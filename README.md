@@ -1,2 +1,5 @@
 # vip-go-ci
-Continuous for VIP Go repositories
+
+Continuous integration for VIP Go repositories.
+
+A PHP-program that will call PHPCS for each commit made on GitHub.
