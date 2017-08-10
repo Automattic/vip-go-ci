@@ -248,7 +248,7 @@ function vipgoci_phpcs_phpscan_commit(
 		 */
 		$temp_file_name = tempnam(
 			sys_get_temp_dir(),
-			'gdh-'
+			'phpcs-scan-'
 		);
 
 		file_put_contents(
