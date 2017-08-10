@@ -7,23 +7,23 @@
  */
 
 function vipgoci_phpcs_log( $str, $debug_data ) {
-	echo '[ ' . date( 'c' ) . ' ] ' . 
-		$str . 
-		'; ' . 
-		print_r( 
-			json_encode( 
+	echo '[ ' . date( 'c' ) . ' ] ' .
+		$str .
+		'; ' .
+		print_r(
+			json_encode(
 				$debug_data,
-				JSON_PRETTY_PRINT 
-			), 
-			true 
-		) . 
+				JSON_PRETTY_PRINT
+			),
+			true
+		) .
 		"\n\r";
 }
 
 
 /*
  * Look at a patch given to use by our caller,
- * and figure out what lines of the target-file 
+ * and figure out what lines of the target-file
  * were affected by the patch.
  */
 

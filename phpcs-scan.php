@@ -10,18 +10,18 @@ require_once( __DIR__ . '/misc.php' );
  * appropriate standards. Return the results.
  */
 
-function vipgoci_phpcs_phpcs_run( $filename_tmp, $real_name ) { 
+function vipgoci_phpcs_phpcs_run( $filename_tmp, $real_name ) {
 	/*
 	 * Run PHPCS from the shell, making sure we escape everything.
 	 *
 	 * Feed PHPCS the temporary file specified by our caller,
 	 * forcing the PHPCS output to use the name of this file as
-	 * found in the git repository. 
+	 * found in the git repository.
 	 *
 	 * Make sure to use wide enough output, so we can catch all of it.
 	 */
 
-	$cmd = sprintf( 
+	$cmd = sprintf(
 		'cat %s | %s %s --standard=%s --report-width=%s --stdin-path=%s',
 		escapeshellarg( $filename_tmp ),
 		escapeshellcmd( 'php' ),
@@ -33,7 +33,17 @@ function vipgoci_phpcs_phpcs_run( $filename_tmp, $real_name ) {
 
 	$result = shell_exec( $cmd );
 
-	// FIXME: Handle errors
+	/* Catch errors */
+	if ( null === $result ) {
+		vipgoci_phpcs_log(
+			'Failed to execute PHPCS. Cannot continue execution.',
+			array(
+				'command' => $cmd,
+			)
+		);
+
+		exit( 254 );
+	}
 
 	return $result;
 }
@@ -52,7 +62,7 @@ function vipgoci_phpcs_phpcs_results_parse( $phpcs_results ) {
 		'/^[\s\t]+(\d+)\s\|[\s\t]+([A-Z]+)[\s|\t]+\|[\s\t]+(.*)$/m',
 		$phpcs_results,
 		$matches,
-		PREG_SET_ORDER 
+		PREG_SET_ORDER
 	) ) {
 		/*
 		 * Look through each result, set key too be
@@ -86,13 +96,13 @@ function vipgoci_github_comment_match(
 	/*
 	 * Construct an index-key made of file:line.
 	 */
-	$comment_index_key = 
+	$comment_index_key =
 		$file_issue_path .
 		':' .
 		$file_issue_line;
 
 
-	if ( isset(
+	if ( ! isset(
 		$comments_made[
 			$comment_index_key
 		]
@@ -101,7 +111,7 @@ function vipgoci_github_comment_match(
 		 * No match on index-key within the
 		 * associative array -- the comment has
 		 * not been made, so return false.
-		 */ 
+		 */
 		return false;
 	}
 
@@ -136,7 +146,7 @@ function vipgoci_github_comment_match(
 		);
 
 		if (
-			strtolower( $comment_made_body ) == 
+			strtolower( $comment_made_body ) ==
 			strtolower( $file_issue_comment )
 		) {
 			/* Comment found, return true. */
@@ -145,7 +155,7 @@ function vipgoci_github_comment_match(
 	}
 
 	return false;
-}  
+}
 
 
 /*
@@ -161,14 +171,14 @@ function vipgoci_phpcs_phpscan_commit(
 ) {
 	$commit_issues_all = array();
 
-	vipgoci_phpcs_log( 
-		'About to scan repository', 
+	vipgoci_phpcs_log(
+		'About to scan repository',
 
 		array(
 			'repo_owner' => $repo_owner,
 			'repo_name' => $repo_name,
 			'commit_id' => $commit_id,
-		) 
+		)
 	);
 
 	$commit_info = vipgoci_phpcs_github_fetch_commit_info(
@@ -212,7 +222,7 @@ function vipgoci_phpcs_phpscan_commit(
 		/*
 		 * If the file was neither added nor modified, skip
 		 */
-		if ( 
+		if (
 			( 'added' !== $file_info->status ) &&
 			( 'modified' !== $file_info->status )
 		) {
@@ -226,7 +236,7 @@ function vipgoci_phpcs_phpscan_commit(
 
 			continue;
 		}
-		
+
 
 		$file_contents = vipgoci_phpcs_github_fetch_committed_file(
 			$repo_owner, $repo_name, $github_access_token, $commit_id, $file_info->filename
@@ -237,7 +247,7 @@ function vipgoci_phpcs_phpscan_commit(
 		 * fetched files into
 		 */
 		$temp_file_name = tempnam(
-			sys_get_temp_dir(), 
+			sys_get_temp_dir(),
 			'gdh-'
 		);
 
@@ -270,7 +280,7 @@ function vipgoci_phpcs_phpscan_commit(
 		$file_changed_lines = vipgoci_phpcs_patch_changed_lines( $file_info->patch );
 
 		/*
-		 * Filter out any issues that affect the file, but are not 
+		 * Filter out any issues that affect the file, but are not
 		 * due to the commit made -- so any existing issues are left
 		 * out and not commented on by us.
 		 */
@@ -292,7 +302,7 @@ function vipgoci_phpcs_phpscan_commit(
 				 * we might run more than once per commit.
 				 */
 
-				if ( 
+				if (
 					vipgoci_github_comment_match(
 						$file_info->filename,
 						$file_issue_line,
@@ -316,24 +326,24 @@ function vipgoci_phpcs_phpscan_commit(
 
 
 				vipgoci_phpcs_github_comment_open(
-					$repo_owner, 
-					$repo_name, 
-					$commit_id, 
+					$repo_owner,
+					$repo_name,
+					$commit_id,
 					$github_access_token,
-					$file_info->filename, 
-					$file_changed_line_no_to_file_line_no[ $file_issue_line ],  
-					$file_issue_val_item['level'], 
+					$file_info->filename,
+					$file_changed_line_no_to_file_line_no[ $file_issue_line ],
+					$file_issue_val_item['level'],
 					$file_issue_val_item['message']
 				);
 			}
 		}
 
-		$commit_issues_all[ $file_info->filename ] = 
+		$commit_issues_all[ $file_info->filename ] =
 			$file_issues_arr;
 
 		vipgoci_phpcs_log(
 			'Cleaning up, and sleeping a bit (for GitHub)',
-			array() 
+			array()
 		);
 
 		/* Get rid of temporary file */
@@ -373,8 +383,8 @@ function vipgoci_phpcs_run() {
 
 
 	$commit_issues_all = vipgoci_phpcs_phpscan_commit(
-		$argv[1], 
-		$argv[2], 
+		$argv[1],
+		$argv[2],
 		$argv[3],
 		$argv[4]
 	);

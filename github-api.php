@@ -8,7 +8,7 @@
 // Has to work for vipgoci_phpcs_github_fetch_url() as well
 
 /*
- * This function works both to collect headers 
+ * This function works both to collect headers
  + when called as a callback function, and to return
  * the headers collected when called standalone.
  *
@@ -48,7 +48,7 @@ function vipgoci_phpcs_curl_headers( $ch, $header ) {
 
 
 	/*
-	 * Turn the header into an array 
+	 * Turn the header into an array
 	 */
 	$header_len = strlen( $header );
 	$header = explode( ':', $header, 2 );
@@ -57,7 +57,7 @@ function vipgoci_phpcs_curl_headers( $ch, $header ) {
 		/*
 		 * Should there be less than two values
 		 * in the array, simply return, as the header is
-		 * invalid.	
+		 * invalid.
 		 */
 		return $header_len;
 	}
@@ -68,15 +68,15 @@ function vipgoci_phpcs_curl_headers( $ch, $header ) {
 	 * in our associative array.
 	 */
 	$key = strtolower( trim( $header[0] ) );
-	
+
 	if ( ! array_key_exists( $key, $resp_headers ) ) {
 		$resp_headers[ $key ] = array();
 	}
-    
+
 	$resp_headers[ $key ][] = trim(
 		$header[1]
 	);
-	
+
 	return $header_len;
 }
 
@@ -85,36 +85,81 @@ function vipgoci_phpcs_curl_headers( $ch, $header ) {
  * provided, using the access-token specified.
  *
  * Will return the raw-data returned by GitHub,
- * or false on error.
+ * or halt execution on repeated errors.
  */
 function vipgoci_phpcs_github_fetch_url(
 	$github_url, $github_access_token
 ) {
-	$ch = curl_init();
 
-	curl_setopt( $ch, CURLOPT_URL, 			$github_url );
-	curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 	1 );
-	curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, 	20 );
-	curl_setopt( $ch, CURLOPT_USERAGENT, 		'automattic-github-review-client' );
-
-	curl_setopt( $ch, CURLOPT_HTTPHEADER,
-			array( 'Authorization: token ' . $github_access_token )
-	);
-
-	$resp_data = curl_exec( $ch );
-	curl_close( $ch );
+	$curl_retries = 0;
 
 	/*
-	 * GitHub asks that requests are made with at least
-	 * one second interval. Guarantee that.
-	 *
-	 * https://developer.github.com/v3/guides/best-practices-for-integrators/#dealing-with-abuse-rate-limits
+	 * Attempt to send request -- retry if
+	 * it fails.
 	 */
+	do {
+		$ch = curl_init();
 
-	sleep( 1 );
+		curl_setopt( $ch, CURLOPT_URL, 			$github_url );
+		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 	1 );
+		curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, 	20 );
+		curl_setopt( $ch, CURLOPT_USERAGENT, 		'automattic-github-review-client' );
 
-	// FIXME. Retry-mechanism? Retry three times, with a bit of delay inbetween?
-	// FIXME: Detect errors
+		curl_setopt( $ch, CURLOPT_HTTPHEADER,
+			array( 'Authorization: token ' . $github_access_token )
+		);
+
+		$resp_data = curl_exec( $ch );
+
+		/*
+		 * Detect and process possible errors
+		 */
+		if (
+			( false === $resp_data ) ||
+			( curl_errno( $ch ) )
+		) {
+			vipgoci_phpcs_log(
+				'Sending request to GitHub failed, will retry in a bit... ',
+				array(
+					'github_url' => $github_url,
+					'curl_retries' => $curl_retries,
+					'curl_errno' => curl_errno( $ch ),
+					'curl_errormsg' => curl_strerror( curl_errno( $ch ) ),
+				)
+			);
+
+			sleep( 60 );
+		}
+
+		else {
+			/*
+			 * Request seems to have been successful, in that it
+			 * was processed by GitHub.
+			 *
+			 * However, GitHub asks that requests are made with at least
+			 * one second interval. Guarantee that.
+			 *
+			 * https://developer.github.com/v3/guides/best-practices-for-integrators/#dealing-with-abuse-rate-limits
+			 */
+			sleep( 1 );
+		}
+
+		curl_close( $ch );
+
+	} while (
+		( false === $resp_data ) &&
+		( $curl_retries++ < 2 )
+	);
+
+
+	if ( false === $resp_data ) {
+		vipgoci_phpcs_log(
+			'Gave up, cannot continue',
+			array()
+		);
+
+		exit( 254 );
+	}
 
 	return $resp_data;
 }
@@ -125,8 +170,8 @@ function vipgoci_phpcs_github_fetch_url(
  * the access-token given.
  *
  * Will return the JSON-decoded data provided
- * by GitHub on success, or false on an error.
- */ 
+ * by GitHub on success.
+ */
 function vipgoci_phpcs_github_fetch_commit_info(
 		$repo_owner, $repo_name, $commit_id, $github_access_token
 ) {
@@ -139,7 +184,7 @@ function vipgoci_phpcs_github_fetch_commit_info(
 		)
 	);
 
-	$github_url = 
+	$github_url =
 		'https://api.github.com/' .
 		'repos/' .
 		rawurlencode( $repo_owner ) . '/' .
@@ -147,7 +192,7 @@ function vipgoci_phpcs_github_fetch_commit_info(
 		'commits/' .
 		rawurlencode( $commit_id );
 
-	// FIXME: Detect errors
+	// FIXME: Detect when GitHub sent back an error
 	return json_decode(
 		vipgoci_phpcs_github_fetch_url(
 			$github_url,
@@ -158,16 +203,16 @@ function vipgoci_phpcs_github_fetch_commit_info(
 
 
 /*
- * Fetch from GitHub a particular file which is a part of a 
+ * Fetch from GitHub a particular file which is a part of a
  * commit, within a particular repository. Will return
  * the file (raw), or false on error.
  */
 
-function vipgoci_phpcs_github_fetch_committed_file( 
-	$repo_owner, 
+function vipgoci_phpcs_github_fetch_committed_file(
+	$repo_owner,
 	$repo_name,
-	$github_access_token, 
-	$commit_id, 
+	$github_access_token,
+	$commit_id,
 	$file_name
 ) {
 
@@ -187,7 +232,7 @@ function vipgoci_phpcs_github_fetch_committed_file(
 		)
 	);
 
-	// FIXME: Detect problems.
+	// FIXME: Detect if GitHub returned with an error.
 	return vipgoci_phpcs_github_fetch_url(
 		'https://raw.githubusercontent.com/' .
 		rawurlencode( $repo_owner ) .  '/' .
@@ -222,7 +267,7 @@ function vipgoci_phpcs_github_comments_get(
 		)
 	);
 
-	$github_url = 
+	$github_url =
 		'https://api.github.com/' .
 		'repos/' .
 		rawurlencode( $repo_owner ) . '/' .
@@ -231,7 +276,7 @@ function vipgoci_phpcs_github_comments_get(
 		rawurlencode( $commit_id ) . '/' .
 		'comments';
 
-	// FIXME: Detect problems
+	// FIXME: Detect when GitHub returned with an error
 
 	$commit_comments_tmp = json_decode(
 		vipgoci_phpcs_github_fetch_url(
@@ -260,8 +305,8 @@ function vipgoci_phpcs_github_comments_get(
 
 
 /*
- * Submit a comment on GitHub for a particular file, 
- * line, and commit, using the access-token provided. 
+ * Submit a comment on GitHub for a particular file,
+ * line, and commit, using the access-token provided.
  */
 function vipgoci_phpcs_github_comment_open(
 	$repo_owner,
@@ -269,7 +314,7 @@ function vipgoci_phpcs_github_comment_open(
 	$commit_id,
  	$github_access_token,
 	$path,
-	$position, 
+	$position,
 	$severity,
 	$comment_str
 ) {
@@ -288,23 +333,23 @@ function vipgoci_phpcs_github_comment_open(
 	);
 
 	$github_url =
-		'https://api.github.com/' . 
+		'https://api.github.com/' .
 		'repos/' .
 		rawurlencode( $repo_owner ) . '/' .
 		rawurlencode( $repo_name ) . '/' .
 		'commits/' .
-		rawurlencode( $commit_id ) . '/' . 
+		rawurlencode( $commit_id ) . '/' .
 		'comments';
 
 
 	$github_postfields = json_encode(
 		array(
-			'body'		=> 
-				'**' . 
+			'body'		=>
+				'**' .
 				ucfirst( strtolower(
-					$severity 
-				)) . 
-				'**: ' . 
+					$severity
+				)) .
+				'**: ' .
 				$comment_str,
 
 			'path'		=> $path,
@@ -328,16 +373,16 @@ function vipgoci_phpcs_github_comment_open(
 	);
 
 	$resp_data = curl_exec( $ch );
-	
+
 	$resp_headers = vipgoci_phpcs_curl_headers( null, null );
 
 	if ( intval( $resp_headers[ 'status' ][0] ) !== 201 ) {
-		if ( 
+		if (
 			( isset( $resp_headers[ 'retry-after' ] ) ) &&
 			( intval( $resp_headers[ 'retry-after' ] ) > 0 )
 		) {
 			vipgoci_phpcs_log(
-				'GitHub asked us to retry in ' . 
+				'GitHub asked us to retry in ' .
 				intval( $resp_headers[ 'retry-after' ] ) .
 				' seconds -- waiting ... ',
 				array()
@@ -361,9 +406,9 @@ function vipgoci_phpcs_github_comment_open(
 	curl_close( $ch );
 
 	// FIXME: Detect errors
- 
-	/* 
-	 * GitHub asks that requests are made with at least one 
+
+	/*
+	 * GitHub asks that requests are made with at least one
 	 * second wait in between -- guarantee that.
 	 */
 	sleep( 1 );
