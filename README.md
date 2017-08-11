@@ -11,8 +11,8 @@ A PHP-program that can be called for each commit made on GitHub. For each commit
 To run this standalone on your local console, PHPCS has to be installed and configured with a certain profile at a certain path. To get the profile installed, the following shell-script can be run:
 
 ```
-if [ ! -d ~/php-validation ] ; then
-	TMP_FOLDER=`mktemp -d /tmp/php-validation-XXXXXX`
+if [ ! -d ~/phpcs-scan ] ; then
+	TMP_FOLDER=`mktemp -d /tmp/phpcs-scan-XXXXXX`
 
 	cd $TMP_FOLDER && \
 	wget https://github.com/squizlabs/PHP_CodeSniffer/archive/2.8.0.tar.gz && \
@@ -25,18 +25,19 @@ if [ ! -d ~/php-validation ] ; then
 	mv WordPress-Coding-Standards-0.11.0/WordPress* phpcs/CodeSniffer/Standards/ && \
 	git clone -b master https://github.com/Automattic/VIP-Coding-Standards.git VIP-Coding-Standards && \
 	mv VIP-Coding-Standards/WordPressVIPMinimum/ phpcs/CodeSniffer/Standards/  && \
-	mv $TMP_FOLDER ~/php-validation && \
+	git clone -b master https://github.com/Automattic/vip-go-ci.git && \
+	mv $TMP_FOLDER ~/phpcs-scan && \
 	echo "Installation finished"
 fi
 ```
 
-Note that `~/php-validation` is assumed to exist by `phpcs-scan.php`.
+This should only need to be run once.
 
-After the shell-script has been run successfully, `phpcs-scan.php` can be run on your local console:
+After the shell-script has been run successfully, `phpcs-scan.php` can be run on your local console to scan a particular commit in a particular repository:
 
-> ./phpcs-scan.php [repo-owner] [repo-name] [commit-ID] [GitHub-Access-Token]
+> ./phpcs-scan.php repo-owner repo-name commit-ID GitHub-Access-Token
 
--- were repo-owner is the GitHub repository-owner, repo-name is the name of the repository, commit-ID is the SHA-hash identifying the commit, and GitHub-Access-Token is a access-token created on GitHub that allows reading and commenting on the repository in question.
+-- were `repo-owner` is the GitHub repository-owner, `repo-name` is the name of the repository, `commit-ID` is the SHA-hash identifying the commit, and `GitHub-Access-Token` is a access-token created on GitHub that allows reading and commenting on the repository in question.
 
 The output you see should be something like this:
 
@@ -60,13 +61,13 @@ The output you see should be something like this:
     "repo_owner": "mygithubuser",
     "repo_name": "testing123",
     "commit_id": "9bf0208a8bc2b86b43513a5d2c4b78fa1ee9244b",
-    "filename": "bla-2.php"
+    "filename": "myfile.php"
 }
 [ 2017-08-10T14:21:35+00:00 ] About to PHPCS-scan file; {
     "repo_owner": "mygithubuser",
     "repo_name": "testing123",
     "commit_id": "9bf0208a8bc2b86b43513a5d2c4b78fa1ee9244b",
-    "filename": "bla-2.php",
+    "filename": "myfile.php",
     "temp_file_name": "\/tmp\/phpcs-scan-WSAUiB"
 }
 [ 2017-08-10T14:21:35+00:00 ] About submit a comment to GitHub about an issue; {
@@ -85,7 +86,7 @@ The output you see should be something like this:
 ```
 
 
-### In Docker
+### Starting a local instance of TeamCity
 
 You can start a local instance of TeamCity in Docker.
 
@@ -99,5 +100,19 @@ To start with multiple agents (for example, three):
 ```
 docker-compose up -d --scale agent=3
 ```
+
+Alternatively, if you do not wish to run TeamCity in a Docker-instance, you can of course download it and set it up manually.
+
+### Configuring TeamCity runner
+
+You can set this up with TeamCity, so that when a commit gets pushed to GitHub, `phpcs-scan.php` will run and scan the commit.
+
+Follow these steps to get it working:
+
+* Create a project, and link it to the GitHub repository you wish to scan
+* Create a build-runner by clicking on `Create build configuration` on the project
+* Emulate fields as shown in the attached screenshot as needed
+* Add a shell-script into the `Custom Script` field. The shell-script should be the one shown in the previous section on how to run `phpcs-scan.php` on the console -- adding this will make sure all the tools `phpcs-scan.php` needs are set up automatically on your build-runner instances
+* In addition, the `Custom Script` field should contain, at the absolute bottom, the following: `~/phpcs-scan/vip-go-ci/phpcs-scan.php repo-owner repo-name "$BUILD_VCS_NUMBER" GitHub-Access-Token` ­­ `repo-owner` etc are the same as shown above. `$BUILD_VCS_NUMBER` should be left untouched, as that is provided by TeamCity on execution.
 
 
