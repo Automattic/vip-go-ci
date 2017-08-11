@@ -1,12 +1,5 @@
 <?php
 
-// FIXME: Handle:
-// * Exceeded rate-limit
-// * about to exceed rate-limit
-// * GitHub fatals
-
-// Has to work for vipgoci_phpcs_github_fetch_url() as well
-
 /*
  * This function works both to collect headers
  + when called as a callback function, and to return
@@ -30,7 +23,7 @@ function vipgoci_phpcs_curl_headers( $ch, $header ) {
 
 		/*
 		 * 'Fix' the status header before returning;
-		 * We want the value to be an array such as:
+		 * we want the value to be an array such as:
 		 * array(
 		 *	0 => 201, // Status-code
 		 *	1 => 'Created' // Status-string
@@ -221,6 +214,8 @@ function vipgoci_phpcs_github_fetch_committed_file(
 	// If a local repository is available,
 	// use that to get the information needed --
 	// this will save us API requests to GitHub.
+	//
+	// Issue #3
 
 	vipgoci_phpcs_log(
 		'Fetching file-information from GitHub',

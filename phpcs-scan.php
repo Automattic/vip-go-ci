@@ -10,7 +10,7 @@ require_once( __DIR__ . '/misc.php' );
  * appropriate standards. Return the results.
  */
 
-function vipgoci_phpcs_phpcs_run( $filename_tmp, $real_name ) {
+function vipgoci_phpcs_do_scan( $filename_tmp, $real_name ) {
 	/*
 	 * Run PHPCS from the shell, making sure we escape everything.
 	 *
@@ -25,7 +25,7 @@ function vipgoci_phpcs_phpcs_run( $filename_tmp, $real_name ) {
 		'cat %s | %s %s --standard=%s --report-width=%s --stdin-path=%s',
 		escapeshellarg( $filename_tmp ),
 		escapeshellcmd( 'php' ),
-		'~/' .  escapeshellcmd( 'php-validation/phpcs/scripts/phpcs' ),
+		'~/' .  escapeshellcmd( 'phpcs-scan/phpcs/scripts/phpcs' ),
 		escapeshellarg( 'WordPressVIPminimum' ),
 		escapeshellarg( 500 ),
 		escapeshellarg( $real_name )
@@ -55,7 +55,7 @@ function vipgoci_phpcs_phpcs_run( $filename_tmp, $real_name ) {
  * as a key.
  */
 
-function vipgoci_phpcs_phpcs_results_parse( $phpcs_results ) {
+function vipgoci_phpcs_parse_results( $phpcs_results ) {
 	$issues = array();
 
 	if ( preg_match_all(
@@ -163,7 +163,7 @@ function vipgoci_github_comment_match(
  * a particular repository on GitHub, and use the specified
  * access-token to gain access.
  */
-function vipgoci_phpcs_phpscan_commit(
+function vipgoci_phpcs_scan_commit(
 	$repo_owner,
 	$repo_name,
 	$commit_id,
@@ -251,10 +251,22 @@ function vipgoci_phpcs_phpscan_commit(
 			'phpcs-scan-'
 		);
 
-		file_put_contents(
+		$temp_file_save_status = file_put_contents(
 			$temp_file_name,
 			$file_contents
 		);
+
+		// Detect possible errors when saving the temporary file
+		if ( false === $temp_file_save_status ) {
+			vipgoci_phpcs_log(
+				'Could not save file to disk, got an error. Exiting...',
+				array(
+					'temp_file_name' => $temp_file_name,
+				)
+			);
+
+			exit( 254 );
+		}
 
 		vipgoci_phpcs_log(
 			'About to PHPCS-scan file',
@@ -268,12 +280,12 @@ function vipgoci_phpcs_phpscan_commit(
 		);
 
 
-		$file_issues_str = vipgoci_phpcs_phpcs_run(
+		$file_issues_str = vipgoci_phpcs_do_scan(
 			$temp_file_name,
 			$file_info->filename
 		);
 
-		$file_issues_arr = vipgoci_phpcs_phpcs_results_parse(
+		$file_issues_arr = vipgoci_phpcs_parse_results(
 			$file_issues_str
 		);
 
@@ -382,7 +394,7 @@ function vipgoci_phpcs_run() {
 	}
 
 
-	$commit_issues_all = vipgoci_phpcs_phpscan_commit(
+	$commit_issues_all = vipgoci_phpcs_scan_commit(
 		$argv[1],
 		$argv[2],
 		$argv[3],
