@@ -33,6 +33,18 @@ function vipgoci_phpcs_do_scan( $filename_tmp, $real_name ) {
 
 	$result = shell_exec( $cmd );
 
+	/*
+	 * Do simple checks to see if we can find any signature marks
+	 * of PHPCS having run -- these two strings should be in what
+	 * PHPCS returns.
+	 */
+	if (
+		( false === strpos( $result, 'FILE: ' ) ) &&
+		( false === strpos( $result, 'Time: ') )
+	) {
+		$result = null;
+	}
+
 	/* Catch errors */
 	if ( null === $result ) {
 		vipgoci_phpcs_log(
