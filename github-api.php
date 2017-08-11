@@ -208,15 +208,6 @@ function vipgoci_phpcs_github_fetch_committed_file(
 	$commit_id,
 	$file_name
 ) {
-
-	// FIXME: Use GitHub as a fallback, when
-	// no local repository is available.
-	// If a local repository is available,
-	// use that to get the information needed --
-	// this will save us API requests to GitHub.
-	//
-	// Issue #3
-
 	vipgoci_phpcs_log(
 		'Fetching file-information from GitHub',
 		array(
