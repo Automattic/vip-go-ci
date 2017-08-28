@@ -408,8 +408,8 @@ function vipgoci_phpcs_run() {
 	));
 
 	// Validate args
-	if ( ! isset( $options[ 'organization'] ) ||
-		! isset( $options[ 'repo' ] ) ||
+	if ( ! isset( $options['organization'] ) ||
+		! isset( $options['repo'] ) ||
 		! isset( $options['commit'] ) ||
 		! isset( $options['token'] ) ) {
 		print "Usage: " . $argv[0] . " --organization=repo-owner --repo=name --commit=SHA --token=github-access-token\n";
