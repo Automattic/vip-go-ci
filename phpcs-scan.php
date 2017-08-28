@@ -175,12 +175,13 @@ function vipgoci_github_comment_match(
  * a particular repository on GitHub, and use the specified
  * access-token to gain access.
  */
-function vipgoci_phpcs_scan_commit(
-	$repo_owner,
-	$repo_name,
-	$commit_id,
-	$github_access_token
-) {
+function vipgoci_phpcs_scan_commit( $options ) {
+	$repo_owner = $options['organization'];
+	$repo_name  = $options['repo'];
+	$commit_id  = $options['commit'];
+
+	$github_access_token = $options['token'];
+
 	$commit_issues_all = array();
 
 	vipgoci_phpcs_log(
@@ -399,19 +400,23 @@ function vipgoci_phpcs_run() {
 
 	$startup_time = time();
 
+	$options = getopt( null, array(
+		'organization:',
+		'repo:',
+		'commit:',
+		'token:',
+	));
 
-	if ( count( $argv ) != 5 ) {
-		print "Usage: " . $argv[0] . " repo-owner repo-name commit-id github-access-token\n";
+	// Validate args
+	if ( ! isset( $options[ 'organization'] ) ||
+		! isset( $options[ 'repo' ] ) ||
+		! isset( $options['commit'] ) ||
+		! isset( $options['token'] ) ) {
+		print "Usage: " . $argv[0] . " --organization=repo-owner --repo=name --commit=SHA --token=github-access-token\n";
 		exit(-1);
 	}
 
-
-	$commit_issues_all = vipgoci_phpcs_scan_commit(
-		$argv[1],
-		$argv[2],
-		$argv[3],
-		$argv[4]
-	);
+	$commit_issues_all = vipgoci_phpcs_scan_commit( $options );
 
 	vipgoci_phpcs_log(
 		'Shutting down',
@@ -422,4 +427,3 @@ function vipgoci_phpcs_run() {
 }
 
 vipgoci_phpcs_run();
-
