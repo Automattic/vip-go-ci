@@ -176,8 +176,8 @@ function vipgoci_github_comment_match(
  * access-token to gain access.
  */
 function vipgoci_phpcs_scan_commit( $options ) {
-	$repo_owner = $options['organization'];
-	$repo_name  = $options['repo'];
+	$repo_owner = $options['repo-owner'];
+	$repo_name  = $options['repo-name'];
 	$commit_id  = $options['commit'];
 
 	$github_access_token = $options['token'];
@@ -408,20 +408,23 @@ function vipgoci_phpcs_run() {
 
 	$startup_time = time();
 
-	$options = getopt( null, array(
-		'organization:',
-		'repo:',
-		'commit:',
-		'token:',
-		'output:',
-	));
+	$options = getopt(
+		null,
+		array(
+			'repo-owner:',
+			'repo-name:',
+			'commit:',
+			'token:',
+			'output:',
+		)
+	);
 
 	// Validate args
-	if ( ! isset( $options['organization'] ) ||
-		! isset( $options['repo'] ) ||
+	if ( ! isset( $options['repo-owner'] ) ||
+		! isset( $options['repo-name'] ) ||
 		! isset( $options['commit'] ) ||
 		! isset( $options['token'] ) ) {
-		print "Usage: " . $argv[0] . " --organization=repo-owner --repo=name --commit=SHA --token=github-access-token\n";
+		print "Usage: " . $argv[0] . " --repo-owner=repo-owner --repo-name=repo-name --commit=SHA --token=github-access-token\n";
 		exit(-1);
 	}
 

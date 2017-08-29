@@ -35,7 +35,7 @@ This should only need to be run once.
 
 After the shell-script has been run successfully, `phpcs-scan.php` can be run on your local console to scan a particular commit in a particular repository:
 
-> ./phpcs-scan.php repo-owner repo-name commit-ID GitHub-Access-Token
+> ./phpcs-scan.php --repo-owner=repo-owner --repo-name=repo-name --commit=commit-ID --token=GitHub-Access-Token
 
 -- were `repo-owner` is the GitHub repository-owner, `repo-name` is the name of the repository, `commit-ID` is the SHA-hash identifying the commit, and `GitHub-Access-Token` is a access-token created on GitHub that allows reading and commenting on the repository in question.
 
@@ -113,6 +113,6 @@ Follow these steps to get it working:
 * Create a build-runner by clicking on `Create build configuration` on the project
 * Make sure the build-runner is of the `Command Line` type, that `If all previous steps finished successfully` is chosen, and that `Custom Script` is chosen for the run `Run` field.
 * Add a shell-script into the `Custom Script` field. The shell-script should be the one shown in the previous section on how to run `phpcs-scan.php` on the console -- adding this will make sure all the tools `phpcs-scan.php` needs are set up automatically on your build-runner instances
-* In addition, the `Custom Script` field should contain, at the absolute bottom, the following: `~/phpcs-scan/vip-go-ci/phpcs-scan.php repo-owner repo-name "$BUILD_VCS_NUMBER" GitHub-Access-Token`. `repo-owner` etc need to be replaced, in the same way as shown above in the local console example. `$BUILD_VCS_NUMBER` should be left untouched, as that is provided by TeamCity on execution.
+* In addition, the `Custom Script` field should contain, at the absolute bottom, the following: `~/phpcs-scan/vip-go-ci/phpcs-scan.php --repo-owner=repo-owner --repo-name=repo-name --commit="$BUILD_VCS_NUMBER" --token=GitHub-Access-Token`. `repo-owner` etc need to be replaced, in the same way as shown above in the local console example. `$BUILD_VCS_NUMBER` should be left untouched, as that is provided by TeamCity on execution.
 
 
