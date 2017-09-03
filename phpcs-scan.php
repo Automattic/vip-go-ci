@@ -302,11 +302,20 @@ function vipgoci_phpcs_scan_commit( $options ) {
 			$file_issues_str
 		);
 
-		if ( $options[ 'output'] ) {
+		if ( ! empty( $options[ 'output'] ) ) {
 			if ( is_file( $options['output'] ) && ! is_writeable( $options['output'] ) ) {
-				vipgoci_phpcs_log( 'File ' . $options['output'] . ' is not writeable', array() );
+				vipgoci_phpcs_log(
+					'File ' . $options['output'] . ' is not writeable',
+					array()
+				);
 			} else {
-				file_put_contents( $options['output'], json_encode( $file_issues_arr, JSON_PRETTY_PRINT ) );
+				file_put_contents(
+					$options['output'],
+					json_encode(
+						$file_issues_arr,
+						JSON_PRETTY_PRINT
+					)
+				);
 			}
 		}
 
