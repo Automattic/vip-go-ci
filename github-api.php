@@ -230,22 +230,25 @@ function vipgoci_phpcs_github_fetch_committed_file(
 }
 
 
+
 /*
  * Fetch all comments made on GitHub for the
- * repository and commits specified.
+ * repository and commit specified -- but are
+ * still associated with a Pull Request.
  *
  * Will return an associative array of comments,
  * with file-name and file-line number as keys. Will
  * return false on an error.
  */
-function vipgoci_phpcs_github_comments_get(
+function vipgoci_phpcs_github_pull_requests_comments_get(
 	$repo_owner,
 	$repo_name,
 	$commit_id,
 	$github_access_token
 ) {
+
 	vipgoci_phpcs_log(
-		'Fetching comments info from GitHub',
+		'Fetching Pull-Requests comments info from GitHub',
 		array(
 			'repo_owner' => $repo_owner,
 			'repo_name' => $repo_name,
@@ -258,13 +261,12 @@ function vipgoci_phpcs_github_comments_get(
 		'repos/' .
 		rawurlencode( $repo_owner ) . '/' .
 		rawurlencode( $repo_name ) . '/' .
-		'commits/' .
-		rawurlencode( $commit_id ) . '/' .
+		'pulls/' .
 		'comments';
 
 	// FIXME: Detect when GitHub returned with an error
 
-	$commit_comments_tmp = json_decode(
+	$prs_comments_tmp = json_decode(
 		vipgoci_phpcs_github_fetch_url(
 			$github_url,
 			$github_access_token
@@ -278,68 +280,93 @@ function vipgoci_phpcs_github_comments_get(
 	 * can easily be found.
 	 */
 
-	$commit_comments = array();
+	$prs_comments = array();
 
-	foreach ( $commit_comments_tmp as $commit_comment ) {
-		$commit_comments[
-			$commit_comment->path . ':' . $commit_comment->position
+	foreach ( $prs_comments_tmp as $commit_comment ) {
+		if ( null === $commit_comment->position ) {
+			/*
+			 * If no line-number was provided,
+			 * ignore the comment.
+			 */
+			continue;
+		}
+
+		if ( $commit_id !== $commit_comment->commit_id ) {
+			/*
+			 * If commit_id on comment does not match
+			 * current one, skip the comment.
+			 */
+			continue;
+		}
+
+		$prs_comments[
+			$commit_comment->path . ':' .
+			$commit_comment->position
 		][] = $commit_comment;
 	}
 
-	return $commit_comments;
+	return $prs_comments;
 }
 
 
 /*
  * Submit a comment on GitHub for a particular file,
- * line, and commit, using the access-token provided.
+ * line, commit and Pull-Request, using the
+ * access-token provided.
  */
-function vipgoci_phpcs_github_comment_open(
+function vipgoci_phpcs_github_review_submit(
 	$repo_owner,
 	$repo_name,
-	$commit_id,
  	$github_access_token,
-	$path,
-	$position,
-	$severity,
-	$comment_str
+	$pr_number,
+	$commit_id,
+	$commit_issues_submit
 ) {
-
 	vipgoci_phpcs_log(
-		'About submit a comment to GitHub about an issue',
+		'About submit comment(s) to GitHub about issue(s)',
 		array(
 			'repo_owner' => $repo_owner,
 			'repo_name' => $repo_name,
+			'pr_number' => $pr_number,
 			'commit_id' => $commit_id,
-			'filename' => $path,
-			'position' => $position,
-			'level' => $severity,
-			'message' => $comment_str,
+			'comments' => $commit_issues_submit,
 		)
 	);
 
+	// FIXME: When there are no issues, comment that
+	// there were no issues found, and leave a 'COMMENT' status
 	$github_url =
 		'https://api.github.com/' .
 		'repos/' .
 		rawurlencode( $repo_owner ) . '/' .
 		rawurlencode( $repo_name ) . '/' .
-		'commits/' .
-		rawurlencode( $commit_id ) . '/' .
-		'comments';
+		'pulls/' .
+		rawurlencode( $pr_number ) . '/' .
+		'reviews';
+
+	$commit_issues_rewritten = array();
+
+	foreach ( $commit_issues_submit as $commit_issue ) {
+		$commit_issues_rewritten[] = array(
+			'body' 		=> '**' .
+						ucfirst( strtolower(
+							$commit_issue[ 'issue' ][ 'level' ]
+						)) .
+						'**: ' .
+						$commit_issue[ 'issue' ][ 'message' ],
+			'position'	=> $commit_issue[ 'file_line' ],
+			'path'		=> $commit_issue[ 'file_name']
+		);
+	}
 
 
 	$github_postfields = json_encode(
 		array(
+			'commit_id'	=> $commit_id,
 			'body'		=>
-				'**' .
-				ucfirst( strtolower(
-					$severity
-				)) .
-				'**: ' .
-				$comment_str,
-
-			'path'		=> $path,
-			'position'	=> $position,
+				count( $commit_issues_rewritten ) . ' issues found ',
+			'event'		=> 'REQUEST_CHANGES',
+			'comments'	=> $commit_issues_rewritten,
 		)
 	);
 
@@ -362,7 +389,7 @@ function vipgoci_phpcs_github_comment_open(
 
 	$resp_headers = vipgoci_phpcs_curl_headers( null, null );
 
-	if ( intval( $resp_headers[ 'status' ][0] ) !== 201 ) {
+	if ( intval( $resp_headers[ 'status' ][0] ) !== 200 ) {
 		if (
 			( isset( $resp_headers[ 'retry-after' ] ) ) &&
 			( intval( $resp_headers[ 'retry-after' ] ) > 0 )
@@ -402,3 +429,65 @@ function vipgoci_phpcs_github_comment_open(
 	return $resp_data;
 }
 
+
+/*
+ * Get Pull Requests which are open currently
+ * and the commit is a part of.
+ */
+
+function vipgoci_phpcs_github_prs_implicated(
+	$repo_owner,
+	$repo_name,
+	$commit_id,
+	$github_access_token
+) {
+	$prs_implicated = array();
+	$prs_maybe_implicted = array();
+
+	vipgoci_phpcs_log(
+		'Fetching all open Pull-Requests from GitHub',
+		array(
+			'repo_owner' => $repo_owner,
+			'repo_name' => $repo_name,
+			'commit_id' => $commit_id,
+		)
+	);
+
+	$github_url =
+		'https://api.github.com/' .
+		'repos/' .
+		rawurlencode( $repo_owner ) . '/' .
+		rawurlencode( $repo_name ) . '/' .
+		'pulls' .
+		'?state=open';
+
+
+	// FIXME: Detect when GitHub sent back an error
+	$prs_implicated_unfiltered = json_decode(
+		vipgoci_phpcs_github_fetch_url(
+			$github_url,
+			$github_access_token
+		)
+	);
+
+	/*
+	 * Filter out any Pull-Requests that
+	 * have nothing to do with our commit
+	 */
+	foreach ( $prs_implicated_unfiltered as $pr_item ) {
+		$prs_maybe_implicated[] = $pr_item->number;
+
+		if ( $commit_id !== $pr_item->head->sha ) {
+			continue;
+		}
+
+		$prs_implicated[] = $pr_item->number;
+	}
+
+	/* FIXME: Go through each 'maybe', and check if they are implicated --
+	 * we have to do that so we do not miss any commit which is not
+	 * in the head of any particular pull-request, but is still part of it.
+	 */
+
+	return $prs_implicated;
+}

@@ -183,6 +183,7 @@ function vipgoci_phpcs_scan_commit( $options ) {
 	$github_access_token = $options['token'];
 
 	$commit_issues_all = array();
+	$commit_issues_submit = array();
 
 	vipgoci_phpcs_log(
 		'About to scan repository',
@@ -201,8 +202,19 @@ function vipgoci_phpcs_scan_commit( $options ) {
 		$github_access_token
 	);
 
-	/* Fetch all comments to the current commit */
-	$commit_comments = vipgoci_phpcs_github_comments_get(
+
+	$prs_implicated = vipgoci_phpcs_github_prs_implicated(
+		$repo_owner,
+		$repo_name,
+		$commit_id,
+		$github_access_token
+	);
+
+	/*
+	 * Fetch all comments made in relation to that commit
+	 * and associated with any Pull-Requests that are open.
+	 */
+	$prs_comments = vipgoci_phpcs_github_pull_requests_comments_get(
 		$repo_owner,
 		$repo_name,
 		$commit_id,
@@ -302,6 +314,11 @@ function vipgoci_phpcs_scan_commit( $options ) {
 			$file_issues_str
 		);
 
+
+		/*
+		 * Output scanning-results if requested
+		 */
+
 		if ( ! empty( $options[ 'output'] ) ) {
 			if ( is_file( $options['output'] ) && ! is_writeable( $options['output'] ) ) {
 				vipgoci_phpcs_log(
@@ -347,13 +364,13 @@ function vipgoci_phpcs_scan_commit( $options ) {
 				if (
 					vipgoci_github_comment_match(
 						$file_info->filename,
-						$file_issue_line,
+						$file_changed_line_no_to_file_line_no[ $file_issue_line ],
 						$file_issue_val_item['message'],
-						$commit_comments
+						$prs_comments
 					)
 				) {
 					vipgoci_phpcs_log(
-						'Skipping submittion of comment, has already been submitted',
+						'Skipping submition of comment, has already been submitted',
 						array(
 							'repo_owner'		=> $repo_owner,
 							'repo_name'		=> $repo_name,
@@ -366,16 +383,15 @@ function vipgoci_phpcs_scan_commit( $options ) {
 					continue;
 				}
 
+				/*
+				 * Collect all the issues that
+				 * we need to submit about
+				 */
 
-				vipgoci_phpcs_github_comment_open(
-					$repo_owner,
-					$repo_name,
-					$commit_id,
-					$github_access_token,
-					$file_info->filename,
-					$file_changed_line_no_to_file_line_no[ $file_issue_line ],
-					$file_issue_val_item['level'],
-					$file_issue_val_item['message']
+				$commit_issues_submit[] = array(
+					'file_name'	=> $file_info->filename,
+					'file_line'	=> $file_changed_line_no_to_file_line_no[ $file_issue_line ],
+					'issue'		=> $file_issue_val_item
 				);
 			}
 		}
@@ -405,6 +421,35 @@ function vipgoci_phpcs_scan_commit( $options ) {
 
 		gc_collect_cycles();
 	}
+
+
+	/*
+	 * Submit a review of what we found
+	 * for each implicated Pull-Request
+	 */
+
+	foreach ( $prs_implicated as $pr_number ) {
+		vipgoci_phpcs_github_review_submit(
+			$repo_owner,
+			$repo_name,
+			$github_access_token,
+			$pr_number,
+			$commit_id,
+			$commit_issues_submit
+		);
+	}
+
+
+	/*
+	 * Clean up a bit
+	 */
+
+	unset( $prs_comments );
+	unset( $prs_implicated );
+	unset( $commit_issues_submit );
+
+	gc_collect_cycles();
+
 
 	return $commit_issues_all;
 }
