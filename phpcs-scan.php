@@ -446,12 +446,10 @@ function vipgoci_phpcs_scan_commit( $options ) {
 
 	unset( $prs_comments );
 	unset( $prs_implicated );
-	unset( $commit_issues_submit );
 
 	gc_collect_cycles();
 
-
-	return $commit_issues_all;
+	return $commit_issues_submit;
 }
 
 /*
@@ -482,14 +480,33 @@ function vipgoci_phpcs_run() {
 		exit(-1);
 	}
 
-	$commit_issues_all = vipgoci_phpcs_scan_commit( $options );
+	$commit_issues_submit = vipgoci_phpcs_scan_commit( $options );
 
 	vipgoci_phpcs_log(
 		'Shutting down',
 		array(
-			'run_time_seconds' => time() - $startup_time
+			'run_time_seconds' => time() - $startup_time,
+			'issues_submitted' => count( $commit_issues_submit ),
 		)
 	);
+
+
+	/*
+	 * If any issues were submitted to GitHub,
+	 * we announce a failure to our parent-process
+	 * by returning with a non-zero exit-code.
+	 */
+
+	if ( count( $commit_issues_submit ) == 0 ) {
+		return 0;
+	}
+
+	else {
+		return 250;
+	}
 }
 
-vipgoci_phpcs_run();
+$ret = vipgoci_phpcs_run();
+
+exit( $ret );
+
