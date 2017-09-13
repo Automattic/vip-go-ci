@@ -244,8 +244,12 @@ function vipgoci_phpcs_github_pull_requests_comments_get(
 	$repo_owner,
 	$repo_name,
 	$commit_id,
+	$commit_made_at,
 	$github_access_token
 ) {
+
+	$page = 0;
+	$prs_comments = array();
 
 	vipgoci_phpcs_log(
 		'Fetching Pull-Requests comments info from GitHub',
@@ -253,57 +257,72 @@ function vipgoci_phpcs_github_pull_requests_comments_get(
 			'repo_owner' => $repo_owner,
 			'repo_name' => $repo_name,
 			'commit_id' => $commit_id,
-		)
-	);
-
-	$github_url =
-		'https://api.github.com/' .
-		'repos/' .
-		rawurlencode( $repo_owner ) . '/' .
-		rawurlencode( $repo_name ) . '/' .
-		'pulls/' .
-		'comments';
-
-	// FIXME: Detect when GitHub returned with an error
-
-	$prs_comments_tmp = json_decode(
-		vipgoci_phpcs_github_fetch_url(
-			$github_url,
-			$github_access_token
+			'commit_made_at' => $commit_made_at,
 		)
 	);
 
 
 	/*
- 	 * Look through each comment, create an associative array
-	 * of file:position out of all the comments, so any comment
-	 * can easily be found.
+	 * FIXME:
+	 *
+	 * Asking for all the pages from GitHub
+	 * might get expensive as we process more
+	 * commits/hour -- maybe cache this in memcache.
 	 */
 
-	$prs_comments = array();
+	do {
+		$github_url =
+			'https://api.github.com/' .
+			'repos/' .
+			rawurlencode( $repo_owner ) . '/' .
+			rawurlencode( $repo_name ) . '/' .
+			'pulls/' .
+			'comments?' .
+			'sort=created&' .
+			'direction=asc&' .
+			'since=' . rawurlencode( $commit_made_at ) . '&' .
+			'page=' . rawurlencode( $page );
 
-	foreach ( $prs_comments_tmp as $commit_comment ) {
-		if ( null === $commit_comment->position ) {
-			/*
-			 * If no line-number was provided,
-			 * ignore the comment.
-			 */
-			continue;
+		// FIXME: Detect when GitHub returned with an error
+		$prs_comments_tmp = json_decode(
+			vipgoci_phpcs_github_fetch_url(
+				$github_url,
+				$github_access_token
+			)
+		);
+
+
+		/*
+		 * Look through each comment, create an associative array
+		 * of file:position out of all the comments, so any comment
+		 * can easily be found.
+		 */
+
+		foreach ( $prs_comments_tmp as $pr_comment ) {
+			if ( null === $pr_comment->position ) {
+				/*
+				 * If no line-number was provided,
+				 * ignore the comment.
+				 */
+				continue;
+			}
+
+			if ( $commit_id !== $pr_comment->original_commit_id ) {
+				/*
+				 * If commit_id on comment does not match
+				 * current one, skip the comment.
+				 */
+				continue;
+			}
+
+			$prs_comments[
+				$pr_comment->path . ':' .
+				$pr_comment->position
+			][] = $pr_comment;
 		}
 
-		if ( $commit_id !== $commit_comment->commit_id ) {
-			/*
-			 * If commit_id on comment does not match
-			 * current one, skip the comment.
-			 */
-			continue;
-		}
-
-		$prs_comments[
-			$commit_comment->path . ':' .
-			$commit_comment->position
-		][] = $commit_comment;
-	}
+		$page++;
+	} while ( count( $prs_comments_tmp ) == 30 );
 
 	return $prs_comments;
 }
@@ -320,7 +339,8 @@ function vipgoci_phpcs_github_review_submit(
  	$github_access_token,
 	$pr_number,
 	$commit_id,
-	$commit_issues_submit
+	$commit_issues_submit,
+	$commit_issues_stats
 ) {
 	vipgoci_phpcs_log(
 		'About submit comment(s) to GitHub about issue(s)',
@@ -330,6 +350,7 @@ function vipgoci_phpcs_github_review_submit(
 			'pr_number' => $pr_number,
 			'commit_id' => $commit_id,
 			'comments' => $commit_issues_submit,
+			'commit_issues_stats' => $commit_issues_stats,
 		)
 	);
 
@@ -360,15 +381,50 @@ function vipgoci_phpcs_github_review_submit(
 	}
 
 
-	$github_postfields = json_encode(
-		array(
-			'commit_id'	=> $commit_id,
-			'body'		=>
-				count( $commit_issues_rewritten ) . ' issues found ',
-			'event'		=> 'REQUEST_CHANGES',
-			'comments'	=> $commit_issues_rewritten,
-		)
+
+	$github_postfields = array(
+		'commit_id'	=> $commit_id,
+		'body'		=> '',
+		'event'		=> '',
+		'comments'	=> $commit_issues_rewritten,
 	);
+
+	/*
+	 * If there are 'error'-level issues, make sure the submission
+	 * asks for changes to be made, otherwise only comment.
+	 */
+
+	if ( empty( $commit_issues_stats[ 'errors' ] ) ) {
+		$github_postfields[ 'event' ] = 'COMMENT';
+	}
+
+	else {
+		$github_postfields[ 'event'] = 'REQUEST_CHANGES';
+	}
+
+
+	/*
+	 * Compose the number of warnings/errors for the
+	 * review-submission to GitHub.
+	 */
+
+	if ( empty( $commit_issues_stats ) ) {
+		$github_postfields[ 'body' ] = 'No issues';
+	}
+
+	else {
+		$github_postfields[ 'body'] = "PHPCS found issues\n\r";
+	}
+
+	foreach (
+		$commit_issues_stats as
+			$commit_issue_stat_key => $commit_issue_stat_value
+	) {
+		$github_postfields[ 'body' ] .=
+			$commit_issue_stat_value . ' ' .
+			$commit_issue_stat_key . '(s) ' .
+			"\n\r";
+	}
 
 
 	$ch = curl_init();
@@ -378,7 +434,7 @@ function vipgoci_phpcs_github_review_submit(
 	curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, 	20) ;
 	curl_setopt( $ch, CURLOPT_USERAGENT, 		'automattic-github-review-client' );
 	curl_setopt( $ch, CURLOPT_POST,			1 );
-	curl_setopt( $ch, CURLOPT_POSTFIELDS,		$github_postfields );
+	curl_setopt( $ch, CURLOPT_POSTFIELDS,		json_encode( $github_postfields ) );
 	curl_setopt( $ch, CURLOPT_HEADERFUNCTION, 	'vipgoci_phpcs_curl_headers' );
 
 	curl_setopt( $ch, CURLOPT_HTTPHEADER,
@@ -452,6 +508,8 @@ function vipgoci_phpcs_github_prs_implicated(
 			'commit_id' => $commit_id,
 		)
 	);
+
+	// FIXME: Traverse pages
 
 	$github_url =
 		'https://api.github.com/' .

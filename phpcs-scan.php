@@ -105,6 +105,7 @@ function vipgoci_github_comment_match(
 	$file_issue_comment,
 	$comments_made
 ) {
+
 	/*
 	 * Construct an index-key made of file:line.
 	 */
@@ -182,8 +183,11 @@ function vipgoci_phpcs_scan_commit( $options ) {
 
 	$github_access_token = $options['token'];
 
-	$commit_issues_all = array();
 	$commit_issues_submit = array();
+	$commit_issues_stats = array(
+		'error' => 0,
+		'warning' => 0
+	);
 
 	vipgoci_phpcs_log(
 		'About to scan repository',
@@ -218,6 +222,7 @@ function vipgoci_phpcs_scan_commit( $options ) {
 		$repo_owner,
 		$repo_name,
 		$commit_id,
+		$commit_info->commit->committer->date,
 		$github_access_token
 	);
 
@@ -370,7 +375,7 @@ function vipgoci_phpcs_scan_commit( $options ) {
 					)
 				) {
 					vipgoci_phpcs_log(
-						'Skipping submition of comment, has already been submitted',
+						'Skipping submission of comment, has already been submitted',
 						array(
 							'repo_owner'		=> $repo_owner,
 							'repo_name'		=> $repo_name,
@@ -393,11 +398,20 @@ function vipgoci_phpcs_scan_commit( $options ) {
 					'file_line'	=> $file_changed_line_no_to_file_line_no[ $file_issue_line ],
 					'issue'		=> $file_issue_val_item
 				);
+
+				/*
+				 * Collect statistics on
+				 * number of warnings/errors
+				 */
+
+				$commit_issues_stats[
+					strtolower(
+						$file_issue_val_item[ 'level' ]
+					)
+				]++;
+
 			}
 		}
-
-		$commit_issues_all[ $file_info->filename ] =
-			$file_issues_arr;
 
 		vipgoci_phpcs_log(
 			'Cleaning up, and sleeping a bit (for GitHub)',
@@ -405,7 +419,7 @@ function vipgoci_phpcs_scan_commit( $options ) {
 		);
 
 		/* Get rid of temporary file */
-		unlink($temp_file_name);
+		unlink( $temp_file_name );
 
 
 		/*
@@ -435,7 +449,8 @@ function vipgoci_phpcs_scan_commit( $options ) {
 			$github_access_token,
 			$pr_number,
 			$commit_id,
-			$commit_issues_submit
+			$commit_issues_submit,
+			$commit_issues_stats
 		);
 	}
 
@@ -446,10 +461,11 @@ function vipgoci_phpcs_scan_commit( $options ) {
 
 	unset( $prs_comments );
 	unset( $prs_implicated );
+	unset( $commit_issues_submit );
 
 	gc_collect_cycles();
 
-	return $commit_issues_submit;
+	return $commit_issues_stats;
 }
 
 /*
@@ -480,24 +496,26 @@ function vipgoci_phpcs_run() {
 		exit(-1);
 	}
 
-	$commit_issues_submit = vipgoci_phpcs_scan_commit( $options );
+	$commit_issues_stats = vipgoci_phpcs_scan_commit( $options );
 
 	vipgoci_phpcs_log(
 		'Shutting down',
 		array(
 			'run_time_seconds' => time() - $startup_time,
-			'issues_submitted' => count( $commit_issues_submit ),
+			'issues_stats' => $commit_issues_stats,
 		)
 	);
 
 
 	/*
-	 * If any issues were submitted to GitHub,
-	 * we announce a failure to our parent-process
+	 * If any 'error'-type issues  were submitted to
+	 * GitHub we announce a failure to our parent-process
 	 * by returning with a non-zero exit-code.
+	 *
+	 * If we only submitted warnings, we do not announce failure.
 	 */
 
-	if ( count( $commit_issues_submit ) == 0 ) {
+	if ( empty( $commit_issues_stats['error'] ) ) {
 		return 0;
 	}
 
