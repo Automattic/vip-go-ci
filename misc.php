@@ -7,7 +7,7 @@
  */
 
 function vipgoci_phpcs_log( $str, $debug_data ) {
-	echo '[ ' . date( 'c' ) . ' ] ' .
+	echo '[ ' . date( 'c' ) . ' ]  ' .
 		$str .
 		'; ' .
 		print_r(
