@@ -96,9 +96,16 @@ function vipgoci_phpcs_github_fetch_url(
 		curl_setopt( $ch, CURLOPT_URL, 			$github_url );
 		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 	1 );
 		curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, 	20 );
-		curl_setopt( $ch, CURLOPT_USERAGENT, 		'automattic-github-review-client' );
 
-		curl_setopt( $ch, CURLOPT_HTTPHEADER,
+		curl_setopt(
+			$ch,
+			CURLOPT_USERAGENT,
+			'automattic-github-review-client'
+		);
+
+		curl_setopt(
+			$ch,
+			CURLOPT_HTTPHEADER,
 			array( 'Authorization: token ' . $github_access_token )
 		);
 
@@ -112,12 +119,20 @@ function vipgoci_phpcs_github_fetch_url(
 			( curl_errno( $ch ) )
 		) {
 			vipgoci_phpcs_log(
-				'Sending request to GitHub failed, will retry in a bit... ',
+				'Sending request to GitHub failed, will ' .
+					'retry in a bit... ',
+
 				array(
 					'github_url' => $github_url,
 					'curl_retries' => $curl_retries,
-					'curl_errno' => curl_errno( $ch ),
-					'curl_errormsg' => curl_strerror( curl_errno( $ch ) ),
+
+					'curl_errno' => curl_errno(
+						$ch
+					),
+
+					'curl_errormsg' => curl_strerror(
+						curl_errno( $ch )
+					),
 				)
 			);
 
@@ -327,7 +342,7 @@ function vipgoci_phpcs_github_pull_requests_comments_get(
 		 * Sleep a bit extra for GitHub.
 		 */
 		sleep( 3 );
-	} while ( count( $prs_comments_tmp ) == 30 );
+	} while ( count( $prs_comments_tmp ) >= 30 );
 
 	return $prs_comments;
 }
@@ -381,12 +396,14 @@ function vipgoci_phpcs_github_review_submit(
 
 	foreach ( $commit_issues_submit as $commit_issue ) {
 		$commit_issues_rewritten[] = array(
-			'body' 		=> '**' .
-						ucfirst( strtolower(
-							$commit_issue[ 'issue' ][ 'level' ]
-						)) .
-						'**: ' .
-						$commit_issue[ 'issue' ][ 'message' ],
+			'body' 		=>
+				'**' .
+				ucfirst( strtolower(
+					$commit_issue[ 'issue' ][ 'level' ]
+					)) .
+				'**: ' .
+				$commit_issue[ 'issue' ][ 'message' ],
+
 			'position'	=> $commit_issue[ 'file_line' ],
 			'path'		=> $commit_issue[ 'file_name']
 		);
@@ -420,13 +437,7 @@ function vipgoci_phpcs_github_review_submit(
 	 * review-submission to GitHub.
 	 */
 
-	if ( empty( $commit_issues_stats ) ) {
-		$github_postfields[ 'body' ] = 'No issues';
-	}
-
-	else {
-		$github_postfields[ 'body'] = "PHPCS found issues\n\r";
-	}
+	$github_postfields[ 'body'] = "PHPCS scanning turned up:\n\r";
 
 	foreach (
 		$commit_issues_stats as
@@ -444,13 +455,27 @@ function vipgoci_phpcs_github_review_submit(
 	curl_setopt( $ch, CURLOPT_URL, 			$github_url );
 	curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 	1 );
 	curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, 	20) ;
-	curl_setopt( $ch, CURLOPT_USERAGENT, 		'automattic-github-review-client' );
+
+	curl_setopt(
+		$ch,
+		CURLOPT_USERAGENT,
+		'automattic-github-review-client'
+	);
+
 	curl_setopt( $ch, CURLOPT_POST,			1 );
-	curl_setopt( $ch, CURLOPT_POSTFIELDS,		json_encode( $github_postfields ) );
+
+	curl_setopt(
+		$ch,
+		CURLOPT_POSTFIELDS,
+		json_encode( $github_postfields )
+	);
+
 	curl_setopt( $ch, CURLOPT_HEADERFUNCTION, 	'vipgoci_phpcs_curl_headers' );
 
-	curl_setopt( $ch, CURLOPT_HTTPHEADER,
-			array( 'Authorization: token ' . $github_access_token )
+	curl_setopt(
+		$ch,
+		CURLOPT_HTTPHEADER,
+		array( 'Authorization: token ' . $github_access_token )
 	);
 
 	$resp_data = curl_exec( $ch );
@@ -521,43 +546,131 @@ function vipgoci_phpcs_github_prs_implicated(
 		)
 	);
 
-	// FIXME: Traverse pages
 
-	$github_url =
-		'https://api.github.com/' .
-		'repos/' .
-		rawurlencode( $repo_owner ) . '/' .
-		rawurlencode( $repo_name ) . '/' .
-		'pulls' .
-		'?state=open';
-
-
-	// FIXME: Detect when GitHub sent back an error
-	$prs_implicated_unfiltered = json_decode(
-		vipgoci_phpcs_github_fetch_url(
-			$github_url,
-			$github_access_token
-		)
-	);
+	$page = 0;
 
 	/*
-	 * Filter out any Pull-Requests that
-	 * have nothing to do with our commit
+	 * Fetch all open Pull-Requests, store
+	 * PR IDs that have a commit-head that matches
+	 * the one we are working on.
 	 */
-	foreach ( $prs_implicated_unfiltered as $pr_item ) {
-		$prs_maybe_implicated[] = $pr_item->number;
+	do {
+		$github_url =
+			'https://api.github.com/' .
+			'repos/' .
+			rawurlencode( $repo_owner ) . '/' .
+			rawurlencode( $repo_name ) . '/' .
+			'pulls' .
+			'?state=open&' .
+			'page=' . rawurlencode( $page );
 
-		if ( $commit_id !== $pr_item->head->sha ) {
-			continue;
+
+		// FIXME: Detect when GitHub sent back an error
+		$prs_implicated_unfiltered = json_decode(
+			vipgoci_phpcs_github_fetch_url(
+				$github_url,
+				$github_access_token
+			)
+		);
+
+		/*
+		 * Filter out any Pull-Requests that
+		 * have nothing to do with our commit
+		 */
+		foreach ( $prs_implicated_unfiltered as $pr_item ) {
+			if ( $commit_id === $pr_item->head->sha ) {
+				$prs_implicated[] = $pr_item->number;
+			}
+
+			else {
+				$prs_maybe_implicated[] = $pr_item->number;
+			}
 		}
 
-		$prs_implicated[] = $pr_item->number;
-	}
+		sleep ( 2 );
 
-	/* FIXME: Go through each 'maybe', and check if they are implicated --
-	 * we have to do that so we do not miss any commit which is not
-	 * in the head of any particular pull-request, but is still part of it.
+		$page++;
+	} while ( count( $prs_implicated_unfiltered ) >= 30 );
+
+
+	/*
+	 * Look through any Pull-Requests that might be implicated
+	 * -- to do this, we have fetch all commits implicated by all
+	 * open Pull-Requests to make sure our comments are delivered
+	 * successfully.
 	 */
+
+	foreach ( $prs_maybe_implicated as $pr_number_tmp ) {
+		if ( in_array(
+			$commit_id,
+			vipgoci_phpcs_github_prs_commits_list(
+				$repo_owner,
+				$repo_name,
+				$pr_number_tmp,
+				$github_access_token
+			),
+			true
+		) ) {
+			$prs_implicated[] = $pr_number_tmp;
+		}
+	}
 
 	return $prs_implicated;
 }
+
+
+/*
+ * Get all commits that are a part of a Pull-Request.
+ */
+
+function vipgoci_phpcs_github_prs_commits_list(
+	$repo_owner,
+	$repo_name,
+	$pr_number,
+	$github_access_token
+) {
+	$pr_commits = array();
+
+	vipgoci_phpcs_log(
+		'Fetching all commits made to Pull-Request #' .
+			(int) $pr_number . ' from GitHub',
+
+		array(
+			'repo_owner' => $repo_owner,
+			'repo_name' => $repo_name,
+			'pr_number' => $pr_number,
+		)
+	);
+
+	$page = 0;
+
+	do {
+		$github_url =
+			'https://api.github.com/' .
+			'repos/' .
+			rawurlencode( $repo_owner ) . '/' .
+			rawurlencode( $repo_name ) . '/' .
+			'pulls/' .
+			rawurlencode( $pr_number ) . '/' .
+			'commits?' .
+			'page=' . rawurlencode( $page );
+
+
+		// FIXME: Detect when GitHub sent back an error
+		$pr_commits_raw = json_decode(
+			vipgoci_phpcs_github_fetch_url(
+				$github_url,
+				$github_access_token
+			)
+		);
+
+		foreach ( $pr_commits_raw as $pr_commit ) {
+			$pr_commits[] = $pr_commit->sha;
+		}
+
+		$page++;
+	} while ( count( $pr_commits ) >= 30);
+
+	return $pr_commits;
+}
+
