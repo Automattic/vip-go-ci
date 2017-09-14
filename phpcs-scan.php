@@ -246,7 +246,10 @@ function vipgoci_phpcs_scan_commit( $options ) {
 	 * the commit.
 	 */
 	foreach( $commit_info->files as $file_info ) {
-		$file_info_extension = pathinfo( $file_info->filename, PATHINFO_EXTENSION );
+		$file_info_extension = pathinfo(
+			$file_info->filename,
+			PATHINFO_EXTENSION
+		);
 
 		/*
 		 * If the file is not a PHP-file, skip
@@ -283,7 +286,11 @@ function vipgoci_phpcs_scan_commit( $options ) {
 
 
 		$file_contents = vipgoci_phpcs_github_fetch_committed_file(
-			$repo_owner, $repo_name, $github_access_token, $commit_id, $file_info->filename
+			$repo_owner,
+			$repo_name,
+			$github_access_token,
+			$commit_id,
+			$file_info->filename
 		);
 
 		/*
@@ -339,9 +346,14 @@ function vipgoci_phpcs_scan_commit( $options ) {
 		 */
 
 		if ( ! empty( $options[ 'output'] ) ) {
-			if ( is_file( $options['output'] ) && ! is_writeable( $options['output'] ) ) {
+			if (
+				( is_file( $options['output'] ) ) &&
+				( ! is_writeable( $options['output'] ) )
+			) {
 				vipgoci_phpcs_log(
-					'File ' . $options['output'] . ' is not writeable',
+					'File ' .
+						$options['output'] .
+						' is not writeable',
 					array()
 				);
 			} else {
@@ -355,7 +367,9 @@ function vipgoci_phpcs_scan_commit( $options ) {
 			}
 		}
 
-		$file_changed_lines = vipgoci_phpcs_patch_changed_lines( $file_info->patch );
+		$file_changed_lines = vipgoci_phpcs_patch_changed_lines(
+			$file_info->patch
+		);
 
 		/*
 		 * Filter out any issues that affect the file, but are not
@@ -389,7 +403,9 @@ function vipgoci_phpcs_scan_commit( $options ) {
 					)
 				) {
 					vipgoci_phpcs_log(
-						'Skipping submission of comment, has already been submitted',
+						'Skipping submission of ' .
+						'comment, has already been ' .
+						'submitted',
 						array(
 							'repo_owner'		=> $repo_owner,
 							'repo_name'		=> $repo_name,
@@ -506,17 +522,21 @@ function vipgoci_phpcs_run() {
 		! isset( $options['repo-name'] ) ||
 		! isset( $options['commit'] ) ||
 		! isset( $options['token'] ) ) {
-		print "Usage: " . $argv[0] . " --repo-owner=repo-owner --repo-name=repo-name --commit=SHA --token=github-access-token\n";
+		print 'Usage: ' . $argv[0] .
+			' --repo-owner=repo-owner --repo-name=repo-name ' .
+			'--commit=SHA --token=github-access-token' . "\n";
 		exit(-1);
 	}
 
-	$commit_issues_stats = vipgoci_phpcs_scan_commit( $options );
+	$commit_issues_stats = vipgoci_phpcs_scan_commit(
+		$options
+	);
 
 	vipgoci_phpcs_log(
 		'Shutting down',
 		array(
-			'run_time_seconds' => time() - $startup_time,
-			'issues_stats' => $commit_issues_stats,
+			'run_time_seconds'	=> time() - $startup_time,
+			'issues_stats'		=> $commit_issues_stats,
 		)
 	);
 
