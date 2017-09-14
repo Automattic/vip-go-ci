@@ -180,7 +180,6 @@ function vipgoci_phpcs_scan_commit( $options ) {
 	$repo_owner = $options['repo-owner'];
 	$repo_name  = $options['repo-name'];
 	$commit_id  = $options['commit'];
-
 	$github_access_token = $options['token'];
 
 	$commit_issues_submit = array();
@@ -213,6 +212,21 @@ function vipgoci_phpcs_scan_commit( $options ) {
 		$commit_id,
 		$github_access_token
 	);
+
+
+	/*
+	 * If no Pull-Requests are implicated by this commit,
+	 * bail now, as there is no point in continuing running.
+	 */
+	if ( empty( $prs_implicated ) ) {
+		vipgoci_phpcs_log(
+			'Skipping scanning entirely, as the commit is not a part of any Pull-Request',
+			array()
+		);
+
+		return $commit_issues_stats;
+	}
+
 
 	/*
 	 * Fetch all comments made in relation to that commit

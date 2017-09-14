@@ -322,6 +322,11 @@ function vipgoci_phpcs_github_pull_requests_comments_get(
 		}
 
 		$page++;
+
+		/*
+		 * Sleep a bit extra for GitHub.
+		 */
+		sleep( 3 );
 	} while ( count( $prs_comments_tmp ) == 30 );
 
 	return $prs_comments;
@@ -394,7 +399,7 @@ function vipgoci_phpcs_github_review_submit(
 	 * asks for changes to be made, otherwise only comment.
 	 */
 
-	if ( empty( $commit_issues_stats[ 'errors' ] ) ) {
+	if ( empty( $commit_issues_stats[ 'error' ] ) ) {
 		$github_postfields[ 'event' ] = 'COMMENT';
 	}
 
@@ -478,9 +483,9 @@ function vipgoci_phpcs_github_review_submit(
 
 	/*
 	 * GitHub asks that requests are made with at least one
-	 * second wait in between -- guarantee that.
+	 * second wait in between -- guarantee that, and a bit more.
 	 */
-	sleep( 1 );
+	sleep( 5 );
 
 	return $resp_data;
 }
