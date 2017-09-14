@@ -415,6 +415,7 @@ function vipgoci_phpcs_scan_commit( $options ) {
 						)
 					);
 
+					/* Skip */
 					continue;
 				}
 
@@ -480,7 +481,8 @@ function vipgoci_phpcs_scan_commit( $options ) {
 			$pr_number,
 			$commit_id,
 			$commit_issues_submit,
-			$commit_issues_stats
+			$commit_issues_stats,
+			$options['dry-run']
 		);
 	}
 
@@ -514,6 +516,7 @@ function vipgoci_phpcs_run() {
 			'commit:',
 			'token:',
 			'output:',
+			'dry-run:',
 		)
 	);
 
@@ -527,6 +530,33 @@ function vipgoci_phpcs_run() {
 			'--commit=SHA --token=github-access-token' . "\n";
 		exit(-1);
 	}
+
+	/*
+	 * Handle optional --dry-run parameter
+	 */
+
+	if ( ! isset( $options['dry-run'] ) ) {
+		$options['dry-run'] = 'false';
+	}
+
+	if (
+		( $options['dry-run'] !== 'false' ) &&
+		( $options['dry-run'] !== 'true' )
+	) {
+		print 'Usage: Parameter --dry-run has to be either false or true' . "\n";
+		exit(-1);
+	}
+
+	else {
+		if ( $options['dry-run'] === 'false' ) {
+			$options['dry-run'] = false;
+		}
+
+		else {
+			$options['dry-run'] = true;
+		}
+	}
+
 
 	$commit_issues_stats = vipgoci_phpcs_scan_commit(
 		$options

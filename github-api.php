@@ -345,10 +345,12 @@ function vipgoci_phpcs_github_review_submit(
 	$pr_number,
 	$commit_id,
 	$commit_issues_submit,
-	$commit_issues_stats
+	$commit_issues_stats,
+	$dry_run
 ) {
 	vipgoci_phpcs_log(
-		'About submit comment(s) to GitHub about issue(s)',
+		( $dry_run == true ? 'Would ' : 'About to ' ) .
+		'submit comment(s) to GitHub about issue(s)',
 		array(
 			'repo_owner' => $repo_owner,
 			'repo_name' => $repo_name,
@@ -356,11 +358,16 @@ function vipgoci_phpcs_github_review_submit(
 			'commit_id' => $commit_id,
 			'comments' => $commit_issues_submit,
 			'commit_issues_stats' => $commit_issues_stats,
+			'dry_run' => $dry_run,
 		)
 	);
 
-	// FIXME: When there are no issues, comment that
-	// there were no issues found, and leave a 'COMMENT' status
+
+	/* If dry-run is enabled, do nothing further. */
+	if ( $dry_run == true ) {
+		return;
+	}
+
 	$github_url =
 		'https://api.github.com/' .
 		'repos/' .
@@ -487,7 +494,7 @@ function vipgoci_phpcs_github_review_submit(
 	 */
 	sleep( 5 );
 
-	return $resp_data;
+	return;
 }
 
 
