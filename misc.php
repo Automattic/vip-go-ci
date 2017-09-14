@@ -35,10 +35,17 @@ function vipgoci_phpcs_patch_changed_lines( $patch ) {
 	$i = 1;
 
 	foreach ( $lines_arr as $line ) {
-		preg_match_all("/^@@\s+[-\+]([0-9]+,[0-9]+)\s+[-\+]([0-9]+,[0-9]+)\s+@@/", $line, $matches);
+		preg_match_all(
+			"/^@@\s+[-\+]([0-9]+,[0-9]+)\s+[-\+]([0-9]+,[0-9]+)\s+@@/",
+			$line,
+			$matches
+		);
 
 		if ( ! empty( $matches[0] ) ) {
-			$start_end = explode( ',', $matches[2][0] );
+			$start_end = explode(
+				',',
+				$matches[2][0]
+			);
 
 
 			$i = $start_end[0];
