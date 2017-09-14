@@ -220,7 +220,9 @@ function vipgoci_phpcs_scan_commit( $options ) {
 	 */
 	if ( empty( $prs_implicated ) ) {
 		vipgoci_phpcs_log(
-			'Skipping scanning entirely, as the commit is not a part of any Pull-Request',
+			'Skipping scanning entirely, as the commit ' .
+				'is not a part of any Pull-Request',
+
 			array()
 		);
 
@@ -257,7 +259,9 @@ function vipgoci_phpcs_scan_commit( $options ) {
 
 		if ( 'php' !== strtolower( $file_info_extension ) ) {
 			vipgoci_phpcs_log(
-				'Skipping file that does not seem to be a PHP-file',
+				'Skipping file that does not seem ' .
+					'to be a PHP-file',
+
 				array(
 					'filename' => $file_info->filename
 				)
@@ -274,7 +278,9 @@ function vipgoci_phpcs_scan_commit( $options ) {
 			( 'modified' !== $file_info->status )
 		) {
 			vipgoci_phpcs_log(
-				'Skipping file that was neither added nor modified',
+				'Skipping file that was neither ' .
+					'added nor modified',
+
 				array(
 					'filename'	=> $file_info->filename,
 					'status'	=> $file_info->status,
@@ -310,7 +316,8 @@ function vipgoci_phpcs_scan_commit( $options ) {
 		// Detect possible errors when saving the temporary file
 		if ( false === $temp_file_save_status ) {
 			vipgoci_phpcs_log(
-				'Could not save file to disk, got an error. Exiting...',
+				'Could not save file to disk, got ' .
+					'an error. Exiting...',
 				array(
 					'temp_file_name' => $temp_file_name,
 				)
@@ -376,15 +383,26 @@ function vipgoci_phpcs_scan_commit( $options ) {
 		 * due to the commit made -- so any existing issues are left
 		 * out and not commented on by us.
 		 */
-		foreach( $file_issues_arr as $file_issue_line => $file_issue_val ) {
-			if ( ! in_array( $file_issue_line, $file_changed_lines ) ) {
+		foreach (
+			$file_issues_arr as
+				$file_issue_line => $file_issue_val
+		) {
+			if ( ! in_array(
+				$file_issue_line,
+				$file_changed_lines
+			) ) {
 				unset( $file_issues_arr[ $file_issue_line ] );
 			}
 		}
 
-		$file_changed_line_no_to_file_line_no = @array_flip( $file_changed_lines );
+		$file_changed_line_no_to_file_line_no = @array_flip(
+			$file_changed_lines
+		);
 
-		foreach ( $file_issues_arr as $file_issue_line => $file_issue_values ) {
+		foreach (
+			$file_issues_arr as
+				$file_issue_line => $file_issue_values
+		) {
 			foreach( $file_issue_values as $file_issue_val_item ) {
 
 				/*
@@ -521,15 +539,18 @@ function vipgoci_phpcs_run() {
 	);
 
 	// Validate args
-	if ( ! isset( $options['repo-owner'] ) ||
+	if (
+		! isset( $options['repo-owner'] ) ||
 		! isset( $options['repo-name'] ) ||
 		! isset( $options['commit'] ) ||
-		! isset( $options['token'] ) ) {
+		! isset( $options['token'] )
+	) {
 		print 'Usage: ' . $argv[0] .
 			' --repo-owner=repo-owner --repo-name=repo-name ' .
 			'--commit=SHA --token=github-access-token' . "\n";
 		exit(-1);
 	}
+
 
 	/*
 	 * Handle optional --dry-run parameter
