@@ -212,13 +212,13 @@ function vipgoci_phpcs_scan_commit( $options ) {
 			continue;
 		}
 
-
 		$file_contents = vipgoci_phpcs_github_fetch_committed_file(
 			$repo_owner,
 			$repo_name,
 			$github_access_token,
 			$commit_id,
-			$file_info->filename
+			$file_info->filename,
+			$options['local-git-repo']
 		);
 
 		/*
@@ -459,6 +459,7 @@ function vipgoci_phpcs_run() {
 			'token:',
 			'output:',
 			'dry-run:',
+			'local-git-repo:',
 		)
 	);
 
@@ -499,6 +500,32 @@ function vipgoci_phpcs_run() {
 
 		else {
 			$options['dry-run'] = true;
+		}
+	}
+
+
+	/*
+	 * Handle optional --local-git-repo parameter
+	 */
+
+	if ( isset( $options['local-git-repo'] ) ) {
+		$options['local-git-repo'] = rtrim(
+			$options['local-git-repo'],
+			'/'
+		);
+
+		if ( false === file_exists(
+			$options['local-git-repo'] . '/.git'
+		) ) {
+			vipgoci_phpcs_log(
+				'Local git repository was not found',
+				array(
+					'local_git_repo' =>
+						$options['local-git-repo'],
+				)
+			);
+
+			$options['local-git-repo'] = null;
 		}
 	}
 

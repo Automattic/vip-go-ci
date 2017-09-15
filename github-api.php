@@ -214,6 +214,10 @@ function vipgoci_phpcs_github_fetch_commit_info(
  * Fetch from GitHub a particular file which is a part of a
  * commit, within a particular repository. Will return
  * the file (raw), or false on error.
+ *
+ * If possible, the function will first try to use a local repository
+ * to do the same thing, bypassing GitHub altogether, but if it fails,
+ * reverting to GitHub.
  */
 
 function vipgoci_phpcs_github_fetch_committed_file(
@@ -221,8 +225,140 @@ function vipgoci_phpcs_github_fetch_committed_file(
 	$repo_name,
 	$github_access_token,
 	$commit_id,
-	$file_name
+	$file_name,
+	$local_git_repo
 ) {
+
+	static $local_git_repo_failure = false;
+
+	/*
+	 * Try a local Git-repository first,
+	 * if that fails, ask GitHub.
+	 */
+	if (
+		( null !== $local_git_repo ) &&
+		( false == $local_git_repo_failure )
+	) {
+		vipgoci_phpcs_log(
+			'Fetching file-information from local Git repository',
+			array(
+				'repo_owner'		=> $repo_owner,
+				'repo_name'		=> $repo_name,
+				'commit_id'		=> $commit_id,
+				'filename'		=> $file_name,
+				'local_git_repo'	=> $local_git_repo,
+			)
+		);
+
+
+		/*
+		 * Check at what revision the local git repository is.
+		 *
+		 * We do this to make sure the local repository
+		 * is actually checked out at the same commit
+		 * as the one we are working with.
+		 */
+		$lgit_head = @file_get_contents(
+			$local_git_repo . '/.git/HEAD'
+		);
+
+		$lgit_branch_ref = false;
+
+		$file_contents_tmp = false;
+
+		/*
+		 * Check if we successfully got any information
+		 */
+
+		if ( false !== $lgit_head ) {
+			// We might have gotten a reference, work with that
+			if ( strpos( $lgit_head, 'ref: ') === 0 ) {
+				$lgit_branch_ref = substr(
+					$lgit_head,
+					5
+				);
+
+				$lgit_branch_ref = rtrim(
+					$lgit_branch_ref
+				);
+
+				$lgit_head = false;
+			}
+		}
+
+
+		/*
+		 * If we have not established a head,
+		 * but we have a reference, try to get the
+		 * head
+		 */
+		if (
+			( false === $lgit_head ) &&
+			( false !== $lgit_branch_ref )
+		) {
+			$lgit_head = @file_get_contents(
+				$local_git_repo . '/.git/' . $lgit_branch_ref
+			);
+
+			$lgit_head = rtrim(
+				$lgit_head
+			);
+
+			$lgit_branch_ref = false;
+		}
+
+
+		/*
+		 * Check if commit-ID and head are the same, and
+		 * only then try to fetch the requested file from the repo
+		 */
+
+		if (
+			( false !== $commit_id ) &&
+			( $commit_id === $lgit_head )
+		) {
+			$file_contents_tmp = @file_get_contents(
+				$local_git_repo . '/' . $file_name
+			);
+		}
+
+
+		/*
+		 * If either the commit ID and the head are not
+		 * the same, or fetching the file failed; make
+		 * a note of that, and do not try to use the
+		 * repository again for this run
+		 */
+		if (
+			( $commit_id !== $lgit_head ) ||
+			( $file_contents_tmp === false )
+		) {
+			vipgoci_phpcs_log(
+				'Skipping local Git repository, seems not to be in sync with current commit',
+				array(
+					'repo_owner'		=> $repo_owner,
+					'repo_name'		=> $repo_name,
+					'commit_id'		=> $commit_id,
+					'filename'		=> $file_name,
+					'local_git_repo'	=> $local_git_repo,
+				)
+			);
+		}
+
+		/*
+		 * If everything seems fine, return the file.
+		 */
+
+		if ( false !== $file_contents_tmp ) {
+			/*
+			 * Non-failure, return the file contents.
+			 */
+			return $file_contents_tmp;
+		}
+
+		$local_git_repo_failure = true;
+	}
+
 	vipgoci_phpcs_log(
 		'Fetching file-information from GitHub',
 		array(
@@ -243,7 +379,6 @@ function vipgoci_phpcs_github_fetch_committed_file(
 		$github_access_token
 	);
 }
-
 
 
 /*
@@ -632,7 +767,8 @@ function vipgoci_phpcs_github_prs_commits_list(
 	$pr_commits = array();
 
 	vipgoci_phpcs_log(
-		'Fetching all commits made to Pull-Request #' .
+		'Fetching information about all commits made' .
+			' to Pull-Request #' .
 			(int) $pr_number . ' from GitHub',
 
 		array(
@@ -751,6 +887,4 @@ function vipgoci_github_comment_match(
 
 	return false;
 }
-
-
 
