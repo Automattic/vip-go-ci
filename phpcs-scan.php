@@ -225,15 +225,17 @@ function vipgoci_phpcs_scan_commit( $options ) {
 		 * Create temporary directory to save
 		 * fetched files into
 		 */
-		$temp_file_name = tempnam(
+		$temp_file_name = $temp_file_save_status = tempnam(
 			sys_get_temp_dir(),
 			'phpcs-scan-'
 		);
 
-		$temp_file_save_status = file_put_contents(
-			$temp_file_name,
-			$file_contents
-		);
+		if ( false !== $temp_file_name ) {
+			$temp_file_save_status = file_put_contents(
+				$temp_file_name,
+				$file_contents
+			);
+		}
 
 		// Detect possible errors when saving the temporary file
 		if ( false === $temp_file_save_status ) {
