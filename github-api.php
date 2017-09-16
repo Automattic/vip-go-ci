@@ -670,7 +670,7 @@ function vipgoci_phpcs_github_prs_implicated(
 	$github_access_token
 ) {
 	$prs_implicated = array();
-	$prs_maybe_implicted = array();
+	$prs_maybe_implicated = array();
 
 	vipgoci_phpcs_log(
 		'Fetching all open Pull-Requests from GitHub',
