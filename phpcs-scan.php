@@ -22,7 +22,7 @@ function vipgoci_phpcs_do_scan( $filename_tmp, $real_name ) {
 	 */
 
 	$cmd = sprintf(
-		'cat %s | %s %s --standard=%s --report-width=%s --stdin-path=%s',
+		'cat %s | %s %s --standard=%s --report-width=%s --stdin-path=%s -p',
 		escapeshellarg( $filename_tmp ),
 		escapeshellcmd( 'php' ),
 		'~/' .  escapeshellcmd( 'phpcs-scan/phpcs/scripts/phpcs' ),
@@ -31,15 +31,15 @@ function vipgoci_phpcs_do_scan( $filename_tmp, $real_name ) {
 		escapeshellarg( $real_name )
 	);
 
+
 	$result = shell_exec( $cmd );
 
 	/*
 	 * Do simple checks to see if we can find any signature marks
-	 * of PHPCS having run -- these two strings should be in what
+	 * of PHPCS having run -- this should be in what
 	 * PHPCS returns.
 	 */
 	if (
-		( false === strpos( $result, 'FILE: ' ) ) &&
 		( false === strpos( $result, 'Time: ') )
 	) {
 		$result = null;
@@ -51,6 +51,7 @@ function vipgoci_phpcs_do_scan( $filename_tmp, $real_name ) {
 			'Failed to execute PHPCS. Cannot continue execution.',
 			array(
 				'command' => $cmd,
+				'result' => $result,
 			)
 		);
 
