@@ -805,7 +805,7 @@ function vipgoci_phpcs_github_prs_commits_list(
 		}
 
 		$page++;
-	} while ( count( $pr_commits ) >= 30 );
+	} while ( count( $pr_commits_raw ) >= 30 );
 
 	return $pr_commits;
 }
