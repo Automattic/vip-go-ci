@@ -263,7 +263,7 @@ function vipgoci_phpcs_github_fetch_committed_file(
 		( false == $local_git_repo_failure )
 	) {
 		vipgoci_phpcs_log(
-			'Fetching file-information from local Git repository',
+			'Fetching file-contents from local Git repository',
 			array(
 				'repo_owner'		=> $repo_owner,
 				'repo_name'		=> $repo_name,
@@ -383,7 +383,7 @@ function vipgoci_phpcs_github_fetch_committed_file(
 	}
 
 	vipgoci_phpcs_log(
-		'Fetching file-information from GitHub',
+		'Fetching file-contents from GitHub',
 		array(
 			'repo_owner' => $repo_owner,
 			'repo_name' => $repo_name,
@@ -660,33 +660,51 @@ function vipgoci_phpcs_github_review_submit(
 
 		if ( intval( $resp_headers[ 'status' ][0] ) !== 200 ) {
 			/*
-			 * Retry the request, set default wait
-			 * period between requests
+			 * Set default wait period between requests
 			 */
-			$retry_req = true;
 			$retry_sleep = 10;
 
+
+			/*
+			 * Figure out if to retry...
+			 */
 
 			if (
 				( isset( $resp_headers[ 'retry-after' ] ) ) &&
 				( intval( $resp_headers[ 'retry-after' ] ) > 0 )
 			) {
+				$retry_req = true;
 				$retry_sleep = intval(
 					$resp_headers[ 'retry-after' ]
 				);
 			}
 
-			else {
-				vipgoci_phpcs_log(
-					'GitHub reported an error,' .
-					' will retry request in ' .
-					$retry_sleep . ' seconds',
-					array(
-						'http_response_headers' => $resp_headers,
-						'http_reponse_body'	=> $resp_data,
-					)
-				);
+			else if (
+				( $resp_data->message == 'Validation Failed' ) &&
+				( $resp_data->errors[0] == 'was submitted too quickly after a previous comment' )
+			) {
+				$retry_req = true;
+				$retry_sleep = 20;
 			}
+
+			else if (
+				( $resp_data->message == 'Validation Failed' )
+			) {
+				$retry_req = false;
+			}
+
+			vipgoci_phpcs_log(
+				'GitHub reported an error' .
+				( $retry_req === true  ?
+					' will retry request in ' :
+					''
+				) .
+				$retry_sleep . ' seconds',
+				array(
+					'http_response_headers' => $resp_headers,
+					'http_reponse_body'	=> $resp_data,
+				)
+			);
 
 			sleep( $retry_sleep + 1 );
 		}
