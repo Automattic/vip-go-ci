@@ -1,5 +1,8 @@
 <?php
 
+define( 'VIPGOCI_PHPCS_CLIENT_ID', 'automattic-github-review-client' );
+
+
 /*
  * This function works both to collect headers
  + when called as a callback function, and to return
@@ -73,6 +76,36 @@ function vipgoci_phpcs_curl_headers( $ch, $header ) {
 	return $header_len;
 }
 
+
+/*
+ * Make sure to wait in between requests to
+ * GitHub. Only waits if it is really needed.
+ *
+ * This function should only be called just before
+ * sending a request to GitHub -- that is the most
+ * effective usage.
+ *
+ * See here for background:
+ * https://developer.github.com/v3/guides/best-practices-for-integrators/#dealing-with-abuse-rate-limits
+ */
+
+function vipgoci_phpcs_github_wait() {
+	static $last_request_time = null;
+
+	if ( null !== $last_request_time ) {
+		/*
+		 * Only sleep if four or less seconds
+		 * have elapsed from last request.
+		 */
+		if ( ( time() - $last_request_time ) <= 4 ) {
+			sleep( 4 );
+		}
+	}
+
+	$last_request_time = time();
+}
+
+
 /*
  * Make a GET request to GitHub, for the URL
  * provided, using the access-token specified.
@@ -100,7 +133,7 @@ function vipgoci_phpcs_github_fetch_url(
 		curl_setopt(
 			$ch,
 			CURLOPT_USERAGENT,
-			'automattic-github-review-client'
+			VIPGOCI_PHPCS_CLIENT_ID
 		);
 
 		curl_setopt(
@@ -108,6 +141,9 @@ function vipgoci_phpcs_github_fetch_url(
 			CURLOPT_HTTPHEADER,
 			array( 'Authorization: token ' . $github_access_token )
 		);
+
+		// Make sure to pause between GitHub-requests
+		vipgoci_phpcs_github_wait();
 
 		$resp_data = curl_exec( $ch );
 
@@ -136,20 +172,7 @@ function vipgoci_phpcs_github_fetch_url(
 				)
 			);
 
-			sleep( 60 );
-		}
-
-		else {
-			/*
-			 * Request seems to have been successful, in that it
-			 * was processed by GitHub.
-			 *
-			 * However, GitHub asks that requests are made with at least
-			 * one second interval. Guarantee that.
-			 *
-			 * https://developer.github.com/v3/guides/best-practices-for-integrators/#dealing-with-abuse-rate-limits
-			 */
-			sleep( 1 );
+			sleep( 10 );
 		}
 
 		curl_close( $ch );
@@ -473,10 +496,6 @@ function vipgoci_phpcs_github_pull_requests_comments_get(
 
 		$page++;
 
-		/*
-		 * Sleep a bit extra for GitHub.
-		 */
-		sleep( 3 );
 	} while ( count( $prs_comments_tmp ) >= 30 );
 
 	return $prs_comments;
@@ -585,74 +604,96 @@ function vipgoci_phpcs_github_review_submit(
 	}
 
 
-	$ch = curl_init();
-
-	curl_setopt( $ch, CURLOPT_URL, 			$github_url );
-	curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 	1 );
-	curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, 	20) ;
-
-	curl_setopt(
-		$ch,
-		CURLOPT_USERAGENT,
-		'automattic-github-review-client'
-	);
-
-	curl_setopt( $ch, CURLOPT_POST,			1 );
-
-	curl_setopt(
-		$ch,
-		CURLOPT_POSTFIELDS,
-		json_encode( $github_postfields )
-	);
-
-	curl_setopt( $ch, CURLOPT_HEADERFUNCTION, 	'vipgoci_phpcs_curl_headers' );
-
-	curl_setopt(
-		$ch,
-		CURLOPT_HTTPHEADER,
-		array( 'Authorization: token ' . $github_access_token )
-	);
-
-	$resp_data = curl_exec( $ch );
-
-	$resp_headers = vipgoci_phpcs_curl_headers( null, null );
-
-	if ( intval( $resp_headers[ 'status' ][0] ) !== 200 ) {
-		if (
-			( isset( $resp_headers[ 'retry-after' ] ) ) &&
-			( intval( $resp_headers[ 'retry-after' ] ) > 0 )
-		) {
-			vipgoci_phpcs_log(
-				'GitHub asked us to retry in ' .
-				intval( $resp_headers[ 'retry-after' ] ) .
-				' seconds -- waiting ... ',
-				array()
-			);
-
-			sleep( intval( $resp_headers[ 'retry-after' ] ) + 1 );
-		}
-
-		else {
-			vipgoci_phpcs_log(
-				'GitHub reported an unknown error',
-				array(
-					'http_response_headers' => $resp_headers,
-					'http_reponse_body'	=> $resp_data,
-				)
-			);
-		}
-
-	}
-
-	curl_close( $ch );
-
-	// FIXME: Detect errors
-
 	/*
-	 * GitHub asks that requests are made with at least one
-	 * second wait in between -- guarantee that, and a bit more.
+	 * Actually send a request to GitHub -- make sure
+	 * to retry if something fails.
 	 */
-	sleep( 5 );
+	do {
+		/*
+		 * By default, do not retry the request,
+		 * just assume everything goes well
+		 */
+
+		$retry_req = false;
+
+		$ch = curl_init();
+
+		curl_setopt( $ch, CURLOPT_URL, 			$github_url );
+		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 	1 );
+		curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, 	20) ;
+
+		curl_setopt(
+			$ch,
+			CURLOPT_USERAGENT,
+			VIPGOCI_PHPCS_CLIENT_ID
+		);
+
+		curl_setopt( $ch, CURLOPT_POST,			1 );
+
+		curl_setopt(
+			$ch,
+			CURLOPT_POSTFIELDS,
+			json_encode( $github_postfields )
+		);
+
+		curl_setopt(
+			$ch,
+			CURLOPT_HEADERFUNCTION,
+			'vipgoci_phpcs_curl_headers'
+		);
+
+		curl_setopt(
+			$ch,
+			CURLOPT_HTTPHEADER,
+			array( 'Authorization: token ' . $github_access_token )
+		);
+
+		// Make sure to pause between GitHub-requests
+		vipgoci_phpcs_github_wait();
+
+
+		$resp_data = curl_exec( $ch );
+
+		$resp_headers = vipgoci_phpcs_curl_headers( null, null );
+
+
+
+		if ( intval( $resp_headers[ 'status' ][0] ) !== 200 ) {
+			/*
+			 * Retry the request, set default wait
+			 * period between requests
+			 */
+			$retry_req = true;
+			$retry_sleep = 10;
+
+
+			if (
+				( isset( $resp_headers[ 'retry-after' ] ) ) &&
+				( intval( $resp_headers[ 'retry-after' ] ) > 0 )
+			) {
+				$retry_sleep = intval(
+					$resp_headers[ 'retry-after' ]
+				);
+			}
+
+			else {
+				vipgoci_phpcs_log(
+					'GitHub reported an error,' .
+					' will retry request in ' .
+					$retry_sleep . ' seconds',
+					array(
+						'http_response_headers' => $resp_headers,
+						'http_reponse_body'	=> $resp_data,
+					)
+				);
+			}
+
+			sleep( $retry_sleep + 1 );
+		}
+
+		curl_close( $ch );
+
+	} while ( $retry_req == true );
 
 	return;
 }
