@@ -353,6 +353,7 @@ function vipgoci_phpcs_scan_commit( $options ) {
 							'repo_name'		=> $repo_name,
 							'filename'		=> $file_info->filename,
 							'file_issue_line'	=> $file_issue_line,
+							'file_issue_msg'	=> $file_issue_val_item['message'],
 							'commit_id'		=> $commit_id,
 						)
 					);
@@ -387,7 +388,7 @@ function vipgoci_phpcs_scan_commit( $options ) {
 		}
 
 		vipgoci_phpcs_log(
-			'Cleaning up, and sleeping a bit (for GitHub)',
+			'Cleaning up...',
 			array()
 		);
 
