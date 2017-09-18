@@ -475,7 +475,7 @@ function vipgoci_phpcs_run() {
 		print 'Usage: ' . $argv[0] .
 			' --repo-owner=repo-owner --repo-name=repo-name ' .
 			'--commit=SHA --token=github-access-token' . "\n";
-		exit(-1);
+		exit( 253 );
 	}
 
 
@@ -492,7 +492,7 @@ function vipgoci_phpcs_run() {
 		( $options['dry-run'] !== 'true' )
 	) {
 		print 'Usage: Parameter --dry-run has to be either false or true' . "\n";
-		exit(-1);
+		exit( 253 );
 	}
 
 	else {
