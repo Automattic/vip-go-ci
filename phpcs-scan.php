@@ -100,11 +100,10 @@ function vipgoci_phpcs_scan_commit( $options ) {
 	$commit_id  = $options['commit'];
 	$github_access_token = $options['token'];
 
+	$prs_diffs = array();
+
 	$commit_issues_submit = array();
-	$commit_issues_stats = array(
-		'error' => 0,
-		'warning' => 0
-	);
+	$commit_issues_stats = array();
 
 	vipgoci_log(
 		'About to scan repository',
@@ -145,6 +144,36 @@ function vipgoci_phpcs_scan_commit( $options ) {
 		);
 
 		return $commit_issues_stats;
+	}
+
+
+	foreach ( $prs_implicated as $pr_item ) {
+		/*
+		 * Fetch diffs for every file committed,
+		 * for every Pull-Request, using head of
+		 * Pull-Request as a base for diff.
+		 */
+
+		$prs_diffs[ $pr_item->number ] =
+			vipgoci_github_diffs_fetch(
+				$repo_owner,
+				$repo_name,
+				$github_access_token,
+				$pr_item->base->sha,
+				$commit_id
+			);
+
+		/*
+		 * Initialize array for statistics
+		 * and results of scanning.
+		 */
+		$commit_issues_stats[ $pr_item->number ] = array(
+			'error' => 0,
+			'warning' => 0
+		);
+
+		$commit_issues_submit[ $pr_item->number ] = array(
+		);
 	}
 
 
@@ -263,7 +292,7 @@ function vipgoci_phpcs_scan_commit( $options ) {
 			$file_info->filename
 		);
 
-		$file_issues_arr = vipgoci_phpcs_parse_results(
+		$file_issues_arr_master = vipgoci_phpcs_parse_results(
 			$file_issues_str
 		);
 
@@ -294,95 +323,115 @@ function vipgoci_phpcs_scan_commit( $options ) {
 			}
 		}
 
-		// FIXME: Cannot use this patch, must use the
-		// patch belonging to the Pull-Request in question.
-
-		$file_changed_lines = vipgoci_patch_changed_lines(
-			$file_info->patch
-		);
 
 		/*
-		 * Filter out any issues that affect the file, but are not
-		 * due to the commit made -- so any existing issues are left
-		 * out and not commented on by us.
+		 * Loop through each Pull-Request,
+		 * and detect problems that apply to
+		 * each and every one, while skipping
+		 * those that do not apply.
 		 */
-		foreach (
-			$file_issues_arr as
-				$file_issue_line => $file_issue_val
-		) {
-			if ( ! in_array(
-				$file_issue_line,
-				$file_changed_lines
-			) ) {
-				unset( $file_issues_arr[ $file_issue_line ] );
+
+		foreach ( $prs_implicated as $pr_item ) {
+
+			$file_changed_lines = vipgoci_patch_changed_lines(
+				$prs_diffs[ $pr_item->number ]
+					[ $file_info->filename ]
+			);
+
+			/*
+			 * Filter out any issues that affect the file, but are not
+			 * due to the commit made -- so any existing issues are left
+			 * out and not commented on by us.
+			 */
+			$file_issues_arr = $file_issues_arr_master;
+
+			foreach (
+				$file_issues_arr as
+					$file_issue_line => $file_issue_val
+			) {
+				if ( ! in_array(
+					$file_issue_line,
+					$file_changed_lines
+				) ) {
+					unset(
+						$file_issues_arr[
+							$file_issue_line
+						]
+					);
+				}
 			}
-		}
 
-		$file_changed_line_no_to_file_line_no = @array_flip(
-			$file_changed_lines
-		);
+			$file_changed_line_no_to_file_line_no = @array_flip(
+				$file_changed_lines
+			);
 
-		foreach (
-			$file_issues_arr as
-				$file_issue_line => $file_issue_values
-		) {
-			foreach( $file_issue_values as $file_issue_val_item ) {
-
-				/*
-				 * Figure out if the comment has been
-				 * submitted before, and if so, do not submit
-				 * it again. This needs to be done because
-				 * we might run more than once per commit.
-				 */
-
-				if (
-					vipgoci_github_comment_match(
-						$file_info->filename,
-						$file_changed_line_no_to_file_line_no[ $file_issue_line ],
-						$file_issue_val_item['message'],
-						$prs_comments
-					)
+			foreach (
+				$file_issues_arr as
+					$file_issue_line => $file_issue_values
+			) {
+				foreach (
+					$file_issue_values as $file_issue_val_item
 				) {
-					vipgoci_log(
-						'Skipping submission of ' .
-						'comment, has already been ' .
-						'submitted',
-						array(
-							'repo_owner'		=> $repo_owner,
-							'repo_name'		=> $repo_name,
-							'filename'		=> $file_info->filename,
-							'file_issue_line'	=> $file_issue_line,
-							'file_issue_msg'	=> $file_issue_val_item['message'],
-							'commit_id'		=> $commit_id,
+
+					/*
+					 * Figure out if the comment has been
+					 * submitted before, and if so, do not submit
+					 * it again. This needs to be done because
+					 * we might run more than once per commit.
+					 */
+
+					if (
+						vipgoci_github_comment_match(
+							$file_info->filename,
+							$file_changed_line_no_to_file_line_no[ $file_issue_line ],
+							$file_issue_val_item['message'],
+							$prs_comments
 						)
+					) {
+						vipgoci_log(
+							'Skipping submission of ' .
+							'comment, has already been ' .
+							'submitted',
+							array(
+								'repo_owner'		=> $repo_owner,
+								'repo_name'		=> $repo_name,
+								'filename'		=> $file_info->filename,
+								'file_issue_line'	=> $file_issue_line,
+								'file_issue_msg'	=> $file_issue_val_item['message'],
+								'commit_id'		=> $commit_id,
+							)
+						);
+
+						/* Skip */
+						continue;
+					}
+
+					/*
+					 * Collect all the issues that
+					 * we need to submit about
+					 */
+
+					$commit_issues_submit[
+						$pr_item->number
+					][] = array(
+						'file_name'	=> $file_info->filename,
+						'file_line'	=> $file_changed_line_no_to_file_line_no[ $file_issue_line ],
+						'issue'		=> $file_issue_val_item
 					);
 
-					/* Skip */
-					continue;
+					/*
+					 * Collect statistics on
+					 * number of warnings/errors
+					 */
+
+					$commit_issues_stats[
+						$pr_item->number
+					][
+						strtolower(
+							$file_issue_val_item['level']
+						)
+					]++;
 				}
-
-				/*
-				 * Collect all the issues that
-				 * we need to submit about
-				 */
-
-				$commit_issues_submit[] = array(
-					'file_name'	=> $file_info->filename,
-					'file_line'	=> $file_changed_line_no_to_file_line_no[ $file_issue_line ],
-					'issue'		=> $file_issue_val_item
-				);
-
-				/*
-				 * Collect statistics on
-				 * number of warnings/errors
-				 */
-
-				$commit_issues_stats[
-					strtolower(
-						$file_issue_val_item['level']
-					)
-				]++;
-
 			}
 		}
 
@@ -415,15 +464,18 @@ function vipgoci_phpcs_scan_commit( $options ) {
 	 * for each implicated Pull-Request
 	 */
 
-	foreach ( $prs_implicated as $pr_number ) {
+	foreach (
+		$prs_implicated as
+			$pr_number => $pr_item
+	) {
 		vipgoci_phpcs_github_review_submit(
 			$repo_owner,
 			$repo_name,
 			$github_access_token,
 			$pr_number,
 			$commit_id,
-			$commit_issues_submit,
-			$commit_issues_stats,
+			$commit_issues_submit[ $pr_number ],
+			$commit_issues_stats[ $pr_number ],
 			$options['dry-run']
 		);
 	}
