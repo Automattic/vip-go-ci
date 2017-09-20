@@ -67,6 +67,8 @@ function vipgoci_run() {
 			'dry-run:',
 			'local-git-repo:',
 			'help',
+			'lint:',
+			'phpcs:',
 		)
 	);
 
@@ -172,13 +174,16 @@ function vipgoci_run() {
 		);
 	}
 
-	// FIXME: If there are fatal errors with linting,
-	// do not continue with the next step
-
+	/*
+	 * Note: We run this, even if linting fails, to make sure
+	 * to catch all errors incrementally.
+	 */
 	// FIXME: Instead of submitting to GitHub in this function, we
 	// should do that in a generic function, so the linting
 	// results can be submitted as well
+
 	if ( true === $options['phpcs'] ) {
+
 		$results['phpcs'] = vipgoci_phpcs_scan_commit(
 			$options
 		);
