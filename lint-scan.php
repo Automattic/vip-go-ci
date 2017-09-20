@@ -4,6 +4,9 @@
  * Run PHP lint on all files in a path
  */
 function vipgoci_lint_do_scan( $path ) {
+	// FIXME: Walk through each file in the
+	// commit, get a copy, then run lint on it
+
 	$path = realpath( $path );
 
 	if ( ! $path ) {
