@@ -32,10 +32,10 @@ function vipgoci_phpcs_curl_headers( $ch, $header ) {
 		 *	1 => 'Created' // Status-string
 		 * )
 		 */
-		if ( isset( $ret[ 'status' ] ) ) {
-			$ret[ 'status' ] = explode(
+		if ( isset( $ret['status'] ) ) {
+			$ret['status'] = explode(
 				' ',
-				$ret[ 'status' ][0]
+				$ret['status'][0]
 			);
 		}
 
@@ -553,13 +553,13 @@ function vipgoci_phpcs_github_review_submit(
 			'body' 		=>
 				'**' .
 				ucfirst( strtolower(
-					$commit_issue[ 'issue' ][ 'level' ]
+					$commit_issue['issue']['level']
 					)) .
 				'**: ' .
-				$commit_issue[ 'issue' ][ 'message' ],
+				$commit_issue['issue']['message'],
 
-			'position'	=> $commit_issue[ 'file_line' ],
-			'path'		=> $commit_issue[ 'file_name']
+			'position'	=> $commit_issue['file_line'],
+			'path'		=> $commit_issue['file_name']
 		);
 	}
 
@@ -577,12 +577,12 @@ function vipgoci_phpcs_github_review_submit(
 	 * asks for changes to be made, otherwise only comment.
 	 */
 
-	if ( empty( $commit_issues_stats[ 'error' ] ) ) {
-		$github_postfields[ 'event' ] = 'COMMENT';
+	if ( empty( $commit_issues_stats['error'] ) ) {
+		$github_postfields['event'] = 'COMMENT';
 	}
 
 	else {
-		$github_postfields[ 'event'] = 'REQUEST_CHANGES';
+		$github_postfields['event'] = 'REQUEST_CHANGES';
 	}
 
 
@@ -591,13 +591,13 @@ function vipgoci_phpcs_github_review_submit(
 	 * review-submission to GitHub.
 	 */
 
-	$github_postfields[ 'body'] = "PHPCS scanning turned up:\n\r";
+	$github_postfields['body'] = "PHPCS scanning turned up:\n\r";
 
 	foreach (
 		$commit_issues_stats as
 			$commit_issue_stat_key => $commit_issue_stat_value
 	) {
-		$github_postfields[ 'body' ] .=
+		$github_postfields['body'] .=
 			$commit_issue_stat_value . ' ' .
 			$commit_issue_stat_key . '(s) ' .
 			"\n\r";
@@ -658,7 +658,7 @@ function vipgoci_phpcs_github_review_submit(
 
 
 
-		if ( intval( $resp_headers[ 'status' ][0] ) !== 200 ) {
+		if ( intval( $resp_headers['status'][0] ) !== 200 ) {
 			/*
 			 * Set default wait period between requests
 			 */
@@ -670,12 +670,12 @@ function vipgoci_phpcs_github_review_submit(
 			 */
 
 			if (
-				( isset( $resp_headers[ 'retry-after' ] ) ) &&
-				( intval( $resp_headers[ 'retry-after' ] ) > 0 )
+				( isset( $resp_headers['retry-after'] ) ) &&
+				( intval( $resp_headers['retry-after'] ) > 0 )
 			) {
 				$retry_req = true;
 				$retry_sleep = intval(
-					$resp_headers[ 'retry-after' ]
+					$resp_headers['retry-after']
 				);
 			}
 

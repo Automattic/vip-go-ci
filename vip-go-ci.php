@@ -140,8 +140,8 @@ function vipgoci_run() {
 
 
 	if (
-		( false === $options[ 'lint' ] ) &&
-		( false === $options[ 'phpcs' ] )
+		( false === $options['lint'] ) &&
+		( false === $options['phpcs'] )
 	) {
 		vipgoci_phpcs_log(
 			'Both --lint and --phpcs set to false, nothing to do!',
@@ -151,12 +151,23 @@ function vipgoci_run() {
 		exit( 253 );
 	}
 
-	// Run all checks and store the results in an array
-	$results = array();
 
-	if ( true === $options[ 'lint' ] ) {
+	/*
+	 * Run all checks and store the results in an array
+	 */
+
+	/*
+	 * Set default values for results -- null,
+	 * meaning it did not run
+	 */
+	$results = array(
+		'lint'	=> null,
+		'phpcs'	=> null,
+	);
+
+	if ( true === $options['lint'] ) {
 		// FIXME: what is the path?
-		$results[ 'lint' ] = vipgoci_lint_do_scan(
+		$results['lint'] = vipgoci_lint_do_scan(
 			'.'
 		);
 	}
@@ -167,8 +178,8 @@ function vipgoci_run() {
 	// FIXME: Instead of submitting to GitHub in this function, we
 	// should do that in a generic function, so the linting
 	// results can be submitted as well
-	if ( true === $options[ 'phpcs' ] ) {
-		$results[ 'phpcs' ] = vipgoci_phpcs_scan_commit(
+	if ( true === $options['phpcs'] ) {
+		$results['phpcs'] = vipgoci_phpcs_scan_commit(
 			$options
 		);
 	}

@@ -34,6 +34,10 @@ function vipgoci_lint_do_scan( $path ) {
 		}
 	}
 
+	/* FIXME:
+	 * 	1) Return problematic file (path, file-name, line-number
+	 *	2) Return statistics
+	 */
 
 	return $lines;
 }

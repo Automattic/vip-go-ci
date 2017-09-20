@@ -272,7 +272,7 @@ function vipgoci_phpcs_scan_commit( $options ) {
 		 * Output scanning-results if requested
 		 */
 
-		if ( ! empty( $options[ 'output'] ) ) {
+		if ( ! empty( $options['output'] ) ) {
 			if (
 				( is_file( $options['output'] ) ) &&
 				( ! is_writeable( $options['output'] ) )
@@ -293,6 +293,9 @@ function vipgoci_phpcs_scan_commit( $options ) {
 				);
 			}
 		}
+
+		// FIXME: Cannot use this patch, must use the
+		// patch belonging to the Pull-Request in question.
 
 		$file_changed_lines = vipgoci_phpcs_patch_changed_lines(
 			$file_info->patch
@@ -376,7 +379,7 @@ function vipgoci_phpcs_scan_commit( $options ) {
 
 				$commit_issues_stats[
 					strtolower(
-						$file_issue_val_item[ 'level' ]
+						$file_issue_val_item['level']
 					)
 				]++;
 
