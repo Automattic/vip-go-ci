@@ -697,9 +697,8 @@ function vipgoci_phpcs_github_review_submit(
 				'GitHub reported an error' .
 				( $retry_req === true  ?
 					' will retry request in ' :
-					''
-				) .
-				$retry_sleep . ' seconds',
+					$retry_sleep . ' seconds'
+				),
 				array(
 					'http_response_headers' => $resp_headers,
 					'http_reponse_body'	=> $resp_data,
@@ -773,7 +772,7 @@ function vipgoci_phpcs_github_prs_implicated(
 		 */
 		foreach ( $prs_implicated_unfiltered as $pr_item ) {
 			if ( $commit_id === $pr_item->head->sha ) {
-				$prs_implicated[] = $pr_item->number;
+				$prs_implicated[ $pr_item->number ] = $pr_item;
 			}
 
 			else {
@@ -805,7 +804,23 @@ function vipgoci_phpcs_github_prs_implicated(
 			),
 			true
 		) ) {
-			$prs_implicated[] = $pr_number_tmp;
+
+			$github_url =
+				'https://api.github.com/' .
+				'repos/' .
+				rawurlencode( $repo_owner ) . '/' .
+				rawurlencode( $repo_name ) . '/' .
+				'pulls/' .
+				rawurlencode( $pr_number_tmp );
+
+
+			$prs_implicated[ $pr_number_tmp ] =
+				json_decode(
+					vipgoci_phpcs_github_fetch_url(
+						$github_url,
+						$github_access_token
+					)
+				);
 		}
 	}
 
@@ -869,6 +884,56 @@ function vipgoci_phpcs_github_prs_commits_list(
 	return $pr_commits;
 }
 
+function vipgoci_github_diffs_fetch(
+	$repo_owner,
+	$repo_name,
+	$github_access_token,
+	$commit_id_a,
+	$commit_id_b
+) {
+
+	$diffs = array();
+
+	vipgoci_log(
+		'Fetching diffs between two commits ' .
+			'from GitHub',
+
+		array(
+			'repo_owner' => $repo_owner,
+			'repo_name' => $repo_name,
+			'commit_id_a' => $commit_id_a,
+			'commit_id_b' => $commit_id_b,
+		)
+	);
+
+	$github_url =
+		'https://api.github.com/' .
+		'repos/' .
+		rawurlencode( $repo_owner ) . '/' .
+		rawurlencode( $repo_name ) . '/' .
+		'compare/' .
+		rawurlencode( $commit_id_a ) .
+			'...' .
+			rawurlencode( $commit_id_b );
+
+	// FIXME: Error-handling
+	$resp_raw = json_decode(
+		vipgoci_phpcs_github_fetch_url(
+			$github_url,
+			$github_access_token
+		)
+	);
+
+	foreach( $resp_raw->files as $file_item ) {
+		if ( ! isset( $file_item->patch ) ) {
+			continue;
+		}
+
+		$diffs[ $file_item->filename ] = $file_item->patch;
+	}
+
+	return $diffs;
+}
 
 /*
  * Check if the specified comment exists
