@@ -6,7 +6,7 @@
  * our caller might pass us.
  */
 
-function vipgoci_phpcs_log( $str, $debug_data ) {
+function vipgoci_log( $str, $debug_data ) {
 	echo '[ ' . date( 'c' ) . ' ]  ' .
 		$str .
 		'; ' .
@@ -27,7 +27,7 @@ function vipgoci_phpcs_log( $str, $debug_data ) {
  * were affected by the patch.
  */
 
-function vipgoci_phpcs_patch_changed_lines( $patch ) {
+function vipgoci_patch_changed_lines( $patch ) {
 	$lines_changed = array();
 
 	$lines_arr = explode( "\n", $patch );

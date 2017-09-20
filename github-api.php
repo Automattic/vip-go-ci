@@ -154,7 +154,7 @@ function vipgoci_phpcs_github_fetch_url(
 			( false === $resp_data ) ||
 			( curl_errno( $ch ) )
 		) {
-			vipgoci_phpcs_log(
+			vipgoci_log(
 				'Sending request to GitHub failed, will ' .
 					'retry in a bit... ',
 
@@ -184,7 +184,7 @@ function vipgoci_phpcs_github_fetch_url(
 
 
 	if ( false === $resp_data ) {
-		vipgoci_phpcs_log(
+		vipgoci_log(
 			'Gave up, cannot continue',
 			array()
 		);
@@ -206,7 +206,7 @@ function vipgoci_phpcs_github_fetch_url(
 function vipgoci_phpcs_github_fetch_commit_info(
 		$repo_owner, $repo_name, $commit_id, $github_access_token
 ) {
-	vipgoci_phpcs_log(
+	vipgoci_log(
 		'Fetching commit info from GitHub',
 		array(
 			'repo_owner' => $repo_owner,
@@ -262,7 +262,7 @@ function vipgoci_phpcs_github_fetch_committed_file(
 		( null !== $local_git_repo ) &&
 		( false == $local_git_repo_failure )
 	) {
-		vipgoci_phpcs_log(
+		vipgoci_log(
 			'Fetching file-contents from local Git repository',
 			array(
 				'repo_owner'		=> $repo_owner,
@@ -356,7 +356,7 @@ function vipgoci_phpcs_github_fetch_committed_file(
 			( $commit_id !== $lgit_head ) ||
 			( $file_contents_tmp === false )
 		) {
-			vipgoci_phpcs_log(
+			vipgoci_log(
 				'Skipping local Git repository, seems not to be in sync with current commit',
 				array(
 					'repo_owner'		=> $repo_owner,
@@ -382,7 +382,7 @@ function vipgoci_phpcs_github_fetch_committed_file(
 		$local_git_repo_failure = true;
 	}
 
-	vipgoci_phpcs_log(
+	vipgoci_log(
 		'Fetching file-contents from GitHub',
 		array(
 			'repo_owner' => $repo_owner,
@@ -424,7 +424,7 @@ function vipgoci_phpcs_github_pull_requests_comments_get(
 	$page = 0;
 	$prs_comments = array();
 
-	vipgoci_phpcs_log(
+	vipgoci_log(
 		'Fetching Pull-Requests comments info from GitHub',
 		array(
 			'repo_owner' => $repo_owner,
@@ -517,7 +517,7 @@ function vipgoci_phpcs_github_review_submit(
 	$commit_issues_stats,
 	$dry_run
 ) {
-	vipgoci_phpcs_log(
+	vipgoci_log(
 		( $dry_run == true ? 'Would ' : 'About to ' ) .
 		'submit comment(s) to GitHub about issue(s)',
 		array(
@@ -693,7 +693,7 @@ function vipgoci_phpcs_github_review_submit(
 				$retry_req = false;
 			}
 
-			vipgoci_phpcs_log(
+			vipgoci_log(
 				'GitHub reported an error' .
 				( $retry_req === true  ?
 					' will retry request in ' :
@@ -731,7 +731,7 @@ function vipgoci_phpcs_github_prs_implicated(
 	$prs_implicated = array();
 	$prs_maybe_implicated = array();
 
-	vipgoci_phpcs_log(
+	vipgoci_log(
 		'Fetching all open Pull-Requests from GitHub',
 		array(
 			'repo_owner' => $repo_owner,
@@ -825,7 +825,7 @@ function vipgoci_phpcs_github_prs_commits_list(
 ) {
 	$pr_commits = array();
 
-	vipgoci_phpcs_log(
+	vipgoci_log(
 		'Fetching information about all commits made' .
 			' to Pull-Request #' .
 			(int) $pr_number . ' from GitHub',

@@ -115,7 +115,7 @@ function vipgoci_run() {
 		if ( false === file_exists(
 			$options['local-git-repo'] . '/.git'
 		) ) {
-			vipgoci_phpcs_log(
+			vipgoci_log(
 				'Local git repository was not found',
 				array(
 					'local_git_repo' =>
@@ -143,7 +143,7 @@ function vipgoci_run() {
 		( false === $options['lint'] ) &&
 		( false === $options['phpcs'] )
 	) {
-		vipgoci_phpcs_log(
+		vipgoci_log(
 			'Both --lint and --phpcs set to false, nothing to do!',
 			array()
 		);
@@ -185,7 +185,7 @@ function vipgoci_run() {
 	}
 
 
-	vipgoci_phpcs_log(
+	vipgoci_log(
 		'Shutting down',
 		array(
 			'run_time_seconds'	=> time() - $startup_time,

@@ -42,7 +42,7 @@ function vipgoci_phpcs_do_scan( $filename_tmp, $real_name ) {
 
 	/* Catch errors */
 	if ( null === $result ) {
-		vipgoci_phpcs_log(
+		vipgoci_log(
 			'Failed to execute PHPCS. Cannot continue execution.',
 			array(
 				'command' => $cmd,
@@ -106,7 +106,7 @@ function vipgoci_phpcs_scan_commit( $options ) {
 		'warning' => 0
 	);
 
-	vipgoci_phpcs_log(
+	vipgoci_log(
 		'About to scan repository',
 
 		array(
@@ -137,7 +137,7 @@ function vipgoci_phpcs_scan_commit( $options ) {
 	 * bail now, as there is no point in continuing running.
 	 */
 	if ( empty( $prs_implicated ) ) {
-		vipgoci_phpcs_log(
+		vipgoci_log(
 			'Skipping scanning entirely, as the commit ' .
 				'is not a part of any Pull-Request',
 
@@ -176,7 +176,7 @@ function vipgoci_phpcs_scan_commit( $options ) {
 		 */
 
 		if ( 'php' !== strtolower( $file_info_extension ) ) {
-			vipgoci_phpcs_log(
+			vipgoci_log(
 				'Skipping file that does not seem ' .
 					'to be a PHP-file',
 
@@ -195,7 +195,7 @@ function vipgoci_phpcs_scan_commit( $options ) {
 			( 'added' !== $file_info->status ) &&
 			( 'modified' !== $file_info->status )
 		) {
-			vipgoci_phpcs_log(
+			vipgoci_log(
 				'Skipping file that was neither ' .
 					'added nor modified',
 
@@ -235,7 +235,7 @@ function vipgoci_phpcs_scan_commit( $options ) {
 
 		// Detect possible errors when saving the temporary file
 		if ( false === $temp_file_save_status ) {
-			vipgoci_phpcs_log(
+			vipgoci_log(
 				'Could not save file to disk, got ' .
 					'an error. Exiting...',
 				array(
@@ -246,7 +246,7 @@ function vipgoci_phpcs_scan_commit( $options ) {
 			exit( 254 );
 		}
 
-		vipgoci_phpcs_log(
+		vipgoci_log(
 			'About to PHPCS-scan file',
 			array(
 				'repo_owner' => $repo_owner,
@@ -277,7 +277,7 @@ function vipgoci_phpcs_scan_commit( $options ) {
 				( is_file( $options['output'] ) ) &&
 				( ! is_writeable( $options['output'] ) )
 			) {
-				vipgoci_phpcs_log(
+				vipgoci_log(
 					'File ' .
 						$options['output'] .
 						' is not writeable',
@@ -297,7 +297,7 @@ function vipgoci_phpcs_scan_commit( $options ) {
 		// FIXME: Cannot use this patch, must use the
 		// patch belonging to the Pull-Request in question.
 
-		$file_changed_lines = vipgoci_phpcs_patch_changed_lines(
+		$file_changed_lines = vipgoci_patch_changed_lines(
 			$file_info->patch
 		);
 
@@ -343,7 +343,7 @@ function vipgoci_phpcs_scan_commit( $options ) {
 						$prs_comments
 					)
 				) {
-					vipgoci_phpcs_log(
+					vipgoci_log(
 						'Skipping submission of ' .
 						'comment, has already been ' .
 						'submitted',
@@ -386,7 +386,7 @@ function vipgoci_phpcs_scan_commit( $options ) {
 			}
 		}
 
-		vipgoci_phpcs_log(
+		vipgoci_log(
 			'Cleaning up...',
 			array()
 		);
