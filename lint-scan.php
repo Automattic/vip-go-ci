@@ -7,6 +7,14 @@ function vipgoci_lint_do_scan( $path ) {
 	// FIXME: Walk through each file in the
 	// commit, get a copy, then run lint on it
 
+	vipgoci_log(
+		'About to lint files',
+		array(
+			'path'	=> $path
+		)
+	);
+
+
 	$path = realpath( $path );
 
 	if ( ! $path ) {
