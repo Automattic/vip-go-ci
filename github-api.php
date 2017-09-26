@@ -204,12 +204,16 @@ function vipgoci_phpcs_github_fetch_url(
  * by GitHub on success.
  */
 function vipgoci_phpcs_github_fetch_commit_info(
-		$repo_owner, $repo_name, $commit_id, $github_token
+		$repo_owner,
+		$repo_name,
+		$commit_id,
+		$github_token,
+		$filter = null
 ) {
 	/* Check for cached version */
 	$cached_id = array(
 		__FUNCTION__, $repo_owner, $repo_name,
-		$commit_id, $github_token
+		$commit_id, $github_token, $filter
 	);
 
 	$cached_data = vipgoci_cache( $cached_id );
@@ -222,6 +226,7 @@ function vipgoci_phpcs_github_fetch_commit_info(
 			'repo_owner' => $repo_owner,
 			'repo_name' => $repo_name,
 			'commit_id' => $commit_id,
+			'filter' => $filter,
 		)
 	);
 
@@ -245,6 +250,87 @@ function vipgoci_phpcs_github_fetch_commit_info(
 			$github_token
 		)
 	);
+
+
+	/*
+	 * Filter out files based on
+	 * parameter
+	 */
+
+	if ( null !== $filter ) {
+		$files_new = array();
+
+		foreach( $data->files as $file_info ) {
+			$file_info_extension = pathinfo(
+				$file_info->filename,
+				PATHINFO_EXTENSION
+			);
+
+			/*
+			 * If the file does not have an acceptable
+			 * file-extension, skip
+			 */
+
+			if (
+				! in_array(
+					strtolower( $file_info_extension ),
+					$filter['file_extensions'],
+					true
+				)
+			) {
+				vipgoci_log(
+					'Skipping file that does not seem ' .
+						'to be a file matching ' .
+						'filter-criteria',
+
+					array(
+						'filename' =>
+							$file_info->filename,
+
+						'allowable_file_extensions' =>
+							$filter['file_extensions'],
+					)
+				);
+
+				continue;
+			}
+
+
+			/*
+			 * Process status based on filter.
+			 */
+
+			if (
+				! in_array(
+					$file_info->status,
+					$filter['status']
+				)
+			) {
+
+				vipgoci_log(
+					'Skipping file that does not have a  ' .
+						'matching modification status',
+
+					array(
+						'filename'	=>
+							$file_info->filename,
+
+						'status'	=>
+							$file_info->status,
+
+						'filter_status' =>
+							$filter['status'],
+					)
+				);
+
+				continue;
+			}
+
+			$files_new[] = $file_info;
+		}
+
+		$data->files = $files_new;
+	}
 
 	vipgoci_cache(
 		$cached_id,
