@@ -104,3 +104,43 @@ function vipgoci_cache( $cache_id_arr, $data = null ) {
 	return $data;
 }
 
+
+/*
+ * Create a temporary file, and return the
+ * full-path to the file.
+ */
+
+function vipgoci_save_temp_file( $file_name_prefix, $file_contents ) {
+	/*
+	 * Create temporary directory to save
+	 * fetched files into
+	 */
+	$temp_file_name = $temp_file_save_status = tempnam(
+		sys_get_temp_dir(),
+		$file_name_prefix
+	);
+
+	if ( false !== $temp_file_name ) {
+		$temp_file_save_status = file_put_contents(
+			$temp_file_name,
+			$file_contents
+		);
+	}
+
+	// Detect possible errors when saving the temporary file
+	if ( false === $temp_file_save_status ) {
+		vipgoci_log(
+			'Could not save file to disk, got ' .
+			'an error. Exiting...',
+
+			array(
+				'temp_file_name' => $temp_file_name,
+			)
+		);
+
+		exit( 254 );
+	}
+
+	return $temp_file_name;
+}
+
