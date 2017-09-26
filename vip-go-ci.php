@@ -114,7 +114,7 @@ function vipgoci_run() {
 			'/'
 		);
 
-		if ( false === file_exists(
+		if ( false === is_dir(
 			$options['local-git-repo'] . '/.git'
 		) ) {
 			vipgoci_log(
@@ -158,19 +158,22 @@ function vipgoci_run() {
 	 * Run all checks and store the results in an array
 	 */
 
-	/*
-	 * Set default values for results -- null,
-	 * meaning it did not run
-	 */
 	$results = array(
-		'lint'	=> null,
-		'phpcs'	=> null,
+		'issues'	=> array(),
+
+		'stats'		=> array(
+			'phpcs'	=> null,
+			'lint'	=> null,
+		),
 	);
 
 	if ( true === $options['lint'] ) {
 		// FIXME: what is the path?
-		$results['lint'] = vipgoci_lint_do_scan(
-			'.'
+		vipgoci_lint_do_scan(
+			$options['local-git-repo'], // FIXME: Support non git-repo operation
+			$options,
+			$results['issues'],
+			$results['stats']['lint']
 		);
 	}
 
@@ -178,17 +181,27 @@ function vipgoci_run() {
 	 * Note: We run this, even if linting fails, to make sure
 	 * to catch all errors incrementally.
 	 */
-	// FIXME: Instead of submitting to GitHub in this function, we
-	// should do that in a generic function, so the linting
-	// results can be submitted as well
 
 	if ( true === $options['phpcs'] ) {
-
-		$results['phpcs'] = vipgoci_phpcs_scan_commit(
-			$options
+		vipgoci_phpcs_scan_commit(
+			$options,
+			$results['issues'],
+			$results['stats']['phpcs']
 		);
 	}
 
+
+	/*
+	 * Submit any issues to GitHub
+	 */
+	vipgoci_github_review_submit(
+		$options['repo-owner'],
+		$options['repo-name'],
+		$options['token'],
+		$options['commit'],
+		$results,
+		$options['dry-run']
+	);
 
 	vipgoci_log(
 		'Shutting down',
@@ -206,7 +219,10 @@ function vipgoci_run() {
 	 * If we only submitted warnings, we do not announce failure.
 	 */
 
-	if ( empty( $commit_issues_stats['error'] ) ) {
+	if (
+		( empty( $results['phpcs']['error'] ) ) &&
+		( empty( $results['lint']['error'] ) )
+	) {
 		return 0;
 	}
 

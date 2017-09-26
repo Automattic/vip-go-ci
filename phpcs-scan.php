@@ -90,11 +90,44 @@ function vipgoci_phpcs_parse_results( $phpcs_results ) {
 
 
 /*
+ * Dump output of scan-analysis to a file,
+ * if possible.
+ */
+
+function vipgoci_phpcs_scan_output_dump( $file, $data ) {
+	if (
+		( is_file( $options['output'] ) ) &&
+		( ! is_writeable( $options['output'] ) )
+	) {
+		vipgoci_log(
+			'File ' .
+				$options['output'] .
+				' is not writeable',
+			array()
+		);
+	} else {
+		file_put_contents(
+			$options['output'],
+			json_encode(
+				$data,
+				JSON_PRETTY_PRINT
+			),
+			FILE_APPEND
+		);
+	}
+}
+
+
+/*
  * Scan a particular commit which should live within
  * a particular repository on GitHub, and use the specified
  * access-token to gain access.
  */
-function vipgoci_phpcs_scan_commit( $options ) {
+function vipgoci_phpcs_scan_commit(
+	$options,
+	&$commit_issues_submit,
+	&$commit_issues_stats
+) {
 	$repo_owner = $options['repo-owner'];
 	$repo_name  = $options['repo-name'];
 	$commit_id  = $options['commit'];
@@ -102,11 +135,8 @@ function vipgoci_phpcs_scan_commit( $options ) {
 
 	$prs_diffs = array();
 
-	$commit_issues_submit = array();
-	$commit_issues_stats = array();
-
 	vipgoci_log(
-		'About to scan repository',
+		'About to PHPCS-scan repository',
 
 		array(
 			'repo_owner' => $repo_owner,
@@ -143,7 +173,7 @@ function vipgoci_phpcs_scan_commit( $options ) {
 			array()
 		);
 
-		return $commit_issues_stats;
+		exit( 0 );
 	}
 
 
@@ -164,16 +194,22 @@ function vipgoci_phpcs_scan_commit( $options ) {
 			);
 
 		/*
-		 * Initialize array for statistics
-		 * and results of scanning.
+		 * Initialize array for stats and
+		 * results of scanning, if needed.
 		 */
-		$commit_issues_stats[ $pr_item->number ] = array(
-			'error' => 0,
-			'warning' => 0
-		);
 
-		$commit_issues_submit[ $pr_item->number ] = array(
-		);
+		if ( empty( $commit_issues_submit[ $pr_item->number ] ) ) {
+			$commit_issues_submit[ $pr_item->number ] = array(
+			);
+		}
+
+
+		if ( empty( $commit_issues_stats[ $pr_item->number ] ) ) {
+			$commit_issues_stats[ $pr_item->number ] = array(
+				'error'		=> 0,
+				'warning'	=> 0
+			);
+		}
 	}
 
 
@@ -302,25 +338,16 @@ function vipgoci_phpcs_scan_commit( $options ) {
 		 */
 
 		if ( ! empty( $options['output'] ) ) {
-			if (
-				( is_file( $options['output'] ) ) &&
-				( ! is_writeable( $options['output'] ) )
-			) {
-				vipgoci_log(
-					'File ' .
-						$options['output'] .
-						' is not writeable',
-					array()
-				);
-			} else {
-				file_put_contents(
-					$options['output'],
-					json_encode(
-						$file_issues_arr,
-						JSON_PRETTY_PRINT
-					)
-				);
-			}
+			vipgoci_phpcs_scan_output_dump(
+				$options['output'],
+				array(
+					'repo_owner'	=> $repo_owner,
+					'repo_name'	=> $repo_name,
+					'commit_id'	=> $commit_id,
+					'filename'	=> $file_info->filename,
+					'issues'	=> $file_issues_arr,
+				)
+			);
 		}
 
 
@@ -332,10 +359,8 @@ function vipgoci_phpcs_scan_commit( $options ) {
 		 */
 
 		foreach ( $prs_implicated as $pr_item ) {
-
 			$file_changed_lines = vipgoci_patch_changed_lines(
-				$prs_diffs[ $pr_item->number ]
-					[ $file_info->filename ]
+				$prs_diffs[ $pr_item->number ][ $file_info->filename ]
 			);
 
 			/*
@@ -365,10 +390,20 @@ function vipgoci_phpcs_scan_commit( $options ) {
 				$file_changed_lines
 			);
 
+
+			/*
+			 * Loop through array of lines in which
+			 * issues exist.
+			 */
 			foreach (
 				$file_issues_arr as
 					$file_issue_line => $file_issue_values
 			) {
+				/*
+				 * Loop through each issue for the particular
+				 * line.
+				 */
+
 				foreach (
 					$file_issue_values as $file_issue_val_item
 				) {
@@ -414,9 +449,10 @@ function vipgoci_phpcs_scan_commit( $options ) {
 					$commit_issues_submit[
 						$pr_item->number
 					][] = array(
+						'type'		=> 'phpcs',
 						'file_name'	=> $file_info->filename,
 						'file_line'	=> $file_changed_line_no_to_file_line_no[ $file_issue_line ],
-						'issue'		=> $file_issue_val_item
+						'issue'		=> $file_issue_val_item,
 					);
 
 					/*
@@ -428,7 +464,9 @@ function vipgoci_phpcs_scan_commit( $options ) {
 						$pr_item->number
 					][
 						strtolower(
-							$file_issue_val_item['level']
+							$file_issue_val_item[
+								'level'
+							]
 						)
 					]++;
 				}
@@ -460,36 +498,11 @@ function vipgoci_phpcs_scan_commit( $options ) {
 
 
 	/*
-	 * Submit a review of what we found
-	 * for each implicated Pull-Request
-	 */
-
-	foreach (
-		$prs_implicated as
-			$pr_number => $pr_item
-	) {
-		vipgoci_phpcs_github_review_submit(
-			$repo_owner,
-			$repo_name,
-			$github_access_token,
-			$pr_number,
-			$commit_id,
-			$commit_issues_submit[ $pr_number ],
-			$commit_issues_stats[ $pr_number ],
-			$options['dry-run']
-		);
-	}
-
-
-	/*
 	 * Clean up a bit
 	 */
 
 	unset( $prs_comments );
 	unset( $prs_implicated );
-	unset( $commit_issues_submit );
 
 	gc_collect_cycles();
-
-	return $commit_issues_stats;
 }

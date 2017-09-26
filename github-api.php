@@ -507,14 +507,12 @@ function vipgoci_phpcs_github_pull_requests_comments_get(
  * line, commit and Pull-Request, using the
  * access-token provided.
  */
-function vipgoci_phpcs_github_review_submit(
+function vipgoci_github_review_submit(
 	$repo_owner,
 	$repo_name,
  	$github_access_token,
-	$pr_number,
 	$commit_id,
-	$commit_issues_submit,
-	$commit_issues_stats,
+	$results,
 	$dry_run
 ) {
 	vipgoci_log(
@@ -523,10 +521,8 @@ function vipgoci_phpcs_github_review_submit(
 		array(
 			'repo_owner' => $repo_owner,
 			'repo_name' => $repo_name,
-			'pr_number' => $pr_number,
 			'commit_id' => $commit_id,
-			'comments' => $commit_issues_submit,
-			'commit_issues_stats' => $commit_issues_stats,
+			'results' => $results,
 			'dry_run' => $dry_run,
 		)
 	);
@@ -537,180 +533,252 @@ function vipgoci_phpcs_github_review_submit(
 		return;
 	}
 
-	$github_url =
-		'https://api.github.com/' .
-		'repos/' .
-		rawurlencode( $repo_owner ) . '/' .
-		rawurlencode( $repo_name ) . '/' .
-		'pulls/' .
-		rawurlencode( $pr_number ) . '/' .
-		'reviews';
-
-	$commit_issues_rewritten = array();
-
-	foreach ( $commit_issues_submit as $commit_issue ) {
-		$commit_issues_rewritten[] = array(
-			'body' 		=>
-				'**' .
-				ucfirst( strtolower(
-					$commit_issue['issue']['level']
-					)) .
-				'**: ' .
-				$commit_issue['issue']['message'],
-
-			'position'	=> $commit_issue['file_line'],
-			'path'		=> $commit_issue['file_name']
-		);
-	}
-
-
-
-	$github_postfields = array(
-		'commit_id'	=> $commit_id,
-		'body'		=> '',
-		'event'		=> '',
-		'comments'	=> $commit_issues_rewritten,
-	);
-
-	/*
-	 * If there are 'error'-level issues, make sure the submission
-	 * asks for changes to be made, otherwise only comment.
-	 */
-
-	if ( empty( $commit_issues_stats['error'] ) ) {
-		$github_postfields['event'] = 'COMMENT';
-	}
-
-	else {
-		$github_postfields['event'] = 'REQUEST_CHANGES';
-	}
-
-
-	/*
-	 * Compose the number of warnings/errors for the
-	 * review-submission to GitHub.
-	 */
-
-	$github_postfields['body'] = "PHPCS scanning turned up:\n\r";
-
 	foreach (
-		$commit_issues_stats as
-			$commit_issue_stat_key => $commit_issue_stat_value
+		array_keys(
+			$results['issues']
+		) as $pr_number
 	) {
-		$github_postfields['body'] .=
-			$commit_issue_stat_value . ' ' .
-			$commit_issue_stat_key . '(s) ' .
-			"\n\r";
-	}
+
+		$github_url =
+			'https://api.github.com/' .
+			'repos/' .
+			rawurlencode( $repo_owner ) . '/' .
+			rawurlencode( $repo_name ) . '/' .
+			'pulls/' .
+			rawurlencode( $pr_number ) . '/' .
+			'reviews';
 
 
-	/*
-	 * Actually send a request to GitHub -- make sure
-	 * to retry if something fails.
-	 */
-	do {
-		/*
-		 * By default, do not retry the request,
-		 * just assume everything goes well
-		 */
+		$commit_issues_rewritten = array();
 
-		$retry_req = false;
+		foreach (
+			$results['issues'][ $pr_number ]
+				as $commit_issue
+		) {
+			$commit_issues_rewritten[] = array(
+				'body' 		=>
+					'**' .
+					ucfirst( strtolower(
+						$commit_issue['issue']['level']
+						)) .
+					'**: ' .
+					$commit_issue['issue']['message'],
 
-		$ch = curl_init();
-
-		curl_setopt( $ch, CURLOPT_URL, 			$github_url );
-		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 	1 );
-		curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, 	20) ;
-
-		curl_setopt(
-			$ch,
-			CURLOPT_USERAGENT,
-			VIPGOCI_PHPCS_CLIENT_ID
-		);
-
-		curl_setopt( $ch, CURLOPT_POST,			1 );
-
-		curl_setopt(
-			$ch,
-			CURLOPT_POSTFIELDS,
-			json_encode( $github_postfields )
-		);
-
-		curl_setopt(
-			$ch,
-			CURLOPT_HEADERFUNCTION,
-			'vipgoci_phpcs_curl_headers'
-		);
-
-		curl_setopt(
-			$ch,
-			CURLOPT_HTTPHEADER,
-			array( 'Authorization: token ' . $github_access_token )
-		);
-
-		// Make sure to pause between GitHub-requests
-		vipgoci_phpcs_github_wait();
-
-
-		$resp_data = curl_exec( $ch );
-
-		$resp_headers = vipgoci_phpcs_curl_headers( null, null );
-
-
-
-		if ( intval( $resp_headers['status'][0] ) !== 200 ) {
-			/*
-			 * Set default wait period between requests
-			 */
-			$retry_sleep = 10;
-
-
-			/*
-			 * Figure out if to retry...
-			 */
-
-			if (
-				( isset( $resp_headers['retry-after'] ) ) &&
-				( intval( $resp_headers['retry-after'] ) > 0 )
-			) {
-				$retry_req = true;
-				$retry_sleep = intval(
-					$resp_headers['retry-after']
-				);
-			}
-
-			else if (
-				( $resp_data->message == 'Validation Failed' ) &&
-				( $resp_data->errors[0] == 'was submitted too quickly after a previous comment' )
-			) {
-				$retry_req = true;
-				$retry_sleep = 20;
-			}
-
-			else if (
-				( $resp_data->message == 'Validation Failed' )
-			) {
-				$retry_req = false;
-			}
-
-			vipgoci_log(
-				'GitHub reported an error' .
-				( $retry_req === true  ?
-					' will retry request in ' :
-					$retry_sleep . ' seconds'
-				),
-				array(
-					'http_response_headers' => $resp_headers,
-					'http_reponse_body'	=> $resp_data,
-				)
+				'position'	=> $commit_issue['file_line'],
+				'path'		=> $commit_issue['file_name']
 			);
-
-			sleep( $retry_sleep + 1 );
 		}
 
-		curl_close( $ch );
 
-	} while ( $retry_req == true );
+		$github_postfields = array(
+			'commit_id'	=> $commit_id,
+			'body'		=> '',
+			'event'		=> '',
+			'comments'	=> $commit_issues_rewritten,
+		);
+
+		/*
+		 * If there are 'error'-level issues, make sure the submission
+		 * asks for changes to be made, otherwise only comment.
+		 */
+
+		if (
+			( ! empty( $results['stats'][ 'lint' ] ) ) &&
+			( empty( $results['stats'][ 'lint' ]['error'] ) )
+			||
+			( ! empty( $results['stats'][ 'phpcs' ] ) ) &&
+			( empty( $results['stats'][ 'phpcs' ]['error'] ) )
+		) {
+			$github_postfields['event'] = 'REQUEST_CHANGES';
+		}
+
+		else {
+			$github_postfields['event'] = 'COMMENT';
+		}
+
+
+		/*
+		 * Compose the number of warnings/errors for the
+		 * review-submission to GitHub.
+		 */
+
+		foreach (
+			array( 'PHPCS', 'lint' ) as
+				$stats_type
+		) {
+			/*
+			 * Check if this type of scanning
+			 * was skipped, and if so, note it.
+			 */
+
+			if ( empty(
+				$results
+					['stats']
+					[ strtolower( $stats_type ) ]
+			) ) {
+				$github_postfields['body'] .=
+					$stats_type . "-scanning skipped\n\r";
+
+				// Skipped
+				continue;
+			}
+
+
+			$github_postfields['body'] .=
+				$stats_type .
+				" scanning turned up:\n\r";
+
+			foreach (
+				$results
+					['stats']
+					[ strtolower( $stats_type ) ]
+					[ $pr_number ] as
+
+					$commit_issue_stat_key =>
+						$commit_issue_stat_value
+			) {
+				$github_postfields['body'] .=
+					$commit_issue_stat_value . ' ' .
+					$commit_issue_stat_key . '(s) ' .
+					"\n\r";
+			}
+		}
+
+
+		/*
+		 * Actually send a request to GitHub -- make sure
+		 * to retry if something fails.
+		 */
+		do {
+			/*
+			 * By default, do not retry the request,
+			 * just assume everything goes well
+			 */
+
+			$retry_req = false;
+
+			$ch = curl_init();
+
+			curl_setopt(
+				$ch, CURLOPT_URL, $github_url
+			);
+
+			curl_setopt(
+				$ch, CURLOPT_RETURNTRANSFER, 1
+			);
+
+			curl_setopt(
+				$ch, CURLOPT_CONNECTTIMEOUT, 20
+			);
+
+			curl_setopt(
+				$ch, CURLOPT_USERAGENT,	VIPGOCI_PHPCS_CLIENT_ID
+			);
+
+			curl_setopt(
+				$ch, CURLOPT_POST, 1
+			);
+
+			curl_setopt(
+				$ch,
+				CURLOPT_POSTFIELDS,
+				json_encode( $github_postfields )
+			);
+
+			curl_setopt(
+				$ch,
+				CURLOPT_HEADERFUNCTION,
+				'vipgoci_phpcs_curl_headers'
+			);
+
+			curl_setopt(
+				$ch,
+				CURLOPT_HTTPHEADER,
+				array( 'Authorization: token ' . $github_access_token )
+			);
+
+			// Make sure to pause between GitHub-requests
+			vipgoci_phpcs_github_wait();
+
+
+			$resp_data = curl_exec( $ch );
+
+			$resp_headers = vipgoci_phpcs_curl_headers(
+				null,
+				null
+			);
+
+
+
+			if ( intval( $resp_headers['status'][0] ) !== 200 ) {
+				/*
+				 * Set default wait period between requests
+				 */
+				$retry_sleep = 10;
+
+
+				/*
+				 * Figure out if to retry...
+				 */
+
+				// Decode JSON
+				$resp_data = json_decode( $resp_data );
+
+				if (
+					( isset(
+						$resp_headers['retry-after']
+					) ) &&
+					( intval(
+						$resp_headers['retry-after']
+					) > 0 )
+				) {
+					$retry_req = true;
+					$retry_sleep = intval(
+						$resp_headers['retry-after']
+					);
+				}
+
+				else if (
+					( $resp_data->message ==
+						'Validation Failed' ) &&
+
+					( $resp_data->errors[0] ==
+						'was submitted too quickly ' .
+						'after a previous comment' )
+				) {
+					$retry_req = true;
+					$retry_sleep = 20;
+				}
+
+				else if (
+					( $resp_data->message ==
+						'Validation Failed' )
+				) {
+					$retry_req = false;
+				}
+
+				vipgoci_log(
+					'GitHub reported an error' .
+						( $retry_req === true ?
+						' will retry request in ' .
+						$retry_sleep . ' seconds' :
+						'' ),
+					array(
+						'http_response_headers'
+							=> $resp_headers,
+
+						'http_reponse_body'
+							=> $resp_data,
+					)
+				);
+
+				sleep( $retry_sleep + 1 );
+			}
+
+			curl_close( $ch );
+
+		} while ( $retry_req == true );
+	}
 
 	return;
 }
@@ -821,6 +889,22 @@ function vipgoci_phpcs_github_prs_implicated(
 						$github_access_token
 					)
 				);
+		}
+	}
+
+
+	/*
+	 * Convert number parameter of each object
+	 * saved to an integer.
+	 */
+
+	foreach(
+		array_keys( $prs_implicated ) as
+			$pr_implicated
+	) {
+		if ( isset( $pr_implicated->number ) ) {
+			$prs_implicated[ $pr_implicated->number ]->number =
+				(int) $pr_implicated->number;
 		}
 	}
 
