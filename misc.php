@@ -70,3 +70,37 @@ function vipgoci_patch_changed_lines( $patch ) {
 	return $lines_changed;
 }
 
+
+/*
+ * Get a specific item from in-memory cache based on
+ * $cache_id_arr if $data is null, or if $data is not null,
+ * add a specific item to cache.
+ *
+ * The data is stored in an associative array, with
+ * key being an array (or anything else) -- $cache_id_arr --, 
+ * and used to identify the data up on retrieval.
+ */
+
+function vipgoci_cache( $cache_id_arr, $data = null ) {
+	global $vipgoci_cache_buffer;
+
+	$cache_id = json_encode(
+		$cache_id_arr
+	);
+
+
+	if ( null === $data ) {
+		if ( isset( $vipgoci_cache_buffer[ $cache_id ] ) ) {
+			return $vipgoci_cache_buffer[ $cache_id ];
+		}
+
+		else {
+			return false;
+		}
+	}
+
+	$vipgoci_cache_buffer[ $cache_id ] = $data;
+
+	return $data;
+}
+

@@ -131,7 +131,7 @@ function vipgoci_phpcs_scan_commit(
 	$repo_owner = $options['repo-owner'];
 	$repo_name  = $options['repo-name'];
 	$commit_id  = $options['commit'];
-	$github_access_token = $options['token'];
+	$github_token = $options['token'];
 
 	$prs_diffs = array();
 
@@ -149,7 +149,7 @@ function vipgoci_phpcs_scan_commit(
 		$repo_owner,
 		$repo_name,
 		$commit_id,
-		$github_access_token
+		$github_token
 	);
 
 
@@ -157,7 +157,7 @@ function vipgoci_phpcs_scan_commit(
 		$repo_owner,
 		$repo_name,
 		$commit_id,
-		$github_access_token
+		$github_token
 	);
 
 
@@ -188,7 +188,7 @@ function vipgoci_phpcs_scan_commit(
 			vipgoci_github_diffs_fetch(
 				$repo_owner,
 				$repo_name,
-				$github_access_token,
+				$github_token,
 				$pr_item->base->sha,
 				$commit_id
 			);
@@ -222,7 +222,7 @@ function vipgoci_phpcs_scan_commit(
 		$repo_name,
 		$commit_id,
 		$commit_info->commit->committer->date,
-		$github_access_token
+		$github_token
 	);
 
 
@@ -276,7 +276,7 @@ function vipgoci_phpcs_scan_commit(
 		$file_contents = vipgoci_phpcs_github_fetch_committed_file(
 			$repo_owner,
 			$repo_name,
-			$github_access_token,
+			$github_token,
 			$commit_id,
 			$file_info->filename,
 			$options['local-git-repo']

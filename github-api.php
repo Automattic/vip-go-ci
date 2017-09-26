@@ -114,7 +114,7 @@ function vipgoci_phpcs_github_wait() {
  * or halt execution on repeated errors.
  */
 function vipgoci_phpcs_github_fetch_url(
-	$github_url, $github_access_token
+	$github_url, $github_token
 ) {
 
 	$curl_retries = 0;
@@ -126,9 +126,9 @@ function vipgoci_phpcs_github_fetch_url(
 	do {
 		$ch = curl_init();
 
-		curl_setopt( $ch, CURLOPT_URL, 			$github_url );
-		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 	1 );
-		curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, 	20 );
+		curl_setopt( $ch, CURLOPT_URL,			$github_url );
+		curl_setopt( $ch, CURLOPT_RETURNTRANSFER,	1 );
+		curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT,	20 );
 
 		curl_setopt(
 			$ch,
@@ -139,7 +139,7 @@ function vipgoci_phpcs_github_fetch_url(
 		curl_setopt(
 			$ch,
 			CURLOPT_HTTPHEADER,
-			array( 'Authorization: token ' . $github_access_token )
+			array( 'Authorization: token ' . $github_token )
 		);
 
 		// Make sure to pause between GitHub-requests
@@ -204,16 +204,31 @@ function vipgoci_phpcs_github_fetch_url(
  * by GitHub on success.
  */
 function vipgoci_phpcs_github_fetch_commit_info(
-		$repo_owner, $repo_name, $commit_id, $github_access_token
+		$repo_owner, $repo_name, $commit_id, $github_token
 ) {
+	/* Check for cached version */
+	$cached_id = array(
+		__FUNCTION__, $repo_owner, $repo_name,
+		$commit_id, $github_token
+	);
+
+	$cached_data = vipgoci_cache( $cached_id );
+
+
 	vipgoci_log(
-		'Fetching commit info from GitHub',
+		'Fetching commit info from GitHub' .
+			( $cached_data ? ' (cached)' : '' ),
 		array(
 			'repo_owner' => $repo_owner,
 			'repo_name' => $repo_name,
 			'commit_id' => $commit_id,
 		)
 	);
+
+
+	if ( false !== $cached_data ) {
+		return $cached_data;
+	}
 
 	$github_url =
 		'https://api.github.com/' .
@@ -224,12 +239,19 @@ function vipgoci_phpcs_github_fetch_commit_info(
 		rawurlencode( $commit_id );
 
 	// FIXME: Detect when GitHub sent back an error
-	return json_decode(
+	$data = json_decode(
 		vipgoci_phpcs_github_fetch_url(
 			$github_url,
-			$github_access_token
+			$github_token
 		)
 	);
+
+	vipgoci_cache(
+		$cached_id,
+		$data
+	);
+
+	return $data;
 }
 
 
@@ -246,7 +268,7 @@ function vipgoci_phpcs_github_fetch_commit_info(
 function vipgoci_phpcs_github_fetch_committed_file(
 	$repo_owner,
 	$repo_name,
-	$github_access_token,
+	$github_token,
 	$commit_id,
 	$file_name,
 	$local_git_repo
@@ -382,8 +404,27 @@ function vipgoci_phpcs_github_fetch_committed_file(
 		$local_git_repo_failure = true;
 	}
 
+
+	/*
+	 * Fallback to GitHub.
+	 *
+	 * Check first for a cached copy of the
+	 * file -- if that does not exist, ask
+	 * GitHub for a copy and cache it.
+	 */
+
+	// Check for cached copy of the file
+	$cached_id = array(
+		__FUNCTION__, $repo_owner, $repo_name, $commit_id,
+		$file_name, $github_token
+	);
+
+	$cached_data = vipgoci_cache( $cached_id );
+
+
 	vipgoci_log(
-		'Fetching file-contents from GitHub',
+		'Fetching file-contents from GitHub' .
+			( $cached_data ? ' (cached)' : '' ),
 		array(
 			'repo_owner' => $repo_owner,
 			'repo_name' => $repo_name,
@@ -392,15 +433,24 @@ function vipgoci_phpcs_github_fetch_committed_file(
 		)
 	);
 
+	if ( false !== $cached_data ) {
+		return $cached_data;
+	}
+
+
 	// FIXME: Detect if GitHub returned with an error.
-	return vipgoci_phpcs_github_fetch_url(
+	$data = vipgoci_phpcs_github_fetch_url(
 		'https://raw.githubusercontent.com/' .
 		rawurlencode( $repo_owner ) .  '/' .
 		rawurlencode( $repo_name ) . '/' .
 		rawurlencode( $commit_id ) . '/' .
 		rawurlencode( $file_name ),
-		$github_access_token
+		$github_token
 	);
+
+	vipgoci_cache( $cached_id, $data );
+
+	return $data;
 }
 
 
@@ -418,14 +468,23 @@ function vipgoci_phpcs_github_pull_requests_comments_get(
 	$repo_name,
 	$commit_id,
 	$commit_made_at,
-	$github_access_token
+	$github_token
 ) {
 
-	$page = 0;
-	$prs_comments = array();
+	/*
+	 * Try to get comments from cache
+	 */
+	$cached_id = array(
+		__FUNCTION__, $repo_owner, $repo_name,
+		$commit_id, $commit_made_at, $github_token
+	);
+
+	$cached_data = vipgoci_cache( $cached_id );
 
 	vipgoci_log(
-		'Fetching Pull-Requests comments info from GitHub',
+		'Fetching Pull-Requests comments info from GitHub' .
+			( $cached_data ? ' (cached)' : '' ),
+
 		array(
 			'repo_owner' => $repo_owner,
 			'repo_name' => $repo_name,
@@ -433,6 +492,13 @@ function vipgoci_phpcs_github_pull_requests_comments_get(
 			'commit_made_at' => $commit_made_at,
 		)
 	);
+
+	if ( false !== $cached_data ) {
+		return $cached_data;
+	}
+
+	$page = 0;
+	$prs_comments = array();
 
 
 	/*
@@ -460,7 +526,7 @@ function vipgoci_phpcs_github_pull_requests_comments_get(
 		$prs_comments_tmp = json_decode(
 			vipgoci_phpcs_github_fetch_url(
 				$github_url,
-				$github_access_token
+				$github_token
 			)
 		);
 
@@ -498,6 +564,9 @@ function vipgoci_phpcs_github_pull_requests_comments_get(
 
 	} while ( count( $prs_comments_tmp ) >= 30 );
 
+
+	vipgoci_cache( $cached_id, $prs_comments );
+
 	return $prs_comments;
 }
 
@@ -510,7 +579,7 @@ function vipgoci_phpcs_github_pull_requests_comments_get(
 function vipgoci_github_review_submit(
 	$repo_owner,
 	$repo_name,
- 	$github_access_token,
+	$github_token,
 	$commit_id,
 	$results,
 	$dry_run
@@ -556,7 +625,7 @@ function vipgoci_github_review_submit(
 				as $commit_issue
 		) {
 			$commit_issues_rewritten[] = array(
-				'body' 		=>
+				'body'		=>
 					'**' .
 					ucfirst( strtolower(
 						$commit_issue['issue']['level']
@@ -694,7 +763,7 @@ function vipgoci_github_review_submit(
 			curl_setopt(
 				$ch,
 				CURLOPT_HTTPHEADER,
-				array( 'Authorization: token ' . $github_access_token )
+				array( 'Authorization: token ' . $github_token )
 			);
 
 			// Make sure to pause between GitHub-requests
@@ -793,19 +862,37 @@ function vipgoci_phpcs_github_prs_implicated(
 	$repo_owner,
 	$repo_name,
 	$commit_id,
-	$github_access_token
+	$github_token
 ) {
-	$prs_implicated = array();
-	$prs_maybe_implicated = array();
+
+	/*
+	 * Check for cached copy
+	 */
+
+	$cached_id = array(
+		__FUNCTION__, $repo_owner, $repo_name,
+		$commit_id, $github_token
+	);
+
+	$cached_data = vipgoci_cache( $cached_id );
 
 	vipgoci_log(
-		'Fetching all open Pull-Requests from GitHub',
+		'Fetching all open Pull-Requests from GitHub' .
+			( $cached_data ? ' (cached)' : '' ),
 		array(
 			'repo_owner' => $repo_owner,
 			'repo_name' => $repo_name,
 			'commit_id' => $commit_id,
 		)
 	);
+
+	if ( false !== $cached_data ) {
+		return $cached_data;
+	}
+
+
+	$prs_implicated = array();
+	$prs_maybe_implicated = array();
 
 
 	$page = 0;
@@ -830,7 +917,7 @@ function vipgoci_phpcs_github_prs_implicated(
 		$prs_implicated_unfiltered = json_decode(
 			vipgoci_phpcs_github_fetch_url(
 				$github_url,
-				$github_access_token
+				$github_token
 			)
 		);
 
@@ -868,7 +955,7 @@ function vipgoci_phpcs_github_prs_implicated(
 				$repo_owner,
 				$repo_name,
 				$pr_number_tmp,
-				$github_access_token
+				$github_token
 			),
 			true
 		) ) {
@@ -886,7 +973,7 @@ function vipgoci_phpcs_github_prs_implicated(
 				json_decode(
 					vipgoci_phpcs_github_fetch_url(
 						$github_url,
-						$github_access_token
+						$github_token
 					)
 				);
 		}
@@ -908,6 +995,8 @@ function vipgoci_phpcs_github_prs_implicated(
 		}
 	}
 
+	vipgoci_cache( $cached_id, $prs_implicated );
+
 	return $prs_implicated;
 }
 
@@ -920,14 +1009,25 @@ function vipgoci_phpcs_github_prs_commits_list(
 	$repo_owner,
 	$repo_name,
 	$pr_number,
-	$github_access_token
+	$github_token
 ) {
-	$pr_commits = array();
+
+	/*
+	 * Check for cached copy
+	 */
+	$cached_id = array(
+		__FUNCTION__, $repo_owner, $repo_name,
+		$pr_number, $github_token
+	);
+
+	$cached_data = vipgoci_cache( $cached_id );
+
 
 	vipgoci_log(
 		'Fetching information about all commits made' .
 			' to Pull-Request #' .
-			(int) $pr_number . ' from GitHub',
+			(int) $pr_number . ' from GitHub' .
+			( $cached_data ? ' (cached)' : '' ),
 
 		array(
 			'repo_owner' => $repo_owner,
@@ -935,6 +1035,14 @@ function vipgoci_phpcs_github_prs_commits_list(
 			'pr_number' => $pr_number,
 		)
 	);
+
+	if ( false !== $cached_data ) {
+		return $cached_data;
+	}
+
+
+	$pr_commits = array();
+
 
 	$page = 0;
 
@@ -954,7 +1062,7 @@ function vipgoci_phpcs_github_prs_commits_list(
 		$pr_commits_raw = json_decode(
 			vipgoci_phpcs_github_fetch_url(
 				$github_url,
-				$github_access_token
+				$github_token
 			)
 		);
 
@@ -965,22 +1073,34 @@ function vipgoci_phpcs_github_prs_commits_list(
 		$page++;
 	} while ( count( $pr_commits_raw ) >= 30 );
 
+	vipgoci_cache( $cached_id, $pr_commits );
+
 	return $pr_commits;
 }
 
 function vipgoci_github_diffs_fetch(
 	$repo_owner,
 	$repo_name,
-	$github_access_token,
+	$github_token,
 	$commit_id_a,
 	$commit_id_b
 ) {
 
-	$diffs = array();
+	/*
+	 * Check for a cached copy of the diffs
+	 */
+	$cached_id = array(
+		__FUNCTION__, $repo_owner, $repo_name,
+		$github_token, $commit_id_a, $commit_id_b
+	);
+
+	$cached_data = vipgoci_cache( $cached_id );
+
 
 	vipgoci_log(
 		'Fetching diffs between two commits ' .
-			'from GitHub',
+			'from GitHub' .
+			( $cached_data ? ' (cached)' : '' ),
 
 		array(
 			'repo_owner' => $repo_owner,
@@ -989,6 +1109,13 @@ function vipgoci_github_diffs_fetch(
 			'commit_id_b' => $commit_id_b,
 		)
 	);
+
+	if ( false !== $cached_data ) {
+		return $cached_data;
+	}
+
+
+	$diffs = array();
 
 	$github_url =
 		'https://api.github.com/' .
@@ -1004,7 +1131,7 @@ function vipgoci_github_diffs_fetch(
 	$resp_raw = json_decode(
 		vipgoci_phpcs_github_fetch_url(
 			$github_url,
-			$github_access_token
+			$github_token
 		)
 	);
 
@@ -1015,6 +1142,8 @@ function vipgoci_github_diffs_fetch(
 
 		$diffs[ $file_item->filename ] = $file_item->patch;
 	}
+
+	vipgoci_cache( $cached_id, $diffs );
 
 	return $diffs;
 }
