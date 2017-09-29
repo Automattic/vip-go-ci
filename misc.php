@@ -27,10 +27,38 @@ function vipgoci_log( $str, $debug_data ) {
  * were affected by the patch.
  */
 
-function vipgoci_patch_changed_lines( $patch ) {
-	$lines_changed = array();
+function vipgoci_patch_changed_lines(
+	$repo_owner,
+	$repo_name,
+	$github_token,
+	$pr_base_sha,
+	$commit_id,
+	$file_name
+) {
 
-	$lines_arr = explode( "\n", $patch );
+	/*
+	 * Fetch patch for all files of the Pull-Request
+	 */
+	$patch_arr = vipgoci_github_diffs_fetch(
+		$repo_owner,
+		$repo_name,
+		$github_token,
+		$pr_base_sha,
+		$commit_id
+	);
+
+
+	/*
+	 * Get patch for the relevant file
+	 * our caller is interested in
+	 */
+
+	$lines_arr = explode(
+		"\n",
+		$patch_arr[ $file_name ]
+	);
+
+	$lines_changed = array();
 
 	$i = 1;
 
@@ -68,6 +96,35 @@ function vipgoci_patch_changed_lines( $patch ) {
 	}
 
 	return $lines_changed;
+}
+
+
+/*
+ * Filter out any issues in the code that were not
+ * touched up on by the patch -- i.e., any issues
+ * that existed prior to the change.
+ */
+function vipgoci_issues_filter_irrellevant(
+	$file_issues_arr,
+	$file_changed_lines
+) {
+	foreach (
+		$file_issues_arr as
+			$file_issue_line => $file_issue_val
+	) {
+		if ( ! in_array(
+			$file_issue_line,
+			$file_changed_lines
+		) ) {
+			unset(
+				$file_issues_arr[
+					$file_issue_line
+				]
+			);
+		}
+	}
+
+	return $file_issues_arr;
 }
 
 

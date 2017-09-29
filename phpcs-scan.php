@@ -133,7 +133,6 @@ function vipgoci_phpcs_scan_commit(
 	$commit_id  = $options['commit'];
 	$github_token = $options['token'];
 
-	$prs_diffs = array();
 
 	vipgoci_log(
 		'About to PHPCS-scan repository',
@@ -149,7 +148,14 @@ function vipgoci_phpcs_scan_commit(
 		$repo_owner,
 		$repo_name,
 		$commit_id,
-		$github_token
+		$github_token,
+		array(
+			'file_extensions'
+				=> array( 'php' ),
+
+			'status'
+				=> array( 'added', 'modified' ),
+		)
 	);
 
 
@@ -178,21 +184,6 @@ function vipgoci_phpcs_scan_commit(
 
 
 	foreach ( $prs_implicated as $pr_item ) {
-		/*
-		 * Fetch diffs for every file committed,
-		 * for every Pull-Request, using head of
-		 * Pull-Request as a base for diff.
-		 */
-
-		$prs_diffs[ $pr_item->number ] =
-			vipgoci_github_diffs_fetch(
-				$repo_owner,
-				$repo_name,
-				$github_token,
-				$pr_item->base->sha,
-				$commit_id
-			);
-
 		/*
 		 * Initialize array for stats and
 		 * results of scanning, if needed.
@@ -231,48 +222,6 @@ function vipgoci_phpcs_scan_commit(
 	 * the commit.
 	 */
 	foreach( $commit_info->files as $file_info ) {
-		$file_info_extension = pathinfo(
-			$file_info->filename,
-			PATHINFO_EXTENSION
-		);
-
-		/*
-		 * If the file is not a PHP-file, skip
-		 */
-
-		if ( 'php' !== strtolower( $file_info_extension ) ) {
-			vipgoci_log(
-				'Skipping file that does not seem ' .
-					'to be a PHP-file',
-
-				array(
-					'filename' => $file_info->filename
-				)
-			);
-
-			continue;
-		}
-
-		/*
-		 * If the file was neither added nor modified, skip
-		 */
-		if (
-			( 'added' !== $file_info->status ) &&
-			( 'modified' !== $file_info->status )
-		) {
-			vipgoci_log(
-				'Skipping file that was neither ' .
-					'added nor modified',
-
-				array(
-					'filename'	=> $file_info->filename,
-					'status'	=> $file_info->status,
-				)
-			);
-
-			continue;
-		}
-
 		$file_contents = vipgoci_phpcs_github_fetch_committed_file(
 			$repo_owner,
 			$repo_name,
@@ -282,34 +231,10 @@ function vipgoci_phpcs_scan_commit(
 			$options['local-git-repo']
 		);
 
-		/*
-		 * Create temporary directory to save
-		 * fetched files into
-		 */
-		$temp_file_name = $temp_file_save_status = tempnam(
-			sys_get_temp_dir(),
-			'phpcs-scan-'
+		$temp_file_name = vipgoci_save_temp_file(
+			'phpcs-scan-',
+			$file_contents
 		);
-
-		if ( false !== $temp_file_name ) {
-			$temp_file_save_status = file_put_contents(
-				$temp_file_name,
-				$file_contents
-			);
-		}
-
-		// Detect possible errors when saving the temporary file
-		if ( false === $temp_file_save_status ) {
-			vipgoci_log(
-				'Could not save file to disk, got ' .
-					'an error. Exiting...',
-				array(
-					'temp_file_name' => $temp_file_name,
-				)
-			);
-
-			exit( 254 );
-		}
 
 		vipgoci_log(
 			'About to PHPCS-scan file',
@@ -360,7 +285,12 @@ function vipgoci_phpcs_scan_commit(
 
 		foreach ( $prs_implicated as $pr_item ) {
 			$file_changed_lines = vipgoci_patch_changed_lines(
-				$prs_diffs[ $pr_item->number ][ $file_info->filename ]
+				$repo_owner,
+				$repo_name,
+				$github_token,
+				$pr_item->base->sha,
+				$commit_id,
+				$file_info->filename
 			);
 
 			/*
@@ -370,23 +300,12 @@ function vipgoci_phpcs_scan_commit(
 			 */
 			$file_issues_arr = $file_issues_arr_master;
 
-			foreach (
-				$file_issues_arr as
-					$file_issue_line => $file_issue_val
-			) {
-				if ( ! in_array(
-					$file_issue_line,
-					$file_changed_lines
-				) ) {
-					unset(
-						$file_issues_arr[
-							$file_issue_line
-						]
-					);
-				}
-			}
+			$file_issues_arr = vipgoci_issues_filter_irrellevant(
+				$file_issues_arr,
+				$file_changed_lines
+			);
 
-			$file_changed_line_no_to_file_line_no = @array_flip(
+			$file_relevant_lines = @array_flip(
 				$file_changed_lines
 			);
 
@@ -418,7 +337,7 @@ function vipgoci_phpcs_scan_commit(
 					if (
 						vipgoci_github_comment_match(
 							$file_info->filename,
-							$file_changed_line_no_to_file_line_no[ $file_issue_line ],
+							$file_relevant_lines[ $file_issue_line ],
 							$file_issue_val_item['message'],
 							$prs_comments
 						)
@@ -450,9 +369,17 @@ function vipgoci_phpcs_scan_commit(
 						$pr_item->number
 					][] = array(
 						'type'		=> 'phpcs',
-						'file_name'	=> $file_info->filename,
-						'file_line'	=> $file_changed_line_no_to_file_line_no[ $file_issue_line ],
-						'issue'		=> $file_issue_val_item,
+
+						'file_name'	=>
+							$file_info->filename,
+
+						'file_line'	=>
+							$file_relevant_lines[
+								$file_issue_line
+							],
+
+						'issue'		=>
+							$file_issue_val_item,
 					);
 
 					/*

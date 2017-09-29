@@ -243,7 +243,6 @@ function vipgoci_phpcs_github_fetch_commit_info(
 		'commits/' .
 		rawurlencode( $commit_id );
 
-	// FIXME: Detect when GitHub sent back an error
 	$data = json_decode(
 		vipgoci_phpcs_github_fetch_url(
 			$github_url,
@@ -251,6 +250,21 @@ function vipgoci_phpcs_github_fetch_commit_info(
 		)
 	);
 
+
+	if (
+		( isset( $data->message ) ) &&
+		( 'Not Found' === $data->message )
+	) {
+		vipgoci_log(
+			'Unable to fetch commit-info from GitHub, the ' .
+				'commit does not exist.',
+			array(
+				'error_data' => $data
+			)
+		);
+
+		exit( 254 );
+	}
 
 	/*
 	 * Filter out files based on
