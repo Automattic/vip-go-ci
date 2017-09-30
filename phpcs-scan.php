@@ -5,7 +5,11 @@
  * appropriate standards. Return the results.
  */
 
-function vipgoci_phpcs_do_scan( $filename_tmp, $real_name ) {
+function vipgoci_phpcs_do_scan(
+	$filename_tmp,
+	$real_name,
+	$phpcs_path
+) {
 	/*
 	 * Run PHPCS from the shell, making sure we escape everything.
 	 *
@@ -20,7 +24,7 @@ function vipgoci_phpcs_do_scan( $filename_tmp, $real_name ) {
 		'cat %s | %s %s --standard=%s --report-width=%s --stdin-path=%s -p',
 		escapeshellarg( $filename_tmp ),
 		escapeshellcmd( 'php' ),
-		'~/' .  escapeshellcmd( 'phpcs-scan/phpcs/scripts/phpcs' ),
+		escapeshellcmd( $phpcs_path ),
 		escapeshellarg( 'WordPressVIPminimum' ),
 		escapeshellarg( 500 ),
 		escapeshellarg( $real_name )
@@ -250,7 +254,8 @@ function vipgoci_phpcs_scan_commit(
 
 		$file_issues_str = vipgoci_phpcs_do_scan(
 			$temp_file_name,
-			$file_info->filename
+			$file_info->filename,
+			$options['phpcs-path']
 		);
 
 		$file_issues_arr_master = vipgoci_phpcs_parse_results(
