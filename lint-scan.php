@@ -1,6 +1,35 @@
 <?php
 
 /*
+ * Execute PHP linter, get results and
+ * return them to caller as an array of
+ * lines.
+ */
+
+function vipgoci_lint_do_scan(
+	$temp_file_name
+) {
+	/*
+	 * Prepare command to use, make sure
+	 * to grab all the output, also
+	 * the output to STDERR.
+	 */
+	$cmd = sprintf(
+		'( php -l %s 2>&1 )',
+		escapeshellarg( $temp_file_name )
+	);
+
+
+	$file_issues_arr = array();
+
+	// Execute linter
+	exec( $cmd, $file_issues_arr );
+
+	return $file_issues_arr;
+}
+
+
+/*
  * Parse array of results, extract the problems
  * and return as a well-structed array.
  */
@@ -46,33 +75,6 @@ function vipgoci_lint_get_issues(
 	}
 
 	return $file_issues_arr_new;
-}
-
-/*
- * Execute linter, get results and
- * return them to caller.
- */
-
-function vipgoci_lint_do_scan(
-	$temp_file_name
-) {
-	/*
-	 * Prepare command to use, make sure
-	 * to grab all the output, also
-	 * the output to STDERR.
-	 */
-	$cmd = sprintf(
-		'( php -l %s 2>&1 )',
-		escapeshellarg( $temp_file_name )
-	);
-
-
-	$file_issues_arr = array();
-
-	// Execute linter
-	exec( $cmd, $file_issues_arr );
-
-	return $file_issues_arr;
 }
 
 
@@ -174,7 +176,7 @@ function vipgoci_lint_scan_commit(
 			)
 		);
 
-		$file_issues_arr = vipgoci_lint_do_scan(
+		$file_issues_arr_raw = vipgoci_lint_do_scan(
 			$temp_file_name
 		);
 
@@ -189,9 +191,11 @@ function vipgoci_lint_scan_commit(
 		$file_issues_arr = vipgoci_lint_get_issues(
 			$pr_item->number,
 			$file_info->filename,
-			$file_issues_arr
+			$file_issues_arr_raw
 		);
 
+		/* Get rid of the raw version of issues */
+		unset( $file_issues_arr_raw );
 
 		// If there are no new issues, just leave it at that
 		if ( empty( $file_issues_arr ) ) {
@@ -221,10 +225,8 @@ function vipgoci_lint_scan_commit(
 			 * out and not commented on by us.
 			 */
 
-			$file_issues_arr = $file_issues_arr_master;
-
 			$file_issues_arr = vipgoci_issues_filter_irrellevant(
-				$file_issues_arr,
+				$file_issues_arr_master,
 				$file_changed_lines
 			);
 
@@ -251,6 +253,8 @@ function vipgoci_lint_scan_commit(
 					$file_issue_values as
 						$file_issue_val_item
 				) {
+					// FIXME: Avoid making the same comment twice
+					// just as we do with PHPCS
 
 					$commit_issues_submit[
 						$pr_item->number
