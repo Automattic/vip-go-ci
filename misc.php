@@ -210,3 +210,21 @@ function vipgoci_save_temp_file( $file_name_prefix, $file_contents ) {
 	return $temp_file_name;
 }
 
+
+/*
+ * Return ASCII-art for GitHub, which will then
+ * be turned into something more fancy. This is
+ * intended to be called when preparing messages/comments
+ * to be submitted to GitHub.
+ */
+function vipgoci_github_labels( $text_string ) {
+	switch( strtolower( $text_string ) ) {
+		case 'warning':
+			return ':exclamation:';
+
+		case 'error':
+			return ':no_entry_sign:';
+	}
+
+	return '';
+}

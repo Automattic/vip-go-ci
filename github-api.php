@@ -727,6 +727,10 @@ function vipgoci_github_review_submit(
 		) {
 			$commit_issues_rewritten[] = array(
 				'body'		=>
+					vipgoci_github_labels(
+						$commit_issue['issue']['level']
+					) . ' ' .
+
 					'**' .
 					ucfirst( strtolower(
 						$commit_issue['issue']['level']
@@ -795,7 +799,7 @@ function vipgoci_github_review_submit(
 
 
 			$github_postfields['body'] .=
-				$stats_type .
+				'**' . $stats_type . '**' .
 				" scanning turned up:\n\r";
 
 			foreach (
@@ -808,6 +812,10 @@ function vipgoci_github_review_submit(
 						$commit_issue_stat_value
 			) {
 				$github_postfields['body'] .=
+					vipgoci_github_labels(
+						$commit_issue_stat_key
+					) . ' ' .
+
 					$commit_issue_stat_value . ' ' .
 					$commit_issue_stat_key . '(s) ' .
 					"\n\r";
