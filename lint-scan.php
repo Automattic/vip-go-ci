@@ -37,6 +37,7 @@ function vipgoci_lint_do_scan(
 function vipgoci_lint_get_issues(
 	$pr_number,
 	$file_name,
+	$temp_file_name,
 	$file_issues_arr
 ) {
 
@@ -74,29 +75,34 @@ function vipgoci_lint_get_issues(
 				$message
 			);
 
+
+			/*
+			 * Figure out on what line the problem is
+			 */
 			$pos = strpos(
 				$message,
 				' on line '
-			) + strlen(' on line ');
+			) + strlen( ' on line ' );
 
-			$pos2 = strpos(
-				$message,
-				' ',
-				$pos
-			);
 
 			$file_line = substr(
 				$message,
 				$pos,
-				$pos2
+				strlen( $message ) - $pos
 			);
 
 			unset( $pos );
 			unset( $pos2 );
 
-			$pos3 = strpos( $message, ' in ' . $file_name );
+
+			/*
+			 * Get rid of name of the file, and
+			 * the rest of the message, too.
+			 */
+			$pos3 = strpos( $message, ' in ' . $temp_file_name );
 
 			$message = substr( $message, 0, $pos3 );
+			$message = ltrim( rtrim( $message ) );
 
 			$file_issues_arr_new[ $file_line ][] = array(
 				'message' => $message,
@@ -211,9 +217,9 @@ function vipgoci_lint_scan_commit(
 			$temp_file_name
 		);
 
-
 		/* Get rid of temporary file */
-		unset( $temp_file_name );
+		unlink( $temp_file_name );
+
 
 		/*
 		 * Process the results, get them in an array format
@@ -222,6 +228,7 @@ function vipgoci_lint_scan_commit(
 		$file_issues_arr = vipgoci_lint_get_issues(
 			$pr_item->number,
 			$file_info->filename,
+			$temp_file_name,
 			$file_issues_arr_raw
 		);
 
