@@ -43,9 +43,12 @@ function vipgoci_lint_get_issues(
 	$file_issues_arr_new = array();
 
 	// Loop through everything we got from the command
-	foreach( $file_issues_arr as $index => $line ) {
+	foreach( $file_issues_arr as $index => $message ) {
 		if (
-			( 0 === strpos( $line, 'No syntax errors detected' ) )
+			( 0 === strpos(
+				$message,
+				'No syntax errors detected'
+			) )
 		) {
 			// Skip non-errors we do not care about
 			continue;
@@ -56,19 +59,47 @@ function vipgoci_lint_get_issues(
 		 * Catch any syntax-error problems
 		 */
 
-		$pos = strpos( $line, ' on line ' );
+		if (
+			( false !== strpos( $message, ' on line ' ) ) &&
+			( false !== strpos( $message, 'PHP Parse error:' ) )
+		) {
+			/*
+			 * Get rid of 'PHP Parse...' which is not helpful
+			 * for users when seen on GitHub
+			 */
 
-		if ( false !== $pos ) {
-			$pos2 = strpos( $line, ' ', $pos );
+			$message = str_replace(
+				'PHP Parse error:',
+				'',
+				$message
+			);
+
+			$pos = strpos(
+				$message,
+				' on line '
+			) + strlen(' on line ');
+
+			$pos2 = strpos(
+				$message,
+				' ',
+				$pos
+			);
 
 			$file_line = substr(
-				$line,
-				$pos + strlen(' on line '),
+				$message,
+				$pos,
 				$pos2
 			);
 
+			unset( $pos );
+			unset( $pos2 );
+
+			$pos3 = strpos( $message, ' in ' . $file_name );
+
+			$message = substr( $message, 0, $pos3 );
+
 			$file_issues_arr_new[ $file_line ][] = array(
-				'message' => $line,
+				'message' => $message,
 				'level' => 'ERROR'
 			);
 		}
@@ -156,7 +187,7 @@ function vipgoci_lint_scan_commit(
                 );
 
 		$temp_file_name = vipgoci_save_temp_file(
-			'phpcs-scan-',
+			'lint-scan-',
 			$file_contents
 		);
 
