@@ -757,11 +757,13 @@ function vipgoci_github_review_submit(
 		 */
 
 		if (
-			( ! empty( $results['stats'][ 'lint' ] ) ) &&
-			( empty( $results['stats'][ 'lint' ]['error'] ) )
+			( ! empty(
+				$results['stats'][ 'lint' ][ $pr_number ]['error']
+			) )
 			||
-			( ! empty( $results['stats'][ 'phpcs' ] ) ) &&
-			( empty( $results['stats'][ 'phpcs' ]['error'] ) )
+			( ! empty(
+				$results['stats'][ 'phpcs' ][ $pr_number ]['error']
+			) )
 		) {
 			$github_postfields['event'] = 'REQUEST_CHANGES';
 		}
