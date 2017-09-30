@@ -606,7 +606,8 @@ function vipgoci_phpcs_github_pull_requests_comments_get(
 	 *
 	 * Asking for all the pages from GitHub
 	 * might get expensive as we process more
-	 * commits/hour -- maybe cache this in memcache.
+	 * commits/hour -- maybe cache this in memcache,
+	 * making it possible to share data between processes.
 	 */
 
 	do {
@@ -811,6 +812,8 @@ function vipgoci_github_review_submit(
 					$commit_issue_stat_key . '(s) ' .
 					"\n\r";
 			}
+
+			$github_postfields['body'] .= "***\n\r";
 		}
 
 
