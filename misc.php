@@ -25,6 +25,14 @@ function vipgoci_log( $str, $debug_data ) {
  * Look at a patch given to use by our caller,
  * and figure out what lines of the target-file
  * were affected by the patch.
+ *
+ * This function will return an associative
+ * array, were the keys represent every line
+ * in the patch (except for the "@@" lines),
+ * while the values represent line in the
+ * raw committed line. Some keys might point
+ * to empty values, in which case there is no
+ * relation between the two.
  */
 
 function vipgoci_patch_changed_lines(
@@ -47,12 +55,11 @@ function vipgoci_patch_changed_lines(
 		$commit_id
 	);
 
-
 	/*
 	 * Get patch for the relevant file
 	 * our caller is interested in
 	 */
-
+	// FIXME: Detect if file is not part of the patch
 	$lines_arr = explode(
 		"\n",
 		$patch_arr[ $file_name ]
@@ -88,7 +95,9 @@ function vipgoci_patch_changed_lines(
 
 			else if (
 				( $line[0] == '+' ) ||
-				( $line[0] == ' ')
+				( $line[0] == ' ' ) ||	// space
+				( $line[0] == '	' ) ||	// tab
+				( $line[0] == '\\' )	// a single \
 			) {
 				$lines_changed[] = $i++;
 			}
@@ -134,7 +143,7 @@ function vipgoci_issues_filter_irrellevant(
  * add a specific item to cache.
  *
  * The data is stored in an associative array, with
- * key being an array (or anything else) -- $cache_id_arr --, 
+ * key being an array (or anything else) -- $cache_id_arr --,
  * and used to identify the data up on retrieval.
  */
 
