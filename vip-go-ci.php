@@ -158,6 +158,13 @@ function vipgoci_run() {
 	 * Run all checks and store the results in an array
 	 */
 
+	vipgoci_log(
+		'Starting up...',
+		array(
+			'options' => $options
+		)
+	);
+
 	$results = array(
 		'issues'	=> array(),
 
