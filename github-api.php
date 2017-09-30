@@ -11,7 +11,7 @@ define( 'VIPGOCI_PHPCS_CLIENT_ID', 'automattic-github-review-client' );
  * The difference is that the '$ch' argument is non-null
  * when called as a callback.
  */
-function vipgoci_phpcs_curl_headers( $ch, $header ) {
+function vipgoci_curl_headers( $ch, $header ) {
 	static $resp_headers = array();
 
 	if ( null === $ch ) {
@@ -89,7 +89,7 @@ function vipgoci_phpcs_curl_headers( $ch, $header ) {
  * https://developer.github.com/v3/guides/best-practices-for-integrators/#dealing-with-abuse-rate-limits
  */
 
-function vipgoci_phpcs_github_wait() {
+function vipgoci_github_wait() {
 	static $last_request_time = null;
 
 	if ( null !== $last_request_time ) {
@@ -113,7 +113,7 @@ function vipgoci_phpcs_github_wait() {
  * Will return the raw-data returned by GitHub,
  * or halt execution on repeated errors.
  */
-function vipgoci_phpcs_github_fetch_url(
+function vipgoci_github_fetch_url(
 	$github_url, $github_token
 ) {
 
@@ -143,7 +143,7 @@ function vipgoci_phpcs_github_fetch_url(
 		);
 
 		// Make sure to pause between GitHub-requests
-		vipgoci_phpcs_github_wait();
+		vipgoci_github_wait();
 
 		$resp_data = curl_exec( $ch );
 
@@ -203,7 +203,7 @@ function vipgoci_phpcs_github_fetch_url(
  * Will return the JSON-decoded data provided
  * by GitHub on success.
  */
-function vipgoci_phpcs_github_fetch_commit_info(
+function vipgoci_github_fetch_commit_info(
 		$repo_owner,
 		$repo_name,
 		$commit_id,
@@ -244,7 +244,7 @@ function vipgoci_phpcs_github_fetch_commit_info(
 		rawurlencode( $commit_id );
 
 	$data = json_decode(
-		vipgoci_phpcs_github_fetch_url(
+		vipgoci_github_fetch_url(
 			$github_url,
 			$github_token
 		)
@@ -365,7 +365,7 @@ function vipgoci_phpcs_github_fetch_commit_info(
  * reverting to GitHub.
  */
 
-function vipgoci_phpcs_github_fetch_committed_file(
+function vipgoci_github_fetch_committed_file(
 	$repo_owner,
 	$repo_name,
 	$github_token,
@@ -539,7 +539,7 @@ function vipgoci_phpcs_github_fetch_committed_file(
 
 
 	// FIXME: Detect if GitHub returned with an error.
-	$data = vipgoci_phpcs_github_fetch_url(
+	$data = vipgoci_github_fetch_url(
 		'https://raw.githubusercontent.com/' .
 		rawurlencode( $repo_owner ) .  '/' .
 		rawurlencode( $repo_name ) . '/' .
@@ -563,7 +563,7 @@ function vipgoci_phpcs_github_fetch_committed_file(
  * with file-name and file-line number as keys. Will
  * return false on an error.
  */
-function vipgoci_phpcs_github_pull_requests_comments_get(
+function vipgoci_github_pull_requests_comments_get(
 	$repo_owner,
 	$repo_name,
 	$commit_id,
@@ -625,7 +625,7 @@ function vipgoci_phpcs_github_pull_requests_comments_get(
 
 		// FIXME: Detect when GitHub returned with an error
 		$prs_comments_tmp = json_decode(
-			vipgoci_phpcs_github_fetch_url(
+			vipgoci_github_fetch_url(
 				$github_url,
 				$github_token
 			)
@@ -877,7 +877,7 @@ function vipgoci_github_review_submit(
 			curl_setopt(
 				$ch,
 				CURLOPT_HEADERFUNCTION,
-				'vipgoci_phpcs_curl_headers'
+				'vipgoci_curl_headers'
 			);
 
 			curl_setopt(
@@ -887,12 +887,12 @@ function vipgoci_github_review_submit(
 			);
 
 			// Make sure to pause between GitHub-requests
-			vipgoci_phpcs_github_wait();
+			vipgoci_github_wait();
 
 
 			$resp_data = curl_exec( $ch );
 
-			$resp_headers = vipgoci_phpcs_curl_headers(
+			$resp_headers = vipgoci_curl_headers(
 				null,
 				null
 			);
@@ -984,7 +984,7 @@ function vipgoci_github_review_submit(
  * and the commit is a part of.
  */
 
-function vipgoci_phpcs_github_prs_implicated(
+function vipgoci_github_prs_implicated(
 	$repo_owner,
 	$repo_name,
 	$commit_id,
@@ -1041,7 +1041,7 @@ function vipgoci_phpcs_github_prs_implicated(
 
 		// FIXME: Detect when GitHub sent back an error
 		$prs_implicated_unfiltered = json_decode(
-			vipgoci_phpcs_github_fetch_url(
+			vipgoci_github_fetch_url(
 				$github_url,
 				$github_token
 			)
@@ -1077,7 +1077,7 @@ function vipgoci_phpcs_github_prs_implicated(
 	foreach ( $prs_maybe_implicated as $pr_number_tmp ) {
 		if ( in_array(
 			$commit_id,
-			vipgoci_phpcs_github_prs_commits_list(
+			vipgoci_github_prs_commits_list(
 				$repo_owner,
 				$repo_name,
 				$pr_number_tmp,
@@ -1097,7 +1097,7 @@ function vipgoci_phpcs_github_prs_implicated(
 
 			$prs_implicated[ $pr_number_tmp ] =
 				json_decode(
-					vipgoci_phpcs_github_fetch_url(
+					vipgoci_github_fetch_url(
 						$github_url,
 						$github_token
 					)
@@ -1131,7 +1131,7 @@ function vipgoci_phpcs_github_prs_implicated(
  * Get all commits that are a part of a Pull-Request.
  */
 
-function vipgoci_phpcs_github_prs_commits_list(
+function vipgoci_github_prs_commits_list(
 	$repo_owner,
 	$repo_name,
 	$pr_number,
@@ -1186,7 +1186,7 @@ function vipgoci_phpcs_github_prs_commits_list(
 
 		// FIXME: Detect when GitHub sent back an error
 		$pr_commits_raw = json_decode(
-			vipgoci_phpcs_github_fetch_url(
+			vipgoci_github_fetch_url(
 				$github_url,
 				$github_token
 			)
@@ -1255,7 +1255,7 @@ function vipgoci_github_diffs_fetch(
 
 	// FIXME: Error-handling
 	$resp_raw = json_decode(
-		vipgoci_phpcs_github_fetch_url(
+		vipgoci_github_fetch_url(
 			$github_url,
 			$github_token
 		)

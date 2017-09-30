@@ -144,7 +144,7 @@ function vipgoci_phpcs_scan_commit(
 		)
 	);
 
-	$commit_info = vipgoci_phpcs_github_fetch_commit_info(
+	$commit_info = vipgoci_github_fetch_commit_info(
 		$repo_owner,
 		$repo_name,
 		$commit_id,
@@ -159,7 +159,7 @@ function vipgoci_phpcs_scan_commit(
 	);
 
 
-	$prs_implicated = vipgoci_phpcs_github_prs_implicated(
+	$prs_implicated = vipgoci_github_prs_implicated(
 		$repo_owner,
 		$repo_name,
 		$commit_id,
@@ -208,7 +208,7 @@ function vipgoci_phpcs_scan_commit(
 	 * Fetch all comments made in relation to that commit
 	 * and associated with any Pull-Requests that are open.
 	 */
-	$prs_comments = vipgoci_phpcs_github_pull_requests_comments_get(
+	$prs_comments = vipgoci_github_pull_requests_comments_get(
 		$repo_owner,
 		$repo_name,
 		$commit_id,
@@ -222,7 +222,7 @@ function vipgoci_phpcs_scan_commit(
 	 * the commit.
 	 */
 	foreach( $commit_info->files as $file_info ) {
-		$file_contents = vipgoci_phpcs_github_fetch_committed_file(
+		$file_contents = vipgoci_github_fetch_committed_file(
 			$repo_owner,
 			$repo_name,
 			$github_token,
