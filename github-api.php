@@ -933,7 +933,13 @@ function vipgoci_github_review_submit(
 						'was submitted too quickly ' .
 						'after a previous comment' )
 				) {
-					$retry_req = true;
+					/*
+					 * These messages are due to the
+					 * submission being categorized
+					 * as a spam by GitHub -- no good
+					 * reason to retry, really.
+					 */
+					$retry_req = false;
 					$retry_sleep = 20;
 				}
 
