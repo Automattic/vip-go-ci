@@ -15,7 +15,7 @@ require_once( __DIR__ . '/lint-scan.php' );
  * to a boolean-type, and finally set it in $options.
  */
 
-function vipgoci_parameter_check_bool(
+function vipgoci_option_bool_handle(
 	&$options,
 	$parameter_name,
 	$default_value
@@ -45,6 +45,46 @@ function vipgoci_parameter_check_bool(
 	else {
 		$options[ $parameter_name ] = true;
 	}
+}
+
+
+/*
+ * Determine exit status.
+ *
+ * If any 'error'-type issues were submitted to
+ * GitHub we announce a failure to our parent-process
+ * by returning with a non-zero exit-code.
+ *
+ * If we only submitted warnings, we do not announce failure.
+ */
+
+function vipgoci_exit_status( $results ) {
+	foreach (
+		array_keys(
+			$results['stats']
+		)
+		as $stats_type
+	) {
+		foreach (
+			array_keys(
+				$results['stats'][ $stats_type ]
+			)
+			as $pr_number
+		) {
+			if (
+				0 !== $results['stats']
+					[ $stats_type ]
+					[ $pr_number ]
+					['error']
+			) {
+				// Some errors were found, return non-zero
+				return 250;
+			}
+		}
+
+	}
+
+	return 0;
 }
 
 
@@ -134,11 +174,11 @@ function vipgoci_run() {
 	 * Handle boolean parameters parameter
 	 */
 
-	vipgoci_parameter_check_bool( $options, 'dry-run', 'false' );
+	vipgoci_option_bool_handle( $options, 'dry-run', 'false' );
 
-	vipgoci_parameter_check_bool( $options, 'phpcs', 'true' );
+	vipgoci_option_bool_handle( $options, 'phpcs', 'true' );
 
-	vipgoci_parameter_check_bool( $options, 'lint', 'true' );
+	vipgoci_option_bool_handle( $options, 'lint', 'true' );
 
 
 	if (
@@ -217,24 +257,10 @@ function vipgoci_run() {
 		)
 	);
 
-	/*
-	 * If any 'error'-type issues  were submitted to
-	 * GitHub we announce a failure to our parent-process
-	 * by returning with a non-zero exit-code.
-	 *
-	 * If we only submitted warnings, we do not announce failure.
-	 */
 
-	if (
-		( empty( $results['phpcs']['error'] ) ) &&
-		( empty( $results['lint']['error'] ) )
-	) {
-		return 0;
-	}
-
-	else {
-		return 250;
-	}
+	return vipgoci_exit_status(
+		$results
+	);
 }
 
 $ret = vipgoci_run();
