@@ -781,6 +781,14 @@ function vipgoci_github_review_submit(
 				$stats_type
 		) {
 			/*
+			 * Add page-breaking, if needed.
+			 */
+			if ( ! empty( $github_postfields['body'] ) ) {
+				$github_postfields['body'] .= '***' . "\n\r";
+			}
+
+
+			/*
 			 * Check if this type of scanning
 			 * was skipped, and if so, note it.
 			 */
@@ -791,7 +799,8 @@ function vipgoci_github_review_submit(
 					[ strtolower( $stats_type ) ]
 			) ) {
 				$github_postfields['body'] .=
-					$stats_type . "-scanning skipped\n\r";
+					'**' . $stats_type . '**' .
+						"-scanning skipped\n\r";
 
 				// Skipped
 				continue;
@@ -820,8 +829,6 @@ function vipgoci_github_review_submit(
 					$commit_issue_stat_key . '(s) ' .
 					"\n\r";
 			}
-
-			$github_postfields['body'] .= "***\n\r";
 		}
 
 
