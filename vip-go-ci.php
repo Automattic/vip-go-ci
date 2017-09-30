@@ -234,7 +234,6 @@ function vipgoci_run() {
 	);
 
 	if ( true === $options['lint'] ) {
-		// FIXME: what is the path?
 		vipgoci_lint_scan_commit(
 			$options,
 			$results['issues'],
