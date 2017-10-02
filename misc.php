@@ -22,14 +22,13 @@ function vipgoci_log( $str, $debug_data ) {
 
 
 /*
- * Look at a patch given to use by our caller,
- * and figure out what lines of the target-file
- * were affected by the patch.
+ * Given a patch-file, function will return an
+ * associative array, mapping the patch-file
+ * to the raw committed file.
  *
- * This function will return an associative
- * array, were the keys represent every line
- * in the patch (except for the "@@" lines),
- * while the values represent line in the
+ * In the resulting array, the keys represent every
+ * line in the patch (except for the "@@" lines),
+ * while the values represent line-number in the
  * raw committed line. Some keys might point
  * to empty values, in which case there is no
  * relation between the two.
@@ -85,19 +84,26 @@ function vipgoci_patch_changed_lines(
 
 			$i = $start_end[0];
 
+
 			$lines_changed[] = null;
 		}
 
 		else if ( empty( $matches[0] ) ) {
-			if ( $line[0] == '-' ) {
+			if ( empty( $line[0] ) ) {
+				// Do nothing
+			}
+
+			else if (
+				( $line[0] == '-' ) ||
+				( $line[0] == '\\' )
+			) {
 				$lines_changed[] = null;
 			}
 
 			else if (
 				( $line[0] == '+' ) ||
-				( $line[0] == ' ' ) ||	// space
-				( $line[0] == '	' ) ||	// tab
-				( $line[0] == '\\' )	// a single \
+				( $line[0] == " " ) ||
+				( $line[0] == "\t" )
 			) {
 				$lines_changed[] = $i++;
 			}
