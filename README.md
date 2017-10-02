@@ -2,42 +2,19 @@
 
 Continuous integration for VIP Go repositories.
 
-A PHP-program that can be called for each commit made on GitHub. For each commit, it will scan the files affected by the commit using PHPCS, and for any issues outputted by PHPCS, post a comment on the commit, containing the issue.
+A PHP-program that can be called for each commit pushed to Pull-Requests on GitHub. For each commit, it will scan the files affected by the commit using PHPCS and PHP Lint, and for any issues outputted by PHPCS or PHP Lint, post a comment on the commit with the issue, in the form of a 'GitHub Review'. If so desired, the program can only do PHPCS scanning, or PHP-linting. It can scan any commit, not just the latest.
 
 ## Testing
 
 ### On the console
 
-To run this standalone on your local console, PHPCS has to be installed and configured with a certain profile at a certain path. To get the profile installed, the following shell-script can be run:
+To run this standalone on your local console, PHPCS has to be installed and configured with a certain profile. The `utils-init.sh` script that is included, can be run, and that will place PHPCS along with `vip-go-ci` into `vip-go-ci-tools` in the local home directory.
 
-```
-if [ ! -d ~/phpcs-scan ] ; then
-	TMP_FOLDER=`mktemp -d /tmp/phpcs-scan-XXXXXX`
+After the shell-script has been run successfully, `vip-go-ci.php` can be run on your local console to scan a particular commit in a particular repository:
 
-	cd $TMP_FOLDER && \
-	wget https://github.com/squizlabs/PHP_CodeSniffer/archive/2.8.0.tar.gz && \
-	tar -zxvf 2.8.0.tar.gz  && \
-	rm -fv 2.8.0.tar.gz && \
-	mv PHP_CodeSniffer-2.8.0/ phpcs && \
-	wget https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards/archive/0.11.0.tar.gz && \
-	tar -zxvf 0.11.0.tar.gz  && \
-	rm -fv 0.11.0.tar.gz && \
-	mv WordPress-Coding-Standards-0.11.0/WordPress* phpcs/CodeSniffer/Standards/ && \
-	git clone -b master https://github.com/Automattic/VIP-Coding-Standards.git VIP-Coding-Standards && \
-	mv VIP-Coding-Standards/WordPressVIPMinimum/ phpcs/CodeSniffer/Standards/  && \
-	git clone -b master https://github.com/Automattic/vip-go-ci.git && \
-	mv $TMP_FOLDER ~/phpcs-scan && \
-	echo "Installation finished"
-fi
-```
+> ./vip-go-ci.php --repo-owner=repo-owner --repo-name=repo-name --commit=commit-ID --token=GitHub-Access-Token --phpcs-path=phpcs-path
 
-This should only need to be run once.
-
-After the shell-script has been run successfully, `phpcs-scan.php` can be run on your local console to scan a particular commit in a particular repository:
-
-> ./phpcs-scan.php --repo-owner=repo-owner --repo-name=repo-name --commit=commit-ID --token=GitHub-Access-Token
-
--- were `repo-owner` is the GitHub repository-owner, `repo-name` is the name of the repository, `commit-ID` is the SHA-hash identifying the commit, and `GitHub-Access-Token` is a access-token created on GitHub that allows reading and commenting on the repository in question.
+-- where `repo-owner` is the GitHub repository-owner, `repo-name` is the name of the repository, `commit-ID` is the SHA-hash identifying the commit, `GitHub-Access-Token` is a access-token created on GitHub that allows reading and commenting on the repository in question, and `path-to-phpcs` is a full path to PHPCS.
 
 The output you see should be something like this:
 
@@ -105,14 +82,30 @@ Alternatively, if you do not wish to run TeamCity in a Docker-instance, you can 
 
 ### Configuring TeamCity runner
 
-You can set this up with TeamCity, so that when a commit gets pushed to GitHub, `phpcs-scan.php` will run and scan the commit.
+You can set this up with TeamCity, so that when a commit gets pushed to GitHub, `vip-go-ci.php` will run and scan the commit.
 
 Follow these steps to get it working:
 
 * Create a project, and link it to the GitHub repository you wish to scan
 * Create a build-runner by clicking on `Create build configuration` on the project
+* Define a build-feature, by clicking on `Add Build Feature` (located in `Build Features`, found in the project-settings). Define the type of the build-feature as `Commit status publisher`, `VCS Root` as `All attached VCS Roots`, and `Publisher` as `GitHub`. 
+* Click on `Version Control Settings` (in the project-settings), make sure to do the following:
+  - Checkout directory as `Custom path`, and path as something unique and unreadable from other users (local-directory for the build-runner user would be optimal).
+  - Click on `Clean all files in the checkout directory before the build`.
 * Make sure the build-runner is of the `Command Line` type, that `If all previous steps finished successfully` is chosen, and that `Custom Script` is chosen for the run `Run` field.
-* Add a shell-script into the `Custom Script` field. The shell-script should be the one shown in the previous section on how to run `phpcs-scan.php` on the console -- adding this will make sure all the tools `phpcs-scan.php` needs are set up automatically on your build-runner instances
-* In addition, the `Custom Script` field should contain, at the absolute bottom, the following: `~/phpcs-scan/vip-go-ci/phpcs-scan.php --repo-owner=repo-owner --repo-name=repo-name --commit="$BUILD_VCS_NUMBER" --token=GitHub-Access-Token`. `repo-owner` etc need to be replaced, in the same way as shown above in the local console example. `$BUILD_VCS_NUMBER` should be left untouched, as that is provided by TeamCity on execution.
+* Add a shell-script into the `Custom Script` field, the script should look something like the following:
 
+```
+if [ ! -d ~/vip-go-ci-tools ] ; then
+	wget https://raw.githubusercontent.com/Automattic/vip-go-ci/master/tools-init.sh -O tools-init.sh && \
+	bash tools-init.sh && \
+	rm -f tools-init.sh
+fi
+
+~/vip-go-ci-tools/vip-go-ci/vip-go-ci.php --repo-owner=... --repo-name=... --commit="$BUILD_VCS_NUMBER"  --token=... --local-git-repo=... --phpcs=true --lint=true  --phpcs-path=$HOME/vip-go-ci-utils/phpcs/scripts/phpcs
+```
+
+The parameters should be pretty-much self-explanatory. Note that --commit should be left exactly as shown above, as `$BUILD_VCS_NUMBER` is populated by TeamCity. 
+
+That is it. Now TeamCity should run `vip-go-ci.php` for every incoming commit to any Pull-Request.
 
