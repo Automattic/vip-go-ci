@@ -102,7 +102,7 @@ if [ ! -d ~/vip-go-ci-tools ] ; then
 	rm -f tools-init.sh
 fi
 
-~/vip-go-ci-tools/vip-go-ci/vip-go-ci.php --repo-owner=... --repo-name=... --commit="$BUILD_VCS_NUMBER"  --token=... --local-git-repo=... --phpcs=true --lint=true  --phpcs-path="$HOME/vip-go-ci-utils/phpcs/scripts/phpcs"
+~/vip-go-ci-tools/vip-go-ci/vip-go-ci.php --repo-owner=... --repo-name=... --commit="$BUILD_VCS_NUMBER"  --token=... --local-git-repo=... --phpcs=true --lint=true  --phpcs-path="$HOME/vip-go-ci-utils/phpcs/bin/phpcs"
 ```
 
 The parameters should be pretty-much self-explanatory. Note that --commit should be left exactly as shown above, as `$BUILD_VCS_NUMBER` is populated by TeamCity. 
