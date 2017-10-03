@@ -8,7 +8,7 @@ A PHP-program that can be called for each commit pushed to Pull-Requests on GitH
 
 ### On the console
 
-To run this standalone on your local console, PHPCS has to be installed and configured with a certain profile. The `utils-init.sh` script that is included, can be run, and that will place PHPCS along with `vip-go-ci` into `vip-go-ci-tools` in the local home directory.
+To run this standalone on your local console, PHPCS has to be installed and configured with a certain profile. The `tools-init.sh` script that is included, can be run, and that will place PHPCS along with `vip-go-ci` into `vip-go-ci-tools` in the local home directory.
 
 After the shell-script has been run successfully, `vip-go-ci.php` can be run on your local console to scan a particular commit in a particular repository:
 
@@ -102,7 +102,7 @@ if [ ! -d ~/vip-go-ci-tools ] ; then
 	rm -f tools-init.sh
 fi
 
-~/vip-go-ci-tools/vip-go-ci/vip-go-ci.php --repo-owner=... --repo-name=... --commit="$BUILD_VCS_NUMBER"  --token=... --local-git-repo=... --phpcs=true --lint=true  --phpcs-path=$HOME/vip-go-ci-utils/phpcs/scripts/phpcs
+~/vip-go-ci-tools/vip-go-ci/vip-go-ci.php --repo-owner=... --repo-name=... --commit="$BUILD_VCS_NUMBER"  --token=... --local-git-repo=... --phpcs=true --lint=true  --phpcs-path="$HOME/vip-go-ci-utils/phpcs/scripts/phpcs"
 ```
 
 The parameters should be pretty-much self-explanatory. Note that --commit should be left exactly as shown above, as `$BUILD_VCS_NUMBER` is populated by TeamCity. 
