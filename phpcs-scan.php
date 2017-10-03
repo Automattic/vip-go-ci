@@ -7,7 +7,6 @@
 
 function vipgoci_phpcs_do_scan(
 	$filename_tmp,
-	$real_name,
 	$phpcs_path
 ) {
 	/*
@@ -21,13 +20,12 @@ function vipgoci_phpcs_do_scan(
 	 */
 
 	$cmd = sprintf(
-		'cat %s | %s %s --standard=%s --report-width=%s --stdin-path=%s -p',
+		'cat %s | %s %s --standard=%s --report-width=%s -p 2>&1',
 		escapeshellarg( $filename_tmp ),
 		escapeshellcmd( 'php' ),
 		escapeshellcmd( $phpcs_path ),
 		escapeshellarg( 'WordPressVIPminimum' ),
-		escapeshellarg( 500 ),
-		escapeshellarg( $real_name )
+		escapeshellarg( 500 )
 	);
 
 
@@ -254,7 +252,6 @@ function vipgoci_phpcs_scan_commit(
 
 		$file_issues_str = vipgoci_phpcs_do_scan(
 			$temp_file_name,
-			$file_info->filename,
 			$options['phpcs-path']
 		);
 

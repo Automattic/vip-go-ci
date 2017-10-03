@@ -7,6 +7,7 @@
  */
 
 function vipgoci_lint_do_scan(
+	$php_path,
 	$temp_file_name
 ) {
 	/*
@@ -15,7 +16,8 @@ function vipgoci_lint_do_scan(
 	 * the output to STDERR.
 	 */
 	$cmd = sprintf(
-		'( php -l %s 2>&1 )',
+		'( %s -l %s 2>&1 )',
+		escapeshellcmd( $php_path ),
 		escapeshellarg( $temp_file_name )
 	);
 
@@ -214,6 +216,7 @@ function vipgoci_lint_scan_commit(
 		);
 
 		$file_issues_arr_raw = vipgoci_lint_do_scan(
+			$options['php-path'],
 			$temp_file_name
 		);
 

@@ -65,6 +65,14 @@ function vipgoci_exit_status( $results ) {
 		)
 		as $stats_type
 	) {
+		if (
+			! isset( $results['stats'][ $stats_type ] ) ||
+			null === $results['stats'][ $stats_type ]
+		) {
+			/* In case the type of scan was not performed, skip */
+			continue;
+		}
+
 		foreach (
 			array_keys(
 				$results['stats'][ $stats_type ]
@@ -106,6 +114,7 @@ function vipgoci_run() {
 			'output:',
 			'dry-run:',
 			'phpcs-path:',
+			'php-path:',
 			'local-git-repo:',
 			'help',
 			'lint:',
@@ -123,7 +132,7 @@ function vipgoci_run() {
 	) {
 		print 'Usage: ' . $argv[0] . "\n" .
 			"\t" . '--repo-owner=owner --repo-name=name --commit=SHA --token=string' . "\n" .
-			"\t" . '--phpcs-path=string' . "\n" .
+			"\t" . '--phpcs-path=string [ --php-path=string ]' . "\n" .
 			"\t" . '[ --local-git-repo=path ] [ --dry-run=boolean ] [ --output=file-path ]' . "\n" .
 			"\t" . '[ --phpcs=true ] [ --lint=true ]' . "\n" .
 			"\n" .
@@ -132,6 +141,8 @@ function vipgoci_run() {
 			"\t" . '--commit            Specify the exact commit to scan' . "\n" .
 			"\t" . '--token             The access-token to use to communicate with GitHub' . "\n" .
 			"\t" . '--phpcs-path        Full path to PHPCS script' . "\n" .
+			"\t" . '--php-path          Full path to PHP, if not specified the' . "\n" .
+			"\t" . '                    default in $PATH will be used instead' . "\n" .
 			"\t" . '--local-git-repo    The local git repository to use for raw-data' . "\n" .
                         "\t" . '                    -- this will save requests to GitHub, speeding up the' . "\n" .
                         "\t" . '                    whole process' . "\n" .
@@ -160,8 +171,28 @@ function vipgoci_run() {
 			' has to be a valid path to PHPCS' . "\n";
 
 		exit( 253 );
-
 	}
+
+
+	/*
+	 * Check if PHP executable is defined, and
+	 * if it is a file.
+	 */
+
+	if (
+		( isset( $options['php-path'] ) ) &&
+		( ! is_file( $options['php-path'] ) )
+	) {
+		print 'Usage: Parameter --php-path' .
+			' has to be a valid path to PHP' . "\n";
+
+		exit( 253 );
+	}
+
+	else if ( ! isset( $options['php-path'] ) ) {
+		$options['php-path'] = 'php';
+	}
+
 
 	/*
 	 * Handle optional --local-git-repo parameter
