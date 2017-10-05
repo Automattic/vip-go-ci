@@ -12,9 +12,14 @@ if [ ! -d ~/vip-go-ci-tools ] ; then
 	tar -zxvf 0.13.1.tar.gz  && \
 	rm -fv 0.13.1.tar.gz && \
 	mv WordPress-Coding-Standards-0.13.1/WordPress* phpcs/src/Standards/ && \
-	git clone -b master https://github.com/Automattic/VIP-Coding-Standards.git VIP-Coding-Standards && \
-	mv VIP-Coding-Standards/WordPressVIPMinimum/ phpcs/src/Standards/  && \
-	git clone -b master https://github.com/Automattic/vip-go-ci.git && \
+	wget https://github.com/Automattic/VIP-Coding-Standards/archive/master.tar.gz && \
+	tar -zxvf master.tar.gz && \
+	mv VIP-Coding-Standards-master/WordPressVIPMinimum/ phpcs/src/Standards/  && \
+	rm -f master.tar.gz && \
+	wget https://github.com/Automattic/vip-go-ci/archive/master.tar.gz && \
+	tar -zxvf master.tar.gz && \
+	mv vip-go-ci-master vip-go-ci && \
+	rm -f master.tar.gz && \
 	mv $TMP_FOLDER ~/vip-go-ci-tools && \
 	echo "Installation finished"
 fi
