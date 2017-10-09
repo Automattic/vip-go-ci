@@ -245,13 +245,19 @@ function vipgoci_run() {
 
 
 	/*
-	 * Run all checks and store the results in an array
+	 * Log that we started working,
+	 * and the arguments provided as well.
+	 *
+	 * Make sure not to print out any secrets.
 	 */
+
+	$options_clean = $options;
+	$options_clean['token'] = '***';
 
 	vipgoci_log(
 		'Starting up...',
 		array(
-			'options' => $options
+			'options' => $options_clean
 		)
 	);
 
@@ -263,6 +269,13 @@ function vipgoci_run() {
 			'lint'	=> null,
 		),
 	);
+
+	unset( $options_clean );
+
+	/*
+	 * Run all checks requested and store the
+	 * results in an array
+	 */
 
 	if ( true === $options['lint'] ) {
 		vipgoci_lint_scan_commit(
