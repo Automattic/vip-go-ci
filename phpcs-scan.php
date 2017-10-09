@@ -292,8 +292,7 @@ function vipgoci_phpcs_scan_commit(
 				$github_token,
 				$pr_item->base->sha,
 				$commit_id,
-				$file_info->filename,
-				false
+				$file_info->filename
 			);
 
 			$file_relevant_lines = @array_flip(
@@ -310,7 +309,8 @@ function vipgoci_phpcs_scan_commit(
 
 			$file_issues_arr = vipgoci_issues_filter_irrellevant(
 				$file_issues_arr,
-				$file_changed_lines
+				$file_changed_lines,
+				false // No fuzziness
 			);
 
 
