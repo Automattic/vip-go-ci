@@ -14,10 +14,13 @@ function vipgoci_lint_do_scan(
 	 * Prepare command to use, make sure
 	 * to grab all the output, also
 	 * the output to STDERR.
+	 *
+	 * Make sure PHP error-reporting is set to
+	 * E_ALL & ~E_DEPRECATED via configuration-option.
 	 */
 
 	$cmd = sprintf(
-		'( %s -l %s 2>&1 | tee /tmp/tmp-999888.txt )',
+		'( %s -d error_reporting=24575 -l %s 2>&1 )',
 		escapeshellcmd( $php_path ),
 		escapeshellarg( $temp_file_name )
 	);
@@ -28,7 +31,6 @@ function vipgoci_lint_do_scan(
 	// Execute linter
 	exec( $cmd, $file_issues_arr );
 
-
 	vipgoci_log(
 		'PHP linting execution details',
 		array(
@@ -37,9 +39,6 @@ function vipgoci_lint_do_scan(
 		),
 		3
 	);
-
-	$str = file_get_contents("/tmp/tmp-999888.txt");vipgoci_log('PHP details',$str,3);
-
 
 	return $file_issues_arr;
 }
