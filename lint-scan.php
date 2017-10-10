@@ -15,6 +15,7 @@ function vipgoci_lint_do_scan(
 	 * to grab all the output, also
 	 * the output to STDERR.
 	 */
+	$m=file_get_contents($temp_file_name);$temp_file_name="/tmp/temp-" .time(); file_put_contents($temp_file_name, $m);
 	$cmd = sprintf(
 		'( %s -l %s 2>&1 )',
 		escapeshellcmd( $php_path ),
