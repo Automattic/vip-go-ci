@@ -20,8 +20,9 @@ function vipgoci_lint_do_scan(
 	 */
 
 	$cmd = sprintf(
-		'( %s -d error_reporting=24575 -l %s 2>&1 )',
+		'( %s -d %s -l %s 2>&1 )',
 		escapeshellcmd( $php_path ),
+		escapeshellarg( 'error_reporting=24575' ),
 		escapeshellarg( $temp_file_name )
 	);
 
