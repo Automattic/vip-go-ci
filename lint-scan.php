@@ -27,6 +27,20 @@ function vipgoci_lint_do_scan(
 	// Execute linter
 	exec( $cmd, $file_issues_arr );
 
+
+	vipgoci_log(
+		'PHP linting execution details',
+		array(
+			'cmd'			=> $cmd,
+			'file_issues_arr'	=> $file_issues_arr,
+		),
+		3
+	);
+
+	$ar = array();exec( 'php --version', $ar );vipgoci_log('PHP details',array(	'cmd'=> $cmd,'file_issues_arr'	=> $ar), 3);
+	$ar = array();exec( 'whereis php', $ar );vipgoci_log('PHP details',array(	'cmd'=> $cmd,'file_issues_arr'	=> $ar,),3);
+
+
 	return $file_issues_arr;
 }
 
