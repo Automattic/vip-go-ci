@@ -6,8 +6,22 @@
  * our caller might pass us.
  */
 
-function vipgoci_log( $str, $debug_data ) {
-	echo '[ ' . date( 'c' ) . ' ]  ' .
+function vipgoci_log( $str, $debug_data, $debug_level = 0 ) {
+	global $vipgoci_debug_level;
+
+	/*
+	 * Determine if to log the message; if
+	 * debug-level of the message is not high
+	 * enough compared to the debug-level specified
+	 * to be the threshold, do not print it, but
+	 * otherwise, do print it,
+	 */
+
+	if ( $debug_level > $vipgoci_debug_level ) {
+		return;
+	}
+
+	echo '[ ' . date( 'c' ) . ' -- ' . (int) $debug_level . ' ]  ' .
 		$str .
 		'; ' .
 		print_r(

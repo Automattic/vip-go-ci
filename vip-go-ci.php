@@ -101,6 +101,10 @@ function vipgoci_exit_status( $results ) {
  */
 function vipgoci_run() {
 	global $argv;
+	global $vipgoci_debug_level;
+
+	// Set with a temp value for now, user value set later
+	$vipgoci_debug_level = 0;
 
 	$startup_time = time();
 
@@ -116,9 +120,10 @@ function vipgoci_run() {
 			'phpcs-path:',
 			'php-path:',
 			'local-git-repo:',
-			'help',
 			'lint:',
 			'phpcs:',
+			'help',
+			'debug-level:',
 		)
 	);
 
@@ -152,7 +157,10 @@ function vipgoci_run() {
 			"\t" . '                    -- this should be a filename' . "\n" .
 			"\t" . '--phpcs             Whether to run PHPCS' . "\n" .
 			"\t" . '--lint              Whether to do PHP linting' . "\n" .
-			"\t" . '--help              Displays this message' . "\n";
+			"\t" . '--help              Displays this message' . "\n" .
+			"\t" . '--debug-level       Specify minimum debug-level of messages to print' . "\n" .
+			"\t" . '                    -- higher number indicates more detailed debugging-messages.' . "\n" .
+			"\t" . '                    Default is zero' . "\n";
 
 		exit( 253 );
 	}
@@ -218,6 +226,32 @@ function vipgoci_run() {
 			$options['local-git-repo'] = null;
 		}
 	}
+
+
+	/*
+	 * Handle optional --debug-level parameter
+	 * -- must be a numeric. If the user-specified
+	 * value looks good, set the global.
+	 */
+
+	if ( ! isset( $options['debug-level'] ) ) {
+		$options['debug-level'] = 0;
+	}
+
+	if (
+		( ! is_numeric( $options['debug-level'] ) ) ||
+		( $options['debug-level'] < 0 ) ||
+		( $options['debug-level'] > 3 )
+	) {
+		print 'Usage: Parameter --debug-level' .
+			' has to be an integer in the range of' .
+			' 0 to 3 (inclusive)' . "\n";
+
+		exit( 253 );
+	}
+
+	// Set the user-specified value
+	$vipgoci_debug_level = $options['debug-level'];
 
 
 	/*
