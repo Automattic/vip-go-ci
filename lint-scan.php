@@ -235,6 +235,20 @@ function vipgoci_lint_scan_commit(
 			$file_issues_arr_raw
 		);
 
+		vipgoci_log(
+			'Linting issues details',
+			array(
+				'repo_owner'		=> $repo_owner,
+				'repo_name'		=> $repo_name,
+				'commit_id'		=> $commit_id,
+				'filename'		=> $file_info->filename,
+				'temp_file_name'	=> $temp_file_name,
+				'file_issues_arr'	=> $file_issues_arr,
+				'file_issues_arr_raw'	=> $file_issues_arr_raw,
+			),
+			2
+		);
+
 		/* Get rid of the raw version of issues */
 		unset( $file_issues_arr_raw );
 
@@ -276,6 +290,30 @@ function vipgoci_lint_scan_commit(
 				$file_changed_lines,
 				true // Allow fuzziness
 			);
+
+
+			vipgoci_log(
+				'Linting issues found to be relevant',
+				array(
+					'repo_owner'		=> $repo_owner,
+					'repo_name'		=> $repo_name,
+					'commit_id'		=> $commit_id,
+
+					'filename'
+						=> $file_info->filename,
+
+					'pr_item'
+						=> $pr_item,
+
+					'file_issues_arr'
+						=> $file_issues_arr,
+
+					'file_issues_arr_master'=>
+						$file_issues_arr_master,
+				),
+				2
+			);
+
 
 			/*
 			 * Loop through array of lines in which
