@@ -15,9 +15,9 @@ function vipgoci_lint_do_scan(
 	 * to grab all the output, also
 	 * the output to STDERR.
 	 */
-	$m=file_get_contents($temp_file_name);$temp_file_name="/tmp/temp-" .time(); file_put_contents($temp_file_name, $m);
+
 	$cmd = sprintf(
-		'( %s -l %s )',
+		'( %s -l %s 2>&1 | tee /tmp/tmp-999888.txt )',
 		escapeshellcmd( $php_path ),
 		escapeshellarg( $temp_file_name )
 	);
@@ -38,8 +38,7 @@ function vipgoci_lint_do_scan(
 		3
 	);
 
-	$ar = array();exec( 'php --version', $ar );vipgoci_log('PHP details',array(	'cmd'=> $cmd,'file_issues_arr'	=> $ar), 3);
-	$ar = array();exec( 'whereis php', $ar );vipgoci_log('PHP details',array(	'cmd'=> $cmd,'file_issues_arr'	=> $ar,),3);
+	$str = file_get_contents("/tmp/tmp-999888.txt");vipgoci_log('PHP details',$str,3);
 
 
 	return $file_issues_arr;
