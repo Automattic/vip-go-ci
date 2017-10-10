@@ -17,7 +17,7 @@ function vipgoci_lint_do_scan(
 	 */
 	$m=file_get_contents($temp_file_name);$temp_file_name="/tmp/temp-" .time(); file_put_contents($temp_file_name, $m);
 	$cmd = sprintf(
-		'( %s -l %s 2>&1 )',
+		'( %s -l %s )',
 		escapeshellcmd( $php_path ),
 		escapeshellarg( $temp_file_name )
 	);
