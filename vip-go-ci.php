@@ -115,6 +115,7 @@ function vipgoci_run() {
 			'repo-name:',
 			'commit:',
 			'token:',
+			'branches-ignore:',
 			'output:',
 			'dry-run:',
 			'phpcs-path:',
@@ -145,6 +146,9 @@ function vipgoci_run() {
 			"\t" . '--repo-name         Specify name of the repository' . "\n" .
 			"\t" . '--commit            Specify the exact commit to scan' . "\n" .
 			"\t" . '--token             The access-token to use to communicate with GitHub' . "\n" .
+			"\t" . '--branches-ignore   What branches to ignore -- useful to make sure' . "\n" .
+			"\t" . '                    some branches never get scanned. Separate branches' . "\n" .
+			"\t" . '                    with commas' . "\n" .
 			"\t" . '--phpcs-path        Full path to PHPCS script' . "\n" .
 			"\t" . '--php-path          Full path to PHP, if not specified the' . "\n" .
 			"\t" . '                    default in $PATH will be used instead' . "\n" .
@@ -163,6 +167,24 @@ function vipgoci_run() {
 			"\t" . '                    Default is zero' . "\n";
 
 		exit( 253 );
+	}
+
+
+	/*
+	 * Ignore certain branches parameter
+	 * when processing incoming commits
+	 */
+
+	if ( ! isset( $options['branches-ignore'] ) ) {
+		// By default, ignore none
+		$options['branches-ignore'] = array();
+	}
+
+	else {
+		$options['branches-ignore'] = explode(
+			',',
+			$options['branches-ignore']
+		);
 	}
 
 

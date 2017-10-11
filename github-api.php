@@ -983,14 +983,16 @@ function vipgoci_github_review_submit(
 
 /*
  * Get Pull Requests which are open currently
- * and the commit is a part of.
+ * and the commit is a part of. Make sure to ignore
+ * certain branches specified in a parameter.
  */
 
 function vipgoci_github_prs_implicated(
 	$repo_owner,
 	$repo_name,
 	$commit_id,
-	$github_token
+	$github_token,
+	$branches_ignore
 ) {
 
 	/*
@@ -999,7 +1001,7 @@ function vipgoci_github_prs_implicated(
 
 	$cached_id = array(
 		__FUNCTION__, $repo_owner, $repo_name,
-		$commit_id, $github_token
+		$commit_id, $github_token, $branches_ignore
 	);
 
 	$cached_data = vipgoci_cache( $cached_id );
@@ -1011,6 +1013,7 @@ function vipgoci_github_prs_implicated(
 			'repo_owner' => $repo_owner,
 			'repo_name' => $repo_name,
 			'commit_id' => $commit_id,
+			'branches_ignore' => $branches_ignore,
 		)
 	);
 
@@ -1054,11 +1057,34 @@ function vipgoci_github_prs_implicated(
 		 * have nothing to do with our commit
 		 */
 		foreach ( $prs_implicated_unfiltered as $pr_item ) {
+			/*
+			 * If the branch this Pull-Request is associated
+			 * with is one of those we are supposed to ignore,
+			 * then ignore it.
+			 */
+			if ( in_array(
+				$pr_item->head->ref,
+				$branches_ignore
+			) ) {
+				continue;
+			}
+
+
+			/*
+			 * If the commit we are processing currently
+			 * matches the head-commit of the Pull-Request,
+			 * then the Pull-Request should be considered to
+			 * be relevant.
+			 */
 			if ( $commit_id === $pr_item->head->sha ) {
 				$prs_implicated[ $pr_item->number ] = $pr_item;
 			}
 
 			else {
+				/*
+				 * No match, might be relevant, so needs
+				 * to be checked in more detail.
+				 */
 				$prs_maybe_implicated[] = $pr_item->number;
 			}
 		}

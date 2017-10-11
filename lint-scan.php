@@ -173,7 +173,8 @@ function vipgoci_lint_scan_commit(
 		$repo_owner,
 		$repo_name,
 		$commit_id,
-		$github_token
+		$github_token,
+		$options['branches-ignore']
 	);
 
 
