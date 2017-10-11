@@ -235,7 +235,7 @@ function vipgoci_run() {
 	 */
 
 	if ( ! isset( $options['debug-level'] ) ) {
-		$options['debug-level'] = 3;
+		$options['debug-level'] = 0;
 	}
 
 	if (
