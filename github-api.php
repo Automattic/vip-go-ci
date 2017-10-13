@@ -78,6 +78,158 @@ function vipgoci_curl_headers( $ch, $header ) {
 
 
 /*
+ * Send a POST request to GitHub -- attempt
+ * to retry if errors were encountered.
+ */
+
+function vipgoci_github_post_url(
+	$github_url,
+	$github_postfields,
+	$github_token
+) {
+	/*
+	 * Actually send a request to GitHub -- make sure
+	 * to retry if something fails.
+	 */
+	do {
+		/*
+		 * By default, do not retry the request,
+		 * just assume everything goes well
+		 */
+
+		$retry_req = false;
+
+		$ch = curl_init();
+
+		curl_setopt(
+			$ch, CURLOPT_URL, $github_url
+		);
+
+		curl_setopt(
+			$ch, CURLOPT_RETURNTRANSFER, 1
+		);
+
+		curl_setopt(
+			$ch, CURLOPT_CONNECTTIMEOUT, 20
+		);
+
+		curl_setopt(
+			$ch, CURLOPT_USERAGENT,	VIPGOCI_PHPCS_CLIENT_ID
+		);
+
+		curl_setopt(
+			$ch, CURLOPT_POST, 1
+		);
+
+		curl_setopt(
+			$ch,
+			CURLOPT_POSTFIELDS,
+			json_encode( $github_postfields )
+		);
+
+		curl_setopt(
+			$ch,
+			CURLOPT_HEADERFUNCTION,
+			'vipgoci_curl_headers'
+		);
+
+		curl_setopt(
+			$ch,
+			CURLOPT_HTTPHEADER,
+			array( 'Authorization: token ' . $github_token )
+		);
+
+		// Make sure to pause between GitHub-requests
+		vipgoci_github_wait();
+
+
+		$resp_data = curl_exec( $ch );
+
+		$resp_headers = vipgoci_curl_headers(
+			null,
+			null
+		);
+
+
+
+		if ( intval( $resp_headers['status'][0] ) !== 200 ) {
+			/*
+			 * Set default wait period between requests
+			 */
+			$retry_sleep = 10;
+
+
+			/*
+			 * Figure out if to retry...
+			 */
+
+			// Decode JSON
+			$resp_data = json_decode( $resp_data );
+
+			if (
+				( isset(
+					$resp_headers['retry-after']
+				) ) &&
+				( intval(
+					$resp_headers['retry-after']
+				) > 0 )
+			) {
+				$retry_req = true;
+				$retry_sleep = intval(
+					$resp_headers['retry-after']
+				);
+			}
+
+			else if (
+				( $resp_data->message ==
+					'Validation Failed' ) &&
+
+				( $resp_data->errors[0] ==
+					'was submitted too quickly ' .
+					'after a previous comment' )
+			) {
+				/*
+				 * These messages are due to the
+				 * submission being categorized
+				 * as a spam by GitHub -- no good
+				 * reason to retry, really.
+				 */
+				$retry_req = false;
+				$retry_sleep = 20;
+			}
+
+			else if (
+				( $resp_data->message ==
+					'Validation Failed' )
+			) {
+				$retry_req = false;
+			}
+
+			vipgoci_log(
+				'GitHub reported an error' .
+					( $retry_req === true ?
+					' will retry request in ' .
+					$retry_sleep . ' seconds' :
+					'' ),
+				array(
+					'http_response_headers'
+						=> $resp_headers,
+
+					'http_reponse_body'
+						=> $resp_data,
+				)
+			);
+
+			sleep( $retry_sleep + 1 );
+		}
+
+		curl_close( $ch );
+
+	} while ( $retry_req == true );
+}
+
+
+/*
  * Make sure to wait in between requests to
  * GitHub. Only waits if it is really needed.
  *
@@ -286,11 +438,12 @@ function vipgoci_github_fetch_commit_info(
 			 */
 
 			if (
-				! in_array(
+				( is_array( $file_info_extension ) ) &&
+				( ! in_array(
 					strtolower( $file_info_extension ),
 					$filter['file_extensions'],
 					true
-				)
+				) )
 			) {
 				vipgoci_log(
 					'Skipping file that does not seem ' .
@@ -835,149 +988,68 @@ function vipgoci_github_review_submit(
 			}
 		}
 
-
-		/*
-		 * Actually send a request to GitHub -- make sure
-		 * to retry if something fails.
-		 */
-		do {
-			/*
-			 * By default, do not retry the request,
-			 * just assume everything goes well
-			 */
-
-			$retry_req = false;
-
-			$ch = curl_init();
-
-			curl_setopt(
-				$ch, CURLOPT_URL, $github_url
-			);
-
-			curl_setopt(
-				$ch, CURLOPT_RETURNTRANSFER, 1
-			);
-
-			curl_setopt(
-				$ch, CURLOPT_CONNECTTIMEOUT, 20
-			);
-
-			curl_setopt(
-				$ch, CURLOPT_USERAGENT,	VIPGOCI_PHPCS_CLIENT_ID
-			);
-
-			curl_setopt(
-				$ch, CURLOPT_POST, 1
-			);
-
-			curl_setopt(
-				$ch,
-				CURLOPT_POSTFIELDS,
-				json_encode( $github_postfields )
-			);
-
-			curl_setopt(
-				$ch,
-				CURLOPT_HEADERFUNCTION,
-				'vipgoci_curl_headers'
-			);
-
-			curl_setopt(
-				$ch,
-				CURLOPT_HTTPHEADER,
-				array( 'Authorization: token ' . $github_token )
-			);
-
-			// Make sure to pause between GitHub-requests
-			vipgoci_github_wait();
-
-
-			$resp_data = curl_exec( $ch );
-
-			$resp_headers = vipgoci_curl_headers(
-				null,
-				null
-			);
-
-
-
-			if ( intval( $resp_headers['status'][0] ) !== 200 ) {
-				/*
-				 * Set default wait period between requests
-				 */
-				$retry_sleep = 10;
-
-
-				/*
-				 * Figure out if to retry...
-				 */
-
-				// Decode JSON
-				$resp_data = json_decode( $resp_data );
-
-				if (
-					( isset(
-						$resp_headers['retry-after']
-					) ) &&
-					( intval(
-						$resp_headers['retry-after']
-					) > 0 )
-				) {
-					$retry_req = true;
-					$retry_sleep = intval(
-						$resp_headers['retry-after']
-					);
-				}
-
-				else if (
-					( $resp_data->message ==
-						'Validation Failed' ) &&
-
-					( $resp_data->errors[0] ==
-						'was submitted too quickly ' .
-						'after a previous comment' )
-				) {
-					/*
-					 * These messages are due to the
-					 * submission being categorized
-					 * as a spam by GitHub -- no good
-					 * reason to retry, really.
-					 */
-					$retry_req = false;
-					$retry_sleep = 20;
-				}
-
-				else if (
-					( $resp_data->message ==
-						'Validation Failed' )
-				) {
-					$retry_req = false;
-				}
-
-				vipgoci_log(
-					'GitHub reported an error' .
-						( $retry_req === true ?
-						' will retry request in ' .
-						$retry_sleep . ' seconds' :
-						'' ),
-					array(
-						'http_response_headers'
-							=> $resp_headers,
-
-						'http_reponse_body'
-							=> $resp_data,
-					)
-				);
-
-				sleep( $retry_sleep + 1 );
-			}
-
-			curl_close( $ch );
-
-		} while ( $retry_req == true );
+		// Actually send a request to GitHub
+		vipgoci_github_post_url(
+			$github_url,
+			$github_postfields,
+			$github_token
+		);
 	}
 
 	return;
+}
+
+
+/*
+ * Approve a Pull-Request, and afterwards
+ * make sure to verify that the latest commit
+ * added to the Pull-Request is commit with
+ * commit-ID $latest_commit_id -- this is to avoid
+ * race-conditions.
+ *
+ * The race-conditions can occur when a Pull-Request
+ * is approved, but it is approved after a new commit
+ * was added, but that has not been scanned.
+ */
+
+function vipgoci_github_approve_pr(
+	$repo_owner,
+	$repo_name,
+	$github_token,
+	$pr_number,
+	$latest_commit_id,
+	$filetypes_approve
+) {
+
+
+	$github_url =
+		'https://api.github.com/' .
+		'repos/' .
+		rawurlencode( $repo_owner ) . '/' .
+		rawurlencode( $repo_name ) . '/' .
+		'pulls/' .
+		rawurlencode( $pr_number ) . '/' .
+		'reviews';
+
+	$github_postfields = array(
+		'commit_id' => $latest_commit_id,
+		'body' => 'Auto-approved Pull-Request #' .
+			(int) $pr_number . ' as it ' .
+			'contains only allowable file-types ' .
+			'(' . implode( ', ', $filetypes_approve ) . ')',
+		'event' => 'APPROVE',
+		'comments' => array()
+	);
+
+	vipgoci_github_post_url(
+		$github_url,
+		$github_postfields,
+		$github_token
+	);
+
+	// FIXME: Approve PR, then make sure
+	// the latest commit in the PR is actually
+	// the one provided in $latest_commit_id
 }
 
 
@@ -994,6 +1066,10 @@ function vipgoci_github_prs_implicated(
 	$github_token,
 	$branches_ignore
 ) {
+
+	// FIXME: Ignore PRs that have already been accepted,
+	// that way we can avoid strange things happening when
+	// we already auto-approved a PR.
 
 	/*
 	 * Check for cached copy
