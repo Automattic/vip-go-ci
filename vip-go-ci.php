@@ -47,6 +47,82 @@ function vipgoci_option_bool_handle(
 	}
 }
 
+/*
+ * Handle array-like option parameters given on the command line
+ *
+ * Parses the parameter, turns it into a real array,
+ * makes sure forbidden values are not contained in it.
+ * Does not return the result, but rather alters
+ * $options directly.
+ */
+function vipgoci_option_array_handle(
+	&$options,
+	$option_name,
+	$default_value = array(),
+	$forbidden_value = null
+) {
+	if ( ! isset( $options[ $option_name ] ) ) {
+		$options[ $option_name ] = array();
+	}
+
+	else {
+		$options[ $option_name ] = explode(
+			',',
+			strtolower(
+				$options[ $option_name ]
+			)
+		);
+
+		if ( ! empty( $forbidden_value ) ) {
+			if ( in_array(
+				$forbidden_value,
+				$options[ $option_name ],
+				true
+			) ) {
+				print 'Usage: Parameter --' .
+					$option_name . ' ' .
+					'can not contain \'' .
+					$forbidden_value .
+					'\' as one of ' .
+					'the file-types' . "\n";
+
+				exit( 253 );
+			}
+		}
+	}
+}
+
+
+/*
+ * Handle parameter that expects the value
+ * of it to be a file. Allow a default value
+ * to be set if none is set.
+ */
+
+function vipgoci_option_file_handle(
+	&$options,
+	$option_name,
+	$default_value = null
+) {
+
+	if (
+		( ! isset( $options[ $option_name ] ) ) &&
+		( null !== $default_value )
+	) {
+		$options[ $option_name ] = $default_value;
+	}
+
+	else if (
+		( ! isset( $options[ $option_name ] ) ) ||
+		( ! is_file( $options[ $option_name ] ) )
+	) {
+		print 'Usage: Parameter --' . $option_name .
+			' has to be a valid path' . "\n";
+
+		exit( 253 );
+	}
+}
+
 
 /*
  * Determine exit status.
@@ -139,19 +215,19 @@ function vipgoci_run() {
 		print 'Usage: ' . $argv[0] . "\n" .
 			"\t" . '--repo-owner=owner --repo-name=name --commit=SHA --token=string' . "\n" .
 			"\t" . '--phpcs-path=string [ --php-path=string ]' . "\n" .
-			"\t" . '[ --local-git-repo=path ] [ --dry-run=boolean ] [ --output=file-path ]' . "\n" .
-			"\t" . '[ --phpcs=true ] [ --lint=true ]' . "\n" .
+			"\t" . '[ --branches-ignore=string,string ] [ --local-git-repo=path ] [ --dry-run=boolean ]' . "\n" .
+			"\t" . '[ --output=file-path ] [ --phpcs=true ] [ --lint=true ] [ --debug-level=integer ]' . "\n" .
 			"\n" .
 			"\t" . '--repo-owner        Specify repository owner, can be an organization' . "\n" .
 			"\t" . '--repo-name         Specify name of the repository' . "\n" .
 			"\t" . '--commit            Specify the exact commit to scan' . "\n" .
 			"\t" . '--token             The access-token to use to communicate with GitHub' . "\n" .
-			"\t" . '--branches-ignore   What branches to ignore -- useful to make sure' . "\n" .
-			"\t" . '                    some branches never get scanned. Separate branches' . "\n" .
-			"\t" . '                    with commas' . "\n" .
 			"\t" . '--phpcs-path        Full path to PHPCS script' . "\n" .
 			"\t" . '--php-path          Full path to PHP, if not specified the' . "\n" .
 			"\t" . '                    default in $PATH will be used instead' . "\n" .
+			"\t" . '--branches-ignore   What branches to ignore -- useful to make sure' . "\n" .
+			"\t" . '                    some branches never get scanned. Separate branches' . "\n" .
+			"\t" . '                    with commas' . "\n" .
 			"\t" . '--local-git-repo    The local git repository to use for raw-data' . "\n" .
                         "\t" . '                    -- this will save requests to GitHub, speeding up the' . "\n" .
                         "\t" . '                    whole process' . "\n" .
@@ -171,57 +247,39 @@ function vipgoci_run() {
 
 
 	/*
-	 * Ignore certain branches parameter
-	 * when processing incoming commits
+	 * Process the --branches-ignore parameter,
+	 * -- expected to be an array
 	 */
 
-	if ( ! isset( $options['branches-ignore'] ) ) {
-		// By default, ignore none
-		$options['branches-ignore'] = array();
-	}
-
-	else {
-		$options['branches-ignore'] = explode(
-			',',
-			$options['branches-ignore']
-		);
-	}
+	vipgoci_option_array_handle(
+		$options,
+		'branches-ignore',
+		array()
+	);
 
 
 	/*
-	 * Check if PHPCS executable is defined, and
-	 * if it is a file.
+	 * Process --phpcs-path -- expected to
+	 * be a file
 	 */
 
-	if (
-		( ! isset( $options['phpcs-path'] ) ) ||
-		( ! is_file( $options['phpcs-path'] ) )
-	) {
-		print 'Usage: Parameter --phpcs-path' .
-			' has to be a valid path to PHPCS' . "\n";
-
-		exit( 253 );
-	}
+	vipgoci_option_file_handle(
+		$options,
+		'phpcs-path',
+		null
+	);
 
 
 	/*
-	 * Check if PHP executable is defined, and
-	 * if it is a file.
+	 * Process --php-path -- expected to be a file,
+	 * default value is 'php' (then relies on $PATH)
 	 */
 
-	if (
-		( isset( $options['php-path'] ) ) &&
-		( ! is_file( $options['php-path'] ) )
-	) {
-		print 'Usage: Parameter --php-path' .
-			' has to be a valid path to PHP' . "\n";
-
-		exit( 253 );
-	}
-
-	else if ( ! isset( $options['php-path'] ) ) {
-		$options['php-path'] = 'php';
-	}
+	vipgoci_option_file_handle(
+		$options,
+		'php-path',
+		'php'
+	);
 
 
 	/*
@@ -327,6 +385,7 @@ function vipgoci_run() {
 	);
 
 	unset( $options_clean );
+
 
 	/*
 	 * Run all checks requested and store the
