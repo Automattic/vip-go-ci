@@ -6,7 +6,7 @@
  * our caller might pass us.
  */
 
-function vipgoci_log( $str, $debug_data, $debug_level = 0 ) {
+function vipgoci_log( $str, $debug_data = array(), $debug_level = 0 ) {
 	global $vipgoci_debug_level;
 
 	/*
