@@ -20,9 +20,11 @@ function vipgoci_lint_do_scan(
 	 */
 
 	$cmd = sprintf(
-		'( %s -d %s -l %s 2>&1 )',
+		'( %s -d %s -d %s -d %s -l %s 2>&1 )',
 		escapeshellcmd( $php_path ),
 		escapeshellarg( 'error_reporting=24575' ),
+		escapeshellarg( 'error_log=null' ),
+		escapeshellarg( 'display_errors=off' ),
 		escapeshellarg( $temp_file_name )
 	);
 
