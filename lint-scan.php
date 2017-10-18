@@ -53,7 +53,6 @@ function vipgoci_lint_do_scan(
  */
 
 function vipgoci_lint_get_issues(
-	$pr_number,
 	$file_name,
 	$temp_file_name,
 	$file_issues_arr
@@ -246,7 +245,6 @@ function vipgoci_lint_scan_commit(
 		 */
 
 		$file_issues_arr = vipgoci_lint_get_issues(
-			$pr_item->number,
 			$file_info->filename,
 			$temp_file_name,
 			$file_issues_arr_raw
@@ -319,8 +317,8 @@ function vipgoci_lint_scan_commit(
 					'filename'
 						=> $file_info->filename,
 
-					'pr_item'
-						=> $pr_item,
+					'pr_number'
+						=> $pr_item->number,
 
 					'file_issues_arr'
 						=> $file_issues_arr,

@@ -169,23 +169,6 @@ function vipgoci_phpcs_scan_commit(
 		$options['branches-ignore']
 	);
 
-
-	/*
-	 * If no Pull-Requests are implicated by this commit,
-	 * bail now, as there is no point in continuing running.
-	 */
-	if ( empty( $prs_implicated ) ) {
-		vipgoci_log(
-			'Skipping scanning entirely, as the commit ' .
-				'is not a part of any Pull-Request',
-
-			array()
-		);
-
-		exit( 0 );
-	}
-
-
 	foreach ( $prs_implicated as $pr_item ) {
 		/*
 		 * Initialize array for stats and
