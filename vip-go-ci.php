@@ -398,6 +398,30 @@ function vipgoci_run() {
 
 
 	/*
+	 * If no Pull-Requests are implicated by this commit,
+	 * bail now, as there is no point in continuing running.
+	 */
+
+	$prs_implicated = vipgoci_github_prs_implicated(
+		$options['repo-owner'],
+		$options['repo-name'],
+		$options['commit'],
+		$options['token'],
+		$options['branches-ignore']
+	);
+
+	if ( empty( $prs_implicated ) ) {
+		vipgoci_log(
+			'Skipping scanning entirely, as the commit ' .
+				'is not a part of any Pull-Request',
+			array()
+		);
+
+		exit( 0 );
+	}
+
+
+	/*
 	 * Run all checks requested and store the
 	 * results in an array
 	 */
