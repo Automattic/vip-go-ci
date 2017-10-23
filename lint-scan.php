@@ -179,27 +179,6 @@ function vipgoci_lint_scan_commit(
 	);
 
 
-
-	foreach( $prs_implicated as $pr_item ) {
-		/*
-		 * Initialize array for stats and
-		 * results of scanning, if needed.
-		 */
-
-		if ( empty( $commit_issues_submit[ $pr_item->number ] ) ) {
-			$commit_issues_submit[ $pr_item->number ] = array(
-			);
-		}
-
-		if ( empty( $commit_issues_stats[ $pr_item->number ] ) ) {
-			$commit_issues_stats[ $pr_item->number ] = array(
-				'error'         => 0,
-				'warning'       => 0
-			);
-		}
-	}
-
-
 	foreach( $commit_info->files as $file_info ) {
 		$file_contents = vipgoci_github_fetch_committed_file(
 			$repo_owner,

@@ -421,6 +421,25 @@ function vipgoci_run() {
 	}
 
 
+	foreach ( $prs_implicated as $pr_item ) {
+		/*
+		 * Initialize array for stats and
+		 * results of scanning, if needed.
+		 */
+
+		if ( empty( $commit_issues_submit[ $pr_item->number ] ) ) {
+			$commit_issues_submit[ $pr_item->number ] = array(
+			);
+		}
+
+		if ( empty( $commit_issues_stats[ $pr_item->number ] ) ) {
+			$commit_issues_stats[ $pr_item->number ] = array(
+				'error'         => 0,
+				'warning'       => 0
+			);
+		}
+	}
+
 	/*
 	 * Run all checks requested and store the
 	 * results in an array

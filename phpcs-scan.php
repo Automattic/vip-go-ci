@@ -169,27 +169,6 @@ function vipgoci_phpcs_scan_commit(
 		$options['branches-ignore']
 	);
 
-	foreach ( $prs_implicated as $pr_item ) {
-		/*
-		 * Initialize array for stats and
-		 * results of scanning, if needed.
-		 */
-
-		if ( empty( $commit_issues_submit[ $pr_item->number ] ) ) {
-			$commit_issues_submit[ $pr_item->number ] = array(
-			);
-		}
-
-
-		if ( empty( $commit_issues_stats[ $pr_item->number ] ) ) {
-			$commit_issues_stats[ $pr_item->number ] = array(
-				'error'		=> 0,
-				'warning'	=> 0
-			);
-		}
-	}
-
-
 	/*
 	 * Fetch all comments made in relation to that commit
 	 * and associated with any Pull-Requests that are open.
