@@ -335,3 +335,49 @@ function vipgoci_github_labels( $text_string ) {
 
 	return '';
 }
+
+
+/*
+ * Determine if the presented file has an
+ * allowable file-ending
+ */
+function vipgoci_filter_file_endings(
+	$filename,
+	$file_extensions_arr
+) {
+	$file_info_extension = pathinfo(
+		$filename,
+		PATHINFO_EXTENSION
+	);
+
+	/*
+	 * If the file does not have an acceptable
+	 * file-extension, skip
+	 */
+
+	if ( ! in_array(
+		strtolower( $file_info_extension ),
+			$file_extensions_arr,
+			true
+	) ) {
+		vipgoci_log(
+			'Skipping file that does not seem ' .
+				'to be a file matching ' .
+				'filter-criteria',
+
+			array(
+				'filename' =>
+					$filename,
+
+				'allowable_file_extensions' =>
+					$file_extensions_arr,
+			),
+			2
+		);
+
+		return false;
+	}
+
+	return true;
+}
+

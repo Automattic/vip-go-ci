@@ -427,38 +427,15 @@ function vipgoci_github_fetch_commit_info(
 		$files_new = array();
 
 		foreach( $data->files as $file_info ) {
-			$file_info_extension = pathinfo(
-				$file_info->filename,
-				PATHINFO_EXTENSION
-			);
-
 			/*
 			 * If the file does not have an acceptable
 			 * file-extension, skip
 			 */
 
-			if (
-				( is_array( $file_info_extension ) ) &&
-				( ! in_array(
-					strtolower( $file_info_extension ),
-					$filter['file_extensions'],
-					true
-				) )
-			) {
-				vipgoci_log(
-					'Skipping file that does not seem ' .
-						'to be a file matching ' .
-						'filter-criteria',
-
-					array(
-						'filename' =>
-							$file_info->filename,
-
-						'allowable_file_extensions' =>
-							$filter['file_extensions'],
-					)
-				);
-
+			if ( false === vipgoci_filter_file_endings(
+				$file_info->filename,
+				$filter['file_extensions']
+			) ) {
 				continue;
 			}
 
@@ -505,6 +482,108 @@ function vipgoci_github_fetch_commit_info(
 	);
 
 	return $data;
+}
+
+
+/*
+ * Fetch "tree" from GitHub; a tree
+ * of files that are part of the commit
+ * specified.
+ *
+ * Allows filtering out files that the
+ * caller does only want to see.
+ */
+
+function vipgoci_github_fetch_tree(
+	$repo_owner,
+	$repo_name,
+	$commit_id,
+	$github_token,
+	$filter = null
+) {
+	/* Check for cached version */
+	$cached_id = array(
+		__FUNCTION__, $repo_owner, $repo_name,
+		$commit_id, $github_token, $filter
+	);
+
+	$cached_data = vipgoci_cache( $cached_id );
+
+	vipgoci_log(
+		'Fetching tree info from GitHub' .
+			( $cached_data ? ' (cached)' : '' ),
+
+		array(
+			'repo_owner' => $repo_owner,
+			'repo_name' => $repo_name,
+			'commit_id' => $commit_id,
+			'filter' => $filter,
+		)
+	);
+
+	if ( false !== $cached_data ) {
+		return $cached_data;
+	}
+
+
+	/*
+	 * No cached version; ask GitHub
+	 * for information
+	 */
+	$github_url =
+		'https://api.github.com/' .
+		'repos/' .
+		rawurlencode( $repo_owner ) . '/' .
+		rawurlencode( $repo_name ) . '/' .
+		'git/' .
+		'trees/' .
+		rawurlencode( $commit_id );
+
+	$data = json_decode(
+		vipgoci_github_fetch_url(
+			$github_url,
+			$github_token
+		)
+	);
+
+
+	/*
+	 * Now go through the tree,
+	 * remove any files that are
+	 * not allowable according to the
+	 * filter.
+	 */
+
+	$files_arr = array();
+
+	foreach ( $data->tree as $file_info ) {
+		if ( null !== $filter ) {
+			/*
+			 * If the file does not have an acceptable
+			 * file-extension, skip
+			 */
+
+			if ( false === vipgoci_filter_file_endings(
+				$file_info->path,
+				$filter['file_extensions']
+			) ) {
+				continue;
+			}
+		}
+
+		$files_arr[] = $file_info->path;
+	}
+
+
+	/*
+	 * Cache the results and return
+	 */
+	vipgoci_cache(
+		$cached_id,
+		$files_arr
+	);
+
+	return $files_arr;
 }
 
 
