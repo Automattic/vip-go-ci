@@ -428,12 +428,12 @@ function vipgoci_run() {
 		 */
 
 		if ( empty( $commit_issues_submit[ $pr_item->number ] ) ) {
-			$commit_issues_submit[ $pr_item->number ] = array(
+			$results['issues'][ $pr_item->number ] = array(
 			);
 		}
 
 		if ( empty( $commit_issues_stats[ $pr_item->number ] ) ) {
-			$commit_issues_stats[ $pr_item->number ] = array(
+			$results['stats'][ $pr_item->number ] = array(
 				'error'         => 0,
 				'warning'       => 0
 			);
