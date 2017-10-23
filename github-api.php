@@ -78,6 +78,35 @@ function vipgoci_curl_headers( $ch, $header ) {
 
 
 /*
+ * Make sure to wait in between requests to
+ * GitHub. Only waits if it is really needed.
+ *
+ * This function should only be called just before
+ * sending a request to GitHub -- that is the most
+ * effective usage.
+ *
+ * See here for background:
+ * https://developer.github.com/v3/guides/best-practices-for-integrators/#dealing-with-abuse-rate-limits
+ */
+
+function vipgoci_github_wait() {
+	static $last_request_time = null;
+
+	if ( null !== $last_request_time ) {
+		/*
+		 * Only sleep if four or less seconds
+		 * have elapsed from last request.
+		 */
+		if ( ( time() - $last_request_time ) <= 4 ) {
+			sleep( 4 );
+		}
+	}
+
+	$last_request_time = time();
+}
+
+
+/*
  * Send a POST request to GitHub -- attempt
  * to retry if errors were encountered.
  */
@@ -226,35 +255,6 @@ function vipgoci_github_post_url(
 		curl_close( $ch );
 
 	} while ( $retry_req == true );
-}
-
-
-/*
- * Make sure to wait in between requests to
- * GitHub. Only waits if it is really needed.
- *
- * This function should only be called just before
- * sending a request to GitHub -- that is the most
- * effective usage.
- *
- * See here for background:
- * https://developer.github.com/v3/guides/best-practices-for-integrators/#dealing-with-abuse-rate-limits
- */
-
-function vipgoci_github_wait() {
-	static $last_request_time = null;
-
-	if ( null !== $last_request_time ) {
-		/*
-		 * Only sleep if four or less seconds
-		 * have elapsed from last request.
-		 */
-		if ( ( time() - $last_request_time ) <= 4 ) {
-			sleep( 4 );
-		}
-	}
-
-	$last_request_time = time();
 }
 
 
@@ -826,9 +826,8 @@ function vipgoci_github_pull_requests_comments_get(
 
 
 /*
- * Submit a comment on GitHub for a particular file,
- * line, commit and Pull-Request, using the
- * access-token provided.
+ * Submit a review on GitHub for a particular commit,
+ * and pull-request using the access-token provided.
  */
 function vipgoci_github_review_submit(
 	$repo_owner,
