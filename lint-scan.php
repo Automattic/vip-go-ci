@@ -170,6 +170,18 @@ function vipgoci_lint_scan_commit(
 		)
 	);
 
+	// Fetch list of files that exist in the commit
+	$commit_tree = vipgoci_github_fetch_tree(
+		$repo_owner,
+		$repo_name,
+		$commit_id,
+		$github_token,
+		array(
+			'file_extensions'
+				=> array( 'php' )
+		)
+	);
+
 	$prs_implicated = vipgoci_github_prs_implicated(
 		$repo_owner,
 		$repo_name,
@@ -179,13 +191,17 @@ function vipgoci_lint_scan_commit(
 	);
 
 
-	foreach( $commit_info->files as $file_info ) {
+	/*
+	 * Lint every PHP file existing in the commit
+	 */
+
+	foreach( $commit_tree as $filename ) {
 		$file_contents = vipgoci_github_fetch_committed_file(
 			$repo_owner,
 			$repo_name,
 			$github_token,
 			$commit_id,
-			$file_info->filename,
+			$filename,
 			$options['local-git-repo']
                 );
 
@@ -205,7 +221,7 @@ function vipgoci_lint_scan_commit(
 				'repo_owner' => $repo_owner,
 				'repo_name' => $repo_name,
 				'commit_id' => $commit_id,
-				'filename' => $file_info->filename,
+				'filename' => $filename,
 				'temp_file_name' => $temp_file_name,
 			)
 		);
@@ -224,7 +240,7 @@ function vipgoci_lint_scan_commit(
 		 */
 
 		$file_issues_arr = vipgoci_lint_get_issues(
-			$file_info->filename,
+			$filename,
 			$temp_file_name,
 			$file_issues_arr_raw
 		);
@@ -235,7 +251,7 @@ function vipgoci_lint_scan_commit(
 				'repo_owner'		=> $repo_owner,
 				'repo_name'		=> $repo_name,
 				'commit_id'		=> $commit_id,
-				'filename'		=> $file_info->filename,
+				'filename'		=> $filename,
 				'temp_file_name'	=> $temp_file_name,
 				'file_issues_arr'	=> $file_issues_arr,
 				'file_issues_arr_raw'	=> $file_issues_arr_raw,
@@ -248,10 +264,8 @@ function vipgoci_lint_scan_commit(
 
 		// If there are no new issues, just leave it at that
 		if ( empty( $file_issues_arr ) ) {
-			return;
+			continue;
 		}
-
-		$file_issues_arr_master = $file_issues_arr;
 
 		/*
 		 * Process results of linting
@@ -259,51 +273,21 @@ function vipgoci_lint_scan_commit(
 		 * queue issues for submission.
 		 */
 		foreach( $prs_implicated as $pr_item ) {
-			$file_changed_lines = vipgoci_patch_changed_lines(
-				$repo_owner,
-				$repo_name,
-				$github_token,
-				$pr_item->base->sha,
-				$commit_id,
-				$file_info->filename
-			);
-
-			$file_relevant_lines = @array_flip(
-				$file_changed_lines
-			);
-
-
-			/*
-			 * Filter out any issues that affect the file, but are not
-			 * due to the commit made -- so any existing issues are left
-			 * out and not commented on by us.
-			 */
-
-			$file_issues_arr = vipgoci_issues_filter_irrellevant(
-				$file_issues_arr,
-				$file_changed_lines,
-				true // Allow fuzziness
-			);
-
-
 			vipgoci_log(
-				'Linting issues found to be relevant',
+				'Linting issues found',
 				array(
 					'repo_owner'		=> $repo_owner,
 					'repo_name'		=> $repo_name,
 					'commit_id'		=> $commit_id,
 
 					'filename'
-						=> $file_info->filename,
+						=> $filename,
 
 					'pr_number'
 						=> $pr_item->number,
 
 					'file_issues_arr'
 						=> $file_issues_arr,
-
-					'file_issues_arr_master'=>
-						$file_issues_arr_master,
 				),
 				2
 			);
@@ -327,21 +311,16 @@ function vipgoci_lint_scan_commit(
 					$file_issue_values as
 						$file_issue_val_item
 				) {
-					// FIXME: Avoid making the same comment twice
-					// just as we do with PHPCS
-
 					$commit_issues_submit[
 						$pr_item->number
 					][] = array(
 						'type'		=> 'lint',
 
 						'file_name'	=>
-							$file_info->filename,
+							$filename,
 
 						'file_line'	=> intval(
-							$file_relevant_lines[
-								$file_issue_line
-							]
+							$file_issue_line
 						),
 
 						'issue'		=>
@@ -363,10 +342,9 @@ function vipgoci_lint_scan_commit(
 	 */
 	unset( $file_contents );
 	unset( $file_issues_arr );
-	unset( $file_issues_arr_master );
 	unset( $prs_implicated );
-	unset( $file_changed_lines );
 	unset( $file_issue_values );
+	unset( $commit_tree );
 
 	gc_collect_cycles();
 }
