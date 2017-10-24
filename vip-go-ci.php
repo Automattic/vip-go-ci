@@ -427,13 +427,18 @@ function vipgoci_run() {
 		 * results of scanning, if needed.
 		 */
 
-		if ( empty( $commit_issues_submit[ $pr_item->number ] ) ) {
+		if ( empty( $results['issues'][ $pr_item->number ] ) ) {
 			$results['issues'][ $pr_item->number ] = array(
 			);
 		}
 
-		if ( empty( $commit_issues_stats[ $pr_item->number ] ) ) {
-			$results['stats'][ $pr_item->number ] = array(
+		if ( empty( $results['stats'][ $pr_item->number ] ) ) {
+			$results['stats']['phpcs'][ $pr_item->number ] = array(
+				'error'         => 0,
+				'warning'       => 0
+			);
+
+			$results['stats']['lint'][ $pr_item->number ] = array(
 				'error'         => 0,
 				'warning'       => 0
 			);
@@ -470,7 +475,8 @@ function vipgoci_run() {
 	/*
 	 * Submit any issues to GitHub
 	 */
-	vipgoci_github_review_submit(
+
+	vipgoci_github_pr_comment_submit(
 		$options['repo-owner'],
 		$options['repo-name'],
 		$options['token'],
@@ -478,6 +484,18 @@ function vipgoci_run() {
 		$results,
 		$options['dry-run']
 	);
+
+	// FIXME: Remove old comments
+
+	vipgoci_github_pr_review_submit(
+		$options['repo-owner'],
+		$options['repo-name'],
+		$options['token'],
+		$options['commit'],
+		$results,
+		$options['dry-run']
+	);
+
 
 	vipgoci_log(
 		'Shutting down',
