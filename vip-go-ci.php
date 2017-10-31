@@ -397,6 +397,7 @@ function vipgoci_run() {
 	unset( $options_clean );
 
 
+
 	/*
 	 * If no Pull-Requests are implicated by this commit,
 	 * bail now, as there is no point in continuing running.
@@ -432,18 +433,31 @@ function vipgoci_run() {
 			);
 		}
 
-		if ( empty( $results['stats'][ $pr_item->number ] ) ) {
-			$results['stats']['phpcs'][ $pr_item->number ] = array(
-				'error'         => 0,
-				'warning'       => 0
-			);
+		foreach ( array( 'phpcs', 'lint' ) as $stats_type ) {
+			// Initialize stats for the stats-types only when supposed to run them
+			if (
+				( true !== $options[ $stats_type ] ) ||
+				( ! empty( $results['stats'][ $stats_type ][ $pr_item->number ] ) )
+			) {
+				continue;
+			}
 
-			$results['stats']['lint'][ $pr_item->number ] = array(
+			$results['stats'][ $stats_type ][ $pr_item->number ] = array(
 				'error'         => 0,
 				'warning'       => 0
 			);
 		}
 	}
+
+	// FIXME: Move
+	vipgoci_github_pr_comments_cleanup(
+		$options['repo-owner'],
+		$options['repo-name'],
+		$options['commit'],
+		$options['token'],
+		$options['branches-ignore'],
+		$options['dry-run']
+	);
 
 	/*
 	 * Run all checks requested and store the
@@ -476,7 +490,7 @@ function vipgoci_run() {
 	 * Submit any issues to GitHub
 	 */
 
-	vipgoci_github_pr_comment_submit(
+	vipgoci_github_pr_generic_comment_submit(
 		$options['repo-owner'],
 		$options['repo-name'],
 		$options['token'],
@@ -484,6 +498,7 @@ function vipgoci_run() {
 		$results,
 		$options['dry-run']
 	);
+
 
 	// FIXME: Remove old comments
 
