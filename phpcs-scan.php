@@ -173,7 +173,7 @@ function vipgoci_phpcs_scan_commit(
 	 * Fetch all comments made in relation to that commit
 	 * and associated with any Pull-Requests that are open.
 	 */
-	$prs_comments = vipgoci_github_pull_requests_comments_get(
+	$prs_comments = vipgoci_github_pr_reviews_comments_get(
 		$repo_owner,
 		$repo_name,
 		$commit_id,
