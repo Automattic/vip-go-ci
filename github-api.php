@@ -221,7 +221,8 @@ function vipgoci_github_repo_ok(
 function vipgoci_github_post_url(
 	$github_url,
 	$github_postfields,
-	$github_token
+	$github_token,
+	$http_delete = false
 ) {
 	/*
 	 * Actually send a request to GitHub -- make sure
@@ -253,9 +254,17 @@ function vipgoci_github_post_url(
 			$ch, CURLOPT_USERAGENT,	VIPGOCI_PHPCS_CLIENT_ID
 		);
 
-		curl_setopt(
-			$ch, CURLOPT_POST, 1
-		);
+		if ( false === $http_delete ) {
+			curl_setopt(
+				$ch, CURLOPT_POST, 1
+			);
+		}
+
+		else {
+			curl_setopt(
+				$ch, CURLOPT_CUSTOMREQUEST, 'DELETE'
+			);
+		}
 
 		curl_setopt(
 			$ch,
@@ -291,8 +300,18 @@ function vipgoci_github_post_url(
 		 * Allow 'OK' and 'Created' statuses
 		 */
 		if (
-			( intval( $resp_headers['status'][0] ) !== 200 ) &&
-			( intval( $resp_headers['status'][0] ) !== 201 )
+			(
+				( false === $http_delete ) &&
+				( intval( $resp_headers['status'][0] ) !== 200 ) &&
+				( intval( $resp_headers['status'][0] ) !== 201 )
+			)
+
+			||
+
+			(
+				( true === $http_delete ) &&
+				( intval( $resp_headers['status'][0] ) !== 204 )
+			)
 		) {
 			/*
 			 * Set default wait period between requests
@@ -810,7 +829,7 @@ function vipgoci_github_fetch_committed_file(
  * with file-name and file-line number as keys. Will
  * return false on an error.
  */
-function vipgoci_github_pull_requests_comments_get(
+function vipgoci_github_pr_reviews_comments_get(
 	$repo_owner,
 	$repo_name,
 	$commit_id,
@@ -920,20 +939,79 @@ function vipgoci_github_pull_requests_comments_get(
 
 
 /*
- * Delete a particular comment from
- * a particular Pull-Request.
+ * Get all generic comments made to a Pull-Request from Github.
  */
 
-function vipgoci_github_pr_comment_delete(
+function vipgoci_github_pr_generic_comments_get(
 	$repo_owner,
 	$repo_name,
-	$github_token,
 	$pr_number,
-	$comment_id
+	$github_token
 ) {
-	// FIXME: Implement
-}
+	/*
+	 * Try to get comments from cache
+	 */
+	$cached_id = array(
+		__FUNCTION__, $repo_owner, $repo_name,
+		$pr_number, $github_token
+	);
 
+	$cached_data = vipgoci_cache( $cached_id );
+
+	vipgoci_log(
+		'Fetching Pull-Requests generic comments from GitHub' .
+			( $cached_data ? ' (cached)' : '' ),
+
+		array(
+			'repo_owner' => $repo_owner,
+			'repo_name' => $repo_name,
+			'pr_number' => $pr_number,
+		)
+	);
+
+	if ( false !== $cached_data ) {
+		return $cached_data;
+	}
+
+
+	$pr_comments_ret = array();
+
+	$page = 0;
+
+	do {
+		$github_url =
+			'https://api.github.com/' .
+			'repos/' .
+			rawurlencode( $repo_owner ) . '/' .
+			rawurlencode( $repo_name ) . '/' .
+			'issues/' .
+			rawurlencode( $pr_number ) . '/' .
+			'comments' .
+			'?page=' . rawurlencode( $page );
+
+
+		$pr_comments_raw = json_decode(
+			vipgoci_github_fetch_url(
+				$github_url,
+				$github_token
+			)
+		);
+
+		foreach ( $pr_comments_raw as $pr_comment ) {
+			$pr_comments_ret[] = $pr_comment;
+		}
+
+		$page++;
+	} while ( count( $pr_comments_raw ) > 0 );
+
+
+	vipgoci_cache(
+		$cached_id,
+		$pr_comments_ret
+	);
+
+	return $pr_comments_ret;
+}
 
 /*
  * Submit comment to GitHub, reporting any
@@ -942,7 +1020,7 @@ function vipgoci_github_pr_comment_delete(
  * others. Attempts to format the comment to GitHub.
  */
 
-function vipgoci_github_pr_comment_submit(
+function vipgoci_github_pr_generic_comment_submit(
 	$repo_owner,
 	$repo_name,
 	$github_token,
@@ -991,9 +1069,7 @@ function vipgoci_github_pr_comment_submit(
 
 
 		$github_postfields = array(
-			'body' =>
-				'**PHP Syntax Errors Found**' .
-				"\n\r\n\r",
+			'body' => ''
 		);
 
 
@@ -1042,7 +1118,11 @@ function vipgoci_github_pr_comment_submit(
 
 				': ' .
 
-				$commit_issue['issue']['message'] .
+				str_replace(
+					'\'',
+					'`',
+					$commit_issue['issue']['message']
+				) .
 
 				"\n\r\n\r" .
 
@@ -1066,6 +1146,28 @@ function vipgoci_github_pr_comment_submit(
 			continue;
 		}
 
+
+		/*
+		 * There are issues, report them.
+		 *
+		 * Put togather a comment to be posted to GitHub
+		 * -- splice a header to the message we currently have.
+		 */
+
+		$github_postfields['body'] =
+			'**PHP Syntax Errors Found**' .
+			"\n\r\n\r" .
+
+			"Scan performed on the code at commit " . $commit_id .
+				" ([view code](https://github.com/" .
+				rawurlencode( $repo_owner ) . "/" .
+				rawurlencode( $repo_name ) . "/" .
+				"tree/" .
+				rawurlencode( $commit_id ) .
+				"))." .
+				"\n\r***\n\r" .
+			$github_postfields['body'];
+
 		vipgoci_github_post_url(
 			$github_url,
 			$github_postfields,
@@ -1073,6 +1175,110 @@ function vipgoci_github_pr_comment_submit(
 		);
 	}
 }
+
+
+/*
+ * Remove any comments made by us earlier.
+ */
+
+function vipgoci_github_pr_comments_cleanup(
+	$repo_owner,
+	$repo_name,
+	$commit_id,
+	$github_token,
+	$branches_ignore,
+	$dry_run
+) {
+	vipgoci_log(
+		( $dry_run == true ? 'Would ' : 'About to ' ) .
+		'clean up generic PR comments on Github',
+		array(
+			'repo_owner' => $repo_owner,
+			'repo_name' => $repo_name,
+			'commit_id' => $commit_id,
+			'branches_ignore' => $branches_ignore,
+			'dry_run' => $dry_run,
+		)
+	);
+
+
+	/* If dry-run is enabled, do nothing further. */
+	if ( $dry_run == true ) {
+		return;
+	}
+
+	$prs_implicated = vipgoci_github_prs_implicated(
+		$repo_owner,
+		$repo_name,
+		$commit_id,
+		$github_token,
+		$branches_ignore
+	);
+
+	foreach ( $prs_implicated as $pr_item ) {
+		$pr_comments = vipgoci_github_pr_generic_comments_get(
+			$repo_owner,
+			$repo_name,
+			$pr_item->number,
+			$github_token
+		);
+
+		foreach ( $pr_comments as $pr_comment ) {
+			if ( $pr_comment->user->login != $repo_owner ) {
+				// Do not delete other person's comment
+				continue;
+			}
+
+			vipgoci_github_pr_generic_comment_delete(
+				$repo_owner,
+				$repo_name,
+				$github_token,
+				$pr_comment->id
+			);
+		}
+	}
+}
+
+
+/*
+ * Delete generic comment made to Pull-Request.
+ */
+
+function vipgoci_github_pr_generic_comment_delete(
+	$repo_owner,
+	$repo_name,
+	$github_token,
+	$comment_id
+) {
+	vipgoci_log(
+		'About to remove generic PR comment on Github',
+		array(
+			'repo_owner' => $repo_owner,
+			'repo_name' => $repo_name,
+			'comment_id' => $comment_id,
+		),
+		1
+	);
+
+
+	$github_url =
+		'https://api.github.com/' .
+		'repos/' .
+		rawurlencode( $repo_owner ) . '/' .
+		rawurlencode( $repo_name ) . '/' .
+		'issues/' .
+		'comments/' .
+		rawurlencode( $comment_id );
+
+
+	vipgoci_github_post_url(
+		$github_url,
+		array(),
+		$github_token,
+		true
+	);
+}
+
 
 /*
  * Submit a review on GitHub for a particular commit,
@@ -1126,7 +1332,13 @@ function vipgoci_github_pr_review_submit(
 			'reviews';
 
 
-		$commit_issues_rewritten = array();
+		$github_postfields = array(
+			'commit_id'	=> $commit_id,
+			'body'		=> '',
+			'event'		=> '',
+			'comments'	=> array(),
+		);
+
 
 		/*
 		 * For each issue reported, format
@@ -1150,7 +1362,7 @@ function vipgoci_github_pr_review_submit(
 			}
 
 
-			$commit_issues_rewritten[] = array(
+			$github_postfields['comments'][] = array(
 				'body'		=>
 					vipgoci_github_labels(
 						$commit_issue['issue']['level']
@@ -1171,19 +1383,20 @@ function vipgoci_github_pr_review_submit(
 		}
 
 
-		$github_postfields = array(
-			'commit_id'	=> $commit_id,
-			'body'		=> '',
-			'event'		=> '',
-			'comments'	=> $commit_issues_rewritten,
-		);
-
 		/*
-		 * If there are 'error'-level issues, make sure the submission
+		 * Figure out what to report to GitHub.
+		 *
+		 * If there are any 'error'-level issues, make sure the submission
 		 * asks for changes to be made, otherwise only comment.
+		 *
+		 * If there are no issues at all -- warning or error -- do not
+		 * submit anything.
 		 */
 
 		$github_postfields['event'] = 'COMMENT';
+
+		$github_errors = false;
+		$github_warnings = false;
 
 		foreach (
 			$stats_types_to_process as
@@ -1194,8 +1407,32 @@ function vipgoci_github_pr_review_submit(
 					[ $stats_type ][ $pr_number ]['error']
 			) ) {
 				$github_postfields['event'] = 'REQUEST_CHANGES';
+				$github_errors = true;
+			}
+
+			if ( ! empty(
+				$results['stats']
+					[ $stats_type ][ $pr_number ]['warning']
+			) ) {
+				$github_warnings = true;
 			}
 		}
+
+
+		/*
+		 * If there are no issues to report to GitHub,
+		 * do not continue processing the Pull-Request.
+		 * Our exit signal will indicate if anything is wrong.
+		 */
+		if (
+			( false === $github_errors ) &&
+			( false === $github_warnings )
+		) {
+			continue;
+		}
+
+		unset( $github_errors );
+		unset( $github_warnings );
 
 
 		/*
