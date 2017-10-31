@@ -691,6 +691,47 @@ function vipgoci_github_fetch_tree(
 	$files_arr = array();
 
 	foreach ( $data->tree as $file_info ) {
+		/*
+		 * If we get a 'tree', it means that there is
+		 * a sub-folder we need to recurse into
+		 */
+
+		if ( 'tree' === $file_info->type ) {
+			/*
+			 * Sanity-check: If tree is the same as the one
+			 * we are currently processing, ignore. This is to
+			 * avoid endless loops.
+			 */
+
+			if ( $file_info->sha === $commit_id ) {
+				continue;
+			}
+
+
+			/*
+			 * Fetch the sub-tree and merge the
+			 * results
+			 */
+
+			$subtree_files = vipgoci_github_fetch_tree(
+				$repo_owner,
+				$repo_name,
+				$file_info->sha,
+				$github_token,
+				$filter
+			);
+
+			foreach ( $subtree_files as $tmp_file_item ) {
+				$files_arr[] =
+					$file_info->path .
+					'/' .
+					$tmp_file_item;
+			}
+
+			// Do not continue processing when dealing with subfolders
+			continue;
+		}
+
 		if ( null !== $filter ) {
 			/*
 			 * If the file does not have an acceptable
@@ -704,6 +745,7 @@ function vipgoci_github_fetch_tree(
 				continue;
 			}
 		}
+
 
 		$files_arr[] = $file_info->path;
 	}
