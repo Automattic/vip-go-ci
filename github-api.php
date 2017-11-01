@@ -626,19 +626,15 @@ function vipgoci_github_fetch_commit_info(
  */
 
 function vipgoci_github_fetch_tree(
-	$repo_owner,
-	$repo_name,
+	$options,
 	$commit_id,
-	$github_token,
 	$filter = null
 ) {
-	// FIXME: Be able to use local
-	// git repository
 
 	/* Check for cached version */
 	$cached_id = array(
-		__FUNCTION__, $repo_owner, $repo_name,
-		$commit_id, $github_token, $filter
+		__FUNCTION__, $options['repo-owner'], $options['repo-name'],
+		$commit_id, $options['token'], $filter
 	);
 
 	$cached_data = vipgoci_cache( $cached_id );
@@ -648,8 +644,8 @@ function vipgoci_github_fetch_tree(
 			( $cached_data ? ' (cached)' : '' ),
 
 		array(
-			'repo_owner' => $repo_owner,
-			'repo_name' => $repo_name,
+			'repo_owner' => $options['repo-owner'],
+			'repo_name' => $options['repo-name'],
 			'commit_id' => $commit_id,
 			'filter' => $filter,
 		)
@@ -661,14 +657,42 @@ function vipgoci_github_fetch_tree(
 
 
 	/*
-	 * No cached version; ask GitHub
-	 * for information
+	 * If we can use local git repository, do so
+	 */
+
+	if (
+		( ! empty( $options['local-git-repo'] ) ) &&
+		( vipgoci_github_repo_ok(
+			$commit_id,
+			$options['local-git-repo']
+		) )
+	) {
+		$files_arr = vipgoci_scandir_git_repo(
+			$options['local-git-repo'],
+			$filter
+		);
+
+		/*
+		 * Cache the results and return
+		 */
+		vipgoci_cache(
+			$cached_id,
+			$files_arr
+		);
+
+		return $files_arr;
+	}
+
+
+	/*
+	 * No cached version, no local git repo;
+	 * ask GitHub for information
 	 */
 	$github_url =
 		'https://api.github.com/' .
 		'repos/' .
-		rawurlencode( $repo_owner ) . '/' .
-		rawurlencode( $repo_name ) . '/' .
+		rawurlencode( $options['repo-owner'] ) . '/' .
+		rawurlencode( $options['repo-name'] ) . '/' .
 		'git/' .
 		'trees/' .
 		rawurlencode( $commit_id );
@@ -676,7 +700,7 @@ function vipgoci_github_fetch_tree(
 	$data = json_decode(
 		vipgoci_github_fetch_url(
 			$github_url,
-			$github_token
+			$options['token']
 		)
 	);
 
@@ -714,10 +738,8 @@ function vipgoci_github_fetch_tree(
 			 */
 
 			$subtree_files = vipgoci_github_fetch_tree(
-				$repo_owner,
-				$repo_name,
+				$options,
 				$file_info->sha,
-				$github_token,
 				$filter
 			);
 

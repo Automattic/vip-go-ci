@@ -172,10 +172,8 @@ function vipgoci_lint_scan_commit(
 
 	// Fetch list of files that exist in the commit
 	$commit_tree = vipgoci_github_fetch_tree(
-		$repo_owner,
-		$repo_name,
+		$options,
 		$commit_id,
-		$github_token,
 		array(
 			'file_extensions'
 				=> array( 'php' )

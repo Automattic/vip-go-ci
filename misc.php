@@ -381,3 +381,56 @@ function vipgoci_filter_file_endings(
 	return true;
 }
 
+
+/*
+ * Recursively scan the git repository,
+ * returning list of files that exist in
+ * it, making sure to filter the result
+ */
+function vipgoci_scandir_git_repo( $path, $filter ) {
+	$result = array();
+
+	$cdir = scandir( $path );
+
+	foreach ( $cdir as $key => $value ) {
+		if ( in_array( $value, array( '.', '..', '.git' ) ) ) {
+			// Skip '.' and '..'
+			continue;
+		}
+
+		if ( is_dir( $path . DIRECTORY_SEPARATOR . $value ) ) {
+			/*
+			 * A directory, traverse into, get files,
+			 * amend the results
+			 */
+			$tmp_result = vipgoci_scandir_git_repo(
+				$path . DIRECTORY_SEPARATOR . $value,
+				$filter
+			);
+
+			foreach ( $tmp_result as $tmp_result_item ) {
+				$result[] = $value .
+					DIRECTORY_SEPARATOR .
+					$tmp_result_item;
+			}
+
+			continue;
+		}
+
+		// Filter out files not with desired line-ending
+		if ( null === $filter ) {
+			if ( false === vipgoci_filter_file_endings(
+				$value,
+				$filter['file_extensions']
+			) ) {
+				continue;
+			}
+		}
+
+		// Not a directory, passed filter, save in array
+		$result[] = $value;
+	}
+
+	return $result;
+}
+
