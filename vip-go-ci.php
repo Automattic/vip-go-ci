@@ -449,7 +449,6 @@ function vipgoci_run() {
 		}
 	}
 
-	// FIXME: Move
 	vipgoci_github_pr_comments_cleanup(
 		$options['repo-owner'],
 		$options['repo-name'],
@@ -499,8 +498,6 @@ function vipgoci_run() {
 		$options['dry-run']
 	);
 
-
-	// FIXME: Remove old comments
 
 	vipgoci_github_pr_review_submit(
 		$options['repo-owner'],
