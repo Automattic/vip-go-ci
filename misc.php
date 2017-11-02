@@ -434,3 +434,43 @@ function vipgoci_scandir_git_repo( $path, $filter ) {
 	return $result;
 }
 
+
+/*
+ * Initialize statistics array
+ */
+function vipgoci_stats_init( $options, $prs_implicated, &$results ) {
+	/*
+	 * Init stats
+	 */
+
+	foreach ( $prs_implicated as $pr_item ) {
+		/*
+		 * Initialize array for stats and
+		 * results of scanning, if needed.
+		 */
+
+		if ( empty( $results['issues'][ $pr_item->number ] ) ) {
+			$results['issues'][ $pr_item->number ] = array(
+			);
+		}
+
+		foreach ( array( 'phpcs', 'lint' ) as $stats_type ) {
+			/*
+			 * Initialize stats for the stats-types only when
+			 * supposed to run them
+			 */
+			if (
+				( true !== $options[ $stats_type ] ) ||
+				( ! empty( $results['stats'][ $stats_type ][ $pr_item->number ] ) )
+			) {
+				continue;
+			}
+
+			$results['stats'][ $stats_type ]
+				[ $pr_item->number ] = array(
+					'error'         => 0,
+					'warning'       => 0
+				);
+		}
+	}
+}

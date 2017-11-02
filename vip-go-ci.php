@@ -302,17 +302,10 @@ function vipgoci_run() {
 			'/'
 		);
 
-		if ( false === is_dir(
-			$options['local-git-repo'] . '/.git'
+		if ( false === vipgoci_github_repo_ok(
+			$options['commit'],
+			$options['local-git-repo']
 		) ) {
-			vipgoci_log(
-				'Local git repository was not found',
-				array(
-					'local_git_repo' =>
-						$options['local-git-repo'],
-				)
-			);
-
 			$options['local-git-repo'] = null;
 		}
 	}
@@ -422,33 +415,101 @@ function vipgoci_run() {
 	}
 
 
+	/*
+	 * Make sure we are working with the latest
+	 * commit to each implicated PR.
+	 *
+	 * If we detect that we are doing linting,
+	 * and the commit is not the latest, skip linting
+	 * as it becomes useless if this is not the
+	 * latest commit: There is no use in linting
+	 * an obsolete commit.
+	 */
 	foreach ( $prs_implicated as $pr_item ) {
+		$commits_list = vipgoci_github_prs_commits_list(
+			$options['repo-owner'],
+			$options['repo-name'],
+			$pr_item->number,
+			$options['token']
+		);
+
+		// If no commits, skip checks
+		if ( empty( $commits_list ) ) {
+			continue;
+		}
+
+
+		// If latest commit to the PR, we do not care at all
+		if ( $commits_list[0] === $options['commit'] ) {
+			continue;
+		}
+
 		/*
-		 * Initialize array for stats and
-		 * results of scanning, if needed.
+		 * At this point, we have found an inconsistency;
+		 * the commit we are working with is not the latest
+		 * to the Pull-Request, and we have to deal with that.
 		 */
 
-		if ( empty( $results['issues'][ $pr_item->number ] ) ) {
-			$results['issues'][ $pr_item->number ] = array(
+		if (
+			( true === $options['lint'] ) &&
+			( false === $options['phpcs'] )
+		) {
+			vipgoci_log(
+				'The current commit is not the latest one ' .
+					'to the Pull-Request, skipping ' .
+					'linting, and not doing PHPCS ' .
+					'-- nothing to do',
+				array(
+					'repo_owner' => $options['repo-owner'],
+					'repo_name' => $options['repo-name'],
+					'pr_number' => $pr_item->number,
+				)
+			);
+
+			exit( 0 );
+		}
+
+		else if (
+			( true === $options['lint'] ) &&
+			( true === $options['phpcs'] )
+		) {
+			// Skip linting, useless if not latest commit
+			$options['lint'] = false;
+
+			vipgoci_log(
+				'The current commit is not the latest ' .
+					'one to the Pull-Request, ' .
+					'skipping linting',
+				array(
+					'repo_owner' => $options['repo-owner'],
+					'repo_name' => $options['repo-name'],
+					'pr_number' => $pr_item->number,
+				)
 			);
 		}
 
-		foreach ( array( 'phpcs', 'lint' ) as $stats_type ) {
-			// Initialize stats for the stats-types only when supposed to run them
-			if (
-				( true !== $options[ $stats_type ] ) ||
-				( ! empty( $results['stats'][ $stats_type ][ $pr_item->number ] ) )
-			) {
-				continue;
-			}
+		/*
+		 * As for lint === false && true === phpcs,
+		 * we do not care, as then we will not be linting.
+		 */
 
-			$results['stats'][ $stats_type ][ $pr_item->number ] = array(
-				'error'         => 0,
-				'warning'       => 0
-			);
-		}
+		unset( $commits_list );
 	}
 
+
+	/*
+	 * Init stats
+	 */
+	vipgoci_stats_init(
+		$options,
+		$prs_implicated,
+		$results
+	);
+
+
+	/*
+	 * Clean up old comments made by use previously
+	 */
 	vipgoci_github_pr_comments_cleanup(
 		$options['repo-owner'],
 		$options['repo-name'],
