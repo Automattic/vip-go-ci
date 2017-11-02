@@ -438,6 +438,9 @@ function vipgoci_run() {
 			continue;
 		}
 
+		// Reverse array, so we get the last commit first
+		$commits_list = array_reverse( $commits_list );
+
 
 		// If latest commit to the PR, we do not care at all
 		if ( $commits_list[0] === $options['commit'] ) {
