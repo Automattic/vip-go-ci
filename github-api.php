@@ -1,5 +1,9 @@
 <?php
 
+/*
+ * Client-ID for Github.
+ */
+
 define( 'VIPGOCI_PHPCS_CLIENT_ID', 'automattic-github-review-client' );
 
 
@@ -118,7 +122,13 @@ function vipgoci_github_repo_ok(
 	static $local_git_repo_failure = false;
 
 	/*
-	 * If we failed earlier, assume failure now also
+	 * If we failed earlier, assume failure now also.
+	 *
+	 * This is because if we detect a failure, we are
+	 * unlikely to see a change during the span of our
+	 * execution -- our usual execution-pattern is that
+	 * the caller should run 'git pull' (or similar), and
+	 * then run 'vip-go-ci'.
 	 */
 
 	if ( true == $local_git_repo_failure ) {
@@ -190,7 +200,7 @@ function vipgoci_github_repo_ok(
 
 	/*
 	 * Check if commit-ID and head are the same, and
-	 * only then try to fetch the requested file from the repo
+	 * return with a status accordingly.
 	 */
 
 	if (
@@ -198,7 +208,8 @@ function vipgoci_github_repo_ok(
 		( $commit_id !== $lgit_head )
 	) {
 		vipgoci_log(
-			'Skipping local Git repository, seems not to be in sync with current commit',
+			'Skipping local Git repository, seems not to be in ' .
+			'sync with current commit',
 			array(
 				'commit_id'		=> $commit_id,
 				'local_git_repo'	=> $local_git_repo,
@@ -214,8 +225,11 @@ function vipgoci_github_repo_ok(
 
 
 /*
- * Send a POST request to GitHub -- attempt
+ * Send a POST/DELETE request to GitHub -- attempt
  * to retry if errors were encountered.
+ *
+ * Note that the '$http_delete' parameter will determine
+ * if a POST or DELETE request will be sent.
  */
 
 function vipgoci_github_post_url(
@@ -235,6 +249,10 @@ function vipgoci_github_post_url(
 		 */
 
 		$retry_req = false;
+
+		/*
+		 * Initialize and send request.
+		 */
 
 		$ch = curl_init();
 
@@ -297,7 +315,7 @@ function vipgoci_github_post_url(
 
 
 		/*
-		 * Allow 'OK' and 'Created' statuses
+		 * Allow certain statuses, depending on type of request
 		 */
 		if (
 			(
@@ -397,7 +415,8 @@ function vipgoci_github_post_url(
  * or halt execution on repeated errors.
  */
 function vipgoci_github_fetch_url(
-	$github_url, $github_token
+	$github_url,
+	$github_token
 ) {
 
 	$curl_retries = 0;
@@ -487,11 +506,11 @@ function vipgoci_github_fetch_url(
  * by GitHub on success.
  */
 function vipgoci_github_fetch_commit_info(
-		$repo_owner,
-		$repo_name,
-		$commit_id,
-		$github_token,
-		$filter = null
+	$repo_owner,
+	$repo_name,
+	$commit_id,
+	$github_token,
+	$filter = null
 ) {
 	/* Check for cached version */
 	$cached_id = array(
@@ -517,6 +536,11 @@ function vipgoci_github_fetch_commit_info(
 	if ( false !== $cached_data ) {
 		return $cached_data;
 	}
+
+	/*
+	 * Nothing cached, attempt to
+	 * fetch from GitHub.
+	 */
 
 	$github_url =
 		'https://api.github.com/' .
@@ -550,8 +574,10 @@ function vipgoci_github_fetch_commit_info(
 	}
 
 	/*
-	 * Filter out files based on
-	 * parameter
+	 * Filter array of files based on
+	 * parameter -- i.e., files
+	 * that the commit implicates, and
+	 * GitHub hands over to us.
 	 */
 
 	if ( null !== $filter ) {
@@ -667,6 +693,7 @@ function vipgoci_github_fetch_tree(
 			$options['local-git-repo']
 		) )
 	) {
+		// Actually get files
 		$files_arr = vipgoci_scandir_git_repo(
 			$options['local-git-repo'],
 			$filter
@@ -927,9 +954,12 @@ function vipgoci_github_pr_reviews_comments_get(
 		return $cached_data;
 	}
 
+	/*
+	 * Nothing in cache, ask GitHub.
+	 */
+
 	$page = 0;
 	$prs_comments = array();
-
 
 	/*
 	 * FIXME:
@@ -1038,6 +1068,10 @@ function vipgoci_github_pr_generic_comments_get(
 	}
 
 
+	/*
+	 * Nothing in cache, ask GitHub.
+	 */
+
 	$pr_comments_ret = array();
 
 	$page = 0;
@@ -1078,7 +1112,7 @@ function vipgoci_github_pr_generic_comments_get(
 }
 
 /*
- * Submit comment to GitHub, reporting any
+ * Submit generic PR comment to GitHub, reporting any
  * issues found within $results. Selectively report
  * issues that we are supposed to report on, ignore
  * others. Attempts to format the comment to GitHub.
@@ -1117,7 +1151,7 @@ function vipgoci_github_pr_generic_comment_submit(
 
 
 	foreach (
-		// The $results array is keyed by Pull-Request number
+		// The $results['issues'] array is keyed by Pull-Request number
 		array_keys(
 			$results['issues']
 		) as $pr_number
@@ -1174,6 +1208,7 @@ function vipgoci_github_pr_generic_comment_submit(
 			$github_postfields['body'] .=
 				'**' .
 
+				// First in: level (error, warning)
 				ucfirst( strtolower(
 					$commit_issue['issue']['level']
 				) ) .
@@ -1182,6 +1217,7 @@ function vipgoci_github_pr_generic_comment_submit(
 
 				': ' .
 
+				// Then the message
 				str_replace(
 					'\'',
 					'`',
@@ -1190,6 +1226,7 @@ function vipgoci_github_pr_generic_comment_submit(
 
 				"\n\r\n\r" .
 
+				// And finally a URL to the issue is
 				'https://github.com/' .
 					$repo_owner . '/' .
 					$repo_name . '/' .
@@ -1230,6 +1267,8 @@ function vipgoci_github_pr_generic_comment_submit(
 				rawurlencode( $commit_id ) .
 				"))." .
 				"\n\r***\n\r" .
+
+			// Splice the body constructed earlier
 			$github_postfields['body'];
 
 		vipgoci_github_post_url(
@@ -1288,11 +1327,12 @@ function vipgoci_github_pr_comments_cleanup(
 		);
 
 		foreach ( $pr_comments as $pr_comment ) {
-			if ( $pr_comment->user->login != $repo_owner ) {
+			if ( $pr_comment->user->login !== $repo_owner ) {
 				// Do not delete other person's comment
 				continue;
 			}
 
+			// Actually delete the comment
 			vipgoci_github_pr_generic_comment_delete(
 				$repo_owner,
 				$repo_name,
@@ -1334,7 +1374,9 @@ function vipgoci_github_pr_generic_comment_delete(
 		'comments/' .
 		rawurlencode( $comment_id );
 
-
+	/*
+	 * Send DELETE request to GitHub.
+	 */
 	vipgoci_github_post_url(
 		$github_url,
 		array(),
@@ -1425,18 +1467,28 @@ function vipgoci_github_pr_review_submit(
 				continue;
 			}
 
+			/*
+			 * Construct comment, append to array of comments.
+			 */
 
 			$github_postfields['comments'][] = array(
 				'body'		=>
+
+					// Add nice label
 					vipgoci_github_labels(
 						$commit_issue['issue']['level']
 					) . ' ' .
 
+
 					'**' .
+
+					// Level -- error, warning
 					ucfirst( strtolower(
 						$commit_issue['issue']['level']
 						)) .
 					'**: ' .
+
+					// Then the message it self
 					htmlentities(
 						$commit_issue['issue']['message']
 					),
@@ -1612,6 +1664,7 @@ function vipgoci_github_approve_pr(
 		'comments' => array()
 	);
 
+	// Actually approve
 	vipgoci_github_post_url(
 		$github_url,
 		$github_postfields,
@@ -1637,10 +1690,6 @@ function vipgoci_github_prs_implicated(
 	$github_token,
 	$branches_ignore
 ) {
-
-	// FIXME: Ignore PRs that have already been accepted,
-	// that way we can avoid strange things happening when
-	// we already auto-approved a PR.
 
 	/*
 	 * Check for cached copy
@@ -1668,6 +1717,10 @@ function vipgoci_github_prs_implicated(
 		return $cached_data;
 	}
 
+
+	/*
+	 * Nothing cached; ask GitHub.
+	 */
 
 	$prs_implicated = array();
 	$prs_maybe_implicated = array();
@@ -1699,10 +1752,6 @@ function vipgoci_github_prs_implicated(
 			)
 		);
 
-		/*
-		 * Filter out any Pull-Requests that
-		 * have nothing to do with our commit
-		 */
 		foreach ( $prs_implicated_unfiltered as $pr_item ) {
 			/*
 			 * If the branch this Pull-Request is associated
@@ -1745,8 +1794,7 @@ function vipgoci_github_prs_implicated(
 	/*
 	 * Look through any Pull-Requests that might be implicated
 	 * -- to do this, we have fetch all commits implicated by all
-	 * open Pull-Requests to make sure our comments are delivered
-	 * successfully.
+	 * open Pull-Requests.
 	 */
 
 	foreach ( $prs_maybe_implicated as $pr_number_tmp ) {
@@ -1841,6 +1889,9 @@ function vipgoci_github_prs_commits_list(
 		return $cached_data;
 	}
 
+	/*
+	 * Nothing in cache; ask GitHub.
+	 */
 
 	$pr_commits = array();
 
@@ -1879,6 +1930,9 @@ function vipgoci_github_prs_commits_list(
 	return $pr_commits;
 }
 
+/*
+ * Fetch diffs between two commits.
+ */
 function vipgoci_github_diffs_fetch(
 	$repo_owner,
 	$repo_name,
@@ -1916,6 +1970,11 @@ function vipgoci_github_diffs_fetch(
 	}
 
 
+	/*
+	 * Nothing cached; ask GitHub.
+	 */
+
+	// FIXME: Use local git-repo for this, if possible.
 	$diffs = array();
 
 	$github_url =
@@ -1936,6 +1995,9 @@ function vipgoci_github_diffs_fetch(
 		)
 	);
 
+	/*
+	 * Loop through all files, save patch in an array
+	 */
 	foreach( $resp_raw->files as $file_item ) {
 		if ( ! isset( $file_item->patch ) ) {
 			continue;

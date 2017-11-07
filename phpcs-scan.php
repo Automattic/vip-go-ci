@@ -12,9 +12,7 @@ function vipgoci_phpcs_do_scan(
 	/*
 	 * Run PHPCS from the shell, making sure we escape everything.
 	 *
-	 * Feed PHPCS the temporary file specified by our caller,
-	 * forcing the PHPCS output to use the name of this file as
-	 * found in the git repository.
+	 * Feed PHPCS the temporary file specified by our caller.
 	 *
 	 * Make sure to use wide enough output, so we can catch all of it.
 	 */
@@ -146,6 +144,7 @@ function vipgoci_phpcs_scan_commit(
 		)
 	);
 
+	// Get commit-info
 	$commit_info = vipgoci_github_fetch_commit_info(
 		$repo_owner,
 		$repo_name,
@@ -160,7 +159,7 @@ function vipgoci_phpcs_scan_commit(
 		)
 	);
 
-
+	// Fetch list of all Pull-Requests which the commit is a part of
 	$prs_implicated = vipgoci_github_prs_implicated(
 		$repo_owner,
 		$repo_name,
@@ -217,6 +216,10 @@ function vipgoci_phpcs_scan_commit(
 			$temp_file_name,
 			$options['phpcs-path']
 		);
+
+		/* Get rid of temporary file */
+		unlink( $temp_file_name );
+
 
 		$file_issues_arr_master = vipgoci_phpcs_parse_results(
 			$file_issues_str
@@ -371,9 +374,6 @@ function vipgoci_phpcs_scan_commit(
 			'Cleaning up...',
 			array()
 		);
-
-		/* Get rid of temporary file */
-		unlink( $temp_file_name );
 
 
 		/*

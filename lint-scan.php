@@ -15,7 +15,7 @@ function vipgoci_lint_do_scan(
 	 * to grab all the output, also
 	 * the output to STDERR.
 	 *
-	 * Make sure PHP error-reporting is set to
+	 * Further, make sure PHP error-reporting is set to
 	 * E_ALL & ~E_DEPRECATED via configuration-option.
 	 */
 
@@ -31,7 +31,7 @@ function vipgoci_lint_do_scan(
 
 	$file_issues_arr = array();
 
-	// Execute linter
+	// Execute linter, grab issues in array
 	exec( $cmd, $file_issues_arr );
 
 	vipgoci_log(
@@ -156,6 +156,7 @@ function vipgoci_lint_scan_commit(
 		)
 	);
 
+	// Ask for information about the commit
 	$commit_info = vipgoci_github_fetch_commit_info(
 		$repo_owner,
 		$repo_name,
@@ -180,6 +181,7 @@ function vipgoci_lint_scan_commit(
 		)
 	);
 
+	// Ask for all Pull-Requests that this commit is part of
 	$prs_implicated = vipgoci_github_prs_implicated(
 		$repo_owner,
 		$repo_name,
@@ -203,6 +205,7 @@ function vipgoci_lint_scan_commit(
 			$options['local-git-repo']
                 );
 
+		// Save the file-contents in a temporary-file
 		$temp_file_name = vipgoci_save_temp_file(
 			'lint-scan-',
 			$file_contents

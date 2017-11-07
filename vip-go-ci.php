@@ -84,7 +84,7 @@ function vipgoci_option_array_handle(
 					'can not contain \'' .
 					$forbidden_value .
 					'\' as one of ' .
-					'the file-types' . "\n";
+					'the values' . "\n";
 
 				exit( 253 );
 			}
@@ -511,7 +511,7 @@ function vipgoci_run() {
 
 
 	/*
-	 * Clean up old comments made by use previously
+	 * Clean up old comments made by us previously
 	 */
 	vipgoci_github_pr_comments_cleanup(
 		$options['repo-owner'],

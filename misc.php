@@ -130,7 +130,7 @@ function vipgoci_patch_changed_lines(
 
 /*
  * Filter out any issues in the code that were not
- * touched up on by the patch -- i.e., any issues
+ * touched up on by the changed lines -- i.e., any issues
  * that existed prior to the change.
  *
  * The argument $fuzziness indicates that issues should
@@ -284,10 +284,7 @@ function vipgoci_cache( $cache_id_arr, $data = null ) {
  */
 
 function vipgoci_save_temp_file( $file_name_prefix, $file_contents ) {
-	/*
-	 * Create temporary directory to save
-	 * fetched files into
-	 */
+	// Determine name for temporary-file
 	$temp_file_name = $temp_file_save_status = tempnam(
 		sys_get_temp_dir(),
 		$file_name_prefix
@@ -352,7 +349,7 @@ function vipgoci_filter_file_endings(
 
 	/*
 	 * If the file does not have an acceptable
-	 * file-extension, skip
+	 * file-extension, flag it.
 	 */
 
 	if ( ! in_array(
@@ -393,12 +390,18 @@ function vipgoci_scandir_git_repo( $path, $filter ) {
 	$cdir = scandir( $path );
 
 	foreach ( $cdir as $key => $value ) {
-		if ( in_array( $value, array( '.', '..', '.git' ) ) ) {
+		if ( in_array(
+			$value,
+			array( '.', '..', '.git' )
+		) ) {
 			// Skip '.' and '..'
 			continue;
 		}
 
-		if ( is_dir( $path . DIRECTORY_SEPARATOR . $value ) ) {
+
+		if ( is_dir(
+			$path . DIRECTORY_SEPARATOR . $value
+		) ) {
 			/*
 			 * A directory, traverse into, get files,
 			 * amend the results
