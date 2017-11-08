@@ -184,6 +184,30 @@ function vipgoci_github_repo_ok(
 			$local_git_repo . '/.git/' . $lgit_branch_ref
 		);
 
+		/*
+		 * Still no success? Use the name of the branch,
+		 * and see if we have a ref in '.git/refs/remotes/origin/'
+		 */
+		if ( false === $lgit_head ) {
+			$tmp_ref_name_pos = strrpos(
+				$lgit_branch_ref,
+				'/'
+			);
+
+			$lgit_branch_ref = substr(
+				$lgit_branch_ref,
+				$tmp_ref_name_pos
+			);
+
+			unset( $tmp_ref_name_pos );
+
+			$lgit_head = @file_get_contents(
+				$local_git_repo .
+					'/.git/refs/remotes/origin/' .
+					$lgit_branch_ref
+			);
+		}
+
 		$lgit_branch_ref = false;
 	}
 
