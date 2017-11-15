@@ -477,3 +477,68 @@ function vipgoci_stats_init( $options, $prs_implicated, &$results ) {
 		}
 	}
 }
+
+
+/*
+ * A simple function to keep record of how
+ * much a time a particular action takes to execute.
+ * Allows multiple records to be kept at the same time.
+ *
+ * Allows specifying 'start' acton, which indicates that
+ * keeping record of measurement should start, 'stop'
+ * which indicates that recording should be stopped,
+ * and 'dump' which will return with an associative
+ * array of all measurements collected henceforth.
+ *
+ */
+function vipgoci_runtime_measure( $action = null, $type = null ) {
+	static $runtime = array();
+	static $timers = array();
+
+	/*
+	 * Check usage.
+	 */
+	if (
+		( 'start' !== $action ) &&
+		( 'stop' !== $action ) &&
+		( 'dump' !== $action )
+	) {
+		return false;
+	}
+
+	// Dump all runtimes we have
+	if ( 'dump' === $action ) {
+		return $runtime;
+	}
+
+
+	/*
+	 * Being asked to either start
+	 * or stop collecting, act on that.
+	 */
+
+	if ( ! isset( $runtime[ $type ] ) ) {
+		$runtime[ $type ] = 0;
+	}
+
+
+	if ( 'start' === $action ) {
+		$timers[ $type ] = time();
+
+		return true;
+	}
+
+	else if ( 'stop' === $action ) {
+		if ( ! isset( $timers[ $type ] ) ) {
+			return false;
+		}
+
+		$tmp_time = time() - $timers[ $type ];
+
+		$runtime[ $type ] += $tmp_time;
+
+		unset( $timers[ $type ] );
+
+		return $tmp_time;
+	}
+}

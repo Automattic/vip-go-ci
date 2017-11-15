@@ -31,8 +31,17 @@ function vipgoci_lint_do_scan(
 
 	$file_issues_arr = array();
 
-	// Execute linter, grab issues in array
+	/*
+	 * Execute linter, grab issues in array,
+	 * measure how long time it took
+	 */
+
+	vipgoci_runtime_measure( 'start', 'linting' );
+
 	exec( $cmd, $file_issues_arr );
+
+	vipgoci_runtime_measure( 'stop', 'linting' );
+
 
 	vipgoci_log(
 		'PHP linting execution details',

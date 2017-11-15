@@ -26,8 +26,12 @@ function vipgoci_phpcs_do_scan(
 		escapeshellarg( 500 )
 	);
 
+	vipgoci_runtime_measure( 'start', 'phpcs' );
 
 	$result = shell_exec( $cmd );
+
+	vipgoci_runtime_measure( 'stop', 'phpcs' );
+
 
 	/*
 	 * Do simple checks to see if we can find any signature marks

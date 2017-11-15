@@ -577,6 +577,11 @@ function vipgoci_run() {
 		'Shutting down',
 		array(
 			'run_time_seconds'	=> time() - $startup_time,
+			'run_time_measurements'	=>
+				vipgoci_runtime_measure(
+					'dump',
+					null
+				),
 			'results'		=> $results,
 		)
 	);

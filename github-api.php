@@ -96,6 +96,8 @@ function vipgoci_curl_headers( $ch, $header ) {
 function vipgoci_github_wait() {
 	static $last_request_time = null;
 
+	vipgoci_runtime_measure( 'start', 'github_forced_wait' );
+
 	if ( null !== $last_request_time ) {
 		/*
 		 * Only sleep if four or less seconds
@@ -107,6 +109,8 @@ function vipgoci_github_wait() {
 	}
 
 	$last_request_time = time();
+
+	vipgoci_runtime_measure( 'stop', 'github_forced_wait' );
 }
 
 
@@ -329,8 +333,17 @@ function vipgoci_github_post_url(
 		// Make sure to pause between GitHub-requests
 		vipgoci_github_wait();
 
+		/*
+		 * Execute query to GitHub, keep
+		 * record of how long time it took.
+		 */
+
+		vipgoci_runtime_measure( 'start', 'github_api' );
 
 		$resp_data = curl_exec( $ch );
+
+		vipgoci_runtime_measure( 'stop', 'github_api' );
+
 
 		$resp_headers = vipgoci_curl_headers(
 			null,
@@ -471,7 +484,17 @@ function vipgoci_github_fetch_url(
 		// Make sure to pause between GitHub-requests
 		vipgoci_github_wait();
 
+
+		/*
+		 * Execute query to GitHub, keep
+		 * record of how long time it took.
+		 */
+		vipgoci_runtime_measure( 'start', 'github_api' );
+
 		$resp_data = curl_exec( $ch );
+
+		vipgoci_runtime_measure( 'stop', 'github_api' );
+
 
 		/*
 		 * Detect and process possible errors
