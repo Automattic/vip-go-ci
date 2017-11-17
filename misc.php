@@ -387,6 +387,17 @@ function vipgoci_filter_file_endings(
 function vipgoci_scandir_git_repo( $path, $filter ) {
 	$result = array();
 
+	vipgoci_log(
+		'Fetching git-tree using scandir()' .
+
+                array(
+                        'path' => $path,
+                        'filter' => $filter,
+                ),
+		3
+        );
+
+
 	$cdir = scandir( $path );
 
 	foreach ( $cdir as $key => $value ) {

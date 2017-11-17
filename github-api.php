@@ -713,7 +713,7 @@ function vipgoci_github_fetch_tree(
 	$cached_data = vipgoci_cache( $cached_id );
 
 	vipgoci_log(
-		'Fetching tree info from GitHub' .
+		'Fetching tree info' .
 			( $cached_data ? ' (cached)' : '' ),
 
 		array(
@@ -746,21 +746,63 @@ function vipgoci_github_fetch_tree(
 			$filter
 		);
 
-		/*
-		 * Cache the results and return
-		 */
-		vipgoci_cache(
-			$cached_id,
-			$files_arr
-		);
-
-		return $files_arr;
 	}
+
+	/*
+	 * Cannot use local repository, try GitHub API
+	 */
+
+	else {
+		$files_arr = vipgoci_github_fetch_tree_api_fallback(
+			$options,
+			$commit_id,
+			$filter
+		);
+	}
+
+	/*
+	 * Cache the results and return
+	 */
+	vipgoci_cache(
+		$cached_id,
+		$files_arr
+	);
+
+	return $files_arr;
+}
+
+
+/*
+ * Use the GitHub API to fetch tree of a git-repository
+ *
+ * Note: This function does not cache, as we expect
+ * our caller to do so.
+ *
+ * Also note: Use the vipgoci_github_fetch_tree() function
+ * if you wish to get tree-data, as that function might be
+ * faster. This function is only a fallback function.
+ */
+
+function vipgoci_github_fetch_tree_api_fallback(
+	$options,
+	$commit_id,
+	$filter = null
+) {
+	vipgoci_log(
+		'Fetching tree info using GitHub API',
+
+		array(
+			'repo_owner' => $options['repo-owner'],
+			'repo_name' => $options['repo-name'],
+			'commit_id' => $commit_id,
+			'filter' => $filter,
+		),
+		3
+	);
 
 
 	/*
-	 * No cached version, no local git repo;
-	 * ask GitHub for information
+	 * Ask GitHub for information
 	 */
 	$github_url =
 		'https://api.github.com/' .
@@ -811,7 +853,7 @@ function vipgoci_github_fetch_tree(
 			 * results
 			 */
 
-			$subtree_files = vipgoci_github_fetch_tree(
+			$subtree_files = vipgoci_github_fetch_tree_api_fallback(
 				$options,
 				$file_info->sha,
 				$filter
@@ -845,15 +887,6 @@ function vipgoci_github_fetch_tree(
 
 		$files_arr[] = $file_info->path;
 	}
-
-
-	/*
-	 * Cache the results and return
-	 */
-	vipgoci_cache(
-		$cached_id,
-		$files_arr
-	);
 
 	return $files_arr;
 }
