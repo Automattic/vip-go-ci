@@ -103,7 +103,7 @@ function vipgoci_github_wait() {
 		 * Only sleep if four or less seconds
 		 * have elapsed from last request.
 		 */
-		if ( ( time() - $last_request_time ) <= 4 ) {
+		if ( ( time() - $last_request_time ) <= 2 ) {
 			sleep( 4 );
 		}
 	}
@@ -1070,7 +1070,7 @@ function vipgoci_github_pr_reviews_comments_get(
 
 		$page++;
 
-	} while ( count( $prs_comments_tmp ) >= 30 );
+	} while ( count( $prs_comments_tmp ) > 0 );
 
 
 	vipgoci_cache( $cached_id, $prs_comments );
@@ -1835,7 +1835,7 @@ function vipgoci_github_prs_implicated(
 		sleep ( 2 );
 
 		$page++;
-	} while ( count( $prs_implicated_unfiltered ) >= 30 );
+	} while ( count( $prs_implicated_unfiltered ) > 0 );
 
 
 	/*
@@ -1970,7 +1970,7 @@ function vipgoci_github_prs_commits_list(
 		}
 
 		$page++;
-	} while ( count( $pr_commits_raw ) >= 30 );
+	} while ( count( $pr_commits_raw ) > 0 );
 
 	vipgoci_cache( $cached_id, $pr_commits );
 
