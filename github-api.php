@@ -104,7 +104,7 @@ function vipgoci_github_wait() {
 		 * have elapsed from last request.
 		 */
 		if ( ( time() - $last_request_time ) <= 2 ) {
-			sleep( 4 );
+			sleep( 2 );
 		}
 	}
 
