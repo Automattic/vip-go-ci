@@ -117,28 +117,14 @@ function vipgoci_github_wait() {
 /*
  * Determine if repository specified is in
  * sync with the commit-ID specified.
+ *
+ * If it is not in sync, exit with error.
  */
 
 function vipgoci_github_repo_ok(
 	$commit_id,
 	$local_git_repo
 ) {
-	static $local_git_repo_failure = false;
-
-	/*
-	 * If we failed earlier, assume failure now also.
-	 *
-	 * This is because if we detect a failure, we are
-	 * unlikely to see a change during the span of our
-	 * execution -- our usual execution-pattern is that
-	 * the caller should run 'git pull' (or similar), and
-	 * then run 'vip-go-ci'.
-	 */
-
-	if ( true == $local_git_repo_failure ) {
-		return ( ! $local_git_repo_failure );
-	}
-
 
 	/*
 	 * Check at what revision the local git repository is.
@@ -236,7 +222,7 @@ function vipgoci_github_repo_ok(
 		( $commit_id !== $lgit_head )
 	) {
 		vipgoci_log(
-			'Skipping local Git repository, seems not to be in ' .
+			'Can not use local Git repository, seems not to be in ' .
 			'sync with current commit',
 			array(
 				'commit_id'		=> $commit_id,
@@ -245,10 +231,11 @@ function vipgoci_github_repo_ok(
 			)
 		);
 
-		$local_git_repo_failure = true;
+		exit ( 253 );
+
 	}
 
-	return ( ! $local_git_repo_failure );
+	return true;
 }
 
 
@@ -690,7 +677,7 @@ function vipgoci_github_fetch_commit_info(
 
 
 /*
- * Fetch "tree" from GitHub; a tree
+ * Fetch "tree" of the repository; a tree
  * of files that are part of the commit
  * specified.
  *
@@ -730,35 +717,20 @@ function vipgoci_github_fetch_tree(
 
 
 	/*
-	 * If we can use local git repository, do so
+	 * Use local git repository
 	 */
 
-	if (
-		( ! empty( $options['local-git-repo'] ) ) &&
-		( vipgoci_github_repo_ok(
-			$commit_id,
-			$options['local-git-repo']
-		) )
-	) {
-		// Actually get files
-		$files_arr = vipgoci_scandir_git_repo(
-			$options['local-git-repo'],
-			$filter
-		);
+	vipgoci_github_repo_ok(
+		$commit_id,
+		$options['local-git-repo']
+	);
 
-	}
+	// Actually get files
+	$files_arr = vipgoci_scandir_git_repo(
+		$options['local-git-repo'],
+		$filter
+	);
 
-	/*
-	 * Cannot use local repository, try GitHub API
-	 */
-
-	else {
-		$files_arr = vipgoci_github_fetch_tree_api_fallback(
-			$options,
-			$commit_id,
-			$filter
-		);
-	}
 
 	/*
 	 * Cache the results and return
@@ -773,133 +745,9 @@ function vipgoci_github_fetch_tree(
 
 
 /*
- * Use the GitHub API to fetch tree of a git-repository
- *
- * Note: This function does not cache, as we expect
- * our caller to do so.
- *
- * Also note: Use the vipgoci_github_fetch_tree() function
- * if you wish to get tree-data, as that function might be
- * faster. This function is only a fallback function.
- */
-
-function vipgoci_github_fetch_tree_api_fallback(
-	$options,
-	$commit_id,
-	$filter = null
-) {
-	vipgoci_log(
-		'Fetching tree info using GitHub API',
-
-		array(
-			'repo_owner' => $options['repo-owner'],
-			'repo_name' => $options['repo-name'],
-			'commit_id' => $commit_id,
-			'filter' => $filter,
-		),
-		3
-	);
-
-
-	/*
-	 * Ask GitHub for information
-	 */
-	$github_url =
-		'https://api.github.com/' .
-		'repos/' .
-		rawurlencode( $options['repo-owner'] ) . '/' .
-		rawurlencode( $options['repo-name'] ) . '/' .
-		'git/' .
-		'trees/' .
-		rawurlencode( $commit_id );
-
-	$data = json_decode(
-		vipgoci_github_fetch_url(
-			$github_url,
-			$options['token']
-		)
-	);
-
-
-	/*
-	 * Now go through the tree,
-	 * remove any files that are
-	 * not allowable according to the
-	 * filter.
-	 */
-
-	$files_arr = array();
-
-	foreach ( $data->tree as $file_info ) {
-		/*
-		 * If we get a 'tree', it means that there is
-		 * a sub-folder we need to recurse into
-		 */
-
-		if ( 'tree' === $file_info->type ) {
-			/*
-			 * Sanity-check: If tree is the same as the one
-			 * we are currently processing, ignore. This is to
-			 * avoid endless loops.
-			 */
-
-			if ( $file_info->sha === $commit_id ) {
-				continue;
-			}
-
-
-			/*
-			 * Fetch the sub-tree and merge the
-			 * results
-			 */
-
-			$subtree_files = vipgoci_github_fetch_tree_api_fallback(
-				$options,
-				$file_info->sha,
-				$filter
-			);
-
-			foreach ( $subtree_files as $tmp_file_item ) {
-				$files_arr[] =
-					$file_info->path .
-					'/' .
-					$tmp_file_item;
-			}
-
-			// Do not continue processing when dealing with subfolders
-			continue;
-		}
-
-		if ( null !== $filter ) {
-			/*
-			 * If the file does not have an acceptable
-			 * file-extension, skip
-			 */
-
-			if ( false === vipgoci_filter_file_endings(
-				$file_info->path,
-				$filter['file_extensions']
-			) ) {
-				continue;
-			}
-		}
-
-
-		$files_arr[] = $file_info->path;
-	}
-
-	return $files_arr;
-}
-
-
-/*
- * Fetch from GitHub a particular file which is a part of a
- * commit, within a particular repository. Will return
- * the file (raw), or false on error.
- *
- * If possible, the function will first try to use a local repository
- * to do the same thing, bypassing GitHub altogether, but if it fails,
- * reverting to GitHub.
+ * Fetch from the local git-repository a particular file
+ * which is a part of a commit. Will return the file (raw),
+ * or false on error.
  */
 
 function vipgoci_github_fetch_committed_file(
@@ -911,83 +759,31 @@ function vipgoci_github_fetch_committed_file(
 	$local_git_repo
 ) {
 
-	if (
-		( null !== $local_git_repo ) &&
-		( vipgoci_github_repo_ok(
-			$commit_id, $local_git_repo
-		) )
-	) {
-		vipgoci_log(
-			'Fetching file-contents from local Git repository',
-			array(
-				'repo_owner'		=> $repo_owner,
-				'repo_name'		=> $repo_name,
-				'commit_id'		=> $commit_id,
-				'filename'		=> $file_name,
-				'local_git_repo'	=> $local_git_repo,
-			)
-		);
-
-
-		/*
-		 * If everything seems fine, return the file.
-		 */
-
-		$file_contents_tmp = @file_get_contents(
-			$local_git_repo . '/' . $file_name
-		);
-
-		if ( false !== $file_contents_tmp ) {
-			return $file_contents_tmp;
-		}
-	}
-
-	/*
-	 * Fallback to GitHub.
-	 *
-	 * Check first for a cached copy of the
-	 * file -- if that does not exist, ask
-	 * GitHub for a copy and cache it.
-	 */
-
-	// Check for cached copy of the file
-	$cached_id = array(
-		__FUNCTION__, $repo_owner, $repo_name, $commit_id,
-		$file_name, $github_token
+	vipgoci_github_repo_ok(
+		$commit_id, $local_git_repo
 	);
 
-	$cached_data = vipgoci_cache( $cached_id );
-
-
 	vipgoci_log(
-		'Fetching file-contents from GitHub' .
-			( $cached_data ? ' (cached)' : '' ),
+		'Fetching file-contents from local Git repository',
 		array(
-			'repo_owner' => $repo_owner,
-			'repo_name' => $repo_name,
-			'commit_id' => $commit_id,
-			'filename' => $file_name,
+			'repo_owner'		=> $repo_owner,
+			'repo_name'		=> $repo_name,
+			'commit_id'		=> $commit_id,
+			'filename'		=> $file_name,
+			'local_git_repo'	=> $local_git_repo,
 		)
 	);
 
-	if ( false !== $cached_data ) {
-		return $cached_data;
-	}
 
+	/*
+	 * If everything seems fine, return the file.
+	 */
 
-	// FIXME: Detect if GitHub returned with an error.
-	$data = vipgoci_github_fetch_url(
-		'https://raw.githubusercontent.com/' .
-		rawurlencode( $repo_owner ) .  '/' .
-		rawurlencode( $repo_name ) . '/' .
-		rawurlencode( $commit_id ) . '/' .
-		rawurlencode( $file_name ),
-		$github_token
+	$file_contents_tmp = @file_get_contents(
+		$local_git_repo . '/' . $file_name
 	);
 
-	vipgoci_cache( $cached_id, $data );
-
-	return $data;
+	return $file_contents_tmp;
 }
 
 

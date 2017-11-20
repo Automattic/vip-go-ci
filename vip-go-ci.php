@@ -179,6 +179,11 @@ function vipgoci_run() {
 	global $argv;
 	global $vipgoci_debug_level;
 
+	vipgoci_log(
+		'Initializing...',
+		array()
+	);
+
 	/*
 	 * Set how to deal with errors:
 	 * Report all errors, and display them.
@@ -220,12 +225,13 @@ function vipgoci_run() {
 		! isset( $options['repo-name'] ) ||
 		! isset( $options['commit'] ) ||
 		! isset( $options['token'] ) ||
+		! isset( $options['local-git-repo']) ||
 		isset( $options['help'] )
 	) {
 		print 'Usage: ' . $argv[0] . "\n" .
 			"\t" . '--repo-owner=owner --repo-name=name --commit=SHA --token=string' . "\n" .
-			"\t" . '--phpcs-path=string [ --php-path=string ]' . "\n" .
-			"\t" . '[ --branches-ignore=string,string ] [ --local-git-repo=path ] [ --dry-run=boolean ]' . "\n" .
+			"\t" . '--phpcs-path=string --local-git-repo=path [ --php-path=string ]' . "\n" .
+			"\t" . '[ --branches-ignore=string,string ] [ --dry-run=boolean ]' . "\n" .
 			"\t" . '[ --output=file-path ] [ --phpcs=true ] [ --lint=true ] [ --debug-level=integer ]' . "\n" .
 			"\n" .
 			"\t" . '--repo-owner        Specify repository owner, can be an organization' . "\n" .
@@ -293,22 +299,18 @@ function vipgoci_run() {
 
 
 	/*
-	 * Handle optional --local-git-repo parameter
+	 * Handle --local-git-repo parameter
 	 */
 
-	if ( isset( $options['local-git-repo'] ) ) {
-		$options['local-git-repo'] = rtrim(
-			$options['local-git-repo'],
-			'/'
-		);
+	$options['local-git-repo'] = rtrim(
+		$options['local-git-repo'],
+		'/'
+	);
 
-		if ( false === vipgoci_github_repo_ok(
-			$options['commit'],
-			$options['local-git-repo']
-		) ) {
-			$options['local-git-repo'] = null;
-		}
-	}
+	vipgoci_github_repo_ok(
+		$options['commit'],
+		$options['local-git-repo']
+	);
 
 
 	/*
