@@ -31,7 +31,7 @@ function vipgoci_log( $str, $debug_data = array(), $debug_level = 0 ) {
 			),
 			true
 		) .
-		"\n\r";
+		PHP_EOL;
 }
 
 
