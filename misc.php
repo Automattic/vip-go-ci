@@ -252,6 +252,10 @@ function vipgoci_issues_filter_irrellevant(
  * The data is stored in an associative array, with
  * key being an array (or anything else) -- $cache_id_arr --,
  * and used to identify the data up on retrieval.
+ *
+ * If the data being cached is an object, we make a copy of it,
+ * and then store it. When the cached data is being retrieved,
+ * we return a copy of the cached data.
  */
 
 function vipgoci_cache( $cache_id_arr, $data = null ) {
@@ -264,12 +268,24 @@ function vipgoci_cache( $cache_id_arr, $data = null ) {
 
 	if ( null === $data ) {
 		if ( isset( $vipgoci_cache_buffer[ $cache_id ] ) ) {
-			return $vipgoci_cache_buffer[ $cache_id ];
+			$ret = $vipgoci_cache_buffer[ $cache_id ];
+
+			// If an object, copy and return the copy
+			if ( is_object( $ret ) ) {
+				$ret = clone $ret;
+			}
+
+			return $ret;
 		}
 
 		else {
 			return false;
 		}
+	}
+
+	// If an object, copy, save it, and return the copy
+	if ( is_object( $data ) ) {
+		$data = clone $data;
 	}
 
 	$vipgoci_cache_buffer[ $cache_id ] = $data;
