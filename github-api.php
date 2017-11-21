@@ -549,7 +549,7 @@ function vipgoci_github_fetch_commit_info(
 	/* Check for cached version */
 	$cached_id = array(
 		__FUNCTION__, $repo_owner, $repo_name,
-		$commit_id, $github_token, $filter
+		$commit_id, $github_token
 	);
 
 	$cached_data = vipgoci_cache( $cached_id );
@@ -567,44 +567,53 @@ function vipgoci_github_fetch_commit_info(
 	);
 
 
-	if ( false !== $cached_data ) {
-		return $cached_data;
-	}
+	if ( false === $cached_data ) {
 
-	/*
-	 * Nothing cached, attempt to
-	 * fetch from GitHub.
-	 */
+		/*
+		 * Nothing cached, attempt to
+		 * fetch from GitHub.
+		 */
 
-	$github_url =
-		'https://api.github.com/' .
-		'repos/' .
-		rawurlencode( $repo_owner ) . '/' .
-		rawurlencode( $repo_name ) . '/' .
-		'commits/' .
-		rawurlencode( $commit_id );
+		$github_url =
+			'https://api.github.com/' .
+			'repos/' .
+			rawurlencode( $repo_owner ) . '/' .
+			rawurlencode( $repo_name ) . '/' .
+			'commits/' .
+			rawurlencode( $commit_id );
 
-	$data = json_decode(
-		vipgoci_github_fetch_url(
-			$github_url,
-			$github_token
-		)
-	);
-
-
-	if (
-		( isset( $data->message ) ) &&
-		( 'Not Found' === $data->message )
-	) {
-		vipgoci_log(
-			'Unable to fetch commit-info from GitHub, the ' .
-				'commit does not exist.',
-			array(
-				'error_data' => $data
+		$data = json_decode(
+			vipgoci_github_fetch_url(
+				$github_url,
+				$github_token
 			)
 		);
 
-		exit( 254 );
+
+		if (
+			( isset( $data->message ) ) &&
+			( 'Not Found' === $data->message )
+		) {
+			vipgoci_log(
+				'Unable to fetch commit-info from GitHub, ' .
+					'the commit does not exist.',
+				array(
+					'error_data' => $data
+				)
+			);
+
+			exit( 254 );
+		}
+
+		// Cache the results
+		vipgoci_cache(
+			$cached_id,
+			$data
+		);
+	}
+
+	else {
+		$data = $cached_data;
 	}
 
 	/*
@@ -655,7 +664,8 @@ function vipgoci_github_fetch_commit_info(
 
 						'filter_status' =>
 							$filter['status'],
-					)
+					),
+					1
 				);
 
 				continue;
@@ -666,11 +676,6 @@ function vipgoci_github_fetch_commit_info(
 
 		$data->files = $files_new;
 	}
-
-	vipgoci_cache(
-		$cached_id,
-		$data
-	);
 
 	return $data;
 }
