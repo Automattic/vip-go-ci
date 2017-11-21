@@ -335,6 +335,9 @@ function vipgoci_run() {
 		exit( 253 );
 	}
 
+	// Convert to integer
+	$options['debug-level'] = intval( $options['debug-level'] );
+
 	// Set the user-specified value
 	$vipgoci_debug_level = $options['debug-level'];
 
