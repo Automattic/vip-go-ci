@@ -1397,7 +1397,7 @@ function vipgoci_github_prs_implicated(
 			)
 		);
 
-		print_r($github_urls);
+		print_r($github_url);
 		print_r($prs_implicated_unfiltered);
 
 		foreach ( $prs_implicated_unfiltered as $pr_item ) {
