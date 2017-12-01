@@ -190,7 +190,7 @@ function vipgoci_phpcs_scan_commit(
 	 * the commit.
 	 */
 	foreach( $commit_info->files as $file_info ) {
-		$file_contents = vipgoci_github_fetch_committed_file(
+		$file_contents = vipgoci_gitrepo_fetch_committed_file(
 			$repo_owner,
 			$repo_name,
 			$github_token,

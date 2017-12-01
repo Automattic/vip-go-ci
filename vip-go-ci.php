@@ -2,6 +2,7 @@
 <?php
 
 require_once( __DIR__ . '/github-api.php' );
+require_once( __DIR__ . '/git-repo.php' );
 require_once( __DIR__ . '/misc.php' );
 require_once( __DIR__ . '/phpcs-scan.php' );
 require_once( __DIR__ . '/lint-scan.php' );
@@ -309,7 +310,7 @@ function vipgoci_run() {
 
 	exec( "find " . $options['local-git-repo'], $arr ); print_r( $arr);
 
-	vipgoci_github_repo_ok(
+	vipgoci_gitrepo_ok(
 		$options['commit'],
 		$options['local-git-repo']
 	);

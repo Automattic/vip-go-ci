@@ -181,7 +181,7 @@ function vipgoci_lint_scan_commit(
 	);
 
 	// Fetch list of files that exist in the commit
-	$commit_tree = vipgoci_github_fetch_tree(
+	$commit_tree = vipgoci_gitrepo_fetch_tree(
 		$options,
 		$commit_id,
 		array(
@@ -205,7 +205,7 @@ function vipgoci_lint_scan_commit(
 	 */
 
 	foreach( $commit_tree as $filename ) {
-		$file_contents = vipgoci_github_fetch_committed_file(
+		$file_contents = vipgoci_gitrepo_fetch_committed_file(
 			$repo_owner,
 			$repo_name,
 			$github_token,
@@ -352,9 +352,11 @@ function vipgoci_lint_scan_commit(
 	 */
 	unset( $file_contents );
 	unset( $file_issues_arr );
+	unset( $file_issues_arr_raw );
 	unset( $prs_implicated );
 	unset( $file_issue_values );
 	unset( $commit_tree );
+	unset( $commit_info );
 
 	gc_collect_cycles();
 }
