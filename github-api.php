@@ -1397,6 +1397,8 @@ function vipgoci_github_prs_implicated(
 			)
 		);
 
+		print_r($prs_implicated_unfiltered);
+
 		foreach ( $prs_implicated_unfiltered as $pr_item ) {
 			if ( ! isset( $pr_item->head->ref ) ) {
 				continue;
