@@ -1398,6 +1398,10 @@ function vipgoci_github_prs_implicated(
 		);
 
 		foreach ( $prs_implicated_unfiltered as $pr_item ) {
+			if ( ! isset( $pr_item->head->ref ) ) {
+				continue;
+			}
+
 			/*
 			 * If the branch this Pull-Request is associated
 			 * with is one of those we are supposed to ignore,
