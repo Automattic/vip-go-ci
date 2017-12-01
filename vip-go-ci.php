@@ -308,7 +308,6 @@ function vipgoci_run() {
 		'/'
 	);
 
-	exec( "find " . $options['local-git-repo'], $arr ); print_r( $arr);
 
 	vipgoci_gitrepo_ok(
 		$options['commit'],
