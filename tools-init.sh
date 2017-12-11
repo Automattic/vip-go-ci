@@ -8,10 +8,10 @@ if [ ! -d ~/vip-go-ci-tools ] ; then
 	tar -zxvf 3.1.0.tar.gz  && \
 	rm -fv 3.1.0.tar.gz && \
 	mv PHP_CodeSniffer-3.1.0/ phpcs && \
-	wget https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards/archive/0.13.1.tar.gz && \
-	tar -zxvf 0.13.1.tar.gz  && \
-	rm -fv 0.13.1.tar.gz && \
-	mv WordPress-Coding-Standards-0.13.1/WordPress* phpcs/src/Standards/ && \
+	wget https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards/archive/0.14.0.tar.gz && \
+	tar -zxvf 0.14.0.tar.gz  && \
+	rm -fv 0.14.0.tar.gz && \
+	mv WordPress-Coding-Standards-0.14.0/WordPress* phpcs/src/Standards/ && \
 	wget https://github.com/Automattic/VIP-Coding-Standards/archive/master.tar.gz && \
 	tar -zxvf master.tar.gz && \
 	mv VIP-Coding-Standards-master/WordPressVIPMinimum/ phpcs/src/Standards/  && \
