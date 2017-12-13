@@ -90,11 +90,26 @@ function vipgoci_gitrepo_ok(
 
 
 	/*
+	 * Last chance: Execute git and get hash
+	 */
+	if ( false === $lgit_head ) {
+		$lgit_head = vipgoci_git_repo_get_head(
+			$local_git_repo
+		);
+	}
+
+
+	/*
 	 * Trim any whitespace characters away
 	 */
 	if ( false !== $lgit_head ) {
 		$lgit_head = trim(
 			$lgit_head
+		);
+
+		$lgit_head = trim(
+			$lgit_head,
+			"'\""
 		);
 	}
 
@@ -123,6 +138,40 @@ function vipgoci_gitrepo_ok(
 	}
 
 	return true;
+}
+
+
+/*
+ * Get latest commit HEAD in the specified repository.
+ * Will return a commit-hash if successful. Note that
+ * this function will execute git.
+ */
+
+function vipgoci_git_repo_get_head( $local_git_repo ) {
+
+	/*
+	 * Prepare to execute git; ask git to
+	 * operate within a certain path ( -C param ),
+	 * to fetch log (one line), and print only
+	 * the hash-ID. Catch anything returned to STDERR.
+	 */
+
+	$cmd = sprintf(
+		'%s -C %s log -n %s --pretty=format:"%s" 2>&1',
+		escapeshellcmd( 'git' ),
+		escapeshellarg( $local_git_repo ),
+		escapeshellarg( 1 ),
+		escapeshellarg( '%H' )
+	);
+
+	/* Actually execute */
+	vipgoci_runtime_measure( 'start', 'git-cli' );
+
+	$result = shell_exec( $cmd );
+
+	vipgoci_runtime_measure( 'stop', 'git-cli' );
+
+	return $result;
 }
 
 
