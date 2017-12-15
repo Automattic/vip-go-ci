@@ -971,7 +971,10 @@ function vipgoci_github_pr_comments_cleanup(
 			$github_token
 		);
 
+		var_dump( $pr_comment );
+
 		foreach ( $pr_comments as $pr_comment ) {
+
 			if ( $pr_comment->user->login !== $repo_owner ) {
 				// Do not delete other person's comment
 				continue;
