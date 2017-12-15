@@ -971,8 +971,8 @@ function vipgoci_github_pr_comments_cleanup(
 			$github_token
 		);
 
-		echo "pr_comment=";
-		var_dump( $pr_comment );
+		echo "pr_comments=";
+		var_dump( $pr_comments );
 
 		foreach ( $pr_comments as $pr_comment ) {
 
