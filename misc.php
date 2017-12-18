@@ -307,10 +307,14 @@ function vipgoci_save_temp_file( $file_name_prefix, $file_contents ) {
 	);
 
 	if ( false !== $temp_file_name ) {
+		vipgoci_runtime_measure( 'start', 'save_temp_file' );
+
 		$temp_file_save_status = file_put_contents(
 			$temp_file_name,
 			$file_contents
 		);
+
+		vipgoci_runtime_measure( 'stop', 'save_temp_file' );
 	}
 
 	// Detect possible errors when saving the temporary file
