@@ -278,9 +278,13 @@ function vipgoci_gitrepo_fetch_committed_file(
 	 * If everything seems fine, return the file.
 	 */
 
+	vipgoci_runtime_measure( 'start', 'git_repo_fetch_file' );
+
 	$file_contents_tmp = @file_get_contents(
 		$local_git_repo . '/' . $file_name
 	);
+
+	vipgoci_runtime_measure( 'stop', 'git_repo_fetch_file' );
 
 	return $file_contents_tmp;
 }

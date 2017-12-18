@@ -414,7 +414,12 @@ function vipgoci_scandir_git_repo( $path, $filter ) {
 	);
 
 
+	vipgoci_runtime_measure( 'start', 'git_repo_scandir' );
+
 	$cdir = scandir( $path );
+
+	vipgoci_runtime_measure( 'stop', 'git_repo_scandir' );
+
 
 	foreach ( $cdir as $key => $value ) {
 		if ( in_array(
