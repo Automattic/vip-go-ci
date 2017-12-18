@@ -100,11 +100,11 @@ function vipgoci_github_wait() {
 
 	if ( null !== $last_request_time ) {
 		/*
-		 * Only sleep if four or less seconds
-		 * have elapsed from last request.
+		 * Only sleep if less than one second
+		 * has elapsed from last request.
 		 */
-		if ( ( time() - $last_request_time ) <= 2 ) {
-			sleep( 2 );
+		if ( ( time() - $last_request_time ) < 1 ) {
+			sleep( 1 );
 		}
 	}
 
