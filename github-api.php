@@ -289,6 +289,9 @@ function vipgoci_github_post_url(
 					$retry_sleep . ' seconds' :
 					'' ),
 				array(
+					'http_url'
+						=> $github_url,
+
 					'http_response_headers'
 						=> $resp_headers,
 
