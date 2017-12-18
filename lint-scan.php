@@ -36,11 +36,11 @@ function vipgoci_lint_do_scan(
 	 * measure how long time it took
 	 */
 
-	vipgoci_runtime_measure( 'start', 'linting' );
+	vipgoci_runtime_measure( 'start', 'php-linting' );
 
 	exec( $cmd, $file_issues_arr );
 
-	vipgoci_runtime_measure( 'stop', 'linting' );
+	vipgoci_runtime_measure( 'stop', 'php-linting' );
 
 
 	vipgoci_log(
