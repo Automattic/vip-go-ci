@@ -949,6 +949,11 @@ function vipgoci_github_pr_comments_cleanup(
 		)
 	);
 
+	/* Get info about token-holder */
+	$current_user_info = vipgoci_github_authenticated_user_get(
+		$github_token
+	);
+
 
 	/* If dry-run is enabled, do nothing further. */
 	if ( $dry_run == true ) {
@@ -971,12 +976,9 @@ function vipgoci_github_pr_comments_cleanup(
 			$github_token
 		);
 
-		echo "pr_comments=";
-		var_dump( $pr_comments );
-
 		foreach ( $pr_comments as $pr_comment ) {
 
-			if ( $pr_comment->user->login !== $repo_owner ) {
+			if ( $pr_comment->user->login !== $current_user_info->login ) {
 				// Do not delete other person's comment
 				continue;
 			}
@@ -1742,3 +1744,42 @@ function vipgoci_github_comment_match(
 	return false;
 }
 
+
+/*
+ * Get information from GitHub on the user
+ * authenticated.
+ */
+function vipgoci_github_authenticated_user_get( $github_token ) {
+	$cached_id = array(
+		__FUNCTION__, $github_token
+	);
+
+	$cached_data = vipgoci_cache( $cached_id );
+
+	vipgoci_log(
+		'Trying to get information about the user the GitHub-token belongs to' .
+			( $cached_data ? ' (cached)' : '' ),
+		array(
+		)
+	);
+
+	if ( false !== $cached_data ) {
+		return $cached_data;
+	}
+
+
+	$github_url =
+		'https://api.github.com/' .
+		'user';
+
+	$current_user_info = json_decode(
+		vipgoci_github_fetch_url(
+			$github_url,
+			$github_token
+		)
+	);
+
+	vipgoci_cache( $cached_id, $current_user_info );
+
+	return $current_user_info;
+}

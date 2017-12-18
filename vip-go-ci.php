@@ -367,6 +367,26 @@ function vipgoci_run() {
 		exit( 253 );
 	}
 
+	/*
+	 * Ask GitHub about information about
+	 * the user the token belongs to
+	 */
+	$current_user_info = vipgoci_github_authenticated_user_get(
+		$options['token']
+	);
+
+	if (
+		( ! isset( $current_user_info->login ) ) ||
+		( empty( $current_user_info->login ) )
+	) {
+		vipgoci_log(
+			'Unable to get information about token-holder user from GitHub',
+			array()
+		);
+
+		exit( 250 );
+	}
+
 
 	/*
 	 * Log that we started working,
