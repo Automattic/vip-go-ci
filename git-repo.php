@@ -20,83 +20,10 @@ function vipgoci_gitrepo_ok(
 	 * is actually checked out at the same commit
 	 * as the one we are working with.
 	 */
-	$lgit_head = @file_get_contents(
-		$local_git_repo . '/.git/HEAD'
+
+	$lgit_head = vipgoci_git_repo_get_head(
+		$local_git_repo
 	);
-
-	$lgit_branch_ref = false;
-
-
-	/*
-	 * Check if we successfully got any information
-	 */
-
-	if ( false !== $lgit_head ) {
-		// We might have gotten a reference, work with that
-		if ( strpos( $lgit_head, 'ref: ') === 0 ) {
-			$lgit_branch_ref = substr(
-				$lgit_head,
-				5
-			);
-
-			$lgit_branch_ref = rtrim(
-				$lgit_branch_ref
-			);
-
-			$lgit_head = false;
-		}
-	}
-
-
-	/*
-	 * If we have not established a head,
-	 * but we have a reference, try to get the
-	 * head
-	 */
-	if (
-		( false === $lgit_head ) &&
-		( false !== $lgit_branch_ref )
-	) {
-		$lgit_head = @file_get_contents(
-			$local_git_repo . '/.git/' . $lgit_branch_ref
-		);
-
-		/*
-		 * Still no success? Use the name of the branch,
-		 * and see if we have a ref in '.git/refs/remotes/origin/'
-		 */
-		if ( false === $lgit_head ) {
-			$tmp_ref_name_pos = strrpos(
-				$lgit_branch_ref,
-				'/'
-			);
-
-			$lgit_branch_ref = substr(
-				$lgit_branch_ref,
-				$tmp_ref_name_pos
-			);
-
-			unset( $tmp_ref_name_pos );
-
-			$lgit_head = @file_get_contents(
-				$local_git_repo .
-					'/.git/refs/remotes/origin/' .
-					$lgit_branch_ref
-			);
-		}
-
-		$lgit_branch_ref = false;
-	}
-
-
-	/*
-	 * Last chance: Execute git and get hash
-	 */
-	if ( false === $lgit_head ) {
-		$lgit_head = vipgoci_git_repo_get_head(
-			$local_git_repo
-		);
-	}
 
 
 	/*
