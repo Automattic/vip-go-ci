@@ -408,7 +408,7 @@ function vipgoci_scandir_git_repo( $path, $filter ) {
 	$result = array();
 
 	vipgoci_log(
-		'Fetching git-tree using scandir()', 
+		'Fetching git-tree using scandir()',
 
 		array(
 			'path' => $path,
