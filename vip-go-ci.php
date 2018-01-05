@@ -211,6 +211,7 @@ function vipgoci_run() {
 			'output:',
 			'dry-run:',
 			'phpcs-path:',
+			'phpcs-standard:',
 			'php-path:',
 			'local-git-repo:',
 			'lint:',
@@ -233,13 +234,15 @@ function vipgoci_run() {
 			"\t" . '--repo-owner=owner --repo-name=name --commit=SHA --token=string' . PHP_EOL .
 			"\t" . '--phpcs-path=string --local-git-repo=path [ --php-path=string ]' . PHP_EOL .
 			"\t" . '[ --branches-ignore=string,string ] [ --dry-run=boolean ]' . PHP_EOL .
-			"\t" . '[ --output=file-path ] [ --phpcs=true ] [ --lint=true ] [ --debug-level=integer ]' . PHP_EOL .
+			"\t" . '[ --output=file-path ] [ --phpcs=true ] [ --phpcs-standard=string ] [ --lint=true ] [ --debug-level=integer ]' . PHP_EOL .
 			PHP_EOL .
 			"\t" . '--repo-owner        Specify repository owner, can be an organization' . PHP_EOL .
 			"\t" . '--repo-name         Specify name of the repository' . PHP_EOL .
 			"\t" . '--commit            Specify the exact commit to scan' . PHP_EOL .
 			"\t" . '--token             The access-token to use to communicate with GitHub' . PHP_EOL .
+			"\t" . '--phpcs             Whether to run PHPCS' . PHP_EOL .
 			"\t" . '--phpcs-path        Full path to PHPCS script' . PHP_EOL .
+			"\t" . '--phpcs-standard    Use to specify which PHPCS standard to use' . PHP_EOL .
 			"\t" . '--php-path          Full path to PHP, if not specified the' . PHP_EOL .
 			"\t" . '                    default in $PATH will be used instead' . PHP_EOL .
 			"\t" . '--branches-ignore   What branches to ignore -- useful to make sure' . PHP_EOL .
@@ -252,7 +255,6 @@ function vipgoci_run() {
 			"\t" . '                    on GitHub -- no comments will be submitted, etc.' . PHP_EOL .
 			"\t" . '--output            Where to save output made from running PHPCS' . PHP_EOL .
 			"\t" . '                    -- this should be a filename' . PHP_EOL .
-			"\t" . '--phpcs             Whether to run PHPCS' . PHP_EOL .
 			"\t" . '--lint              Whether to do PHP linting' . PHP_EOL .
 			"\t" . '--help              Displays this message' . PHP_EOL .
 			"\t" . '--debug-level       Specify minimum debug-level of messages to print' . PHP_EOL .
@@ -286,6 +288,18 @@ function vipgoci_run() {
 		null
 	);
 
+	/*
+	 * Process --phpcs-standard -- expected to be
+	 * a string
+	 */
+
+	if ( empty( $options['phpcs-standard'] ) ) {
+		$options['phpcs-standard'] = 'WordPressVIPminimum';
+	}
+
+	$options['phpcs-standard'] = trim(
+		$options['phpcs-standard']
+	);
 
 	/*
 	 * Process --php-path -- expected to be a file,
@@ -345,7 +359,7 @@ function vipgoci_run() {
 
 
 	/*
-	 * Handle boolean parameters parameter
+	 * Handle boolean parameters
 	 */
 
 	vipgoci_option_bool_handle( $options, 'dry-run', 'false' );

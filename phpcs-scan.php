@@ -7,7 +7,8 @@
 
 function vipgoci_phpcs_do_scan(
 	$filename_tmp,
-	$phpcs_path
+	$phpcs_path,
+	$phpcs_standard
 ) {
 	/*
 	 * Run PHPCS from the shell, making sure we escape everything.
@@ -22,7 +23,7 @@ function vipgoci_phpcs_do_scan(
 		escapeshellarg( $filename_tmp ),
 		escapeshellcmd( 'php' ),
 		escapeshellcmd( $phpcs_path ),
-		escapeshellarg( 'WordPressVIPminimum' ),
+		escapeshellarg( $phpcs_standard ),
 		escapeshellarg( 500 )
 	);
 
@@ -246,7 +247,8 @@ function vipgoci_phpcs_scan_commit(
 
 		$file_issues_str = vipgoci_phpcs_do_scan(
 			$temp_file_name,
-			$options['phpcs-path']
+			$options['phpcs-path'],
+			$options['phpcs-standard']
 		);
 
 		/* Get rid of temporary file */
