@@ -231,35 +231,30 @@ function vipgoci_run() {
 		isset( $options['help'] )
 	) {
 		print 'Usage: ' . $argv[0] . PHP_EOL .
-			"\t" . '--repo-owner=owner --repo-name=name --commit=SHA --token=string' . PHP_EOL .
-			"\t" . '--phpcs-path=string --local-git-repo=path [ --php-path=string ]' . PHP_EOL .
-			"\t" . '[ --branches-ignore=string,string ] [ --dry-run=boolean ]' . PHP_EOL .
-			"\t" . '[ --output=file-path ] [ --phpcs=true ] [ --phpcs-standard=string ] [ --lint=true ] [ --debug-level=integer ]' . PHP_EOL .
+			"\t" . 'Options --repo-owner, --repo-name, --commit, --token, --local-git-repo are ' . PHP_EOL .
+			"\t" . 'mandatory, while others are optional.' . PHP_EOL .
 			PHP_EOL .
-			"\t" . '--repo-owner        Specify repository owner, can be an organization' . PHP_EOL .
-			"\t" . '--repo-name         Specify name of the repository' . PHP_EOL .
-			"\t" . '--commit            Specify the exact commit to scan' . PHP_EOL .
-			"\t" . '--token             The access-token to use to communicate with GitHub' . PHP_EOL .
-			"\t" . '--phpcs             Whether to run PHPCS' . PHP_EOL .
-			"\t" . '--phpcs-path        Full path to PHPCS script' . PHP_EOL .
-			"\t" . '--phpcs-standard    Use to specify which PHPCS standard to use' . PHP_EOL .
-			"\t" . '--php-path          Full path to PHP, if not specified the' . PHP_EOL .
-			"\t" . '                    default in $PATH will be used instead' . PHP_EOL .
-			"\t" . '--branches-ignore   What branches to ignore -- useful to make sure' . PHP_EOL .
-			"\t" . '                    some branches never get scanned. Separate branches' . PHP_EOL .
-			"\t" . '                    with commas' . PHP_EOL .
-			"\t" . '--local-git-repo    The local git repository to use for raw-data' . PHP_EOL .
-                        "\t" . '                    -- this will save requests to GitHub, speeding up the' . PHP_EOL .
-                        "\t" . '                    whole process' . PHP_EOL .
-			"\t" . '--dry-run           If set to true, will not make any changes to any data' . PHP_EOL .
-			"\t" . '                    on GitHub -- no comments will be submitted, etc.' . PHP_EOL .
-			"\t" . '--output            Where to save output made from running PHPCS' . PHP_EOL .
-			"\t" . '                    -- this should be a filename' . PHP_EOL .
-			"\t" . '--lint              Whether to do PHP linting' . PHP_EOL .
-			"\t" . '--help              Displays this message' . PHP_EOL .
-			"\t" . '--debug-level       Specify minimum debug-level of messages to print' . PHP_EOL .
-			"\t" . '                    -- higher number indicates more detailed debugging-messages.' . PHP_EOL .
-			"\t" . '                    Default is zero' . PHP_EOL;
+			"\t" . '--repo-owner=STRING            Specify repository owner, can be an organization' . PHP_EOL .
+			"\t" . '--repo-name=STRING             Specify name of the repository' . PHP_EOL .
+			"\t" . '--commit=STRING                Specify the exact commit to scan (SHA)' . PHP_EOL .
+			"\t" . '--token=STRING                 The access-token to use to communicate with GitHub' . PHP_EOL .
+			"\t" . '--phpcs=BOOL                   Whether to run PHPCS (true/false)' . PHP_EOL .
+			"\t" . '--phpcs-path=FILE              Full path to PHPCS script' . PHP_EOL .
+			"\t" . '--phpcs-standard=STRING        Specify which PHPCS standard to use' . PHP_EOL .
+			"\t" . '--php-path=FILE                Full path to PHP, if not specified the' . PHP_EOL .
+			"\t" . '                               default in $PATH will be used instead' . PHP_EOL .
+			"\t" . '--branches-ignore=STRING,...   What branches to ignore -- useful to make sure' . PHP_EOL .
+			"\t" . '                               some branches never get scanned. Separate branches' . PHP_EOL .
+			"\t" . '                               with commas' . PHP_EOL .
+			"\t" . '--local-git-repo=FILE          The local git repository to use for direct access to code' . PHP_EOL .
+			"\t" . '--dry-run=BOOL                 If set to true, will not make any changes to any data' . PHP_EOL .
+			"\t" . '                               on GitHub -- no comments will be submitted, etc.' . PHP_EOL .
+			"\t" . '--output=FILE                  Where to save output made from running PHPCS' . PHP_EOL .
+			"\t" . '--lint=BOOL                    Whether to do PHP linting (true/false)' . PHP_EOL .
+			"\t" . '--help                         Displays this message' . PHP_EOL .
+			"\t" . '--debug-level=NUMBER           Specify minimum debug-level of messages to print' . PHP_EOL .
+			"\t" . '                                -- higher number indicates more detailed debugging-messages.' . PHP_EOL .
+			"\t" . '                               Default is zero' . PHP_EOL;
 
 		exit( 253 );
 	}
