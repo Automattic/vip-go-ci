@@ -99,20 +99,20 @@ function vipgoci_phpcs_parse_results( $phpcs_results ) {
  * if possible.
  */
 
-function vipgoci_phpcs_scan_output_dump( $file, $data ) {
+function vipgoci_phpcs_scan_output_dump( $output_file, $data ) {
 	if (
-		( is_file( $options['output'] ) ) &&
-		( ! is_writeable( $options['output'] ) )
+		( is_file( $output_file ) ) &&
+		( ! is_writeable( $output_file ) )
 	) {
 		vipgoci_log(
 			'File ' .
-				$options['output'] .
+				$output_file .
 				' is not writeable',
 			array()
 		);
 	} else {
 		file_put_contents(
-			$options['output'],
+			$output_file,
 			json_encode(
 				$data,
 				JSON_PRETTY_PRINT
@@ -272,7 +272,7 @@ function vipgoci_phpcs_scan_commit(
 					'repo_name'	=> $repo_name,
 					'commit_id'	=> $commit_id,
 					'filename'	=> $file_info->filename,
-					'issues'	=> $file_issues_arr,
+					'issues'	=> $file_issues_arr_master,
 				)
 			);
 		}
