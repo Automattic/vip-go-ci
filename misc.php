@@ -559,7 +559,7 @@ function vipgoci_runtime_measure( $action = null, $type = null ) {
 
 
 	if ( 'start' === $action ) {
-		$timers[ $type ] = time();
+		$timers[ $type ] = microtime( true );
 
 		return true;
 	}
@@ -569,7 +569,7 @@ function vipgoci_runtime_measure( $action = null, $type = null ) {
 			return false;
 		}
 
-		$tmp_time = time() - $timers[ $type ];
+		$tmp_time = microtime( true ) - $timers[ $type ];
 
 		$runtime[ $type ] += $tmp_time;
 
