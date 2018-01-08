@@ -36,11 +36,11 @@ function vipgoci_lint_do_scan(
 	 * measure how long time it took
 	 */
 
-	vipgoci_runtime_measure( 'start', 'php_linting' );
+	vipgoci_runtime_measure( 'start', 'php_lint_cli' );
 
 	exec( $cmd, $file_issues_arr );
 
-	vipgoci_runtime_measure( 'stop', 'php_linting' );
+	vipgoci_runtime_measure( 'stop', 'php_lint_cli' );
 
 
 	vipgoci_log(
@@ -278,6 +278,7 @@ function vipgoci_lint_scan_commit(
 
 		// If there are no new issues, just leave it at that
 		if ( empty( $file_issues_arr ) ) {
+			vipgoci_runtime_measure( 'stop', 'lint_scan_single_file' );
 			continue;
 		}
 
