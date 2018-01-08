@@ -92,11 +92,11 @@ function vipgoci_git_repo_get_head( $local_git_repo ) {
 	);
 
 	/* Actually execute */
-	vipgoci_runtime_measure( 'start', 'git-cli' );
+	vipgoci_runtime_measure( 'start', 'git_cli' );
 
 	$result = shell_exec( $cmd );
 
-	vipgoci_runtime_measure( 'stop', 'git-cli' );
+	vipgoci_runtime_measure( 'stop', 'git_cli' );
 
 	return $result;
 }

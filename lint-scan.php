@@ -154,6 +154,7 @@ function vipgoci_lint_scan_commit(
 	$commit_id  = $options['commit'];
 	$github_token = $options['token'];
 
+	vipgoci_runtime_measure( 'start', 'lint_scan_commit' );
 
 	vipgoci_log(
 		'About to lint PHP-files',
@@ -164,6 +165,7 @@ function vipgoci_lint_scan_commit(
 			'commit_id'	=> $commit_id,
 		)
 	);
+
 
 	// Ask for information about the commit
 	$commit_info = vipgoci_github_fetch_commit_info(
@@ -205,6 +207,8 @@ function vipgoci_lint_scan_commit(
 	 */
 
 	foreach( $commit_tree as $filename ) {
+		vipgoci_runtime_measure( 'start', 'lint_scan_single_file' );
+
 		$file_contents = vipgoci_gitrepo_fetch_committed_file(
 			$repo_owner,
 			$repo_name,
@@ -344,6 +348,7 @@ function vipgoci_lint_scan_commit(
 			}
 		}
 
+		vipgoci_runtime_measure( 'stop', 'lint_scan_single_file' );
 	}
 
 
@@ -359,4 +364,6 @@ function vipgoci_lint_scan_commit(
 	unset( $commit_info );
 
 	gc_collect_cycles();
+
+	vipgoci_runtime_measure( 'stop', 'lint_scan_commit' );
 }
