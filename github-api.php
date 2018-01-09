@@ -4,7 +4,7 @@
  * Client-ID for Github.
  */
 
-define( 'VIPGOCI_PHPCS_CLIENT_ID', 'automattic-github-review-client' );
+define( 'VIPGOCI_CLIENT_ID', 'automattic-vip-go-ci' );
 define( 'VIPGOCI_SYNTAX_ERROR_STR', 'PHP Syntax Errors Found' );
 
 /*
@@ -159,7 +159,7 @@ function vipgoci_github_post_url(
 		);
 
 		curl_setopt(
-			$ch, CURLOPT_USERAGENT,	VIPGOCI_PHPCS_CLIENT_ID
+			$ch, CURLOPT_USERAGENT,	VIPGOCI_CLIENT_ID
 		);
 
 		if ( false === $http_delete ) {
@@ -337,7 +337,7 @@ function vipgoci_github_fetch_url(
 		curl_setopt(
 			$ch,
 			CURLOPT_USERAGENT,
-			VIPGOCI_PHPCS_CLIENT_ID
+			VIPGOCI_CLIENT_ID
 		);
 
 		curl_setopt(
