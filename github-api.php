@@ -1737,8 +1737,8 @@ function vipgoci_github_comment_match(
 		 * as "Warning: ..." -- remove all of that.
 		 */
 		$comment_made_body = str_replace(
-			array("**", "Warning", "Error"),
-			array("", "", ""),
+			array("**", "Warning", "Error", ":no_entry_sign:", ":exclamation:"),
+			array("", "", "", "", ""),
 			$comment_made->body
 		);
 
