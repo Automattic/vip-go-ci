@@ -312,8 +312,7 @@ function vipgoci_phpcs_scan_commit(
 
 			$file_issues_arr = vipgoci_issues_filter_irrellevant(
 				$file_issues_arr,
-				$file_changed_lines,
-				false // No fuzziness
+				$file_changed_lines
 			);
 
 

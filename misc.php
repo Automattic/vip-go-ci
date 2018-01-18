@@ -36,7 +36,7 @@ function vipgoci_log( $str, $debug_data = array(), $debug_level = 0 ) {
 
 
 /*
- * Given a patch-file, function will return an
+ * Given a patch-file, the function will return an
  * associative array, mapping the patch-file
  * to the raw committed file.
  *
@@ -132,16 +132,10 @@ function vipgoci_patch_changed_lines(
  * Filter out any issues in the code that were not
  * touched up on by the changed lines -- i.e., any issues
  * that existed prior to the change.
- *
- * The argument $fuzziness indicates that issues should
- * not be filtered out if they are only one line-number
- * out of range -- they should be kept and their line-numbers
- * adjusted so that they are included.
  */
 function vipgoci_issues_filter_irrellevant(
 	$file_issues_arr,
-	$file_changed_lines,
-	$fuzziness = false
+	$file_changed_lines
 ) {
 	foreach (
 		$file_issues_arr as
@@ -166,18 +160,9 @@ function vipgoci_issues_filter_irrellevant(
 
 
 		/*
-		 * Issue is out of range, and no fuzzy-checking
-		 * requested, so delete it.
+		 * Issue is out of range, so delete it.
 		 */
-		else if (
-			( false === $exists ) &&
-			( false === $fuzziness )
-		) {
-			/*
-			 * No fuzziness-check, and the
-			 * issue is out of range, delete it,
-			 * and continue.
-			 */
+		else if ( false === $exists ) {
 			unset(
 				$file_issues_arr[
 					$file_issue_line
@@ -185,58 +170,6 @@ function vipgoci_issues_filter_irrellevant(
 			);
 
 			continue;
-		}
-
-
-		else if (
-			( false === $exists ) &&
-			( true === $fuzziness )
-		) {
-			/*
-			 * Issue out of range, but fuzziness
-			 * is requested, act on that.
-			 */
-
-			$tmp_minus = in_array(
-				$file_issue_line - 1,
-				$file_changed_lines
-			);
-
-
-			$tmp_plus = in_array(
-				$file_issue_line + 1,
-				$file_changed_lines
-			);
-
-
-			if (
-				( $tmp_minus === true ) ||
-				( $tmp_plus === true )
-			) {
-				/*
-				 * Copy the instance, delete
-				 * the original, and add again
-				 * but with the line-number altered.
-				 */
-
-				$tmp_num = $tmp_minus === true ? -1 : +1;
-
-				// Add a new one
-				$file_issues_arr[
-					$file_issue_line + $tmp_num
-				] = $file_issues_arr[
-					$file_issue_line
-				];
-
-				// Remove the old one
-				unset(
-					$file_issues_arr[
-						$file_issue_line
-					]
-				);
-
-				continue;
-			}
 		}
 	}
 
