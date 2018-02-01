@@ -232,12 +232,48 @@ function vipgoci_cache( $cache_id_arr, $data = null ) {
  * full-path to the file.
  */
 
-function vipgoci_save_temp_file( $file_name_prefix, $file_contents ) {
+function vipgoci_save_temp_file(
+	$file_name_prefix,
+	$file_name_extension = null,
+	$file_contents
+) {
 	// Determine name for temporary-file
 	$temp_file_name = $temp_file_save_status = tempnam(
 		sys_get_temp_dir(),
 		$file_name_prefix
 	);
+
+	/*
+	 * If temporary file should have an extension,
+	 * make that happen by renaming the currently existing
+	 * file.
+	 */
+
+	if (
+		( null !== $file_name_extension ) &&
+		( false !== $temp_file_name )
+	) {
+		$temp_file_name_old = $temp_file_name;
+		$temp_file_name .= '.' . $file_name_extension;
+
+		if ( true !== rename(
+			$temp_file_name_old,
+			$temp_file_name
+		) ) {
+			vipgoci_log(
+				'Unable to rename temporary file',
+				array(
+					'temp_file_name_old' => $temp_file_name_old,
+					'temp_file_name_new' => $temp_file_name,
+				),
+				2
+			);
+
+			exit( 250 );
+		}
+
+		unset( $temp_file_name_old );
+	}
 
 	if ( false !== $temp_file_name ) {
 		vipgoci_runtime_measure( 'start', 'save_temp_file' );

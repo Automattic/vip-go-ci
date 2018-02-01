@@ -221,6 +221,7 @@ function vipgoci_lint_scan_commit(
 		// Save the file-contents in a temporary-file
 		$temp_file_name = vipgoci_save_temp_file(
 			'lint-scan-',
+			null,
 			$file_contents
 		);
 

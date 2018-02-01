@@ -19,12 +19,12 @@ function vipgoci_phpcs_do_scan(
 	 */
 
 	$cmd = sprintf(
-		'cat %s | %s %s --standard=%s --report-width=%s -p 2>&1',
-		escapeshellarg( $filename_tmp ),
+		'%s %s --standard=%s --report-width=%s -p %s 2>&1',
 		escapeshellcmd( 'php' ),
 		escapeshellcmd( $phpcs_path ),
 		escapeshellarg( $phpcs_standard ),
-		escapeshellarg( 500 )
+		escapeshellarg( 500 ),
+		escapeshellarg( $filename_tmp )
 	);
 
 	vipgoci_runtime_measure( 'start', 'phpcs_cli' );
@@ -186,7 +186,7 @@ function vipgoci_phpcs_scan_commit(
 		$github_token,
 		array(
 			'file_extensions'
-				=> array( 'php' ),
+				=> array( 'php', 'js', 'twig' ),
 
 			'status'
 				=> array( 'added', 'modified' ),
@@ -231,8 +231,18 @@ function vipgoci_phpcs_scan_commit(
 			$options['local-git-repo']
 		);
 
+		$file_extension = pathinfo(
+			$file_info->filename,
+			PATHINFO_EXTENSION
+		);
+
+		if ( false === $file_extension ) {
+			$file_extension = null;
+		}
+
 		$temp_file_name = vipgoci_save_temp_file(
 			'phpcs-scan-',
+			$file_extension,
 			$file_contents
 		);
 
