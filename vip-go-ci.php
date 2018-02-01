@@ -289,7 +289,7 @@ function vipgoci_run() {
 	 */
 
 	if ( empty( $options['phpcs-standard'] ) ) {
-		$options['phpcs-standard'] = 'WordPressVIPminimum';
+		$options['phpcs-standard'] = 'WordPressVIPMinimum';
 	}
 
 	$options['phpcs-standard'] = trim(
