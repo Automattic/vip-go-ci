@@ -236,7 +236,7 @@ function vipgoci_phpcs_scan_commit(
 			PATHINFO_EXTENSION
 		);
 
-		if ( false === $file_extension ) {
+		if ( empty( $file_extension ) ) {
 			$file_extension = null;
 		}
 
