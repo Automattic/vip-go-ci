@@ -37,7 +37,7 @@ fi
 
 # The release number is not available at all, abort
 if [ "$VIP_GO_CI_VER" == "" ] ; then
-	echo "Could not determine latest release of vip-go-ci -- aborting";
+	echo "$0: Could not determine latest release of vip-go-ci -- aborting";
 	exit 1
 fi
 
@@ -59,20 +59,24 @@ if [ -d ~/vip-go-ci-tools ] ; then
 	done
 
 	if [ "$TMP_DO_DELETE" -eq "1" ] ; then
-		echo "Detected obsolete vip-go-ci tools"
+		echo "$0: Detected obsolete vip-go-ci tools, removing them"
 		# One or more of the versions do not match,
 		# remove and reinstall
 		rm -rf ~/vip-go-ci-tools
-		echo "Removed tools"
+		echo "$0: Removed tools"
 	fi
 fi
 
 
-if [ ! -d ~/vip-go-ci-tools ] ; then
+if [ -d ~/vip-go-ci-tools ] ; then
+	echo "$0: Nothing to update, exiting"
+	exit 0
+else
+
 	#
 	# No tools installed, do install them,
 	#
-	echo "No vip-go-ci tools present, will install"
+	echo "$0: No vip-go-ci tools present, will install"
 
 	TMP_FOLDER=`mktemp -d /tmp/vip-go-ci-tools-XXXXXX`
 
@@ -103,6 +107,6 @@ if [ ! -d ~/vip-go-ci-tools ] ; then
 	# Either moving the folder succeeds, and the tools
 	# are all installed, or it fails and no tools are installed.
 
-	echo "Installation finished"
+	echo "$0: Installation of tools finished"
 fi
 
