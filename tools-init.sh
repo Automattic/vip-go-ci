@@ -4,27 +4,43 @@ export PHP_CODESNIFFER_VER="3.1.0"
 export WP_CODING_STANDARDS_VER="0.14.0"
 export VIP_CODING_STANDARDS_VER="0.2.2"
 
-#
-# FIXME: Only check in 33% of cases...
-#
+if [ -d ~/vip-go-ci-tools ] ; then
+	#
+	# We have got the tools installed already,
+	# only check in 33% of cases if we should
+	# upgrade.
+	#
+	export TMP_RAND=`seq 1 3 | sort -R | head -n 1`
 
-# Start by fetching the version-number from the latest
-# release of vip-go-ci
+	if [ "$TMP_RAND" -ne "1" ] ; then
+		echo "$0: Not due to update anything, exiting"
+		exit 1
+	fi
+fi
+
+
+# Fetch the latest release tag of vip-go-ci
 
 export VIP_GO_CI_VER=`~/vip-go-ci-tools/vip-go-ci/latest-release.php`
 
 if [ "$VIP_GO_CI_VER" == "" ] ; then
+	# latest-release.php is not available, fetch it
+	# and then fetch the latest release number of vip-go-ci
 	TMP_FILE=`mktemp /tmp/vip-go-ci-latest-release-XXXXX.php`
-	
+
+	echo "$0: Trying to determine latest release of vip-go-ci, need to fetch latest-release.php first..."
 	wget -O "$TMP_FILE" https://raw.githubusercontent.com/Automattic/vip-go-ci/master/latest-release.php && \
 	chmod u+x "$TMP_FILE" && \
-	export VIP_GO_CI_VER=`./$TMP_FILE`
+	export VIP_GO_CI_VER=`$TMP_FILE` && \
+	echo "$0: Latest release of vip-go-ci is: $VIP_GO_CI_VER"
 fi
 
+# The release number is not available at all, abort
 if [ "$VIP_GO_CI_VER" == "" ] ; then
-	echo "Could not fetch version of latest release of vip-go-ci -- aborting";
+	echo "Could not determine latest release of vip-go-ci -- aborting";
 	exit 1
 fi
+
 
 
 if [ -d ~/vip-go-ci-tools ] ; then
@@ -53,6 +69,9 @@ fi
 
 
 if [ ! -d ~/vip-go-ci-tools ] ; then
+	#
+	# No tools installed, do install them,
+	#
 	echo "No vip-go-ci tools present, will install"
 
 	TMP_FOLDER=`mktemp -d /tmp/vip-go-ci-tools-XXXXXX`
@@ -79,6 +98,11 @@ if [ ! -d ~/vip-go-ci-tools ] ; then
 	rm -f "$VIP_GO_CI_VER.tar.gz" && \
 	touch "$TMP_FOLDER/vip-go-ci-$VIP_GO_CI_VER.txt" && \
 	mv $TMP_FOLDER ~/vip-go-ci-tools && \
+
+	# Note that the last action above is atomic:
+	# Either moving the folder succeeds, and the tools
+	# are all installed, or it fails and no tools are installed.
+
 	echo "Installation finished"
 fi
 
