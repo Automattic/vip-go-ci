@@ -21,7 +21,7 @@ fi
 
 # Fetch the latest release tag of vip-go-ci
 
-export VIP_GO_CI_VER=`~/vip-go-ci-tools/vip-go-ci/latest-release.php`
+export VIP_GO_CI_VER=`php ~/vip-go-ci-tools/vip-go-ci/latest-release.php`
 
 if [ "$VIP_GO_CI_VER" == "" ] ; then
 	# latest-release.php is not available, fetch it
@@ -31,7 +31,7 @@ if [ "$VIP_GO_CI_VER" == "" ] ; then
 	echo "$0: Trying to determine latest release of vip-go-ci, need to fetch latest-release.php first..."
 	wget -O "$TMP_FILE" https://raw.githubusercontent.com/Automattic/vip-go-ci/master/latest-release.php && \
 	chmod u+x "$TMP_FILE" && \
-	export VIP_GO_CI_VER=`$TMP_FILE` && \
+	export VIP_GO_CI_VER=`php $TMP_FILE` && \
 	rm "$TMP_FILE" && \
 	echo "$0: Latest release of vip-go-ci is: $VIP_GO_CI_VER"
 fi
