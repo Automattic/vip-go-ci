@@ -21,7 +21,8 @@ fi
 
 # Fetch the latest release tag of vip-go-ci
 
-export VIP_GO_CI_VER=`~/vip-go-ci-tools/vip-go-ci/latest-release.php`
+#export VIP_GO_CI_VER=`~/vip-go-ci-tools/vip-go-ci/latest-release.php`
+export VIP_GO_CI_VER=""
 
 if [ "$VIP_GO_CI_VER" == "" ] ; then
 	# latest-release.php is not available, fetch it
