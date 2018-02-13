@@ -32,6 +32,7 @@ if [ "$VIP_GO_CI_VER" == "" ] ; then
 	wget -O "$TMP_FILE" https://raw.githubusercontent.com/Automattic/vip-go-ci/master/latest-release.php && \
 	chmod u+x "$TMP_FILE" && \
 	export VIP_GO_CI_VER=`$TMP_FILE` && \
+	rm "$TMP_FILE" && \
 	echo "$0: Latest release of vip-go-ci is: $VIP_GO_CI_VER"
 fi
 
