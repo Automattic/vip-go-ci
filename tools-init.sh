@@ -21,7 +21,7 @@ function lock_remove() {
 	rm -f "$TMP_LOCK_FILE"
 }
 
-lock_place()
+lock_place
 
 
 if [ -d ~/vip-go-ci-tools ] ; then
