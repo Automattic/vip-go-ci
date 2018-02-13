@@ -4,6 +4,26 @@ export PHP_CODESNIFFER_VER="3.1.0"
 export WP_CODING_STANDARDS_VER="0.14.0"
 export VIP_CODING_STANDARDS_VER="0.2.2"
 
+export TMP_LOCK_FILE="$HOME/.vip-go-ci-tools-init.lck"
+
+function lock_place() {
+	# Get lock, if that fails, just exit
+	if [ -f "$TMP_LOCK_FILE" ] ; then
+		echo "$0: Lock in place, not doing anything."
+		exit 0
+	fi
+
+	# Acquire lock
+	touch "$TMP_LOCK_FILE"
+}
+
+function lock_remove() {
+	rm -f "$TMP_LOCK_FILE"
+}
+
+lock_place()
+
+
 if [ -d ~/vip-go-ci-tools ] ; then
 	#
 	# We have got the tools installed already,
@@ -14,6 +34,7 @@ if [ -d ~/vip-go-ci-tools ] ; then
 
 	if [ "$TMP_RAND" -ne "1" ] ; then
 		echo "$0: Not due to update anything, exiting"
+		lock_remove
 		exit 1
 	fi
 fi
@@ -43,6 +64,7 @@ fi
 # The release number is not available at all, abort
 if [ "$VIP_GO_CI_VER" == "" ] ; then
 	echo "$0: Could not determine latest release of vip-go-ci -- aborting";
+	lock_remove
 	exit 1
 fi
 
@@ -75,6 +97,7 @@ fi
 
 if [ -d ~/vip-go-ci-tools ] ; then
 	echo "$0: Nothing to update, exiting"
+	lock_remove
 	exit 0
 else
 
@@ -115,3 +138,4 @@ else
 	echo "$0: Installation of tools finished"
 fi
 
+lock_remove
