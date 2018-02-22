@@ -139,10 +139,11 @@ function vipgoci_issues_filter_irrellevant(
 ) {
 	foreach (
 		$file_issues_arr as
-			$file_issue_line => $file_issue_val
+			$file_issue_key =>
+			$file_issue_val
 	) {
 		if ( ! in_array(
-				$file_issue_line,
+				$file_issue_val['line'],
 				$file_changed_lines
 		) ) {
 			$exists = false;
@@ -165,7 +166,7 @@ function vipgoci_issues_filter_irrellevant(
 		else if ( false === $exists ) {
 			unset(
 				$file_issues_arr[
-					$file_issue_line
+					$file_issue_key
 				]
 			);
 

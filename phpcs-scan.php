@@ -19,11 +19,11 @@ function vipgoci_phpcs_do_scan(
 	 */
 
 	$cmd = sprintf(
-		'%s %s --standard=%s --report-width=%s -p %s 2>&1',
+		'%s %s --standard=%s --report=%s %s 2>&1',
 		escapeshellcmd( 'php' ),
 		escapeshellcmd( $phpcs_path ),
 		escapeshellarg( $phpcs_standard ),
-		escapeshellarg( 500 ),
+		escapeshellarg( 'json' ),
 		escapeshellarg( $filename_tmp )
 	);
 
@@ -33,64 +33,7 @@ function vipgoci_phpcs_do_scan(
 
 	vipgoci_runtime_measure( 'stop', 'phpcs_cli' );
 
-
-	/*
-	 * Do simple checks to see if we can find any signature marks
-	 * of PHPCS having run -- this should be in what
-	 * PHPCS returns.
-	 */
-	if (
-		( false === strpos( $result, 'Time: ') )
-	) {
-		$result = null;
-	}
-
-	/* Catch errors */
-	if ( null === $result ) {
-		vipgoci_log(
-			'Failed to execute PHPCS. Cannot continue execution.',
-			array(
-				'command' => $cmd,
-				'result' => $result,
-			)
-		);
-
-		exit( 254 );
-	}
-
 	return $result;
-}
-
-
-/*
- * Parse the PHCS-results provided, making sure the
- * output be an associative array, using line-number
- * as a key.
- */
-
-function vipgoci_phpcs_parse_results( $phpcs_results ) {
-	$issues = array();
-
-	if ( preg_match_all(
-		'/^[\s\t]+(\d+)\s\|[\s\t]+([A-Z]+)[\s|\t]+\|[\s\t]+(.*)$/m',
-		$phpcs_results,
-		$matches,
-		PREG_SET_ORDER
-	) ) {
-		/*
-		 * Look through each result, set key too be
-		 * the line number, and value to be an array
-		 * which it self is an associative array.
-		 */
-		foreach( $matches as $match ) {
-			$issues[ $match[1] ][] = array(
-				'level'		=> $match[2],
-				'message' 	=> $match[3],
-			);
-		}
-	}
-
-	return $issues;
 }
 
 
@@ -267,11 +210,52 @@ function vipgoci_phpcs_scan_commit(
 		/* Get rid of temporary file */
 		unlink( $temp_file_name );
 
-
-		$file_issues_arr_master = vipgoci_phpcs_parse_results(
-			$file_issues_str
+		$file_issues_arr_master = json_decode(
+			$file_issues_str,
+			true
 		);
 
+
+		/*
+		 * Do sanity-checking
+		 */
+
+		if (
+			( null === $file_issues_arr_master ) ||
+			( ! isset( $file_issues_arr_master['totals'] ) ) ||
+			( ! isset( $file_issues_arr_master['files'] ) )
+		) {
+			vipgoci_log(
+				'Failed parsing output from PHPCS',
+				array(
+					'repo_owner' => $repo_owner,
+					'repo_name' => $repo_name,
+					'commit_id' => $commit_id,
+					'file_issues_arr_master' =>
+						$file_issues_arr_master,
+					'file_issues_str' =>
+						$file_issues_str,
+				)
+			);
+		}
+
+		unset( $file_issues_str );
+
+		/*
+		 * Make sure items in $file_issues_arr_master have
+		 * 'level' key and value.
+		 */
+		$file_issues_arr_master = array_map(
+			function( $item ) {
+				$item['level'] = $item['type'];
+
+				return $item;
+			},
+			$file_issues_arr_master
+				['files']
+				[ $temp_file_name ]
+				['messages']
+		);
 
 		/*
 		 * Output scanning-results if requested
@@ -325,94 +309,84 @@ function vipgoci_phpcs_scan_commit(
 				$file_changed_lines
 			);
 
-
 			/*
 			 * Loop through array of lines in which
 			 * issues exist.
 			 */
 			foreach (
-				$file_issues_arr as
-					$file_issue_line => $file_issue_values
+				$file_issues_arr as $file_issue_val_item
 			) {
 				/*
-				 * Loop through each issue for the particular
-				 * line.
+				 * Figure out if the comment has been
+				 * submitted before, and if so, do not submit
+				 * it again. This needs to be done because
+				 * we might run more than once per commit.
 				 */
 
-				foreach (
-					$file_issue_values as $file_issue_val_item
+				if (
+					vipgoci_github_comment_match(
+						$file_info->filename,
+						$file_issue_val_item['line'],
+						$file_issue_val_item['message'],
+						$prs_comments
+					)
 				) {
-
-					/*
-					 * Figure out if the comment has been
-					 * submitted before, and if so, do not submit
-					 * it again. This needs to be done because
-					 * we might run more than once per commit.
-					 */
-
-					if (
-						vipgoci_github_comment_match(
-							$file_info->filename,
-							$file_relevant_lines[ $file_issue_line ],
-							$file_issue_val_item['message'],
-							$prs_comments
+					vipgoci_log(
+						'Skipping submission of ' .
+						'comment, has already been ' .
+						'submitted',
+						array(
+							'repo_owner'		=> $repo_owner,
+							'repo_name'		=> $repo_name,
+							'filename'		=> $file_info->filename,
+							'file_issue_line'	=> $file_issue_val_item['line'],
+							'file_issue_msg'	=> $file_issue_val_item['message'],
+							'commit_id'		=> $commit_id,
 						)
-					) {
-						vipgoci_log(
-							'Skipping submission of ' .
-							'comment, has already been ' .
-							'submitted',
-							array(
-								'repo_owner'		=> $repo_owner,
-								'repo_name'		=> $repo_name,
-								'filename'		=> $file_info->filename,
-								'file_issue_line'	=> $file_issue_line,
-								'file_issue_msg'	=> $file_issue_val_item['message'],
-								'commit_id'		=> $commit_id,
-							)
-						);
-
-						/* Skip */
-						continue;
-					}
-
-					/*
-					 * Collect all the issues that
-					 * we need to submit about
-					 */
-
-					$commit_issues_submit[
-						$pr_item->number
-					][] = array(
-						'type'		=> 'phpcs',
-
-						'file_name'	=>
-							$file_info->filename,
-
-						'file_line'	=>
-							$file_relevant_lines[
-								$file_issue_line
-							],
-
-						'issue'		=>
-							$file_issue_val_item,
 					);
 
-					/*
-					 * Collect statistics on
-					 * number of warnings/errors
-					 */
-
-					$commit_issues_stats[
-						$pr_item->number
-					][
-						strtolower(
-							$file_issue_val_item[
-								'level'
-							]
-						)
-					]++;
+					/* Skip */
+					continue;
 				}
+
+				/*
+				 * Collect all the issues that
+				 * we need to submit about
+				 */
+
+				$commit_issues_submit[
+					$pr_item->number
+				][] = array(
+					'type'		=> 'phpcs',
+
+					'file_name'	=>
+						$file_info->filename,
+
+					'file_line'	=>
+						$file_relevant_lines[
+							$file_issue_val_item[
+								'line'
+							]
+						],
+
+					'issue'		=>
+						$file_issue_val_item,
+				);
+
+				/*
+				 * Collect statistics on
+				 * number of warnings/errors
+				 */
+
+				$commit_issues_stats[
+					$pr_item->number
+				][
+					strtolower(
+						$file_issue_val_item[
+							'level'
+						]
+					)
+				]++;
 			}
 		}
 
