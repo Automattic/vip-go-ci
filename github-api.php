@@ -82,6 +82,38 @@ function vipgoci_curl_headers( $ch, $header ) {
 
 
 /*
+ * Detect if we exceeded the GitHub rate-limits,
+ * and if so, exit with error.
+ */
+
+function vipgoci_github_rate_limits_check(
+	$github_url,
+	$resp_headers
+) {
+	if (
+		( isset( $resp_headers['x-ratelimit-remaining'][0] ) ) &&
+		( $resp_headers['x-ratelimit-remaining'][0] <= 1 )
+	) {
+		vipgoci_log(
+			'Ran out of request limits for GitHub, ' .
+				'cannot continue without making ' .
+				'making further requests.',
+			array(
+				'github_url' => $github_url,
+
+				'x-ratelimit-remaining' =>
+					$resp_headers['x-ratelimit-remaining'][0],
+
+				'x-ratelimit-limit' =>
+					$resp_headers['x-ratelimit-limit'][0],
+			)
+		);
+
+		exit( 254 );
+	}
+}
+
+/*
  * Make sure to wait in between requests to
  * GitHub. Only waits if it is really needed.
  *
@@ -303,6 +335,12 @@ function vipgoci_github_post_url(
 			sleep( $retry_sleep + 1 );
 		}
 
+		vipgoci_github_rate_limits_check(
+			$github_url,
+			$resp_headers
+		);
+
+
 		curl_close( $ch );
 
 	} while ( $retry_req == true );
@@ -342,6 +380,12 @@ function vipgoci_github_fetch_url(
 
 		curl_setopt(
 			$ch,
+			CURLOPT_HEADERFUNCTION,
+			'vipgoci_curl_headers'
+		);
+
+		curl_setopt(
+			$ch,
 			CURLOPT_HTTPHEADER,
 			array( 'Authorization: token ' . $github_token )
 		);
@@ -359,6 +403,12 @@ function vipgoci_github_fetch_url(
 		$resp_data = curl_exec( $ch );
 
 		vipgoci_runtime_measure( 'stop', 'github_api' );
+
+
+		$resp_headers = vipgoci_curl_headers(
+			null,
+			null
+		);
 
 
 		/*
@@ -388,6 +438,12 @@ function vipgoci_github_fetch_url(
 
 			sleep( 10 );
 		}
+
+
+		vipgoci_github_rate_limits_check(
+			$github_url,
+			$resp_headers
+		);
 
 		curl_close( $ch );
 
