@@ -662,7 +662,7 @@ function vipgoci_github_pr_reviews_comments_get(
 	 * Nothing in cache, ask GitHub.
 	 */
 
-	$page = 0;
+	$page = 1;
 	$prs_comments = array();
 
 	/*
@@ -685,7 +685,8 @@ function vipgoci_github_pr_reviews_comments_get(
 			'sort=created&' .
 			'direction=asc&' .
 			'since=' . rawurlencode( $commit_made_at ) . '&' .
-			'page=' . rawurlencode( $page );
+			'page=' . rawurlencode( $page ) . '&' .
+			'per_page=' . rawurlencode( 100 );
 
 		// FIXME: Detect when GitHub returned with an error
 		$prs_comments_tmp = json_decode(
@@ -727,7 +728,7 @@ function vipgoci_github_pr_reviews_comments_get(
 
 		$page++;
 
-	} while ( count( $prs_comments_tmp ) > 0 );
+	} while ( count( $prs_comments_tmp ) >= 100 );
 
 
 	vipgoci_cache( $cached_id, $prs_comments );
