@@ -145,18 +145,6 @@ function vipgoci_phpcs_scan_commit(
 		$options['branches-ignore']
 	);
 
-	/*
-	 * Fetch all comments made in relation to that commit
-	 * and associated with any Pull-Requests that are open.
-	 */
-	$prs_comments = vipgoci_github_pr_reviews_comments_get(
-		$repo_owner,
-		$repo_name,
-		$commit_id,
-		$commit_info->commit->committer->date,
-		$github_token
-	);
-
 
 	/*
 	 * Loop through each file affected by
@@ -283,6 +271,67 @@ function vipgoci_phpcs_scan_commit(
 		 */
 
 		foreach ( $prs_implicated as $pr_item ) {
+			$prs_comments = array();
+
+			/*
+			 * Get all commits related to the current
+			 * Pull-Request.
+			 */
+			$pr_item_commits = vipgoci_github_prs_commits_list(
+				$repo_owner,
+				$repo_name,
+				$pr_item->number,
+				$github_token
+			);
+
+			foreach ( $pr_item_commits as $pr_item_commit_id ) {
+				/*
+				 * Fetch all comments made in relation to that commit
+				 * and associated with any Pull-Requests that are open.
+				 */
+
+				$prs_comments_tmp = vipgoci_github_pr_reviews_comments_get(
+					$repo_owner,
+					$repo_name,
+					$pr_item_commit_id,
+					$pr_item->created_at,
+					$github_token
+				);
+
+				/*
+				 * Merge the comments we got back with those
+				 * we already have got.
+				 */
+
+				foreach (
+					array_keys( $prs_comments_tmp )
+						as $tmp_cmt_key
+				) {
+					if ( ! isset(
+						$prs_comments[
+							$tmp_cmt_key
+						]
+					) ) {
+						$prs_comments[
+							$tmp_cmt_key
+						] = array();
+					}
+
+					$prs_comments[ $tmp_cmt_key ] =
+						array_merge(
+							$prs_comments[
+								$tmp_cmt_key
+							],
+							$prs_comments_tmp[
+								$tmp_cmt_key
+							]
+						);
+				}
+
+				unset( $prs_comments_tmp );
+				unset( $tmp_cmt_key );
+			}
+
 			$file_changed_lines = vipgoci_patch_changed_lines(
 				$repo_owner,
 				$repo_name,
