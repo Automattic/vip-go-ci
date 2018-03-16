@@ -321,12 +321,19 @@ function vipgoci_phpcs_scan_commit(
 				 * submitted before, and if so, do not submit
 				 * it again. This needs to be done because
 				 * we might run more than once per commit.
+				 *
+				 * When we do this, make sure to use relative
+				 * line numbers to determine if the comment has
+				 * been submitted to GitHub before, as the
+				 * GitHub API uses relative line numbering.
 				 */
 
 				if (
 					vipgoci_github_comment_match(
 						$file_info->filename,
-						$file_issue_val_item['line'],
+						$file_relevant_lines[
+							$file_issue_val_item['line']
+						],
 						$file_issue_val_item['message'],
 						$prs_comments
 					)
