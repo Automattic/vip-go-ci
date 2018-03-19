@@ -637,7 +637,7 @@ function vipgoci_github_pr_reviews_comments_get(
 	 */
 	$cached_id = array(
 		__FUNCTION__, $repo_owner, $repo_name,
-		$commit_id, $commit_made_at, $github_token
+		$commit_made_at, $github_token
 	);
 
 	$cached_data = vipgoci_cache( $cached_id );
@@ -654,48 +654,79 @@ function vipgoci_github_pr_reviews_comments_get(
 		)
 	);
 
+
 	if ( false !== $cached_data ) {
-		return $cached_data;
+		$prs_comments = $cached_data;
 	}
 
-	/*
-	 * Nothing in cache, ask GitHub.
-	 */
+	else {
+		/*
+		 * Nothing in cache, ask GitHub.
+		 */
 
-	$page = 1;
-	$prs_comments = array();
+		$page = 1;
+		$per_page = 100;
+		$prs_comments = array();
 
-	/*
-	 * FIXME:
-	 *
-	 * Asking for all the pages from GitHub
-	 * might get expensive as we process more
-	 * commits/hour -- maybe cache this in memcache,
-	 * making it possible to share data between processes.
-	 */
+		/*
+		 * FIXME:
+		 *
+		 * Asking for all the pages from GitHub
+		 * might get expensive as we process more
+		 * commits/hour -- maybe cache this in memcache,
+		 * making it possible to share data between processes.
+		 */
 
-	do {
-		$github_url =
-			'https://api.github.com/' .
-			'repos/' .
-			rawurlencode( $repo_owner ) . '/' .
-			rawurlencode( $repo_name ) . '/' .
-			'pulls/' .
-			'comments?' .
-			'sort=created&' .
-			'direction=asc&' .
-			'since=' . rawurlencode( $commit_made_at ) . '&' .
-			'page=' . rawurlencode( $page ) . '&' .
-			'per_page=' . rawurlencode( 100 );
+		do {
+			$github_url =
+				'https://api.github.com/' .
+				'repos/' .
+				rawurlencode( $repo_owner ) . '/' .
+				rawurlencode( $repo_name ) . '/' .
+				'pulls/' .
+				'comments?' .
+				'sort=created&' .
+				'direction=asc&' .
+				'since=' . rawurlencode( $commit_made_at ) . '&' .
+				'page=' . rawurlencode( $page ) . '&' .
+				'per_page=' . rawurlencode( $per_page );
 
-		// FIXME: Detect when GitHub returned with an error
-		$prs_comments_tmp = json_decode(
-			vipgoci_github_fetch_url(
-				$github_url,
-				$github_token
-			)
-		);
+			// FIXME: Detect when GitHub returned with an error
+			$prs_comments_tmp = json_decode(
+				vipgoci_github_fetch_url(
+					$github_url,
+					$github_token
+				)
+			);
 
+			foreach ( $prs_comments_tmp as $pr_comment ) {
+				$prs_comments[] = $pr_comment;
+			}
+
+			$page++;
+		} while ( count( $prs_comments_tmp ) >= $per_page );
+
+		vipgoci_cache( $cached_id, $prs_comments );
+	}
+
+	$prs_comments_ret = array();
+
+	foreach ( $prs_comments as $pr_comment ) {
+		if ( null === $pr_comment->position ) {
+			/*
+			 * If no line-number was provided,
+			 * ignore the comment.
+			 */
+			continue;
+		}
+
+		if ( $commit_id !== $pr_comment->original_commit_id ) {
+			/*
+			 * If commit_id on comment does not match
+			 * current one, skip the comment.
+			 */
+			continue;
+		}
 
 		/*
 		 * Look through each comment, create an associative array
@@ -703,37 +734,13 @@ function vipgoci_github_pr_reviews_comments_get(
 		 * can easily be found.
 		 */
 
-		foreach ( $prs_comments_tmp as $pr_comment ) {
-			if ( null === $pr_comment->position ) {
-				/*
-				 * If no line-number was provided,
-				 * ignore the comment.
-				 */
-				continue;
-			}
+		$prs_comments_ret[
+			$pr_comment->path . ':' .
+			$pr_comment->position
+		][] = $pr_comment;
+	}
 
-			if ( $commit_id !== $pr_comment->original_commit_id ) {
-				/*
-				 * If commit_id on comment does not match
-				 * current one, skip the comment.
-				 */
-				continue;
-			}
-
-			$prs_comments[
-				$pr_comment->path . ':' .
-				$pr_comment->position
-			][] = $pr_comment;
-		}
-
-		$page++;
-
-	} while ( count( $prs_comments_tmp ) >= 100 );
-
-
-	vipgoci_cache( $cached_id, $prs_comments );
-
-	return $prs_comments;
+	return $prs_comments_ret;
 }
 
 
