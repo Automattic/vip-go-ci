@@ -217,3 +217,112 @@ function vipgoci_gitrepo_fetch_committed_file(
 }
 
 
+/*
+ * Get 'git blame' log for a particular file,
+ * using a local Git repository.
+ */
+
+function vipgoci_gitrepo_blame_for_file(
+	$commit_id,
+	$file_name,
+	$local_git_repo
+) {
+	vipgoci_gitrepo_ok(
+		$commit_id, $local_git_repo
+	);
+
+	vipgoci_runtime_measure( 'start', 'git_repo_blame_for_file' );
+
+	vipgoci_log(
+		'Fetching \'git blame\' log from Git repository for file',
+		array(
+			'commmit_id' => $commit_id,
+			'file_name' => $file_name,
+			'local_git_repo' => $local_git_repo,
+		)
+	);
+
+	/*
+	 * Compose command to get blame-log
+	 */
+
+	$cmd = sprintf(
+		'%s -C %s blame -l -s %s 2>&1',
+		escapeshellcmd( 'git' ),
+		escapeshellarg( $local_git_repo ),
+		escapeshellarg( $file_name )
+	);
+
+
+	/* Actually execute */
+	vipgoci_runtime_measure( 'start', 'git_cli' );
+
+	$result = shell_exec( $cmd );
+
+	vipgoci_runtime_measure( 'stop', 'git_cli' );
+
+	/*
+	 * Process the output from git,
+	 * split each line into an array.
+	 */
+
+	$blame_log = array();
+
+	$result = explode(
+		"\n",
+		$result
+	);
+
+	foreach ( $result as $result_line ) {
+		$result_line_arr = explode(
+			' ',
+			$result_line
+		);
+
+		/*
+		 * commit_id should be first, but in some
+		 * cases it is not, so skip it.
+		 */
+
+		if ( empty( $result_line_arr[0] ) ) {
+			continue;
+		}
+
+		/*
+		 * Because 'git blame' indents things to
+		 * be human readable, adding whitespaces
+		 * as needed, we must work around that,
+		 * copying the line-number wherever that
+		 * is in the resulting array.
+		 */
+
+		for ( $i = 1; $i < count( $result_line_arr ); $i++ ) {
+			if ( ! empty( $result_line_arr[ 1 ] ) ) {
+				break;
+			}
+
+			if ( ! empty ($result_line_arr[ $i ] ) ) {
+				$result_line_arr[ 1 ] = $result_line_arr[ $i ];
+				break;
+			}
+		}
+
+		/*
+		 * Finally, construct return array
+		 */
+
+		$blame_log[] = array(
+			'commit_id' => $result_line_arr[0],
+			'file_name' => $file_name,
+			'line_no' => (int) str_replace(
+				')',
+				'',
+				$result_line_arr[1]
+			),
+		);
+	}
+
+	vipgoci_runtime_measure( 'stop', 'git_repo_blame_for_file' );
+
+	return $blame_log;
+}
