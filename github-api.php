@@ -625,6 +625,7 @@ function vipgoci_github_fetch_commit_info(
  * return false on an error.
  */
 function vipgoci_github_pr_reviews_comments_get(
+	&$prs_comments,
 	$repo_owner,
 	$repo_name,
 	$commit_id,
@@ -656,7 +657,7 @@ function vipgoci_github_pr_reviews_comments_get(
 
 
 	if ( false !== $cached_data ) {
-		$prs_comments = $cached_data;
+		$prs_comments_cache = $cached_data;
 	}
 
 	else {
@@ -666,7 +667,7 @@ function vipgoci_github_pr_reviews_comments_get(
 
 		$page = 1;
 		$per_page = 100;
-		$prs_comments = array();
+		$prs_comments_cache = array();
 
 		/*
 		 * FIXME:
@@ -700,18 +701,17 @@ function vipgoci_github_pr_reviews_comments_get(
 			);
 
 			foreach ( $prs_comments_tmp as $pr_comment ) {
-				$prs_comments[] = $pr_comment;
+				$prs_comments_cache[] = $pr_comment;
 			}
 
 			$page++;
 		} while ( count( $prs_comments_tmp ) >= $per_page );
 
-		vipgoci_cache( $cached_id, $prs_comments );
+		vipgoci_cache( $cached_id, $prs_comments_cache );
 	}
 
-	$prs_comments_ret = array();
 
-	foreach ( $prs_comments as $pr_comment ) {
+	foreach ( $prs_comments_cache as $pr_comment ) {
 		if ( null === $pr_comment->position ) {
 			/*
 			 * If no line-number was provided,
@@ -734,13 +734,11 @@ function vipgoci_github_pr_reviews_comments_get(
 		 * can easily be found.
 		 */
 
-		$prs_comments_ret[
+		$prs_comments[
 			$pr_comment->path . ':' .
 			$pr_comment->position
 		][] = $pr_comment;
 	}
-
-	return $prs_comments_ret;
 }
 
 
@@ -1670,6 +1668,44 @@ function vipgoci_github_prs_commits_list(
 }
 
 /*
+ * Fetch all files that were changed as a part
+ * of a particular Pull-Request. Allow filtering
+ * of file-endings according to $filter.
+ */
+function vipgoci_github_pr_files_changed(
+	$repo_owner,
+	$repo_name,
+	$github_token,
+	$pr_base_sha,
+	$current_commit_id,
+	$filter
+) {
+
+	$files_changed = vipgoci_github_diffs_fetch(
+		$repo_owner,
+		$repo_name,
+		$github_token,
+		$pr_base_sha,
+		$current_commit_id
+	);
+
+	$files_changed_ret = array();
+
+	foreach ( $files_changed as $file_name => $tmp_patch ) {
+		if ( false === vipgoci_filter_file_endings(
+			$file_name,
+			$filter
+		) ) {
+			continue;
+		}
+
+		$files_changed_ret[] = $file_name;
+	}
+
+	return $files_changed_ret;
+}
+
+/*
  * Fetch diffs between two commits.
  */
 function vipgoci_github_diffs_fetch(
@@ -1748,83 +1784,6 @@ function vipgoci_github_diffs_fetch(
 	vipgoci_cache( $cached_id, $diffs );
 
 	return $diffs;
-}
-
-/*
- * Check if the specified comment exists
- * within an array of other comments --
- * this is used to understand if the specific
- * comment has already been submitted earlier.
- */
-function vipgoci_github_comment_match(
-	$file_issue_path,
-	$file_issue_line,
-	$file_issue_comment,
-	$comments_made
-) {
-
-	/*
-	 * Construct an index-key made of file:line.
-	 */
-	$comment_index_key =
-		$file_issue_path .
-		':' .
-		$file_issue_line;
-
-
-	if ( ! isset(
-		$comments_made[
-			$comment_index_key
-		]
-	)) {
-		/*
-		 * No match on index-key within the
-		 * associative array -- the comment has
-		 * not been made, so return false.
-		 */
-		return false;
-	}
-
-
-	/*
-	 * Some comment matching the file and line-number
-	 * was found -- figure out if it is definately the
-	 * same comment.
-	 */
-
-	foreach (
-		$comments_made[ $comment_index_key ] as
-		$comment_made
-	) {
-		/*
-		 * The comment might contain formatting, such
-		 * as "Warning: ..." -- remove all of that.
-		 */
-		$comment_made_body = str_replace(
-			array("**", "Warning", "Error", ":no_entry_sign:", ":exclamation:"),
-			array("", "", "", "", ""),
-			$comment_made->body
-		);
-
-		/*
-		 * The comment might be prefixed with ': ',
-		 * remove that as well.
-		 */
-		$comment_made_body = ltrim(
-			$comment_made_body,
-			': '
-		);
-
-		if (
-			strtolower( $comment_made_body ) ==
-			strtolower( $file_issue_comment )
-		) {
-			/* Comment found, return true. */
-			return true;
-		}
-	}
-
-	return false;
 }
 
 
