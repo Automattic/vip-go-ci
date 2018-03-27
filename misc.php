@@ -129,56 +129,6 @@ function vipgoci_patch_changed_lines(
 
 
 /*
- * Filter out any issues in the code that were not
- * touched up on by the changed lines -- i.e., any issues
- * that existed prior to the change.
- */
-function vipgoci_issues_filter_irrellevant(
-	$file_issues_arr,
-	$file_changed_lines
-) {
-	foreach (
-		$file_issues_arr as
-			$file_issue_key =>
-			$file_issue_val
-	) {
-		if ( ! in_array(
-				$file_issue_val['line'],
-				$file_changed_lines
-		) ) {
-			$exists = false;
-		}
-
-		else {
-			$exists = true;
-		}
-
-
-		// Issue exists, do not remove or alter.
-		if ( $exists === true ) {
-			continue;
-		}
-
-
-		/*
-		 * Issue is out of range, so delete it.
-		 */
-		else if ( false === $exists ) {
-			unset(
-				$file_issues_arr[
-					$file_issue_key
-				]
-			);
-
-			continue;
-		}
-	}
-
-	return $file_issues_arr;
-}
-
-
-/*
  * Get a specific item from in-memory cache based on
  * $cache_id_arr if $data is null, or if $data is not null,
  * add a specific item to cache.
@@ -477,8 +427,8 @@ function vipgoci_stats_init( $options, $prs_implicated, &$results ) {
 
 			$results['stats'][ $stats_type ]
 				[ $pr_item->number ] = array(
-					'error'         => 0,
-					'warning'       => 0
+					'error'		=> 0,
+					'warning'	=> 0
 				);
 		}
 	}
@@ -548,3 +498,120 @@ function vipgoci_runtime_measure( $action = null, $type = null ) {
 		return $tmp_time;
 	}
 }
+
+
+/*
+ * Go through the given blame-log, and
+ * return only the items from the log that
+ * are found in $relevant_commit_ids.
+ */
+
+function vipgoci_blame_filter_commits(
+	$blame_log,
+	$relevant_commit_ids
+) {
+
+	/*
+	 * Loop through each file, get a
+	 * 'git blame' log for the file, so
+	 * so we can filter out issues not
+	 * stemming from commits that are a
+	 * part of the current Pull-Request.
+	 */
+
+	$blame_log_filtered = array();
+
+	foreach ( $blame_log as $blame_log_item ) {
+		if ( ! in_array(
+			$blame_log_item['commit_id'],
+			$relevant_commit_ids,
+			true
+		) ) {
+			continue;
+		}
+
+		$blame_log_filtered[] =
+			$blame_log_item;
+	}
+
+	return $blame_log_filtered;
+}
+
+
+/*
+ * Check if the specified comment exists
+ * within an array of other comments --
+ * this is used to understand if the specific
+ * comment has already been submitted earlier.
+ */
+function vipgoci_github_comment_match(
+	$file_issue_path,
+	$file_issue_line,
+	$file_issue_comment,
+	$comments_made
+) {
+
+	/*
+	 * Construct an index-key made of file:line.
+	 */
+	$comment_index_key =
+		$file_issue_path .
+		':' .
+		$file_issue_line;
+
+
+	if ( ! isset(
+		$comments_made[
+			$comment_index_key
+		]
+	)) {
+		/*
+		 * No match on index-key within the
+		 * associative array -- the comment has
+		 * not been made, so return false.
+		 */
+		return false;
+	}
+
+
+	/*
+	 * Some comment matching the file and line-number
+	 * was found -- figure out if it is definately the
+	 * same comment.
+	 */
+
+	foreach (
+		$comments_made[ $comment_index_key ] as
+		$comment_made
+	) {
+		/*
+		 * The comment might contain formatting, such
+		 * as "Warning: ..." -- remove all of that.
+		 */
+		$comment_made_body = str_replace(
+			array("**", "Warning", "Error", ":no_entry_sign:", ":exclamation:"),
+			array("", "", "", "", ""),
+			$comment_made->body
+		);
+
+		/*
+		 * The comment might be prefixed with ': ',
+		 * remove that as well.
+		 */
+		$comment_made_body = ltrim(
+			$comment_made_body,
+			': '
+		);
+
+		if (
+			strtolower( $comment_made_body ) ==
+			strtolower( $file_issue_comment )
+		) {
+			/* Comment found, return true. */
+			return true;
+		}
+	}
+
+	return false;
+}
+
