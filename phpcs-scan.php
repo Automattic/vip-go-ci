@@ -67,6 +67,106 @@ function vipgoci_phpcs_scan_output_dump( $output_file, $data ) {
 
 
 /*
+ * Filter out any issues in the code that were not
+ * touched up on by the changed lines -- i.e., any issues
+ * that existed prior to the change.
+ */
+function vipgoci_issues_filter_irrellevant(
+	$repo_owner,
+	$repo_name,
+	$commit_id,
+	$file_name,
+	$file_issues_arr,
+	$file_blame_log,
+	$pr_item_commits,
+	$comments_existing,
+	$file_relative_lines
+) {
+	/*
+	 * Filter out any issues
+	 * that are due to commits outside
+	 * of the Pull-Request
+	 */
+
+	$file_blame_log_filtered =
+		vipgoci_blame_filter_commits(
+			$file_blame_log,
+			$pr_item_commits
+		);
+
+
+	$file_issues_ret = array();
+
+	/*
+	 * Loop through all the issues affecting
+	 * this particular file
+	 */
+	foreach (
+		$file_issues_arr[ $file_name ] as
+			$file_issue_key =>
+			$file_issue_val
+	) {
+		$keep_issue = false;
+
+		/*
+		 * Filter out issues outside of the blame log
+		 */
+
+		foreach ( $file_blame_log_filtered as $blame_log_item ) {
+			if (
+				$blame_log_item['line_no'] ===
+					$file_issue_val['line']
+			) {
+				$keep_issue = true;
+			}
+		}
+
+		/*
+		 * Filter out issues that have already been
+		 * reported got GitHub.
+		 */
+
+		if (
+			vipgoci_github_comment_match(
+				$file_name,
+				$file_relative_lines[
+					$file_issue_val['line']
+				],
+				$file_issue_val['message'],
+				$comments_existing
+			)
+		) {
+			vipgoci_log(
+				'Skipping submission of ' .
+				'comment, has already been ' .
+				'submitted',
+				array(
+					'repo_owner'		=> $repo_owner,
+					'repo_name'		=> $repo_name,
+					'filename'		=> $file_name,
+					'file_issue_line'	=> $file_issue_val['line'],
+					'file_issue_msg'	=> $file_issue_val['message'],
+					'commit_id'		=> $commit_id,
+				)
+			);
+
+			/* Skip */
+			$keep_issue = false;
+		}
+
+
+		if ( true === $keep_issue ) {
+			$file_issues_ret[] = $file_issue_val;
+		}
+
+		// FIXME: Filter by comments too
+	}
+
+	return $file_issues_ret;
+}
+
+
+/*
  * Scan a particular commit which should live within
  * a particular repository on GitHub, and use the specified
  * access-token to gain access.
@@ -121,20 +221,6 @@ function vipgoci_phpcs_scan_commit(
 	}
 
 
-	// Get commit-info
-	$commit_info = vipgoci_github_fetch_commit_info(
-		$repo_owner,
-		$repo_name,
-		$commit_id,
-		$github_token,
-		array(
-			'file_extensions'
-				=> array( 'php', 'js', 'twig' ),
-
-			'status'
-				=> array( 'added', 'modified' ),
-		)
-	);
 
 	// Fetch list of all Pull-Requests which the commit is a part of
 	$prs_implicated = vipgoci_github_prs_implicated(
@@ -147,10 +233,83 @@ function vipgoci_phpcs_scan_commit(
 
 
 	/*
-	 * Loop through each file affected by
-	 * the commit.
+	 * Get list of all files affected by
+	 * each Pull-Request implicated by the commit.
 	 */
-	foreach( $commit_info->files as $file_info ) {
+
+	vipgoci_log(
+		'Fetching list of all files affected by each Pull-Request ' .
+			'implicated by the commit',
+
+		array(
+			'repo_owner' => $repo_owner,
+			'repo_name' => $repo_name,
+			'commit_id' => $commit_id,
+		)
+	);
+
+	$pr_item_files_changed = array();
+	$pr_item_files_changed['all'] = array();
+
+	foreach ( $prs_implicated as $pr_item ) {
+		/*
+		 * Get list of all files changed
+		 * in this Pull-Request.
+		 */
+
+		$pr_item_files_tmp = vipgoci_github_pr_files_changed(
+			$repo_owner,
+			$repo_name,
+			$github_token,
+			$pr_item->base->sha,
+			$commit_id,
+			array( 'php', 'js', 'twig' )
+		);
+
+		foreach ( $pr_item_files_tmp as $pr_item_file_name ) {
+			if ( in_array(
+				$pr_item_file_name,
+				$pr_item_files_changed['all'],
+				true
+			) ) {
+				continue;
+			}
+
+			$pr_item_files_changed['all'][] =
+				$pr_item_file_name;
+
+			$pr_item_files_changed[
+				$pr_item->number
+			][] = $pr_item_file_name;
+		}
+	}
+
+
+	$files_issues_arr = array();
+
+	/*
+	 * Loop through each altered file in all the Pull-Requests,
+	 * use PHPCS to scan for issues, save the issues; they will
+	 * be processed in the next step.
+	 */
+
+	vipgoci_log(
+		'About to PHPCS-scan all files affected by any of the ' .
+			'Pull-Requests',
+
+		array(
+			'repo_owner' => $repo_owner,
+			'repo_name' => $repo_name,
+			'commit_id' => $commit_id,
+		)
+	);
+
+
+	foreach ( $pr_item_files_changed['all'] as $file_name ) {
+		/*
+		 * Loop through each file affected by
+		 * the commit.
+		 */
 		vipgoci_runtime_measure( 'start', 'phpcs_scan_single_file' );
 
 		$file_contents = vipgoci_gitrepo_fetch_committed_file(
@@ -158,12 +317,12 @@ function vipgoci_phpcs_scan_commit(
 			$repo_name,
 			$github_token,
 			$commit_id,
-			$file_info->filename,
+			$file_name,
 			$options['local-git-repo']
 		);
 
 		$file_extension = pathinfo(
-			$file_info->filename,
+			$file_name,
 			PATHINFO_EXTENSION
 		);
 
@@ -183,7 +342,7 @@ function vipgoci_phpcs_scan_commit(
 				'repo_owner' => $repo_owner,
 				'repo_name' => $repo_name,
 				'commit_id' => $commit_id,
-				'filename' => $file_info->filename,
+				'filename' => $file_name,
 				'temp_file_name' => $temp_file_name,
 			)
 		);
@@ -245,6 +404,8 @@ function vipgoci_phpcs_scan_commit(
 				['messages']
 		);
 
+		$files_issues_arr[ $file_name ] = $file_issues_arr_master;
+
 		/*
 		 * Output scanning-results if requested
 		 */
@@ -256,81 +417,106 @@ function vipgoci_phpcs_scan_commit(
 					'repo_owner'	=> $repo_owner,
 					'repo_name'	=> $repo_name,
 					'commit_id'	=> $commit_id,
-					'filename'	=> $file_info->filename,
+					'filename'	=> $file_name,
 					'issues'	=> $file_issues_arr_master,
 				)
 			);
 		}
 
-
 		/*
-		 * Loop through each Pull-Request,
-		 * and detect problems that apply to
-		 * each and every one, while skipping
-		 * those that do not apply.
+		 * Get rid of data, and
+		 * attempt to garbage-collect.
+		 */
+		vipgoci_log(
+			'Cleaning up after scanning of file...',
+			array()
+		);
+
+		unset( $file_contents );
+		unset( $file_extension );
+		unset( $temp_file_name );
+		unset( $file_issues_arr_master );
+		unset( $file_issues_str );
+
+		gc_collect_cycles();
+
+		vipgoci_runtime_measure( 'stop', 'phpcs_scan_single_file' );
+	}
+
+
+	/*
+	 * Loop through each Pull-Request implicated,
+	 * get comments made on GitHub already,
+	 * then filter out any PHPCS-issues irrelevant
+	 * as they are not due to any commit that is part
+	 * of the Pull-Request, and skip any PHPCS-issue
+	 * already reported. Report the rest, if any.
+	 */
+
+	vipgoci_log(
+		'Figuring out which comment(s) to submit to GitHub, if any',
+		array(
+			'repo_owner' => $repo_owner,
+			'repo_name' => $repo_name,
+			'commit_id' => $commit_id,
+		)
+	);
+
+
+	foreach ( $prs_implicated as $pr_item ) {
+		/*
+		 * Loop through each commit, fetching all comments
+		 * made in relation to that commit
 		 */
 
-		foreach ( $prs_implicated as $pr_item ) {
-			$prs_comments = array();
+		$prs_comments = array();
 
-			/*
-			 * Get all commits related to the current
-			 * Pull-Request.
-			 */
-			$pr_item_commits = vipgoci_github_prs_commits_list(
+		/*
+		 * Get all commits related to the current
+		 * Pull-Request.
+		 */
+		$pr_item_commits = vipgoci_github_prs_commits_list(
+			$repo_owner,
+			$repo_name,
+			$pr_item->number,
+			$github_token
+		);
+
+		foreach ( $pr_item_commits as $pr_item_commit_id ) {
+			vipgoci_github_pr_reviews_comments_get(
+				$prs_comments,
 				$repo_owner,
 				$repo_name,
-				$pr_item->number,
+				$pr_item_commit_id,
+				$pr_item->created_at,
 				$github_token
 			);
 
-			foreach ( $pr_item_commits as $pr_item_commit_id ) {
-				/*
-				 * Fetch all comments made in relation to that commit
-				 * and associated with any Pull-Requests that are open.
-				 */
+			unset( $pr_item_commit_id );
+		}
 
-				$prs_comments_tmp = vipgoci_github_pr_reviews_comments_get(
-					$repo_owner,
-					$repo_name,
-					$pr_item_commit_id,
-					$pr_item->created_at,
-					$github_token
-				);
 
-				/*
-				 * Merge the comments we got back with those
-				 * we already have got.
-				 */
+		/*
+		 * Loop through each file, get a
+		 * 'git blame' log for the file, then
+		 * filter out issues stemming
+		 * from commits that are not a
+		 * part of the current Pull-Request.
+		 */
 
-				foreach (
-					array_keys( $prs_comments_tmp )
-						as $tmp_cmt_key
-				) {
-					if ( ! isset(
-						$prs_comments[
-							$tmp_cmt_key
-						]
-					) ) {
-						$prs_comments[
-							$tmp_cmt_key
-						] = array();
-					}
+		foreach (
+			$pr_item_files_changed[ $pr_item->number ] as
+				$_tmp => $file_name
+			) {
 
-					$prs_comments[ $tmp_cmt_key ] =
-						array_merge(
-							$prs_comments[
-								$tmp_cmt_key
-							],
-							$prs_comments_tmp[
-								$tmp_cmt_key
-							]
-						);
-				}
-
-				unset( $prs_comments_tmp );
-				unset( $tmp_cmt_key );
-			}
+			/*
+			 * Get blame log for file
+			 */
+			$file_blame_log = vipgoci_gitrepo_blame_for_file(
+				$commit_id,
+				$file_name,
+				$options['local-git-repo']
+			);
 
 			$file_changed_lines = vipgoci_patch_changed_lines(
 				$repo_owner,
@@ -338,92 +524,59 @@ function vipgoci_phpcs_scan_commit(
 				$github_token,
 				$pr_item->base->sha,
 				$commit_id,
-				$file_info->filename
+				$file_name
 			);
 
-			$file_relevant_lines = @array_flip(
+			$file_relative_lines = @array_flip(
 				$file_changed_lines
 			);
 
 
 			/*
-			 * Filter out any issues that affect the file, but are not
-			 * due to the commit made -- so any existing issues are left
-			 * out and not commented on by us.
+			 * Filter the issues we found
+			 * previously in this file; remove
+			 * the ones that the are not found
+			 * in the blame-log (meaning that
+			 * they are due to commits outside of
+			 * the Pull-Request), and remove
+			 * those which have already been submitted.
 			 */
-			$file_issues_arr = $file_issues_arr_master;
 
-			$file_issues_arr = vipgoci_issues_filter_irrellevant(
-				$file_issues_arr,
-				$file_changed_lines
+			$file_issues_arr_filtered = vipgoci_issues_filter_irrellevant(
+				$repo_owner,
+				$repo_name,
+				$commit_id,
+				$file_name,
+				$files_issues_arr,
+				$file_blame_log,
+				$pr_item_commits,
+				$prs_comments,
+				$file_relative_lines
 			);
 
 			/*
-			 * Loop through array of lines in which
-			 * issues exist.
+			 * Collect all the issues that
+			 * we need to submit about
 			 */
-			foreach (
-				$file_issues_arr as $file_issue_val_item
+
+			foreach( $file_issues_arr_filtered as
+				$file_issue_val_key =>
+				$file_issue_val_item
 			) {
-				/*
-				 * Figure out if the comment has been
-				 * submitted before, and if so, do not submit
-				 * it again. This needs to be done because
-				 * we might run more than once per commit.
-				 *
-				 * When we do this, make sure to use relative
-				 * line numbers to determine if the comment has
-				 * been submitted to GitHub before, as the
-				 * GitHub API uses relative line numbering.
-				 */
-
-				if (
-					vipgoci_github_comment_match(
-						$file_info->filename,
-						$file_relevant_lines[
-							$file_issue_val_item['line']
-						],
-						$file_issue_val_item['message'],
-						$prs_comments
-					)
-				) {
-					vipgoci_log(
-						'Skipping submission of ' .
-						'comment, has already been ' .
-						'submitted',
-						array(
-							'repo_owner'		=> $repo_owner,
-							'repo_name'		=> $repo_name,
-							'filename'		=> $file_info->filename,
-							'file_issue_line'	=> $file_issue_val_item['line'],
-							'file_issue_msg'	=> $file_issue_val_item['message'],
-							'commit_id'		=> $commit_id,
-						)
-					);
-
-					/* Skip */
-					continue;
-				}
-
-				/*
-				 * Collect all the issues that
-				 * we need to submit about
-				 */
-
 				$commit_issues_submit[
 					$pr_item->number
 				][] = array(
 					'type'		=> 'phpcs',
 
 					'file_name'	=>
-						$file_info->filename,
+						$file_name,
 
 					'file_line'	=>
-						$file_relevant_lines[
+						$file_relative_lines[
 							$file_issue_val_item[
 								'line'
-							]
-						],
+						]
+					],
 
 					'issue'		=>
 						$file_issue_val_item,
@@ -446,37 +599,30 @@ function vipgoci_phpcs_scan_commit(
 			}
 		}
 
-		vipgoci_log(
-			'Cleaning up...',
-			array()
-		);
-
-
-		/*
-		 * Get rid of data, and
-		 * attempt to garbage-collect.
-		 */
-
-		unset( $commit_info );
-		unset( $file_contents );
-		unset( $file_issues_str );
-		unset( $file_issues_arr );
+		unset( $prs_comments );
+		unset( $pr_item_commits );
+		unset( $pr_item_files_changed );
+		unset( $file_blame_log );
 		unset( $file_changed_lines );
+		unset( $file_relative_lines );
+		unset( $file_issues_arr_filtered );
 
 		gc_collect_cycles();
-
-		vipgoci_runtime_measure( 'stop', 'phpcs_scan_single_file' );
 	}
 
 
 	/*
 	 * Clean up a bit
 	 */
+	vipgoci_log(
+		'Cleaning up after PHPCS-scanning...',
+		array()
+	);
 
-	unset( $prs_comments );
 	unset( $prs_implicated );
 
 	gc_collect_cycles();
 
         vipgoci_runtime_measure( 'stop', 'phpcs_scan_commit' );
 }
+
