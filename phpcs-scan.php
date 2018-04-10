@@ -121,12 +121,30 @@ function vipgoci_issues_filter_irrellevant(
 			}
 		}
 
+		if ( false === $keep_issue ) {
+			continue;
+		}
+
+		unset( $keep_issue );
+
+		/*
+		 * Filter out any issues that are outside
+		 * of the current patch
+		 */
+
+		if ( ! isset(
+			$file_relative_lines[ $file_issue_val['line'] ]
+		) ) {
+			continue;
+		}
+
 		/*
 		 * Filter out issues that have already been
 		 * reported got GitHub.
 		 */
 
 		if (
+			// Only do check if everything above is looking good
 			vipgoci_github_comment_match(
 				$file_name,
 				$file_relative_lines[
@@ -151,15 +169,11 @@ function vipgoci_issues_filter_irrellevant(
 			);
 
 			/* Skip */
-			$keep_issue = false;
+			continue;
 		}
 
-
-		if ( true === $keep_issue ) {
-			$file_issues_ret[] = $file_issue_val;
-		}
-
-		// FIXME: Filter by comments too
+		// Passed all tests, keep this issue
+		$file_issues_ret[] = $file_issue_val;
 	}
 
 	return $file_issues_ret;
