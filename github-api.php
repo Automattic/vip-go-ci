@@ -94,7 +94,7 @@ function vipgoci_github_rate_limits_check(
 		( isset( $resp_headers['x-ratelimit-remaining'][0] ) ) &&
 		( $resp_headers['x-ratelimit-remaining'][0] <= 1 )
 	) {
-		vipgoci_log(
+		vipgoci_sysexit(
 			'Ran out of request limits for GitHub, ' .
 				'cannot continue without making ' .
 				'making further requests.',
@@ -106,10 +106,9 @@ function vipgoci_github_rate_limits_check(
 
 				'x-ratelimit-limit' =>
 					$resp_headers['x-ratelimit-limit'][0],
-			)
+			),
+			VIPGOCI_EXIT_GITHUB_PROBLEM
 		);
-
-		exit( 254 );
 	}
 }
 
@@ -454,12 +453,11 @@ function vipgoci_github_fetch_url(
 
 
 	if ( false === $resp_data ) {
-		vipgoci_log(
-			'Gave up, cannot continue',
-			array()
+		vipgoci_sysexit(
+			'Gave up retrying request to GitHub, cannot continue',
+			array(),
+			VIPGOCI_EXIT_GITHUB_PROBLEM
 		);
-
-		exit( 254 );
 	}
 
 	return $resp_data;
@@ -528,15 +526,14 @@ function vipgoci_github_fetch_commit_info(
 			( isset( $data->message ) ) &&
 			( 'Not Found' === $data->message )
 		) {
-			vipgoci_log(
+			vipgoci_sysexit(
 				'Unable to fetch commit-info from GitHub, ' .
 					'the commit does not exist.',
 				array(
 					'error_data' => $data
-				)
+				),
+				VIPGOCI_EXIT_GITHUB_PROBLEM
 			);
-
-			exit( 254 );
 		}
 
 		// Cache the results

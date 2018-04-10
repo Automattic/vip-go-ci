@@ -32,10 +32,12 @@ function vipgoci_option_bool_handle(
 		( $options[ $parameter_name ] !== 'false' ) &&
 		( $options[ $parameter_name ] !== 'true' )
 	) {
-		print 'Usage: Parameter --' . $parameter_name .
-			' has to be either false or true' . PHP_EOL;
-
-		exit( 253 );
+		vipgoci_sysexit(
+			'Parameter --' . $parameter_name .
+				' has to be either false or true',
+			array(),
+			VIPGOCI_EXIT_USAGE_ERROR
+		);
 	}
 
 	/* Convert the given value to a boolean type value */
@@ -72,10 +74,12 @@ function vipgoci_option_integer_handle(
 
 	/* Make sure it is a numeric */
 	if ( ! is_numeric( $options[ $parameter_name ] ) ) {
-		print 'Usage: Parameter ' . $parameter_name . ' is not ' .
-			'an integer-value.';
-
-		exit( 253 );
+		vipgoci_sysexit(
+			'Usage: Parameter ' . $parameter_name . ' is not ' .
+				'an integer-value.',
+			array(),
+			VIPGOCI_EXIT_USAGE_ERROR
+		);
 	}
 
 	/* Forcibly convert to integer-value */
@@ -95,10 +99,12 @@ function vipgoci_option_integer_handle(
 			true
 		) )
 	) {
-		print 'Usage: Parameter ' . $parameter_name . ' is out ' .
-			'of allowable range.';
-
-		exit( 253 );
+		vipgoci_sysexit(
+			'Parameter ' . $parameter_name . ' is out ' .
+				'of allowable range.',
+			array(),
+			VIPGOCI_EXIT_USAGE_ERROR
+		);
 	}
 
 }
@@ -135,14 +141,16 @@ function vipgoci_option_array_handle(
 				$options[ $option_name ],
 				true
 			) ) {
-				print 'Usage: Parameter --' .
-					$option_name . ' ' .
-					'can not contain \'' .
-					$forbidden_value .
-					'\' as one of ' .
-					'the values' . PHP_EOL;
-
-				exit( 253 );
+				vipgoci_sysexit(
+					'Parameter --' .
+						$option_name . ' ' .
+						'can not contain \'' .
+						$forbidden_value .
+						'\' as one of ' .
+						'the values',
+					array(),
+					VIPGOCI_EXIT_USAGE_ERROR
+				);
 			}
 		}
 	}
@@ -172,10 +180,12 @@ function vipgoci_option_file_handle(
 		( ! isset( $options[ $option_name ] ) ) ||
 		( ! is_file( $options[ $option_name ] ) )
 	) {
-		print 'Usage: Parameter --' . $option_name .
-			' has to be a valid path' . PHP_EOL;
-
-		exit( 253 );
+		vipgoci_sysexit(
+			'Parameter --' . $option_name .
+				' has to be a valid path',
+			array(),
+			VIPGOCI_EXIT_USAGE_ERROR
+		);
 	}
 }
 
@@ -313,7 +323,7 @@ function vipgoci_run() {
 			"\t" . '                                -- higher number indicates more detailed debugging-messages.' . PHP_EOL .
 			"\t" . '                               Default is zero' . PHP_EOL;
 
-		exit( 253 );
+		exit( VIPGOCI_EXIT_USAGE_ERROR );
 	}
 
 
@@ -424,12 +434,11 @@ function vipgoci_run() {
 		( false === $options['lint'] ) &&
 		( false === $options['phpcs'] )
 	) {
-		vipgoci_log(
+		vipgoci_sysexit(
 			'Both --lint and --phpcs set to false, nothing to do!',
-			array()
+			array(),
+			VIPGOCI_EXIT_USAGE_ERROR
 		);
-
-		exit( 253 );
 	}
 
 	/*
@@ -444,12 +453,11 @@ function vipgoci_run() {
 		( ! isset( $current_user_info->login ) ) ||
 		( empty( $current_user_info->login ) )
 	) {
-		vipgoci_log(
+		vipgoci_sysexit(
 			'Unable to get information about token-holder user from GitHub',
-			array()
+			array(),
+			VIPGOCI_EXIT_GITHUB_PROBLEM
 		);
-
-		exit( 250 );
 	}
 
 
@@ -497,13 +505,12 @@ function vipgoci_run() {
 	);
 
 	if ( empty( $prs_implicated ) ) {
-		vipgoci_log(
+		vipgoci_sysexit(
 			'Skipping scanning entirely, as the commit ' .
 				'is not a part of any Pull-Request',
-			array()
+			array(),
+			VIPGOCI_EXIT_NORMAL
 		);
-
-		exit( 0 );
 	}
 
 
@@ -549,7 +556,7 @@ function vipgoci_run() {
 			( true === $options['lint'] ) &&
 			( false === $options['phpcs'] )
 		) {
-			vipgoci_log(
+			vipgoci_sysexit(
 				'The current commit is not the latest one ' .
 					'to the Pull-Request, skipping ' .
 					'linting, and not doing PHPCS ' .
@@ -558,10 +565,9 @@ function vipgoci_run() {
 					'repo_owner' => $options['repo-owner'],
 					'repo_name' => $options['repo-name'],
 					'pr_number' => $pr_item->number,
-				)
+				),
+				VIPGOCI_EXIT_NORMAL
 			);
-
-			exit( 0 );
 		}
 
 		else if (

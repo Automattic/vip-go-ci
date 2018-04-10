@@ -1,6 +1,17 @@
 <?php
 
 /*
+ * Define exit-codes
+ */
+
+
+define( 'VIPGOCI_EXIT_NORMAL',		0 );
+define( 'VIPGOCI_EXIT_CODE_ISSUES',	250 );
+define( 'VIPGOCI_EXIT_SYSTEM_PROBLEM',	251 );
+define( 'VIPGOCI_EXIT_GITHUB_PROBLEM',	252 );
+define( 'VIPGOCI_EXIT_USAGE_ERROR',	253 );
+
+/*
  * Log information to the console.
  * Include timestamp, and any debug-data
  * our caller might pass us.
@@ -34,6 +45,28 @@ function vipgoci_log( $str, $debug_data = array(), $debug_level = 0 ) {
 		PHP_EOL;
 }
 
+/*
+ * Exit program, using vipgoci_log() to print a
+ * message before doing so.
+ */
+
+function vipgoci_sysexit(
+	$str,
+	$debug_data = array(),
+	$exit_status = VIPGOCI_EXIT_USAGE_ERROR
+) {
+	if ( $exit_status === VIPGOCI_EXIT_USAGE_ERROR ) {
+		$str = 'Usage: ' . $str;
+	}
+
+	vipgoci_log(
+		$str,
+		$debug_data,
+		0
+	);
+
+	exit( $exit_status );
+}
 
 /*
  * Given a patch-file, the function will return an
@@ -211,16 +244,14 @@ function vipgoci_save_temp_file(
 			$temp_file_name_old,
 			$temp_file_name
 		) ) {
-			vipgoci_log(
+			vipgoci_sysexit(
 				'Unable to rename temporary file',
 				array(
 					'temp_file_name_old' => $temp_file_name_old,
 					'temp_file_name_new' => $temp_file_name,
 				),
-				2
+				VIPGOCI_EXIT_SYSTEM_PROBLEM
 			);
-
-			exit( 250 );
 		}
 
 		unset( $temp_file_name_old );
@@ -239,16 +270,15 @@ function vipgoci_save_temp_file(
 
 	// Detect possible errors when saving the temporary file
 	if ( false === $temp_file_save_status ) {
-		vipgoci_log(
+		vipgoci_sysexit(
 			'Could not save file to disk, got ' .
 			'an error. Exiting...',
 
 			array(
 				'temp_file_name' => $temp_file_name,
-			)
+			),
+			VIPGOCI_EXIT_SYSTEM_PROBLEM
 		);
-
-		exit( 254 );
 	}
 
 	return $temp_file_name;
