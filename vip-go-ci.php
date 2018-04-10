@@ -75,7 +75,7 @@ function vipgoci_option_integer_handle(
 	/* Make sure it is a numeric */
 	if ( ! is_numeric( $options[ $parameter_name ] ) ) {
 		vipgoci_sysexit(
-			'Usage: Parameter ' . $parameter_name . ' is not ' .
+			'Usage: Parameter --' . $parameter_name . ' is not ' .
 				'an integer-value.',
 			array(),
 			VIPGOCI_EXIT_USAGE_ERROR
@@ -100,7 +100,7 @@ function vipgoci_option_integer_handle(
 		) )
 	) {
 		vipgoci_sysexit(
-			'Parameter ' . $parameter_name . ' is out ' .
+			'Parameter --' . $parameter_name . ' is out ' .
 				'of allowable range.',
 			array(),
 			VIPGOCI_EXIT_USAGE_ERROR
