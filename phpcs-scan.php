@@ -8,7 +8,8 @@
 function vipgoci_phpcs_do_scan(
 	$filename_tmp,
 	$phpcs_path,
-	$phpcs_standard
+	$phpcs_standard,
+	$phpcs_severity
 ) {
 	/*
 	 * Run PHPCS from the shell, making sure we escape everything.
@@ -19,10 +20,11 @@ function vipgoci_phpcs_do_scan(
 	 */
 
 	$cmd = sprintf(
-		'%s %s --standard=%s --report=%s %s 2>&1',
+		'%s %s --standard=%s --severity=%s --report=%s %s 2>&1',
 		escapeshellcmd( 'php' ),
 		escapeshellcmd( $phpcs_path ),
 		escapeshellarg( $phpcs_standard ),
+		escapeshellarg( $phpcs_severity ),
 		escapeshellarg( 'json' ),
 		escapeshellarg( $filename_tmp )
 	);
@@ -365,7 +367,8 @@ function vipgoci_phpcs_scan_commit(
 		$file_issues_str = vipgoci_phpcs_do_scan(
 			$temp_file_name,
 			$options['phpcs-path'],
-			$options['phpcs-standard']
+			$options['phpcs-standard'],
+			$options['phpcs-severity']
 		);
 
 		/* Get rid of temporary file */

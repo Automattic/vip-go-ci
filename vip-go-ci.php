@@ -49,6 +49,61 @@ function vipgoci_option_bool_handle(
 }
 
 /*
+ * Handle integer parameters given on the command-line.
+ *
+ * Will set a default value for the given parameter name,
+ * if no value is set. Will then proceed to check if the
+ * value given is an integer-value, then forcibly convert
+ * it to integer-value to make sure it is of that type,
+ * then check if it is in a list of allowable values.
+ * If any of these fail, it will exit the program with an error.
+ */
+
+function vipgoci_option_integer_handle(
+	&$options,
+	$parameter_name,
+	$default_value,
+	$allowed_values = null
+) {
+	/* If no value is set, set the default value */
+	if ( ! isset( $options[ $parameter_name ] ) ) {
+		$options[ $parameter_name ] = $default_value;
+	}
+
+	/* Make sure it is a numeric */
+	if ( ! is_numeric( $options[ $parameter_name ] ) ) {
+		print 'Usage: Parameter ' . $parameter_name . ' is not ' .
+			'an integer-value.';
+
+		exit( 253 );
+	}
+
+	/* Forcibly convert to integer-value */
+	$options[ $parameter_name ] =
+		(int) $options[ $parameter_name ];
+
+	/*
+	 * Check if value is in range
+	 */
+
+	if (
+		( null !== $allowed_values )
+		&&
+		( ! in_array(
+			$options[ $parameter_name ],
+			$allowed_values,
+			true
+		) )
+	) {
+		print 'Usage: Parameter ' . $parameter_name . ' is out ' .
+			'of allowable range.';
+
+		exit( 253 );
+	}
+
+}
+
+/*
  * Handle array-like option parameters given on the command line
  *
  * Parses the parameter, turns it into a real array,
@@ -241,6 +296,7 @@ function vipgoci_run() {
 			"\t" . '--phpcs=BOOL                   Whether to run PHPCS (true/false)' . PHP_EOL .
 			"\t" . '--phpcs-path=FILE              Full path to PHPCS script' . PHP_EOL .
 			"\t" . '--phpcs-standard=STRING        Specify which PHPCS standard to use' . PHP_EOL .
+			"\t" . '--phpcs-severity=NUMBER        Specify severity for PHPCS' . PHP_EOL .
 			"\t" . '--php-path=FILE                Full path to PHP, if not specified the' . PHP_EOL .
 			"\t" . '                               default in $PATH will be used instead' . PHP_EOL .
 			"\t" . '--branches-ignore=STRING,...   What branches to ignore -- useful to make sure' . PHP_EOL .
@@ -289,11 +345,24 @@ function vipgoci_run() {
 	 */
 
 	if ( empty( $options['phpcs-standard'] ) ) {
-		$options['phpcs-standard'] = 'WordPressVIPMinimum';
+		$options['phpcs-standard'] = 'WordPress-VIP-Go';
 	}
 
 	$options['phpcs-standard'] = trim(
 		$options['phpcs-standard']
+	);
+
+
+	/*
+	 * Process --phpcs-severity -- expected to be
+	 * an integer-value.
+	 */
+
+	vipgoci_option_integer_handle(
+		$options,
+		'phpcs-severity',
+		1,
+		array( 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 )
 	);
 
 	/*
@@ -326,30 +395,16 @@ function vipgoci_run() {
 
 	/*
 	 * Handle optional --debug-level parameter
-	 * -- must be a numeric. If the user-specified
-	 * value looks good, set the global.
 	 */
 
-	if ( ! isset( $options['debug-level'] ) ) {
-		$options['debug-level'] = 0;
-	}
+	vipgoci_option_integer_handle(
+		$options,
+		'debug-level',
+		0,
+		array( 0, 1, 2 )
+	);
 
-	if (
-		( ! is_numeric( $options['debug-level'] ) ) ||
-		( $options['debug-level'] < 0 ) ||
-		( $options['debug-level'] > 3 )
-	) {
-		print 'Usage: Parameter --debug-level' .
-			' has to be an integer in the range of' .
-			' 0 to 3 (inclusive)' . PHP_EOL;
-
-		exit( 253 );
-	}
-
-	// Convert to integer
-	$options['debug-level'] = intval( $options['debug-level'] );
-
-	// Set the user-specified value
+	// Set the value to global
 	$vipgoci_debug_level = $options['debug-level'];
 
 
