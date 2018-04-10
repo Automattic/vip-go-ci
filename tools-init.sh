@@ -2,7 +2,7 @@
 
 export PHP_CODESNIFFER_VER="3.1.0"
 export WP_CODING_STANDARDS_VER="0.14.0"
-export VIP_CODING_STANDARDS_VER="0.2.2"
+export VIP_CODING_STANDARDS_VER="0.2.3"
 
 export TMP_LOCK_FILE="$HOME/.vip-go-ci-tools-init.lck"
 
@@ -122,6 +122,7 @@ else
 	wget "https://github.com/Automattic/VIP-Coding-Standards/archive/$VIP_CODING_STANDARDS_VER.tar.gz" && \
 	tar -zxvf "$VIP_CODING_STANDARDS_VER.tar.gz" && \
 	mv "VIP-Coding-Standards-$VIP_CODING_STANDARDS_VER/WordPressVIPMinimum/" phpcs/src/Standards/  && \
+	mv "VIP-Coding-Standards-$VIP_CODING_STANDARDS_VER/WordPress-VIP-Go/" phpcs/src/Standards/  && \
 	rm -f "$VIP_CODING_STANDARDS_VER".tar.gz && \
 	touch $TMP_FOLDER/vip-coding-standards-$VIP_CODING_STANDARDS_VER.txt && \
 	wget "https://github.com/Automattic/vip-go-ci/archive/$VIP_GO_CI_VER.tar.gz" && \
