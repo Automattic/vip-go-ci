@@ -267,6 +267,7 @@ function vipgoci_run() {
 			'dry-run:',
 			'phpcs-path:',
 			'phpcs-standard:',
+			'phpcs-severity:',
 			'php-path:',
 			'local-git-repo:',
 			'lint:',
