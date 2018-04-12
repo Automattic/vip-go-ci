@@ -45,6 +45,9 @@ function vipgoci_hashes_api_scan_commit( $options ) {
 			 * recognises this file, and check its
 			 * status.
 			 */
+
+			// FIXME: Take into consideration the review-level of both
+			// the target-repo and of the code
 			$approval_status = vipgoci_hashes_api_approved(
 				$options,
 				$pr_diff_file_name
@@ -60,6 +63,27 @@ function vipgoci_hashes_api_scan_commit( $options ) {
 			}
 		}
 	}
+
+	// FIXME: If all seen files are found in approved, simply
+	// make a comment to the PR stating that this is approved
+	// or even auto-approve
+
+	if (
+		count(
+			array_diff(
+				$files_seen_in_pr,
+				$files_approved_in_pr
+			)
+		) === 0
+	) {
+		// FIXME: Make a comment on that this can be auto-approved
+	}
+
+	else {
+		// FIXME: Make separate comment for each file approved,
+		// noting that it does not need a review
+	}
+
 
 	/*
 	 * Reduce memory-usage as possible
