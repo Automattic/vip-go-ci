@@ -2,6 +2,8 @@
 
 function vipgoci_auto_approval( $options ) {
 
+	vipgoci_runtime_measure( 'start', 'auto_approve_commit' );
+
 	vipgoci_log(
 		'Doing auto-approval',
 		array(
@@ -154,4 +156,7 @@ function vipgoci_auto_approval( $options ) {
 	unset( $pr_diff );
 
 	gc_collect_cycles();
+
+	vipgoci_runtime_measure( 'stop', 'auto_approve_commit' );
 }
+
