@@ -458,14 +458,14 @@ function vipgoci_run() {
 
 	vipgoci_option_array_handle(
 		$options,
-		'filetypes-autoapprove',
+		'autoapprove-filetypes',
 		array(),
 		'php'
 	);
 
-	$options['filetypes-approve'] = array_map(
+	$options['autoapprove-filetypes'] = array_map(
 		'strtolower',
-		$options['filetypes-approve']
+		$options['autoapprove-filetypes']
 	);
 
 
@@ -474,7 +474,7 @@ function vipgoci_run() {
 	 */
 	if (
 		( true === $options['autoapprove'] ) &&
-		( empty( $options['filetypes-approve'] ) )
+		( empty( $options['autoapprove-filetypes'] ) )
 	) {
 		vipgoci_log(
 			'Skipping auto-approval as no file-types ' .
@@ -483,8 +483,8 @@ function vipgoci_run() {
 				'autoapprove' =>
 					$options['autoapprove'],
 
-				'filetypes-approve' =>
-					$options['filetypes-approve'],
+				'autoapprove-filetypes' =>
+					$options['autoapprove-filetypes'],
 			)
 		);
 
@@ -493,7 +493,7 @@ function vipgoci_run() {
 
 	else if (
 		( true === $options['autoapprove'] ) &&
-		( in_array( 'php', $options['filetypes-approve'], true ) )
+		( in_array( 'php', $options['autoapprove-filetypes'], true ) )
 	) {
 		vipgoci_sysexit(
 			'PHP files cannot be auto-approved, as they can' .

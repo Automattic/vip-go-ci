@@ -10,8 +10,8 @@ function vipgoci_auto_approval( $options ) {
 			'commit_id'	=> $options['commit'],
 			'autoapprove'	=> $options['autoapprove'],
 
-			'filetypes-approve' =>
-				$options['filetypes-approve'],
+			'autoapprove-filetypes' =>
+				$options['autoapprove-filetypes'],
 		)
 	);
 
@@ -89,8 +89,8 @@ function vipgoci_auto_approval( $options ) {
 					'file-types which are not ' .
 					'automatically approvable',
 					array(
-						'filetypes-approve' =>
-							$options['filetypes-approve'],
+						'autoapprove-filetypes' =>
+							$options['autoapprove-filetypes'],
 
 						'files_seen' => $files_seen,
 				)
@@ -121,8 +121,8 @@ function vipgoci_auto_approval( $options ) {
 						'dry_run'
 							=> $options['dry-run'],
 
-						'filetypes-approve' =>
-							$options['filetypes-approve'],
+						'autoapprove-filetypes' =>
+							$options['autoapprove-filetypes'],
 
 						'files_seen' => $files_seen,
 				)
@@ -139,7 +139,7 @@ function vipgoci_auto_approval( $options ) {
 					$options['token'],
 					$pr_item->number,
 					$options['commit'],
-					$options['filetypes-approve']
+					$options['autoapprove-filetypes']
 				);
 			}
 		}
