@@ -41,18 +41,15 @@ function vipgoci_hashes_api_scan_commit( $options ) {
 			$files_seen_in_pr[] = $pr_diff_file_name;
 
 			/*
-			 * Get SHA1 checksum for the file-contents
+			 * Check if the hashes-to-hashes database
+			 * recognises this file, and check its
+			 * status.
 			 */
 			$approval_status = vipgoci_hashes_api_approved(
 				$options,
 				$pr_diff_file_name
 			);
 
-			/*
-			 * Check if the hashes-to-hashes database
-			 * recognises this file, and check its
-			 * status.
-			 */
 
 			/*
 			 * Add the file to a list of approved files
