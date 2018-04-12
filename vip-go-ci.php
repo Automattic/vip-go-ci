@@ -648,6 +648,18 @@ function vipgoci_run() {
 
 
 	/*
+	 * Do scanning of all altered file, using
+	 * the hashes-to-hashes database API.
+	 */
+
+	if ( true === $options['hashes-api'] ) {
+		vipgoci_hashes_api_scan_commit(
+			$options
+		);
+	}
+
+
+	/*
 	 * Submit any issues to GitHub
 	 */
 
