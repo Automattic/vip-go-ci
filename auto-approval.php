@@ -107,7 +107,7 @@ function vipgoci_auto_approval( $options ) {
 				$options['dry-run'] ? 'Would ' : 'Will' .
 					' auto-approve Pull-Request #' .
 					(int) $pr_item->number . ' ' .
-					'as it contains ' . "\n\t" .
+					'as it alters or creates ' . "\n\t" .
 					'only file-types that can be ' .
 					'automatically approved',
 					array(
