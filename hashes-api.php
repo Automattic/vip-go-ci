@@ -9,6 +9,7 @@ function vipgoci_hashes_api_file_approved(
 	$options,
 	$file_path
 ) {
+	vipgoci_runtime_measure( 'start', 'hashes_api_scan_file' );
 
 	$file_contents = file_get_contents(
 		$file_path
@@ -62,10 +63,14 @@ function vipgoci_hashes_api_file_approved(
 		$file_approved = false;
 	}
 
+	vipgoci_runtime_measure( 'stop', 'hashes_api_scan_file' );
+
 	return $file_approved;
 }
 
 function vipgoci_hashes_api_scan_commit( $options ) {
+	vipgoci_runtime_measure( 'start', 'hashes_api_scan' );
+
 	vipgoci_log(
 		'Scanning altered or new files affected by Pull-Request(s) ',
 			'using hashes-to-hashes database via API',
@@ -160,6 +165,7 @@ function vipgoci_hashes_api_scan_commit( $options ) {
 	unset( $pr_diff );
 
 	gc_collect_cycles();
-}
 
+	vipgoci_runtime_measure( 'stop', 'hashes_api_scan' );
+}
 
