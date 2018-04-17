@@ -1,5 +1,70 @@
 <?php
 
+/*
+ * Ask the hashes-to-hashes database API if the
+ * specified file is approved.
+ */
+
+function vipgoci_hashes_api_file_approved(
+	$options,
+	$file_path
+) {
+
+	$file_contents = file_get_contents(
+		$file_path
+	);
+
+	$file_contents = php_strip_whitespaces(
+		$file_contents
+	);
+
+	$file_sha1 = sha1( $file_contents );
+
+	$github_url =
+		'https://' .
+		'hashes-to-hashes.go-vip.co' . // FIXME: From option
+		'/wp-json/viphash/v1/hashes/id' .
+		rawurlencode( $file_sha1 );
+
+	$file_hashes_info = json_decode(
+		vipgoci_github_fetch_url(
+			$github_url,
+			$github_token
+		),
+		true
+	);
+
+	$file_approved = null;
+
+	/*
+	 * Only approve file if all info-items show
+	 * the file to be approved.
+	 */
+
+	foreach( $file_hashes_info as $file_hash_info ) {
+		if ( false === $file_hash_info[ 'status' ] ) {
+			$file_approved = false;
+		}
+
+		if ( true === $file_hash_info[ 'status' ] ) {
+			if ( null === $file_approved ) {
+				$file_approved = true;
+			}
+		}
+	}
+
+
+	/*
+	 * If no approval is seen, assume it is not.
+	 */
+
+	if ( null === $file_approved ) {
+		$file_approved = false;
+	}
+
+	return $file_approved;
+}
+
 function vipgoci_hashes_api_scan_commit( $options ) {
 	vipgoci_log(
 		'Scanning altered or new files affected by Pull-Request(s) ',
@@ -96,3 +161,5 @@ function vipgoci_hashes_api_scan_commit( $options ) {
 
 	gc_collect_cycles();
 }
+
+
