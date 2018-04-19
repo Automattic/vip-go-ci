@@ -460,6 +460,16 @@ function vipgoci_run() {
 		);
 	}
 
+	else {
+		vipgoci_log(
+			'Got information about token-holder user from GitHub',
+			array(
+				'login' => $current_user_info->login,
+				'html_url' => $current_user_info->html_url,
+			)
+		);
+	}
+
 
 	/*
 	 * Log that we started working,
