@@ -531,6 +531,48 @@ function vipgoci_runtime_measure( $action = null, $type = null ) {
 
 
 /*
+ * Keep a counter for stuff we do. For instance,
+ * number of GitHub API requests.
+ */
+
+function vipgoci_counter_report( $action = null, $type = null, $amount = 1 ) {
+	static $counters = array();
+
+	/*
+	 * Check usage.
+	 */
+	if (
+		( 'do' !== $action ) &&
+		( 'dump' !== $action )
+	) {
+		return false;
+	}
+
+	// Dump all runtimes we have
+	if ( 'dump' === $action ) {
+		return $counters;
+	}
+
+
+	/*
+	 * Being asked to either start
+	 * collecting, act on that.
+	 */
+
+	if ( ! isset( $counters[ $type ] ) ) {
+		$counters[ $type ] = 0;
+	}
+
+
+	if ( 'do' === $action ) {
+		$counters[ $type ] += $amount;
+
+		return true;
+	}
+}
+
+
+/*
  * Go through the given blame-log, and
  * return only the items from the log that
  * are found in $relevant_commit_ids.

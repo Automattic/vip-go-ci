@@ -690,6 +690,12 @@ function vipgoci_run() {
 					'dump',
 					null
 				),
+			'counters_report'	=>
+				vipgoci_counter_report(
+					'dump',
+					null,
+					null
+				),
 			'results'		=> $results,
 		)
 	);

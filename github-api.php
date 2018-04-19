@@ -228,10 +228,13 @@ function vipgoci_github_post_url(
 
 		/*
 		 * Execute query to GitHub, keep
-		 * record of how long time it took.
+		 * record of how long time it took,
+		 * and keep count of how many requests we do.
 		 */
 
 		vipgoci_runtime_measure( 'start', 'github_api' );
+
+		vipgoci_counter_report( 'do', 'github_api_request', 1 );
 
 		$resp_data = curl_exec( $ch );
 
@@ -395,9 +398,12 @@ function vipgoci_github_fetch_url(
 
 		/*
 		 * Execute query to GitHub, keep
-		 * record of how long time it took.
+		 * record of how long time it took,
+		 + and also keep count of how many we do.
 		 */
 		vipgoci_runtime_measure( 'start', 'github_api' );
+
+		vipgoci_counter_report( 'do', 'github_api_request', 1 );
 
 		$resp_data = curl_exec( $ch );
 
