@@ -1482,7 +1482,6 @@ function vipgoci_github_prs_implicated(
 	 */
 
 	$prs_implicated = array();
-	$prs_maybe_implicated = array();
 
 
 	$page = 1;
@@ -1541,58 +1540,12 @@ function vipgoci_github_prs_implicated(
 			if ( $commit_id === $pr_item->head->sha ) {
 				$prs_implicated[ $pr_item->number ] = $pr_item;
 			}
-
-			else {
-				/*
-				 * No match, might be relevant, so needs
-				 * to be checked in more detail.
-				 */
-				$prs_maybe_implicated[] = $pr_item->number;
-			}
 		}
 
 		sleep ( 2 );
 
 		$page++;
 	} while ( count( $prs_implicated_unfiltered ) >= $per_page );
-
-
-	/*
-	 * Look through any Pull-Requests that might be implicated
-	 * -- to do this, we have fetch all commits implicated by all
-	 * open Pull-Requests.
-	 */
-
-	foreach ( $prs_maybe_implicated as $pr_number_tmp ) {
-		if ( in_array(
-			$commit_id,
-			vipgoci_github_prs_commits_list(
-				$repo_owner,
-				$repo_name,
-				$pr_number_tmp,
-				$github_token
-			),
-			true
-		) ) {
-
-			$github_url =
-				'https://api.github.com/' .
-				'repos/' .
-				rawurlencode( $repo_owner ) . '/' .
-				rawurlencode( $repo_name ) . '/' .
-				'pulls/' .
-				rawurlencode( $pr_number_tmp );
-
-
-			$prs_implicated[ $pr_number_tmp ] =
-				json_decode(
-					vipgoci_github_fetch_url(
-						$github_url,
-						$github_token
-					)
-				);
-		}
-	}
 
 
 	/*
