@@ -680,6 +680,10 @@ function vipgoci_run() {
 		$options['dry-run']
 	);
 
+	$github_api_rate_limit_usage =
+		vipgoci_github_rate_limit_usage(
+			$options['token']
+		);
 
 	vipgoci_log(
 		'Shutting down',
@@ -696,6 +700,9 @@ function vipgoci_run() {
 					null,
 					null
 				),
+			'github_api_rate_limit' =>
+				$github_api_rate_limit_usage->resources->core,
+
 			'results'		=> $results,
 		)
 	);
