@@ -157,6 +157,20 @@ function vipgoci_patch_changed_lines(
 		}
 	}
 
+
+	/*
+	 * In cases where there is just one line,
+	 * make special arrangements. This needs
+	 * to be fixed properly.
+	 */
+	if (
+		( count( $lines_changed) === 1 ) &&
+		( 1 === $lines_changed[0] )
+	) {
+		unset( $lines_changed[0] );
+		$lines_changed[1] = 1;
+	}
+
 	return $lines_changed;
 }
 
