@@ -112,6 +112,28 @@ function vipgoci_github_rate_limits_check(
 	}
 }
 
+
+/*
+ * Ask GitHub for API rate-limit information and
+ * report that back to the user.
+ *
+ * The results are not cached, as we want fresh data
+ * every time.
+ */
+
+function vipgoci_github_rate_limit_usage(
+	$github_token
+) {
+	$rate_limit = vipgoci_github_fetch_url(
+		'https://api.github.com/rate_limit',
+		$github_token
+	);
+
+	return json_decode(
+		$rate_limit
+	);
+}
+
 /*
  * Make sure to wait in between requests to
  * GitHub. Only waits if it is really needed.
@@ -787,7 +809,8 @@ function vipgoci_github_pr_generic_comments_get(
 
 	$pr_comments_ret = array();
 
-	$page = 0;
+	$page = 1;
+	$per_page = 100;
 
 	do {
 		$github_url =
@@ -798,7 +821,8 @@ function vipgoci_github_pr_generic_comments_get(
 			'issues/' .
 			rawurlencode( $pr_number ) . '/' .
 			'comments' .
-			'?page=' . rawurlencode( $page );
+			'?page=' . rawurlencode( $page ) . '&' .
+			'per_page=' . rawurlencode( $per_page );
 
 
 		$pr_comments_raw = json_decode(
@@ -813,7 +837,7 @@ function vipgoci_github_pr_generic_comments_get(
 		}
 
 		$page++;
-	} while ( count( $pr_comments_raw ) > 0 );
+	} while ( count( $pr_comments_raw ) >= $per_page );
 
 
 	vipgoci_cache(
@@ -1461,7 +1485,8 @@ function vipgoci_github_prs_implicated(
 	$prs_maybe_implicated = array();
 
 
-	$page = 0;
+	$page = 1;
+	$per_page = 100;
 
 	/*
 	 * Fetch all open Pull-Requests, store
@@ -1476,7 +1501,8 @@ function vipgoci_github_prs_implicated(
 			rawurlencode( $repo_name ) . '/' .
 			'pulls' .
 			'?state=open&' .
-			'page=' . rawurlencode( $page );
+			'page=' . rawurlencode( $page ) . '&' .
+			'per_page=' . rawurlencode( $per_page );
 
 
 		// FIXME: Detect when GitHub sent back an error
@@ -1528,7 +1554,7 @@ function vipgoci_github_prs_implicated(
 		sleep ( 2 );
 
 		$page++;
-	} while ( count( $prs_implicated_unfiltered ) > 0 );
+	} while ( count( $prs_implicated_unfiltered ) >= $per_page );
 
 
 	/*
@@ -1636,7 +1662,8 @@ function vipgoci_github_prs_commits_list(
 	$pr_commits = array();
 
 
-	$page = 0;
+	$page = 1;
+	$per_page = 100;
 
 	do {
 		$github_url =
@@ -1647,7 +1674,8 @@ function vipgoci_github_prs_commits_list(
 			'pulls/' .
 			rawurlencode( $pr_number ) . '/' .
 			'commits?' .
-			'page=' . rawurlencode( $page );
+			'page=' . rawurlencode( $page ) . '&' .
+			'per_page=' . rawurlencode( $per_page );
 
 
 		// FIXME: Detect when GitHub sent back an error
@@ -1663,7 +1691,7 @@ function vipgoci_github_prs_commits_list(
 		}
 
 		$page++;
-	} while ( count( $pr_commits_raw ) > 0 );
+	} while ( count( $pr_commits_raw ) >= $per_page );
 
 	vipgoci_cache( $cached_id, $pr_commits );
 
