@@ -569,16 +569,15 @@ function vipgoci_counter_report( $action = null, $type = null, $amount = 1 ) {
 
 
 	/*
-	 * Being asked to either start
+	 * Being asked to start
 	 * collecting, act on that.
 	 */
 
-	if ( ! isset( $counters[ $type ] ) ) {
-		$counters[ $type ] = 0;
-	}
-
-
 	if ( 'do' === $action ) {
+		if ( ! isset( $counters[ $type ] ) ) {
+			$counters[ $type ] = 0;
+		}
+
 		$counters[ $type ] += $amount;
 
 		return true;
