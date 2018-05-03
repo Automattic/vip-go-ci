@@ -164,7 +164,7 @@ function vipgoci_patch_changed_lines(
 	 * to be fixed properly.
 	 */
 	if (
-		( count( $lines_changed) === 1 ) &&
+		( count( $lines_changed ) === 1 ) &&
 		( 1 === $lines_changed[0] )
 	) {
 		unset( $lines_changed[0] );
