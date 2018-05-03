@@ -157,17 +157,22 @@ function vipgoci_patch_changed_lines(
 		}
 	}
 
-
 	/*
-	 * In cases where there is just one line,
-	 * make special arrangements. This needs
-	 * to be fixed properly.
+	 * In certain edge-cases, line 1 in the patch
+	 * will refer to line 0 in the code, which
+	 * is not what we want. In these cases, we
+	 * simply hard-code line 1 in the patch to match
+	 * with line 1 in the code.
 	 */
 	if (
-		( count( $lines_changed ) === 1 ) &&
-		( 1 === $lines_changed[0] )
+		( isset( $lines_changed[1] ) ) &&
+		(
+			( $lines_changed[1] === null ) ||
+			( $lines_changed[1] === 0 )
+		)
+		||
+		( ! isset( $lines_changed[1] ) )
 	) {
-		unset( $lines_changed[0] );
 		$lines_changed[1] = 1;
 	}
 
