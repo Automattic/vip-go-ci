@@ -251,6 +251,17 @@ function vipgoci_run() {
 	);
 
 	/*
+	 * Refuse to run as root.
+	 */
+	if ( 0 === posix_getuid() ) {
+		vipgoci_sysexit(
+			'Will not run as root. Please run as non-privileged user.',
+			array(),
+			VIPGOCI_EXIT_USAGE_ERROR
+		);
+	}
+
+	/*
 	 * Set how to deal with errors:
 	 * Report all errors, and display them.
 	 */
