@@ -6,6 +6,7 @@
 
 define( 'VIPGOCI_CLIENT_ID', 'automattic-vip-go-ci' );
 define( 'VIPGOCI_SYNTAX_ERROR_STR', 'PHP Syntax Errors Found' );
+define( 'VIPGOCI_GITHUB_ERROR_STR', 'GitHub API communication error');
 
 /*
  * This function works both to collect headers
@@ -187,6 +188,12 @@ function vipgoci_github_post_url(
 	 */
 	do {
 		/*
+		 * By default, assume request went through okay.
+		 */
+
+		$ret_val = 0;
+
+		/*
 		 * By default, do not retry the request,
 		 * just assume everything goes well
 		 */
@@ -291,6 +298,10 @@ function vipgoci_github_post_url(
 			 */
 			$retry_sleep = 10;
 
+			/*
+			 * Set error-return value
+			 */
+			$ret_val = -1;
 
 			/*
 			 * Figure out if to retry...
@@ -338,6 +349,13 @@ function vipgoci_github_post_url(
 				$retry_req = false;
 			}
 
+			else if (
+				( $resp_data->message ==
+					'Server Error' )
+			) {
+				$retry_req = false;
+			}
+
 			vipgoci_log(
 				'GitHub reported an error' .
 					( $retry_req === true ?
@@ -368,6 +386,8 @@ function vipgoci_github_post_url(
 		curl_close( $ch );
 
 	} while ( $retry_req == true );
+
+	return $ret_val;
 }
 
 
@@ -1016,6 +1036,55 @@ function vipgoci_github_pr_generic_comment_submit(
 	}
 }
 
+/*
+ * Post a generic PR comment to GitHub, reporting
+ * an error.
+ */
+function vipgoci_github_pr_comments_error_msg(
+	$repo_owner,
+	$repo_name,
+	$github_token,
+	$commit_id,
+	$pr_number,
+	$message
+) {
+	vipgoci_log(
+		'GitHub reported a failure, posting a ' .
+			'comment about this to the Pull-Request',
+		array(
+			'repo_owner' => $repo_owner,
+			'repo_name' => $repo_name,
+			'commit_id' => $commit_id,
+			'pr_number' => $pr_number,
+			'message' => $message,
+		)
+	);
+
+	$github_url =
+		'https://api.github.com/' .
+		'repos/' .
+		rawurlencode( $repo_owner ) . '/' .
+		rawurlencode( $repo_name ) . '/' .
+		'issues/' .
+		rawurlencode( $pr_number ) . '/' .
+		'comments';
+
+
+	$github_postfields = array();
+	$github_postfields['body'] =
+		'**' . VIPGOCI_GITHUB_ERROR_STR . '**' .
+		"\n\r\n\r" .
+
+		$message .
+			" (commit-ID: " . $commit_id . ")" .
+			"\n\r***\n\r";
+
+	vipgoci_github_post_url(
+		$github_url,
+		$github_postfields,
+		$github_token
+	);
+}
 
 /*
  * Remove any comments made by us earlier.
@@ -1084,10 +1153,17 @@ function vipgoci_github_pr_comments_cleanup(
 			 * not want to remove those. Avoid that.
 			 */
 
-			if ( strpos(
-				$pr_comment->body,
-				VIPGOCI_SYNTAX_ERROR_STR
-			) === false ) {
+			if (
+				( strpos(
+					$pr_comment->body,
+					VIPGOCI_SYNTAX_ERROR_STR
+				) === false )
+				&&
+				( strpos(
+					$pr_comment->body,
+					VIPGOCI_GITHUB_ERROR_STR
+				) === false )
+			) {
 				continue;
 			}
 
@@ -1371,11 +1447,23 @@ function vipgoci_github_pr_review_submit(
 		}
 
 		// Actually send a request to GitHub
-		vipgoci_github_post_url(
+		$github_post_res = vipgoci_github_post_url(
 			$github_url,
 			$github_postfields,
 			$github_token
 		);
+
+		if ( -1 === $github_post_res ) {
+			vipgoci_github_pr_comments_error_msg(
+				$repo_owner,
+				$repo_name,
+				$github_token,
+				$commit_id,
+				$pr_number,
+				'Error while communicating to the GitHub ' .
+					'API. Please contact a human.'
+			);
+		}
 	}
 
 	return;
