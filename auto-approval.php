@@ -132,7 +132,8 @@ function vipgoci_auto_approval( $options ) {
 
 
 			/*
-			 * Actually approve, if not in dry-mode
+			 * Actually approve, if not in dry-mode.
+			 * Also add a label to the Pull-Request.
 			 */
 			if ( false === $options['dry-run'] ) {
 				vipgoci_github_approve_pr(
@@ -142,6 +143,14 @@ function vipgoci_auto_approval( $options ) {
 					$pr_item->number,
 					$options['commit'],
 					$options['autoapprove-filetypes']
+				);
+
+				vipgoci_github_label_add_to_pr(
+					$options['repo-owner'],
+					$options['repo-name'],
+					$options['token'],
+					$pr_item->number,
+					'[Auto-Approved]'
 				);
 			}
 		}

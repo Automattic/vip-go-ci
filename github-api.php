@@ -1822,3 +1822,44 @@ function vipgoci_github_authenticated_user_get( $github_token ) {
 
 	return $current_user_info;
 }
+
+/*
+ * Add a particular label to a specific
+ * Pull-Request (or issue).
+ */
+function vipgoci_github_label_add_to_pr(
+	$repo_owner,
+	$repo_name,
+	$github_token,
+	$pr_number,
+	$label_name
+) {
+	vipgoci_log(
+		'Adding label to GitHub issue',
+		array(
+			'repo_owner' => $repo_owner,
+			'repo_name' => $repo_name,
+			'pr_number' => $pr_number,
+			'label_name' => $label_name,
+		)
+	);
+
+	$github_url =
+		'https://api.github.com/' .
+		'repos/' .
+		rawurlencode( $repo_owner ) . '/' .
+		rawurlencode( $repo_name ) . '/' .
+		'issues/' .
+		rawurlencode( $pr_number ) . '/' .
+		'labels';
+
+	$github_postfields = array(
+		$label_name
+	);
+
+	vipgoci_github_post_url(
+		$github_url,
+		$github_postfields,
+		$github_token
+	);
+}
