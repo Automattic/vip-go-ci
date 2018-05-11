@@ -150,7 +150,7 @@ function vipgoci_auto_approval( $options ) {
 					$options['repo-name'],
 					$options['token'],
 					$pr_item->number,
-					'[Auto-Approved]'
+					'[Status] VIP Auto Approved'
 				);
 			}
 		}
