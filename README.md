@@ -12,9 +12,11 @@ If so desired, the program can only do PHPCS scanning, or PHP-linting. It should
 
 This program comes with a small utility, `tools-init.sh`, that will install PHPCS and related tools in your home-directory upon execution. This utility will check if the tools required are installed, and if not, install them, or if they are, check if they are of the latest version, and upgrade them as needed.
 
-## Testing
+## Setting up
 
-### On the console
+### On the console, standalone
+
+It is possible to run `vip-go-ci` standalone on the console, although it has limited functionality. It is mainly useful for debugging purposes and to understand if everything is correctly configured.
 
 To run this standalone on your local console, PHPCS has to be installed and configured with a certain profile. The `tools-init.sh` script that is included will install the tools needed.
 
@@ -158,27 +160,15 @@ The output from `vip-go-ci` you will get should be something like this:
 }
 ```
 
-
-### Starting a local instance of TeamCity
-
-You can start a local instance of TeamCity in Docker.
-
-```
-docker-compose up -d
-open http://localhost:8111
-```
-
-To start with multiple agents (for example, three):
-
-```
-docker-compose up -d --scale agent=3
-```
-
-Alternatively, if you do not wish to run TeamCity in a Docker-instance, you can download it and set it up manually.
-
 ### Configuring TeamCity runner
 
-You can set `vip-go-ci` with TeamCity, so that when a commit gets pushed to GitHub, `vip-go-ci.php` will run and scan the commit. Follow these steps to get it working:
+You can set up `vip-go-ci` with TeamCity, so that when a commit gets pushed to GitHub, `vip-go-ci.php` will run and scan the commit.
+
+This flowchart shows how `vip-go-ci` interacts with TeamCity, git, GitHub, and the utilities it uses:
+
+![Flowchart](https://raw.githubusercontent.com/Automattic/vip-go-ci/master/docs/vipgoci-flow.png)
+
+To get `vip-go-ci` working, follow these steps:
 
 * Create a project, and link it to the GitHub repository you wish to scan
 * Create a build-runner by clicking on `Create build configuration` on the project
@@ -186,7 +176,7 @@ You can set `vip-go-ci` with TeamCity, so that when a commit gets pushed to GitH
 * Click on `Version Control Settings` (in the project-settings), make sure to do the following:
   - Checkout directory as `Custom path`, and path as something unique and unreadable from other users (local-directory for the build-runner user would be optimal).
   - Click on `Clean all files in the checkout directory before the build`.
-* Define parameters for the build. In the project-settings, click on`Parameters`, then click 'Add Parameter' and follow the on-screen instructions. The parameters that need to be added are `REPO_ORG`, `REPO_NAME`, and `REPO_TOKEN` and with values appropriate with for the repository which is to be scanned. 
+* Define parameters for the build. In the project-settings, click on`Parameters`, then click 'Add Parameter' and follow the on-screen instructions. The parameters that need to be added are `REPO_ORG`, `REPO_NAME`, and `REPO_TOKEN` and with values appropriate with for the repository which is to be scanned.
 
 * Make sure the build-runner is of the `Command Line` type, that `If all previous steps finished successfully` is chosen, and that `Custom Script` is chosen for the run `Run` field.
 * Add a shell-script into the `Custom Script` field, the script should look something like the following:
@@ -220,8 +210,28 @@ PHPCS_ENABLED=${PHPCS_ENABLED:-false}
 php ~/vip-go-ci-tools/vip-go-ci/vip-go-ci.php --repo-owner="$REPO_ORG" --repo-name="$REPO_NAME" --commit="$BUILD_VCS_NUMBER"  --token="$REPO_TOKEN" --local-git-repo="%system.teamcity.build.checkoutDir%" --phpcs="$PHPCS_ENABLED" --lint="$LINTING_ENABLED"  --phpcs-path="$HOME/vip-go-ci-tools/phpcs/bin/phpcs"
 ```
 
+Note that the script has built-in commands to install all the utilities `vip-go-ci` relies on, so that they will be configured automatically, and maintained automatically as well.
 
 The parameters should be pretty-much self-explanatory. Note that --commit should be left exactly as shown above, as `$BUILD_VCS_NUMBER` is populated by TeamCity. Other variables, `$REPO_ORG`, `$REPO_NAME` and `$REPO_TOKEN` are populated by TeamCity on run-time according to your settings (see above).
 
 That is it. Now TeamCity should run `vip-go-ci.php` for every incoming commit to any Pull-Request associated with the repository.
+
+
+### Starting a local instance of TeamCity
+
+You can start a local instance of TeamCity in Docker if you like.
+
+```
+docker-compose up -d
+open http://localhost:8111
+```
+
+To start with multiple agents (for example, three):
+
+```
+docker-compose up -d --scale agent=3
+```
+
+Alternatively, if you do not wish to run TeamCity in a Docker-instance, you can download it and set it up manually.
+
 
