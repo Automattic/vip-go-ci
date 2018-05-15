@@ -269,6 +269,13 @@ function vipgoci_phpcs_scan_commit(
 
 	foreach ( $prs_implicated as $pr_item ) {
 		/*
+		 * Make sure that the PR is defined in the array
+		 */
+		if ( ! isset( $pr_item_files_changed[ $pr_item->number ] ) ) {
+			$pr_item_files_changed[ $pr_item->number ] = [];
+		}
+
+		/*
 		 * Get list of all files changed
 		 * in this Pull-Request.
 		 */
