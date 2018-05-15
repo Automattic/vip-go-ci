@@ -1488,7 +1488,8 @@ function vipgoci_github_approve_pr(
 	$github_token,
 	$pr_number,
 	$latest_commit_id,
-	$filetypes_approve
+	$filetypes_approve,
+	$dry_run
 ) {
 
 
@@ -1503,13 +1504,21 @@ function vipgoci_github_approve_pr(
 
 	$github_postfields = array(
 		'commit_id' => $latest_commit_id,
-		'body' => 'Auto-approved Pull-Request #' .
+		'body' =>
+			( $dry_run === true ?
+				'Would auto-approve' :
+				'Auto-approved' ) .
+			' Pull-Request #' .
 			(int) $pr_number . ' as it ' .
 			'contains only allowable file-types ' .
 			'(' . implode( ', ', $filetypes_approve ) . ')',
 		'event' => 'APPROVE',
 		'comments' => array()
 	);
+
+	if ( true === $dry_run ) {
+		return;
+	}
 
 	// Actually approve
 	vipgoci_github_post_url(
@@ -1907,10 +1916,12 @@ function vipgoci_github_label_add_to_pr(
 	$repo_name,
 	$github_token,
 	$pr_number,
-	$label_name
+	$label_name,
+	$dry_run
 ) {
 	vipgoci_log(
-		'Adding label to GitHub issue',
+		( $dry_run === true ? 'Would add ' : 'Adding ' ) .
+		'label to GitHub issue',
 		array(
 			'repo_owner' => $repo_owner,
 			'repo_name' => $repo_name,
@@ -1918,6 +1929,10 @@ function vipgoci_github_label_add_to_pr(
 			'label_name' => $label_name,
 		)
 	);
+
+	if ( true === $dry_run ) {
+		return;
+	}
 
 	$github_url =
 		'https://api.github.com/' .
