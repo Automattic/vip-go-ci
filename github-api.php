@@ -1504,11 +1504,7 @@ function vipgoci_github_approve_pr(
 
 	$github_postfields = array(
 		'commit_id' => $latest_commit_id,
-		'body' =>
-			( $dry_run === true ?
-				'Would auto-approve' :
-				'Auto-approved' ) .
-			' Pull-Request #' .
+		'body' => 'Auto-approved Pull-Request #' .
 			(int) $pr_number . ' as it ' .
 			'contains only allowable file-types ' .
 			'(' . implode( ', ', $filetypes_approve ) . ')',

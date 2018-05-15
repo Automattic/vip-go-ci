@@ -104,8 +104,9 @@ function vipgoci_auto_approval( $options ) {
 			( true === $can_auto_approve )
 		) {
 			vipgoci_log(
-				$options['dry-run'] ? 'Would ' : 'Will' .
-					' auto-approve Pull-Request #' .
+				( $options['dry-run'] === true
+					? 'Would ' : 'Will ' ) .
+					'auto-approve Pull-Request #' .
 					(int) $pr_item->number . ' ' .
 					'as it alters or creates ' . "\n\t" .
 					'only file-types that can be ' .
