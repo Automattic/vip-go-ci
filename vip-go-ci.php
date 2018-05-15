@@ -6,6 +6,7 @@ require_once( __DIR__ . '/git-repo.php' );
 require_once( __DIR__ . '/misc.php' );
 require_once( __DIR__ . '/phpcs-scan.php' );
 require_once( __DIR__ . '/lint-scan.php' );
+require_once( __DIR__ . '/auto-approval.php' );
 
 /*
  * Handle boolean parameters given on the command-line.
@@ -289,10 +290,12 @@ function vipgoci_run() {
 			'phpcs-path:',
 			'phpcs-standard:',
 			'phpcs-severity:',
+			'autoapprove-filetypes:',
 			'php-path:',
 			'local-git-repo:',
 			'lint:',
 			'phpcs:',
+			'autoapprove:',
 			'help',
 			'debug-level:',
 		)
@@ -319,6 +322,10 @@ function vipgoci_run() {
 			"\t" . '--phpcs-path=FILE              Full path to PHPCS script' . PHP_EOL .
 			"\t" . '--phpcs-standard=STRING        Specify which PHPCS standard to use' . PHP_EOL .
 			"\t" . '--phpcs-severity=NUMBER        Specify severity for PHPCS' . PHP_EOL .
+			"\t" . '--autoapprove=BOOL             Whether to auto-approve Pull-Requests' . PHP_EOL .
+			"\t" . '                               altering only files of certain types' . PHP_EOL .
+			"\t" . '--autoapprove-filetypes=STRING Specify what file-types can be auto-' . PHP_EOL .
+			"\t" . '                               approved. PHP files cannot be specified' . PHP_EOL .
 			"\t" . '--php-path=FILE                Full path to PHP, if not specified the' . PHP_EOL .
 			"\t" . '                               default in $PATH will be used instead' . PHP_EOL .
 			"\t" . '--branches-ignore=STRING,...   What branches to ignore -- useful to make sure' . PHP_EOL .
@@ -451,6 +458,63 @@ function vipgoci_run() {
 			VIPGOCI_EXIT_USAGE_ERROR
 		);
 	}
+
+
+	/*
+	 * Should we auto-approve Pull-Requests
+	 * only altering certain file-types?
+	 */
+
+	vipgoci_option_bool_handle( $options, 'autoapprove', 'false' );
+
+	vipgoci_option_array_handle(
+		$options,
+		'autoapprove-filetypes',
+		array(),
+		'php'
+	);
+
+	$options['autoapprove-filetypes'] = array_map(
+		'strtolower',
+		$options['autoapprove-filetypes']
+	);
+
+
+	/*
+	 * Do some sanity-checking on the parameters
+	 */
+	if (
+		( true === $options['autoapprove'] ) &&
+		( empty( $options['autoapprove-filetypes'] ) )
+	) {
+		vipgoci_log(
+			'Skipping auto-approval as no file-types ' .
+				'are specified',
+			array(
+				'autoapprove' =>
+					$options['autoapprove'],
+
+				'autoapprove-filetypes' =>
+					$options['autoapprove-filetypes'],
+			)
+		);
+
+		$options['autoapprove'] = false;
+	}
+
+	else if (
+		( true === $options['autoapprove'] ) &&
+		( in_array( 'php', $options['autoapprove-filetypes'], true ) )
+	) {
+		vipgoci_sysexit(
+			'PHP files cannot be auto-approved, as they can' .
+				'contain serious problems for execution',
+			array(
+			),
+			VIPGOCI_EXIT_USAGE_ERROR
+		);
+	}
+
 
 	/*
 	 * Ask GitHub about information about
@@ -664,6 +728,18 @@ function vipgoci_run() {
 			$options,
 			$results['issues'],
 			$results['stats']['phpcs']
+		);
+	}
+
+	/*
+	 * If to auto-approve, then do so.
+	 */
+
+	if ( true === $options['autoapprove'] ) {
+		// FIXME: Do not auto-approve if there are
+		// any linting or PHPCS-issues.
+		vipgoci_auto_approval(
+			$options
 		);
 	}
 
