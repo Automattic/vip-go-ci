@@ -286,7 +286,10 @@ function vipgoci_phpcs_scan_commit(
 			$github_token,
 			$pr_item->base->sha,
 			$commit_id,
-			array( 'php', 'js', 'twig' )
+			array(
+				'file_extensions' =>
+					array( 'php', 'js', 'twig' ),
+			)
 		);
 
 		foreach ( $pr_item_files_tmp as $pr_item_file_name ) {

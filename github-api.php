@@ -1771,7 +1771,7 @@ function vipgoci_github_pr_files_changed(
 	foreach ( $files_changed as $file_name => $tmp_patch ) {
 		if ( false === vipgoci_filter_file_endings(
 			$file_name,
-			$filter
+			$filter['file_extensions']
 		) ) {
 			continue;
 		}
