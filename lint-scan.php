@@ -49,7 +49,7 @@ function vipgoci_lint_do_scan(
 			'cmd'			=> $cmd,
 			'file_issues_arr'	=> $file_issues_arr,
 		),
-		3
+		2
 	);
 
 	return $file_issues_arr;

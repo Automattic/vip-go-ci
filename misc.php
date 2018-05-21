@@ -383,7 +383,7 @@ function vipgoci_scandir_git_repo( $path, $filter ) {
 			'path' => $path,
 			'filter' => $filter,
 		),
-		3
+		2
 	);
 
 
@@ -428,7 +428,7 @@ function vipgoci_scandir_git_repo( $path, $filter ) {
 		// Filter out files not with desired line-ending
 		if ( null !== $filter ) {
 			if ( false === vipgoci_filter_file_endings(
-				$value,
+				$path . DIRECTORY_SEPARATOR . $value,
 				$filter['file_extensions']
 			) ) {
 				continue;
