@@ -325,15 +325,21 @@ function vipgoci_github_labels( $text_string ) {
 
 /*
  * Determine if the presented file has an
- * allowable file-ending
+ * allowable file-ending, and if the file presented
+ * is in a directory that is can be scanned.
  */
-function vipgoci_filter_file_endings(
+function vipgoci_filter_file_path(
 	$filename,
-	$file_extensions_arr
+	$filter
 ) {
 	$file_info_extension = pathinfo(
 		$filename,
 		PATHINFO_EXTENSION
+	);
+
+	$file_dirs = pathinfo(
+		$filename,
+		PATHINFO_DIRNAME
 	);
 
 	/*
@@ -341,11 +347,47 @@ function vipgoci_filter_file_endings(
 	 * file-extension, flag it.
 	 */
 
-	if ( ! in_array(
-		strtolower( $file_info_extension ),
-			$file_extensions_arr,
-			true
-	) ) {
+	$file_ext_match =
+		( null !== $filter ) &&
+		( isset( $filter['file_extensions'] ) ) &&
+		( ! in_array(
+			strtolower( $file_info_extension ),
+				$filter['file_extensions'],
+				true
+		) );
+
+	/*
+	 * If path to the file contains any non-acceptable
+	 * directory-names, skip it.
+	 */
+
+	$file_folders_match = false;
+
+	if (
+		( null !== $filter ) &&
+		( isset( $filter['file_dirs_skip' ] ) )
+	) {
+		$file_dirs_arr = explode( '/', $file_dirs );
+
+		foreach ( $file_dirs_arr as $file_dir_item ) {
+			if ( in_array(
+				$file_dir_item,
+				$filter['file_dirs_skip']
+			) ) {
+				$file_folders_match = true;
+			}
+		}
+	}
+
+	/*
+	 * Do the actual skipping of file,
+	 * if either of the conditions are fulfiled.
+	 */
+
+	if (
+		( true === $file_ext_match ) ||
+		( true === $file_folders_match )
+	) {
 		vipgoci_log(
 			'Skipping file that does not seem ' .
 				'to be a file matching ' .
@@ -355,8 +397,8 @@ function vipgoci_filter_file_endings(
 				'filename' =>
 					$filename,
 
-				'allowable_file_extensions' =>
-					$file_extensions_arr,
+				'filter' =>
+					$filter,
 			),
 			2
 		);
@@ -427,9 +469,9 @@ function vipgoci_scandir_git_repo( $path, $filter ) {
 
 		// Filter out files not with desired line-ending
 		if ( null !== $filter ) {
-			if ( false === vipgoci_filter_file_endings(
+			if ( false === vipgoci_filter_file_path(
 				$path . DIRECTORY_SEPARATOR . $value,
-				$filter['file_extensions']
+				$filter
 			) ) {
 				continue;
 			}

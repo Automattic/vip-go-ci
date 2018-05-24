@@ -611,9 +611,9 @@ function vipgoci_github_fetch_commit_info(
 			 * file-extension, skip
 			 */
 
-			if ( false === vipgoci_filter_file_endings(
+			if ( false === vipgoci_filter_file_path(
 				$file_info->filename,
-				$filter['file_extensions']
+				$filter
 			) ) {
 				continue;
 			}
@@ -1769,10 +1769,13 @@ function vipgoci_github_pr_files_changed(
 	$files_changed_ret = array();
 
 	foreach ( $files_changed as $file_name => $tmp_patch ) {
-		if ( false === vipgoci_filter_file_endings(
-			$file_name,
-			$filter['file_extensions']
-		) ) {
+		if (
+			( null !== $filter ) &&
+			( false === vipgoci_filter_file_path(
+				$file_name,
+				$filter
+			) )
+		) {
 			continue;
 		}
 

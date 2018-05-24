@@ -289,6 +289,8 @@ function vipgoci_phpcs_scan_commit(
 			array(
 				'file_extensions' =>
 					array( 'php', 'js', 'twig' ),
+				'file_dirs_skip' =>
+					$options['skip-folders'],
 			)
 		);
 

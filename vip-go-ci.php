@@ -293,6 +293,7 @@ function vipgoci_run() {
 			'autoapprove-filetypes:',
 			'php-path:',
 			'local-git-repo:',
+			'skip-folders:',
 			'lint:',
 			'phpcs:',
 			'autoapprove:',
@@ -332,6 +333,9 @@ function vipgoci_run() {
 			"\t" . '                               some branches never get scanned. Separate branches' . PHP_EOL .
 			"\t" . '                               with commas' . PHP_EOL .
 			"\t" . '--local-git-repo=FILE          The local git repository to use for direct access to code' . PHP_EOL .
+			"\t" . '--skip-folders=STRING          Specify folders relative to the git repository in which not ' . PHP_EOL .
+			"\t" . '                               to look into for files to PHP lint or scan using PHPCS. ' . PHP_EOL .
+			"\t" . '                               Values are comma separated' . PHP_EOL .
 			"\t" . '--dry-run=BOOL                 If set to true, will not make any changes to any data' . PHP_EOL .
 			"\t" . '                               on GitHub -- no comments will be submitted, etc.' . PHP_EOL .
 			"\t" . '--output=FILE                  Where to save output made from running PHPCS' . PHP_EOL .
@@ -421,6 +425,15 @@ function vipgoci_run() {
 		$options['local-git-repo']
 	);
 
+
+	/*
+	 * Handle --skip-folders parameter
+	 */
+	vipgoci_option_array_handle(
+		$options,
+		'skip-folders',
+		array()
+	);
 
 	/*
 	 * Handle optional --debug-level parameter

@@ -188,7 +188,9 @@ function vipgoci_lint_scan_commit(
 		$commit_id,
 		array(
 			'file_extensions'
-				=> array( 'php' )
+				=> array( 'php' ),
+			'file_dirs_skip'
+				=> $options['skip-folders'],
 		)
 	);
 
