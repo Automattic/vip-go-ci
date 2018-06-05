@@ -365,14 +365,14 @@ function vipgoci_filter_file_path(
 
 	if (
 		( null !== $filter ) &&
-		( isset( $filter['file_dirs_skip' ] ) )
+		( isset( $filter['skip_folders' ] ) )
 	) {
 		$file_dirs_arr = explode( '/', $file_dirs );
 
 		foreach ( $file_dirs_arr as $file_dir_item ) {
 			if ( in_array(
 				$file_dir_item,
-				$filter['file_dirs_skip']
+				$filter['skip_folders']
 			) ) {
 				$file_folders_match = true;
 			}
