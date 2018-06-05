@@ -1,5 +1,18 @@
 <?php
 
+/*
+ * Process auto-approval(s) of the Pull-Request(s)
+ * involved with the commit specified.
+ *
+ * This function will attempt to auto-approve
+ * Pull-Request(s) that only alter files with specific
+ * file-type endings. If the PR only alters these kinds
+ * of files, the function will auto-approve them, and else not.
+ *
+ * Note that the --skip-folders argument is ignored
+ * in this function.
+ */
+
 function vipgoci_auto_approval( $options ) {
 
 	vipgoci_runtime_measure( 'start', 'auto_approve_commit' );

@@ -335,6 +335,7 @@ function vipgoci_run() {
 			"\t" . '--local-git-repo=FILE          The local git repository to use for direct access to code' . PHP_EOL .
 			"\t" . '--skip-folders=STRING          Specify folders relative to the git repository in which not ' . PHP_EOL .
 			"\t" . '                               to look into for files to PHP lint or scan using PHPCS. ' . PHP_EOL .
+			"\t" . '                               Note that this argument is not employed with auto-approvals. ' . PHP_EOL .
 			"\t" . '                               Values are comma separated' . PHP_EOL .
 			"\t" . '--dry-run=BOOL                 If set to true, will not make any changes to any data' . PHP_EOL .
 			"\t" . '                               on GitHub -- no comments will be submitted, etc.' . PHP_EOL .
