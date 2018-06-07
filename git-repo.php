@@ -247,7 +247,7 @@ function vipgoci_gitrepo_blame_for_file(
 	 */
 
 	$cmd = sprintf(
-		'%s -C %s blame -l -s %s 2>&1',
+		'%s -C %s blame --line-porcelain %s 2>&1',
 		escapeshellcmd( 'git' ),
 		escapeshellarg( $local_git_repo ),
 		escapeshellarg( $file_name )
@@ -273,53 +273,79 @@ function vipgoci_gitrepo_blame_for_file(
 		$result
 	);
 
+	$current_commit = array(
+	);
+
 	foreach ( $result as $result_line ) {
+
+		/*
+		 * First split the line into an array
+		 */
+
 		$result_line_arr = explode(
 			' ',
 			$result_line
 		);
 
+
 		/*
-		 * commit_id should be first, but in some
-		 * cases it is not, so skip it.
+		 * Try to figure out if the line is contains
+		 * a commit-ID and line-number, such as this:
+		 *
+		 * 6c85fe619e39cc7beefb1faf0102d9d872bc7bb2 3 3
+		 *
+		 * and if so, store them.
 		 */
 
-		if ( empty( $result_line_arr[0] ) ) {
-			continue;
+		if (
+			( count( $result_line_arr ) >= 3 ) &&
+			( strlen( $result_line_arr[0] ) === 40 ) &&
+			( ctype_xdigit( $result_line_arr[0] ) === true )
+		) {
+			$current_commit = array(
+				'commit_id'	=> $result_line_arr[0],
+				'number'	=> $result_line_arr[1],
+			);
 		}
 
 		/*
-		 * Because 'git blame' indents things to
-		 * be human readable, adding whitespaces
-		 * as needed, we must work around that,
-		 * copying the line-number wherever that
-		 * is in the resulting array.
+		 * Test if the first string on the line is 'filename',
+		 * and if so, store the filename it self. Do so using
+		 * a method that will save spaces and so forth in the
+		 * filename.
 		 */
 
-		for ( $i = 1; $i < count( $result_line_arr ); $i++ ) {
-			if ( ! empty( $result_line_arr[ 1 ] ) ) {
-				break;
-			}
+		else if (
+			( count( $result_line_arr ) >= 2 ) &&
+			( 'filename' === $result_line_arr[0] )
+		) {
+			$tmp_file_arr = $result_line_arr;
+			unset( $tmp_file_arr[0] );
 
-			if ( ! empty ($result_line_arr[ $i ] ) ) {
-				$result_line_arr[ 1 ] = $result_line_arr[ $i ];
-				break;
-			}
+			$current_commit['filename'] = implode( ' ', $tmp_file_arr );
+
+			unset( $tmp_file_arr );
 		}
 
+
 		/*
-		 * Finally, construct return array
+		 * If we have got commit-ID, line-number
+		 * and filename, we can construct a return array
 		 */
 
-		$blame_log[] = array(
-			'commit_id' => $result_line_arr[0],
-			'file_name' => $file_name,
-			'line_no' => (int) str_replace(
-				')',
-				'',
-				$result_line_arr[1]
-			),
-		);
+		if (
+			( ! empty( $current_commit['commit_id'] ) ) &&
+			( ! empty( $current_commit['number'] ) ) &&
+			( ! empty( $current_commit['filename'] ) )
+		) {
+			$blame_log[] = array(
+				'commit_id' => $current_commit['commit_id'],
+				'file_name' => $current_commit['filename'],
+				'line_no' => (int) $current_commit['number'],
+			);
+
+			$current_commit = array();
+		}
 	}
 
 	vipgoci_runtime_measure( 'stop', 'git_repo_blame_for_file' );
