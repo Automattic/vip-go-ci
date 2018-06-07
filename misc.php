@@ -399,6 +399,11 @@ function vipgoci_filter_file_path(
 
 				'filter' =>
 					$filter,
+
+				'matches' => array(
+					'file_ext_match' => $file_ext_match,
+					'file_folders_match' => $file_folders_match,
+				),
 			),
 			2
 		);
