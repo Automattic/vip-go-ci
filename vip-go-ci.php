@@ -284,6 +284,7 @@ function vipgoci_run() {
 			'repo-name:',
 			'commit:',
 			'token:',
+			'review-comments-max:',
 			'branches-ignore:',
 			'output:',
 			'dry-run:',
@@ -319,6 +320,10 @@ function vipgoci_run() {
 			"\t" . '--repo-name=STRING             Specify name of the repository' . PHP_EOL .
 			"\t" . '--commit=STRING                Specify the exact commit to scan (SHA)' . PHP_EOL .
 			"\t" . '--token=STRING                 The access-token to use to communicate with GitHub' . PHP_EOL .
+			"\t" . '--review-comments-max=NUMBER   Maximum number of inline comments to submit' . PHP_EOL .
+			"\t" . '                               to GitHub in one review. If the number of ' . PHP_EOL .
+			"\t" . '                               comments exceed this number, additional reviews ' . PHP_EOL .
+			"\t" . '                               will be submitted.' . PHP_EOL .
 			"\t" . '--phpcs=BOOL                   Whether to run PHPCS (true/false)' . PHP_EOL .
 			"\t" . '--phpcs-path=FILE              Full path to PHPCS script' . PHP_EOL .
 			"\t" . '--phpcs-standard=STRING        Specify which PHPCS standard to use' . PHP_EOL .
@@ -561,6 +566,19 @@ function vipgoci_run() {
 
 
 	/*
+	 * Maximum number of inline comments posted to
+	 * Github with one review -- from 5 to 100.
+	 */
+
+	vipgoci_option_integer_handle(
+		$options,
+		'review-comments-max',
+		10,
+		range( 5, 100, 1 )
+	);
+
+
+	/*
 	 * Log that we started working,
 	 * and the arguments provided as well.
 	 *
@@ -778,7 +796,8 @@ function vipgoci_run() {
 		$options['token'],
 		$options['commit'],
 		$results,
-		$options['dry-run']
+		$options['dry-run'],
+		$options['review-comments-max']
 	);
 
 	$github_api_rate_limit_usage =

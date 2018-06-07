@@ -1231,7 +1231,8 @@ function vipgoci_github_pr_review_submit(
 	$github_token,
 	$commit_id,
 	$results,
-	$dry_run
+	$dry_run,
+	$github_review_comments_max
 ) {
 
 	$stats_types_to_process = array(
@@ -1446,13 +1447,90 @@ function vipgoci_github_pr_review_submit(
 			}
 		}
 
-		// Actually send a request to GitHub
-		$github_post_res = vipgoci_github_post_url(
-			$github_url,
-			$github_postfields,
-			$github_token
-		);
 
+		/*
+		 * Only submit a specific number of comments in one go.
+		 *
+		 * This hopefully will reduce the likelihood of problems
+		 * with the GitHub API. Also, it will avoid excessive number
+		 * of comments being posted at once.
+		 *
+		 * Do this by picking out a few comments at a time,
+		 * submit, and repeat.
+		 */
+
+		if (
+			count( $github_postfields['comments'] ) >
+				$github_review_comments_max
+		) {
+			// Append a comment that there will be more reviews 
+			$github_postfields['body'] .=
+				"\n\r" .
+				'Posting will continue in further review(s)';
+		}
+
+
+		do {
+			/*
+			 * Set temporary variable we use for posting
+			 * and remove all comments from it.
+			 */
+			$github_postfields_tmp = $github_postfields;
+
+			unset( $github_postfields_tmp['comments'] );
+
+			/*
+			 * Add in comments.
+			 */
+
+			for ( $i = 0; $i < $github_review_comments_max; $i++ ) {
+				$y = count( $github_postfields['comments'] );
+
+				if ( 0 === $y ) {
+					/* No more items, break out */
+					break;
+				}
+
+				$y--;
+
+				$github_postfields_tmp['comments'][] =
+					$github_postfields['comments'][ $y ];
+
+				unset(
+					$github_postfields['comments'][ $y ]
+				);
+			}
+
+			// Actually send a request to GitHub
+			$github_post_res_tmp = vipgoci_github_post_url(
+				$github_url,
+				$github_postfields_tmp,
+				$github_token
+			);
+
+			/*
+			 * If something goes wrong with any submission,
+			 * keep a note on that.
+			 */
+			if (
+				( ! isset( $github_post_res ) ||
+				( -1 !== $github_post_res ) )
+			) {
+				$github_post_res = $github_post_res_tmp;
+			}
+
+			// Set a new post-body for future posting.
+			$github_postfields['body'] = 'Previous scan continued.';
+		} while ( count( $github_postfields['comments'] ) > 0 );
+
+		unset( $github_post_res_tmp );
+		unset( $y );
+		unset( $i );
+
+		/*
+		 * If one or more submissions went wrong,
+		 * let humans know that there was a problem.
+		 */
 		if ( -1 === $github_post_res ) {
 			vipgoci_github_pr_comments_error_msg(
 				$repo_owner,
