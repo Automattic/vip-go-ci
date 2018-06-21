@@ -82,14 +82,26 @@ function vipgoci_auto_approval( $options ) {
 		}
 
 
+		/*
+		 * Get label associated, but
+		 * only our auto-approved one
+		 */
+		$pr_label = vipgoci_github_labels_get(
+			$options['repo-owner'],
+			$options['repo-name'],
+			$options['token'],
+			(int) $pr_item->number,
+			$options['autoapprove-label']
+		);
+
 		if ( false == $did_foreach ) {
 			vipgoci_log(
 				'No action taken with Pull-Request #' .
 					(int) $pr_item->number . ' ' .
 					'since no files were found',
-					array(
-						'files_seen' => $files_seen,
-					)
+				array(
+					'files_seen' => $files_seen,
+				)
 			);
 		}
 
@@ -103,13 +115,42 @@ function vipgoci_auto_approval( $options ) {
 					'as it contains ' . "\n\t" .
 					'file-types which are not ' .
 					'automatically approvable',
-					array(
-						'autoapprove-filetypes' =>
-							$options['autoapprove-filetypes'],
+				array(
+					'autoapprove-filetypes' =>
+						$options['autoapprove-filetypes'],
 
-						'files_seen' => $files_seen,
+					'files_seen' => $files_seen,
 				)
 			);
+
+
+			if ( false === $pr_label ) {
+				vipgoci_log(
+					'Will not attempt to remove label ' .
+						'from issue as it does not ' .
+						'exist',
+					array(
+						'repo_owner' => $options['repo-owner'],
+						'repo_name' => $options['repo-name'],
+						'pr_number' => $pr_item->number,
+						'label_name' => $options['autoapprove-label'],
+					)
+				);
+			}
+
+			else {
+				/*
+				 * Remove auto-approve label
+				 */
+				vipgoci_github_label_remove_from_pr(
+					$options['repo-owner'],
+					$options['repo-name'],
+					$options['token'],
+					(int) $pr_item->number,
+					$pr_label->name,
+					$options['dry-run']
+				);
+			}
 		}
 
 		else if (
@@ -124,30 +165,31 @@ function vipgoci_auto_approval( $options ) {
 					'as it alters or creates ' . "\n\t" .
 					'only file-types that can be ' .
 					'automatically approved',
-					array(
-						'repo_owner'
-							=> $options['repo-owner'],
+				array(
+					'repo_owner'
+						=> $options['repo-owner'],
 
-						'repo_name'
-							=> $options['repo-name'],
+					'repo_name'
+						=> $options['repo-name'],
 
-						'commit_id'
-							=> $options['commit'],
+					'commit_id'
+						=> $options['commit'],
 
-						'dry_run'
-							=> $options['dry-run'],
+					'dry_run'
+						=> $options['dry-run'],
 
-						'autoapprove-filetypes' =>
-							$options['autoapprove-filetypes'],
+					'autoapprove-filetypes' =>
+						$options['autoapprove-filetypes'],
 
-						'files_seen' => $files_seen,
+					'files_seen' => $files_seen,
 				)
 			);
 
 
 			/*
 			 * Actually approve, if not in dry-mode.
-			 * Also add a label to the Pull-Request.
+			 * Also add a label to the Pull-Request
+			 * if applicable.
 			 */
 			vipgoci_github_approve_pr(
 				$options['repo-owner'],
@@ -159,14 +201,40 @@ function vipgoci_auto_approval( $options ) {
 				$options['dry-run']
 			);
 
-			vipgoci_github_label_add_to_pr(
-				$options['repo-owner'],
-				$options['repo-name'],
-				$options['token'],
-				$pr_item->number,
-				'[Status] VIP Auto Approved',
-				$options['dry-run']
-			);
+
+			/*
+			 * Add label to Pull-Request, but
+			 * only if it is not associated already.
+			 * If it is already associated, just log
+			 * that fact.
+			 */
+			if ( false === $pr_label ) {
+				vipgoci_github_label_add_to_pr(
+					$options['repo-owner'],
+					$options['repo-name'],
+					$options['token'],
+					$pr_item->number,
+					$options['autoapprove-label'],
+					$options['dry-run']
+				);
+			}
+
+			else {
+				vipgoci_log(
+					'Will not add label to issue, ' .
+						'as it already exists',
+					array(
+						'repo_owner' =>
+							$options['repo-owner'],
+						'repo_name' =>
+							$options['repo-name'],
+						'pr_number' =>
+							$pr_item->number,
+						'label_name' =>
+							$options['autoapprove-label'],
+					)
+				);
+			}
 		}
 
 		unset( $files_seen );

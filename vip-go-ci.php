@@ -291,13 +291,14 @@ function vipgoci_run() {
 			'phpcs-path:',
 			'phpcs-standard:',
 			'phpcs-severity:',
-			'autoapprove-filetypes:',
 			'php-path:',
 			'local-git-repo:',
 			'skip-folders:',
 			'lint:',
 			'phpcs:',
 			'autoapprove:',
+			'autoapprove-filetypes:',
+			'autoapprove-label:',
 			'help',
 			'debug-level:',
 		)
@@ -316,6 +317,9 @@ function vipgoci_run() {
 			"\t" . 'Options --repo-owner, --repo-name, --commit, --token, --local-git-repo are ' . PHP_EOL .
 			"\t" . 'mandatory, while others are optional.' . PHP_EOL .
 			PHP_EOL .
+			"\t" . 'Note that if option --autoapprove is specified, --autoapprove-filetypes and ' . PHP_EOL .
+			"\t" . '--autoapprove-label need to be specified as well.' . PHP_EOL .
+			PHP_EOL .
 			"\t" . '--repo-owner=STRING            Specify repository owner, can be an organization' . PHP_EOL .
 			"\t" . '--repo-name=STRING             Specify name of the repository' . PHP_EOL .
 			"\t" . '--commit=STRING                Specify the exact commit to scan (SHA)' . PHP_EOL .
@@ -332,6 +336,7 @@ function vipgoci_run() {
 			"\t" . '                               altering only files of certain types' . PHP_EOL .
 			"\t" . '--autoapprove-filetypes=STRING Specify what file-types can be auto-' . PHP_EOL .
 			"\t" . '                               approved. PHP files cannot be specified' . PHP_EOL .
+			"\t" . '--autoapprove-label=STRING     String to use for labels when auto-approving' . PHP_EOL .
 			"\t" . '--php-path=FILE                Full path to PHP, if not specified the' . PHP_EOL .
 			"\t" . '                               default in $PATH will be used instead' . PHP_EOL .
 			"\t" . '--branches-ignore=STRING,...   What branches to ignore -- useful to make sure' . PHP_EOL .
@@ -480,7 +485,7 @@ function vipgoci_run() {
 
 
 	/*
-	 * Should we auto-approve Pull-Requests
+	 * Should we auto-approve Pull-Requests when
 	 * only altering certain file-types?
 	 */
 
@@ -493,35 +498,44 @@ function vipgoci_run() {
 		'php'
 	);
 
+	/*
+	 * Do some sanity-checking on the parameters
+	 */
+
 	$options['autoapprove-filetypes'] = array_map(
 		'strtolower',
 		$options['autoapprove-filetypes']
 	);
 
-
-	/*
-	 * Do some sanity-checking on the parameters
-	 */
-	if (
-		( true === $options['autoapprove'] ) &&
-		( empty( $options['autoapprove-filetypes'] ) )
-	) {
-		vipgoci_log(
-			'Skipping auto-approval as no file-types ' .
-				'are specified',
-			array(
-				'autoapprove' =>
-					$options['autoapprove'],
-
-				'autoapprove-filetypes' =>
-					$options['autoapprove-filetypes'],
-			)
-		);
-
-		$options['autoapprove'] = false;
+	if ( empty( $options['autoapprove-label'] ) ) {
+		$options['autoapprove-label'] = false;
 	}
 
-	else if (
+	else {
+		$options['autoapprove-label'] = trim(
+			$options['autoapprove-label']
+		);
+	}
+
+
+	if (
+		( true === $options['autoapprove'] ) &&
+		(
+			( empty( $options['autoapprove-filetypes'] ) ) ||
+			( false === $options['autoapprove-label'] )
+		)
+	) {
+		vipgoci_sysexit(
+			'To be able to auto-approve, file-types to approve ' .
+			'must be specified, as well as a label; see --help ' .
+			'for information',
+			array(),
+			VIPGOCI_EXIT_USAGE_ERROR
+		);
+	}
+
+
+	if (
 		( true === $options['autoapprove'] ) &&
 		( in_array( 'php', $options['autoapprove-filetypes'], true ) )
 	) {

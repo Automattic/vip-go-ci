@@ -290,7 +290,8 @@ function vipgoci_github_post_url(
 
 			(
 				( true === $http_delete ) &&
-				( intval( $resp_headers['status'][0] ) !== 204 )
+				( intval( $resp_headers['status'][0] ) !== 204 ) &&
+				( intval( $resp_headers['status'][0] ) !== 200 )
 			)
 		) {
 			/*
@@ -1463,7 +1464,7 @@ function vipgoci_github_pr_review_submit(
 			count( $github_postfields['comments'] ) >
 				$github_review_comments_max
 		) {
-			// Append a comment that there will be more reviews 
+			// Append a comment that there will be more reviews
 			$github_postfields['body'] .=
 				"\n\r" .
 				'Posting will continue in further review(s)';
@@ -1984,6 +1985,7 @@ function vipgoci_github_authenticated_user_get( $github_token ) {
 	return $current_user_info;
 }
 
+
 /*
  * Add a particular label to a specific
  * Pull-Request (or issue).
@@ -2028,5 +2030,136 @@ function vipgoci_github_label_add_to_pr(
 		$github_url,
 		$github_postfields,
 		$github_token
+	);
+}
+
+/*
+ * Fetch labels associated with a
+ * particular issue/Pull-Request.
+ */
+function vipgoci_github_labels_get(
+	$repo_owner,
+	$repo_name,
+	$github_token,
+	$pr_number,
+	$label_to_look_for = null
+) {
+	vipgoci_log(
+		'Getting labels associated with GitHub issue',
+		array(
+			'repo_owner' => $repo_owner,
+			'repo_name' => $repo_name,
+			'pr_number' => $pr_number,
+		)
+	);
+	/*
+	 * Check first if we have
+	 * got the information cached
+	 */
+	$cache_id = array(
+		__FUNCTION__, $repo_owner, $repo_name,
+                $github_token, $pr_number, $label_to_look_for
+	);
+
+	$cached_data = vipgoci_cache( $cache_id );
+
+
+	/*
+	 * If there is nothing cached, fetch it
+	 * from GitHub.
+	 */
+	if ( false === $cached_data ) {
+		$github_url =
+			'https://api.github.com/' .
+			'repos/' .
+			rawurlencode( $repo_owner ) . '/' .
+			rawurlencode( $repo_name ) . '/' .
+			'issues/' .
+			rawurlencode( $pr_number ) . '/' .
+			'labels';
+
+		$data = vipgoci_github_fetch_url(
+			$github_url,
+			$github_token
+		);
+
+		$data = json_decode( $data );
+
+		vipgoci_cache( $cache_id, $data );
+	}
+
+	else {
+		$data = $cached_data;
+	}
+
+	/*
+	 * We got something -- validate it.
+	 */
+
+	if ( empty( $data ) ) {
+		return false;
+	}
+
+	else if ( ( ! empty( $data ) ) && ( null !== $label_to_look_for ) ) {
+		/*
+		 * Decoding of data succeeded,
+		 * look for any labels and return
+		 * them specifically
+		 */
+		foreach( $data as $data_item ) {
+			if ( $data_item->name === $label_to_look_for ) {
+				return $data_item;
+			}
+		}
+
+		return false;
+	}
+
+	return $data;
+}
+
+
+/*
+ * Remove a particular label from a specific
+ * Pull-Request (or issue).
+ */
+function vipgoci_github_label_remove_from_pr(
+	$repo_owner,
+	$repo_name,
+	$github_token,
+	$pr_number,
+	$label_name,
+	$dry_run
+) {
+	vipgoci_log(
+		( $dry_run === true ? 'Would remove ' : 'Removing ' ) .
+		'label from GitHub issue',
+		array(
+			'repo_owner' => $repo_owner,
+			'repo_name' => $repo_name,
+			'pr_number' => $pr_number,
+			'label_name' => $label_name,
+		)
+	);
+
+	if ( true === $dry_run ) {
+		return;
+	}
+
+	$github_url =
+		'https://api.github.com/' .
+		'repos/' .
+		rawurlencode( $repo_owner ) . '/' .
+		rawurlencode( $repo_name ) . '/' .
+		'issues/' .
+		rawurlencode( $pr_number ) . '/' .
+		'labels/' .
+		rawurlencode( $label_name );
+
+	vipgoci_github_post_url(
+		$github_url,
+		array(),
+		$github_token,
+		true // DELETE request will be sent
 	);
 }
