@@ -11,17 +11,17 @@ function vipgoci_hashes_api_file_approved(
 ) {	
 	vipgoci_runtime_measure( 'start', 'hashes_api_scan_file' );
 
+	/*
+	 * Make sure to process only *.php and
+	 * *.js files -- others are ignored.
+	 */
+ 
 	$file_extensions_approvable = array(
 		'php',
 		'js',
 	);
 
-
-	/*
-	 * Make sure to process only .php and
-	 * .js files -- others are ignored.
-	 */
-        
+       
 	$file_info_extension = pathinfo(
 		$file_path,
 		PATHINFO_EXTENSION
@@ -34,8 +34,8 @@ function vipgoci_hashes_api_file_approved(
 	) === false ) {
 		vipgoci_log(
 			'Not checking file for approval in hashes-to-hashes ' .
-				'API, as it is not a file-type that are ' .
-				' to be checked with it',
+				'API, as it is not a file-type that is ' .
+				'to be checked using it',
 			
 			array(
 				'file_path'
@@ -198,8 +198,10 @@ function vipgoci_hashes_api_file_approved(
 			( 'true' === $file_hash_info[ 'status' ] ) ||
 			( true === $file_hash_info[ 'status' ] )
 		) {
-			/* If we hit one non-approval,
-			 * effectively assume it is not approved.
+			/* 
+			 * Only update approval-flag if we have not
+			 * seen any other approvals, and if we have
+			 * not seen any rejections.
 			 */
 			if ( null === $file_approved ) {
 				$file_approved = true;
@@ -209,7 +211,8 @@ function vipgoci_hashes_api_file_approved(
 
 
 	/*
-	 * If no approval is seen, assume it is not.
+	 * If no approval is seen, assume it is not
+	 * approved at all.
 	 */
 
 	if ( null === $file_approved ) {

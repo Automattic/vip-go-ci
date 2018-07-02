@@ -504,7 +504,7 @@ function vipgoci_stats_init( $options, $prs_implicated, &$results ) {
 				VIPGOCI_STATS_LINT,
 				VIPGOCI_STATS_HASHES_API
 			)
-				as $stats_type
+			as $stats_type
 		) {
 			/*
 			 * Initialize stats for the stats-types only when

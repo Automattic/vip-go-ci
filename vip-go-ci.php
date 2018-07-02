@@ -796,7 +796,7 @@ function vipgoci_run() {
 		vipgoci_lint_scan_commit(
 			$options,
 			$results['issues'],
-			$results['stats'][VIPGOCI_STATS_LINT]
+			$results['stats'][ VIPGOCI_STATS_LINT ]
 		);
 	}
 
@@ -809,7 +809,7 @@ function vipgoci_run() {
 		vipgoci_phpcs_scan_commit(
 			$options,
 			$results['issues'],
-			$results['stats'][VIPGOCI_STATS_PHPCS]
+			$results['stats'][ VIPGOCI_STATS_PHPCS ]
 		);
 	}
 
