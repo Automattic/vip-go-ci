@@ -286,10 +286,10 @@ function vipgoci_run() {
 			'autoapprove:',
 			'autoapprove-filetypes:',
 			'autoapprove-label:',
-			'hashes-api:',
 			'help',
 			'debug-level:',
-		)
+			'hashes-api:',
+	)
 	);
 
 	// Validate args
