@@ -11,29 +11,79 @@ function vipgoci_hashes_api_file_approved(
 ) {
 	vipgoci_runtime_measure( 'start', 'hashes_api_scan_file' );
 
+	/*
+	 * Try to read file from disk, then
+	 * get rid of whitespaces in the file
+	 * and calculate SHA1 hash from the whole.
+	 */
+
 	$file_contents = file_get_contents(
 		$file_path
 	);
+
+	if ( false === $file_contents ) {
+		vipgoci_log(
+			'Unable to read file',
+			array(
+				'file_path' => $file_path,
+			)
+		);
+
+		return null;
+	}
 
 	$file_contents = php_strip_whitespaces(
 		$file_contents
 	);
 
+
 	$file_sha1 = sha1( $file_contents );
 
-	$github_url =
-		'https://' .
-		'hashes-to-hashes.go-vip.co' . // FIXME: From option
+	unset( $file_contents );
+
+	/*
+	 * Ask the API for information about
+	 * the specific hash we calculated.
+	 */
+
+	$hashes_to_hashes_url =
+		$options['hashes-api-url'] .
 		'/wp-json/viphash/v1/hashes/id' .
 		rawurlencode( $file_sha1 );
 
-	$file_hashes_info = json_decode(
+	$file_hashes_info =
 		vipgoci_github_fetch_url(
-			$github_url,
-			$github_token
-		),
-		true
-	);
+			$hashes_to_hashes_url,
+			null
+		);
+
+
+	/*
+	 * Try to parse, and check for errors.
+	 */
+	if ( false !== $file_hashes_info ) {
+		$file_hashes_info = json_decode(
+			$file_hashes_info
+		);
+	}
+
+
+	if (
+		( false === $file_hashes_info ) ||
+		( null === $file_hashes_info )
+	) {
+		vipgoci_log(
+			'Unable to get information from ' .
+				'hashes-to-hashes HTTP API',
+			array(
+				'hashes_to_hashes_url' => $hashes_to_hashes_url,
+				'file_path' => $file_path,
+			)
+		);
+
+		return null;
+	}
+
 
 	$file_approved = null;
 
@@ -48,6 +98,9 @@ function vipgoci_hashes_api_file_approved(
 		}
 
 		if ( true === $file_hash_info[ 'status' ] ) {
+			/* If we hit one non-approval,
+			 * effectively assume it is not approved.
+			 */
 			if ( null === $file_approved ) {
 				$file_approved = true;
 			}
@@ -68,17 +121,28 @@ function vipgoci_hashes_api_file_approved(
 	return $file_approved;
 }
 
-function vipgoci_hashes_api_scan_commit( $options ) {
+
+/*
+ * Scan a particular commit, look for altered
+ * files in the Pull-Request we are associated with
+ * and for each of these files, check if they
+ * are approved in the hashes-to-hashes API.
+ */
+function vipgoci_hashes_api_scan_commit(
+	$options,
+	$commit_issues_submit
+) {
 	vipgoci_runtime_measure( 'start', 'hashes_api_scan' );
 
 	vipgoci_log(
 		'Scanning altered or new files affected by Pull-Request(s) ',
 			'using hashes-to-hashes database via API',
 		array(
-			'repo_owner'	=> $options['repo-owner'],
-			'repo_name'	=> $options['repo-name'],
-			'commit_id'	=> $options['commit'],
-			// FIXME: relevant options should follow
+			'repo_owner'		=> $options['repo-owner'],
+			'repo_name'		=> $options['repo-name'],
+			'commit_id'		=> $options['commit'],
+			'hashes-api'		=> $options['hashes-api'],
+			'hashes-api-url'	=> $options['hashes-api-url'],
 		)
 	);
 
@@ -131,6 +195,26 @@ function vipgoci_hashes_api_scan_commit( $options ) {
 			if ( true === $approval_status ) {
 				$files_approved_in_pr[] = $pr_diff_file_name;
 			}
+
+			else if ( false === $approval_status ) {
+				vipgoci_log(
+					'File is not approved in ' .
+						'hashes-to-hashes API',
+					array(
+						'file_name' => $pr_diff_file_name,
+					)
+				);
+			}
+
+			else if ( null === $approval_status ) {
+				vipgoci_log(
+					'Could not determine if file is approved ' .
+						'in hashes-to-hashes API',
+					array(
+						'file_name' => $pr_diff_file_name,
+					)
+				);
+			}
 		}
 	}
 
@@ -150,8 +234,22 @@ function vipgoci_hashes_api_scan_commit( $options ) {
 	}
 
 	else {
-		// FIXME: Make separate comment for each file approved,
-		// noting that it does not need a review
+		foreach ( $files_approved_in_pr as $file_name ) {
+			/*
+			 * Make comment for each file, noting
+			 * that it is already approved.
+			 */
+			$commit_issues_submit[
+				$pr_item->number
+			][] = array(
+				'type'          => 'phpcs',
+				'file_name'     => $file_name,
+				'file_line'     => 1,
+                                       'issue'
+						=> 'File is approved in ' .
+						'hashes-to-hashes database',
+			);
+		}
 	}
 
 
