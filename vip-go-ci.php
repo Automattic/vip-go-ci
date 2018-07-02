@@ -6,6 +6,7 @@ require_once( __DIR__ . '/git-repo.php' );
 require_once( __DIR__ . '/misc.php' );
 require_once( __DIR__ . '/phpcs-scan.php' );
 require_once( __DIR__ . '/lint-scan.php' );
+require_once( __DIR__ . '/auto-approval.php' );
 
 /*
  * Handle boolean parameters given on the command-line.
@@ -251,6 +252,17 @@ function vipgoci_run() {
 	);
 
 	/*
+	 * Refuse to run as root.
+	 */
+	if ( 0 === posix_getuid() ) {
+		vipgoci_sysexit(
+			'Will not run as root. Please run as non-privileged user.',
+			array(),
+			VIPGOCI_EXIT_USAGE_ERROR
+		);
+	}
+
+	/*
 	 * Set how to deal with errors:
 	 * Report all errors, and display them.
 	 */
@@ -272,6 +284,7 @@ function vipgoci_run() {
 			'repo-name:',
 			'commit:',
 			'token:',
+			'review-comments-max:',
 			'branches-ignore:',
 			'output:',
 			'dry-run:',
@@ -281,6 +294,7 @@ function vipgoci_run() {
 			'hashes-api-url:',
 			'php-path:',
 			'local-git-repo:',
+			'skip-folders:',
 			'lint:',
 			'phpcs:',
 			'autoapprove:',
@@ -305,14 +319,26 @@ function vipgoci_run() {
 			"\t" . 'Options --repo-owner, --repo-name, --commit, --token, --local-git-repo are ' . PHP_EOL .
 			"\t" . 'mandatory, while others are optional.' . PHP_EOL .
 			PHP_EOL .
+			"\t" . 'Note that if option --autoapprove is specified, --autoapprove-filetypes and ' . PHP_EOL .
+			"\t" . '--autoapprove-label need to be specified as well.' . PHP_EOL .
+			PHP_EOL .
 			"\t" . '--repo-owner=STRING            Specify repository owner, can be an organization' . PHP_EOL .
 			"\t" . '--repo-name=STRING             Specify name of the repository' . PHP_EOL .
 			"\t" . '--commit=STRING                Specify the exact commit to scan (SHA)' . PHP_EOL .
 			"\t" . '--token=STRING                 The access-token to use to communicate with GitHub' . PHP_EOL .
+			"\t" . '--review-comments-max=NUMBER   Maximum number of inline comments to submit' . PHP_EOL .
+			"\t" . '                               to GitHub in one review. If the number of ' . PHP_EOL .
+			"\t" . '                               comments exceed this number, additional reviews ' . PHP_EOL .
+			"\t" . '                               will be submitted.' . PHP_EOL .
 			"\t" . '--phpcs=BOOL                   Whether to run PHPCS (true/false)' . PHP_EOL .
 			"\t" . '--phpcs-path=FILE              Full path to PHPCS script' . PHP_EOL .
 			"\t" . '--phpcs-standard=STRING        Specify which PHPCS standard to use' . PHP_EOL .
 			"\t" . '--phpcs-severity=NUMBER        Specify severity for PHPCS' . PHP_EOL .
+			"\t" . '--autoapprove=BOOL             Whether to auto-approve Pull-Requests' . PHP_EOL .
+			"\t" . '                               altering only files of certain types' . PHP_EOL .
+			"\t" . '--autoapprove-filetypes=STRING Specify what file-types can be auto-' . PHP_EOL .
+			"\t" . '                               approved. PHP files cannot be specified' . PHP_EOL .
+			"\t" . '--autoapprove-label=STRING     String to use for labels when auto-approving' . PHP_EOL .
 			"\t" . '--php-path=FILE                Full path to PHP, if not specified the' . PHP_EOL .
 			"\t" . '                               default in $PATH will be used instead' . PHP_EOL .
 			"\t" . '--hashes-api=BOOL              Wether to do hashes-to-hashes API verfication ' . PHP_EOL .
@@ -325,6 +351,10 @@ function vipgoci_run() {
 			"\t" . '                               some branches never get scanned. Separate branches' . PHP_EOL .
 			"\t" . '                               with commas' . PHP_EOL .
 			"\t" . '--local-git-repo=FILE          The local git repository to use for direct access to code' . PHP_EOL .
+			"\t" . '--skip-folders=STRING          Specify folders relative to the git repository in which not ' . PHP_EOL .
+			"\t" . '                               to look into for files to PHP lint or scan using PHPCS. ' . PHP_EOL .
+			"\t" . '                               Note that this argument is not employed with auto-approvals. ' . PHP_EOL .
+			"\t" . '                               Values are comma separated' . PHP_EOL .
 			"\t" . '--dry-run=BOOL                 If set to true, will not make any changes to any data' . PHP_EOL .
 			"\t" . '                               on GitHub -- no comments will be submitted, etc.' . PHP_EOL .
 			"\t" . '--output=FILE                  Where to save output made from running PHPCS' . PHP_EOL .
@@ -440,6 +470,15 @@ function vipgoci_run() {
 
 
 	/*
+	 * Handle --skip-folders parameter
+	 */
+	vipgoci_option_array_handle(
+		$options,
+		'skip-folders',
+		array()
+	);
+
+	/*
 	 * Handle optional --debug-level parameter
 	 */
 
@@ -476,6 +515,72 @@ function vipgoci_run() {
 		);
 	}
 
+
+	/*
+	 * Should we auto-approve Pull-Requests when
+	 * only altering certain file-types?
+	 */
+
+	vipgoci_option_bool_handle( $options, 'autoapprove', 'false' );
+
+	vipgoci_option_array_handle(
+		$options,
+		'autoapprove-filetypes',
+		array(),
+		'php'
+	);
+
+	/*
+	 * Do some sanity-checking on the parameters
+	 */
+
+	$options['autoapprove-filetypes'] = array_map(
+		'strtolower',
+		$options['autoapprove-filetypes']
+	);
+
+	if ( empty( $options['autoapprove-label'] ) ) {
+		$options['autoapprove-label'] = false;
+	}
+
+	else {
+		$options['autoapprove-label'] = trim(
+			$options['autoapprove-label']
+		);
+	}
+
+
+	if (
+		( true === $options['autoapprove'] ) &&
+		(
+			( empty( $options['autoapprove-filetypes'] ) ) ||
+			( false === $options['autoapprove-label'] )
+		)
+	) {
+		vipgoci_sysexit(
+			'To be able to auto-approve, file-types to approve ' .
+			'must be specified, as well as a label; see --help ' .
+			'for information',
+			array(),
+			VIPGOCI_EXIT_USAGE_ERROR
+		);
+	}
+
+
+	if (
+		( true === $options['autoapprove'] ) &&
+		( in_array( 'php', $options['autoapprove-filetypes'], true ) )
+	) {
+		vipgoci_sysexit(
+			'PHP files cannot be auto-approved, as they can' .
+				'contain serious problems for execution',
+			array(
+			),
+			VIPGOCI_EXIT_USAGE_ERROR
+		);
+	}
+
+
 	/*
 	 * Ask GitHub about information about
 	 * the user the token belongs to
@@ -494,6 +599,29 @@ function vipgoci_run() {
 			VIPGOCI_EXIT_GITHUB_PROBLEM
 		);
 	}
+
+	else {
+		vipgoci_log(
+			'Got information about token-holder user from GitHub',
+			array(
+				'login' => $current_user_info->login,
+				'html_url' => $current_user_info->html_url,
+			)
+		);
+	}
+
+
+	/*
+	 * Maximum number of inline comments posted to
+	 * Github with one review -- from 5 to 100.
+	 */
+
+	vipgoci_option_integer_handle(
+		$options,
+		'review-comments-max',
+		10,
+		range( 5, 100, 1 )
+	);
 
 
 	/*
@@ -681,6 +809,18 @@ function vipgoci_run() {
 		);
 	}
 
+	/*
+	 * If to auto-approve, then do so.
+	 */
+
+	if ( true === $options['autoapprove'] ) {
+		// FIXME: Do not auto-approve if there are
+		// any linting or PHPCS-issues.
+		vipgoci_auto_approval(
+			$options
+		);
+	}
+
 
 	/*
 	 * Do scanning of all altered file, using
@@ -716,9 +856,14 @@ function vipgoci_run() {
 		$options['token'],
 		$options['commit'],
 		$results,
-		$options['dry-run']
+		$options['dry-run'],
+		$options['review-comments-max']
 	);
 
+	$github_api_rate_limit_usage =
+		vipgoci_github_rate_limit_usage(
+			$options['token']
+		);
 
 	vipgoci_log(
 		'Shutting down',
@@ -729,6 +874,15 @@ function vipgoci_run() {
 					'dump',
 					null
 				),
+			'counters_report'	=>
+				vipgoci_counter_report(
+					'dump',
+					null,
+					null
+				),
+			'github_api_rate_limit' =>
+				$github_api_rate_limit_usage->resources->core,
+
 			'results'		=> $results,
 		)
 	);

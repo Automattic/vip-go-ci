@@ -24,6 +24,17 @@ function lock_remove() {
 lock_place
 
 
+#
+# Exit if running as root
+#
+if [ "$USERNAME" == "root" ] ; then
+	echo "$0: Will not run as root, exiting"
+	lock_remove
+	exit 1
+
+fi
+
+
 if [ -d ~/vip-go-ci-tools ] ; then
 	#
 	# We have got the tools installed already,

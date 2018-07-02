@@ -49,7 +49,7 @@ function vipgoci_lint_do_scan(
 			'cmd'			=> $cmd,
 			'file_issues_arr'	=> $file_issues_arr,
 		),
-		3
+		2
 	);
 
 	return $file_issues_arr;
@@ -188,7 +188,9 @@ function vipgoci_lint_scan_commit(
 		$commit_id,
 		array(
 			'file_extensions'
-				=> array( 'php' )
+				=> array( 'php' ),
+			'skip_folders'
+				=> $options['skip-folders'],
 		)
 	);
 

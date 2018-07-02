@@ -157,6 +157,25 @@ function vipgoci_patch_changed_lines(
 		}
 	}
 
+	/*
+	 * In certain edge-cases, line 1 in the patch
+	 * will refer to line 0 in the code, which
+	 * is not what we want. In these cases, we
+	 * simply hard-code line 1 in the patch to match
+	 * with line 1 in the code.
+	 */
+	if (
+		( isset( $lines_changed[1] ) ) &&
+		(
+			( $lines_changed[1] === null ) ||
+			( $lines_changed[1] === 0 )
+		)
+		||
+		( ! isset( $lines_changed[1] ) )
+	) {
+		$lines_changed[1] = 1;
+	}
+
 	return $lines_changed;
 }
 
@@ -306,15 +325,21 @@ function vipgoci_github_labels( $text_string ) {
 
 /*
  * Determine if the presented file has an
- * allowable file-ending
+ * allowable file-ending, and if the file presented
+ * is in a directory that is can be scanned.
  */
-function vipgoci_filter_file_endings(
+function vipgoci_filter_file_path(
 	$filename,
-	$file_extensions_arr
+	$filter
 ) {
 	$file_info_extension = pathinfo(
 		$filename,
 		PATHINFO_EXTENSION
+	);
+
+	$file_dirs = pathinfo(
+		$filename,
+		PATHINFO_DIRNAME
 	);
 
 	/*
@@ -322,11 +347,47 @@ function vipgoci_filter_file_endings(
 	 * file-extension, flag it.
 	 */
 
-	if ( ! in_array(
-		strtolower( $file_info_extension ),
-			$file_extensions_arr,
-			true
-	) ) {
+	$file_ext_match =
+		( null !== $filter ) &&
+		( isset( $filter['file_extensions'] ) ) &&
+		( ! in_array(
+			strtolower( $file_info_extension ),
+				$filter['file_extensions'],
+				true
+		) );
+
+	/*
+	 * If path to the file contains any non-acceptable
+	 * directory-names, skip it.
+	 */
+
+	$file_folders_match = false;
+
+	if (
+		( null !== $filter ) &&
+		( isset( $filter['skip_folders' ] ) )
+	) {
+		$file_dirs_arr = explode( '/', $file_dirs );
+
+		foreach ( $file_dirs_arr as $file_dir_item ) {
+			if ( in_array(
+				$file_dir_item,
+				$filter['skip_folders']
+			) ) {
+				$file_folders_match = true;
+			}
+		}
+	}
+
+	/*
+	 * Do the actual skipping of file,
+	 * if either of the conditions are fulfiled.
+	 */
+
+	if (
+		( true === $file_ext_match ) ||
+		( true === $file_folders_match )
+	) {
 		vipgoci_log(
 			'Skipping file that does not seem ' .
 				'to be a file matching ' .
@@ -336,8 +397,13 @@ function vipgoci_filter_file_endings(
 				'filename' =>
 					$filename,
 
-				'allowable_file_extensions' =>
-					$file_extensions_arr,
+				'filter' =>
+					$filter,
+
+				'matches' => array(
+					'file_ext_match' => $file_ext_match,
+					'file_folders_match' => $file_folders_match,
+				),
 			),
 			2
 		);
@@ -364,7 +430,7 @@ function vipgoci_scandir_git_repo( $path, $filter ) {
 			'path' => $path,
 			'filter' => $filter,
 		),
-		3
+		2
 	);
 
 
@@ -408,9 +474,9 @@ function vipgoci_scandir_git_repo( $path, $filter ) {
 
 		// Filter out files not with desired line-ending
 		if ( null !== $filter ) {
-			if ( false === vipgoci_filter_file_endings(
-				$value,
-				$filter['file_extensions']
+			if ( false === vipgoci_filter_file_path(
+				$path . DIRECTORY_SEPARATOR . $value,
+				$filter
 			) ) {
 				continue;
 			}
@@ -526,6 +592,47 @@ function vipgoci_runtime_measure( $action = null, $type = null ) {
 		unset( $timers[ $type ] );
 
 		return $tmp_time;
+	}
+}
+
+
+/*
+ * Keep a counter for stuff we do. For instance,
+ * number of GitHub API requests.
+ */
+
+function vipgoci_counter_report( $action = null, $type = null, $amount = 1 ) {
+	static $counters = array();
+
+	/*
+	 * Check usage.
+	 */
+	if (
+		( 'do' !== $action ) &&
+		( 'dump' !== $action )
+	) {
+		return false;
+	}
+
+	// Dump all runtimes we have
+	if ( 'dump' === $action ) {
+		return $counters;
+	}
+
+
+	/*
+	 * Being asked to start
+	 * collecting, act on that.
+	 */
+
+	if ( 'do' === $action ) {
+		if ( ! isset( $counters[ $type ] ) ) {
+			$counters[ $type ] = 0;
+		}
+
+		$counters[ $type ] += $amount;
+
+		return true;
 	}
 }
 
