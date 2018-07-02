@@ -1,14 +1,6 @@
 <?php
 
 /*
- * Client-ID for Github.
- */
-
-define( 'VIPGOCI_CLIENT_ID', 'automattic-vip-go-ci' );
-define( 'VIPGOCI_SYNTAX_ERROR_STR', 'PHP Syntax Errors Found' );
-define( 'VIPGOCI_GITHUB_ERROR_STR', 'GitHub API communication error');
-
-/*
  * This function works both to collect headers
  + when called as a callback function, and to return
  * the headers collected when called standalone.
@@ -888,7 +880,7 @@ function vipgoci_github_pr_generic_comment_submit(
 	$dry_run
 ) {
 	$stats_types_to_process = array(
-		'lint',
+		VIPGOCI_STATS_LINT,
 	);
 
 
@@ -1240,7 +1232,8 @@ function vipgoci_github_pr_review_submit(
 ) {
 
 	$stats_types_to_process = array(
-		'phpcs',
+		VIPGOCI_STATS_PHPCS,
+		VIPGOCI_STATS_HASHES_API,
 	);
 
 	vipgoci_log(
@@ -1345,7 +1338,7 @@ function vipgoci_github_pr_review_submit(
 		 * If there are any 'error'-level issues, make sure the submission
 		 * asks for changes to be made, otherwise only comment.
 		 *
-		 * If there are no issues at all -- warning or error -- do not
+		 * If there are no issues at all -- warning, error, info -- do not
 		 * submit anything.
 		 */
 
@@ -1353,6 +1346,7 @@ function vipgoci_github_pr_review_submit(
 
 		$github_errors = false;
 		$github_warnings = false;
+		$github_info = false;
 
 		foreach (
 			$stats_types_to_process as
@@ -1372,6 +1366,13 @@ function vipgoci_github_pr_review_submit(
 			) ) {
 				$github_warnings = true;
 			}
+
+			if ( ! empty(
+				$results['stats']
+					[ $stats_type ][ $pr_number ]['info']
+			) ) {
+				$github_info = true;
+			}
 		}
 
 
@@ -1382,7 +1383,8 @@ function vipgoci_github_pr_review_submit(
 		 */
 		if (
 			( false === $github_errors ) &&
-			( false === $github_warnings )
+			( false === $github_warnings ) &&
+			( false === $github_info )
 		) {
 			continue;
 		}

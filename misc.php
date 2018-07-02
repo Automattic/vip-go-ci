@@ -1,17 +1,6 @@
 <?php
 
 /*
- * Define exit-codes
- */
-
-
-define( 'VIPGOCI_EXIT_NORMAL',		0 );
-define( 'VIPGOCI_EXIT_CODE_ISSUES',	250 );
-define( 'VIPGOCI_EXIT_SYSTEM_PROBLEM',	251 );
-define( 'VIPGOCI_EXIT_GITHUB_PROBLEM',	252 );
-define( 'VIPGOCI_EXIT_USAGE_ERROR',	253 );
-
-/*
  * Log information to the console.
  * Include timestamp, and any debug-data
  * our caller might pass us.
@@ -509,7 +498,14 @@ function vipgoci_stats_init( $options, $prs_implicated, &$results ) {
 			);
 		}
 
-		foreach ( array( 'phpcs', 'lint' ) as $stats_type ) {
+		foreach (
+			array(
+				VIPGOCI_STATS_PHPCS,
+				VIPGOCI_STATS_LINT,
+				VIPGOCI_STATS_HASHES_API
+			)
+				as $stats_type
+		) {
 			/*
 			 * Initialize stats for the stats-types only when
 			 * supposed to run them
@@ -524,7 +520,8 @@ function vipgoci_stats_init( $options, $prs_implicated, &$results ) {
 			$results['stats'][ $stats_type ]
 				[ $pr_item->number ] = array(
 					'error'		=> 0,
-					'warning'	=> 0
+					'warning'	=> 0,
+					'info'		=> 0,
 				);
 		}
 	}

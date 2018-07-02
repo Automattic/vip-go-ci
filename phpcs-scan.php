@@ -595,7 +595,7 @@ function vipgoci_phpcs_scan_commit(
 				$commit_issues_submit[
 					$pr_item->number
 				][] = array(
-					'type'		=> 'phpcs',
+					'type'		=> VIPGOCI_STATS_PHPCS,
 
 					'file_name'	=>
 						$file_name,

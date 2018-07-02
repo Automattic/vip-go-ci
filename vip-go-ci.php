@@ -1,6 +1,7 @@
 #!/usr/bin/php
 <?php
 
+require_once( __DIR__ . '/defines.php' );
 require_once( __DIR__ . '/github-api.php' );
 require_once( __DIR__ . '/git-repo.php' );
 require_once( __DIR__ . '/misc.php' );
@@ -8,6 +9,7 @@ require_once( __DIR__ . '/phpcs-scan.php' );
 require_once( __DIR__ . '/lint-scan.php' );
 require_once( __DIR__ . '/auto-approval.php' );
 require_once( __DIR__ . '/hashes-api.php' );
+
 
 /*
  * Handle boolean parameters given on the command-line.
@@ -646,8 +648,9 @@ function vipgoci_run() {
 		'issues'	=> array(),
 
 		'stats'		=> array(
-			'phpcs'	=> null,
-			'lint'	=> null,
+			VIPGOCI_STATS_PHPCS	=> null,
+			VIPGOCI_STATS_LINT	=> null,
+			VIPGOCI_STATS_HASHES_API => null,
 		),
 	);
 
@@ -793,7 +796,7 @@ function vipgoci_run() {
 		vipgoci_lint_scan_commit(
 			$options,
 			$results['issues'],
-			$results['stats']['lint']
+			$results['stats'][VIPGOCI_STATS_LINT]
 		);
 	}
 
@@ -806,7 +809,7 @@ function vipgoci_run() {
 		vipgoci_phpcs_scan_commit(
 			$options,
 			$results['issues'],
-			$results['stats']['phpcs']
+			$results['stats'][VIPGOCI_STATS_PHPCS]
 		);
 	}
 
@@ -832,7 +835,8 @@ function vipgoci_run() {
 	if ( true === $options['hashes-api'] ) {
 		vipgoci_hashes_api_scan_commit(
 			$options,
-			$results['issues']
+			$results['issues'],
+			$results['stats'][ VIPGOCI_STATS_HASHES_API ]
 		);
 	}
 

@@ -332,7 +332,7 @@ function vipgoci_lint_scan_commit(
 					$commit_issues_submit[
 						$pr_item->number
 					][] = array(
-						'type'		=> 'lint',
+						'type'		=> VIPGOCI_STATS_LINT,
 
 						'file_name'	=>
 							$filename,

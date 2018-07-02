@@ -118,10 +118,21 @@ function vipgoci_hashes_api_file_approved(
 	unset( $file_contents );
 	unset( $file_contents_stripped );
 
+
 	/*
 	 * Ask the API for information about
 	 * the specific hash we calculated.
 	 */
+
+	vipgoci_log(
+		'Asking hashes-to-hashes HTTP API if hash of file is ' .
+			'known',
+		array(
+			'file_path'	=> $file_path,
+			'file_sha1'	=> $file_sha1,
+		),
+		2
+	);
 
 	$hashes_to_hashes_url =
 		$options['hashes-api-url'] .
@@ -176,11 +187,17 @@ function vipgoci_hashes_api_file_approved(
 	 */
 
 	foreach( $file_hashes_info as $file_hash_info ) {
-		if ( false === $file_hash_info[ 'status' ] ) {
+		if (
+			( 'false' === $file_hash_info[ 'status' ] ) ||
+			( false === $file_hash_info[ 'status' ] )
+		) {
 			$file_approved = false;
 		}
 
-		if ( true === $file_hash_info[ 'status' ] ) {
+		else if (
+			( 'true' === $file_hash_info[ 'status' ] ) ||
+			( true === $file_hash_info[ 'status' ] )
+		) {
 			/* If we hit one non-approval,
 			 * effectively assume it is not approved.
 			 */
@@ -213,7 +230,8 @@ function vipgoci_hashes_api_file_approved(
  */
 function vipgoci_hashes_api_scan_commit(
 	$options,
-	$commit_issues_submit
+	&$commit_issues_submit,
+	&$commit_issues_stats
 ) {
 	vipgoci_runtime_measure( 'start', 'hashes_api_scan' );
 
@@ -276,6 +294,14 @@ function vipgoci_hashes_api_scan_commit(
 			 * of these affected by the Pull-Request.
 			 */
 			if ( true === $approval_status ) {
+				vipgoci_log(
+					'File is approved in ' .
+						'hashes-to-hashes API',
+					array(
+						'file_name' => $pr_diff_file_name,
+					)
+				);
+
 				$files_approved_in_pr[] = $pr_diff_file_name;
 			}
 
@@ -325,13 +351,22 @@ function vipgoci_hashes_api_scan_commit(
 			$commit_issues_submit[
 				$pr_item->number
 			][] = array(
-				'type'          => 'phpcs',
+				'type'          => VIPGOCI_STATS_HASHES_API,
 				'file_name'     => $file_name,
 				'file_line'     => 1,
-                                       'issue'
-						=> 'File is approved in ' .
-						'hashes-to-hashes database',
+				'issue'	
+					=> array(
+						'message' =>
+							'File is approved in ' .
+							'hashes-to-hashes ' .
+							'database',
+						'level' => 'INFO',
+					)
 			);
+
+			$commit_issues_stats[
+				$pr_item->number
+			]['info']++;
 		}
 	}
 
