@@ -8,17 +8,76 @@
 function vipgoci_hashes_api_file_approved(
 	$options,
 	$file_path
-) {
+) {	
 	vipgoci_runtime_measure( 'start', 'hashes_api_scan_file' );
+
+	$file_extensions_approvable = array(
+		'php',
+		'js',
+	);
+
+
+	/*
+	 * Make sure to process only .php and
+	 * .js files -- others are ignored.
+	 */
+        
+	$file_info_extension = pathinfo(
+		$file_path,
+		PATHINFO_EXTENSION
+	);
+
+
+	if ( in_array(
+		strtolower( $file_info_extension ),
+		$file_extensions_approvable
+	) === false ) {
+		vipgoci_log(
+			'Not checking file for approval in hashes-to-hashes ' .
+				'API, as it is not a file-type that are ' .
+				' to be checked with it',
+			
+			array(
+				'file_path'
+					=> $file_path,
+
+				'file_extension'
+					=> $file_info_extension,
+
+				'file_extensions_approvable'
+					=> $file_extensions_approvable,
+			)
+		);
+
+		return null;
+	}
+
+
+	vipgoci_log(
+		'Checking if file is already approved in ' .
+			'hashes-to-hashes API',
+		array(
+			'repo_owner'	=> $options['repo-owner'],
+			'repo_name'	=> $options['repo-name'],
+			'token'		=> $options['token'],
+			'commit'	=> $options['commit'],
+			'file_path'	=> $file_path,
+		)
+	);
 
 	/*
 	 * Try to read file from disk, then
 	 * get rid of whitespaces in the file
 	 * and calculate SHA1 hash from the whole.
 	 */
-
-	$file_contents = file_get_contents(
-		$file_path
+                
+	$file_contents = vipgoci_gitrepo_fetch_committed_file(
+		$options['repo-owner'],
+		$options['repo-name'],
+		$options['token'],
+		$options['commit'],
+		$file_path,
+		$options['local-git-repo']
 	);
 
 	if ( false === $file_contents ) {
@@ -32,14 +91,32 @@ function vipgoci_hashes_api_file_approved(
 		return null;
 	}
 
-	$file_contents = php_strip_whitespaces(
-		$file_contents
+	vipgoci_log(
+		'Saving file from git-repository into temporary file ' .
+			'in order to strip any whitespacing from it',
+		array(
+			'file_path' => $file_path,
+		),
+		2
 	);
 
 
-	$file_sha1 = sha1( $file_contents );
+	$file_temp_path = vipgoci_save_temp_file(
+		$file_path,
+		null,
+		$file_contents
+	);
 
+	$file_contents_stripped = php_strip_whitespace(
+		$file_temp_path
+	);
+
+
+	$file_sha1 = sha1( $file_contents_stripped );
+
+	unlink( $file_temp_path );
 	unset( $file_contents );
+	unset( $file_contents_stripped );
 
 	/*
 	 * Ask the API for information about
@@ -48,7 +125,7 @@ function vipgoci_hashes_api_file_approved(
 
 	$hashes_to_hashes_url =
 		$options['hashes-api-url'] .
-		'/v1/hashes/id' .
+		'/v1/hashes/id/' .
 		rawurlencode( $file_sha1 );
 
 	$file_hashes_info =
@@ -63,21 +140,27 @@ function vipgoci_hashes_api_file_approved(
 	 */
 	if ( false !== $file_hashes_info ) {
 		$file_hashes_info = json_decode(
-			$file_hashes_info
+			$file_hashes_info,
+			true
 		);
 	}
 
 
 	if (
 		( false === $file_hashes_info ) ||
-		( null === $file_hashes_info )
+		( null === $file_hashes_info ) ||
+		(
+			( isset( $file_hashes_info['data']['status'] ) ) &&
+			( 404 === $file_hashes_info['data']['status'] )
+		)
 	) {
 		vipgoci_log(
 			'Unable to get information from ' .
 				'hashes-to-hashes HTTP API',
 			array(
-				'hashes_to_hashes_url' => $hashes_to_hashes_url,
-				'file_path' => $file_path,
+				'hashes_to_hashes_url'	=> $hashes_to_hashes_url,
+				'file_path'		=> $file_path,
+				'http_reply'		=> $file_hashes_info,
 			)
 		);
 
@@ -182,7 +265,7 @@ function vipgoci_hashes_api_scan_commit(
 
 			// FIXME: Take into consideration the review-level of both
 			// the target-repo and of the code
-			$approval_status = vipgoci_hashes_api_approved(
+			$approval_status = vipgoci_hashes_api_file_approved(
 				$options,
 				$pr_diff_file_name
 			);
