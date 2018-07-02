@@ -306,6 +306,9 @@ function vipgoci_github_labels( $text_string ) {
 
 		case 'error':
 			return ':no_entry_sign:';
+
+		case 'info':
+			return ':information_source:';
 	}
 
 	return '';
