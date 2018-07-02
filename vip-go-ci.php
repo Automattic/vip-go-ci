@@ -7,6 +7,7 @@ require_once( __DIR__ . '/misc.php' );
 require_once( __DIR__ . '/phpcs-scan.php' );
 require_once( __DIR__ . '/lint-scan.php' );
 require_once( __DIR__ . '/auto-approval.php' );
+require_once( __DIR__ . '/hashes-api.php' );
 
 /*
  * Handle boolean parameters given on the command-line.
