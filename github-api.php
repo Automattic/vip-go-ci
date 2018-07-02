@@ -383,11 +383,14 @@ function vipgoci_github_fetch_url(
 			'vipgoci_curl_headers'
 		);
 
-		curl_setopt(
-			$ch,
-			CURLOPT_HTTPHEADER,
-			array( 'Authorization: token ' . $github_token )
-		);
+		if ( null !== $github_token ) {
+			curl_setopt(
+				$ch,
+				CURLOPT_HTTPHEADER,
+				array( 'Authorization: token ' . $github_token )
+			);
+		}
+
 
 		// Make sure to pause between GitHub-requests
 		vipgoci_github_wait();
