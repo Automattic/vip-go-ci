@@ -278,10 +278,12 @@ function vipgoci_run() {
 			'phpcs-path:',
 			'phpcs-standard:',
 			'phpcs-severity:',
+			'hashes-api-url:',
 			'php-path:',
 			'local-git-repo:',
 			'lint:',
 			'phpcs:',
+			'hashes-api:',
 			'help',
 			'debug-level:',
 		)
@@ -310,6 +312,12 @@ function vipgoci_run() {
 			"\t" . '--phpcs-severity=NUMBER        Specify severity for PHPCS' . PHP_EOL .
 			"\t" . '--php-path=FILE                Full path to PHP, if not specified the' . PHP_EOL .
 			"\t" . '                               default in $PATH will be used instead' . PHP_EOL .
+			"\t" . '--hashes-api=BOOL              Wether to do hashes-to-hashes API verfication ' . PHP_EOL .
+			"\t" . '                               with individual PHP files found to be altered ' . PHP_EOL .
+			"\t" . '                               in the branch specified' . PHP_EOL .
+			"\t" . '--hashes-api-url=STRING        URL to hashes-to-hashes HTTP API root URL' . PHP_EOL .
+			"\t" . '                               -- note that it should not include any specific' . PHP_EOL .
+			"\t" . '                               paths to individual parts of the API.' . PHP_EOL .
 			"\t" . '--branches-ignore=STRING,...   What branches to ignore -- useful to make sure' . PHP_EOL .
 			"\t" . '                               some branches never get scanned. Separate branches' . PHP_EOL .
 			"\t" . '                               with commas' . PHP_EOL .
@@ -386,6 +394,30 @@ function vipgoci_run() {
 		'php-path',
 		'php'
 	);
+
+
+	/*
+	 * Process --hashes-api -- expected to be a boolean.
+	*/
+
+	vipgoci_option_bool_handle( $options, 'hashes-api', 'false' );
+
+
+	/*
+	 * Process --hashes-api-url -- expected to
+	 * be an URL to a webservice.
+	 */
+
+	if ( isset( $options['hashes-api-url'] ) ) {
+		$options['hashes-api-url'] = trim(
+			$options['hashes-api-url']
+		);
+
+		$options['hashes-api-url'] = rtrim(
+			$options['hashes-api-url'],
+			'/'
+		);
+	} 
 
 
 	/*
@@ -652,9 +684,11 @@ function vipgoci_run() {
 	 * the hashes-to-hashes database API.
 	 */
 
+
 	if ( true === $options['hashes-api'] ) {
 		vipgoci_hashes_api_scan_commit(
-			$options
+			$options,
+			$results['issues']
 		);
 	}
 
