@@ -48,7 +48,7 @@ function vipgoci_hashes_api_file_approved(
 
 	$hashes_to_hashes_url =
 		$options['hashes-api-url'] .
-		'/wp-json/viphash/v1/hashes/id' .
+		'/v1/hashes/id' .
 		rawurlencode( $file_sha1 );
 
 	$file_hashes_info =
