@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export PHP_CODESNIFFER_VER="3.1.0"
+export PHP_CODESNIFFER_VER="3.2.0"
 export WP_CODING_STANDARDS_VER="0.14.0"
 export VIP_CODING_STANDARDS_VER="0.2.3"
 
