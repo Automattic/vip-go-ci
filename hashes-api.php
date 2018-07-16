@@ -330,9 +330,12 @@ function vipgoci_hashes_api_scan_commit(
 		}
 	}
 
-	// FIXME: If all seen files are found in approved, simply
-	// make a comment to the PR stating that this is approved
-	// or even auto-approve
+	/*
+	 * If all seen files are found in approved in hashes-to-hashes,
+	 * simply make a comment to the PR stating that this is approved.
+	 * If only some files are approved, make a comment on these
+	 * saying that the files are approved in hashes-to-hashes.
+	 */
 
 	if (
 		count(
@@ -343,6 +346,7 @@ function vipgoci_hashes_api_scan_commit(
 		) === 0
 	) {
 		// FIXME: Make a comment on that this can be auto-approved
+		// -- or just auto-approve?
 	}
 
 	else {
