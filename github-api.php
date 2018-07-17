@@ -1978,12 +1978,35 @@ function vipgoci_github_authenticated_user_get( $github_token ) {
 		'https://api.github.com/' .
 		'user';
 
-	$current_user_info = json_decode(
-		vipgoci_github_fetch_url(
-			$github_url,
-			$github_token
-		)
+	$current_user_info_json = vipgoci_github_fetch_url(
+		$github_url,
+		$github_token
 	);
+
+	$current_user_info = null;
+
+	if ( false !== $current_user_info_json ) {
+		$current_user_info = json_decode(
+			$current_user_info_json
+		);
+	}
+
+	if (	
+		( false === $current_user_info_json ) ||
+		( null === $current_user_info )
+	) {
+		vipgoci_log(
+			'Unable to get information about token-holder from' .
+				'GitHub due to error',
+			array(
+				'current_user_info_json' => $current_user_info_json,
+				'current_user_info' => $current_user_info,
+			)
+		);
+
+		return false;
+	}
+
 
 	vipgoci_cache( $cached_id, $current_user_info );
 
