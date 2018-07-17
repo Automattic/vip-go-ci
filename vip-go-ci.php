@@ -598,7 +598,9 @@ function vipgoci_run() {
 	) {
 		vipgoci_sysexit(
 			'Unable to get information about token-holder user from GitHub',
-			array(),
+			array(
+				'current_user_info' => $current_user_info,
+			),
 			VIPGOCI_EXIT_GITHUB_PROBLEM
 		);
 	}
