@@ -572,11 +572,33 @@ function vipgoci_run() {
 
 	if (
 		( true === $options['autoapprove'] ) &&
-		( in_array( 'php', $options['autoapprove-filetypes'], true ) )
+
+		/*
+		 * Cross-reference: We disallow autoapproving
+		 * PHP and JS files here, because hashes-api
+		 * could autoapprove them and because they can
+		 * contain dangerous code. By doing this, we
+		 * avoid any possible conflicts between autoapproval
+		 * and hases-api.
+		 */
+		(
+			( in_array( 
+				'php',
+				$options['autoapprove-filetypes'],
+				true
+			) )
+		||
+			( in_array( 
+				'js',
+				$options['autoapprove-filetypes'],
+				true
+			) )
+	
+		)
 	) {
 		vipgoci_sysexit(
-			'PHP files cannot be auto-approved, as they can' .
-				'contain serious problems for execution',
+			'PHP and JS files cannot be auto-approved, as they ' .
+				'can contain serious problems for execution',
 			array(
 			),
 			VIPGOCI_EXIT_USAGE_ERROR
@@ -832,7 +854,6 @@ function vipgoci_run() {
 	 * Do scanning of all altered file, using
 	 * the hashes-to-hashes database API.
 	 */
-
 
 	if ( true === $options['hashes-api'] ) {
 		vipgoci_hashes_api_scan_commit(

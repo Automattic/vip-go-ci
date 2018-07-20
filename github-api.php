@@ -1563,7 +1563,7 @@ function vipgoci_github_pr_review_submit(
  *
  * The race-conditions can occur when a Pull-Request
  * is approved, but it is approved after a new commit
- * was added, but that has not been scanned.
+ * was added which has not been scanned.
  */
 
 function vipgoci_github_approve_pr(
@@ -1573,6 +1573,7 @@ function vipgoci_github_approve_pr(
 	$pr_number,
 	$latest_commit_id,
 	$filetypes_approve,
+	$approval_type = null,
 	$dry_run
 ) {
 
@@ -1588,13 +1589,35 @@ function vipgoci_github_approve_pr(
 
 	$github_postfields = array(
 		'commit_id' => $latest_commit_id,
-		'body' => 'Auto-approved Pull-Request #' .
-			(int) $pr_number . ' as it ' .
-			'contains only allowable file-types ' .
-			'(' . implode( ', ', $filetypes_approve ) . ')',
 		'event' => 'APPROVE',
+		'body' => null,
 		'comments' => array()
 	);
+
+	if ( VIPGOCI_APPROVAL_AUTOAPPROVE === $approval_type ) {
+		$github_postfields['body'] =
+			'Auto-approved Pull-Request #' .
+			(int) $pr_number . ' as it ' .
+			'contains only allowable file-types ' .
+			'(' . implode( ', ', $filetypes_approve ) . ')';
+	}
+
+	else if ( VIPGOCI_APPROVAL_HASHES_API === $approval_type ) {
+		$github_postfields['body'] =
+			'Auto-approved Pull-Request #' .
+			(int) $pr_number . ' as it contains ' .
+			'contains only files approved in hashes-to-hashes' .
+			'database';
+	}
+
+	else {
+		vipgoci_sysexit(
+			'Illegal usage of function',
+			array(
+				'function_name' => __FUNCTION__,
+			)
+		);
+	}
 
 	if ( true === $dry_run ) {
 		return;

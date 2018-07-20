@@ -31,3 +31,10 @@ define( 'VIPGOCI_EXIT_USAGE_ERROR',	253 );
 define( 'VIPGOCI_STATS_PHPCS',		'phpcs'		);
 define( 'VIPGOCI_STATS_LINT',		'lint'		);
 define( 'VIPGOCI_STATS_HASHES_API',	'hashes-api'	);
+
+/*
+ * Define auto-approval types
+ */
+
+define( 'VIPGOCI_APPROVAL_AUTOAPPROVE',		'auto-approval' );
+define( 'VIPGOCI_APPROVAL_HASHES_API',		'hashes-api' );

@@ -198,6 +198,7 @@ function vipgoci_auto_approval( $options ) {
 				$pr_item->number,
 				$options['commit'],
 				$options['autoapprove-filetypes'],
+				VIPGOCI_APPROVAL_AUTOAPPROVE,
 				$options['dry-run']
 			);
 

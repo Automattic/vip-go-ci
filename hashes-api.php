@@ -8,20 +8,25 @@
 function vipgoci_hashes_api_file_approved(
 	$options,
 	$file_path
-) {	
+) {
 	vipgoci_runtime_measure( 'start', 'hashes_api_scan_file' );
 
 	/*
 	 * Make sure to process only *.php and
 	 * *.js files -- others are ignored.
+	 *
+	 * Cross-reference: These files are not
+	 * auto-approved by our own auto-approval
+	 * mechanism, as to avoid any conflicts between
+	 * hashes-api and the auto-approval mechanism.
 	 */
- 
+
 	$file_extensions_approvable = array(
 		'php',
 		'js',
 	);
 
-       
+
 	$file_info_extension = pathinfo(
 		$file_path,
 		PATHINFO_EXTENSION
@@ -36,7 +41,7 @@ function vipgoci_hashes_api_file_approved(
 			'Not checking file for approval in hashes-to-hashes ' .
 				'API, as it is not a file-type that is ' .
 				'to be checked using it',
-			
+
 			array(
 				'file_path'
 					=> $file_path,
@@ -70,7 +75,7 @@ function vipgoci_hashes_api_file_approved(
 	 * get rid of whitespaces in the file
 	 * and calculate SHA1 hash from the whole.
 	 */
-                
+
 	$file_contents = vipgoci_gitrepo_fetch_committed_file(
 		$options['repo-owner'],
 		$options['repo-name'],
@@ -198,7 +203,7 @@ function vipgoci_hashes_api_file_approved(
 			( 'true' === $file_hash_info[ 'status' ] ) ||
 			( true === $file_hash_info[ 'status' ] )
 		) {
-			/* 
+			/*
 			 * Only update approval-flag if we have not
 			 * seen any other approvals, and if we have
 			 * not seen any rejections.
@@ -331,8 +336,23 @@ function vipgoci_hashes_api_scan_commit(
 	}
 
 	/*
+	 * Get label associated, but
+	 * only our auto-approved one
+	 */
+
+	$pr_label = vipgoci_github_labels_get(
+		$options['repo-owner'],
+		$options['repo-name'],
+		$options['token'],
+		(int) $pr_item->number,
+		$options['autoapprove-label']
+	);
+
+
+	/*
 	 * If all seen files are found in approved in hashes-to-hashes,
-	 * simply make a comment to the PR stating that this is approved.
+	 * approve the Pull-Request and add a label.
+	 *
 	 * If only some files are approved, make a comment on these
 	 * saying that the files are approved in hashes-to-hashes.
 	 */
@@ -345,12 +365,84 @@ function vipgoci_hashes_api_scan_commit(
 			)
 		) === 0
 	) {
-		// FIXME: Make a comment on that this can be auto-approved
-		// -- or just auto-approve?
+		/*
+		 * Actually approve, if not in dry-mode.
+		 * Also add a label to the Pull-Request
+		 * if applicable.
+		 */
+
+		vipgoci_github_approve_pr(
+			$options['repo-owner'],
+			$options['repo-name'],
+			$options['token'],
+			$pr_item->number,
+			$options['commit'],
+			$options['autoapprove-filetypes'],
+			VIPGOCI_APPROVAL_HASHES_API,
+			$options['dry-run']
+		);
+
+		/* Add label, if needed */
+		if ( false === $pr_label ) {
+			vipgoci_github_label_add_to_pr(
+				$options['repo-owner'],
+				$options['repo-name'],
+				$options['token'],
+				$pr_item->number,
+				$options['autoapprove-label'],
+				$options['dry-run']
+			);
+		}
+
+		else {
+			vipgoci_log(
+				'Will not add label to issue, ' .
+					'as it already exists',
+
+				array(
+					'repo_owner' =>
+						$options['repo-owner'],
+
+					'repo_name' =>
+						$options['repo-name'],
+
+					'pr_number' =>
+						$pr_item->number,
+
+					'label_name' =>
+						$options['autoapprove-label'],
+				)
+			);
+		}
 	}
 
 	else {
+		/*
+		 * Remove auto-approve label
+		 */
+
+		if ( false !== $pr_label ) { 
+			vipgoci_github_label_remove_from_pr(
+				$options['repo-owner'],
+				$options['repo-name'],
+				$options['token'],
+				(int) $pr_item->number,
+				$pr_label->name,
+				$options['dry-run']
+			);
+		}
+
+
+		/*
+		 * Go through files that are approved,
+		 * and add comment for them saying that
+		 * they are approved already in the hashes-api
+		 * database.
+		 */
 		foreach ( $files_approved_in_pr as $file_name ) {
+			// FIXME: Check if comment has been
+			// made before and do not re-post if so.
+
 			/*
 			 * Make comment for each file, noting
 			 * that it is already approved.
@@ -361,7 +453,7 @@ function vipgoci_hashes_api_scan_commit(
 				'type'          => VIPGOCI_STATS_HASHES_API,
 				'file_name'     => $file_name,
 				'file_line'     => 1,
-				'issue'	
+				'issue'
 					=> array(
 						'message' =>
 							'File is approved in ' .
