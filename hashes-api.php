@@ -15,7 +15,7 @@ function vipgoci_hashes_api_file_approved(
 	 * Make sure to process only *.php and
 	 * *.js files -- others are ignored.
 	 *
-	 * Cross-reference: These files are not
+	 * Cross-reference: These file types are not
 	 * auto-approved by our own auto-approval
 	 * mechanism, as to avoid any conflicts between
 	 * hashes-api and the auto-approval mechanism.
