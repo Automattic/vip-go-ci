@@ -388,6 +388,8 @@ function vipgoci_hashes_api_scan_commit(
 			$options['dry-run']
 		);
 
+		// FIXME: We should have our own label
+
 		/* Add label, if needed */
 		if ( false === $pr_label ) {
 			vipgoci_github_label_add_to_pr(
