@@ -344,7 +344,7 @@ function vipgoci_run() {
 			"\t" . '--autoapprove-label=STRING     String to use for labels when auto-approving' . PHP_EOL .
 			"\t" . '--php-path=FILE                Full path to PHP, if not specified the' . PHP_EOL .
 			"\t" . '                               default in $PATH will be used instead' . PHP_EOL .
-			"\t" . '--hashes-api=BOOL              Wether to do hashes-to-hashes API verfication ' . PHP_EOL .
+			"\t" . '--hashes-api=BOOL              Whether to do hashes-to-hashes API verfication ' . PHP_EOL .
 			"\t" . '                               with individual PHP files found to be altered ' . PHP_EOL .
 			"\t" . '                               in the branch specified' . PHP_EOL .
 			"\t" . '--hashes-api-url=STRING        URL to hashes-to-hashes HTTP API root URL' . PHP_EOL .
