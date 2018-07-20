@@ -1606,7 +1606,7 @@ function vipgoci_github_approve_pr(
 		$github_postfields['body'] =
 			'Auto-approved Pull-Request #' .
 			(int) $pr_number . ' as it contains ' .
-			'contains only files approved in hashes-to-hashes' .
+			'only files approved in hashes-to-hashes' .
 			'database';
 	}
 
