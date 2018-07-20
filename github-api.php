@@ -1589,8 +1589,8 @@ function vipgoci_github_approve_pr(
 
 	$github_postfields = array(
 		'commit_id' => $latest_commit_id,
-		'event' => 'APPROVE',
 		'body' => null,
+		'event' => 'APPROVE',
 		'comments' => array()
 	);
 
