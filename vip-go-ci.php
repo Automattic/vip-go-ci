@@ -347,7 +347,7 @@ function vipgoci_run() {
 			"\t" . '--hashes-api=BOOL              Whether to do hashes-to-hashes API verfication ' . PHP_EOL .
 			"\t" . '                               with individual PHP files found to be altered ' . PHP_EOL .
 			"\t" . '                               in the branch specified' . PHP_EOL .
-			"\t" . '--hashes-api-url=STRING        URL to hashes-to-hashes HTTP API root URL' . PHP_EOL .
+			"\t" . '--hashes-api-url=STRING        URL to hashes-to-hashes HTTP API root' . PHP_EOL .
 			"\t" . '                               -- note that it should not include any specific' . PHP_EOL .
 			"\t" . '                               paths to individual parts of the API.' . PHP_EOL .
 			"\t" . '--branches-ignore=STRING,...   What branches to ignore -- useful to make sure' . PHP_EOL .
