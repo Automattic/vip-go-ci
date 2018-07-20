@@ -144,6 +144,12 @@ function vipgoci_hashes_api_file_approved(
 		'/v1/hashes/id/' .
 		rawurlencode( $file_sha1 );
 
+	/* 
+	 * Not really asking GitHub here,
+	 * but we can re-use the function
+	 * for this purpose.
+	 */
+
 	$file_hashes_info =
 		vipgoci_github_fetch_url(
 			$hashes_to_hashes_url,
