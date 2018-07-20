@@ -851,7 +851,7 @@ function vipgoci_run() {
 
 
 	/*
-	 * Do scanning of all altered file, using
+	 * Do scanning of all altered files, using
 	 * the hashes-to-hashes database API.
 	 */
 
