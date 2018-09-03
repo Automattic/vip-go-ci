@@ -18,7 +18,8 @@ function vipgoci_phpcs_do_scan(
 	 *
 	 * Make sure to use wide enough output, so we can catch all of it.
 	 */
-
+// FIXME: When dealing with SVG files
+// use: --extensions=svg --sniffs=WordPressVIPMinimum.SVG.HTMLCode 
 	$cmd = sprintf(
 		'%s %s --standard=%s --severity=%s --report=%s %s 2>&1',
 		escapeshellcmd( 'php' ),
