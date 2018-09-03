@@ -8,7 +8,8 @@ require_once( __DIR__ . '/misc.php' );
 require_once( __DIR__ . '/phpcs-scan.php' );
 require_once( __DIR__ . '/lint-scan.php' );
 require_once( __DIR__ . '/auto-approval.php' );
-require_once( __DIR__ . '/hashes-api.php' );
+require_once( __DIR__ . '/ap-file-types.php' );
+require_once( __DIR__ . '/ap-hashes-api.php' );
 
 
 /*
@@ -838,28 +839,44 @@ function vipgoci_run() {
 	}
 
 	/*
+	 * If to auto-approve based on file-types,
+	 * scan through the files in the PR, and 
+	 * register which can be auto-approved.
+	 */
+	$auto_approved_files_arr = array();
+
+	// FIXME: Command line arguments
+	vipgoci_ap_file_types(
+		$options,
+		$auto_approved_files_arr
+	);
+
+	/*
+	 * Do scanning of all altered files, using
+	 * the hashes-to-hashes database API, collecting
+	 * which files can be auto-approved.
+	 */
+
+	if ( true === $options['hashes-api'] ) {
+		vipgoci_ap_hashes_api_scan_commit(
+			$options,
+			$results['issues'],
+			$results['stats'][ VIPGOCI_STATS_HASHES_API ],
+			$auto_approved_files_arr
+		);
+	}
+	/*
 	 * If to auto-approve, then do so.
 	 */
 
 	if ( true === $options['autoapprove'] ) {
+		$auto_approved_files_arr = array();
+
 		// FIXME: Do not auto-approve if there are
 		// any linting or PHPCS-issues.
 		vipgoci_auto_approval(
-			$options
-		);
-	}
-
-
-	/*
-	 * Do scanning of all altered files, using
-	 * the hashes-to-hashes database API.
-	 */
-
-	if ( true === $options['hashes-api'] ) {
-		vipgoci_hashes_api_scan_commit(
 			$options,
-			$results['issues'],
-			$results['stats'][ VIPGOCI_STATS_HASHES_API ]
+			$auto_approved_files_arr
 		);
 	}
 

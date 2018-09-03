@@ -5,7 +5,7 @@
  * specified file is approved.
  */
 
-function vipgoci_hashes_api_file_approved(
+function vipgoci_ap_hashes_api_file_approved(
 	$options,
 	$file_path
 ) {
@@ -174,6 +174,10 @@ function vipgoci_hashes_api_file_approved(
 		(
 			( isset( $file_hashes_info['data']['status'] ) ) &&
 			( 404 === $file_hashes_info['data']['status'] )
+		) ||
+		(
+			( isset( $file_hashes_info['data']['status'] ) ) &&
+			( 401 === $file_hashes_info['data']['status'] )
 		)
 	) {
 		vipgoci_log(
@@ -198,6 +202,11 @@ function vipgoci_hashes_api_file_approved(
 	 */
 
 	foreach( $file_hashes_info as $file_hash_info ) {
+		if ( ! isset( $file_hash_info[ 'status' ] ) ) {
+			
+			$file_approved = false;
+		}
+
 		if (
 			( 'false' === $file_hash_info[ 'status' ] ) ||
 			( false === $file_hash_info[ 'status' ] )
@@ -242,10 +251,11 @@ function vipgoci_hashes_api_file_approved(
  * and for each of these files, check if they
  * are approved in the hashes-to-hashes API.
  */
-function vipgoci_hashes_api_scan_commit(
+function vipgoci_ap_hashes_api_scan_commit(
 	$options,
 	&$commit_issues_submit,
-	&$commit_issues_stats
+	&$commit_issues_stats,
+	&$auto_approved_files_arr
 ) {
 	vipgoci_runtime_measure( 'start', 'hashes_api_scan' );
 
@@ -281,23 +291,16 @@ function vipgoci_hashes_api_scan_commit(
 		);
 
 
-		$files_seen_in_pr = array();
-		$files_approved_in_pr = array();
-
 		foreach( $pr_diff as
 			$pr_diff_file_name => $pr_diff_contents
 		) {
-			$files_seen_in_pr[] = $pr_diff_file_name;
-
 			/*
 			 * Check if the hashes-to-hashes database
 			 * recognises this file, and check its
 			 * status.
 			 */
 
-			// FIXME: Take into consideration the review-level of both
-			// the target-repo and of the code
-			$approval_status = vipgoci_hashes_api_file_approved(
+			$approval_status = vipgoci_ap_hashes_api_file_approved(
 				$options,
 				$pr_diff_file_name
 			);
@@ -316,7 +319,18 @@ function vipgoci_hashes_api_scan_commit(
 					)
 				);
 
-				$files_approved_in_pr[] = $pr_diff_file_name;
+				/*
+				 * If it is already approved,
+				 * do not add again.
+				 */
+
+				if ( ! in_array(
+					$pr_diff_file_name,
+					$auto_approved_files_arr,
+					true
+				) ) {
+					$auto_approved_files_arr[] = $pr_diff_file_name;
+				}
 			}
 
 			else if ( false === $approval_status ) {
@@ -341,149 +355,11 @@ function vipgoci_hashes_api_scan_commit(
 		}
 	}
 
-	/*
-	 * Get label associated, but
-	 * only our auto-approved one
-	 */
-
-	$pr_label = vipgoci_github_labels_get(
-		$options['repo-owner'],
-		$options['repo-name'],
-		$options['token'],
-		(int) $pr_item->number,
-		$options['autoapprove-label']
-	);
-
-
-	/*
-	 * If all seen files are found in approved in hashes-to-hashes,
-	 * approve the Pull-Request and add a label.
-	 *
-	 * If only some files are approved, make a comment on these
-	 * saying that the files are approved in hashes-to-hashes.
-	 */
-
-	if (
-		count(
-			array_diff(
-				$files_seen_in_pr,
-				$files_approved_in_pr
-			)
-		) === 0
-	) {
-		/*
-		 * Actually approve, if not in dry-mode.
-		 * Also add a label to the Pull-Request
-		 * if applicable.
-		 */
-
-		vipgoci_github_approve_pr(
-			$options['repo-owner'],
-			$options['repo-name'],
-			$options['token'],
-			$pr_item->number,
-			$options['commit'],
-			$options['autoapprove-filetypes'],
-			VIPGOCI_APPROVAL_HASHES_API,
-			$options['dry-run']
-		);
-
-		// FIXME: We should have our own label
-
-		/* Add label, if needed */
-		if ( false === $pr_label ) {
-			vipgoci_github_label_add_to_pr(
-				$options['repo-owner'],
-				$options['repo-name'],
-				$options['token'],
-				$pr_item->number,
-				$options['autoapprove-label'],
-				$options['dry-run']
-			);
-		}
-
-		else {
-			vipgoci_log(
-				'Will not add label to issue, ' .
-					'as it already exists',
-
-				array(
-					'repo_owner' =>
-						$options['repo-owner'],
-
-					'repo_name' =>
-						$options['repo-name'],
-
-					'pr_number' =>
-						$pr_item->number,
-
-					'label_name' =>
-						$options['autoapprove-label'],
-				)
-			);
-		}
-	}
-
-	else {
-		/*
-		 * Remove auto-approve label
-		 */
-
-		if ( false !== $pr_label ) { 
-			vipgoci_github_label_remove_from_pr(
-				$options['repo-owner'],
-				$options['repo-name'],
-				$options['token'],
-				(int) $pr_item->number,
-				$pr_label->name,
-				$options['dry-run']
-			);
-		}
-
-
-		/*
-		 * Go through files that are approved,
-		 * and add comment for them saying that
-		 * they are approved already in the hashes-api
-		 * database.
-		 */
-		foreach ( $files_approved_in_pr as $file_name ) {
-			// FIXME: Check if comment has been
-			// made before and do not re-post if so.
-
-			/*
-			 * Make comment for each file, noting
-			 * that it is already approved.
-			 */
-			$commit_issues_submit[
-				$pr_item->number
-			][] = array(
-				'type'          => VIPGOCI_STATS_HASHES_API,
-				'file_name'     => $file_name,
-				'file_line'     => 1,
-				'issue'
-					=> array(
-						'message' =>
-							'File is approved in ' .
-							'hashes-to-hashes ' .
-							'database',
-						'level' => 'INFO',
-					)
-			);
-
-			$commit_issues_stats[
-				$pr_item->number
-			]['info']++;
-		}
-	}
-
 
 	/*
 	 * Reduce memory-usage as possible
 	 */
 
-	unset( $files_seen_in_pr );
-	unset( $files_approved_in_pr );
 	unset( $prs_implicated );
 	unset( $pr_diff );
 

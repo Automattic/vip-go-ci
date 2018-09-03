@@ -13,8 +13,7 @@
  * in this function.
  */
 
-function vipgoci_auto_approval( $options ) {
-
+function vipgoci_auto_approval( $options, &$auto_approved_files_arr ) {
 	vipgoci_runtime_measure( 'start', 'auto_approve_commit' );
 
 	vipgoci_log(
@@ -55,6 +54,11 @@ function vipgoci_auto_approval( $options ) {
 
 		$files_seen = array();
 
+		/*
+		 * Loop through all files that are
+		 * altered by the Pull-Request, look for
+		 * files that can be auo-approved.
+		 */
 		foreach( $pr_diff as
 			$pr_diff_file_name => $pr_diff_contents
 		) {
@@ -69,11 +73,14 @@ function vipgoci_auto_approval( $options ) {
 			);
 
 
+			/*
+			 * Is file in array of files
+			 * that can be auto-approved?
+			 * If not, we cannot auto-approve.
+			 */
 			if ( ! in_array(
-				strtolower(
-					$pr_diff_file_extension
-				),
-				$options['autoapprove-filetypes'],
+				$pr_diff_file_name,
+				$auto_approved_files_arr,
 				true
 			) ) {
 				$can_auto_approve = false;
@@ -100,6 +107,9 @@ function vipgoci_auto_approval( $options ) {
 					(int) $pr_item->number . ' ' .
 					'since no files were found',
 				array(
+					'auto_approved_files_arr' =>
+						$auto_approved_files_arr,
+
 					'files_seen' => $files_seen,
 				)
 			);
@@ -113,11 +123,14 @@ function vipgoci_auto_approval( $options ) {
 				'Will not auto-approve Pull-Request #' .
 					(int) $pr_item->number . ' ' .
 					'as it contains ' . "\n\t" .
-					'file-types which are not ' .
+					'files which are not ' .
 					'automatically approvable',
 				array(
 					'autoapprove-filetypes' =>
 						$options['autoapprove-filetypes'],
+
+					'auto_approved_files_arr' =>
+						$auto_approved_files_arr,
 
 					'files_seen' => $files_seen,
 				)
@@ -163,7 +176,7 @@ function vipgoci_auto_approval( $options ) {
 					'auto-approve Pull-Request #' .
 					(int) $pr_item->number . ' ' .
 					'as it alters or creates ' . "\n\t" .
-					'only file-types that can be ' .
+					'only files that can be ' .
 					'automatically approved',
 				array(
 					'repo_owner'
@@ -180,6 +193,9 @@ function vipgoci_auto_approval( $options ) {
 
 					'autoapprove-filetypes' =>
 						$options['autoapprove-filetypes'],
+
+					'auto_approved_files_arr' =>
+						$auto_approved_files_arr,
 
 					'files_seen' => $files_seen,
 				)
