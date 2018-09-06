@@ -159,6 +159,182 @@ function vipgoci_github_wait() {
 	vipgoci_runtime_measure( 'stop', 'github_forced_wait' );
 }
 
+/*
+ * Calculate HMAC-SHA1 signature for OAuth 1.0 HTTP
+ * request. Follows the standard on this but to a
+ * limited extent only. For instance, this function
+ * does not support having two parameters with the
+ * same name.
+ *
+ * See here for background:
+ * https://oauth.net/core/1.0a/#signing_process
+ */
+function vipgoci_oauth1_signature_get_hmac_sha1(
+	$http_method,
+	$request_url,
+	$parameters_arr
+) {
+	$parts = array();
+
+	/*
+	 * Start constructing the 'base string' --
+	 * a crucial part of the signature.
+	 */
+	$base_string = strtoupper( $http_method ) . '&';
+	$base_string .= rawurlencode( $request_url ) . '&';
+
+
+	/*
+	 * New array for parameters, temporary
+	 * so we can alter them freely.
+	 */
+	$parameters_arr_new = array();
+
+	/*
+	 * In case this parameter is present, it
+	 * should not be part of the signature according
+	 * to the standard.
+	 */
+	if ( isset( $parameters_arr['realm'] ) ) {
+		unset( $parameters_arr['realm'] );
+	}
+
+	/*
+	 * Add parameters to the new array, these
+	 * need to be encoded in a certain way.
+	 */
+	foreach( $parameters_arr as $key => $value ) {
+		$parameters_arr_new[ rawurlencode( $key ) ] =
+			rawurlencode( $value );
+	}
+
+	/*
+	 * Also these two should not be part of the
+	 * signature.
+	 */
+	unset( $parameters_arr_new['oauth_token_secret'] );
+	unset( $parameters_arr_new['oauth_consumer_secret'] );
+
+	/*
+	 * Sort the parameters alphabetically.
+	 */
+        ksort( $parameters_arr_new );
+
+
+	/*
+	 * Loop through the parameters, and add them
+	 * to a temporary 'base string' according to the standard.
+	 */
+
+	$delimiter = '';
+	$base_string_tmp = '';
+
+	foreach( $parameters_arr_new as $key => $value ) {
+		$base_string_tmp .=
+			$delimiter .
+			$key .
+			'=' .
+			$value;
+
+		$delimiter = '&';
+        }
+
+	/*
+	 * Then add the temporary 'base string' to the
+	 * permanent 'base string'.
+	 */
+	$base_string .= rawurlencode(
+		$base_string_tmp
+	);
+
+
+	/*
+	 * Now calculate hash, using the
+	 * 'base string' as input, and
+	 * secrets as key.
+	 */
+	$hash_raw = hash_hmac(
+		'sha1',
+		$base_string,
+		$parameters_arr['oauth_consumer_secret'] . '&' .
+			$parameters_arr['oauth_token_secret'],
+		true
+	);
+
+	/*
+	 * Return it base64 encoded.
+	 */
+	return base64_encode( $hash_raw );
+}
+
+
+/*
+ * Create and set HTTP header for OAuth 1.0a requests,
+ * including timestamp, nonce, signature method
+ * (all part of the header) and then actually sign
+ * the request. Returns with a full HTTP header for 
+ * a OAuth 1.0a HTTP request.
+ */
+function vipgoci_oauth1_headers_get(
+	$http_method,
+	$github_url,
+	$github_token
+) {
+
+	/*
+	 * Set signature-method header, static.
+	 */
+	$github_token['oauth_signature_method'] =
+		'HMAC-SHA1';
+
+	/*
+	 * Set timestamp and nonce. 
+	 */
+	$github_token['oauth_timestamp'] = (string) time();
+
+	$github_token['oauth_nonce'] = (string) md5(
+		openssl_random_pseudo_bytes( 100 )
+	);
+
+	/*
+	 * Get the signature for the header.
+	 */
+	$github_token['oauth_signature'] =
+		vipgoci_oauth1_signature_get_hmac_sha1(
+			$http_method,
+			$github_url,
+			$github_token
+		);
+
+	unset( $github_token['oauth_token_secret' ] );
+	unset( $github_token['oauth_consumer_secret' ] );
+
+	/*
+	 * Actually create the full HTTP header
+	 */
+
+	$res_header = 'OAuth ';
+	$sep = '';
+
+	foreach(
+		$github_token as
+			$github_token_key =>
+			$github_token_value
+	) {
+		$res_header .=
+			$sep .
+			$github_token_key . '="' .
+			$github_token_value .
+			'"';
+		$sep = ', ';
+	}
+
+	/*
+	 * Return the header.
+	 */
+	return $res_header;
+}
+
 
 /*
  * Send a POST/DELETE request to GitHub -- attempt
@@ -421,12 +597,36 @@ function vipgoci_github_fetch_url(
 			'vipgoci_curl_headers'
 		);
 
-		if ( null !== $github_token ) {
+		if ( is_string( $github_token ) ) {
 			curl_setopt(
 				$ch,
 				CURLOPT_HTTPHEADER,
 				array( 'Authorization: token ' . $github_token )
 			);
+		}
+
+		else if ( is_array( $github_token ) ) {
+			if (
+				( isset( $github_token[ 'oauth_consumer_key' ] ) ) &&
+				( isset( $github_token[ 'oauth_consumer_secret' ] ) ) &&
+				( isset( $github_token[ 'oauth_token' ] ) ) &&
+				( isset( $github_token[ 'oauth_token_secret' ] ) )
+			) {
+				$github_auth_header = vipgoci_oauth1_headers_get(
+					'GET',
+					$github_url,
+					$github_token
+				);
+
+				curl_setopt(
+					$ch,
+					CURLOPT_HTTPHEADER,
+					array(
+						'Authorization: ' .
+						$github_auth_header
+					)
+				);
+			}
 		}
 
 
@@ -2014,7 +2214,7 @@ function vipgoci_github_authenticated_user_get( $github_token ) {
 		);
 	}
 
-	if (	
+	if (
 		( false === $current_user_info_json ) ||
 		( null === $current_user_info )
 	) {
