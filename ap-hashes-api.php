@@ -144,7 +144,7 @@ function vipgoci_ap_hashes_api_file_approved(
 		'/v1/hashes/id/' .
 		rawurlencode( $file_sha1 );
 
-	/* 
+	/*
 	 * Not really asking GitHub here,
 	 * but we can re-use the function
 	 * for this purpose.
@@ -153,13 +153,26 @@ function vipgoci_ap_hashes_api_file_approved(
 	$file_hashes_info =
 		vipgoci_github_fetch_url(
 			$hashes_to_hashes_url,
-			null
+			array(
+				'oauth_consumer_key' =>
+					$options['hashes-oauth-consumer-key'],
+
+				'oauth_consumer_secret' =>
+					$options['hashes-oauth-consumer-secret'],
+
+				'oauth_token' =>
+					$options['hashes-oauth-token'],
+
+				'oauth_token_secret' =>
+					$options['hashes-oauth-token-secret'],
+			)
 		);
 
 
 	/*
 	 * Try to parse, and check for errors.
 	 */
+
 	if ( false !== $file_hashes_info ) {
 		$file_hashes_info = json_decode(
 			$file_hashes_info,
@@ -171,14 +184,7 @@ function vipgoci_ap_hashes_api_file_approved(
 	if (
 		( false === $file_hashes_info ) ||
 		( null === $file_hashes_info ) ||
-		(
-			( isset( $file_hashes_info['data']['status'] ) ) &&
-			( 404 === $file_hashes_info['data']['status'] )
-		) ||
-		(
-			( isset( $file_hashes_info['data']['status'] ) ) &&
-			( 401 === $file_hashes_info['data']['status'] )
-		)
+		( isset( $file_hashes_info['data']['status'] ) )
 	) {
 		vipgoci_log(
 			'Unable to get information from ' .
@@ -193,7 +199,6 @@ function vipgoci_ap_hashes_api_file_approved(
 		return null;
 	}
 
-
 	$file_approved = null;
 
 	/*
@@ -203,7 +208,6 @@ function vipgoci_ap_hashes_api_file_approved(
 
 	foreach( $file_hashes_info as $file_hash_info ) {
 		if ( ! isset( $file_hash_info[ 'status' ] ) ) {
-			
 			$file_approved = false;
 		}
 
