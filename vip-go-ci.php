@@ -250,6 +250,14 @@ function vipgoci_run() {
 	global $argv;
 	global $vipgoci_debug_level;
 
+	$hashes_oauth_arguments = 
+		array(
+			'hashes-oauth-token',
+			'hashes-oauth-token-secret',
+			'hashes-oauth-consumer-key',
+			'hashes-oauth-consumer-secret'
+		);
+
 	vipgoci_log(
 		'Initializing...',
 		array()
@@ -324,11 +332,11 @@ function vipgoci_run() {
 		isset( $options['help'] )
 	) {
 		print 'Usage: ' . $argv[0] . PHP_EOL .
-			"\t" . 'Options --repo-owner, --repo-name, --commit, --token, --local-git-repo are ' . PHP_EOL .
+			"\t" . 'Options --repo-owner, --repo-name, --commit, --token, --local-git-repo, --phpcs-path are ' . PHP_EOL .
 			"\t" . 'mandatory, while others are optional.' . PHP_EOL .
 			PHP_EOL .
-			"\t" . 'Note that if option --autoapprove is specified, --autoapprove-filetypes and ' . PHP_EOL .
-			"\t" . '--autoapprove-label need to be specified as well.' . PHP_EOL .
+			"\t" . 'Note that if option --autoapprove is specified, --autoapprove-label needs to' . PHP_EOL . 
+			"\t" . 'be specified as well.' . PHP_EOL .
 			PHP_EOL .
 			"\t" . '--repo-owner=STRING            Specify repository owner, can be an organization' . PHP_EOL .
 			"\t" . '--repo-name=STRING             Specify name of the repository' . PHP_EOL .
@@ -355,6 +363,13 @@ function vipgoci_run() {
 			"\t" . '--hashes-api-url=STRING        URL to hashes-to-hashes HTTP API root' . PHP_EOL .
 			"\t" . '                               -- note that it should not include any specific' . PHP_EOL .
 			"\t" . '                               paths to individual parts of the API.' . PHP_EOL .
+			PHP_EOL .
+			"\t" . '--hashes-oauth-token=STRING,        --hashes-oauth-token-secret=STRING, ' . PHP_EOL .
+			"\t" . '--hashes-oauth-consumer-key=STRING, --hashes-oauth-consumer-secret=STRING ' . PHP_EOL .
+			"\t" . '                               OAuth 1.0 token, token secret, consumer key and ' . PHP_EOL .
+			"\t" . '                               consumer secret needed for hashes-to-hashes HTTP requests' . PHP_EOL .
+			"\t" . '                               All required for hashes-to-hashes requests.' . PHP_EOL .
+			PHP_EOL .
 			"\t" . '--branches-ignore=STRING,...   What branches to ignore -- useful to make sure' . PHP_EOL .
 			"\t" . '                               some branches never get scanned. Separate branches' . PHP_EOL .
 			"\t" . '                               with commas' . PHP_EOL .
@@ -372,7 +387,6 @@ function vipgoci_run() {
 			"\t" . '                                -- higher number indicates more detailed debugging-messages.' . PHP_EOL .
 			"\t" . '                               Default is zero' . PHP_EOL;
 
-// FIXME: hashes oauth stuff
 		exit( VIPGOCI_EXIT_USAGE_ERROR );
 	}
 
@@ -465,12 +479,7 @@ function vipgoci_run() {
 	 * Process hashes-oauth arguments
 	 */
 
-	foreach( array(
-		'hashes-oauth-token',
-		'hashes-oauth-token-secret',
-		'hashes-oauth-consumer-key',
-		'hashes-oauth-consumer-secret'
-	) as $tmp_key ) {
+	foreach( $hashes_oauth_arguments as $tmp_key ) {
 		if ( ! isset( $options[ $tmp_key ] ) ) {
 			continue;
 		}
@@ -580,10 +589,7 @@ function vipgoci_run() {
 
 	if (
 		( true === $options['autoapprove'] ) &&
-		(
-			( empty( $options['autoapprove-filetypes'] ) ) ||
-			( false === $options['autoapprove-label'] )
-		)
+		( false === $options['autoapprove-label'] )
 	) {
 		vipgoci_sysexit(
 			'To be able to auto-approve, file-types to approve ' .
@@ -594,10 +600,29 @@ function vipgoci_run() {
 		);
 	}
 
-	// FIXME: If hashes is used, auto-approvals has to be used as well
-	// but not nessesary autoapprovals-filetypes
+	/*
+	 * Do sanity-checking with hashes-api-url 
+	 * and --hashes-oauth-* parameters
+	 */
+	if ( isset( $options['hashes-api-url'] ) ) {
+		foreach ( $hashes_oauth_arguments as $tmp_key ) {
+			if ( ! isset( $options[ $tmp_key ] ) ) {
+				vipgoci_sysexit(
+					'Asking to use --hashes-api-url without --hashes-oauth-* parameters, but that is not possible, as authorization is needed for hashes-to-hashes API',
+					array(),
+					VIPGOCI_EXIT_USAGE_ERROR
+				);
+			}
+		}
 
-	// FIXME: If hashes-url is used, must use hashes-oauth parameters as well
+		if ( false === $options['autoapprove'] ) {
+			vipgoci_sysexit(
+				'Asking to use --hashes-api-url without --autoapproval set to true, but for hashes-to-hashes functionality to be useful, --autoapprove must be enabled. Otherwise the functionality will not really be used',
+				array(),
+				VIPGOCI_EXIT_USAGE_ERROR
+			);
+		}
+	}
 
 	if (
 		( true === $options['autoapprove'] ) &&
@@ -866,7 +891,7 @@ function vipgoci_run() {
 	}
 
 	/*
-	 * If to do auto-approvals, then do so now. 
+	 * If to do auto-approvals, then do so now.
 	 * First ask all 'auto-approval modules'
 	 * to do their scanning, collecting all files that
 	 * can be auto-approved, and then actually do the
