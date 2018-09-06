@@ -296,6 +296,10 @@ function vipgoci_run() {
 			'phpcs-standard:',
 			'phpcs-severity:',
 			'hashes-api-url:',
+			'hashes-oauth-token:',
+			'hashes-oauth-token-secret:',
+			'hashes-oauth-consumer-key:',
+			'hashes-oauth-consumer-secret:',
 			'php-path:',
 			'local-git-repo:',
 			'skip-folders:',
@@ -368,6 +372,7 @@ function vipgoci_run() {
 			"\t" . '                                -- higher number indicates more detailed debugging-messages.' . PHP_EOL .
 			"\t" . '                               Default is zero' . PHP_EOL;
 
+// FIXME: hashes oauth stuff
 		exit( VIPGOCI_EXIT_USAGE_ERROR );
 	}
 
@@ -454,6 +459,25 @@ function vipgoci_run() {
 			$options['hashes-api-url'],
 			'/'
 		);
+	}
+
+	/*
+	 * Process hashes-oauth arguments
+	 */
+
+	foreach( array(
+		'hashes-oauth-token',
+		'hashes-oauth-token-secret',
+		'hashes-oauth-consumer-key',
+		'hashes-oauth-consumer-secret'
+	) as $tmp_key ) {
+		if ( ! isset( $options[ $tmp_key ] ) ) {
+			continue;
+		}
+
+		$options[ $tmp_key ] = rtrim( trim(
+			$options[ $tmp_key ]
+		) );
 	}
 
 
@@ -570,6 +594,10 @@ function vipgoci_run() {
 		);
 	}
 
+	// FIXME: If hashes is used, auto-approvals has to be used as well
+	// but not nessesary autoapprovals-filetypes
+
+	// FIXME: If hashes-url is used, must use hashes-oauth parameters as well
 
 	if (
 		( true === $options['autoapprove'] ) &&
@@ -597,8 +625,8 @@ function vipgoci_run() {
 		)
 	) {
 		vipgoci_sysexit(
-			'PHP and JS files cannot be auto-approved, as they ' .
-				'can contain serious problems for execution',
+			'PHP and JS files cannot be auto-approved on file-type basis, as they ' .
+				'can cause serious problems for execution',
 			array(
 			),
 			VIPGOCI_EXIT_USAGE_ERROR
@@ -875,7 +903,8 @@ function vipgoci_run() {
 		}
 
 		// FIXME: Do not auto-approve if there are
-		// any linting or PHPCS-issues.
+		// any linting or PHPCS-issues -- but only
+		// for SVG files.
 		vipgoci_auto_approval(
 			$options,
 			$auto_approved_files_arr
