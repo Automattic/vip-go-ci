@@ -454,7 +454,7 @@ function vipgoci_run() {
 			$options['hashes-api-url'],
 			'/'
 		);
-	} 
+	}
 
 
 	/*
@@ -583,18 +583,17 @@ function vipgoci_run() {
 		 * and hases-api.
 		 */
 		(
-			( in_array( 
+			( in_array(
 				'php',
 				$options['autoapprove-filetypes'],
 				true
 			) )
 		||
-			( in_array( 
+			( in_array(
 				'js',
 				$options['autoapprove-filetypes'],
 				true
 			) )
-	
 		)
 	) {
 		vipgoci_sysexit(
@@ -839,38 +838,41 @@ function vipgoci_run() {
 	}
 
 	/*
-	 * If to auto-approve based on file-types,
-	 * scan through the files in the PR, and 
-	 * register which can be auto-approved.
+	 * If to do auto-approvals, then do so now. 
+	 * First ask all 'auto-approval modules'
+	 * to do their scanning, collecting all files that
+	 * can be auto-approved, and then actually do the
+	 * auto-approval if possible.
 	 */
-	$auto_approved_files_arr = array();
-
-	// FIXME: Command line arguments
-	vipgoci_ap_file_types(
-		$options,
-		$auto_approved_files_arr
-	);
-
-	/*
-	 * Do scanning of all altered files, using
-	 * the hashes-to-hashes database API, collecting
-	 * which files can be auto-approved.
-	 */
-
-	if ( true === $options['hashes-api'] ) {
-		vipgoci_ap_hashes_api_scan_commit(
-			$options,
-			$results['issues'],
-			$results['stats'][ VIPGOCI_STATS_HASHES_API ],
-			$auto_approved_files_arr
-		);
-	}
-	/*
-	 * If to auto-approve, then do so.
-	 */
-
 	if ( true === $options['autoapprove'] ) {
+		/*
+		 * If to auto-approve based on file-types,
+		 * scan through the files in the PR, and
+		 * register which can be auto-approved.
+		 */
 		$auto_approved_files_arr = array();
+
+		if ( ! empty( $options[ 'autoapprove-filetypes' ] ) ) {
+			vipgoci_ap_file_types(
+				$options,
+				$auto_approved_files_arr
+			);
+		}
+
+		/*
+		 * Do scanning of all altered files, using
+		 * the hashes-to-hashes database API, collecting
+		 * which files can be auto-approved.
+		 */
+
+		if ( true === $options['hashes-api'] ) {
+			vipgoci_ap_hashes_api_scan_commit(
+				$options,
+				$results['issues'],
+				$results['stats'][ VIPGOCI_STATS_HASHES_API ],
+				$auto_approved_files_arr
+			);
+		}
 
 		// FIXME: Do not auto-approve if there are
 		// any linting or PHPCS-issues.
