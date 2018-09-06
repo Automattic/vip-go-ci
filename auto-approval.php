@@ -26,6 +26,9 @@ function vipgoci_auto_approval( $options, &$auto_approved_files_arr ) {
 
 			'autoapprove-filetypes' =>
 				$options['autoapprove-filetypes'],
+
+			'autoapproved-files-arr' =>
+				$auto_approved_files_arr,
 		)
 	);
 
@@ -164,6 +167,10 @@ function vipgoci_auto_approval( $options, &$auto_approved_files_arr ) {
 					$options['dry-run']
 				);
 			}
+
+			// FIXME: Add comment for each hashes-to-hashes approved PHP and JS file,
+			// indicating that it is approved in the DB so human reviewers do not
+			// need to look at it again.
 		}
 
 		else if (
@@ -252,6 +259,8 @@ function vipgoci_auto_approval( $options, &$auto_approved_files_arr ) {
 					)
 				);
 			}
+
+			// FIXME: Remove any comments indicating that a file is approved.
 		}
 
 		unset( $files_seen );
