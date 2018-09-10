@@ -18,7 +18,8 @@ function vipgoci_phpcs_do_scan(
 	 *
 	 * Make sure to use wide enough output, so we can catch all of it.
 	 */
-
+// FIXME: When dealing with SVG files
+// use: --extensions=svg --sniffs=WordPressVIPMinimum.SVG.HTMLCode 
 	$cmd = sprintf(
 		'%s %s --standard=%s --severity=%s --report=%s %s 2>&1',
 		escapeshellcmd( 'php' ),
@@ -181,6 +182,37 @@ function vipgoci_issues_filter_irrellevant(
 	return $file_issues_ret;
 }
 
+/*
+ * In case of some issues being reported in duplicate
+ * by PHPCS, remove those. Only issues reported
+ * twice in the same file on the same line are considered
+ * a duplicate.
+ */
+function vipgoci_issues_filter_duplicate( $file_issues_arr ) {
+	$issues_hashes = array();
+	$file_issues_arr_new = array();
+
+	foreach(
+		$file_issues_arr as
+			$issue_item_key => $issue_item_value
+	) {
+		$issue_item_hash = md5(
+			$issue_item_value['message']
+		)
+		. ':' .
+		$issue_item_value['line'];
+
+		if ( in_array( $issue_item_hash, $issues_hashes, true ) ) {
+			continue;
+		}
+
+		$issues_hashes[] = $issue_item_hash;
+
+		$file_issues_arr_new[] = $issue_item_value;
+	}
+
+	return $file_issues_arr_new;
+}
 
 /*
  * Scan a particular commit which should live within
@@ -431,6 +463,13 @@ function vipgoci_phpcs_scan_commit(
 				['files']
 				[ $temp_file_name ]
 				['messages']
+		);
+
+		/*
+		 * Remove any duplicate issues.
+		 */
+		$file_issues_arr_master = vipgoci_issues_filter_duplicate(
+			$file_issues_arr_master
 		);
 
 		$files_issues_arr[ $file_name ] = $file_issues_arr_master;
