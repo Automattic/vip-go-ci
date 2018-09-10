@@ -1,13 +1,14 @@
 <?php
 
 /*
- * Process auto-approval(s) of the Pull-Request(s)
+ * Process all files in the PRs
  * involved with the commit specified.
  *
- * This function will attempt to auto-approve
- * Pull-Request(s) that only alter files with specific
- * file-type endings. If the PR only alters these kinds
- * of files, the function will auto-approve them, and else not.
+ * This function will add to an array
+ * of auto-approvable files any files that
+ * fit the criteria of having certain file-endings.
+ * The allowable file-endings are specifiable
+ * via the command-line.
  *
  * Note that the --skip-folders argument is ignored
  * in this function.
@@ -65,10 +66,10 @@ function vipgoci_ap_file_types(
 			 * If the file is already in the array
 			 * of approved file, do not do anything.
 			 */
-			if ( in_array(
-				$pr_diff_file_name,
-				$auto_approved_files_arr,
-				true
+			if ( isset(
+				$auto_approved_files_arr[
+					$pr_diff_file_name
+				]
 			) ) {
 				continue;
 			}
@@ -85,7 +86,9 @@ function vipgoci_ap_file_types(
 				$options['autoapprove-filetypes'],
 				true
 			) ) {
-				$auto_approved_files_arr[] = $pr_diff_file_name;
+				$auto_approved_files_arr[
+					$pr_diff_file_name
+				] = 'autoapprove-filetypes';
 			}
 		}
 	}

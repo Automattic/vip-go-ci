@@ -328,12 +328,14 @@ function vipgoci_ap_hashes_api_scan_commit(
 				 * do not add again.
 				 */
 
-				if ( ! in_array(
-					$pr_diff_file_name,
-					$auto_approved_files_arr,
-					true
+				if ( ! isset(
+					$auto_approved_files_arr[
+						$pr_diff_file_name
+					]
 				) ) {
-					$auto_approved_files_arr[] = $pr_diff_file_name;
+					$auto_approved_files_arr[
+						$pr_diff_file_name
+					] = 'autoapprove-hashes-to-hashes';
 				}
 			}
 

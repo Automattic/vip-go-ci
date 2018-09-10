@@ -81,10 +81,10 @@ function vipgoci_auto_approval( $options, &$auto_approved_files_arr ) {
 			 * that can be auto-approved?
 			 * If not, we cannot auto-approve.
 			 */
-			if ( ! in_array(
-				$pr_diff_file_name,
-				$auto_approved_files_arr,
-				true
+			if ( ! isset(
+				$auto_approved_files_arr[
+					$pr_diff_file_name
+				]
 			) ) {
 				$can_auto_approve = false;
 				break;
