@@ -290,7 +290,7 @@ function vipgoci_oauth1_headers_get(
 	/*
 	 * Set timestamp and nonce. 
 	 */
-	$github_token['oauth_timestamp'] = (string) time();
+	$github_token['oauth_timestamp'] = (string) ( time() - 1);
 
 	$github_token['oauth_nonce'] = (string) md5(
 		openssl_random_pseudo_bytes( 100 )
@@ -324,7 +324,7 @@ function vipgoci_oauth1_headers_get(
 		$res_header .=
 			$sep .
 			$github_token_key . '="' .
-			$github_token_value .
+			rawurlencode( $github_token_value ) .
 			'"';
 		$sep = ', ';
 	}
