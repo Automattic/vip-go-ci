@@ -714,6 +714,12 @@ function vipgoci_run() {
 	$options_clean = $options;
 	$options_clean['token'] = '***';
 
+	foreach( $hashes_oauth_arguments as $hashes_oauth_argument ) {
+		if ( isset( $options_clean[ $hashes_oauth_argument ] ) ) {
+			$options_clean[ $hashes_oauth_argument ] = '***';
+		}
+	}
+
 	vipgoci_log(
 		'Starting up...',
 		array(
