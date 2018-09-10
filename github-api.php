@@ -7,6 +7,7 @@
 define( 'VIPGOCI_CLIENT_ID', 'automattic-vip-go-ci' );
 define( 'VIPGOCI_SYNTAX_ERROR_STR', 'PHP Syntax Errors Found' );
 define( 'VIPGOCI_GITHUB_ERROR_STR', 'GitHub API communication error');
+define( 'VIPGOCI_GITHUB_BASE_URL',  'https://api.github.com' );
 
 /*
  * This function works both to collect headers
@@ -126,7 +127,7 @@ function vipgoci_github_rate_limit_usage(
 	$github_token
 ) {
 	$rate_limit = vipgoci_github_fetch_url(
-		'https://api.github.com/rate_limit',
+		VIPGOCI_GITHUB_BASE_URL . '/rate_limit',
 		$github_token
 	);
 
@@ -556,7 +557,7 @@ function vipgoci_github_fetch_commit_info(
 		 */
 
 		$github_url =
-			'https://api.github.com/' .
+			VIPGOCI_GITHUB_BASE_URL . '/' .
 			'repos/' .
 			rawurlencode( $repo_owner ) . '/' .
 			rawurlencode( $repo_name ) . '/' .
@@ -726,7 +727,7 @@ function vipgoci_github_pr_reviews_comments_get(
 
 		do {
 			$github_url =
-				'https://api.github.com/' .
+				VIPGOCI_GITHUB_BASE_URL . '/' .
 				'repos/' .
 				rawurlencode( $repo_owner ) . '/' .
 				rawurlencode( $repo_name ) . '/' .
@@ -835,7 +836,7 @@ function vipgoci_github_pr_generic_comments_get(
 
 	do {
 		$github_url =
-			'https://api.github.com/' .
+			VIPGOCI_GITHUB_BASE_URL . '/' .
 			'repos/' .
 			rawurlencode( $repo_owner ) . '/' .
 			rawurlencode( $repo_name ) . '/' .
@@ -915,7 +916,7 @@ function vipgoci_github_pr_generic_comment_submit(
 		) as $pr_number
 	) {
 		$github_url =
-			'https://api.github.com/' .
+			VIPGOCI_GITHUB_BASE_URL . '/' .
 			'repos/' .
 			rawurlencode( $repo_owner ) . '/' .
 			rawurlencode( $repo_name ) . '/' .
@@ -1062,7 +1063,7 @@ function vipgoci_github_pr_comments_error_msg(
 	);
 
 	$github_url =
-		'https://api.github.com/' .
+		VIPGOCI_GITHUB_BASE_URL . '/' .
 		'repos/' .
 		rawurlencode( $repo_owner ) . '/' .
 		rawurlencode( $repo_name ) . '/' .
@@ -1202,7 +1203,7 @@ function vipgoci_github_pr_generic_comment_delete(
 
 
 	$github_url =
-		'https://api.github.com/' .
+		VIPGOCI_GITHUB_BASE_URL . '/' .
 		'repos/' .
 		rawurlencode( $repo_owner ) . '/' .
 		rawurlencode( $repo_name ) . '/' .
@@ -1266,7 +1267,7 @@ function vipgoci_github_pr_review_submit(
 	) {
 
 		$github_url =
-			'https://api.github.com/' .
+			VIPGOCI_GITHUB_BASE_URL . '/' .
 			'repos/' .
 			rawurlencode( $repo_owner ) . '/' .
 			rawurlencode( $repo_name ) . '/' .
@@ -1573,7 +1574,7 @@ function vipgoci_github_approve_pr(
 
 
 	$github_url =
-		'https://api.github.com/' .
+		VIPGOCI_GITHUB_BASE_URL . '/' .
 		'repos/' .
 		rawurlencode( $repo_owner ) . '/' .
 		rawurlencode( $repo_name ) . '/' .
@@ -1666,7 +1667,7 @@ function vipgoci_github_prs_implicated(
 	 */
 	do {
 		$github_url =
-			'https://api.github.com/' .
+			VIPGOCI_GITHUB_BASE_URL . '/' .
 			'repos/' .
 			rawurlencode( $repo_owner ) . '/' .
 			rawurlencode( $repo_name ) . '/' .
@@ -1792,7 +1793,7 @@ function vipgoci_github_prs_commits_list(
 
 	do {
 		$github_url =
-			'https://api.github.com/' .
+			VIPGOCI_GITHUB_BASE_URL . '/' .
 			'repos/' .
 			rawurlencode( $repo_owner ) . '/' .
 			rawurlencode( $repo_name ) . '/' .
@@ -1912,7 +1913,7 @@ function vipgoci_github_diffs_fetch(
 	$diffs = array();
 
 	$github_url =
-		'https://api.github.com/' .
+		VIPGOCI_GITHUB_BASE_URL . '/' .
 		'repos/' .
 		rawurlencode( $repo_owner ) . '/' .
 		rawurlencode( $repo_name ) . '/' .
@@ -1970,7 +1971,7 @@ function vipgoci_github_authenticated_user_get( $github_token ) {
 
 
 	$github_url =
-		'https://api.github.com/' .
+		VIPGOCI_GITHUB_BASE_URL . '/' .
 		'user';
 
 	$current_user_info = json_decode(
@@ -2014,7 +2015,7 @@ function vipgoci_github_label_add_to_pr(
 	}
 
 	$github_url =
-		'https://api.github.com/' .
+		VIPGOCI_GITHUB_BASE_URL . '/' .
 		'repos/' .
 		rawurlencode( $repo_owner ) . '/' .
 		rawurlencode( $repo_name ) . '/' .
@@ -2070,7 +2071,7 @@ function vipgoci_github_labels_get(
 	 */
 	if ( false === $cached_data ) {
 		$github_url =
-			'https://api.github.com/' .
+			VIPGOCI_GITHUB_BASE_URL . '/' .
 			'repos/' .
 			rawurlencode( $repo_owner ) . '/' .
 			rawurlencode( $repo_name ) . '/' .
@@ -2147,7 +2148,7 @@ function vipgoci_github_label_remove_from_pr(
 	}
 
 	$github_url =
-		'https://api.github.com/' .
+		VIPGOCI_GITHUB_BASE_URL . '/' .
 		'repos/' .
 		rawurlencode( $repo_owner ) . '/' .
 		rawurlencode( $repo_name ) . '/' .
