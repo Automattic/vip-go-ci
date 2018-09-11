@@ -12,16 +12,27 @@ function vipgoci_phpcs_do_scan(
 	$phpcs_severity
 ) {
 	/*
+	 * Determine file-extension of the
+	 * file.
+	 */
+	$filename_extension = pathinfo(
+		$filename_tmp,
+		PATHINFO_EXTENSION
+	);
+
+	$filename_extension = strtolower(
+		$filename_extension
+	);
+
+	/*
 	 * Run PHPCS from the shell, making sure we escape everything.
 	 *
 	 * Feed PHPCS the temporary file specified by our caller.
 	 *
 	 * Make sure to use wide enough output, so we can catch all of it.
 	 */
-// FIXME: When dealing with SVG files
-// use: --extensions=svg --sniffs=WordPressVIPMinimum.SVG.HTMLCode 
 	$cmd = sprintf(
-		'%s %s --standard=%s --severity=%s --report=%s %s 2>&1',
+		'%s %s --standard=%s --severity=%s --report=%s %s',
 		escapeshellcmd( 'php' ),
 		escapeshellcmd( $phpcs_path ),
 		escapeshellarg( $phpcs_standard ),
@@ -30,6 +41,20 @@ function vipgoci_phpcs_do_scan(
 		escapeshellarg( $filename_tmp )
 	);
 
+	/*
+	 * If this is a SVG file, we need special arguments
+	 * for PHPCS.
+	 */
+	if ( 'svg' === $filename_extension ) {
+		$cmd .= sprintf(
+			' --extensions=%s --sniffs=%s',
+			escapeshellarg( 'svg' ),
+			escapeshellarg( 'WordPressVIPMinimum.SVG.HTMLCode' )
+		);
+	}
+
+	$cmd .= ' 2>&1';
+
 	vipgoci_runtime_measure( 'start', 'phpcs_cli' );
 
 	$result = shell_exec( $cmd );
@@ -37,6 +62,68 @@ function vipgoci_phpcs_do_scan(
 	vipgoci_runtime_measure( 'stop', 'phpcs_cli' );
 
 	return $result;
+}
+
+function vipgoci_phpcs_scan_single_file(
+	$options,
+	$file_name
+) {
+	$file_contents = vipgoci_gitrepo_fetch_committed_file(
+		$options['repo-owner'],
+		$options['repo-name'],
+		$options['token'],
+		$options['commit'],
+		$file_name,
+		$options['local-git-repo']
+	);
+
+	$file_extension = pathinfo(
+		$file_name,
+		PATHINFO_EXTENSION
+	);
+
+	if ( empty( $file_extension ) ) {
+		$file_extension = null;
+	}
+
+	$temp_file_name = vipgoci_save_temp_file(
+		'phpcs-scan-',
+		$file_extension,
+		$file_contents
+	);
+
+	vipgoci_log(
+		'About to PHPCS-scan file',
+		array(
+			'repo_owner' => $options['repo-owner'],
+			'repo_name' => $options['repo-name'],
+			'commit_id' => $options['commit'],
+			'filename' => $file_name,
+			'temp_file_name' => $temp_file_name,
+		)
+	);
+
+
+	$file_issues_str = vipgoci_phpcs_do_scan(
+		$temp_file_name,
+		$options['phpcs-path'],
+		$options['phpcs-standard'],
+		$options['phpcs-severity']
+	);
+
+	/* Get rid of temporary file */
+	unlink( $temp_file_name );
+
+	$file_issues_arr_master = json_decode(
+		$file_issues_str,
+		true
+	);
+
+	return array(
+		'file_issues_arr_master'	=> $file_issues_arr_master,
+		'file_issues_str'		=> $file_issues_str,
+		'temp_file_name'		=> $temp_file_name,
+	);
 }
 
 
@@ -372,57 +459,19 @@ function vipgoci_phpcs_scan_commit(
 		 */
 		vipgoci_runtime_measure( 'start', 'phpcs_scan_single_file' );
 
-		$file_contents = vipgoci_gitrepo_fetch_committed_file(
-			$repo_owner,
-			$repo_name,
-			$github_token,
-			$commit_id,
-			$file_name,
-			$options['local-git-repo']
+		$tmp_scanning_results = vipgoci_phpcs_scan_single_file(
+			$options,
+			$file_name
 		);
 
-		$file_extension = pathinfo(
-			$file_name,
-			PATHINFO_EXTENSION
-		);
+		$file_issues_arr_master =
+			$tmp_scanning_results['file_issues_arr_master'];
 
-		if ( empty( $file_extension ) ) {
-			$file_extension = null;
-		}
+		$file_issues_str =
+			$tmp_scanning_results['file_issues_str'];
 
-		$temp_file_name = vipgoci_save_temp_file(
-			'phpcs-scan-',
-			$file_extension,
-			$file_contents
-		);
-
-		vipgoci_log(
-			'About to PHPCS-scan file',
-			array(
-				'repo_owner' => $repo_owner,
-				'repo_name' => $repo_name,
-				'commit_id' => $commit_id,
-				'filename' => $file_name,
-				'temp_file_name' => $temp_file_name,
-			)
-		);
-
-
-		$file_issues_str = vipgoci_phpcs_do_scan(
-			$temp_file_name,
-			$options['phpcs-path'],
-			$options['phpcs-standard'],
-			$options['phpcs-severity']
-		);
-
-		/* Get rid of temporary file */
-		unlink( $temp_file_name );
-
-		$file_issues_arr_master = json_decode(
-			$file_issues_str,
-			true
-		);
-
+		$temp_file_name =
+			$tmp_scanning_results['temp_file_name'];
 
 		/*
 		 * Do sanity-checking
