@@ -10,7 +10,7 @@ require_once( __DIR__ . '/lint-scan.php' );
 require_once( __DIR__ . '/auto-approval.php' );
 require_once( __DIR__ . '/ap-file-types.php' );
 require_once( __DIR__ . '/ap-hashes-api.php' );
-
+require_once( __DIR__ . '/ap-svg-files.php' );
 
 /*
  * Handle boolean parameters given on the command-line.
@@ -933,9 +933,12 @@ function vipgoci_run() {
 			);
 		}
 
-		// FIXME: Do not auto-approve if there are
-		// any linting or PHPCS-issues -- but only
-		// for SVG files.
+		// FIXME: Use options here
+		vipgoci_ap_svg_files(
+			$options,
+			$auto_approved_files_arr
+		);
+
 		vipgoci_auto_approval(
 			$options,
 			$auto_approved_files_arr
