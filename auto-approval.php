@@ -171,6 +171,8 @@ function vipgoci_auto_approval( $options, &$auto_approved_files_arr ) {
 			// FIXME: Add comment for each hashes-to-hashes approved PHP and JS file,
 			// indicating that it is approved in the DB so human reviewers do not
 			// need to look at it again.
+
+			// FIXME: Dismiss any approving reviews from the PR.
 		}
 
 		else if (
