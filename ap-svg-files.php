@@ -127,7 +127,7 @@ function vipgoci_ap_svg_files(
 			else {
 				vipgoci_log(
 					'Not adding SVG file to list of ' .
-						'approved files as issues' .
+						'approved files as issues ' .
 						'were found',
 					array(
 						'file_name' =>
