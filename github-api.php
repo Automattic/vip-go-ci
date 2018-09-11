@@ -1353,23 +1353,21 @@ function vipgoci_github_pr_comments_cleanup(
 				( strpos(
 					$pr_comment->body,
 					VIPGOCI_SYNTAX_ERROR_STR
-				) === false )
-				&&
+				) !== false )
+				||
 				( strpos(
 					$pr_comment->body,
 					VIPGOCI_GITHUB_ERROR_STR
-				) === false )
+				) !== false )
 			) {
-				continue;
+				// Actually delete the comment
+				vipgoci_github_pr_generic_comment_delete(
+					$repo_owner,
+					$repo_name,
+					$github_token,
+					$pr_comment->id
+				);
 			}
-
-			// Actually delete the comment
-			vipgoci_github_pr_generic_comment_delete(
-				$repo_owner,
-				$repo_name,
-				$github_token,
-				$pr_comment->id
-			);
 		}
 	}
 }
