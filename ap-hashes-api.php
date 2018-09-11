@@ -64,7 +64,6 @@ function vipgoci_ap_hashes_api_file_approved(
 		array(
 			'repo_owner'	=> $options['repo-owner'],
 			'repo_name'	=> $options['repo-name'],
-			'token'		=> $options['token'],
 			'commit'	=> $options['commit'],
 			'file_path'	=> $file_path,
 		)
@@ -264,7 +263,7 @@ function vipgoci_ap_hashes_api_scan_commit(
 	vipgoci_runtime_measure( 'start', 'hashes_api_scan' );
 
 	vipgoci_log(
-		'Scanning altered or new files affected by Pull-Request(s) ',
+		'Scanning altered or new files affected by Pull-Request(s) ' .
 			'using hashes-to-hashes database via API',
 		array(
 			'repo_owner'		=> $options['repo-owner'],
