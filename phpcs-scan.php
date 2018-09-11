@@ -32,13 +32,12 @@ function vipgoci_phpcs_do_scan(
 	 * Make sure to use wide enough output, so we can catch all of it.
 	 */
 	$cmd = sprintf(
-		'%s %s --standard=%s --severity=%s --report=%s %s',
+		'%s %s --standard=%s --severity=%s --report=%s',
 		escapeshellcmd( 'php' ),
 		escapeshellcmd( $phpcs_path ),
 		escapeshellarg( $phpcs_standard ),
 		escapeshellarg( $phpcs_severity ),
-		escapeshellarg( 'json' ),
-		escapeshellarg( $filename_tmp )
+		escapeshellarg( 'json' )
 	);
 
 	/*
@@ -53,7 +52,24 @@ function vipgoci_phpcs_do_scan(
 		);
 	}
 
+	/*
+	 * Lastly, append the target filename
+	 * to the command-line string.
+	 */
+	$cmd .= sprintf(
+		' %s',
+		escapeshellarg( $filename_tmp )
+	);
+
 	$cmd .= ' 2>&1';
+
+	vipgoci_log(
+		'Running PHPCS now',
+		array(
+			'cmd' => $cmd,
+		),
+		2
+	);
 
 	vipgoci_runtime_measure( 'start', 'phpcs_cli' );
 
