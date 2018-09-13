@@ -9,6 +9,11 @@ define( 'VIPGOCI_SYNTAX_ERROR_STR', 'PHP Syntax Errors Found' );
 define( 'VIPGOCI_GITHUB_ERROR_STR', 'GitHub API communication error');
 define( 'VIPGOCI_GITHUB_BASE_URL',  'https://api.github.com' );
 
+define( 'VIPGOCI_INFORMATIONAL_MESSAGE',
+					'This bot provides automated ' .
+					'PHP Linting and PHPCS scanning, ' .
+					'read more [here](%s).' );
+
 /*
  * This function works both to collect headers
  + when called as a callback function, and to return
@@ -883,6 +888,7 @@ function vipgoci_github_pr_generic_comment_submit(
 	$github_token,
 	$commit_id,
 	$results,
+	$informational_url,
 	$dry_run
 ) {
 	$stats_types_to_process = array(
@@ -1014,7 +1020,7 @@ function vipgoci_github_pr_generic_comment_submit(
 		 * -- splice a header to the message we currently have.
 		 */
 
-		$github_postfields['body'] =
+		$tmp_postfields_body =
 			'**' . VIPGOCI_SYNTAX_ERROR_STR . '**' .
 			"\n\r\n\r" .
 
@@ -1025,10 +1031,30 @@ function vipgoci_github_pr_generic_comment_submit(
 				"tree/" .
 				rawurlencode( $commit_id ) .
 				"))." .
-				"\n\r***\n\r" .
+				"\n\r***\n\r";
 
-			// Splice the body constructed earlier
+		/*
+		 * If we have informational URL, append that
+		 * and a generic message.
+		 */
+		if ( null !== $informational_url ) {
+			$tmp_postfields_body .=
+				sprintf(
+					VIPGOCI_INFORMATIONAL_MESSAGE,
+					$informational_url
+				) .
+				"\n\r***\n\r";
+		}
+
+		/*
+		 * Splice the two messages together,
+		 * remove temporary variable.
+		 */
+		$github_postfields['body'] =
+			$tmp_postfields_body .
 			$github_postfields['body'];
+
+		unset( $tmp_postfields_body );
 
 		vipgoci_github_post_url(
 			$github_url,
@@ -1233,6 +1259,7 @@ function vipgoci_github_pr_review_submit(
 	$github_token,
 	$commit_id,
 	$results,
+	$informational_url,
 	$dry_run,
 	$github_review_comments_max
 ) {
@@ -1446,6 +1473,21 @@ function vipgoci_github_pr_review_submit(
 					$commit_issue_stat_value . ' ' .
 					$commit_issue_stat_key . '(s) ' .
 					"\n\r";
+			}
+
+
+			/*
+			 * If we have a informational-URL about
+			 * the bot, append it along with a generic
+			 * message.
+			 */
+			if ( null !== $informational_url ) {
+				$github_postfields['body'] .=
+					"\n\r***\n\r" .
+					sprintf(
+						VIPGOCI_INFORMATIONAL_MESSAGE,
+						$informational_url
+					);
 			}
 		}
 
