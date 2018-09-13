@@ -1438,6 +1438,9 @@ function vipgoci_github_pr_review_submit(
 					$commit_issue_stat_key =>
 						$commit_issue_stat_value
 			) {
+				if ( $commit_issue_stat_value === 0 ) {
+					continue;
+				}
 				$github_postfields['body'] .=
 					vipgoci_github_labels(
 						$commit_issue_stat_key
