@@ -1444,7 +1444,7 @@ function vipgoci_github_pr_review_submit(
 					) . ' ' .
 
 					$commit_issue_stat_value . ' ' .
-					$commit_issue_stat_key . '(s) ' .
+					$commit_issue_stat_key . ($commit_issue_stat_value > 1) ? '' :'s' . ' ' .
 					"\n\r";
 			}
 		}
