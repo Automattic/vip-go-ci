@@ -27,14 +27,13 @@ function vipgoci_ap_hashes_api_file_approved(
 	);
 
 
-	$file_info_extension = pathinfo(
-		$file_path,
-		PATHINFO_EXTENSION
+	$file_info_extension = vipgoci_file_extension(
+		$file_path
 	);
 
 
 	if ( in_array(
-		strtolower( $file_info_extension ),
+		$file_info_extension,
 		$file_extensions_approvable
 	) === false ) {
 		vipgoci_log(
