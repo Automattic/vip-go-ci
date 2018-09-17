@@ -11,6 +11,7 @@ require_once( __DIR__ . '/auto-approval.php' );
 require_once( __DIR__ . '/ap-file-types.php' );
 require_once( __DIR__ . '/ap-hashes-api.php' );
 require_once( __DIR__ . '/ap-svg-files.php' );
+require_once( __DIR__ . '/svg-scan.php' );
 
 /*
  * Handle boolean parameters given on the command-line.

@@ -53,9 +53,8 @@ function vipgoci_ap_svg_files(
 		foreach ( $pr_diff as
 			$pr_diff_file_name => $pr_diff_contents
 		) {
-			$pr_diff_file_extension = pathinfo(
-				$pr_diff_file_name,
-				PATHINFO_EXTENSION
+			$pr_diff_file_extension = vipgoci_file_extension(
+				$pr_diff_file_name
 			);
 
 			/*
@@ -63,8 +62,8 @@ function vipgoci_ap_svg_files(
 			 */
 
 			if (
-				strtolower( $pr_diff_file_extension ) !==
-				'svg'
+				'svg' !==
+				$pr_diff_file_extension
 			) {
 				continue;
 			}
@@ -82,9 +81,10 @@ function vipgoci_ap_svg_files(
 			}
 
 			/*
-			 * PHPCS scan the file, get the results.
+			 * Scan the SVG file, get the results.
 			 */
-			$tmp_scan_results = vipgoci_phpcs_scan_single_file(
+
+			$tmp_scan_results = vipgoci_svg_scan_single_file(
 				$options,
 				$pr_diff_file_name
 			);
