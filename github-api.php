@@ -1623,6 +1623,16 @@ function vipgoci_github_pr_review_submit(
 				$stats_type
 		) {
 			/*
+			 * No report for 'hashes-api',
+			 * as it can report no issues back
+			 * and statistics for it will always
+			 * be at zero.
+			 */
+			if ( 'hashes-api' === $stats_type ) {
+				continue;
+			}
+
+			/*
 			 * Add page-breaking, if needed.
 			 */
 			if ( ! empty( $github_postfields['body'] ) ) {
@@ -1648,7 +1658,6 @@ function vipgoci_github_pr_review_submit(
 				continue;
 			}
 
-
 			$github_postfields['body'] .=
 				'**' . $stats_type . '**' .
 				" scanning turned up:\n\r";
@@ -1662,6 +1671,14 @@ function vipgoci_github_pr_review_submit(
 					$commit_issue_stat_key =>
 						$commit_issue_stat_value
 			) {
+				/*
+				 * Do not include statistic in the
+				 * the report if there is nothing found.
+				 */
+				if ( 0 === $commit_issue_stat_value ) {
+					continue;
+				}
+
 				$github_postfields['body'] .=
 					vipgoci_github_labels(
 						$commit_issue_stat_key
