@@ -1669,25 +1669,24 @@ function vipgoci_github_pr_review_submit(
 
 					$commit_issue_stat_value . ' ' .
 					$commit_issue_stat_key . 
-					( $commit_issue_stat_value > 1 ) ? '' :'s' .
+					( ( $commit_issue_stat_value > 1 ) ? 's' : '' ) .
 					' ' .
 					"\n\r";
 			}
+		}
 
-
-			/*
-			 * If we have a informational-URL about
-			 * the bot, append it along with a generic
-			 * message.
-			 */
-			if ( null !== $informational_url ) {
-				$github_postfields['body'] .=
-					"\n\r***\n\r" .
-					sprintf(
-						VIPGOCI_INFORMATIONAL_MESSAGE,
-						$informational_url
-					);
-			}
+		/*
+		 * If we have a informational-URL about
+		 * the bot, append it along with a generic
+		 * message.
+		 */
+		if ( null !== $informational_url ) {
+			$github_postfields['body'] .=
+				"\n\r***\n\r" .
+				sprintf(
+					VIPGOCI_INFORMATIONAL_MESSAGE,
+					$informational_url
+				);
 		}
 
 
