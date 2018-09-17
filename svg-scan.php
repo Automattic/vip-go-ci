@@ -93,10 +93,10 @@ function vipgoci_svg_scan_single_file(
 		 */
 		if ( ! isset( $results_files[ $temp_file_name ] ) ) {
 			$results_files[ $temp_file_name ] = array(
-				'messages'	=> array(),
 				'errors'	=> 0,
 				'warnings'	=> 0,
 				'fixable'	=> 0,
+				'messages'	=> array(),
 			);
 		}
 
@@ -127,7 +127,7 @@ function vipgoci_svg_scan_single_file(
 					'message'	=> 'Found PHP tag in SVG file: \'' . $disallowed_token . '\'',
 					'source'	=> 'WordPressVIPMinimum.Security.SVG.DisallowedTags',
 					'severity'	=> 5,
-					'fixable'	=> 0,
+					'fixable'	=> false,
 					'type'		=> 'ERROR',
 					'line'		=> $line_no,
 					'column'	=> $token_pos,
