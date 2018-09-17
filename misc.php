@@ -760,9 +760,33 @@ function vipgoci_github_comment_match(
 			': '
 		);
 
+		/*
+		 * Transform strings to lowercase.
+		 */
+		$comment_made_body = strtolower(
+			$comment_made_body
+		);
+
+		$file_issue_comment = strtolower(
+			$file_issue_comment
+		);
+
+		/*
+		 * Check if comments match, including
+		 * if we need to HTML-encode our new comment
+		 * (GitHub encodes their comments when
+		 * returning them.
+		 */
 		if (
-			strtolower( $comment_made_body ) ==
-			strtolower( $file_issue_comment )
+			(
+				$comment_made_body ==
+				$file_issue_comment
+			)
+			||
+			(
+				$comment_made_body ==
+				htmlentities( $file_issue_comment )
+			)
 		) {
 			/* Comment found, return true. */
 			return true;
