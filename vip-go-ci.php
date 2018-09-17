@@ -195,6 +195,60 @@ function vipgoci_option_file_handle(
 	}
 }
 
+/*
+ * Handle parameter that we expect to be a URL.
+ *
+ * If the parameter is not empty, and is not really 
+ * a URL (not starting with http:// or https://),
+ * exit with error. If empty, sets a default.
+ */
+
+function vipgoci_option_url_handle(
+	&$options,
+	$option_name,
+	$default_value
+) {
+	/*
+	 * If not set, assume default value.
+	 */
+	if (
+		( ! isset( $options[ $option_name ] ) ) ||
+		( empty( $options[ $option_name ] ) )
+	) {
+		$options[ $option_name ] = $default_value;
+	}
+
+	/*
+	 * If not default value, check if it looks like an URL,
+	 * and if so, use it, but if not, exit with error.
+	 * 
+	 */
+	if ( $default_value !== $options[ $option_name ] ) {
+		$options[ $option_name ] = trim(
+			$options[ $option_name ]
+		);
+
+		if (
+			( 0 !== strpos(
+				$options[ $option_name ],
+				'http://'
+			) )
+			&&
+			( 0 !== strpos(
+				$options[ $option_name ],
+				'https://'
+			) )
+		) {
+			vipgoci_sysexit(
+				'Option --' . $option_name . ' should ' . 
+					'be an URL',
+				array(
+				),
+				VIPGOCI_EXIT_USAGE_ERROR
+			);
+		}
+	}
+}
 
 /*
  * Determine exit status.
@@ -301,6 +355,7 @@ function vipgoci_run() {
 			'branches-ignore:',
 			'output:',
 			'dry-run:',
+			'informational-url:',
 			'phpcs-path:',
 			'phpcs-standard:',
 			'phpcs-severity:',
@@ -347,6 +402,8 @@ function vipgoci_run() {
 			"\t" . '                               to GitHub in one review. If the number of ' . PHP_EOL .
 			"\t" . '                               comments exceed this number, additional reviews ' . PHP_EOL .
 			"\t" . '                               will be submitted.' . PHP_EOL .
+			"\t" . '--informational-url=STRING     URL to documentation on what this bot does. Should ' . PHP_EOL .
+			"\t" . '                               start with https:// or https:// ' . PHP_EOL .
 			"\t" . '--phpcs=BOOL                   Whether to run PHPCS (true/false)' . PHP_EOL .
 			"\t" . '--phpcs-path=FILE              Full path to PHPCS script' . PHP_EOL .
 			"\t" . '--phpcs-standard=STRING        Specify which PHPCS standard to use' . PHP_EOL .
@@ -530,6 +587,29 @@ function vipgoci_run() {
 	// Set the value to global
 	$vipgoci_debug_level = $options['debug-level'];
 
+	/*
+	 * Maximum number of inline comments posted to
+	 * Github with one review -- from 5 to 100.
+	 */
+
+	vipgoci_option_integer_handle(
+		$options,
+		'review-comments-max',
+		10,
+		range( 5, 100, 1 )
+	);
+
+	/*
+	 * Handle optional --informational-url --
+	 * URL to information on what this bot does.
+	 */
+
+	vipgoci_option_url_handle(
+		$options,
+		'informational-url',
+		null
+	);
+
 
 	/*
 	 * Handle boolean parameters
@@ -690,19 +770,6 @@ function vipgoci_run() {
 			)
 		);
 	}
-
-
-	/*
-	 * Maximum number of inline comments posted to
-	 * Github with one review -- from 5 to 100.
-	 */
-
-	vipgoci_option_integer_handle(
-		$options,
-		'review-comments-max',
-		10,
-		range( 5, 100, 1 )
-	);
 
 
 	/*
@@ -957,6 +1024,7 @@ function vipgoci_run() {
 		$options['token'],
 		$options['commit'],
 		$results,
+		$options['informational-url'],
 		$options['dry-run']
 	);
 
@@ -967,6 +1035,7 @@ function vipgoci_run() {
 		$options['token'],
 		$options['commit'],
 		$results,
+		$options['informational-url'],
 		$options['dry-run'],
 		$options['review-comments-max']
 	);
