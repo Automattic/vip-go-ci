@@ -292,6 +292,27 @@ function vipgoci_save_temp_file(
 	return $temp_file_name;
 }
 
+/*
+ * Determine file-extension of a particular file,
+ * and return it in lowercase. If it can not be
+ * determined, return null.
+ */
+function vipgoci_file_extension( $file_name ) {
+	$file_extension = pathinfo(
+		$file_name,
+		PATHINFO_EXTENSION
+	);
+
+	if ( empty( $file_extension ) ) {
+		return null;
+	}
+
+	$file_extension = strtolower(
+		$file_extension
+	);
+
+	return $file_extension;
+}
 
 /*
  * Return ASCII-art for GitHub, which will then
@@ -324,9 +345,8 @@ function vipgoci_filter_file_path(
 	$filename,
 	$filter
 ) {
-	$file_info_extension = pathinfo(
-		$filename,
-		PATHINFO_EXTENSION
+	$file_info_extension = vipgoci_file_extension(
+		$filename
 	);
 
 	$file_dirs = pathinfo(
@@ -343,9 +363,9 @@ function vipgoci_filter_file_path(
 		( null !== $filter ) &&
 		( isset( $filter['file_extensions'] ) ) &&
 		( ! in_array(
-			strtolower( $file_info_extension ),
-				$filter['file_extensions'],
-				true
+			$file_info_extension,
+			$filter['file_extensions'],
+			true
 		) );
 
 	/*
