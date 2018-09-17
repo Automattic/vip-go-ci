@@ -12,19 +12,6 @@ function vipgoci_phpcs_do_scan(
 	$phpcs_severity
 ) {
 	/*
-	 * Determine file-extension of the
-	 * file.
-	 */
-	$filename_extension = pathinfo(
-		$filename_tmp,
-		PATHINFO_EXTENSION
-	);
-
-	$filename_extension = strtolower(
-		$filename_extension
-	);
-
-	/*
 	 * Run PHPCS from the shell, making sure we escape everything.
 	 *
 	 * Feed PHPCS the temporary file specified by our caller.
@@ -39,18 +26,6 @@ function vipgoci_phpcs_do_scan(
 		escapeshellarg( $phpcs_severity ),
 		escapeshellarg( 'json' )
 	);
-
-	/*
-	 * If this is a SVG file, we need special arguments
-	 * for PHPCS.
-	 */
-	if ( 'svg' === $filename_extension ) {
-		$cmd .= sprintf(
-			' --extensions=%s --sniffs=%s',
-			escapeshellarg( 'svg' ),
-			escapeshellarg( 'WordPressVIPMinimum.SVG.HTMLCode' )
-		);
-	}
 
 	/*
 	 * Lastly, append the target filename
