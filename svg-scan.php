@@ -124,8 +124,16 @@ function vipgoci_svg_scan_single_file(
 
 			$results_files[ $temp_file_name ]['messages'][] =
 				array(
-					'message'	=> 'Found PHP tag in SVG file: \'' . $disallowed_token . '\'',
-					'source'	=> 'WordPressVIPMinimum.Security.SVG.DisallowedTags',
+					'message'	=> 
+						'Found forbidden tag in SVG ' .
+							'file: \'' .
+							$disallowed_token .
+							'\'',
+
+					'source'	=> 
+						'WordPressVIPMinimum.' .
+						'Security.SVG.DisallowedTags',
+
 					'severity'	=> 5,
 					'fixable'	=> false,
 					'type'		=> 'ERROR',
