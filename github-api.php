@@ -1673,7 +1673,12 @@ function vipgoci_github_pr_review_submit(
 			) {
 				/*
 				 * Do not include statistic in the
-				 * the report if there is nothing found.
+				 * the report if nothing is found.
+				 *
+				 * Note that if nothing is found at
+				 * all, we will not get to this point,
+				 * so there is no need to report if
+				 * nothing is found at all.
 				 */
 				if ( 0 === $commit_issue_stat_value ) {
 					continue;
