@@ -53,7 +53,7 @@ function vipgoci_svg_scan_single_file(
 	}
 
 	$temp_file_name = vipgoci_save_temp_file(
-		'phpcs-scan-',
+		'svg-scan-',
 		$file_extension,
 		$file_contents
 	);
@@ -116,6 +116,9 @@ function vipgoci_svg_scan_single_file(
 				continue;
 			}
 
+			/*
+			 * Found a problem, adding to results.
+			 */
 
 			$results_files[ $temp_file_name ]['errors']++;
 
@@ -134,6 +137,11 @@ function vipgoci_svg_scan_single_file(
 		$line_no++;
 	}
 
+	/*
+	 * Emulate results returned
+	 * by vipgoci_phpcs_scan_single_file().
+	 */
+
 	$results = array(
 		'totals' => array(
 			'errors' => $results_files[
@@ -150,17 +158,12 @@ function vipgoci_svg_scan_single_file(
 		),
 
 		'files' => array(
-			$results_files[
-				$temp_file_name
-			]
+			$temp_file_name =>
+				$results_files[
+					$temp_file_name
+				]
 		)
         );
-
-
-	/*
-	 * Emulate results returned
-	 * by vipgoci_phpcs_scan_single_file()
-	 */
 
 	return array(
 		'file_issues_arr_master'	=> $results,
