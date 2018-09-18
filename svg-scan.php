@@ -4,11 +4,28 @@
  * Scan a SVG-file for disallowed
  * tokens. Will return results in the
  * same format as PHPCS does.
+ *
+ * Note that this function is designed as
+ * a substitute for PHPCS in case of
+ * scanning SVG files.
  */
 function vipgoci_svg_scan_single_file(
 	$options,
 	$file_name
 ) {
+	vipgoci_runtime_measure( 'start', 'svg_scan_single_file' );
+
+	vipgoci_log(
+		'Scanning single SVG file',
+		array(
+			'repo_owner'    => $options['repo-owner'],
+			'repo_name'     => $options['repo-name'],
+			'commit_id'     => $options['commit'],
+			'svg_checks'	=> $options['svg-checks'],
+			'file_name'	=> $file_name,
+		)
+	);
+
 	/*
 	 * These tokens are not allowed
 	 * in SVG files. Note that we do
@@ -49,6 +66,21 @@ function vipgoci_svg_scan_single_file(
 	 * We only process SVG files.
 	 */
 	if ( 'svg' !== $file_extension ) {
+
+		vipgoci_runtime_measure( 'stop', 'svg_scan_single_file' );
+
+		vipgoci_log(
+			'Could not scan file, does not seem to be a SVG file',
+			array(
+				'repo_owner'    => $options['repo-owner'],
+				'repo_name'     => $options['repo-name'],
+				'commit_id'     => $options['commit'],
+				'svg_checks'	=> $options['svg-checks'],
+				'file_name'	=> $file_name,
+			)
+		);
+
+
 		return null;
 	}
 
@@ -172,6 +204,15 @@ function vipgoci_svg_scan_single_file(
 				]
 		)
         );
+
+	vipgoci_runtime_measure( 'stop', 'svg_scan_single_file' );
+
+	vipgoci_log(
+		'SVG scanning of a single file finished',
+		array(
+			'file_issues_arr_master' => $results,
+		)
+	);
 
 	return array(
 		'file_issues_arr_master'	=> $results,
