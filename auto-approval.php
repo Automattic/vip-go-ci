@@ -67,11 +67,6 @@ function vipgoci_auto_approval( $options, &$auto_approved_files_arr ) {
 			$files_seen[] = $pr_diff_file_name;
 
 
-			$pr_diff_file_extension = pathinfo(
-				$pr_diff_file_name,
-				PATHINFO_EXTENSION
-			);
-
 
 			/*
 			 * Is file in array of files
