@@ -369,6 +369,7 @@ function vipgoci_run() {
 			'skip-folders:',
 			'lint:',
 			'phpcs:',
+			'svg-checks:',
 			'autoapprove:',
 			'autoapprove-filetypes:',
 			'autoapprove-label:',
@@ -415,6 +416,9 @@ function vipgoci_run() {
 			"\t" . '--autoapprove-label=STRING     String to use for labels when auto-approving' . PHP_EOL .
 			"\t" . '--php-path=FILE                Full path to PHP, if not specified the' . PHP_EOL .
 			"\t" . '                               default in $PATH will be used instead' . PHP_EOL .
+			"\t" . '--svg-checks=BOOL              Enable or disable SVG checks, both' . PHP_EOL .
+			"\t" . '                               auto-approval of SVG files and problem' . PHP_EOL .
+			"\t" . '                               checking of these files' . PHP_EOL . 
 			"\t" . '--hashes-api=BOOL              Whether to do hashes-to-hashes API verfication ' . PHP_EOL .
 			"\t" . '                               with individual PHP files found to be altered ' . PHP_EOL .
 			"\t" . '                               in the branch specified' . PHP_EOL .
@@ -511,11 +515,13 @@ function vipgoci_run() {
 
 
 	/*
-	 * Process --hashes-api -- expected to be a boolean.
+	 * Process --hashes-api and --svg-checks
+	 * -- expected to be a boolean.
 	*/
 
 	vipgoci_option_bool_handle( $options, 'hashes-api', 'false' );
 
+	vipgoci_option_bool_handle( $options, 'svg-checks', 'false' );
 
 	/*
 	 * Process --hashes-api-url -- expected to
@@ -925,6 +931,11 @@ function vipgoci_run() {
 		$results
 	);
 
+	/* FIXME:
+	 * Loop through all reviews for each PR,
+	 * dismiss reviews that contain *only*
+	 * inactive comments.
+	 */
 
 	/*
 	 * Clean up old comments made by us previously
@@ -1001,11 +1012,12 @@ function vipgoci_run() {
 			);
 		}
 
-		// FIXME: Use options here
-		vipgoci_ap_svg_files(
-			$options,
-			$auto_approved_files_arr
-		);
+		if ( true === $options['svg-checks'] ) {
+			vipgoci_ap_svg_files(
+				$options,
+				$auto_approved_files_arr
+			);
+		}
 
 		vipgoci_auto_approval(
 			$options,
@@ -1013,6 +1025,15 @@ function vipgoci_run() {
 		);
 	}
 
+	/*
+	 * FIXME: Remove issues from $results
+	 * for files that are approved.
+	 */
+
+	/*
+	 * FIXME: Limit number of issues in $results
+	 * -- take into account previously posted issues.
+	 */
 
 	/*
 	 * Submit any issues to GitHub
