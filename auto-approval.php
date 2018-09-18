@@ -24,10 +24,7 @@ function vipgoci_auto_approval( $options, &$auto_approved_files_arr ) {
 			'commit_id'	=> $options['commit'],
 			'autoapprove'	=> $options['autoapprove'],
 
-			'autoapprove-filetypes' =>
-				$options['autoapprove-filetypes'],
-
-			'autoapproved-files-arr' =>
+			'autoapproved_files_arr' =>
 				$auto_approved_files_arr,
 		)
 	);
