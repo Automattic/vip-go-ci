@@ -398,11 +398,22 @@ function vipgoci_phpcs_scan_commit(
 			$commit_id,
 			array(
 				'file_extensions' =>
-					array( 'php', 'js', 'twig', 'svg' ),
+					/*
+					 * If SVG-checks are enabled,
+					 * include it in the file-extensions
+					 */
+					array_merge(
+						array( 'php', 'js', 'twig' ),
+						( $options['svg-checks'] ?
+							array( 'svg' ) :
+							array()
+						)
+					),
 				'skip_folders' =>
 					$options['skip-folders'],
 			)
 		);
+
 
 		foreach ( $pr_item_files_tmp as $pr_item_file_name ) {
 			if ( in_array(
@@ -458,9 +469,15 @@ function vipgoci_phpcs_scan_commit(
 		 * If a SVG file, scan using a
 		 * custom internal function, otherwise
 		 * use PHPCS.
+		 *
+		 * However, only do this if SVG-checks
+		 * is enabled.
 		 */
 		$scanning_func =
-			( 'svg' === $file_extension ) ?
+			(
+				( 'svg' === $file_extension ) &&
+				( $options['svg-checks'] )
+			) ?
 				'vipgoci_svg_scan_single_file' :
 				'vipgoci_phpcs_scan_single_file';
 
