@@ -94,7 +94,7 @@ function vipgoci_patch_changed_lines(
 	 * Get patch for the relevant file
 	 * our caller is interested in
 	 */
-	// FIXME: Detect if file is not part of the patch
+
 	$lines_arr = explode(
 		"\n",
 		$patch_arr[ $file_name ]
