@@ -68,9 +68,8 @@ function vipgoci_phpcs_scan_single_file(
 		$options['local-git-repo']
 	);
 
-	$file_extension = pathinfo(
-		$file_name,
-		PATHINFO_EXTENSION
+	$file_extension = vipgoci_file_extension(
+		$file_name
 	);
 
 	if ( empty( $file_extension ) ) {
