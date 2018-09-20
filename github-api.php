@@ -1623,16 +1623,6 @@ function vipgoci_github_pr_review_submit(
 				$stats_type
 		) {
 			/*
-			 * No report for 'hashes-api',
-			 * as it can report no issues back
-			 * and statistics for it will always
-			 * be at zero.
-			 */
-			if ( 'hashes-api' === $stats_type ) {
-				continue;
-			}
-
-			/*
 			 * Add page-breaking, if needed.
 			 */
 			if ( ! empty( $github_postfields['body'] ) ) {

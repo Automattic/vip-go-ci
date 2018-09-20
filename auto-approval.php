@@ -13,7 +13,11 @@
  * in this function.
  */
 
-function vipgoci_auto_approval( $options, &$auto_approved_files_arr ) {
+function vipgoci_auto_approval(
+	$options,
+	&$auto_approved_files_arr,
+	&$results
+) {
 	vipgoci_runtime_measure( 'start', 'auto_approve_commit' );
 
 	vipgoci_log(
@@ -160,10 +164,64 @@ function vipgoci_auto_approval( $options, &$auto_approved_files_arr ) {
 				);
 			}
 
-			// FIXME: Add comment for each hashes-to-hashes approved PHP and JS file,
-			// indicating that it is approved in the DB so human reviewers do not
-			// need to look at it again.
+			/*
+			 * Loop through approved PHP and JS files,
+			 * adding comment for each about it
+			 * being approved in the hashes-to-hashes API.
+			 */
+			foreach(
+				$auto_approved_files_arr as
+					$approved_file =>
+					$approved_file_system
+			) {
+				if (
+					$approved_file_system !==
+						'autoapprove-hashes-to-hashes'
+				) {
+					/*
+					 * If not autoapproved by hashes-to-hashes,
+					 * do not comment on it. Only PHP and JS files
+					 * are auto-approved by hashes-to-hashes. 
+					 */
+					continue;
+				}
 
+				$results[
+					'issues'
+				][
+					(int) $pr_item->number
+				]
+				[] = array(
+					'type'		=> VIPGOCI_STATS_HASHES_API,
+					'file_name'	=> $approved_file,
+					'file_line'	=> 1,
+					'issue' => array(
+						'message'=> 'File is ' .
+							'approved in hashes-to-hashes database',
+
+						'source'
+							=> 'WordPressVIPMinimum.' .
+							'Info.ApprovedHashesToHashesAPI',
+
+						'severity'	=> 1,
+						'fixable'	=> false,
+						'type'		=> 'INFO',
+						'line'		=> 1,
+						'column'	=> 1,
+						'level'		=>'INFO'
+					)
+				);
+
+				$results[
+					'stats'
+				][
+					VIPGOCI_STATS_HASHES_API
+				][
+					(int) $pr_item->number
+				][
+					'info'
+				]++;
+			}
 			// FIXME: Dismiss any approving reviews from the PR.
 		}
 

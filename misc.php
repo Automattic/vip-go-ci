@@ -860,8 +860,9 @@ function vipgoci_approved_files_comments_remove(
 			 * We do not touch on 'info' type,
 			 * as that does not report any errors.
 			 */
+
 			if ( strtolower(
-				$issue_item['type']
+				$issue_item['issue']['type']
 			) === 'info' ) {
 				continue;
 			}

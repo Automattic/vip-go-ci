@@ -1021,7 +1021,8 @@ function vipgoci_run() {
 
 		vipgoci_auto_approval(
 			$options,
-			$auto_approved_files_arr
+			$auto_approved_files_arr,
+			$results
 		);
 	}
 
