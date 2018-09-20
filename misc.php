@@ -909,7 +909,11 @@ function vipgoci_approved_files_comments_remove(
 		 * Re-order the array as
 		 * some keys might be missing
 		 */
-		ksort(
+		$results[
+			'issues'
+		][
+			$pr_number
+		] = array_values(
 			$results[
 				'issues'
 			][
