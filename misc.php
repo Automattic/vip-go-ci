@@ -796,3 +796,133 @@ function vipgoci_github_comment_match(
 	return false;
 }
 
+/*
+ * For each approved file, remove any issues
+ * to be submitted against them. However,
+ * do not do this for 'info' type messages,
+ * as they are informational, and not problems.
+ *
+ * We do this, because sometimes Pull-Requests
+ * will be opened that contain approved code,
+ * and we do not want to clutter them with 
+ * non-relevant comments.
+ *
+ * Make sure to update statistics to
+ * reflect this.
+ */
+
+function vipgoci_approved_files_comments_remove(
+	$options,
+	&$results,
+	$auto_approved_files_arr
+) {
+
+	$issues_removed = array(
+	);
+
+	vipgoci_log(
+		'Removing any potential issues (errors, warnings) ' .
+			'found for approved files',
+
+		array(
+			'auto_approved_files_arr' => $auto_approved_files_arr,
+		)
+	);
+
+	/*
+ 	 * Loop through each Pull-Request
+	 */
+	foreach( $results['issues'] as
+		$pr_number => $pr_issues
+	) {
+		/*
+		 * Loop through each issue affecting each
+		 * Pull-Request.
+		 */
+		foreach( $pr_issues as
+			$issue_number => $issue_item
+		) {
+
+			/*
+			 * If the file affected is
+			 * not found in the auto-approved files,
+			 * do not to anything.
+			 */
+			if ( ! isset(
+				$auto_approved_files_arr[
+					$issue_item['file_name']
+				]
+			) ) {
+				continue;
+			}
+
+			/*
+			 * We do not touch on 'info' type,
+			 * as that does not report any errors.
+			 */
+			if ( strtolower(
+				$issue_item['type']
+			) === 'info' ) {
+				continue;
+			}
+
+			/*
+			 * We have found an item that is approved,
+			 * and has non-info issues -- remove it
+			 * from the array of submittable issues.
+			 */
+			unset(
+				$results[
+					'issues'
+				][
+					$pr_number
+				][
+					$issue_number
+				]
+			);
+
+			/*
+			 * Update statistics accordingly.
+			 */
+			$results[
+				'stats'
+			][
+				$issue_item['type']
+			][
+				$pr_number
+			][
+				strtolower(
+					$issue_item['issue']['type']
+				)
+			]--;
+
+			/*
+			 * Update our own information array on
+			 * what we did.
+			 */
+			$issues_removed[
+				$pr_number
+			][] = $issue_item;
+		}
+
+		/*
+		 * Re-order the array as
+		 * some keys might be missing
+		 */
+		ksort(
+			$results[
+				'issues'
+			][
+				$pr_number
+			]
+		);
+	}
+
+
+	vipgoci_log(
+		'Completed cleaning out issues for pre-approved files',
+		array(
+			'issues_removed' => $issues_removed,
+		)
+	);
+}

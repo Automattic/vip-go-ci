@@ -1025,10 +1025,18 @@ function vipgoci_run() {
 		);
 	}
 
+
 	/*
-	 * FIXME: Remove issues from $results
-	 * for files that are approved.
+	 * Remove issues from $results for files
+	 * that are approved in hashes-to-hashes API.
 	 */
+
+	vipgoci_approved_files_comments_remove(
+		$options,
+		$results,
+		$auto_approved_files_arr
+	);
+
 
 	/*
 	 * FIXME: Limit number of issues in $results
@@ -1036,7 +1044,7 @@ function vipgoci_run() {
 	 */
 
 	/*
-	 * Submit any issues to GitHub
+	 * Submit any remaining issues to GitHub
 	 */
 
 	vipgoci_github_pr_generic_comment_submit(
