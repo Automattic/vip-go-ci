@@ -198,7 +198,7 @@ function vipgoci_option_file_handle(
 /*
  * Handle parameter that we expect to be a URL.
  *
- * If the parameter is not empty, and is not really 
+ * If the parameter is not empty, and is not really
  * a URL (not starting with http:// or https://),
  * exit with error. If empty, sets a default.
  */
@@ -221,7 +221,6 @@ function vipgoci_option_url_handle(
 	/*
 	 * If not default value, check if it looks like an URL,
 	 * and if so, use it, but if not, exit with error.
-	 * 
 	 */
 	if ( $default_value !== $options[ $option_name ] ) {
 		$options[ $option_name ] = trim(
@@ -240,7 +239,7 @@ function vipgoci_option_url_handle(
 			) )
 		) {
 			vipgoci_sysexit(
-				'Option --' . $option_name . ' should ' . 
+				'Option --' . $option_name . ' should ' .
 					'be an URL',
 				array(
 				),
@@ -305,7 +304,7 @@ function vipgoci_run() {
 	global $argv;
 	global $vipgoci_debug_level;
 
-	$hashes_oauth_arguments = 
+	$hashes_oauth_arguments =
 		array(
 			'hashes-oauth-token',
 			'hashes-oauth-token-secret',
@@ -392,7 +391,7 @@ function vipgoci_run() {
 			"\t" . 'Options --repo-owner, --repo-name, --commit, --token, --local-git-repo, --phpcs-path are ' . PHP_EOL .
 			"\t" . 'mandatory, while others are optional.' . PHP_EOL .
 			PHP_EOL .
-			"\t" . 'Note that if option --autoapprove is specified, --autoapprove-label needs to' . PHP_EOL . 
+			"\t" . 'Note that if option --autoapprove is specified, --autoapprove-label needs to' . PHP_EOL .
 			"\t" . 'be specified as well.' . PHP_EOL .
 			PHP_EOL .
 			"\t" . '--repo-owner=STRING            Specify repository owner, can be an organization' . PHP_EOL .
@@ -418,7 +417,7 @@ function vipgoci_run() {
 			"\t" . '                               default in $PATH will be used instead' . PHP_EOL .
 			"\t" . '--svg-checks=BOOL              Enable or disable SVG checks, both' . PHP_EOL .
 			"\t" . '                               auto-approval of SVG files and problem' . PHP_EOL .
-			"\t" . '                               checking of these files' . PHP_EOL . 
+			"\t" . '                               checking of these files' . PHP_EOL .
 			"\t" . '--hashes-api=BOOL              Whether to do hashes-to-hashes API verfication ' . PHP_EOL .
 			"\t" . '                               with individual PHP files found to be altered ' . PHP_EOL .
 			"\t" . '                               in the branch specified' . PHP_EOL .
@@ -688,7 +687,7 @@ function vipgoci_run() {
 	}
 
 	/*
-	 * Do sanity-checking with hashes-api-url 
+	 * Do sanity-checking with hashes-api-url
 	 * and --hashes-oauth-* parameters
 	 */
 	if ( isset( $options['hashes-api-url'] ) ) {
@@ -1047,7 +1046,7 @@ function vipgoci_run() {
 		$options,
 		$prs_implicated,
 		$results
-	);	
+	);
 
 	/*
 	 * FIXME: Limit number of issues in $results
