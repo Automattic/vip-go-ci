@@ -1038,6 +1038,16 @@ function vipgoci_run() {
 		$auto_approved_files_arr
 	);
 
+	/*
+	 * Remove comments from $results that have
+	 * already been submitted.
+	 */
+
+	vipgoci_remove_existing_github_comments_from_results(
+		$options,
+		$prs_implicated,
+		$results
+	);	
 
 	/*
 	 * FIXME: Limit number of issues in $results
