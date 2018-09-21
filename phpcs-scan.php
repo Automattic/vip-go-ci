@@ -152,14 +152,10 @@ function vipgoci_phpcs_scan_output_dump( $output_file, $data ) {
  * that existed prior to the change.
  */
 function vipgoci_issues_filter_irrellevant(
-	$repo_owner,
-	$repo_name,
-	$commit_id,
 	$file_name,
 	$file_issues_arr,
 	$file_blame_log,
 	$pr_item_commits,
-	$comments_existing,
 	$file_relative_lines
 ) {
 	/*
@@ -215,40 +211,6 @@ function vipgoci_issues_filter_irrellevant(
 		if ( ! isset(
 			$file_relative_lines[ $file_issue_val['line'] ]
 		) ) {
-			continue;
-		}
-
-		/*
-		 * Filter out issues that have already been
-		 * reported got GitHub.
-		 */
-
-		if (
-			// Only do check if everything above is looking good
-			vipgoci_github_comment_match(
-				$file_name,
-				$file_relative_lines[
-					$file_issue_val['line']
-				],
-				$file_issue_val['message'],
-				$comments_existing
-			)
-		) {
-			vipgoci_log(
-				'Skipping submission of ' .
-				'comment, has already been ' .
-				'submitted',
-				array(
-					'repo_owner'		=> $repo_owner,
-					'repo_name'		=> $repo_name,
-					'filename'		=> $file_name,
-					'file_issue_line'	=> $file_issue_val['line'],
-					'file_issue_msg'	=> $file_issue_val['message'],
-					'commit_id'		=> $commit_id,
-				)
-			);
-
-			/* Skip */
 			continue;
 		}
 
@@ -603,13 +565,6 @@ function vipgoci_phpcs_scan_commit(
 
 	foreach ( $prs_implicated as $pr_item ) {
 		/*
-		 * Loop through each commit, fetching all comments
-		 * made in relation to that commit
-		 */
-
-		$prs_comments = array();
-
-		/*
 		 * Get all commits related to the current
 		 * Pull-Request.
 		 */
@@ -619,19 +574,6 @@ function vipgoci_phpcs_scan_commit(
 			$pr_item->number,
 			$github_token
 		);
-
-		foreach ( $pr_item_commits as $pr_item_commit_id ) {
-			vipgoci_github_pr_reviews_comments_get(
-				$prs_comments,
-				$repo_owner,
-				$repo_name,
-				$pr_item_commit_id,
-				$pr_item->created_at,
-				$github_token
-			);
-
-			unset( $pr_item_commit_id );
-		}
 
 
 		/*
@@ -676,19 +618,14 @@ function vipgoci_phpcs_scan_commit(
 			 * the ones that the are not found
 			 * in the blame-log (meaning that
 			 * they are due to commits outside of
-			 * the Pull-Request), and remove
-			 * those which have already been submitted.
+			 * the Pull-Request).
 			 */
 
 			$file_issues_arr_filtered = vipgoci_issues_filter_irrellevant(
-				$repo_owner,
-				$repo_name,
-				$commit_id,
 				$file_name,
 				$files_issues_arr,
 				$file_blame_log,
 				$pr_item_commits,
-				$prs_comments,
 				$file_relative_lines
 			);
 
@@ -737,7 +674,6 @@ function vipgoci_phpcs_scan_commit(
 			}
 		}
 
-		unset( $prs_comments );
 		unset( $pr_item_commits );
 		unset( $pr_item_files_changed );
 		unset( $file_blame_log );
