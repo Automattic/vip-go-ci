@@ -866,13 +866,14 @@ function vipgoci_github_fetch_commit_info(
  * return false on an error.
  */
 function vipgoci_github_pr_reviews_comments_get(
-	&$prs_comments,
-	$repo_owner,
-	$repo_name,
+	$options,
 	$commit_id,
 	$commit_made_at,
-	$github_token
+	&$prs_comments
 ) {
+	$repo_owner = $options['repo-owner'];
+	$repo_name = $options['repo-name'];
+	$github_token = $options['token'];
 
 	/*
 	 * Try to get comments from cache
