@@ -272,7 +272,7 @@ function vipgoci_oauth1_signature_get_hmac_sha1(
  * Create and set HTTP header for OAuth 1.0a requests,
  * including timestamp, nonce, signature method
  * (all part of the header) and then actually sign
- * the request. Returns with a full HTTP header for 
+ * the request. Returns with a full HTTP header for
  * a OAuth 1.0a HTTP request.
  */
 function vipgoci_oauth1_headers_get(
@@ -288,7 +288,7 @@ function vipgoci_oauth1_headers_get(
 		'HMAC-SHA1';
 
 	/*
-	 * Set timestamp and nonce. 
+	 * Set timestamp and nonce.
 	 */
 	$github_token['oauth_timestamp'] = (string) ( time() - 1);
 
@@ -1681,7 +1681,7 @@ function vipgoci_github_pr_review_submit(
 					) . ' ' .
 
 					$commit_issue_stat_value . ' ' .
-					$commit_issue_stat_key . 
+					$commit_issue_stat_key .
 					( ( $commit_issue_stat_value > 1 ) ? 's' : '' ) .
 					' ' .
 					"\n\r";
