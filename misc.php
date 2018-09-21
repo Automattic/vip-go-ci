@@ -746,7 +746,7 @@ function vipgoci_github_comment_match(
 		 * as "Warning: ..." -- remove all of that.
 		 */
 		$comment_made_body = str_replace(
-			array("**", "Warning", "Error", ":no_entry_sign:", ":exclamation:"),
+			array("**", "Warning", "Error", "Info", ":no_entry_sign:", ":exclamation:", ":information_source:"),
 			array("", "", "", "", ""),
 			$comment_made->body
 		);
@@ -797,6 +797,141 @@ function vipgoci_github_comment_match(
 }
 
 /*
+ * Remove comments that exist on a GitHub Pull-Request from
+ * the results array. Will loop through each Pull-Request
+ * affected by the current commit, and remove any comment
+ * from the results array if it already exists.
+ */
+function vipgoci_remove_existing_github_comments_from_results(
+	$options,
+	$prs_implicated,
+	&$results
+) {
+	$comments_removed = array();
+
+	foreach ( $prs_implicated as $pr_item ) {
+		$prs_comments = array();
+
+		if ( ! isset(
+			$comments_removed[ $pr_item->number ]
+		) ) {
+			$comments_removed[ $pr_item->number ] = array();
+		}
+
+		/*
+		 * Get all commits related to the current
+		 * Pull-Request.
+		 */
+
+		$pr_item_commits = vipgoci_github_prs_commits_list(
+			$options['repo-owner'],
+			$options['repo-name'],
+			$pr_item->number,
+			$options['token']
+		);
+
+		/*
+		 * Loop through each commit, fetching all comments
+		 * made in relation to that commit
+		 */
+
+		foreach ( $pr_item_commits as $pr_item_commit_id ) {
+			vipgoci_github_pr_reviews_comments_get(
+				$options,
+				$pr_item_commit_id,
+				$pr_item->created_at,
+				$prs_comments
+			);
+
+			unset( $pr_item_commit_id );
+		}
+
+		foreach(
+			$results['issues'][ $pr_item->number ] as
+				$submitted_comment_key =>
+					$submitted_comment
+		) {
+
+			/*
+			 * Filter out issues that have already been
+			 * reported got GitHub.
+			 */
+
+			if (
+				// Only do check if everything above is looking good
+				vipgoci_github_comment_match(
+					$submitted_comment['file_name'],
+					$submitted_comment['file_line'],
+					$submitted_comment['issue']['message'],
+					$prs_comments
+				)
+			) {
+				/*
+				 * Keep a record of what we remove.
+				 */
+				$comments_removed[ $pr_item->number ][] =
+					$submitted_comment;
+
+				/* Remove it */
+				unset(
+					$results[
+						'issues'
+					][
+						$pr_item->number
+					][
+						$submitted_comment_key
+					]
+				);
+
+				/*
+				 * Update statistics
+				 */
+				$results[
+					'stats'
+				][
+					$submitted_comment['type']
+				][
+					$pr_item->number
+				][
+					strtolower(
+						$submitted_comment['issue']['type']
+					)
+				]--;
+			}
+		}
+
+		/*
+		 * Re-create the issues
+		 * array, so that no array
+		 * keys are missing.
+		 */
+		$results[
+			'issues'
+		][
+			$pr_item->number
+		] = array_values(
+			$results[
+				'issues'
+			][
+				$pr_item->number
+			]
+		);
+	}
+
+	/*
+	 * Report what we removed.
+	 */
+	vipgoci_log(
+		'Removed following comments from array of ' .
+		'to be submitted comments to PRs, as they ' .
+		'have been submitted already',
+		array(
+			'comments_removed' => $comments_removed
+		)
+	);
+}
+
+/*
  * For each approved file, remove any issues
  * to be submitted against them. However,
  * do not do this for 'info' type messages,
@@ -804,7 +939,7 @@ function vipgoci_github_comment_match(
  *
  * We do this, because sometimes Pull-Requests
  * will be opened that contain approved code,
- * and we do not want to clutter them with 
+ * and we do not want to clutter them with
  * non-relevant comments.
  *
  * Make sure to update statistics to
