@@ -181,9 +181,11 @@ function vipgoci_auto_approval(
 					/*
 					 * If not autoapproved by hashes-to-hashes,
 					 * do not comment on it. Only PHP and JS files
-					 * are auto-approved by hashes-to-hashes. 
+					 * are auto-approved by hashes-to-hashes.
 					 */
 					continue;
+
+					// FIXME: Check if comment has been made already.
 				}
 
 				$results[
