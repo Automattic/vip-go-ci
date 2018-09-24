@@ -114,6 +114,7 @@ function vipgoci_auto_approval(
 			);
 		}
 
+// FIXME: Break into functions
 		else if (
 			( true === $did_foreach ) &&
 			( false === $can_auto_approve )
@@ -184,8 +185,6 @@ function vipgoci_auto_approval(
 					 * are auto-approved by hashes-to-hashes.
 					 */
 					continue;
-
-					// FIXME: Check if comment has been made already.
 				}
 
 				$results[
@@ -224,7 +223,35 @@ function vipgoci_auto_approval(
 					'info'
 				]++;
 			}
-			// FIXME: Dismiss any approving reviews from the PR.
+
+			/*
+			 * Get any approving reviews for the Pull-Request
+			 * submitted by us.
+			 */		
+			$pr_item_reviews = vipgoci_github_pr_reviews_get(
+				$options['repo-owner'],
+				$options['repo-name'],
+				(int) $pr_item->number,
+				$options['token'],
+				array(
+					'login' => 'myself',
+					'state' => 'APPROVED'
+				)
+			);
+
+			/*
+			 * Dismiss any approving reviews.
+			 */
+			foreach( $pr_item_reviews as $pr_item_review ) {
+				vipgoci_github_pr_review_dismiss(
+					$options['repo-owner'],
+					$options['repo-name'],
+					(int) $pr_item->number,
+					(int) $pr_item_review->id,
+					'Dismissing obsolete review; not approved any longer',
+					$options['token']
+				);
+			}
 		}
 
 		else if (

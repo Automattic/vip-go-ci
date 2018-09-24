@@ -559,7 +559,6 @@ function vipgoci_github_post_url(
 	return $ret_val;
 }
 
-
 /*
  * Make a GET request to GitHub, for the URL
  * provided, using the access-token specified.
@@ -705,6 +704,201 @@ function vipgoci_github_fetch_url(
 	}
 
 	return $resp_data;
+}
+
+/*
+ * Submit PUT request to the GitHub API.
+ */
+function vipgoci_github_put_url(
+	$github_url,
+	$github_postfields,
+	$github_token
+) {
+	/*
+	 * Actually send a request to GitHub -- make sure
+	 * to retry if something fails.
+	 */
+	do {
+		/*
+		 * By default, assume request went through okay.
+		 */
+
+		$ret_val = 0;
+
+		/*
+		 * By default, do not retry the request,
+		 * just assume everything goes well
+		 */
+
+		$retry_req = false;
+
+		/*
+		 * Initialize and send request.
+		 */
+
+		$ch = curl_init();
+
+		curl_setopt(
+			$ch, CURLOPT_URL, $github_url
+		);
+
+		curl_setopt(
+			$ch, CURLOPT_RETURNTRANSFER, 1
+		);
+
+		curl_setopt(
+			$ch, CURLOPT_CONNECTTIMEOUT, 20
+		);
+
+		curl_setopt(
+			$ch, CURLOPT_USERAGENT,	VIPGOCI_CLIENT_ID
+		);
+
+		curl_setopt(
+			$ch, CURLOPT_CUSTOMREQUEST, 'PUT'
+		);
+
+		curl_setopt(
+			$ch,
+			CURLOPT_POSTFIELDS,
+			json_encode( $github_postfields )
+		);
+
+		curl_setopt(
+			$ch,
+			CURLOPT_HEADERFUNCTION,
+			'vipgoci_curl_headers'
+		);
+
+		curl_setopt(
+			$ch,
+			CURLOPT_HTTPHEADER,
+			array( 'Authorization: token ' . $github_token )
+		);
+
+		// Make sure to pause between GitHub-requests
+		vipgoci_github_wait();
+
+		/*
+		 * Execute query to GitHub, keep
+		 * record of how long time it took,
+		 * and keep count of how many requests we do.
+		 */
+
+		vipgoci_runtime_measure( 'start', 'github_api' );
+
+		vipgoci_counter_report( 'do', 'github_api_request_put', 1 );
+
+		$resp_data = curl_exec( $ch );
+
+		vipgoci_runtime_measure( 'stop', 'github_api' );
+
+
+		$resp_headers = vipgoci_curl_headers(
+			null,
+			null
+		);
+
+
+		/*
+		 * Assume 200 for success, everything else for failure.
+		 */
+		if ( intval( $resp_headers['status'][0] ) !== 200 ) {
+			/*
+			 * Set default wait period between requests
+			 */
+			$retry_sleep = 10;
+
+			/*
+			 * Set error-return value
+			 */
+			$ret_val = -1;
+
+			/*
+			 * Figure out if to retry...
+			 */
+
+			// Decode JSON
+			$resp_data = json_decode( $resp_data );
+
+			if (
+				( isset(
+					$resp_headers['retry-after']
+				) ) &&
+				( intval(
+					$resp_headers['retry-after']
+				) > 0 )
+			) {
+				$retry_req = true;
+				$retry_sleep = intval(
+					$resp_headers['retry-after']
+				);
+			}
+
+			else if (
+				( $resp_data->message ==
+					'Validation Failed' ) &&
+
+				( $resp_data->errors[0] ==
+					'was submitted too quickly ' .
+					'after a previous comment' )
+			) {
+				/*
+				 * These messages are due to the
+				 * submission being categorized
+				 * as a spam by GitHub -- no good
+				 * reason to retry, really.
+				 */
+				$retry_req = false;
+				$retry_sleep = 20;
+			}
+
+			else if (
+				( $resp_data->message ==
+					'Validation Failed' )
+			) {
+				$retry_req = false;
+			}
+
+			else if (
+				( $resp_data->message ==
+					'Server Error' )
+			) {
+				$retry_req = false;
+			}
+
+			vipgoci_log(
+				'GitHub reported an error' .
+					( $retry_req === true ?
+					' will retry request in ' .
+					$retry_sleep . ' seconds' :
+					'' ),
+				array(
+					'http_url'
+						=> $github_url,
+
+					'http_response_headers'
+						=> $resp_headers,
+
+					'http_reponse_body'
+						=> $resp_data,
+				)
+			);
+
+			sleep( $retry_sleep + 1 );
+		}
+
+		vipgoci_github_rate_limits_check(
+			$github_url,
+			$resp_headers
+		);
+
+
+		curl_close( $ch );
+
+	} while ( $retry_req == true );
+
+	return $ret_val;
 }
 
 /*
@@ -1436,6 +1630,111 @@ function vipgoci_github_pr_generic_comment_delete(
 	);
 }
 
+/*
+ * Get all reviews for a particular Pull-Request,
+ * and allow filtering by:
+ * - User submitted (parameter: login)
+ * - State of review (parameter: state, values are: CHANGES_REQUESTED, COMMENTED, APPROVED)
+ *
+ * Note that parameter login can be assigned a magic
+ * value, 'myself', in which case the actual username
+ * will be assumed to be that of the token-holder.
+ */
+function vipgoci_github_pr_reviews_get(
+	$repo_owner,
+	$repo_name,
+	$pr_number,
+	$github_token,
+	$filter = array()
+) {
+	vipgoci_log(
+		'Fetching reviews for Pull-Request',
+		array(
+			'repo_owner' => $repo_owner,
+			'repo_name' => $repo_name,
+			'pr_number' => $pr_number,
+		)
+	);
+
+	$ret_reviews = array();
+
+	$page = 1;
+	$per_page = 100;
+
+
+	/*
+	 * Figure out login name.
+	 */
+	if (
+		( ! empty( $filter['login'] ) ) &&
+		( $filter['login'] === 'myself' )
+	) {
+		$current_user_info = vipgoci_github_authenticated_user_get(
+			$github_token
+		);
+
+		$filter['login'] = $current_user_info->login;
+	}
+
+	/*
+	 * Fetch reviews, paged, from GitHub.
+	 */
+
+	do {
+		$github_url =
+			VIPGOCI_GITHUB_BASE_URL . '/' .
+			'repos/' .
+			rawurlencode( $repo_owner ) . '/' .
+			rawurlencode( $repo_name ) . '/' .
+			'pulls/' .
+			rawurlencode( $pr_number ) . '/' .
+			'reviews' .
+			'?per_page=' . rawurlencode( $per_page ) . '&' .
+			'page=' . rawurlencode( $page );
+
+
+		/*
+		 * Fetch reviews, decode result.
+		 */
+		$pr_reviews = json_decode(
+			vipgoci_github_fetch_url(
+				$github_url,
+				$github_token
+			)
+		);
+
+
+		/*
+		 * Loop through each review-item,
+		 * do filtering and save the ones
+		 * we want to keep.
+		 */
+
+		foreach( $pr_reviews as $pr_review ) {
+			if ( ! empty( $filter['login'] ) ) {
+				if (
+					$pr_review->user->login !==
+					$filter['login']
+				) {
+					continue;
+				}
+			}
+
+			if ( ! empty( $filter['state'] ) ) {
+				if (
+					$pr_review->state !==
+					$filter['state']
+				) {
+					continue;
+				}
+			}
+
+			$ret_reviews[] = $pr_review;
+		}
+	} while( count( $pr_reviews ) >= $per_page );
+
+	return $ret_reviews;
+}
 
 /*
  * Submit a review on GitHub for a particular commit,
@@ -1802,6 +2101,50 @@ function vipgoci_github_pr_review_submit(
 	return;
 }
 
+/*
+ * Dismiss a particular review
+ * previously submitted to a Pull-Request.
+ */
+
+function vipgoci_github_pr_review_dismiss(
+	$repo_owner,
+	$repo_name,
+	$pr_number,
+	$review_id,
+	$dismiss_message,
+	$github_token
+) {
+
+	vipgoci_log(
+		'Dismissing a Pull-Request Review',
+		array(
+			'repo_owner'		=> $repo_owner,
+			'repo_name'		=> $repo_name,
+			'pr_number'		=> $pr_number,
+			'review_id'		=> $review_id,
+			'dismiss_message'	=> $dismiss_message,
+		)
+	);
+
+	$github_url =
+		VIPGOCI_GITHUB_BASE_URL . '/' .
+		'repos/' .
+		rawurlencode( $repo_owner ) . '/' .
+		rawurlencode( $repo_name ) . '/' .
+		'pulls/' .
+		rawurlencode( $pr_number ) . '/' .
+		'reviews/' .
+		rawurlencode( $review_id ) . '/' .
+		'dismissals';
+
+	vipgoci_github_put_url(
+		$github_url,
+		array(
+			'message' => $dismiss_message
+		),
+		$github_token
+	);
+}
 
 /*
  * Approve a Pull-Request, and afterwards
