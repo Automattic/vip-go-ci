@@ -358,9 +358,10 @@ function vipgoci_auto_approval(
 			 * approved anyway.
 			 */
 			vipgoci_log(
-				'Removing any comments indicating that a ' .
-					'particular file is approved, as ' .
-					'the whole Pull-Request is approved',
+				'Removing any previously submitted comments ' .
+					'indicating that a particular file ' .
+					'is approved as the whole ' .
+					'Pull-Request is approved',
 				array(
 					'pr_number'	=> $pr_item->number,
 				)
