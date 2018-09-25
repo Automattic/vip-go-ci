@@ -1184,17 +1184,32 @@ function vipgoci_github_pr_reviews_comments_get(
  */
 function vipgoci_github_pr_reviews_comments_get_by_pr(
 	$options,
-	$pr_number
+	$pr_number,
+	$filter = array()
 ) {
 	vipgoci_log(
 		'Fetching all review comments submitted to a Pull-Request',
 		array(
-			'repo_owner' => $options['repo-owner'],
-			'repo_name' => $options['repo-name'],
-			'commit_id' => $options['commit'],
-			'pr_number' => $pr_number,
+			'repo_owner'	=> $options['repo-owner'],
+			'repo_name'	=> $options['repo-name'],
+			'commit_id'	=> $options['commit'],
+			'pr_number'	=> $pr_number,
+			'filter'	=> $filter,
 		)
 	);
+
+
+	if (
+		( isset( $filter['login'] ) ) &&
+		( 'myself' === $filter['login'] )
+	) {
+		/* Get info about token-holder */
+		$current_user_info = vipgoci_github_authenticated_user_get(
+			$options['token']
+		);
+
+		$filter['login'] = $current_user_info->login;
+	}
 
 	$page = 1;
 	$per_page = 100;
@@ -1221,6 +1236,13 @@ function vipgoci_github_pr_reviews_comments_get_by_pr(
 		);
 
 		foreach( $comments as $comment ) {
+			if (
+				( isset( $filter['login'] ) ) &&
+				( $comment->user->login !== $filter['login'] )
+			) {
+				continue;
+			}
+		
 			$all_comments[] = $comment;
 		}
 
@@ -1228,6 +1250,42 @@ function vipgoci_github_pr_reviews_comments_get_by_pr(
 	} while( count( $comments ) >= $per_page );
 
 	return $all_comments;
+}
+
+
+/*
+ * Remove a particular comment.
+ */
+
+function vipgoci_github_pr_reviews_comments_delete(
+	$options,
+	$comment_id
+) {
+	vipgoci_log(
+		'Deleting an inline comment from a Pull-Request ' .
+			'Review',
+		array(
+			'repo_owner'	=> $options['repo-owner'],
+			'repo_name'	=> $options['repo-name'],
+			'comment_id'	=> $comment_id,
+		)
+	);
+
+	$github_url =
+		VIPGOCI_GITHUB_BASE_URL . '/' .
+		'repos/' .
+		rawurlencode( $options['repo-owner'] ) . '/' .
+		rawurlencode( $options['repo-name'] ) . '/' .
+		'pulls/' .
+		'comments/' .
+		rawurlencode( $comment_id );
+
+	vipgoci_github_post_url(
+		$github_url,
+		array(),
+		$options['token'],
+		true // Indicates a 'DELETE' request
+	);
 }
 
 /*
@@ -2248,7 +2306,10 @@ function vipgoci_github_pr_reviews_dismiss_non_active_comments(
 	 */
 	$all_comments = vipgoci_github_pr_reviews_comments_get_by_pr(
 		$options,
-		$pr_number
+		$pr_number,
+		array(
+			'login' => 'myself',
+		)
 	);
 
 	if ( count( $all_comments ) === 0 ) {
