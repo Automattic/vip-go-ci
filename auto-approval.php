@@ -235,7 +235,7 @@ function vipgoci_auto_approval(
 				$options['token'],
 				array(
 					'login' => 'myself',
-					'state' => 'APPROVED'
+					'state' => array( 'APPROVED' ),
 				)
 			);
 
