@@ -1105,15 +1105,6 @@ function vipgoci_github_pr_reviews_comments_get(
 		$per_page = 100;
 		$prs_comments_cache = array();
 
-		/*
-		 * FIXME:
-		 *
-		 * Asking for all the pages from GitHub
-		 * might get expensive as we process more
-		 * commits/hour -- maybe cache this in memcache,
-		 * making it possible to share data between processes.
-		 */
-
 		do {
 			$github_url =
 				VIPGOCI_GITHUB_BASE_URL . '/' .
