@@ -1179,6 +1179,58 @@ function vipgoci_github_pr_reviews_comments_get(
 
 
 /*
+ * Get all review-comments submitted to a
+ * particular Pull-Request
+ */
+function vipgoci_github_pr_reviews_comments_get_by_pr(
+	$options,
+	$pr_number
+) {
+	vipgoci_log(
+		'Fetching all review comments submitted to a Pull-Request',
+		array(
+			'repo_owner' => $options['repo-owner'],
+			'repo_name' => $options['repo-name'],
+			'commit_id' => $options['commit'],
+			'pr_number' => $pr_number,
+		)
+	);
+
+	$page = 1;
+	$per_page = 100;
+
+	$all_comments = array();
+
+	do {
+		$github_url =
+			VIPGOCI_GITHUB_BASE_URL . '/' .
+			'repos/' .
+			rawurlencode( $options['repo-owner'] ) . '/' .
+			rawurlencode( $options['repo-name'] ) . '/' .
+			'pulls/' .
+			rawurlencode( $pr_number ) . '/' .
+			'comments?' .
+			'page=' . rawurlencode( $page ) . '&' .
+			'per_page=' . rawurlencode( $per_page );
+
+		$comments = json_decode(
+			vipgoci_github_fetch_url(
+				$github_url,
+				$options['token']
+			)
+		);
+
+		foreach( $comments as $comment ) {
+			$all_comments[] = $comment;
+		}
+
+		$page++;
+	} while( count( $comments ) >= $per_page );
+
+	return $all_comments;
+}
+
+/*
  * Get all generic comments made to a Pull-Request from Github.
  */
 
@@ -1721,10 +1773,21 @@ function vipgoci_github_pr_reviews_get(
 			}
 
 			if ( ! empty( $filter['state'] ) ) {
-				if (
-					$pr_review->state !==
-					$filter['state']
+				$match = false;
+
+				foreach(
+					$filter['state'] as
+						$allowed_state
 				) {
+					if (
+						$pr_review->state ===
+						$allowed_state
+					) {
+						$match = true;
+					}
+				}
+
+				if ( false === $match ) {
 					continue;
 				}
 			}
@@ -2144,6 +2207,149 @@ function vipgoci_github_pr_review_dismiss(
 		),
 		$github_token
 	);
+}
+
+
+/*
+ * Dismiss all Pull-Request Reviews that have no
+ * active comments attached to them.
+ */
+function vipgoci_github_pr_reviews_dismiss_non_active_comments(
+	$options,
+	$pr_number
+) {
+	vipgoci_log(
+		'Dismissing any Pull-Request reviews submitted by ' .
+			'us and contain no active inline comments any more',
+		array(
+			'repo_owner'		=> $options['repo-owner'],
+			'repo_name'		=> $options['repo-name'],
+			'pr_number'		=> $pr_number,
+		)
+	);
+
+	/*
+	 * Get any Pull-Request reviews with changes
+ 	 * required status, and submitted by us.
+	 */
+	$pr_reviews = vipgoci_github_pr_reviews_get(
+		$options['repo-owner'],
+		$options['repo-name'],
+		$pr_number,
+		$options['token'],
+		array(
+			'login' => 'myself',
+			'state' => array( 'CHANGES_REQUESTED' )
+		)
+	);
+
+	/*
+	 * Get all comments to a the current Pull-Request
+	 */
+	$all_comments = vipgoci_github_pr_reviews_comments_get_by_pr(
+		$options,
+		$pr_number
+	);
+
+	if ( count( $all_comments ) === 0 ) {
+		/*
+		 * In case we receive no comments at all
+		 * from GitHub, do not do anything, as a precaution.
+		 * Receiving no comments might indicate a
+		 * failure (communication error or something else),
+		 * and because we dismiss reviews that seem not to
+		 * contain any comments, we might risk dismissing
+		 * all reviews when there is a failure. By
+		 * doing this, we take much less risk.
+		 */
+		vipgoci_log(
+			'Not dismissing any reviews, as no inactive ' .
+				'comments submitted to the Pull-Request ' .
+				'were found',
+			array(
+				'repo_owner'	=> $options['repo-owner'],
+				'repo_name'	=> $options['repo-name'],
+				'pr_number'	=> $pr_number,
+			)
+		);
+
+		return;
+	}
+
+	$reviews_status = array();
+
+	foreach( $all_comments as $comment_item ) {
+		/*
+		 * Not associated with a review? Ignore then.
+		 */
+		if ( ! isset( $comment_item->pull_request_review_id ) ) {
+			continue;
+		}
+
+		/*
+		 * If the review ID is not found in
+		 * the array of reviews, put in 'null'.
+		 */
+		if ( ! isset( $reviews_status[
+			$comment_item->pull_request_review_id
+		] ) ) {
+			$reviews_status[
+				$comment_item->pull_request_review_id
+			] = null;
+		}
+
+		/*
+		 * In case position (relative line number)
+		 * is at null, this means that the comment
+		 * is no longer 'active': It has become obsolete
+		 * as the code has changed. If we have not so far
+		 * found any instance of the review associated
+		 * with the comment having other active comments,
+		 * mark it as 'safe to dismiss'.
+		 */
+		if ( null === $comment_item->position ) {
+			if (
+				$reviews_status[
+					$comment_item->pull_request_review_id
+				] !== false
+			) {
+				$reviews_status[
+					$comment_item->pull_request_review_id
+				] = true;
+			}
+		}
+
+		else {
+			$reviews_status[
+				$comment_item->pull_request_review_id
+			] = false;
+		}
+	}
+
+	/*
+	 * Loop through each review we
+	 * found matching the specific criteria.
+	 */
+	foreach( $pr_reviews as $pr_review ) {
+		/*
+		 * If no active comments were found,
+		 * it should be safe to dismiss the review.
+		 */
+		if (
+			( ! isset( $reviews_status[ $pr_review->id ] ) ) ||
+			( true === $reviews_status[ $pr_review->id ] )
+		) {
+			vipgoci_github_pr_review_dismiss(
+				$options['repo-owner'],
+				$options['repo-name'],
+				$pr_number,
+				$pr_review->id,
+				'Dismissing review as all inline comments ' .
+					'are obsolete by now',
+				$options['token']
+			);
+		}
+	}
 }
 
 /*
