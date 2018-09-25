@@ -351,6 +351,7 @@ function vipgoci_run() {
 			'commit:',
 			'token:',
 			'review-comments-max:',
+			'dismiss-stale-reviews:',
 			'branches-ignore:',
 			'output:',
 			'dry-run:',
@@ -402,6 +403,10 @@ function vipgoci_run() {
 			"\t" . '                               to GitHub in one review. If the number of ' . PHP_EOL .
 			"\t" . '                               comments exceed this number, additional reviews ' . PHP_EOL .
 			"\t" . '                               will be submitted.' . PHP_EOL .
+			"\t" . '--dismiss-stale-reviews=BOOL   Dismiss any reviews associated with Pull-Requests ' . PHP_EOL .
+			"\t" . '                               that we process which have no active comments. ' . PHP_EOL .
+			"\t" . '                               The Pull-Requests we process are those associated ' . PHP_EOL .
+			"\t" . '                               with the commit specified.' . PHP_EOL .
 			"\t" . '--informational-url=STRING     URL to documentation on what this bot does. Should ' . PHP_EOL .
 			"\t" . '                               start with https:// or https:// ' . PHP_EOL .
 			"\t" . '--phpcs=BOOL                   Whether to run PHPCS (true/false)' . PHP_EOL .
@@ -626,6 +631,7 @@ function vipgoci_run() {
 
 	vipgoci_option_bool_handle( $options, 'lint', 'true' );
 
+	vipgoci_option_bool_handle( $options, 'dismiss-stale-reviews', 'false' );
 
 	if (
 		( false === $options['lint'] ) &&
@@ -655,6 +661,9 @@ function vipgoci_run() {
 
 	/*
 	 * Do some sanity-checking on the parameters
+	 *
+	 * Note: Parameters should not be set after
+	 * this point.
 	 */
 
 	$options['autoapprove-filetypes'] = array_map(
@@ -930,11 +939,20 @@ function vipgoci_run() {
 		$results
 	);
 
-	/* FIXME:
-	 * Loop through all reviews for each PR,
-	 * dismiss reviews that contain *only*
-	 * inactive comments.
-	 */
+	if ( true === $options['dismiss-stale-reviews'] ) {
+		/*
+		 * Dismiss any reviews that contain *only*
+		 * inactive comments -- i.e. comments that
+		 * are obsolete as the code has been changed.
+		 */
+
+		foreach ( $prs_implicated as $pr_item ) {
+			vipgoci_github_pr_reviews_dismiss_non_active_comments(
+				$options,
+				$pr_item->number
+			);
+		}
+	}
 
 	/*
 	 * Clean up old comments made by us previously
