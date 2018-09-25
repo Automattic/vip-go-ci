@@ -197,8 +197,7 @@ function vipgoci_auto_approval(
 					'file_name'	=> $approved_file,
 					'file_line'	=> 1,
 					'issue' => array(
-						'message'=> 'File is ' .
-							'approved in hashes-to-hashes database',
+						'message'=> VIPGOCI_FILE_IS_APPROVED_MSG,
 
 						'source'
 							=> 'WordPressVIPMinimum.' .
@@ -226,8 +225,18 @@ function vipgoci_auto_approval(
 
 			/*
 			 * Get any approving reviews for the Pull-Request
-			 * submitted by us.
+			 * submitted by us. Then dismiss them.
 			 */		
+
+			vipgoci_log(
+				'Dismissing any approving reviews for ' .
+					'the Pull-Request, as it is not ' .
+					'approved anymore',
+				array(
+					'pr_number'	=> $pr_item->number,
+				)
+			);
+
 			$pr_item_reviews = vipgoci_github_pr_reviews_get(
 				$options['repo-owner'],
 				$options['repo-name'],
@@ -242,6 +251,7 @@ function vipgoci_auto_approval(
 			/*
 			 * Dismiss any approving reviews.
 			 */
+
 			foreach( $pr_item_reviews as $pr_item_review ) {
 				vipgoci_github_pr_review_dismiss(
 					$options['repo-owner'],
@@ -341,7 +351,45 @@ function vipgoci_auto_approval(
 				);
 			}
 
-			// FIXME: Remove any comments indicating that a file is approved.
+			/*
+			 * Remove any comments indicating that a file is
+			 * approved -- we want to get rid of these, as they
+			 * are useless to reviewers at this point. The PR is
+			 * approved anyway.
+			 */
+			vipgoci_log(
+				'Removing any comments indicating that a ' .
+					'particular file is approved, as ' .
+					'the whole Pull-Request is approved',
+				array(
+					'pr_number'	=> $pr_item->number,
+				)
+			);
+
+			$pr_comments = vipgoci_github_pr_reviews_comments_get_by_pr(
+				$options,
+				$pr_item->number,
+				array(
+					'login' => 'myself',
+				)
+			);
+
+			foreach( $pr_comments as $pr_comment_item ) {
+				/*
+				 * If we find the 'approved in hashes-to-hashes ...'
+				 * message, we can safely remove the comment.
+				 */
+				if ( false !== strpos(
+					$pr_comment_item->body,
+					VIPGOCI_FILE_IS_APPROVED_MSG
+				) ) {
+					vipgoci_github_pr_reviews_comments_delete(
+						$options,
+						$pr_comment_item->id
+					);
+				}
+			}
+			
 		}
 
 		unset( $files_seen );
