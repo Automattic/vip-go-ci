@@ -1187,17 +1187,38 @@ function vipgoci_github_pr_reviews_comments_get_by_pr(
 	$pr_number,
 	$filter = array()
 ) {
+
+	/*
+	 * Calculate caching ID
+	 */
+	$cache_id = array(
+		__FUNCTION__, $options['repo-owner'], $options['repo-name'],
+		$pr_number, $filter
+	);
+
+	/*
+	 * Try to get cached data
+	 */
+	$cached_data = vipgoci_cache( $cache_id );
+
 	vipgoci_log(
-		'Fetching all review comments submitted to a Pull-Request',
+		'Fetching all review comments submitted to a Pull-Request' . 
+		(( $cached_data !== false ) ? ' (cached)' : '' ),
 		array(
 			'repo_owner'	=> $options['repo-owner'],
 			'repo_name'	=> $options['repo-name'],
-			'commit_id'	=> $options['commit'],
 			'pr_number'	=> $pr_number,
 			'filter'	=> $filter,
 		)
 	);
 
+	/*
+	 * If we have the information cached,
+	 * return that.
+	 */
+	if ( false !== $cached_data ) {
+		return $cached_data;
+	}
 
 	if (
 		( isset( $filter['login'] ) ) &&
@@ -1248,6 +1269,11 @@ function vipgoci_github_pr_reviews_comments_get_by_pr(
 
 		$page++;
 	} while( count( $comments ) >= $per_page );
+
+	/*
+	 * Cache the results and return 
+	 */
+	vipgoci_cache( $cache_id, $all_comments );
 
 	return $all_comments;
 }
@@ -1791,6 +1817,7 @@ function vipgoci_github_pr_reviews_get(
 	 */
 
 	do {
+echo "Foobar" . PHP_EOL;
 		$github_url =
 			VIPGOCI_GITHUB_BASE_URL . '/' .
 			'repos/' .
@@ -1852,6 +1879,8 @@ function vipgoci_github_pr_reviews_get(
 
 			$ret_reviews[] = $pr_review;
 		}
+
+		$page++;
 	} while( count( $pr_reviews ) >= $per_page );
 
 	return $ret_reviews;
