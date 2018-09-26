@@ -1808,7 +1808,6 @@ function vipgoci_github_pr_reviews_get(
 	 */
 
 	do {
-echo "Foobar" . PHP_EOL;
 		$github_url =
 			VIPGOCI_GITHUB_BASE_URL . '/' .
 			'repos/' .
