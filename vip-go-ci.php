@@ -351,6 +351,7 @@ function vipgoci_run() {
 			'commit:',
 			'token:',
 			'review-comments-max:',
+			'review-comments-total-max:',
 			'dismiss-stale-reviews:',
 			'branches-ignore:',
 			'output:',
@@ -403,6 +404,10 @@ function vipgoci_run() {
 			"\t" . '                               to GitHub in one review. If the number of ' . PHP_EOL .
 			"\t" . '                               comments exceed this number, additional reviews ' . PHP_EOL .
 			"\t" . '                               will be submitted.' . PHP_EOL .
+			"\t" . '--review-comments-total-max=NUMBER  Maximum number of inline comments submitted to'   . PHP_EOL .
+			"\t" . '                                    a single Pull-Request by the program -- includes' . PHP_EOL .
+			"\t" . '                                    comments from previous executions. A value of ' . PHP_EOL .
+			"\t" . '                                    \'0\' indicates no limit.' . PHP_EOL .
 			"\t" . '--dismiss-stale-reviews=BOOL   Dismiss any reviews associated with Pull-Requests ' . PHP_EOL .
 			"\t" . '                               that we process which have no active comments. ' . PHP_EOL .
 			"\t" . '                               The Pull-Requests we process are those associated ' . PHP_EOL .
@@ -607,6 +612,19 @@ function vipgoci_run() {
 		'review-comments-max',
 		10,
 		range( 5, 100, 1 )
+	);
+
+	/*
+	 * Overall maximum number of inline comments
+	 * posted to GitHub Pull-Request Reviews -- from
+	 * 0 to 500. 0 means unlimited.
+	 */
+
+	vipgoci_option_integer_handle(
+		$options,
+		'review-comments-total-max',
+		200,
+		range( 0, 500, 1 )
 	);
 
 	/*
@@ -1039,7 +1057,7 @@ function vipgoci_run() {
 		vipgoci_auto_approval(
 			$options,
 			$auto_approved_files_arr,
-			$results
+			$results // FIXME: dry-run
 		);
 	}
 
@@ -1067,9 +1085,17 @@ function vipgoci_run() {
 	);
 
 	/*
-	 * FIXME: Limit number of issues in $results
-	 * -- take into account previously posted issues.
+	 * Limit number of issues in $results.
+	 * 
+	 * If set to zero, skip this part.
 	 */
+
+	if ( 0 !== $options['review-comments-total-max'] ) {
+		vipgoci_github_results_filter_comments_to_max(
+			$options,
+			$results
+		);
+	}
 
 	/*
 	 * Submit any remaining issues to GitHub
