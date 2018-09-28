@@ -1171,7 +1171,15 @@ function vipgoci_github_pr_reviews_comments_get(
 
 /*
  * Get all review-comments submitted to a
- * particular Pull-Request
+ * particular Pull-Request. 
+ * Supports filtering:Will filter the
+ * - User submitted (parameter: login)
+ * - Comment state (parameter: comments_active, true/false)
+ *
+ * Note that parameter login can be assigned a magic
+ * value, 'myself', in which case the actual username
+ * will be assumed to be that of the token-holder.
+ 
  */
 function vipgoci_github_pr_reviews_comments_get_by_pr(
 	$options,
@@ -1253,6 +1261,18 @@ function vipgoci_github_pr_reviews_comments_get_by_pr(
 				( $comment->user->login !== $filter['login'] )
 			) {
 				continue;
+			}
+
+			if ( isset( $filter['comments_active'] ) ) {
+				if (
+					( ( $comment->position !== null ) &&
+					( $filter['comments_active'] === false ) )
+					||
+					( ( $comment->position === null ) &&
+					( $filter['comments_active'] === true ) )
+				) {
+					continue;
+				}
 			}
 		
 			$all_comments[] = $comment;
