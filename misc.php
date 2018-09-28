@@ -1066,3 +1066,218 @@ function vipgoci_approved_files_comments_remove(
 		)
 	);
 }
+
+/*
+ * Limit the number of to-be-submitted comments to
+ * the Pull-Requests. We take into account the number
+ * to be submitted for each Pull-Request, the number of
+ * comments already submitted, and the limit specified
+ * on start-up. Comments are removed as needed, and
+ * what comments are removed is reported.
+ */
+function vipgoci_github_results_filter_comments_to_max(
+	$options,
+	&$results
+) {
+
+	vipgoci_log(
+		'Preparing to remove any excessive comments from array of ' .
+			'issues to be submitted to PRs',
+		array(
+			'review_comments_total_max'
+				=> $options['review-comments-total-max'],
+		)
+	);
+
+
+	/*
+	 * We might need to remove comments.
+	 *
+	 * We will begin with lower priority comments
+	 * first, remove them, and then progressively
+	 * continue removing comments as priority increases
+	 * and there is still a need for removal.
+	 */
+
+	/*
+	 * Keep track of what we remove.
+	 */
+	$comments_removed = array();
+
+	foreach(
+		$results['issues'] as
+			$pr_number => $pr_issues_comments
+	) {
+		/*
+		 * Take into account previously submitted comments
+		 * by us for the current Pull-Request.
+		 */
+
+		$pr_previous_comments_cnt = count(
+			vipgoci_github_pr_reviews_comments_get_by_pr(
+				$options,
+				$pr_number,
+				array(
+					'login'			=> 'myself',
+					'comments_active'	=> true,
+				)
+			)
+		);
+
+		/*
+		 * How many comments need
+		 * to be removed? Count in
+		 * comments in the PR in addition
+		 * to possible new ones, substract
+		 * from the maximum specified.
+		 */
+		
+		$comments_to_remove =
+			(
+				count( $pr_issues_comments )
+				+
+				$pr_previous_comments_cnt
+			)
+			-
+			$options['review-comments-total-max'];
+
+		/*
+		 * If there are no comments to remove,
+		 * skip and continue.
+		 */
+		if ( $comments_to_remove <= 0 ) {
+			continue;
+		}
+
+		/*
+		 * If more are to be removed than are to be
+		 * submitted, limit to the number of available ones.
+		 */
+		else if (
+			$comments_to_remove >
+				count( $pr_issues_comments )
+		) {
+			$comments_to_remove = count( $pr_issues_comments );
+		}
+
+		/*
+		 * Figure out severity, minimum and maximum.
+		 */
+
+		$severity_min = 0;
+		$severity_max = 0;
+
+		foreach( $pr_issues_comments as $pr_issue ) {
+			$severity_min = min(
+				$pr_issue['issue']['severity'],
+				$severity_min
+			);
+
+			$severity_max = max(
+				$pr_issue['issue']['severity'],
+				$severity_max
+			);
+		}
+
+		/*
+		 * Loop through severity-levels from low to high
+		 * and remove comments as needed.
+		 */
+		for (
+			$i = $severity_min;
+			$i <= $severity_max && $comments_to_remove > 0;
+			$i++
+		) {
+			foreach(
+				$pr_issues_comments as
+					$pr_issue_key => $pr_issue
+			) {
+				/*
+				 * If we have removed enough, stop here.
+				 */
+				if ( $comments_to_remove <= 0 ) {
+					break;
+				}
+
+				/*
+				 * Not correct severity level? Ignore.
+				 */
+				if ( $pr_issue['issue']['severity'] !== $i ) {
+					continue;
+				}
+
+				/*
+				 * Actually remove and
+				 * keep statistics up to date.
+				 */
+
+				unset(
+					$results[
+						'issues'
+					][
+						$pr_number
+					][
+						$pr_issue_key
+					]
+				);
+
+				$results[
+					'stats'
+				][
+					$pr_issue['type']
+				][
+					$pr_number
+				][
+					strtolower(
+						$pr_issue['issue']['type']
+					)
+				]--;
+
+				/*
+				 * Keep track of what we remove
+				 */
+				if ( ! isset(
+					$comments_removed[
+						$pr_number
+					]
+				) ) {
+					$comments_removed[
+						$pr_number
+					] = array();
+				}
+
+				$comments_removed[
+					$pr_number
+				] = $pr_issue;
+
+				$comments_to_remove--;
+			}
+		}
+
+		/*
+		 * Re-create array so to
+		 * keep continuous ordering
+		 * of index.
+		 */
+		$results[
+			'issues'
+		][
+			$pr_number
+		] = array_values(
+			$results[
+				'issues'
+			][
+				$pr_number
+			]
+		);
+	}
+
+	vipgoci_log(
+		'Removed issue comments from array of to be submitted ' .
+			'comments to PRs due to limit constraints',
+		array(
+			'review_comments_total_max'	=> $options['review-comments-total-max'],
+			'comments_removed'		=> $comments_removed,
+		)
+	);
+}
