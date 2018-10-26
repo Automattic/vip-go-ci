@@ -411,6 +411,8 @@ function vipgoci_phpcs_scan_commit(
 			'repo_owner' => $repo_owner,
 			'repo_name' => $repo_name,
 			'commit_id' => $commit_id,
+			'all_files_changed_by_prs' =>
+				$pr_item_files_changed['all'],
 		)
 	);
 
