@@ -57,13 +57,9 @@ function vipgoci_ap_file_types(
 		foreach ( $pr_diff as
 			$pr_diff_file_name => $pr_diff_contents
 		) {
-			$pr_diff_file_extension = vipgoci_file_extension(
-				$pr_diff_file_name
-			);
-
 			/*
 			 * If the file is already in the array
-			 * of approved file, do not do anything.
+			 * of approved files, do not do anything.
 			 */
 			if ( isset(
 				$auto_approved_files_arr[
@@ -72,6 +68,10 @@ function vipgoci_ap_file_types(
 			) ) {
 				continue;
 			}
+
+			$pr_diff_file_extension = vipgoci_file_extension(
+				$pr_diff_file_name
+			);
 
 			/*
 			 * Check if the extension of the file
