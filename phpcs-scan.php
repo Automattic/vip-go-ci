@@ -89,6 +89,7 @@ function vipgoci_phpcs_scan_single_file(
 			'repo_name' => $options['repo-name'],
 			'commit_id' => $options['commit'],
 			'filename' => $file_name,
+			'file_extension' => $file_extension,
 			'temp_file_name' => $temp_file_name,
 		)
 	);
