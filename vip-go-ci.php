@@ -427,7 +427,9 @@ function vipgoci_run() {
 			"\t" . '                               default in $PATH will be used instead' . PHP_EOL .
 			"\t" . '--svg-checks=BOOL              Enable or disable SVG checks, both' . PHP_EOL .
 			"\t" . '                               auto-approval of SVG files and problem' . PHP_EOL .
-			"\t" . '                               checking of these files' . PHP_EOL .
+			"\t" . '                               checking of these files. Note that if' . PHP_EOL .
+			"\t" . '                               auto-approvals are turned off globally, no' . PHP_EOL .
+			"\t" . '                               auto-approval is performed for SVG files.' . PHP_EOL .
 			"\t" . '--hashes-api=BOOL              Whether to do hashes-to-hashes API verfication ' . PHP_EOL .
 			"\t" . '                               with individual PHP files found to be altered ' . PHP_EOL .
 			"\t" . '                               in the branch specified' . PHP_EOL .
@@ -742,11 +744,8 @@ function vipgoci_run() {
 
 		/*
 		 * Cross-reference: We disallow autoapproving
-		 * PHP and JS files here, because hashes-api
-		 * could autoapprove them and because they can
-		 * contain dangerous code. By doing this, we
-		 * avoid any possible conflicts between autoapproval
-		 * and hases-api.
+		 * PHP and JS files here, because they chould contain
+		 * contain dangerous code.
 		 */
 		(
 			( in_array(
