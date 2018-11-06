@@ -142,7 +142,7 @@ function vipgoci_github_rate_limit_usage(
 function vipgoci_github_wait() {
 	static $last_request_time = null;
 
-	vipgoci_runtime_measure( 'start', 'github_forced_wait' );
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'github_forced_wait' );
 
 	if ( null !== $last_request_time ) {
 		/*
@@ -156,7 +156,7 @@ function vipgoci_github_wait() {
 
 	$last_request_time = time();
 
-	vipgoci_runtime_measure( 'stop', 'github_forced_wait' );
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'github_forced_wait' );
 }
 
 /*
@@ -174,8 +174,6 @@ function vipgoci_oauth1_signature_get_hmac_sha1(
 	$request_url,
 	$parameters_arr
 ) {
-	$parts = array();
-
 	/*
 	 * Start constructing the 'base string' --
 	 * a crucial part of the signature.
@@ -306,6 +304,11 @@ function vipgoci_oauth1_headers_get(
 			$github_token
 		);
 
+	/*
+	 * Those are not needed after this point,
+	 * so we remove them to limit any risk
+	 * of information leakage.
+	 */
 	unset( $github_token['oauth_token_secret' ] );
 	unset( $github_token['oauth_consumer_secret' ] );
 
@@ -321,6 +324,18 @@ function vipgoci_oauth1_headers_get(
 			$github_token_key =>
 			$github_token_value
 	) {
+		if ( strpos(
+			$github_token_key,
+			'oauth_'
+		) !== 0 ) {
+			/*
+			 * If the token_key does not
+			 * start with 'oauth_' we skip to
+			 * avoid information-leakage.
+			 */
+			continue;
+		}
+
 		$res_header .=
 			$sep .
 			$github_token_key . '="' .
@@ -429,13 +444,13 @@ function vipgoci_github_post_url(
 		 * and keep count of how many requests we do.
 		 */
 
-		vipgoci_runtime_measure( 'start', 'github_api' );
+		vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'github_api_post' );
 
 		vipgoci_counter_report( 'do', 'github_api_request_post', 1 );
 
 		$resp_data = curl_exec( $ch );
 
-		vipgoci_runtime_measure( 'stop', 'github_api' );
+		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'github_api_post' );
 
 
 		$resp_headers = vipgoci_curl_headers(
@@ -638,13 +653,13 @@ function vipgoci_github_fetch_url(
 		 * record of how long time it took,
 		 + and also keep count of how many we do.
 		 */
-		vipgoci_runtime_measure( 'start', 'github_api' );
+		vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'github_api_get' );
 
-		vipgoci_counter_report( 'do', 'github_api_request_fetch', 1 );
+		vipgoci_counter_report( 'do', 'github_api_request_get', 1 );
 
 		$resp_data = curl_exec( $ch );
 
-		vipgoci_runtime_measure( 'stop', 'github_api' );
+		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'github_api_get' );
 
 
 		$resp_headers = vipgoci_curl_headers(
@@ -785,13 +800,13 @@ function vipgoci_github_put_url(
 		 * and keep count of how many requests we do.
 		 */
 
-		vipgoci_runtime_measure( 'start', 'github_api' );
+		vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'github_api_put' );
 
 		vipgoci_counter_report( 'do', 'github_api_request_put', 1 );
 
 		$resp_data = curl_exec( $ch );
 
-		vipgoci_runtime_measure( 'stop', 'github_api' );
+		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'github_api_put' );
 
 
 		$resp_headers = vipgoci_curl_headers(
@@ -1647,6 +1662,9 @@ function vipgoci_github_pr_comments_error_msg(
 
 /*
  * Remove any comments made by us earlier.
+ *
+ * FIXME: For future alterations, move comments
+ * to be removed to arguments of this function.
  */
 
 function vipgoci_github_pr_comments_cleanup(
@@ -2357,7 +2375,7 @@ function vipgoci_github_pr_reviews_dismiss_non_active_comments(
 		 * from GitHub, do not do anything, as a precaution.
 		 * Receiving no comments might indicate a
 		 * failure (communication error or something else),
-		 * and because we dismiss reviews that seem not to
+		 * and if we dismiss reviews that seem not to
 		 * contain any comments, we might risk dismissing
 		 * all reviews when there is a failure. By
 		 * doing this, we take much less risk.
@@ -2471,11 +2489,8 @@ function vipgoci_github_approve_pr(
 	$pr_number,
 	$latest_commit_id,
 	$filetypes_approve,
-	$approval_type = null,
 	$dry_run
 ) {
-
-
 	$github_url =
 		VIPGOCI_GITHUB_BASE_URL . '/' .
 		'repos/' .
@@ -2492,30 +2507,12 @@ function vipgoci_github_approve_pr(
 		'comments' => array()
 	);
 
-	if ( VIPGOCI_APPROVAL_AUTOAPPROVE === $approval_type ) {
-		$github_postfields['body'] =
-			'Auto-approved Pull-Request #' .
-			(int) $pr_number . ' as it ' .
-			'contains only allowable file-types ' .
-			'(' . implode( ', ', $filetypes_approve ) . ')';
-	}
-
-	else if ( VIPGOCI_APPROVAL_HASHES_API === $approval_type ) {
-		$github_postfields['body'] =
-			'Auto-approved Pull-Request #' .
-			(int) $pr_number . ' as it contains ' .
-			'only files approved in hashes-to-hashes' .
-			'database';
-	}
-
-	else {
-		vipgoci_sysexit(
-			'Illegal usage of function',
-			array(
-				'function_name' => __FUNCTION__,
-			)
-		);
-	}
+	$github_postfields['body'] =
+		'Auto-approved Pull-Request #' .
+		(int) $pr_number . ' as it ' .
+		'contains only auto-approvable files' .
+		'-- either pre-approved or file-types that are auto-approvable (' .
+		'(' . implode( ', ', $filetypes_approve ) . ').';
 
 	if ( true === $dry_run ) {
 		return;
