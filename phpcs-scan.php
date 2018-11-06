@@ -46,11 +46,11 @@ function vipgoci_phpcs_do_scan(
 		2
 	);
 
-	vipgoci_runtime_measure( 'start', 'phpcs_cli' );
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'phpcs_cli' );
 
 	$result = shell_exec( $cmd );
 
-	vipgoci_runtime_measure( 'stop', 'phpcs_cli' );
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'phpcs_cli' );
 
 	return $result;
 }
@@ -269,7 +269,7 @@ function vipgoci_phpcs_scan_commit(
 	$commit_id  = $options['commit'];
 	$github_token = $options['token'];
 
-        vipgoci_runtime_measure( 'start', 'phpcs_scan_commit' );
+        vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'phpcs_scan_commit' );
 
 	vipgoci_log(
 		'About to PHPCS-scan repository',
@@ -423,7 +423,7 @@ function vipgoci_phpcs_scan_commit(
 		 * Loop through each file affected by
 		 * the commit.
 		 */
-		vipgoci_runtime_measure( 'start', 'phpcs_scan_single_file' );
+		vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'phpcs_scan_single_file' );
 
 		$file_extension = vipgoci_file_extension(
 			$file_name
@@ -543,7 +543,7 @@ function vipgoci_phpcs_scan_commit(
 
 		gc_collect_cycles();
 
-		vipgoci_runtime_measure( 'stop', 'phpcs_scan_single_file' );
+		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'phpcs_scan_single_file' );
 	}
 
 
@@ -700,6 +700,6 @@ function vipgoci_phpcs_scan_commit(
 
 	gc_collect_cycles();
 
-        vipgoci_runtime_measure( 'stop', 'phpcs_scan_commit' );
+        vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'phpcs_scan_commit' );
 }
 
