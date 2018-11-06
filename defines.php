@@ -46,3 +46,12 @@ define( 'VIPGOCI_STATS_HASHES_API',	'hashes-api'	);
 
 define( 'VIPGOCI_APPROVAL_AUTOAPPROVE',		'auto-approval' );
 define( 'VIPGOCI_APPROVAL_HASHES_API',		'hashes-api' );
+
+
+/*
+ * Defines for vipgoci_runtime_measure()
+ */
+
+define( 'VIPGOCI_RUNTIME_START', 'start' );
+define( 'VIPGOCI_RUNTIME_STOP', 'stop' );
+define( 'VIPGOCI_RUNTIME_DUMP', 'dump' );
