@@ -19,7 +19,7 @@ function vipgoci_ap_file_types(
 		&$auto_approved_files_arr
 	) {
 
-	vipgoci_runtime_measure( 'start', 'ap_file_types' );
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'ap_file_types' );
 
 	vipgoci_log(
 		'Doing auto-approval scanning based on file-types',
@@ -101,6 +101,6 @@ function vipgoci_ap_file_types(
 
 	gc_collect_cycles();
 
-	vipgoci_runtime_measure( 'stop', 'ap_file_types' );
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'ap_file_types' );
 }
 
