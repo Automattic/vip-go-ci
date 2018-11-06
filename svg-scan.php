@@ -13,7 +13,7 @@ function vipgoci_svg_scan_single_file(
 	$options,
 	$file_name
 ) {
-	vipgoci_runtime_measure( 'start', 'svg_scan_single_file' );
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'svg_scan_single_file' );
 
 	vipgoci_log(
 		'Scanning single SVG file',
@@ -67,7 +67,7 @@ function vipgoci_svg_scan_single_file(
 	 */
 	if ( 'svg' !== $file_extension ) {
 
-		vipgoci_runtime_measure( 'stop', 'svg_scan_single_file' );
+		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'svg_scan_single_file' );
 
 		vipgoci_log(
 			'Could not scan file, does not seem to be a SVG file',
@@ -205,7 +205,7 @@ function vipgoci_svg_scan_single_file(
 		)
         );
 
-	vipgoci_runtime_measure( 'stop', 'svg_scan_single_file' );
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'svg_scan_single_file' );
 
 	vipgoci_log(
 		'SVG scanning of a single file finished',
