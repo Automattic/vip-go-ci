@@ -266,14 +266,14 @@ function vipgoci_save_temp_file(
 	}
 
 	if ( false !== $temp_file_name ) {
-		vipgoci_runtime_measure( 'start', 'save_temp_file' );
+		vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'save_temp_file' );
 
 		$temp_file_save_status = file_put_contents(
 			$temp_file_name,
 			$file_contents
 		);
 
-		vipgoci_runtime_measure( 'stop', 'save_temp_file' );
+		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'save_temp_file' );
 	}
 
 	// Detect possible errors when saving the temporary file
@@ -446,11 +446,11 @@ function vipgoci_scandir_git_repo( $path, $filter ) {
 	);
 
 
-	vipgoci_runtime_measure( 'start', 'git_repo_scandir' );
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'git_repo_scandir' );
 
 	$cdir = scandir( $path );
 
-	vipgoci_runtime_measure( 'stop', 'git_repo_scandir' );
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'git_repo_scandir' );
 
 
 	foreach ( $cdir as $key => $value ) {
@@ -571,15 +571,15 @@ function vipgoci_runtime_measure( $action = null, $type = null ) {
 	 * Check usage.
 	 */
 	if (
-		( 'start' !== $action ) &&
-		( 'stop' !== $action ) &&
-		( 'dump' !== $action )
+		( VIPGOCI_RUNTIME_START !== $action ) &&
+		( VIPGOCI_RUNTIME_STOP !== $action ) &&
+		( VIPGOCI_RUNTIME_DUMP !== $action )
 	) {
 		return false;
 	}
 
 	// Dump all runtimes we have
-	if ( 'dump' === $action ) {
+	if ( VIPGOCI_RUNTIME_DUMP === $action ) {
 		return $runtime;
 	}
 
@@ -594,13 +594,13 @@ function vipgoci_runtime_measure( $action = null, $type = null ) {
 	}
 
 
-	if ( 'start' === $action ) {
+	if ( VIPGOCI_RUNTIME_START === $action ) {
 		$timers[ $type ] = microtime( true );
 
 		return true;
 	}
 
-	else if ( 'stop' === $action ) {
+	else if ( VIPGOCI_RUNTIME_STOP === $action ) {
 		if ( ! isset( $timers[ $type ] ) ) {
 			return false;
 		}
@@ -854,7 +854,7 @@ function vipgoci_remove_existing_github_comments_from_results(
 
 			/*
 			 * Filter out issues that have already been
-			 * reported got GitHub.
+			 * reported to GitHub.
 			 */
 
 			if (
@@ -957,7 +957,7 @@ function vipgoci_approved_files_comments_remove(
 
 	vipgoci_log(
 		'Removing any potential issues (errors, warnings) ' .
-			'found for approved files',
+			'found for approved files from internal results',
 
 		array(
 			'auto_approved_files_arr' => $auto_approved_files_arr,
@@ -1081,7 +1081,7 @@ function vipgoci_github_results_filter_comments_to_max(
 ) {
 
 	vipgoci_log(
-		'Preparing to remove any excessive comments from array of ' .
+		'Preparing to remove any excessive number comments from array of ' .
 			'issues to be submitted to PRs',
 		array(
 			'review_comments_total_max'
@@ -1184,9 +1184,10 @@ function vipgoci_github_results_filter_comments_to_max(
 		 * and remove comments as needed.
 		 */
 		for (
-			$i = $severity_min;
-			$i <= $severity_max && $comments_to_remove > 0;
-			$i++
+			$severity_current = $severity_min;
+			$severity_current <= $severity_max &&
+				$comments_to_remove > 0;
+			$severity_current++
 		) {
 			foreach(
 				$pr_issues_comments as
@@ -1202,7 +1203,10 @@ function vipgoci_github_results_filter_comments_to_max(
 				/*
 				 * Not correct severity level? Ignore.
 				 */
-				if ( $pr_issue['issue']['severity'] !== $i ) {
+				if (
+					$pr_issue['issue']['severity'] !==
+					$severity_current
+				) {
 					continue;
 				}
 
