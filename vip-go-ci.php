@@ -1133,7 +1133,7 @@ function vipgoci_run() {
 			'run_time_seconds'	=> time() - $startup_time,
 			'run_time_measurements'	=>
 				vipgoci_runtime_measure(
-					'dump',
+					VIPGOCI_RUNTIME_DUMP,
 					null
 				),
 			'counters_report'	=>
