@@ -18,7 +18,7 @@ function vipgoci_auto_approval(
 	&$auto_approved_files_arr,
 	&$results
 ) {
-	vipgoci_runtime_measure( 'start', 'auto_approve_commit' );
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'auto_approve_commit' );
 
 	vipgoci_log(
 		'Doing auto-approval',
@@ -61,7 +61,7 @@ function vipgoci_auto_approval(
 		/*
 		 * Loop through all files that are
 		 * altered by the Pull-Request, look for
-		 * files that can be auo-approved.
+		 * files that can be auto-approved.
 		 */
 		foreach( $pr_diff as
 			$pr_diff_file_name => $pr_diff_contents
@@ -69,7 +69,6 @@ function vipgoci_auto_approval(
 
 			$did_foreach = true;
 			$files_seen[] = $pr_diff_file_name;
-
 
 
 			/*
@@ -110,11 +109,16 @@ function vipgoci_auto_approval(
 						$auto_approved_files_arr,
 
 					'files_seen' => $files_seen,
+					'pr_diff' => $pr_diff,
 				)
 			);
 		}
 
-// FIXME: Break into functions
+
+		/*
+		 * FIXME: Break into functions
+		 */
+
 		else if (
 			( true === $did_foreach ) &&
 			( false === $can_auto_approve )
@@ -312,7 +316,6 @@ function vipgoci_auto_approval(
 				$pr_item->number,
 				$options['commit'],
 				$options['autoapprove-filetypes'],
-				VIPGOCI_APPROVAL_AUTOAPPROVE,
 				$options['dry-run']
 			);
 
@@ -399,11 +402,25 @@ function vipgoci_auto_approval(
 	/*
 	 * Reduce memory-usage as possible
 	 */
-	unset( $prs_implicated );
+
 	unset( $pr_diff );
+	unset( $pr_diff_file_name );
+	unset( $pr_diff_contents );
+	unset( $pr_item );
+	unset( $pr_comments );
+	unset( $pr_comment_item );
+	unset( $pr_label );
+	unset( $pr_item_reviews );
+	unset( $pr_item_review );
+	unset( $prs_implicated );
+	unset( $files_seen );
+	unset( $did_foreach );
+	unset( $can_auto_approve );
+	unset( $approved_file );
+	unset( $approved_file_system );
 
 	gc_collect_cycles();
 
-	vipgoci_runtime_measure( 'stop', 'auto_approve_commit' );
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'auto_approve_commit' );
 }
 
