@@ -19,7 +19,7 @@ function vipgoci_ap_svg_files(
 		&$auto_approved_files_arr
 	) {
 
-	vipgoci_runtime_measure( 'start', 'ap_svg_files' );
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'ap_svg_files' );
 
 	vipgoci_log(
 		'Doing auto-approval scanning for SVG files',
@@ -93,14 +93,40 @@ function vipgoci_ap_svg_files(
 				$tmp_scan_results['file_issues_arr_master'];
 
 			/*
+			 * Check for failure
+			 */
+			if (
+				( ! isset(
+					$file_issues_arr_master['totals']
+				) )
+				||
+				( ! isset(
+					$file_issues_arr_master['totals']['errors']
+				) )
+				||
+				( ! isset(
+					$file_issues_arr_master['totals']['warnings']
+				) )
+			) {
+				vipgoci_log(
+					'Not adding SVG file to list of ' .
+						'approved files as a failure occurred',
+
+					array(
+						'file_name' =>
+							$pr_diff_file_name,
+						'file_issues_arr_master' =>
+							$file_issues_arr_master,
+					)
+				);
+			}
+
+
+			/*
 			 * If no issues were found, we
 			 * can approve this file.
 			 */
-			if (
-				( isset(
-					$file_issues_arr_master['totals']
-				) )
-				&&
+			else if (
 				( 0 ===
 					$file_issues_arr_master['totals']['errors']
 				)
@@ -132,6 +158,8 @@ function vipgoci_ap_svg_files(
 					array(
 						'file_name' =>
 							$pr_diff_file_name,
+						'file_issues_arr_master' =>
+							$file_issues_arr_master,
 					)
 				);
 			}
@@ -147,9 +175,10 @@ function vipgoci_ap_svg_files(
 	unset( $pr_item );
 	unset( $pr_diff_file_extension );
 	unset( $pr_diff_file_name );
+	unset( $file_issues_arr_master );
 
 	gc_collect_cycles();
 
-	vipgoci_runtime_measure( 'stop', 'ap_svg_files' );
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'ap_svg_files' );
 }
 
