@@ -9,16 +9,15 @@ function vipgoci_ap_hashes_api_file_approved(
 	$options,
 	$file_path
 ) {
-	vipgoci_runtime_measure( 'start', 'hashes_api_scan_file' );
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'hashes_api_scan_file' );
 
 	/*
 	 * Make sure to process only *.php and
 	 * *.js files -- others are ignored.
 	 *
 	 * Cross-reference: These file types are not
-	 * auto-approved by our own auto-approval
-	 * mechanism, as to avoid any conflicts between
-	 * hashes-api and the auto-approval mechanism.
+	 * auto-approved by the auto-approval mechanism --
+	 * see vip-go-ci.php.
 	 */
 
 	$file_extensions_approvable = array(
@@ -52,6 +51,8 @@ function vipgoci_ap_hashes_api_file_approved(
 					=> $file_extensions_approvable,
 			)
 		);
+
+		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'hashes_api_scan_file' );
 
 		return null;
 	}
@@ -90,6 +91,8 @@ function vipgoci_ap_hashes_api_file_approved(
 				'file_path' => $file_path,
 			)
 		);
+
+		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'hashes_api_scan_file' );
 
 		return null;
 	}
@@ -194,6 +197,8 @@ function vipgoci_ap_hashes_api_file_approved(
 			)
 		);
 
+		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'hashes_api_scan_file' );
+
 		return null;
 	}
 
@@ -241,7 +246,7 @@ function vipgoci_ap_hashes_api_file_approved(
 		$file_approved = false;
 	}
 
-	vipgoci_runtime_measure( 'stop', 'hashes_api_scan_file' );
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'hashes_api_scan_file' );
 
 	return $file_approved;
 }
@@ -259,11 +264,11 @@ function vipgoci_ap_hashes_api_scan_commit(
 	&$commit_issues_stats,
 	&$auto_approved_files_arr
 ) {
-	vipgoci_runtime_measure( 'start', 'hashes_api_scan' );
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'hashes_api_scan' );
 
 	vipgoci_log(
 		'Scanning altered or new files affected by Pull-Request(s) ' .
-			'using hashes-to-hashes database via API',
+			'using hashes-to-hashes API',
 		array(
 			'repo_owner'		=> $options['repo-owner'],
 			'repo_name'		=> $options['repo-name'],
@@ -297,6 +302,19 @@ function vipgoci_ap_hashes_api_scan_commit(
 			$pr_diff_file_name => $pr_diff_contents
 		) {
 			/*
+			 * If it is already approved,
+			 * do not do anything.
+			 */
+
+			if ( isset(
+				$auto_approved_files_arr[
+					$pr_diff_file_name
+				]
+			) ) {
+				continue;
+			}
+
+			/*
 			 * Check if the hashes-to-hashes database
 			 * recognises this file, and check its
 			 * status.
@@ -321,20 +339,9 @@ function vipgoci_ap_hashes_api_scan_commit(
 					)
 				);
 
-				/*
-				 * If it is already approved,
-				 * do not add again.
-				 */
-
-				if ( ! isset(
-					$auto_approved_files_arr[
-						$pr_diff_file_name
-					]
-				) ) {
-					$auto_approved_files_arr[
-						$pr_diff_file_name
-					] = 'autoapprove-hashes-to-hashes';
-				}
+				$auto_approved_files_arr[
+					$pr_diff_file_name
+				] = 'autoapprove-hashes-to-hashes';
 			}
 
 			else if ( false === $approval_status ) {
@@ -365,10 +372,13 @@ function vipgoci_ap_hashes_api_scan_commit(
 	 */
 
 	unset( $prs_implicated );
+	unset( $pr_item );
 	unset( $pr_diff );
+	unset( $pr_diff_contents );
+	unset( $approval_status );
 
 	gc_collect_cycles();
 
-	vipgoci_runtime_measure( 'stop', 'hashes_api_scan' );
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'hashes_api_scan' );
 }
 
