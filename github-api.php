@@ -2488,7 +2488,7 @@ function vipgoci_github_approve_pr(
 	$github_token,
 	$pr_number,
 	$latest_commit_id,
-	$filetypes_approve,
+	$message,
 	$dry_run
 ) {
 	$github_url =
@@ -2507,12 +2507,7 @@ function vipgoci_github_approve_pr(
 		'comments' => array()
 	);
 
-	$github_postfields['body'] =
-		'Auto-approved Pull-Request #' .
-		(int) $pr_number . ' as it ' .
-		'contains only auto-approvable files' .
-		'-- either pre-approved or file-types that are auto-approvable (' .
-		'(' . implode( ', ', $filetypes_approve ) . ').';
+	$github_postfields['body'] = $message;
 
 	if ( true === $dry_run ) {
 		return;
