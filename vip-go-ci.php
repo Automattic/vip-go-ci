@@ -12,6 +12,7 @@ require_once( __DIR__ . '/ap-file-types.php' );
 require_once( __DIR__ . '/ap-hashes-api.php' );
 require_once( __DIR__ . '/ap-svg-files.php' );
 require_once( __DIR__ . '/svg-scan.php' );
+require_once( __DIR__ . '/other-web-services.php' );
 
 /*
  * Handle boolean parameters given on the command-line.
@@ -365,6 +366,10 @@ function vipgoci_run() {
 			'hashes-oauth-token-secret:',
 			'hashes-oauth-consumer-key:',
 			'hashes-oauth-consumer-secret:',
+			'irc-api-url:',
+			'irc-api-token:',
+			'irc-api-bot:',
+			'irc-api-room:',
 			'php-path:',
 			'local-git-repo:',
 			'skip-folders:',
@@ -443,6 +448,13 @@ function vipgoci_run() {
 			"\t" . '                               consumer secret needed for hashes-to-hashes HTTP requests' . PHP_EOL .
 			"\t" . '                               All required for hashes-to-hashes requests.' . PHP_EOL .
 			PHP_EOL .
+			"\t" . '--irc-api-url=STRING           URL to IRC API to send alerts' . PHP_EOL .
+			"\t" . '--irc-api-token=STRING         Access-token to use to communicate with the IRC ' . PHP_EOL .
+			"\t" . '                               API' . PHP_EOL .
+			"\t" . '--irc-api-bot=STRING           Name for the bot which is supposed to send the IRC ' .PHP_EOL .
+			"\t" . '                               messages.' . PHP_EOL .
+			"\t" . '--irc-api-room=STRING          Name for the chatroom to which the IRC messages should ' . PHP_EOL .
+			"\t" . '                               be sent. ' . PHP_EOL .
 			"\t" . '--branches-ignore=STRING,...   What branches to ignore -- useful to make sure' . PHP_EOL .
 			"\t" . '                               some branches never get scanned. Separate branches' . PHP_EOL .
 			"\t" . '                               with commas' . PHP_EOL .
@@ -680,6 +692,55 @@ function vipgoci_run() {
 	);
 
 	/*
+	 * Handle IRC API parameters
+	 */
+
+	$irc_params_defined = 0;
+
+	foreach( array(
+			'irc-api-url',
+			'irc-api-token',
+			'irc-api-bot',
+			'irc-api-room'
+		) as $irc_api_param ) {
+
+		if ( isset( $options[ $irc_api_param ] ) ) {
+			$options[ $irc_api_param ] = trim(
+				$options[ $irc_api_param ]
+			);
+
+			$options[ $irc_api_param ] = rtrim(
+				$options[ $irc_api_param ]
+			);
+
+			$irc_params_defined++;
+		}
+	}
+
+	if ( isset( $options['irc-api-url'] ) ) {
+		vipgoci_option_url_handle(
+			$options,
+			'irc-api-url',
+			null
+		);
+	}
+
+	if (
+		( $irc_params_defined > 0 ) &&
+		( $irc_params_defined !== 4 )
+	) {
+		vipgoci_sysexit(
+			'Some IRC API parameters defined but not all; all must be defined to be useful',
+			array(
+			),
+			VIPGOCI_EXIT_USAGE_ERROR
+		);
+	}
+
+	unset( $irc_params_defined );
+	
+
+	/*
 	 * Do some sanity-checking on the parameters
 	 *
 	 * Note: Parameters should not be set after
@@ -812,6 +873,10 @@ function vipgoci_run() {
 
 	$options_clean = $options;
 	$options_clean['token'] = '***';
+
+	if ( isset( $options_clean['irc-api-token'] ) ) {
+		$options_clean['irc-api-token'] = '***';
+	}
 
 	foreach( $hashes_oauth_arguments as $hashes_oauth_argument ) {
 		if ( isset( $options_clean[ $hashes_oauth_argument ] ) ) {
@@ -1085,7 +1150,7 @@ function vipgoci_run() {
 
 	/*
 	 * Limit number of issues in $results.
-	 * 
+	 *
 	 * If set to zero, skip this part.
 	 */
 
@@ -1121,6 +1186,25 @@ function vipgoci_run() {
 		$options['dry-run'],
 		$options['review-comments-max']
 	);
+
+	/*
+	 * Send out to IRC API any alerts
+	 * that are queued up.
+	 */
+
+	if (
+		( ! empty( $options['irc-api-url'] ) ) &&
+		( ! empty( $options['irc-api-token'] ) ) &&
+		( ! empty( $options['irc-api-bot'] ) ) &&
+		( ! empty( $options['irc-api-room'] ) )
+	) {
+		vipgoci_irc_api_alerts_send(
+			$options['irc-api-url'],
+			$options['irc-api-token'],
+			$options['irc-api-bot'],
+			$options['irc-api-room']
+		);
+	}
 
 	$github_api_rate_limit_usage =
 		vipgoci_github_rate_limit_usage(
