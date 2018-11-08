@@ -6,7 +6,12 @@
  * our caller might pass us.
  */
 
-function vipgoci_log( $str, $debug_data = array(), $debug_level = 0 ) {
+function vipgoci_log(
+	$str,
+	$debug_data = array(),
+	$debug_level = 0,
+	$irc = false
+) {
 	global $vipgoci_debug_level;
 
 	/*
@@ -32,6 +37,23 @@ function vipgoci_log( $str, $debug_data = array(), $debug_level = 0 ) {
 			true
 		) .
 		PHP_EOL;
+
+	/*
+	 * Send to IRC API as well if asked
+	 * to do so. Include debugging information as well.
+	 */
+	if ( true === $irc ) {
+		vipgoci_irc_api_alert_queue(
+			$str .
+				'; ' .
+				print_r(
+					json_encode(
+						$debug_data
+					),
+					true
+				)
+		);
+	}
 }
 
 /*
