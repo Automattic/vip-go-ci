@@ -130,6 +130,23 @@ function vipgoci_auto_approval(
 					'files which are not ' .
 					'automatically approvable',
 				array(
+					'repo_owner' =>
+						$options['repo-owner'],
+
+					'repo_name' =>
+						$options['repo-name'],
+
+					'pr_number' =>
+						$pr_item->number,
+
+					'pr_url' =>
+						'https://github.com/' .
+						rawurlencode( $options['repo-owner'] ) .
+						'/' .
+						rawurlencode( $options['repo-name'] ) .
+						'/pull/' .
+						(int) $pr_item->number,
+
 					'autoapprove-filetypes' =>
 						$options['autoapprove-filetypes'],
 
@@ -137,7 +154,9 @@ function vipgoci_auto_approval(
 						$auto_approved_files_arr,
 
 					'files_seen' => $files_seen,
-				)
+				),
+				0,
+				true // Send to IRC
 			);
 
 
@@ -287,6 +306,17 @@ function vipgoci_auto_approval(
 					'repo_name'
 						=> $options['repo-name'],
 
+					'pr_number'
+						=> (int) $pr_item->number,
+
+					'pr_url' =>
+						'https://github.com/' .
+						rawurlencode( $options['repo-owner'] ) .
+						'/' .
+						rawurlencode( $options['repo-name'] ) .
+						'/pull/' .
+						(int) $pr_item->number,
+
 					'commit_id'
 						=> $options['commit'],
 
@@ -300,7 +330,9 @@ function vipgoci_auto_approval(
 						$auto_approved_files_arr,
 
 					'files_seen' => $files_seen,
-				)
+				),
+				0,
+				true // Send to IRC
 			);
 
 
