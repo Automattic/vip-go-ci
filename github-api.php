@@ -1187,7 +1187,7 @@ function vipgoci_github_pr_reviews_comments_get(
 /*
  * Get all review-comments submitted to a
  * particular Pull-Request. 
- * Supports filtering:Will filter the
+ * Supports filtering by:
  * - User submitted (parameter: login)
  * - Comment state (parameter: comments_active, true/false)
  *
