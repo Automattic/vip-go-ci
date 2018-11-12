@@ -1631,7 +1631,9 @@ function vipgoci_github_pr_comments_error_msg(
 			'commit_id' => $commit_id,
 			'pr_number' => $pr_number,
 			'message' => $message,
-		)
+		),
+		0,
+		true // Log to IRC as well
 	);
 
 	$github_url =
