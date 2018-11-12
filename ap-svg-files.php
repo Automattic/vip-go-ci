@@ -46,7 +46,8 @@ function vipgoci_ap_svg_files(
 			$options['repo-name'],
 			$options['token'],
 			$pr_item->base->sha,
-			$options['commit']
+			$options['commit'],
+			true
 		);
 
 

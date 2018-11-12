@@ -2762,7 +2762,8 @@ function vipgoci_github_pr_files_changed(
 		$repo_name,
 		$github_token,
 		$pr_base_sha,
-		$current_commit_id
+		$current_commit_id,
+		true
 	);
 
 	$files_changed_ret = array();
@@ -2792,7 +2793,8 @@ function vipgoci_github_diffs_fetch(
 	$repo_name,
 	$github_token,
 	$commit_id_a,
-	$commit_id_b
+	$commit_id_b,
+	$empty_patches_also = false
 ) {
 
 	/*
@@ -2853,7 +2855,10 @@ function vipgoci_github_diffs_fetch(
 	 * Loop through all files, save patch in an array
 	 */
 	foreach( $resp_raw->files as $file_item ) {
-		if ( ! isset( $file_item->patch ) ) {
+		if (
+			( false === $empty_files_also ) &&
+			( ! isset( $file_item->patch ) )
+		) {
 			continue;
 		}
 

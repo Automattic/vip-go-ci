@@ -294,7 +294,8 @@ function vipgoci_ap_hashes_api_scan_commit(
 			$options['repo-name'],
 			$options['token'],
 			$pr_item->base->sha,
-			$options['commit']
+			$options['commit'],
+			true
 		);
 
 

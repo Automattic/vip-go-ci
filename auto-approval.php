@@ -258,7 +258,7 @@ function vipgoci_autoapproval_do_approve(
                 'Auto-approved Pull-Request #' .
 			(int) $pr_item->number . ' as it ' .
 			'contains only auto-approvable files' .
-			'-- either pre-approved or file-types that are ' .
+			'-- either pre-approved files or file-types that are ' .
 			'auto-approvable (' .
 			implode( ', ', $options['autoapprove-filetypes'] ) .
 			').',
@@ -392,7 +392,8 @@ function vipgoci_auto_approval(
 			$options['repo-name'],
 			$options['token'],
 			$pr_item->base->sha,
-			$options['commit']
+			$options['commit'],
+			true
 		);
 
 
