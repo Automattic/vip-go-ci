@@ -1206,8 +1206,8 @@ function vipgoci_github_pr_reviews_comments_get_by_pr(
 	 * Calculate caching ID.
 	 *
 	 * Note that $filter should be used here and not its
-	 * individual components, to enable bypassing of caching
-	 * by callers.
+	 * individual components, to enable new data to be fetched
+	 * (i.e. avoiding of caching by callers).
 	 */
 	$cache_id = array(
 		__FUNCTION__, $options['repo-owner'], $options['repo-name'],
