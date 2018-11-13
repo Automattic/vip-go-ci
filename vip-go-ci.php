@@ -1021,21 +1021,6 @@ function vipgoci_run() {
 		$results
 	);
 
-	if ( true === $options['dismiss-stale-reviews'] ) {
-		/*
-		 * Dismiss any reviews that contain *only*
-		 * inactive comments -- i.e. comments that
-		 * are obsolete as the code has been changed.
-		 */
-
-		foreach ( $prs_implicated as $pr_item ) {
-			vipgoci_github_pr_reviews_dismiss_non_active_comments(
-				$options,
-				$pr_item->number
-			);
-		}
-	}
-
 	/*
 	 * Clean up old comments made by us previously
 	 */
@@ -1186,6 +1171,25 @@ function vipgoci_run() {
 		$options['dry-run'],
 		$options['review-comments-max']
 	);
+
+	if ( true === $options['dismiss-stale-reviews'] ) {
+		/*
+		 * Dismiss any reviews that contain *only*
+		 * inactive comments -- i.e. comments that
+		 * are obsolete as the code has been changed.
+		 *
+		 * Note that we do this again here because we might
+		 * just have deleted comments from a Pull-Request which
+		 * would then remain without comments.
+		 */
+
+		foreach ( $prs_implicated as $pr_item ) {
+			vipgoci_github_pr_reviews_dismiss_non_active_comments(
+				$options,
+				$pr_item->number
+			);
+		}
+	}
 
 	/*
 	 * Send out to IRC API any alerts
