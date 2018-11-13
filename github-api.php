@@ -1203,7 +1203,11 @@ function vipgoci_github_pr_reviews_comments_get_by_pr(
 ) {
 
 	/*
-	 * Calculate caching ID
+	 * Calculate caching ID.
+	 *
+	 * Note that $filter should be used here and not its
+	 * individual components, to enable bypassing of caching
+	 * by callers.
 	 */
 	$cache_id = array(
 		__FUNCTION__, $options['repo-owner'], $options['repo-name'],
@@ -2361,13 +2365,16 @@ function vipgoci_github_pr_reviews_dismiss_non_active_comments(
 	);
 
 	/*
-	 * Get all comments to a the current Pull-Request
+	 * Get all comments to a the current Pull-Request.
+	 *
+	 * Note that we must bypass cache here, 
 	 */
 	$all_comments = vipgoci_github_pr_reviews_comments_get_by_pr(
 		$options,
 		$pr_number,
 		array(
 			'login' => 'myself',
+			'timestamp' => time() // To bypass caching
 		)
 	);
 
@@ -2456,7 +2463,7 @@ function vipgoci_github_pr_reviews_dismiss_non_active_comments(
 		 * it should be safe to dismiss the review.
 		 */
 		if (
-			( ! isset( $reviews_status[ $pr_review->id ] ) ) ||
+			( isset( $reviews_status[ $pr_review->id ] ) ) &&
 			( true === $reviews_status[ $pr_review->id ] )
 		) {
 			vipgoci_github_pr_review_dismiss(
