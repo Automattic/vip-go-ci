@@ -2863,10 +2863,14 @@ function vipgoci_github_diffs_fetch(
 	 */
 	foreach( $resp_raw->files as $file_item ) {
 		if (
-			( false === $empty_files_also ) &&
+			( false === $empty_patches_also ) &&
 			( ! isset( $file_item->patch ) )
 		) {
 			continue;
+		}
+
+		if ( ! isset( $file_item->patch ) ) {
+			$file_item->patch = null;
 		}
 
 		$diffs[ $file_item->filename ] = $file_item->patch;
