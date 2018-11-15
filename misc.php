@@ -871,8 +871,8 @@ function vipgoci_remove_existing_github_comments_from_results(
 
 		foreach(
 			$results['issues'][ $pr_item->number ] as
-				$submitted_comment_key =>
-					$submitted_comment
+				$tobe_submitted_cmt_key =>
+					$tobe_submitted_cmt
 		) {
 
 			/*
@@ -883,9 +883,9 @@ function vipgoci_remove_existing_github_comments_from_results(
 			if (
 				// Only do check if everything above is looking good
 				vipgoci_github_comment_match(
-					$submitted_comment['file_name'],
-					$submitted_comment['file_line'],
-					$submitted_comment['issue']['message'],
+					$tobe_submitted_cmt['file_name'],
+					$tobe_submitted_cmt['file_line'],
+					$tobe_submitted_cmt['issue']['message'],
 					$prs_comments
 				)
 			) {
@@ -893,7 +893,7 @@ function vipgoci_remove_existing_github_comments_from_results(
 				 * Keep a record of what we remove.
 				 */
 				$comments_removed[ $pr_item->number ][] =
-					$submitted_comment;
+					$tobe_submitted_cmt;
 
 				/* Remove it */
 				unset(
@@ -902,7 +902,7 @@ function vipgoci_remove_existing_github_comments_from_results(
 					][
 						$pr_item->number
 					][
-						$submitted_comment_key
+						$tobe_submitted_cmt_key
 					]
 				);
 
@@ -912,12 +912,12 @@ function vipgoci_remove_existing_github_comments_from_results(
 				$results[
 					'stats'
 				][
-					$submitted_comment['type']
+					$tobe_submitted_cmt['type']
 				][
 					$pr_item->number
 				][
 					strtolower(
-						$submitted_comment['issue']['type']
+						$tobe_submitted_cmt['issue']['type']
 					)
 				]--;
 			}
