@@ -353,7 +353,10 @@ function vipgoci_autoapproval_do_approve(
  * of files, the function will auto-approve them, and else not.
  *
  * Note that the --skip-folders argument is ignored
- * in this function.
+ * in this function. This is intentional, because if this
+ * function did not ignore these folders, it might approve
+ * Pull-Requests containing files that are actually used
+ * in production and could contain dangerous code.
  */
 
 function vipgoci_auto_approval(
