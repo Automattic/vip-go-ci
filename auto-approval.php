@@ -5,7 +5,7 @@
  * remove label if needed, leave messages
  * on files that are approved, dismiss
  * any previously approving PRs.
- */ 
+ */
 
 function vipgoci_auto_approval_non_approval(
 	$options,
@@ -90,7 +90,6 @@ function vipgoci_auto_approval_non_approval(
 		$auto_approved_files_arr as
 			$approved_file =>
 			$approved_file_system
-
 	) {
 
 		if (
@@ -141,6 +140,55 @@ function vipgoci_auto_approval_non_approval(
 		]++;
 	}
 
+
+	/*
+	 * Remove any 'file is approved in ...' comments,
+	 * but only for files that are no longer approved.
+	 */
+	vipgoci_log(
+		'Removing any comments indicating a file is approved' .
+			'for files that are not approved anymore',
+		array(
+			'pr_number'	=> $pr_item->number,
+		)
+	);
+
+	$pr_comments = vipgoci_github_pr_reviews_comments_get_by_pr(
+		$options,
+		$pr_item->number,
+		array(
+			'login' => 'myself',
+		)
+	);
+
+	foreach( $pr_comments as $pr_comment_item ) {
+		/*
+		 * Skip approved files.
+		 */
+		if ( isset(
+			$auto_approved_files_arr[
+				$pr_comment_item->path
+			]
+		) ) {
+			continue;
+		}
+	
+		/*
+		 * If we find the 'approved in hashes-to-hashes ...'
+		 * message, we can safely remove the comment.
+		 */
+		if ( false !== strpos(
+			$pr_comment_item->body,
+			VIPGOCI_FILE_IS_APPROVED_MSG
+		) ) {
+			vipgoci_github_pr_reviews_comments_delete(
+				$options,
+				$pr_comment_item->id
+			);
+		}
+	}
+
+
 	/*
 	 * Get any approving reviews for the Pull-Request
 	 * submitted by us. Then dismiss them.
@@ -185,7 +233,7 @@ function vipgoci_auto_approval_non_approval(
 }
 
 /*
- * Approve a particular Pull-Request, 
+ * Approve a particular Pull-Request,
  * alter label for the PR if needed,
  * remove old comments, and log everything
  * we do.
