@@ -256,17 +256,6 @@ function vipgoci_autoapproval_do_approve(
 ) {
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'vipgoci_autoapproval_do_approve' );
 
-
-	/*
-	 * Temporary: Just while we test the
-	 * approval-logic.
-	 */
-
-	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'vipgoci_autoapproval_do_approve' );
-
-	return;
-
-
 	vipgoci_log(
 		( $options['dry-run'] === true
 			? 'Would ' : 'Will ' ) .
@@ -309,6 +298,15 @@ function vipgoci_autoapproval_do_approve(
 		0,
 		true // Send to IRC
 	);
+
+	/*
+	 * Temporary: Just while we test the
+	 * approval-logic.
+	 */
+
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'vipgoci_autoapproval_do_approve' );
+
+	return;
 
 
 	/*
