@@ -146,7 +146,7 @@ function vipgoci_auto_approval_non_approval(
 	 * but only for files that are no longer approved.
 	 */
 	vipgoci_log(
-		'Removing any comments indicating a file is approved' .
+		'Removing any comments indicating a file is approved ' .
 			'for files that are not approved anymore',
 		array(
 			'pr_number'	=> $pr_item->number,
