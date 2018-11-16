@@ -303,7 +303,7 @@ function vipgoci_autoapproval_do_approve(
 		$options['token'],
 		$pr_item->number,
 		$options['commit'],
-                'Auto-approved Pull-Request #' .
+		'Auto-approved Pull-Request #' .
 			(int) $pr_item->number . ' as it ' .
 			'contains only auto-approvable files' .
 			'-- either pre-approved files or file-types that are ' .
