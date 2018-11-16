@@ -12,10 +12,10 @@ $client_id = 'automattic-vip-go-ci-release-checker';
 
 $ch = curl_init();
 
-curl_setopt( $ch, CURLOPT_URL,                  $github_url );
-curl_setopt( $ch, CURLOPT_RETURNTRANSFER,       1 );
-curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT,       20 );
-curl_setopt( $ch, CURLOPT_USERAGENT,            $client_id );
+curl_setopt( $ch, CURLOPT_URL,			$github_url );
+curl_setopt( $ch, CURLOPT_RETURNTRANSFER,	1 );
+curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT,	20 );
+curl_setopt( $ch, CURLOPT_USERAGENT,	$client_id );
 
 
 $resp_data_raw = curl_exec( $ch );
@@ -31,7 +31,7 @@ if ( false === $resp_data_raw ) {
 
 
 $resp_data = json_decode(
-        $resp_data_raw
+	$resp_data_raw
 );
 
 unset( $resp_data_raw );
