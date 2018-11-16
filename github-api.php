@@ -216,7 +216,7 @@ function vipgoci_oauth1_signature_get_hmac_sha1(
 	/*
 	 * Sort the parameters alphabetically.
 	 */
-        ksort( $parameters_arr_new );
+	ksort( $parameters_arr_new );
 
 
 	/*
@@ -235,7 +235,7 @@ function vipgoci_oauth1_signature_get_hmac_sha1(
 			$value;
 
 		$delimiter = '&';
-        }
+	}
 
 	/*
 	 * Then add the temporary 'base string' to the
@@ -3017,7 +3017,7 @@ function vipgoci_github_labels_get(
 	 */
 	$cache_id = array(
 		__FUNCTION__, $repo_owner, $repo_name,
-                $github_token, $pr_number, $label_to_look_for
+		$github_token, $pr_number, $label_to_look_for
 	);
 
 	$cached_data = vipgoci_cache( $cache_id );
