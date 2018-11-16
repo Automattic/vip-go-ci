@@ -269,7 +269,7 @@ function vipgoci_phpcs_scan_commit(
 	$commit_id  = $options['commit'];
 	$github_token = $options['token'];
 
-        vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'phpcs_scan_commit' );
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'phpcs_scan_commit' );
 
 	vipgoci_log(
 		'About to PHPCS-scan repository',
@@ -700,6 +700,6 @@ function vipgoci_phpcs_scan_commit(
 
 	gc_collect_cycles();
 
-        vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'phpcs_scan_commit' );
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'phpcs_scan_commit' );
 }
 
