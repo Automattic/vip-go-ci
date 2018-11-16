@@ -828,8 +828,20 @@ function vipgoci_github_comment_match(
 function vipgoci_remove_existing_github_comments_from_results(
 	$options,
 	$prs_implicated,
-	&$results
+	&$results,
+	$ignore_dismissed_reviews = false
 ) {
+	vipgoci_log(
+		'Removing existing GitHub comments from results' .
+			' to be posted to GitHub API',
+		array(
+			'repo_owner' => $options['repo-owner'],
+			'repo_name' => $options['repo-name'],
+			'prs_implicated' => array_keys( $prs_implicated ),
+			'ignore_dismissed_reviews' => $ignore_dismissed_reviews,
+		)
+	);
+
 	$comments_removed = array();
 
 	foreach ( $prs_implicated as $pr_item ) {
@@ -868,6 +880,117 @@ function vipgoci_remove_existing_github_comments_from_results(
 
 			unset( $pr_item_commit_id );
 		}
+
+
+		/*
+		 * Ignore dismissed reviews, if requested.
+		 */
+		if ( true === $ignore_dismissed_reviews ) {
+			/*
+			 * Get dismissed reviews and extract ID of each.
+			 */
+			$pr_reviews = vipgoci_github_pr_reviews_get(
+				$options['repo-owner'],
+				$options['repo-name'],
+				$pr_item->number,
+				$options['token'],
+				array(
+					'login' => 'myself',
+					'state' => array( 'DISMISSED' )
+				)
+			);
+
+			$dismissed_reviews = array_column(
+				$pr_reviews,
+				'id'
+			);
+
+			unset( $pr_reviews );
+
+
+			/*
+			 * Loop through each file to have comments
+			 * submitted against, then look through each
+			 * comment, looking for any comment associated
+			 * with dismissed reviews.
+			 *
+			 * If we find a dismissed review, we will act
+			 * as if the comment was never there by removing
+			 * it from $prs_comments. This will ensure
+			 * that our to-be posted review will contain
+			 * such comments, even though they could be
+			 * considered duplictes. The aim is to make
+			 * them more visible and part of a blocking review.
+			 */
+
+			$removed_comments = array();
+
+			foreach(
+				$prs_comments as
+					$pr_comment_key => $pr_comments_items
+			) {
+				foreach(
+					$pr_comments_items as
+					$pr_review_key => $pr_review_comment
+				) {
+					if ( false === in_array(
+						$pr_review_comment->pull_request_review_id,
+						$dismissed_reviews
+					) ) {
+						continue;
+					}
+
+					$removed_comments[] = array(
+						'pr_number' =>
+							$pr_item->number,
+
+						'pull_request_review_id' =>
+							$pr_review_comment->pull_request_review_id,
+		
+						'comment_id' =>
+							$pr_review_comment->id,
+
+						'message_body' =>
+							$pr_review_comment->body,
+
+						'message_created_at' =>
+							$pr_review_comment->created_at,
+
+						'message_updated_at' =>
+							$pr_review_comment->updated_at,
+					);
+
+	
+					/*
+					 * Comment is a part of a dismissed review,
+					 * get rid of the comment -- act as if was
+					 * never there.
+					 */
+					unset(
+						$prs_comments[
+							$pr_comment_key
+						][
+							$pr_review_key
+						]
+					);
+				}
+			}
+		
+			vipgoci_log(
+				'Removed following comments from list of previously submitted ' .
+					'comments to older PR reviews, as they are ' .
+					'part of dismissed reviews',
+
+				array(
+					'removed_comments' =>
+						$removed_comments
+				)
+			);
+
+			unset( $removed_comments );
+			unset( $dismissed_reviews );
+		}
+
 
 		foreach(
 			$results['issues'][ $pr_item->number ] as

@@ -1130,7 +1130,8 @@ function vipgoci_run() {
 	vipgoci_remove_existing_github_comments_from_results(
 		$options,
 		$prs_implicated,
-		$results
+		$results,
+		true
 	);
 
 	/*
