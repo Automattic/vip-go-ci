@@ -218,7 +218,7 @@ function vipgoci_lint_scan_commit(
 			$commit_id,
 			$filename,
 			$options['local-git-repo']
-                );
+		);
 
 		// Save the file-contents in a temporary-file
 		$temp_file_name = vipgoci_save_temp_file(
