@@ -18,9 +18,9 @@ function vipgoci_svg_scan_single_file(
 	vipgoci_log(
 		'Scanning single SVG file',
 		array(
-			'repo_owner'    => $options['repo-owner'],
-			'repo_name'     => $options['repo-name'],
-			'commit_id'     => $options['commit'],
+			'repo_owner'	=> $options['repo-owner'],
+			'repo_name'	=> $options['repo-name'],
+			'commit_id'	=> $options['commit'],
 			'svg_checks'	=> $options['svg-checks'],
 			'file_name'	=> $file_name,
 		)
@@ -72,9 +72,9 @@ function vipgoci_svg_scan_single_file(
 		vipgoci_log(
 			'Could not scan file, does not seem to be a SVG file',
 			array(
-				'repo_owner'    => $options['repo-owner'],
-				'repo_name'     => $options['repo-name'],
-				'commit_id'     => $options['commit'],
+				'repo_owner'	=> $options['repo-owner'],
+				'repo_name'	=> $options['repo-name'],
+				'commit_id'	=> $options['commit'],
 				'svg_checks'	=> $options['svg-checks'],
 				'file_name'	=> $file_name,
 			)
@@ -203,7 +203,7 @@ function vipgoci_svg_scan_single_file(
 					$temp_file_name
 				]
 		)
-        );
+	);
 
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'svg_scan_single_file' );
 
