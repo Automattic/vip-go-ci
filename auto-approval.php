@@ -17,6 +17,12 @@ function vipgoci_auto_approval_non_approval(
 ) {
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'vipgoci_auto_approval_non_approval' );
 
+	vipgoci_counter_report(
+		'do',
+		'github_pr_non_approval',
+		1
+	);
+
 	vipgoci_log(
 		'Will not auto-approve Pull-Request #' .
 			(int) $pr_item->number . ' ' .
@@ -255,6 +261,12 @@ function vipgoci_autoapproval_do_approve(
 	$files_seen
 ) {
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'vipgoci_autoapproval_do_approve' );
+
+	vipgoci_counter_report(
+		'do',
+		'github_pr_approval',
+		1
+	);
 
 	vipgoci_log(
 		( $options['dry-run'] === true
