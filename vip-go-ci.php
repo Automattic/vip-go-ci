@@ -370,6 +370,8 @@ function vipgoci_run() {
 			'irc-api-token:',
 			'irc-api-bot:',
 			'irc-api-room:',
+			'pixel-api-url:',
+			'pixel-api-groupname:',
 			'php-path:',
 			'local-git-repo:',
 			'skip-folders:',
@@ -738,7 +740,24 @@ function vipgoci_run() {
 	}
 
 	unset( $irc_params_defined );
-	
+
+	/*
+	 * Handle settings for the pixel API.
+	 */
+	if ( isset( $options['pixel-api-url'] ) ) {
+		vipgoci_option_url_handle(
+			$options,
+			'pixel-api-url',
+			null
+		);
+	}
+
+	if ( isset( $options['pixel-api-groupname'] ) ) {
+		$options['pixel-api-groupname'] = trim(
+			$options['pixel-api-groupname']
+		);
+	}
+
 
 	/*
 	 * Do some sanity-checking on the parameters
@@ -1216,6 +1235,49 @@ function vipgoci_run() {
 			$options['token']
 		);
 
+	/*
+	 * Prepare to send statistics to external service,
+	 * also keep for exit-message.
+	 */
+	$counter_report = vipgoci_counter_report(
+		'dump',
+		null,
+		null
+	);
+
+	/*
+	 * Actually send statistics if configured
+	 * to do so.
+	 */
+
+	if (
+		( ! empty( $options['pixel-api-url'] ) ) &&
+		( ! empty( $options['pixel-api-groupname' ] ) )
+	) {
+		vipgoci_send_stats_to_pixel_api(
+			$options['pixel-api-url'],
+			$options['pixel-api-groupname'],
+
+			/*
+			 * Which statistics to send.
+			 */
+			array(
+				'github_pr_approval',
+				'github_pr_non_approval',
+				'github_api_request_get',
+				'github_api_request_post',
+				'github_api_request_put',
+				'github_api_request_fetch',
+				'github_api_request_delete',
+			),
+			$counter_report
+		);
+	}
+
+
+	/*
+	 * Final logging before quitting.
+	 */
 	vipgoci_log(
 		'Shutting down',
 		array(
@@ -1225,12 +1287,8 @@ function vipgoci_run() {
 					VIPGOCI_RUNTIME_DUMP,
 					null
 				),
-			'counters_report'	=>
-				vipgoci_counter_report(
-					'dump',
-					null,
-					null
-				),
+			'counters_report'	=> $counter_report,
+
 			'github_api_rate_limit' =>
 				$github_api_rate_limit_usage->resources->core,
 
@@ -1239,6 +1297,9 @@ function vipgoci_run() {
 	);
 
 
+	/*
+	 * Determine exit code.
+	 */
 	return vipgoci_exit_status(
 		$results
 	);
