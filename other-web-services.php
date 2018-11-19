@@ -19,7 +19,7 @@ function vipgoci_irc_api_alert_queue(
 		return $msg_queue_tmp;
 	}
 
-	$msg_queue[] = $message; 
+	$msg_queue[] = $message;
 }
 
 /*
@@ -117,3 +117,76 @@ function vipgoci_irc_api_alerts_send(
 		time_nanosleep( 0, 500000000 );
 	}
 }
+
+/*
+ * Send statistics to pixel API so
+ * we can keep track of actions we
+ * take during runtime.
+ */
+function vipgoci_send_stats_to_pixel_api(
+	$pixel_api_url,
+	$statistic_group,
+	$stat_names_to_report,
+	$statistics
+) {
+	vipgoci_log(
+		'Sending statistics to pixel API service',
+		array(
+			'stat_names_to_report' =>
+				$stat_names_to_report
+		)
+	);
+
+	foreach(
+		$statistics as
+			$stat_name => $stat_value
+	) {
+		/*
+		 * We are to report only certain
+		 * values, so skip those who we should
+		 * not report on.
+		 */
+		if ( false === in_array(
+			$stat_name,
+			$stat_names_to_report
+		) ) {
+			/*
+			 * Not found, so nothing to report, skip.
+			 */
+			continue;
+		}
+
+		/*
+		 * Compose URL.
+		 */
+		$url =
+			$pixel_api_url .
+			'?' .
+			'v=wpcom-no-pv' .
+			'&' .
+			'x_' . rawurlencode( $statistic_group  ) .
+			'/' .
+			rawurlencode(
+				$stat_name
+			) . '=' .
+			rawurlencode(
+				$stat_value
+			);
+
+		/*
+		 * Call service, do nothing with output.
+		 */
+		file_get_contents( $url );
+
+		/*
+		 * Sleep a short while between
+		 * requests.
+		 */
+		time_nanosleep(
+			0,
+			500000000
+		);
+	}
+}
+
+
