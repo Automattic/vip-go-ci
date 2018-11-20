@@ -36,11 +36,11 @@ function vipgoci_lint_do_scan(
 	 * measure how long time it took
 	 */
 
-	vipgoci_runtime_measure( 'start', 'php_lint_cli' );
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'php_lint_cli' );
 
 	exec( $cmd, $file_issues_arr );
 
-	vipgoci_runtime_measure( 'stop', 'php_lint_cli' );
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'php_lint_cli' );
 
 
 	vipgoci_log(
@@ -154,7 +154,7 @@ function vipgoci_lint_scan_commit(
 	$commit_id  = $options['commit'];
 	$github_token = $options['token'];
 
-	vipgoci_runtime_measure( 'start', 'lint_scan_commit' );
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'lint_scan_commit' );
 
 	vipgoci_log(
 		'About to lint PHP-files',
@@ -209,7 +209,7 @@ function vipgoci_lint_scan_commit(
 	 */
 
 	foreach( $commit_tree as $filename ) {
-		vipgoci_runtime_measure( 'start', 'lint_scan_single_file' );
+		vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'lint_scan_single_file' );
 
 		$file_contents = vipgoci_gitrepo_fetch_committed_file(
 			$repo_owner,
@@ -218,7 +218,7 @@ function vipgoci_lint_scan_commit(
 			$commit_id,
 			$filename,
 			$options['local-git-repo']
-                );
+		);
 
 		// Save the file-contents in a temporary-file
 		$temp_file_name = vipgoci_save_temp_file(
@@ -281,7 +281,7 @@ function vipgoci_lint_scan_commit(
 
 		// If there are no new issues, just leave it at that
 		if ( empty( $file_issues_arr ) ) {
-			vipgoci_runtime_measure( 'stop', 'lint_scan_single_file' );
+			vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'lint_scan_single_file' );
 			continue;
 		}
 
@@ -332,7 +332,7 @@ function vipgoci_lint_scan_commit(
 					$commit_issues_submit[
 						$pr_item->number
 					][] = array(
-						'type'		=> 'lint',
+						'type'		=> VIPGOCI_STATS_LINT,
 
 						'file_name'	=>
 							$filename,
@@ -352,7 +352,7 @@ function vipgoci_lint_scan_commit(
 			}
 		}
 
-		vipgoci_runtime_measure( 'stop', 'lint_scan_single_file' );
+		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'lint_scan_single_file' );
 	}
 
 
@@ -369,5 +369,5 @@ function vipgoci_lint_scan_commit(
 
 	gc_collect_cycles();
 
-	vipgoci_runtime_measure( 'stop', 'lint_scan_commit' );
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'lint_scan_commit' );
 }

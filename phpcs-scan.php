@@ -18,25 +18,103 @@ function vipgoci_phpcs_do_scan(
 	 *
 	 * Make sure to use wide enough output, so we can catch all of it.
 	 */
-// FIXME: When dealing with SVG files
-// use: --extensions=svg --sniffs=WordPressVIPMinimum.SVG.HTMLCode 
 	$cmd = sprintf(
-		'%s %s --standard=%s --severity=%s --report=%s %s 2>&1',
+		'%s %s --standard=%s --severity=%s --report=%s',
 		escapeshellcmd( 'php' ),
 		escapeshellcmd( $phpcs_path ),
 		escapeshellarg( $phpcs_standard ),
 		escapeshellarg( $phpcs_severity ),
-		escapeshellarg( 'json' ),
+		escapeshellarg( 'json' )
+	);
+
+	/*
+	 * Lastly, append the target filename
+	 * to the command-line string.
+	 */
+	$cmd .= sprintf(
+		' %s',
 		escapeshellarg( $filename_tmp )
 	);
 
-	vipgoci_runtime_measure( 'start', 'phpcs_cli' );
+	$cmd .= ' 2>&1';
+
+	vipgoci_log(
+		'Running PHPCS now',
+		array(
+			'cmd' => $cmd,
+		),
+		2
+	);
+
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'phpcs_cli' );
 
 	$result = shell_exec( $cmd );
 
-	vipgoci_runtime_measure( 'stop', 'phpcs_cli' );
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'phpcs_cli' );
 
 	return $result;
+}
+
+function vipgoci_phpcs_scan_single_file(
+	$options,
+	$file_name
+) {
+	$file_contents = vipgoci_gitrepo_fetch_committed_file(
+		$options['repo-owner'],
+		$options['repo-name'],
+		$options['token'],
+		$options['commit'],
+		$file_name,
+		$options['local-git-repo']
+	);
+
+	$file_extension = vipgoci_file_extension(
+		$file_name
+	);
+
+	if ( empty( $file_extension ) ) {
+		$file_extension = null;
+	}
+
+	$temp_file_name = vipgoci_save_temp_file(
+		'phpcs-scan-',
+		$file_extension,
+		$file_contents
+	);
+
+	vipgoci_log(
+		'About to PHPCS-scan file',
+		array(
+			'repo_owner' => $options['repo-owner'],
+			'repo_name' => $options['repo-name'],
+			'commit_id' => $options['commit'],
+			'filename' => $file_name,
+			'file_extension' => $file_extension,
+			'temp_file_name' => $temp_file_name,
+		)
+	);
+
+
+	$file_issues_str = vipgoci_phpcs_do_scan(
+		$temp_file_name,
+		$options['phpcs-path'],
+		$options['phpcs-standard'],
+		$options['phpcs-severity']
+	);
+
+	/* Get rid of temporary file */
+	unlink( $temp_file_name );
+
+	$file_issues_arr_master = json_decode(
+		$file_issues_str,
+		true
+	);
+
+	return array(
+		'file_issues_arr_master'	=> $file_issues_arr_master,
+		'file_issues_str'		=> $file_issues_str,
+		'temp_file_name'		=> $temp_file_name,
+	);
 }
 
 
@@ -75,14 +153,10 @@ function vipgoci_phpcs_scan_output_dump( $output_file, $data ) {
  * that existed prior to the change.
  */
 function vipgoci_issues_filter_irrellevant(
-	$repo_owner,
-	$repo_name,
-	$commit_id,
 	$file_name,
 	$file_issues_arr,
 	$file_blame_log,
 	$pr_item_commits,
-	$comments_existing,
 	$file_relative_lines
 ) {
 	/*
@@ -141,40 +215,6 @@ function vipgoci_issues_filter_irrellevant(
 			continue;
 		}
 
-		/*
-		 * Filter out issues that have already been
-		 * reported got GitHub.
-		 */
-
-		if (
-			// Only do check if everything above is looking good
-			vipgoci_github_comment_match(
-				$file_name,
-				$file_relative_lines[
-					$file_issue_val['line']
-				],
-				$file_issue_val['message'],
-				$comments_existing
-			)
-		) {
-			vipgoci_log(
-				'Skipping submission of ' .
-				'comment, has already been ' .
-				'submitted',
-				array(
-					'repo_owner'		=> $repo_owner,
-					'repo_name'		=> $repo_name,
-					'filename'		=> $file_name,
-					'file_issue_line'	=> $file_issue_val['line'],
-					'file_issue_msg'	=> $file_issue_val['message'],
-					'commit_id'		=> $commit_id,
-				)
-			);
-
-			/* Skip */
-			continue;
-		}
-
 		// Passed all tests, keep this issue
 		$file_issues_ret[] = $file_issue_val;
 	}
@@ -229,7 +269,7 @@ function vipgoci_phpcs_scan_commit(
 	$commit_id  = $options['commit'];
 	$github_token = $options['token'];
 
-        vipgoci_runtime_measure( 'start', 'phpcs_scan_commit' );
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'phpcs_scan_commit' );
 
 	vipgoci_log(
 		'About to PHPCS-scan repository',
@@ -320,11 +360,22 @@ function vipgoci_phpcs_scan_commit(
 			$commit_id,
 			array(
 				'file_extensions' =>
-					array( 'php', 'js', 'twig' ),
+					/*
+					 * If SVG-checks are enabled,
+					 * include it in the file-extensions
+					 */
+					array_merge(
+						array( 'php', 'js', 'twig' ),
+						( $options['svg-checks'] ?
+							array( 'svg' ) :
+							array()
+						)
+					),
 				'skip_folders' =>
 					$options['skip-folders'],
 			)
 		);
+
 
 		foreach ( $pr_item_files_tmp as $pr_item_file_name ) {
 			if ( in_array(
@@ -361,6 +412,8 @@ function vipgoci_phpcs_scan_commit(
 			'repo_owner' => $repo_owner,
 			'repo_name' => $repo_name,
 			'commit_id' => $commit_id,
+			'all_files_changed_by_prs' =>
+				$pr_item_files_changed['all'],
 		)
 	);
 
@@ -370,59 +423,41 @@ function vipgoci_phpcs_scan_commit(
 		 * Loop through each file affected by
 		 * the commit.
 		 */
-		vipgoci_runtime_measure( 'start', 'phpcs_scan_single_file' );
+		vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'phpcs_scan_single_file' );
 
-		$file_contents = vipgoci_gitrepo_fetch_committed_file(
-			$repo_owner,
-			$repo_name,
-			$github_token,
-			$commit_id,
-			$file_name,
-			$options['local-git-repo']
+		$file_extension = vipgoci_file_extension(
+			$file_name
 		);
 
-		$file_extension = pathinfo(
-			$file_name,
-			PATHINFO_EXTENSION
+		/*
+		 * If a SVG file, scan using a
+		 * custom internal function, otherwise
+		 * use PHPCS.
+		 *
+		 * However, only do this if SVG-checks
+		 * is enabled.
+		 */
+		$scanning_func =
+			(
+				( 'svg' === $file_extension ) &&
+				( $options['svg-checks'] )
+			) ?
+				'vipgoci_svg_scan_single_file' :
+				'vipgoci_phpcs_scan_single_file';
+
+		$tmp_scanning_results = $scanning_func(
+			$options,
+			$file_name
 		);
 
-		if ( empty( $file_extension ) ) {
-			$file_extension = null;
-		}
+		$file_issues_arr_master =
+			$tmp_scanning_results['file_issues_arr_master'];
 
-		$temp_file_name = vipgoci_save_temp_file(
-			'phpcs-scan-',
-			$file_extension,
-			$file_contents
-		);
+		$file_issues_str =
+			$tmp_scanning_results['file_issues_str'];
 
-		vipgoci_log(
-			'About to PHPCS-scan file',
-			array(
-				'repo_owner' => $repo_owner,
-				'repo_name' => $repo_name,
-				'commit_id' => $commit_id,
-				'filename' => $file_name,
-				'temp_file_name' => $temp_file_name,
-			)
-		);
-
-
-		$file_issues_str = vipgoci_phpcs_do_scan(
-			$temp_file_name,
-			$options['phpcs-path'],
-			$options['phpcs-standard'],
-			$options['phpcs-severity']
-		);
-
-		/* Get rid of temporary file */
-		unlink( $temp_file_name );
-
-		$file_issues_arr_master = json_decode(
-			$file_issues_str,
-			true
-		);
-
+		$temp_file_name =
+			$tmp_scanning_results['temp_file_name'];
 
 		/*
 		 * Do sanity-checking
@@ -508,7 +543,7 @@ function vipgoci_phpcs_scan_commit(
 
 		gc_collect_cycles();
 
-		vipgoci_runtime_measure( 'stop', 'phpcs_scan_single_file' );
+		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'phpcs_scan_single_file' );
 	}
 
 
@@ -533,13 +568,6 @@ function vipgoci_phpcs_scan_commit(
 
 	foreach ( $prs_implicated as $pr_item ) {
 		/*
-		 * Loop through each commit, fetching all comments
-		 * made in relation to that commit
-		 */
-
-		$prs_comments = array();
-
-		/*
 		 * Get all commits related to the current
 		 * Pull-Request.
 		 */
@@ -549,19 +577,6 @@ function vipgoci_phpcs_scan_commit(
 			$pr_item->number,
 			$github_token
 		);
-
-		foreach ( $pr_item_commits as $pr_item_commit_id ) {
-			vipgoci_github_pr_reviews_comments_get(
-				$prs_comments,
-				$repo_owner,
-				$repo_name,
-				$pr_item_commit_id,
-				$pr_item->created_at,
-				$github_token
-			);
-
-			unset( $pr_item_commit_id );
-		}
 
 
 		/*
@@ -606,19 +621,14 @@ function vipgoci_phpcs_scan_commit(
 			 * the ones that the are not found
 			 * in the blame-log (meaning that
 			 * they are due to commits outside of
-			 * the Pull-Request), and remove
-			 * those which have already been submitted.
+			 * the Pull-Request).
 			 */
 
 			$file_issues_arr_filtered = vipgoci_issues_filter_irrellevant(
-				$repo_owner,
-				$repo_name,
-				$commit_id,
 				$file_name,
 				$files_issues_arr,
 				$file_blame_log,
 				$pr_item_commits,
-				$prs_comments,
 				$file_relative_lines
 			);
 
@@ -634,7 +644,7 @@ function vipgoci_phpcs_scan_commit(
 				$commit_issues_submit[
 					$pr_item->number
 				][] = array(
-					'type'		=> 'phpcs',
+					'type'		=> VIPGOCI_STATS_PHPCS,
 
 					'file_name'	=>
 						$file_name,
@@ -667,7 +677,6 @@ function vipgoci_phpcs_scan_commit(
 			}
 		}
 
-		unset( $prs_comments );
 		unset( $pr_item_commits );
 		unset( $pr_item_files_changed );
 		unset( $file_blame_log );
@@ -691,6 +700,6 @@ function vipgoci_phpcs_scan_commit(
 
 	gc_collect_cycles();
 
-        vipgoci_runtime_measure( 'stop', 'phpcs_scan_commit' );
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'phpcs_scan_commit' );
 }
 

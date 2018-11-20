@@ -1,23 +1,17 @@
 <?php
 
 /*
- * Define exit-codes
- */
-
-
-define( 'VIPGOCI_EXIT_NORMAL',		0 );
-define( 'VIPGOCI_EXIT_CODE_ISSUES',	250 );
-define( 'VIPGOCI_EXIT_SYSTEM_PROBLEM',	251 );
-define( 'VIPGOCI_EXIT_GITHUB_PROBLEM',	252 );
-define( 'VIPGOCI_EXIT_USAGE_ERROR',	253 );
-
-/*
  * Log information to the console.
  * Include timestamp, and any debug-data
  * our caller might pass us.
  */
 
-function vipgoci_log( $str, $debug_data = array(), $debug_level = 0 ) {
+function vipgoci_log(
+	$str,
+	$debug_data = array(),
+	$debug_level = 0,
+	$irc = false
+) {
 	global $vipgoci_debug_level;
 
 	/*
@@ -43,6 +37,23 @@ function vipgoci_log( $str, $debug_data = array(), $debug_level = 0 ) {
 			true
 		) .
 		PHP_EOL;
+
+	/*
+	 * Send to IRC API as well if asked
+	 * to do so. Include debugging information as well.
+	 */
+	if ( true === $irc ) {
+		vipgoci_irc_api_alert_queue(
+			$str .
+				'; ' .
+				print_r(
+					json_encode(
+						$debug_data
+					),
+					true
+				)
+		);
+	}
 }
 
 /*
@@ -98,14 +109,15 @@ function vipgoci_patch_changed_lines(
 		$repo_name,
 		$github_token,
 		$pr_base_sha,
-		$commit_id
+		$commit_id,
+		false
 	);
 
 	/*
 	 * Get patch for the relevant file
 	 * our caller is interested in
 	 */
-	// FIXME: Detect if file is not part of the patch
+
 	$lines_arr = explode(
 		"\n",
 		$patch_arr[ $file_name ]
@@ -277,14 +289,14 @@ function vipgoci_save_temp_file(
 	}
 
 	if ( false !== $temp_file_name ) {
-		vipgoci_runtime_measure( 'start', 'save_temp_file' );
+		vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'save_temp_file' );
 
 		$temp_file_save_status = file_put_contents(
 			$temp_file_name,
 			$file_contents
 		);
 
-		vipgoci_runtime_measure( 'stop', 'save_temp_file' );
+		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'save_temp_file' );
 	}
 
 	// Detect possible errors when saving the temporary file
@@ -303,6 +315,27 @@ function vipgoci_save_temp_file(
 	return $temp_file_name;
 }
 
+/*
+ * Determine file-extension of a particular file,
+ * and return it in lowercase. If it can not be
+ * determined, return null.
+ */
+function vipgoci_file_extension( $file_name ) {
+	$file_extension = pathinfo(
+		$file_name,
+		PATHINFO_EXTENSION
+	);
+
+	if ( empty( $file_extension ) ) {
+		return null;
+	}
+
+	$file_extension = strtolower(
+		$file_extension
+	);
+
+	return $file_extension;
+}
 
 /*
  * Return ASCII-art for GitHub, which will then
@@ -317,6 +350,9 @@ function vipgoci_github_labels( $text_string ) {
 
 		case 'error':
 			return ':no_entry_sign:';
+
+		case 'info':
+			return ':information_source:';
 	}
 
 	return '';
@@ -332,9 +368,8 @@ function vipgoci_filter_file_path(
 	$filename,
 	$filter
 ) {
-	$file_info_extension = pathinfo(
-		$filename,
-		PATHINFO_EXTENSION
+	$file_info_extension = vipgoci_file_extension(
+		$filename
 	);
 
 	$file_dirs = pathinfo(
@@ -351,9 +386,9 @@ function vipgoci_filter_file_path(
 		( null !== $filter ) &&
 		( isset( $filter['file_extensions'] ) ) &&
 		( ! in_array(
-			strtolower( $file_info_extension ),
-				$filter['file_extensions'],
-				true
+			$file_info_extension,
+			$filter['file_extensions'],
+			true
 		) );
 
 	/*
@@ -434,11 +469,11 @@ function vipgoci_scandir_git_repo( $path, $filter ) {
 	);
 
 
-	vipgoci_runtime_measure( 'start', 'git_repo_scandir' );
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'git_repo_scandir' );
 
 	$cdir = scandir( $path );
 
-	vipgoci_runtime_measure( 'stop', 'git_repo_scandir' );
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'git_repo_scandir' );
 
 
 	foreach ( $cdir as $key => $value ) {
@@ -509,7 +544,14 @@ function vipgoci_stats_init( $options, $prs_implicated, &$results ) {
 			);
 		}
 
-		foreach ( array( 'phpcs', 'lint' ) as $stats_type ) {
+		foreach (
+			array(
+				VIPGOCI_STATS_PHPCS,
+				VIPGOCI_STATS_LINT,
+				VIPGOCI_STATS_HASHES_API
+			)
+			as $stats_type
+		) {
 			/*
 			 * Initialize stats for the stats-types only when
 			 * supposed to run them
@@ -524,7 +566,8 @@ function vipgoci_stats_init( $options, $prs_implicated, &$results ) {
 			$results['stats'][ $stats_type ]
 				[ $pr_item->number ] = array(
 					'error'		=> 0,
-					'warning'	=> 0
+					'warning'	=> 0,
+					'info'		=> 0,
 				);
 		}
 	}
@@ -551,15 +594,15 @@ function vipgoci_runtime_measure( $action = null, $type = null ) {
 	 * Check usage.
 	 */
 	if (
-		( 'start' !== $action ) &&
-		( 'stop' !== $action ) &&
-		( 'dump' !== $action )
+		( VIPGOCI_RUNTIME_START !== $action ) &&
+		( VIPGOCI_RUNTIME_STOP !== $action ) &&
+		( VIPGOCI_RUNTIME_DUMP !== $action )
 	) {
 		return false;
 	}
 
 	// Dump all runtimes we have
-	if ( 'dump' === $action ) {
+	if ( VIPGOCI_RUNTIME_DUMP === $action ) {
 		return $runtime;
 	}
 
@@ -574,13 +617,13 @@ function vipgoci_runtime_measure( $action = null, $type = null ) {
 	}
 
 
-	if ( 'start' === $action ) {
+	if ( VIPGOCI_RUNTIME_START === $action ) {
 		$timers[ $type ] = microtime( true );
 
 		return true;
 	}
 
-	else if ( 'stop' === $action ) {
+	else if ( VIPGOCI_RUNTIME_STOP === $action ) {
 		if ( ! isset( $timers[ $type ] ) ) {
 			return false;
 		}
@@ -726,7 +769,7 @@ function vipgoci_github_comment_match(
 		 * as "Warning: ..." -- remove all of that.
 		 */
 		$comment_made_body = str_replace(
-			array("**", "Warning", "Error", ":no_entry_sign:", ":exclamation:"),
+			array("**", "Warning", "Error", "Info", ":no_entry_sign:", ":exclamation:", ":information_source:"),
 			array("", "", "", "", ""),
 			$comment_made->body
 		);
@@ -740,9 +783,33 @@ function vipgoci_github_comment_match(
 			': '
 		);
 
+		/*
+		 * Transform strings to lowercase.
+		 */
+		$comment_made_body = strtolower(
+			$comment_made_body
+		);
+
+		$file_issue_comment = strtolower(
+			$file_issue_comment
+		);
+
+		/*
+		 * Check if comments match, including
+		 * if we need to HTML-encode our new comment
+		 * (GitHub encodes their comments when
+		 * returning them.
+		 */
 		if (
-			strtolower( $comment_made_body ) ==
-			strtolower( $file_issue_comment )
+			(
+				$comment_made_body ==
+				$file_issue_comment
+			)
+			||
+			(
+				$comment_made_body ==
+				htmlentities( $file_issue_comment )
+			)
 		) {
 			/* Comment found, return true. */
 			return true;
@@ -752,3 +819,615 @@ function vipgoci_github_comment_match(
 	return false;
 }
 
+/*
+ * Remove comments that exist on a GitHub Pull-Request from
+ * the results array. Will loop through each Pull-Request
+ * affected by the current commit, and remove any comment
+ * from the results array if it already exists.
+ */
+function vipgoci_remove_existing_github_comments_from_results(
+	$options,
+	$prs_implicated,
+	&$results,
+	$ignore_dismissed_reviews = false
+) {
+	vipgoci_log(
+		'Removing existing GitHub comments from results' .
+			' to be posted to GitHub API',
+		array(
+			'repo_owner' => $options['repo-owner'],
+			'repo_name' => $options['repo-name'],
+			'prs_implicated' => array_keys( $prs_implicated ),
+			'ignore_dismissed_reviews' => $ignore_dismissed_reviews,
+		)
+	);
+
+	$comments_removed = array();
+
+	foreach ( $prs_implicated as $pr_item ) {
+		$prs_comments = array();
+
+		if ( ! isset(
+			$comments_removed[ $pr_item->number ]
+		) ) {
+			$comments_removed[ $pr_item->number ] = array();
+		}
+
+		/*
+		 * Get all commits related to the current
+		 * Pull-Request.
+		 */
+
+		$pr_item_commits = vipgoci_github_prs_commits_list(
+			$options['repo-owner'],
+			$options['repo-name'],
+			$pr_item->number,
+			$options['token']
+		);
+
+		/*
+		 * Loop through each commit, fetching all comments
+		 * made in relation to that commit
+		 */
+
+		foreach ( $pr_item_commits as $pr_item_commit_id ) {
+			vipgoci_github_pr_reviews_comments_get(
+				$options,
+				$pr_item_commit_id,
+				$pr_item->created_at,
+				$prs_comments
+			);
+
+			unset( $pr_item_commit_id );
+		}
+
+
+		/*
+		 * Ignore dismissed reviews, if requested.
+		 */
+		if ( true === $ignore_dismissed_reviews ) {
+			/*
+			 * Get dismissed reviews and extract ID of each.
+			 */
+			$pr_reviews = vipgoci_github_pr_reviews_get(
+				$options['repo-owner'],
+				$options['repo-name'],
+				$pr_item->number,
+				$options['token'],
+				array(
+					'login' => 'myself',
+					'state' => array( 'DISMISSED' )
+				)
+			);
+
+			$dismissed_reviews = array_column(
+				$pr_reviews,
+				'id'
+			);
+
+			unset( $pr_reviews );
+
+
+			/*
+			 * Loop through each file to have comments
+			 * submitted against, then look through each
+			 * comment, looking for any comment associated
+			 * with dismissed reviews.
+			 *
+			 * If we find a dismissed review, we will act
+			 * as if the comment was never there by removing
+			 * it from $prs_comments. This will ensure
+			 * that our to-be posted review will contain
+			 * such comments, even though they could be
+			 * considered duplictes. The aim is to make
+			 * them more visible and part of a blocking review.
+			 */
+
+			$removed_comments = array();
+
+			foreach(
+				$prs_comments as
+					$pr_comment_key => $pr_comments_items
+			) {
+				foreach(
+					$pr_comments_items as
+					$pr_review_key => $pr_review_comment
+				) {
+					if ( false === in_array(
+						$pr_review_comment->pull_request_review_id,
+						$dismissed_reviews
+					) ) {
+						continue;
+					}
+
+					$removed_comments[] = array(
+						'pr_number' =>
+							$pr_item->number,
+
+						'pull_request_review_id' =>
+							$pr_review_comment->pull_request_review_id,
+		
+						'comment_id' =>
+							$pr_review_comment->id,
+
+						'message_body' =>
+							$pr_review_comment->body,
+
+						'message_created_at' =>
+							$pr_review_comment->created_at,
+
+						'message_updated_at' =>
+							$pr_review_comment->updated_at,
+					);
+
+	
+					/*
+					 * Comment is a part of a dismissed review,
+					 * get rid of the comment -- act as if was
+					 * never there.
+					 */
+					unset(
+						$prs_comments[
+							$pr_comment_key
+						][
+							$pr_review_key
+						]
+					);
+				}
+			}
+		
+			vipgoci_log(
+				'Removed following comments from list of previously submitted ' .
+					'comments to older PR reviews, as they are ' .
+					'part of dismissed reviews',
+
+				array(
+					'removed_comments' =>
+						$removed_comments
+				)
+			);
+
+			unset( $removed_comments );
+			unset( $dismissed_reviews );
+		}
+
+
+		foreach(
+			$results['issues'][ $pr_item->number ] as
+				$tobe_submitted_cmt_key =>
+					$tobe_submitted_cmt
+		) {
+
+			/*
+			 * Filter out issues that have already been
+			 * reported to GitHub.
+			 */
+
+			if (
+				// Only do check if everything above is looking good
+				vipgoci_github_comment_match(
+					$tobe_submitted_cmt['file_name'],
+					$tobe_submitted_cmt['file_line'],
+					$tobe_submitted_cmt['issue']['message'],
+					$prs_comments
+				)
+			) {
+				/*
+				 * Keep a record of what we remove.
+				 */
+				$comments_removed[ $pr_item->number ][] =
+					$tobe_submitted_cmt;
+
+				/* Remove it */
+				unset(
+					$results[
+						'issues'
+					][
+						$pr_item->number
+					][
+						$tobe_submitted_cmt_key
+					]
+				);
+
+				/*
+				 * Update statistics
+				 */
+				$results[
+					'stats'
+				][
+					$tobe_submitted_cmt['type']
+				][
+					$pr_item->number
+				][
+					strtolower(
+						$tobe_submitted_cmt['issue']['type']
+					)
+				]--;
+			}
+		}
+
+		/*
+		 * Re-create the issues
+		 * array, so that no array
+		 * keys are missing.
+		 */
+		$results[
+			'issues'
+		][
+			$pr_item->number
+		] = array_values(
+			$results[
+				'issues'
+			][
+				$pr_item->number
+			]
+		);
+	}
+
+	/*
+	 * Report what we removed.
+	 */
+	vipgoci_log(
+		'Removed following comments from array of ' .
+		'to be submitted comments to PRs, as they ' .
+		'have been submitted already',
+		array(
+			'comments_removed' => $comments_removed
+		)
+	);
+}
+
+/*
+ * For each approved file, remove any issues
+ * to be submitted against them. However,
+ * do not do this for 'info' type messages,
+ * as they are informational, and not problems.
+ *
+ * We do this, because sometimes Pull-Requests
+ * will be opened that contain approved code,
+ * and we do not want to clutter them with
+ * non-relevant comments.
+ *
+ * Make sure to update statistics to
+ * reflect this.
+ */
+
+function vipgoci_approved_files_comments_remove(
+	$options,
+	&$results,
+	$auto_approved_files_arr
+) {
+
+	$issues_removed = array(
+	);
+
+	vipgoci_log(
+		'Removing any potential issues (errors, warnings) ' .
+			'found for approved files from internal results',
+
+		array(
+			'auto_approved_files_arr' => $auto_approved_files_arr,
+		)
+	);
+
+	/*
+ 	 * Loop through each Pull-Request
+	 */
+	foreach( $results['issues'] as
+		$pr_number => $pr_issues
+	) {
+		/*
+		 * Loop through each issue affecting each
+		 * Pull-Request.
+		 */
+		foreach( $pr_issues as
+			$issue_number => $issue_item
+		) {
+
+			/*
+			 * If the file affected is
+			 * not found in the auto-approved files,
+			 * do not to anything.
+			 */
+			if ( ! isset(
+				$auto_approved_files_arr[
+					$issue_item['file_name']
+				]
+			) ) {
+				continue;
+			}
+
+			/*
+			 * We do not touch on 'info' type,
+			 * as that does not report any errors.
+			 */
+
+			if ( strtolower(
+				$issue_item['issue']['type']
+			) === 'info' ) {
+				continue;
+			}
+
+			/*
+			 * We have found an item that is approved,
+			 * and has non-info issues -- remove it
+			 * from the array of submittable issues.
+			 */
+			unset(
+				$results[
+					'issues'
+				][
+					$pr_number
+				][
+					$issue_number
+				]
+			);
+
+			/*
+			 * Update statistics accordingly.
+			 */
+			$results[
+				'stats'
+			][
+				$issue_item['type']
+			][
+				$pr_number
+			][
+				strtolower(
+					$issue_item['issue']['type']
+				)
+			]--;
+
+			/*
+			 * Update our own information array on
+			 * what we did.
+			 */
+			$issues_removed[
+				$pr_number
+			][] = $issue_item;
+		}
+
+		/*
+		 * Re-order the array as
+		 * some keys might be missing
+		 */
+		$results[
+			'issues'
+		][
+			$pr_number
+		] = array_values(
+			$results[
+				'issues'
+			][
+				$pr_number
+			]
+		);
+	}
+
+
+	vipgoci_log(
+		'Completed cleaning out issues for pre-approved files',
+		array(
+			'issues_removed' => $issues_removed,
+		)
+	);
+}
+
+/*
+ * Limit the number of to-be-submitted comments to
+ * the Pull-Requests. We take into account the number
+ * to be submitted for each Pull-Request, the number of
+ * comments already submitted, and the limit specified
+ * on start-up. Comments are removed as needed, and
+ * what comments are removed is reported.
+ */
+function vipgoci_github_results_filter_comments_to_max(
+	$options,
+	&$results
+) {
+
+	vipgoci_log(
+		'Preparing to remove any excessive number comments from array of ' .
+			'issues to be submitted to PRs',
+		array(
+			'review_comments_total_max'
+				=> $options['review-comments-total-max'],
+		)
+	);
+
+
+	/*
+	 * We might need to remove comments.
+	 *
+	 * We will begin with lower priority comments
+	 * first, remove them, and then progressively
+	 * continue removing comments as priority increases
+	 * and there is still a need for removal.
+	 */
+
+	/*
+	 * Keep track of what we remove.
+	 */
+	$comments_removed = array();
+
+	foreach(
+		$results['issues'] as
+			$pr_number => $pr_issues_comments
+	) {
+		/*
+		 * Take into account previously submitted comments
+		 * by us for the current Pull-Request.
+		 */
+
+		$pr_previous_comments_cnt = count(
+			vipgoci_github_pr_reviews_comments_get_by_pr(
+				$options,
+				$pr_number,
+				array(
+					'login'			=> 'myself',
+					'comments_active'	=> true,
+				)
+			)
+		);
+
+		/*
+		 * How many comments need
+		 * to be removed? Count in
+		 * comments in the PR in addition
+		 * to possible new ones, substract
+		 * from the maximum specified.
+		 */
+		
+		$comments_to_remove =
+			(
+				count( $pr_issues_comments )
+				+
+				$pr_previous_comments_cnt
+			)
+			-
+			$options['review-comments-total-max'];
+
+		/*
+		 * If there are no comments to remove,
+		 * skip and continue.
+		 */
+		if ( $comments_to_remove <= 0 ) {
+			continue;
+		}
+
+		/*
+		 * If more are to be removed than are to be
+		 * submitted, limit to the number of available ones.
+		 */
+		else if (
+			$comments_to_remove >
+				count( $pr_issues_comments )
+		) {
+			$comments_to_remove = count( $pr_issues_comments );
+		}
+
+		/*
+		 * Figure out severity, minimum and maximum.
+		 */
+
+		$severity_min = 0;
+		$severity_max = 0;
+
+		foreach( $pr_issues_comments as $pr_issue ) {
+			$severity_min = min(
+				$pr_issue['issue']['severity'],
+				$severity_min
+			);
+
+			$severity_max = max(
+				$pr_issue['issue']['severity'],
+				$severity_max
+			);
+		}
+
+		/*
+		 * Loop through severity-levels from low to high
+		 * and remove comments as needed.
+		 */
+		for (
+			$severity_current = $severity_min;
+			$severity_current <= $severity_max &&
+				$comments_to_remove > 0;
+			$severity_current++
+		) {
+			foreach(
+				$pr_issues_comments as
+					$pr_issue_key => $pr_issue
+			) {
+				/*
+				 * If we have removed enough, stop here.
+				 */
+				if ( $comments_to_remove <= 0 ) {
+					break;
+				}
+
+				/*
+				 * Not correct severity level? Ignore.
+				 */
+				if (
+					$pr_issue['issue']['severity'] !==
+					$severity_current
+				) {
+					continue;
+				}
+
+				/*
+				 * Actually remove and
+				 * keep statistics up to date.
+				 */
+
+				unset(
+					$results[
+						'issues'
+					][
+						$pr_number
+					][
+						$pr_issue_key
+					]
+				);
+
+				$results[
+					'stats'
+				][
+					$pr_issue['type']
+				][
+					$pr_number
+				][
+					strtolower(
+						$pr_issue['issue']['type']
+					)
+				]--;
+
+				/*
+				 * Keep track of what we remove
+				 */
+				if ( ! isset(
+					$comments_removed[
+						$pr_number
+					]
+				) ) {
+					$comments_removed[
+						$pr_number
+					] = array();
+				}
+
+				$comments_removed[
+					$pr_number
+				] = $pr_issue;
+
+				$comments_to_remove--;
+			}
+		}
+
+		/*
+		 * Re-create array so to
+		 * keep continuous ordering
+		 * of index.
+		 */
+		$results[
+			'issues'
+		][
+			$pr_number
+		] = array_values(
+			$results[
+				'issues'
+			][
+				$pr_number
+			]
+		);
+	}
+
+	vipgoci_log(
+		'Removed issue comments from array of to be submitted ' .
+			'comments to PRs due to limit constraints',
+		array(
+			'review_comments_total_max'	=> $options['review-comments-total-max'],
+			'comments_removed'		=> $comments_removed,
+		)
+	);
+}

@@ -92,11 +92,11 @@ function vipgoci_git_repo_get_head( $local_git_repo ) {
 	);
 
 	/* Actually execute */
-	vipgoci_runtime_measure( 'start', 'git_cli' );
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'git_cli' );
 
 	$result = shell_exec( $cmd );
 
-	vipgoci_runtime_measure( 'stop', 'git_cli' );
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'git_cli' );
 
 	return $result;
 }
@@ -205,13 +205,13 @@ function vipgoci_gitrepo_fetch_committed_file(
 	 * If everything seems fine, return the file.
 	 */
 
-	vipgoci_runtime_measure( 'start', 'git_repo_fetch_file' );
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'git_repo_fetch_file' );
 
 	$file_contents_tmp = @file_get_contents(
 		$local_git_repo . '/' . $file_name
 	);
 
-	vipgoci_runtime_measure( 'stop', 'git_repo_fetch_file' );
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'git_repo_fetch_file' );
 
 	return $file_contents_tmp;
 }
@@ -231,7 +231,7 @@ function vipgoci_gitrepo_blame_for_file(
 		$commit_id, $local_git_repo
 	);
 
-	vipgoci_runtime_measure( 'start', 'git_repo_blame_for_file' );
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'git_repo_blame_for_file' );
 
 	vipgoci_log(
 		'Fetching \'git blame\' log from Git repository for file',
@@ -255,11 +255,11 @@ function vipgoci_gitrepo_blame_for_file(
 
 
 	/* Actually execute */
-	vipgoci_runtime_measure( 'start', 'git_cli' );
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'git_cli' );
 
 	$result = shell_exec( $cmd );
 
-	vipgoci_runtime_measure( 'stop', 'git_cli' );
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'git_cli' );
 
 	/*
 	 * Process the output from git,
@@ -348,7 +348,7 @@ function vipgoci_gitrepo_blame_for_file(
 		}
 	}
 
-	vipgoci_runtime_measure( 'stop', 'git_repo_blame_for_file' );
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'git_repo_blame_for_file' );
 
 	return $blame_log;
 }

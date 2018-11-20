@@ -1,12 +1,18 @@
 #!/usr/bin/php
 <?php
 
+require_once( __DIR__ . '/defines.php' );
 require_once( __DIR__ . '/github-api.php' );
 require_once( __DIR__ . '/git-repo.php' );
 require_once( __DIR__ . '/misc.php' );
 require_once( __DIR__ . '/phpcs-scan.php' );
 require_once( __DIR__ . '/lint-scan.php' );
 require_once( __DIR__ . '/auto-approval.php' );
+require_once( __DIR__ . '/ap-file-types.php' );
+require_once( __DIR__ . '/ap-hashes-api.php' );
+require_once( __DIR__ . '/ap-svg-files.php' );
+require_once( __DIR__ . '/svg-scan.php' );
+require_once( __DIR__ . '/other-web-services.php' );
 
 /*
  * Handle boolean parameters given on the command-line.
@@ -193,7 +199,7 @@ function vipgoci_option_file_handle(
 /*
  * Handle parameter that we expect to be a URL.
  *
- * If the parameter is not empty, and is not really 
+ * If the parameter is not empty, and is not really
  * a URL (not starting with http:// or https://),
  * exit with error. If empty, sets a default.
  */
@@ -216,7 +222,6 @@ function vipgoci_option_url_handle(
 	/*
 	 * If not default value, check if it looks like an URL,
 	 * and if so, use it, but if not, exit with error.
-	 * 
 	 */
 	if ( $default_value !== $options[ $option_name ] ) {
 		$options[ $option_name ] = trim(
@@ -235,7 +240,7 @@ function vipgoci_option_url_handle(
 			) )
 		) {
 			vipgoci_sysexit(
-				'Option --' . $option_name . ' should ' . 
+				'Option --' . $option_name . ' should ' .
 					'be an URL',
 				array(
 				),
@@ -300,6 +305,14 @@ function vipgoci_run() {
 	global $argv;
 	global $vipgoci_debug_level;
 
+	$hashes_oauth_arguments =
+		array(
+			'hashes-oauth-token',
+			'hashes-oauth-token-secret',
+			'hashes-oauth-consumer-key',
+			'hashes-oauth-consumer-secret'
+		);
+
 	vipgoci_log(
 		'Initializing...',
 		array()
@@ -339,6 +352,8 @@ function vipgoci_run() {
 			'commit:',
 			'token:',
 			'review-comments-max:',
+			'review-comments-total-max:',
+			'dismiss-stale-reviews:',
 			'branches-ignore:',
 			'output:',
 			'dry-run:',
@@ -346,17 +361,30 @@ function vipgoci_run() {
 			'phpcs-path:',
 			'phpcs-standard:',
 			'phpcs-severity:',
+			'hashes-api-url:',
+			'hashes-oauth-token:',
+			'hashes-oauth-token-secret:',
+			'hashes-oauth-consumer-key:',
+			'hashes-oauth-consumer-secret:',
+			'irc-api-url:',
+			'irc-api-token:',
+			'irc-api-bot:',
+			'irc-api-room:',
+			'pixel-api-url:',
+			'pixel-api-groupname:',
 			'php-path:',
 			'local-git-repo:',
 			'skip-folders:',
 			'lint:',
 			'phpcs:',
+			'svg-checks:',
 			'autoapprove:',
 			'autoapprove-filetypes:',
 			'autoapprove-label:',
 			'help',
 			'debug-level:',
-		)
+			'hashes-api:',
+	)
 	);
 
 	// Validate args
@@ -369,11 +397,11 @@ function vipgoci_run() {
 		isset( $options['help'] )
 	) {
 		print 'Usage: ' . $argv[0] . PHP_EOL .
-			"\t" . 'Options --repo-owner, --repo-name, --commit, --token, --local-git-repo are ' . PHP_EOL .
+			"\t" . 'Options --repo-owner, --repo-name, --commit, --token, --local-git-repo, --phpcs-path are ' . PHP_EOL .
 			"\t" . 'mandatory, while others are optional.' . PHP_EOL .
 			PHP_EOL .
-			"\t" . 'Note that if option --autoapprove is specified, --autoapprove-filetypes and ' . PHP_EOL .
-			"\t" . '--autoapprove-label need to be specified as well.' . PHP_EOL .
+			"\t" . 'Note that if option --autoapprove is specified, --autoapprove-label needs to' . PHP_EOL .
+			"\t" . 'be specified as well.' . PHP_EOL .
 			PHP_EOL .
 			"\t" . '--repo-owner=STRING            Specify repository owner, can be an organization' . PHP_EOL .
 			"\t" . '--repo-name=STRING             Specify name of the repository' . PHP_EOL .
@@ -383,6 +411,14 @@ function vipgoci_run() {
 			"\t" . '                               to GitHub in one review. If the number of ' . PHP_EOL .
 			"\t" . '                               comments exceed this number, additional reviews ' . PHP_EOL .
 			"\t" . '                               will be submitted.' . PHP_EOL .
+			"\t" . '--review-comments-total-max=NUMBER  Maximum number of inline comments submitted to'   . PHP_EOL .
+			"\t" . '                                    a single Pull-Request by the program -- includes' . PHP_EOL .
+			"\t" . '                                    comments from previous executions. A value of ' . PHP_EOL .
+			"\t" . '                                    \'0\' indicates no limit.' . PHP_EOL .
+			"\t" . '--dismiss-stale-reviews=BOOL   Dismiss any reviews associated with Pull-Requests ' . PHP_EOL .
+			"\t" . '                               that we process which have no active comments. ' . PHP_EOL .
+			"\t" . '                               The Pull-Requests we process are those associated ' . PHP_EOL .
+			"\t" . '                               with the commit specified.' . PHP_EOL .
 			"\t" . '--informational-url=STRING     URL to documentation on what this bot does. Should ' . PHP_EOL .
 			"\t" . '                               start with https:// or https:// ' . PHP_EOL .
 			"\t" . '--phpcs=BOOL                   Whether to run PHPCS (true/false)' . PHP_EOL .
@@ -396,6 +432,31 @@ function vipgoci_run() {
 			"\t" . '--autoapprove-label=STRING     String to use for labels when auto-approving' . PHP_EOL .
 			"\t" . '--php-path=FILE                Full path to PHP, if not specified the' . PHP_EOL .
 			"\t" . '                               default in $PATH will be used instead' . PHP_EOL .
+			"\t" . '--svg-checks=BOOL              Enable or disable SVG checks, both' . PHP_EOL .
+			"\t" . '                               auto-approval of SVG files and problem' . PHP_EOL .
+			"\t" . '                               checking of these files. Note that if' . PHP_EOL .
+			"\t" . '                               auto-approvals are turned off globally, no' . PHP_EOL .
+			"\t" . '                               auto-approval is performed for SVG files.' . PHP_EOL .
+			"\t" . '--hashes-api=BOOL              Whether to do hashes-to-hashes API verfication ' . PHP_EOL .
+			"\t" . '                               with individual PHP files found to be altered ' . PHP_EOL .
+			"\t" . '                               in the branch specified' . PHP_EOL .
+			"\t" . '--hashes-api-url=STRING        URL to hashes-to-hashes HTTP API root' . PHP_EOL .
+			"\t" . '                               -- note that it should not include any specific' . PHP_EOL .
+			"\t" . '                               paths to individual parts of the API.' . PHP_EOL .
+			PHP_EOL .
+			"\t" . '--hashes-oauth-token=STRING,        --hashes-oauth-token-secret=STRING, ' . PHP_EOL .
+			"\t" . '--hashes-oauth-consumer-key=STRING, --hashes-oauth-consumer-secret=STRING ' . PHP_EOL .
+			"\t" . '                               OAuth 1.0 token, token secret, consumer key and ' . PHP_EOL .
+			"\t" . '                               consumer secret needed for hashes-to-hashes HTTP requests' . PHP_EOL .
+			"\t" . '                               All required for hashes-to-hashes requests.' . PHP_EOL .
+			PHP_EOL .
+			"\t" . '--irc-api-url=STRING           URL to IRC API to send alerts' . PHP_EOL .
+			"\t" . '--irc-api-token=STRING         Access-token to use to communicate with the IRC ' . PHP_EOL .
+			"\t" . '                               API' . PHP_EOL .
+			"\t" . '--irc-api-bot=STRING           Name for the bot which is supposed to send the IRC ' .PHP_EOL .
+			"\t" . '                               messages.' . PHP_EOL .
+			"\t" . '--irc-api-room=STRING          Name for the chatroom to which the IRC messages should ' . PHP_EOL .
+			"\t" . '                               be sent. ' . PHP_EOL .
 			"\t" . '--branches-ignore=STRING,...   What branches to ignore -- useful to make sure' . PHP_EOL .
 			"\t" . '                               some branches never get scanned. Separate branches' . PHP_EOL .
 			"\t" . '                               with commas' . PHP_EOL .
@@ -479,6 +540,46 @@ function vipgoci_run() {
 
 
 	/*
+	 * Process --hashes-api and --svg-checks
+	 * -- expected to be a boolean.
+	*/
+
+	vipgoci_option_bool_handle( $options, 'hashes-api', 'false' );
+
+	vipgoci_option_bool_handle( $options, 'svg-checks', 'false' );
+
+	/*
+	 * Process --hashes-api-url -- expected to
+	 * be an URL to a webservice.
+	 */
+
+	if ( isset( $options['hashes-api-url'] ) ) {
+		$options['hashes-api-url'] = trim(
+			$options['hashes-api-url']
+		);
+
+		$options['hashes-api-url'] = rtrim(
+			$options['hashes-api-url'],
+			'/'
+		);
+	}
+
+	/*
+	 * Process hashes-oauth arguments
+	 */
+
+	foreach( $hashes_oauth_arguments as $tmp_key ) {
+		if ( ! isset( $options[ $tmp_key ] ) ) {
+			continue;
+		}
+
+		$options[ $tmp_key ] = rtrim( trim(
+			$options[ $tmp_key ]
+		) );
+	}
+
+
+	/*
 	 * Handle --local-git-repo parameter
 	 */
 
@@ -530,6 +631,19 @@ function vipgoci_run() {
 	);
 
 	/*
+	 * Overall maximum number of inline comments
+	 * posted to GitHub Pull-Request Reviews -- from
+	 * 0 to 500. 0 means unlimited.
+	 */
+
+	vipgoci_option_integer_handle(
+		$options,
+		'review-comments-total-max',
+		200,
+		range( 0, 500, 1 )
+	);
+
+	/*
 	 * Handle optional --informational-url --
 	 * URL to information on what this bot does.
 	 */
@@ -551,6 +665,7 @@ function vipgoci_run() {
 
 	vipgoci_option_bool_handle( $options, 'lint', 'true' );
 
+	vipgoci_option_bool_handle( $options, 'dismiss-stale-reviews', 'false' );
 
 	if (
 		( false === $options['lint'] ) &&
@@ -579,7 +694,76 @@ function vipgoci_run() {
 	);
 
 	/*
+	 * Handle IRC API parameters
+	 */
+
+	$irc_params_defined = 0;
+
+	foreach( array(
+			'irc-api-url',
+			'irc-api-token',
+			'irc-api-bot',
+			'irc-api-room'
+		) as $irc_api_param ) {
+
+		if ( isset( $options[ $irc_api_param ] ) ) {
+			$options[ $irc_api_param ] = trim(
+				$options[ $irc_api_param ]
+			);
+
+			$options[ $irc_api_param ] = rtrim(
+				$options[ $irc_api_param ]
+			);
+
+			$irc_params_defined++;
+		}
+	}
+
+	if ( isset( $options['irc-api-url'] ) ) {
+		vipgoci_option_url_handle(
+			$options,
+			'irc-api-url',
+			null
+		);
+	}
+
+	if (
+		( $irc_params_defined > 0 ) &&
+		( $irc_params_defined !== 4 )
+	) {
+		vipgoci_sysexit(
+			'Some IRC API parameters defined but not all; all must be defined to be useful',
+			array(
+			),
+			VIPGOCI_EXIT_USAGE_ERROR
+		);
+	}
+
+	unset( $irc_params_defined );
+
+	/*
+	 * Handle settings for the pixel API.
+	 */
+	if ( isset( $options['pixel-api-url'] ) ) {
+		vipgoci_option_url_handle(
+			$options,
+			'pixel-api-url',
+			null
+		);
+	}
+
+	if ( isset( $options['pixel-api-groupname'] ) ) {
+		$options['pixel-api-groupname'] = trim(
+			$options['pixel-api-groupname']
+		);
+	}
+
+
+	/*
 	 * Do some sanity-checking on the parameters
+	 *
+	 * Note: Parameters should not be set after
+	 * this point.
 	 */
 
 	$options['autoapprove-filetypes'] = array_map(
@@ -600,10 +784,7 @@ function vipgoci_run() {
 
 	if (
 		( true === $options['autoapprove'] ) &&
-		(
-			( empty( $options['autoapprove-filetypes'] ) ) ||
-			( false === $options['autoapprove-label'] )
-		)
+		( false === $options['autoapprove-label'] )
 	) {
 		vipgoci_sysexit(
 			'To be able to auto-approve, file-types to approve ' .
@@ -614,14 +795,55 @@ function vipgoci_run() {
 		);
 	}
 
+	/*
+	 * Do sanity-checking with hashes-api-url
+	 * and --hashes-oauth-* parameters
+	 */
+	if ( isset( $options['hashes-api-url'] ) ) {
+		foreach ( $hashes_oauth_arguments as $tmp_key ) {
+			if ( ! isset( $options[ $tmp_key ] ) ) {
+				vipgoci_sysexit(
+					'Asking to use --hashes-api-url without --hashes-oauth-* parameters, but that is not possible, as authorization is needed for hashes-to-hashes API',
+					array(),
+					VIPGOCI_EXIT_USAGE_ERROR
+				);
+			}
+		}
+
+		if ( false === $options['autoapprove'] ) {
+			vipgoci_sysexit(
+				'Asking to use --hashes-api-url without --autoapproval set to true, but for hashes-to-hashes functionality to be useful, --autoapprove must be enabled. Otherwise the functionality will not really be used',
+				array(),
+				VIPGOCI_EXIT_USAGE_ERROR
+			);
+		}
+	}
 
 	if (
 		( true === $options['autoapprove'] ) &&
-		( in_array( 'php', $options['autoapprove-filetypes'], true ) )
+
+		/*
+		 * Cross-reference: We disallow autoapproving
+		 * PHP and JS files here, because they chould contain
+		 * contain dangerous code.
+		 */
+		(
+			( in_array(
+				'php',
+				$options['autoapprove-filetypes'],
+				true
+			) )
+		||
+			( in_array(
+				'js',
+				$options['autoapprove-filetypes'],
+				true
+			) )
+		)
 	) {
 		vipgoci_sysexit(
-			'PHP files cannot be auto-approved, as they can' .
-				'contain serious problems for execution',
+			'PHP and JS files cannot be auto-approved on file-type basis, as they ' .
+				'can cause serious problems for execution',
 			array(
 			),
 			VIPGOCI_EXIT_USAGE_ERROR
@@ -638,12 +860,14 @@ function vipgoci_run() {
 	);
 
 	if (
+		( false === $current_user_info ) ||
 		( ! isset( $current_user_info->login ) ) ||
 		( empty( $current_user_info->login ) )
 	) {
 		vipgoci_sysexit(
 			'Unable to get information about token-holder user from GitHub',
-			array(),
+			array(
+			),
 			VIPGOCI_EXIT_GITHUB_PROBLEM
 		);
 	}
@@ -669,6 +893,16 @@ function vipgoci_run() {
 	$options_clean = $options;
 	$options_clean['token'] = '***';
 
+	if ( isset( $options_clean['irc-api-token'] ) ) {
+		$options_clean['irc-api-token'] = '***';
+	}
+
+	foreach( $hashes_oauth_arguments as $hashes_oauth_argument ) {
+		if ( isset( $options_clean[ $hashes_oauth_argument ] ) ) {
+			$options_clean[ $hashes_oauth_argument ] = '***';
+		}
+	}
+
 	vipgoci_log(
 		'Starting up...',
 		array(
@@ -680,8 +914,9 @@ function vipgoci_run() {
 		'issues'	=> array(),
 
 		'stats'		=> array(
-			'phpcs'	=> null,
-			'lint'	=> null,
+			VIPGOCI_STATS_PHPCS	=> null,
+			VIPGOCI_STATS_LINT	=> null,
+			VIPGOCI_STATS_HASHES_API => null,
 		),
 	);
 
@@ -805,7 +1040,6 @@ function vipgoci_run() {
 		$results
 	);
 
-
 	/*
 	 * Clean up old comments made by us previously
 	 */
@@ -827,7 +1061,7 @@ function vipgoci_run() {
 		vipgoci_lint_scan_commit(
 			$options,
 			$results['issues'],
-			$results['stats']['lint']
+			$results['stats'][ VIPGOCI_STATS_LINT ]
 		);
 	}
 
@@ -840,25 +1074,100 @@ function vipgoci_run() {
 		vipgoci_phpcs_scan_commit(
 			$options,
 			$results['issues'],
-			$results['stats']['phpcs']
+			$results['stats'][ VIPGOCI_STATS_PHPCS ]
 		);
 	}
 
 	/*
-	 * If to auto-approve, then do so.
+	 * If to do auto-approvals, then do so now.
+	 * First ask all 'auto-approval modules'
+	 * to do their scanning, collecting all files that
+	 * can be auto-approved, and then actually do the
+	 * auto-approval if possible.
+	 */
+	if ( true === $options['autoapprove'] ) {
+		/*
+		 * If to auto-approve based on file-types,
+		 * scan through the files in the PR, and
+		 * register which can be auto-approved.
+		 */
+		$auto_approved_files_arr = array();
+
+		if ( ! empty( $options[ 'autoapprove-filetypes' ] ) ) {
+			vipgoci_ap_file_types(
+				$options,
+				$auto_approved_files_arr
+			);
+		}
+
+		/*
+		 * Do scanning of all altered files, using
+		 * the hashes-to-hashes database API, collecting
+		 * which files can be auto-approved.
+		 */
+
+		if ( true === $options['hashes-api'] ) {
+			vipgoci_ap_hashes_api_scan_commit(
+				$options,
+				$results['issues'],
+				$results['stats'][ VIPGOCI_STATS_HASHES_API ],
+				$auto_approved_files_arr
+			);
+		}
+
+		if ( true === $options['svg-checks'] ) {
+			vipgoci_ap_svg_files(
+				$options,
+				$auto_approved_files_arr
+			);
+		}
+
+		vipgoci_auto_approval(
+			$options,
+			$auto_approved_files_arr,
+			$results // FIXME: dry-run
+		);
+	}
+
+
+	/*
+	 * Remove issues from $results for files
+	 * that are approved in hashes-to-hashes API.
 	 */
 
-	if ( true === $options['autoapprove'] ) {
-		// FIXME: Do not auto-approve if there are
-		// any linting or PHPCS-issues.
-		vipgoci_auto_approval(
-			$options
+	vipgoci_approved_files_comments_remove(
+		$options,
+		$results,
+		$auto_approved_files_arr
+	);
+
+	/*
+	 * Remove comments from $results that have
+	 * already been submitted.
+	 */
+
+	vipgoci_remove_existing_github_comments_from_results(
+		$options,
+		$prs_implicated,
+		$results,
+		true
+	);
+
+	/*
+	 * Limit number of issues in $results.
+	 *
+	 * If set to zero, skip this part.
+	 */
+
+	if ( 0 !== $options['review-comments-total-max'] ) {
+		vipgoci_github_results_filter_comments_to_max(
+			$options,
+			$results
 		);
 	}
 
-
 	/*
-	 * Submit any issues to GitHub
+	 * Submit any remaining issues to GitHub
 	 */
 
 	vipgoci_github_pr_generic_comment_submit(
@@ -883,26 +1192,103 @@ function vipgoci_run() {
 		$options['review-comments-max']
 	);
 
+	if ( true === $options['dismiss-stale-reviews'] ) {
+		/*
+		 * Dismiss any reviews that contain *only*
+		 * inactive comments -- i.e. comments that
+		 * are obsolete as the code has been changed.
+		 *
+		 * Note that we do this again here because we might
+		 * just have deleted comments from a Pull-Request which
+		 * would then remain without comments.
+		 */
+
+		foreach ( $prs_implicated as $pr_item ) {
+			vipgoci_github_pr_reviews_dismiss_non_active_comments(
+				$options,
+				$pr_item->number
+			);
+		}
+	}
+
+	/*
+	 * Send out to IRC API any alerts
+	 * that are queued up.
+	 */
+
+	if (
+		( ! empty( $options['irc-api-url'] ) ) &&
+		( ! empty( $options['irc-api-token'] ) ) &&
+		( ! empty( $options['irc-api-bot'] ) ) &&
+		( ! empty( $options['irc-api-room'] ) )
+	) {
+		vipgoci_irc_api_alerts_send(
+			$options['irc-api-url'],
+			$options['irc-api-token'],
+			$options['irc-api-bot'],
+			$options['irc-api-room']
+		);
+	}
+
 	$github_api_rate_limit_usage =
 		vipgoci_github_rate_limit_usage(
 			$options['token']
 		);
 
+	/*
+	 * Prepare to send statistics to external service,
+	 * also keep for exit-message.
+	 */
+	$counter_report = vipgoci_counter_report(
+		'dump',
+		null,
+		null
+	);
+
+	/*
+	 * Actually send statistics if configured
+	 * to do so.
+	 */
+
+	if (
+		( ! empty( $options['pixel-api-url'] ) ) &&
+		( ! empty( $options['pixel-api-groupname' ] ) )
+	) {
+		vipgoci_send_stats_to_pixel_api(
+			$options['pixel-api-url'],
+			$options['pixel-api-groupname'],
+
+			/*
+			 * Which statistics to send.
+			 */
+			array(
+				'github_pr_approval',
+				'github_pr_non_approval',
+				'github_api_request_get',
+				'github_api_request_post',
+				'github_api_request_put',
+				'github_api_request_fetch',
+				'github_api_request_delete',
+			),
+			$counter_report
+		);
+	}
+
+
+	/*
+	 * Final logging before quitting.
+	 */
 	vipgoci_log(
 		'Shutting down',
 		array(
 			'run_time_seconds'	=> time() - $startup_time,
 			'run_time_measurements'	=>
 				vipgoci_runtime_measure(
-					'dump',
+					VIPGOCI_RUNTIME_DUMP,
 					null
 				),
-			'counters_report'	=>
-				vipgoci_counter_report(
-					'dump',
-					null,
-					null
-				),
+			'counters_report'	=> $counter_report,
+
 			'github_api_rate_limit' =>
 				$github_api_rate_limit_usage->resources->core,
 
@@ -911,6 +1297,9 @@ function vipgoci_run() {
 	);
 
 
+	/*
+	 * Determine exit code.
+	 */
 	return vipgoci_exit_status(
 		$results
 	);
