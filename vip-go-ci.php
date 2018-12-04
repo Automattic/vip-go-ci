@@ -1154,6 +1154,13 @@ function vipgoci_run() {
 	);
 
 	/*
+	 * Keep records of how many issues we found.
+	 */
+	vipgoci_counter_update_with_issues_found(
+		$results
+	);
+
+	/*
 	 * Limit number of issues in $results.
 	 *
 	 * If set to zero, skip this part.
@@ -1240,7 +1247,7 @@ function vipgoci_run() {
 	 * also keep for exit-message.
 	 */
 	$counter_report = vipgoci_counter_report(
-		'dump',
+		VIPGOCI_COUNTERS_DUMP,
 		null,
 		null
 	);
@@ -1256,19 +1263,31 @@ function vipgoci_run() {
 	) {
 		vipgoci_send_stats_to_pixel_api(
 			$options['pixel-api-url'],
-			$options['pixel-api-groupname'],
 
 			/*
 			 * Which statistics to send.
 			 */
 			array(
-				'github_pr_approval',
-				'github_pr_non_approval',
-				'github_api_request_get',
-				'github_api_request_post',
-				'github_api_request_put',
-				'github_api_request_fetch',
-				'github_api_request_delete',
+				$options['pixel-api-groupname'] => array(
+					'github_pr_approval',
+					'github_pr_non_approval',
+					'github_api_request_get',
+					'github_api_request_post',
+					'github_api_request_put',
+					'github_api_request_fetch',
+					'github_api_request_delete'
+				),
+				// FIXME: repo-name -- do we really want to use that?
+				'vipgoci-' .
+					$options['repo-name']
+				=> array(
+					'github_pr_files_scanned',
+					'github_pr_lines_scanned',
+					'github_pr_files_linted',
+					'github_pr_lines_linted',
+					'github_pr_phpcs_issues',
+					'github_pr_lint_issues'
+				)
 			),
 			$counter_report
 		);
