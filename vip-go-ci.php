@@ -371,7 +371,7 @@ function vipgoci_run() {
 			'irc-api-bot:',
 			'irc-api-room:',
 			'pixel-api-url:',
-			'pixel-api-groupname:',
+			'pixel-api-groupprefix:',
 			'php-path:',
 			'local-git-repo:',
 			'skip-folders:',
@@ -752,9 +752,9 @@ function vipgoci_run() {
 		);
 	}
 
-	if ( isset( $options['pixel-api-groupname'] ) ) {
-		$options['pixel-api-groupname'] = trim(
-			$options['pixel-api-groupname']
+	if ( isset( $options['pixel-api-groupprefix'] ) ) {
+		$options['pixel-api-groupprefix'] = trim(
+			$options['pixel-api-groupprefix']
 		);
 	}
 
@@ -1259,7 +1259,7 @@ function vipgoci_run() {
 
 	if (
 		( ! empty( $options['pixel-api-url'] ) ) &&
-		( ! empty( $options['pixel-api-groupname' ] ) )
+		( ! empty( $options['pixel-api-groupprefix' ] ) )
 	) {
 		vipgoci_send_stats_to_pixel_api(
 			$options['pixel-api-url'],
@@ -1268,7 +1268,9 @@ function vipgoci_run() {
 			 * Which statistics to send.
 			 */
 			array(
-				$options['pixel-api-groupname'] => array(
+				$options['pixel-api-groupprefix'] .
+					'-actions' =>
+				array(
 					'github_pr_approval',
 					'github_pr_non_approval',
 					'github_api_request_get',
@@ -1277,8 +1279,8 @@ function vipgoci_run() {
 					'github_api_request_fetch',
 					'github_api_request_delete'
 				),
-				// FIXME: repo-name -- do we really want to use that?
-				'vipgoci-' .
+
+				$options['pixel-api-groupprefix'] .
 					$options['repo-name']
 				=> array(
 					'github_pr_files_scanned',
