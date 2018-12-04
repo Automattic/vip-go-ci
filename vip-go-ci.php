@@ -1269,6 +1269,10 @@ function vipgoci_run() {
 			 * Which statistics to send.
 			 */
 			array(
+				/*
+				 * Generic statistics pertaining
+				 * to all repositories.
+				 */
 				$options['pixel-api-groupprefix'] .
 					'-actions' =>
 				array(
@@ -1281,6 +1285,9 @@ function vipgoci_run() {
 					'github_api_request_delete'
 				),
 
+				/*
+				 * Repository-specific statistics.
+				 */
 				$options['pixel-api-groupprefix'] .
 					'-' .
 					$options['repo-name']
