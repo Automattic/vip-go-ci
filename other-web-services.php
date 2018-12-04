@@ -198,7 +198,7 @@ function vipgoci_send_stats_to_pixel_api(
 			rawurlencode(
 				$stat_value
 			);
-echo $url;
+
 		/*
 		 * Call service, do nothing with output.
 		 * Specify a short timeout.
