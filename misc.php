@@ -651,14 +651,14 @@ function vipgoci_counter_report( $action = null, $type = null, $amount = 1 ) {
 	 * Check usage.
 	 */
 	if (
-		( 'do' !== $action ) &&
-		( 'dump' !== $action )
+		( VIPGOCI_COUNTERS_DO !== $action ) &&
+		( VIPGOCI_COUNTERS_DUMP !== $action )
 	) {
 		return false;
 	}
 
 	// Dump all runtimes we have
-	if ( 'dump' === $action ) {
+	if ( VIPGOCI_COUNTERS_DUMP === $action ) {
 		return $counters;
 	}
 
@@ -668,7 +668,7 @@ function vipgoci_counter_report( $action = null, $type = null, $amount = 1 ) {
 	 * collecting, act on that.
 	 */
 
-	if ( 'do' === $action ) {
+	if ( VIPGOCI_COUNTERS_DO === $action ) {
 		if ( ! isset( $counters[ $type ] ) ) {
 			$counters[ $type ] = 0;
 		}
@@ -1077,6 +1077,50 @@ function vipgoci_remove_existing_github_comments_from_results(
 	);
 }
 
+
+/*
+ * Keep statistics on number of files and lines 
+ * either scanned or linted.
+ */
+
+function vipgoci_stats_per_file(
+	$options,
+	$file_name,
+	$stat_type
+) {
+	$file_contents = vipgoci_gitrepo_fetch_committed_file(
+		$options['repo-owner'],
+		$options['repo-name'],
+		$options['token'],
+		$options['commit'],
+		$file_name,
+		$options['local-git-repo']
+	);
+
+
+	if ( false === $file_contents ) {
+		return;
+	}
+
+	$file_lines_cnt = count(
+		explode(
+			"\n",
+			$file_contents
+		)
+	);
+
+	vipgoci_counter_report(
+		VIPGOCI_COUNTERS_DO,
+		'github_pr_files_' . $stat_type,
+		1
+	);
+
+	vipgoci_counter_report(
+		VIPGOCI_COUNTERS_DO,
+		'github_pr_lines_' . $stat_type,
+		$file_lines_cnt
+	);		
+}
 /*
  * For each approved file, remove any issues
  * to be submitted against them. However,
