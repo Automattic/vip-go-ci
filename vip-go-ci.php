@@ -1282,6 +1282,7 @@ function vipgoci_run() {
 				),
 
 				$options['pixel-api-groupprefix'] .
+					'-' .
 					$options['repo-name']
 				=> array(
 					'github_pr_files_scanned',
