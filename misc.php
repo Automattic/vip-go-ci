@@ -946,7 +946,7 @@ function vipgoci_remove_existing_github_comments_from_results(
 
 						'pull_request_review_id' =>
 							$pr_review_comment->pull_request_review_id,
-		
+
 						'comment_id' =>
 							$pr_review_comment->id,
 
@@ -960,7 +960,7 @@ function vipgoci_remove_existing_github_comments_from_results(
 							$pr_review_comment->updated_at,
 					);
 
-	
+
 					/*
 					 * Comment is a part of a dismissed review,
 					 * get rid of the comment -- act as if was
@@ -975,7 +975,7 @@ function vipgoci_remove_existing_github_comments_from_results(
 					);
 				}
 			}
-		
+
 			vipgoci_log(
 				'Removed following comments from list of previously submitted ' .
 					'comments to older PR reviews, as they are ' .
@@ -1077,9 +1077,68 @@ function vipgoci_remove_existing_github_comments_from_results(
 	);
 }
 
+/*
+ * Record statistics on number of linting and PHPCS
+ * issues found in results.
+ */
+function vipgoci_counter_update_with_issues_found(
+	$results
+) {
+	$stats_types = array_keys(
+		$results['stats']
+	);
+
+	foreach( $stats_types as $stat_type ) {
+		$pr_keys = array_keys(
+			$results['stats'][ $stat_type ]
+		);
+
+		$max_issues_found = 0;
+
+		foreach( $pr_keys as $pr_key ) {
+			$issue_types = array_keys(
+				$results['stats'][
+					$stat_type
+				][
+					$pr_key
+				]
+			);
+
+			$issues_found = 0;
+
+			foreach( $issue_types as $issue_type ) {
+				$issues_found +=
+					$results['stats'][
+						$stat_type
+					][
+						$pr_key
+					][
+						$issue_type
+					];
+			}
+
+			$max_issues_found = max(
+				$issues_found,
+				$max_issues_found
+			);
+		}
+
+		$stat_type = str_replace(
+			'-',
+			'_',
+			$stat_type
+		);
+
+		vipgoci_counter_report(
+			VIPGOCI_COUNTERS_DO,
+			'github_pr_' . $stat_type . '_issues',
+			$max_issues_found
+		);
+	}
+}
 
 /*
- * Keep statistics on number of files and lines 
+ * Keep statistics on number of files and lines
  * either scanned or linted.
  */
 
@@ -1119,7 +1178,7 @@ function vipgoci_stats_per_file(
 		VIPGOCI_COUNTERS_DO,
 		'github_pr_lines_' . $stat_type,
 		$file_lines_cnt
-	);		
+	);
 }
 /*
  * For each approved file, remove any issues
@@ -1321,7 +1380,7 @@ function vipgoci_github_results_filter_comments_to_max(
 		 * to possible new ones, substract
 		 * from the maximum specified.
 		 */
-		
+
 		$comments_to_remove =
 			(
 				count( $pr_issues_comments )
