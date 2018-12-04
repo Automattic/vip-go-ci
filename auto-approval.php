@@ -18,7 +18,7 @@ function vipgoci_auto_approval_non_approval(
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'vipgoci_auto_approval_non_approval' );
 
 	vipgoci_counter_report(
-		'do',
+		VIPGOCI_COUNTERS_DO,
 		'github_pr_non_approval',
 		1
 	);
@@ -263,7 +263,7 @@ function vipgoci_autoapproval_do_approve(
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'vipgoci_autoapproval_do_approve' );
 
 	vipgoci_counter_report(
-		'do',
+		VIPGOCI_COUNTERS_DO,
 		'github_pr_approval',
 		1
 	);

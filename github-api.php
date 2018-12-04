@@ -446,7 +446,11 @@ function vipgoci_github_post_url(
 
 		vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'github_api_post' );
 
-		vipgoci_counter_report( 'do', 'github_api_request_post', 1 );
+		vipgoci_counter_report(
+			VIPGOCI_COUNTERS_DO,
+			'github_api_request_post',
+			1
+		);
 
 		$resp_data = curl_exec( $ch );
 
@@ -655,7 +659,11 @@ function vipgoci_github_fetch_url(
 		 */
 		vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'github_api_get' );
 
-		vipgoci_counter_report( 'do', 'github_api_request_get', 1 );
+		vipgoci_counter_report(
+			VIPGOCI_COUNTERS_DO,
+			'github_api_request_get',
+			1
+		);
 
 		$resp_data = curl_exec( $ch );
 
@@ -802,7 +810,11 @@ function vipgoci_github_put_url(
 
 		vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'github_api_put' );
 
-		vipgoci_counter_report( 'do', 'github_api_request_put', 1 );
+		vipgoci_counter_report(
+			VIPGOCI_COUNTERS_DO,
+			'github_api_request_put',
+			1	
+		);
 
 		$resp_data = curl_exec( $ch );
 
