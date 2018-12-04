@@ -1,6 +1,5 @@
 <?php
 
-
 /*
  * Initialize statistics array
  */
