@@ -1599,9 +1599,9 @@ function vipgoci_github_pr_generic_comment_submit(
 				"))." .
 				"\n\r";
 
-			vipgoci_markdown_comment_add_pagebreak(
-				$tmp_postfields_body
-			);
+		vipgoci_markdown_comment_add_pagebreak(
+			$tmp_postfields_body
+		);
 
 		/*
 		 * If we have informational URL, append that
