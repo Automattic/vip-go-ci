@@ -228,6 +228,16 @@ function vipgoci_lint_scan_commit(
 		);
 
 		/*
+		 * Keep statistics of what we do.
+		 */
+
+		vipgoci_stats_per_file(
+			$options,
+			$filename,
+			'linted'
+		);
+
+		/*
 		 * Actually lint the file
 		 */
 

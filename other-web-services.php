@@ -61,7 +61,7 @@ function vipgoci_irc_api_alerts_send(
 		);
 
 		curl_setopt(
-			$ch, CURLOPT_CONNECTTIMEOUT, 20
+			$ch, CURLOPT_CONNECTTIMEOUT, 5
 		);
 
 		curl_setopt(
@@ -97,7 +97,11 @@ function vipgoci_irc_api_alerts_send(
 
 		vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'irc_api_post' );
 
-		vipgoci_counter_report( 'do', 'irc_api_request_post', 1 );
+		vipgoci_counter_report(
+			VIPGOCI_COUNTERS_DO,
+			'irc_api_request_post',
+			1
+		);
 
 		$resp_data = curl_exec( $ch );
 
@@ -125,7 +129,6 @@ function vipgoci_irc_api_alerts_send(
  */
 function vipgoci_send_stats_to_pixel_api(
 	$pixel_api_url,
-	$statistic_group,
 	$stat_names_to_report,
 	$statistics
 ) {
@@ -137,18 +140,37 @@ function vipgoci_send_stats_to_pixel_api(
 		)
 	);
 
+	$stat_names_to_groups = array(
+	);
+
+	foreach(
+		array_keys( $stat_names_to_report ) as
+			$statistic_group
+	) {
+		foreach(
+			$stat_names_to_report[
+				$statistic_group
+			] as $stat_name
+		) {
+			$stat_names_to_groups[
+				$stat_name
+			] = $statistic_group;
+		}
+	}
+
 	foreach(
 		$statistics as
 			$stat_name => $stat_value
 	) {
+
 		/*
 		 * We are to report only certain
 		 * values, so skip those who we should
 		 * not report on.
 		 */
-		if ( false === in_array(
+		if ( false === array_key_exists(
 			$stat_name,
-			$stat_names_to_report
+			$stat_names_to_groups
 		) ) {
 			/*
 			 * Not found, so nothing to report, skip.
@@ -164,7 +186,11 @@ function vipgoci_send_stats_to_pixel_api(
 			'?' .
 			'v=wpcom-no-pv' .
 			'&' .
-			'x_' . rawurlencode( $statistic_group  ) .
+			'x_' . rawurlencode(
+				$stat_names_to_groups[
+					$stat_name
+				]
+			) .
 			'/' .
 			rawurlencode(
 				$stat_name
@@ -175,8 +201,17 @@ function vipgoci_send_stats_to_pixel_api(
 
 		/*
 		 * Call service, do nothing with output.
+		 * Specify a short timeout.
 		 */
-		file_get_contents( $url );
+		$ctx = stream_context_create(
+			array(
+				'http' => array(
+					'timeout' => 5
+				)
+			)
+		);
+
+		file_get_contents( $url, 0, $ctx );
 
 		/*
 		 * Sleep a short while between
@@ -188,5 +223,4 @@ function vipgoci_send_stats_to_pixel_api(
 		);
 	}
 }
-
 

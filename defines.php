@@ -55,3 +55,10 @@ define( 'VIPGOCI_APPROVAL_HASHES_API',		'hashes-api' );
 define( 'VIPGOCI_RUNTIME_START', 'start' );
 define( 'VIPGOCI_RUNTIME_STOP', 'stop' );
 define( 'VIPGOCI_RUNTIME_DUMP', 'dump' );
+
+/*
+ * Defines for vipgoci_counter_report()
+ */
+
+define( 'VIPGOCI_COUNTERS_DUMP',	'dump' );
+define( 'VIPGOCI_COUNTERS_DO',		'do' );

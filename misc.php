@@ -526,161 +526,6 @@ function vipgoci_scandir_git_repo( $path, $filter ) {
 
 
 /*
- * Initialize statistics array
- */
-function vipgoci_stats_init( $options, $prs_implicated, &$results ) {
-	/*
-	 * Init stats
-	 */
-
-	foreach ( $prs_implicated as $pr_item ) {
-		/*
-		 * Initialize array for stats and
-		 * results of scanning, if needed.
-		 */
-
-		if ( empty( $results['issues'][ $pr_item->number ] ) ) {
-			$results['issues'][ $pr_item->number ] = array(
-			);
-		}
-
-		foreach (
-			array(
-				VIPGOCI_STATS_PHPCS,
-				VIPGOCI_STATS_LINT,
-				VIPGOCI_STATS_HASHES_API
-			)
-			as $stats_type
-		) {
-			/*
-			 * Initialize stats for the stats-types only when
-			 * supposed to run them
-			 */
-			if (
-				( true !== $options[ $stats_type ] ) ||
-				( ! empty( $results['stats'][ $stats_type ][ $pr_item->number ] ) )
-			) {
-				continue;
-			}
-
-			$results['stats'][ $stats_type ]
-				[ $pr_item->number ] = array(
-					'error'		=> 0,
-					'warning'	=> 0,
-					'info'		=> 0,
-				);
-		}
-	}
-}
-
-
-/*
- * A simple function to keep record of how
- * much a time a particular action takes to execute.
- * Allows multiple records to be kept at the same time.
- *
- * Allows specifying 'start' acton, which indicates that
- * keeping record of measurement should start, 'stop'
- * which indicates that recording should be stopped,
- * and 'dump' which will return with an associative
- * array of all measurements collected henceforth.
- *
- */
-function vipgoci_runtime_measure( $action = null, $type = null ) {
-	static $runtime = array();
-	static $timers = array();
-
-	/*
-	 * Check usage.
-	 */
-	if (
-		( VIPGOCI_RUNTIME_START !== $action ) &&
-		( VIPGOCI_RUNTIME_STOP !== $action ) &&
-		( VIPGOCI_RUNTIME_DUMP !== $action )
-	) {
-		return false;
-	}
-
-	// Dump all runtimes we have
-	if ( VIPGOCI_RUNTIME_DUMP === $action ) {
-		return $runtime;
-	}
-
-
-	/*
-	 * Being asked to either start
-	 * or stop collecting, act on that.
-	 */
-
-	if ( ! isset( $runtime[ $type ] ) ) {
-		$runtime[ $type ] = 0;
-	}
-
-
-	if ( VIPGOCI_RUNTIME_START === $action ) {
-		$timers[ $type ] = microtime( true );
-
-		return true;
-	}
-
-	else if ( VIPGOCI_RUNTIME_STOP === $action ) {
-		if ( ! isset( $timers[ $type ] ) ) {
-			return false;
-		}
-
-		$tmp_time = microtime( true ) - $timers[ $type ];
-
-		$runtime[ $type ] += $tmp_time;
-
-		unset( $timers[ $type ] );
-
-		return $tmp_time;
-	}
-}
-
-
-/*
- * Keep a counter for stuff we do. For instance,
- * number of GitHub API requests.
- */
-
-function vipgoci_counter_report( $action = null, $type = null, $amount = 1 ) {
-	static $counters = array();
-
-	/*
-	 * Check usage.
-	 */
-	if (
-		( 'do' !== $action ) &&
-		( 'dump' !== $action )
-	) {
-		return false;
-	}
-
-	// Dump all runtimes we have
-	if ( 'dump' === $action ) {
-		return $counters;
-	}
-
-
-	/*
-	 * Being asked to start
-	 * collecting, act on that.
-	 */
-
-	if ( 'do' === $action ) {
-		if ( ! isset( $counters[ $type ] ) ) {
-			$counters[ $type ] = 0;
-		}
-
-		$counters[ $type ] += $amount;
-
-		return true;
-	}
-}
-
-
-/*
  * Go through the given blame-log, and
  * return only the items from the log that
  * are found in $relevant_commit_ids.
@@ -946,7 +791,7 @@ function vipgoci_remove_existing_github_comments_from_results(
 
 						'pull_request_review_id' =>
 							$pr_review_comment->pull_request_review_id,
-		
+
 						'comment_id' =>
 							$pr_review_comment->id,
 
@@ -960,7 +805,7 @@ function vipgoci_remove_existing_github_comments_from_results(
 							$pr_review_comment->updated_at,
 					);
 
-	
+
 					/*
 					 * Comment is a part of a dismissed review,
 					 * get rid of the comment -- act as if was
@@ -975,7 +820,7 @@ function vipgoci_remove_existing_github_comments_from_results(
 					);
 				}
 			}
-		
+
 			vipgoci_log(
 				'Removed following comments from list of previously submitted ' .
 					'comments to older PR reviews, as they are ' .
@@ -1076,6 +921,7 @@ function vipgoci_remove_existing_github_comments_from_results(
 		)
 	);
 }
+
 
 /*
  * For each approved file, remove any issues
@@ -1277,7 +1123,7 @@ function vipgoci_github_results_filter_comments_to_max(
 		 * to possible new ones, substract
 		 * from the maximum specified.
 		 */
-		
+
 		$comments_to_remove =
 			(
 				count( $pr_issues_comments )
@@ -1430,4 +1276,53 @@ function vipgoci_github_results_filter_comments_to_max(
 			'comments_removed'		=> $comments_removed,
 		)
 	);
+}
+
+/*
+ * Add pagebreak to a Markdown-style comment
+ * string -- but only if a pagebreak is not
+ * already the latest addition to the comment.
+ * If whitespacing is present just after the
+ * pagebreak, ignore it and act as if it does
+ * not exist.
+ */
+function vipgoci_markdown_comment_add_pagebreak(
+	&$comment,
+	$pagebreak_style = '***'
+) {
+	/*
+	 * Get rid of any \n\r strings, and other
+	 * whitespaces from $comment.
+	 */
+	$comment_copy = rtrim( $comment );
+	$comment_copy = rtrim( $comment_copy, " \n\r" );
+
+	/*	
+	 * Find the last pagebreak in the comment.
+	 */
+	$pagebreak_location = strrpos(
+		$comment_copy,
+		$pagebreak_style
+	);
+
+
+	/*
+	 * If pagebreak is found, and is
+	 * at the end of the comment, bail
+	 * out and do nothing to the comment.
+	 */
+
+	if ( 
+		( false !== $pagebreak_location ) &&
+		(
+			$pagebreak_location +
+			strlen( $pagebreak_style )
+		)
+		===
+		strlen( $comment_copy )
+	) {
+		return;
+	}
+
+	$comment .= $pagebreak_style . "\n\r";
 }

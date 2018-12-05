@@ -5,6 +5,7 @@ require_once( __DIR__ . '/defines.php' );
 require_once( __DIR__ . '/github-api.php' );
 require_once( __DIR__ . '/git-repo.php' );
 require_once( __DIR__ . '/misc.php' );
+require_once( __DIR__ . '/statistics.php' );
 require_once( __DIR__ . '/phpcs-scan.php' );
 require_once( __DIR__ . '/lint-scan.php' );
 require_once( __DIR__ . '/auto-approval.php' );
@@ -371,7 +372,7 @@ function vipgoci_run() {
 			'irc-api-bot:',
 			'irc-api-room:',
 			'pixel-api-url:',
-			'pixel-api-groupname:',
+			'pixel-api-groupprefix:',
 			'php-path:',
 			'local-git-repo:',
 			'skip-folders:',
@@ -752,9 +753,9 @@ function vipgoci_run() {
 		);
 	}
 
-	if ( isset( $options['pixel-api-groupname'] ) ) {
-		$options['pixel-api-groupname'] = trim(
-			$options['pixel-api-groupname']
+	if ( isset( $options['pixel-api-groupprefix'] ) ) {
+		$options['pixel-api-groupprefix'] = trim(
+			$options['pixel-api-groupprefix']
 		);
 	}
 
@@ -1154,6 +1155,13 @@ function vipgoci_run() {
 	);
 
 	/*
+	 * Keep records of how many issues we found.
+	 */
+	vipgoci_counter_update_with_issues_found(
+		$results
+	);
+
+	/*
 	 * Limit number of issues in $results.
 	 *
 	 * If set to zero, skip this part.
@@ -1240,7 +1248,7 @@ function vipgoci_run() {
 	 * also keep for exit-message.
 	 */
 	$counter_report = vipgoci_counter_report(
-		'dump',
+		VIPGOCI_COUNTERS_DUMP,
 		null,
 		null
 	);
@@ -1252,23 +1260,45 @@ function vipgoci_run() {
 
 	if (
 		( ! empty( $options['pixel-api-url'] ) ) &&
-		( ! empty( $options['pixel-api-groupname' ] ) )
+		( ! empty( $options['pixel-api-groupprefix' ] ) )
 	) {
 		vipgoci_send_stats_to_pixel_api(
 			$options['pixel-api-url'],
-			$options['pixel-api-groupname'],
 
 			/*
 			 * Which statistics to send.
 			 */
 			array(
-				'github_pr_approval',
-				'github_pr_non_approval',
-				'github_api_request_get',
-				'github_api_request_post',
-				'github_api_request_put',
-				'github_api_request_fetch',
-				'github_api_request_delete',
+				/*
+				 * Generic statistics pertaining
+				 * to all repositories.
+				 */
+				$options['pixel-api-groupprefix'] .
+					'-actions' =>
+				array(
+					'github_pr_approval',
+					'github_pr_non_approval',
+					'github_api_request_get',
+					'github_api_request_post',
+					'github_api_request_put',
+					'github_api_request_fetch',
+					'github_api_request_delete'
+				),
+
+				/*
+				 * Repository-specific statistics.
+				 */
+				$options['pixel-api-groupprefix'] .
+					'-' .
+					$options['repo-name']
+				=> array(
+					'github_pr_files_scanned',
+					'github_pr_lines_scanned',
+					'github_pr_files_linted',
+					'github_pr_lines_linted',
+					'github_pr_phpcs_issues',
+					'github_pr_lint_issues'
+				)
 			),
 			$counter_report
 		);

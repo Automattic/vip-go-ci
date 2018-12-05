@@ -18,7 +18,7 @@ function vipgoci_auto_approval_non_approval(
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'vipgoci_auto_approval_non_approval' );
 
 	vipgoci_counter_report(
-		'do',
+		VIPGOCI_COUNTERS_DO,
 		'github_pr_non_approval',
 		1
 	);
@@ -57,15 +57,6 @@ function vipgoci_auto_approval_non_approval(
 		0,
 		true // Send to IRC
 	);
-
-	/*
-	 * Temporary: Just while we test the
-	 * approval-logic.
-	 */
-
-	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'vipgoci_auto_approval_non_approval' );
-
-	return;
 
 
 	if ( false === $pr_label ) {
@@ -263,7 +254,7 @@ function vipgoci_autoapproval_do_approve(
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'vipgoci_autoapproval_do_approve' );
 
 	vipgoci_counter_report(
-		'do',
+		VIPGOCI_COUNTERS_DO,
 		'github_pr_approval',
 		1
 	);
@@ -310,15 +301,6 @@ function vipgoci_autoapproval_do_approve(
 		0,
 		true // Send to IRC
 	);
-
-	/*
-	 * Temporary: Just while we test the
-	 * approval-logic.
-	 */
-
-	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'vipgoci_autoapproval_do_approve' );
-
-	return;
 
 
 	/*
