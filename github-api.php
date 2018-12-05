@@ -2523,6 +2523,10 @@ function vipgoci_github_pr_reviews_dismiss_non_active_comments(
 	/*
 	 * Loop through each review we
 	 * found matching the specific criteria.
+	 *
+	 * Note that implicit in this logic is that
+	 * there must be some comments attached to a
+	 * review so it becomes dismissable at all.
 	 */
 	foreach( $pr_reviews as $pr_review ) {
 		/*
