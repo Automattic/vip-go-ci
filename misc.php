@@ -1277,3 +1277,52 @@ function vipgoci_github_results_filter_comments_to_max(
 		)
 	);
 }
+
+/*
+ * Add pagebreak to a Markdown-style comment
+ * string -- but only if a pagebreak is not
+ * already the latest addition to the comment.
+ * If whitespacing is present just after the
+ * pagebreak, ignore it and act as if it does
+ * not exist.
+ */
+function vipgoci_markdown_comment_add_pagebreak(
+	&$comment,
+	$pagebreak_style = '***'
+) {
+	/*
+	 * Get rid of any \n\r strings, and other
+	 * whitespaces from $comment.
+	 */
+	$comment_copy = rtrim( $comment );
+	$comment_copy = rtrim( $comment_copy, " \n\r" );
+
+	/*	
+	 * Find the last pagebreak in the comment.
+	 */
+	$pagebreak_location = strrpos(
+		$comment_copy,
+		$pagebreak_style
+	);
+
+
+	/*
+	 * If pagebreak is found, and is
+	 * at the end of the comment, bail
+	 * out and do nothing to the comment.
+	 */
+
+	if ( 
+		( false !== $pagebreak_location ) &&
+		(
+			$pagebreak_location +
+			strlen( $pagebreak_style )
+		)
+		===
+		strlen( $comment_copy )
+	) {
+		return;
+	}
+
+	$comment .= $pagebreak_style . "\n\r";
+}

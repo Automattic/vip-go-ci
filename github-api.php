@@ -813,7 +813,7 @@ function vipgoci_github_put_url(
 		vipgoci_counter_report(
 			VIPGOCI_COUNTERS_DO,
 			'github_api_request_put',
-			1	
+			1
 		);
 
 		$resp_data = curl_exec( $ch );
@@ -1198,7 +1198,7 @@ function vipgoci_github_pr_reviews_comments_get(
 
 /*
  * Get all review-comments submitted to a
- * particular Pull-Request. 
+ * particular Pull-Request.
  * Supports filtering by:
  * - User submitted (parameter: login)
  * - Comment state (parameter: comments_active, true/false)
@@ -1206,7 +1206,7 @@ function vipgoci_github_pr_reviews_comments_get(
  * Note that parameter login can be assigned a magic
  * value, 'myself', in which case the actual username
  * will be assumed to be that of the token-holder.
- 
+
  */
 function vipgoci_github_pr_reviews_comments_get_by_pr(
 	$options,
@@ -1232,7 +1232,7 @@ function vipgoci_github_pr_reviews_comments_get_by_pr(
 	$cached_data = vipgoci_cache( $cache_id );
 
 	vipgoci_log(
-		'Fetching all review comments submitted to a Pull-Request' . 
+		'Fetching all review comments submitted to a Pull-Request' .
 		(( $cached_data !== false ) ? ' (cached)' : '' ),
 		array(
 			'repo_owner'	=> $options['repo-owner'],
@@ -1305,7 +1305,7 @@ function vipgoci_github_pr_reviews_comments_get_by_pr(
 					continue;
 				}
 			}
-		
+
 			$all_comments[] = $comment;
 		}
 
@@ -1313,7 +1313,7 @@ function vipgoci_github_pr_reviews_comments_get_by_pr(
 	} while( count( $comments ) >= $per_page );
 
 	/*
-	 * Cache the results and return 
+	 * Cache the results and return
 	 */
 	vipgoci_cache( $cache_id, $all_comments );
 
@@ -1525,7 +1525,11 @@ function vipgoci_github_pr_generic_comment_submit(
 			}
 
 			else {
-				$github_postfields['body'] .= "\n\r***\n\r";
+				$github_postfields['body'] .= "\n\r";
+
+				vipgoci_markdown_comment_add_pagebreak(
+					$github_postfields['body']
+				);
 			}
 
 
@@ -1593,7 +1597,11 @@ function vipgoci_github_pr_generic_comment_submit(
 				"tree/" .
 				rawurlencode( $commit_id ) .
 				"))." .
-				"\n\r***\n\r";
+				"\n\r";
+
+			vipgoci_markdown_comment_add_pagebreak(
+				$tmp_postfields_body
+			);
 
 		/*
 		 * If we have informational URL, append that
@@ -1605,7 +1613,11 @@ function vipgoci_github_pr_generic_comment_submit(
 					VIPGOCI_INFORMATIONAL_MESSAGE,
 					$informational_url
 				) .
-				"\n\r***\n\r";
+				"\n\r";
+
+				vipgoci_markdown_comment_add_pagebreak(
+					$tmp_postfields_body
+				);
 		}
 
 		/*
@@ -1669,7 +1681,11 @@ function vipgoci_github_pr_comments_error_msg(
 
 		$message .
 			" (commit-ID: " . $commit_id . ")" .
-			"\n\r***\n\r";
+			"\n\r";
+
+		vipgoci_markdown_comment_add_pagebreak(
+			$github_postfields['body']
+		);
 
 	vipgoci_github_post_url(
 		$github_url,
@@ -2122,9 +2138,10 @@ function vipgoci_github_pr_review_submit(
 			 * Add page-breaking, if needed.
 			 */
 			if ( ! empty( $github_postfields['body'] ) ) {
-				$github_postfields['body'] .= '***' . "\n\r";
+				vipgoci_markdown_comment_add_pagebreak(
+					$github_postfields['body']
+				);
 			}
-
 
 			/*
 			 * Check if this type of scanning
@@ -2143,6 +2160,37 @@ function vipgoci_github_pr_review_submit(
 				// Skipped
 				continue;
 			}
+
+
+			/*
+			 * If the current stat-type has no items
+			 * to report, do not print out anything for
+			 * it saying we found something to report on.
+			 */
+
+			$found_stats_to_ignore = true;
+
+			foreach(
+				$results
+					['stats']
+					[ strtolower( $stats_type ) ]
+					[ $pr_number ] as
+
+					$commit_issue_stat_key =>
+						$commit_issue_stat_value
+			) {
+				if ( $commit_issue_stat_value > 0 ) {
+					$found_stats_to_ignore = false;
+				}
+			}
+
+			if ( true === $found_stats_to_ignore ) {
+				// Skipped
+				continue;
+			}
+
+			unset( $found_stats_to_ignore );
+
 
 			$github_postfields['body'] .=
 				'**' . $stats_type . '**' .
@@ -2190,7 +2238,14 @@ function vipgoci_github_pr_review_submit(
 		 */
 		if ( null !== $informational_url ) {
 			$github_postfields['body'] .=
-				"\n\r***\n\r" .
+				"\n\r";
+
+			vipgoci_markdown_comment_add_pagebreak(
+				$github_postfields['body']
+			);
+
+
+			$github_postfields['body'] .=
 				sprintf(
 					VIPGOCI_INFORMATIONAL_MESSAGE,
 					$informational_url
@@ -2379,7 +2434,7 @@ function vipgoci_github_pr_reviews_dismiss_non_active_comments(
 	/*
 	 * Get all comments to a the current Pull-Request.
 	 *
-	 * Note that we must bypass cache here, 
+	 * Note that we must bypass cache here,
 	 */
 	$all_comments = vipgoci_github_pr_reviews_comments_get_by_pr(
 		$options,
