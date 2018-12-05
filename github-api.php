@@ -1683,9 +1683,9 @@ function vipgoci_github_pr_comments_error_msg(
 			" (commit-ID: " . $commit_id . ")" .
 			"\n\r";
 
-		vipgoci_markdown_comment_add_pagebreak(
-			$github_postfields['body']
-		);
+	vipgoci_markdown_comment_add_pagebreak(
+		$github_postfields['body']
+	);
 
 	vipgoci_github_post_url(
 		$github_url,
