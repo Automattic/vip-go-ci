@@ -1,8 +1,8 @@
 #!/bin/bash
 
-export PHP_CODESNIFFER_VER="3.3.1"
-export WP_CODING_STANDARDS_VER="1.0.0"
-export VIP_CODING_STANDARDS_VER="0.3.0"
+export PHP_CODESNIFFER_VER="3.3.2"
+export WP_CODING_STANDARDS_VER="1.2.0"
+export VIP_CODING_STANDARDS_VER="0.3.1"
 
 export TMP_LOCK_FILE="$HOME/.vip-go-ci-tools-init.lck"
 
