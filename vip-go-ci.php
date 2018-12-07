@@ -362,6 +362,7 @@ function vipgoci_run() {
 			'phpcs-path:',
 			'phpcs-standard:',
 			'phpcs-severity:',
+			'phpcs-sniffs-exclude:',
 			'hashes-api-url:',
 			'hashes-oauth-token:',
 			'hashes-oauth-token-secret:',
@@ -426,6 +427,7 @@ function vipgoci_run() {
 			"\t" . '--phpcs-path=FILE              Full path to PHPCS script' . PHP_EOL .
 			"\t" . '--phpcs-standard=STRING        Specify which PHPCS standard to use' . PHP_EOL .
 			"\t" . '--phpcs-severity=NUMBER        Specify severity for PHPCS' . PHP_EOL .
+			"\t" . '--phpcs-sniffs-exclude=STRING  Specify which sniff to exclude from PHPCS scanning' . PHP_EOL .
 			"\t" . '--autoapprove=BOOL             Whether to auto-approve Pull-Requests' . PHP_EOL .
 			"\t" . '                               altering only files of certain types' . PHP_EOL .
 			"\t" . '--autoapprove-filetypes=STRING Specify what file-types can be auto-' . PHP_EOL .
@@ -515,6 +517,19 @@ function vipgoci_run() {
 		$options['phpcs-standard']
 	);
 
+	/*
+	 * Process --phpcs-sniffs-exclude -- expected to be
+	 * a string.
+	 */
+	if ( empty( $options['phpcs-sniffs-exclude'] ) ) {
+		$options['phpcs-sniffs-exclude'] = null;
+	}
+
+	else {
+		$options['phpcs-sniffs-exclude'] = trim(
+			$options['phpcs-sniffs-exclude']
+		);
+	}
 
 	/*
 	 * Process --phpcs-severity -- expected to be
