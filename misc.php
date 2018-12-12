@@ -1244,7 +1244,7 @@ function vipgoci_github_results_filter_comments_to_max(
 
 				$comments_removed[
 					$pr_number
-				] = $pr_issue;
+				][] = $pr_issue;
 
 				$comments_to_remove--;
 			}
@@ -1345,7 +1345,7 @@ function vipgoci_results_filter_ignorable(
 
 				$comments_removed[
 					$pr_number
-				] = $pr_issue;
+				][] = $pr_issue;
 
 	
 				/*
