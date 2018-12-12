@@ -124,12 +124,15 @@ function vipgoci_option_integer_handle(
  * makes sure forbidden values are not contained in it.
  * Does not return the result, but rather alters
  * $options directly.
+ *
+ * Allows for array-item separator to be specified.
  */
 function vipgoci_option_array_handle(
 	&$options,
 	$option_name,
 	$default_value = array(),
-	$forbidden_value = null
+	$forbidden_value = null,
+	$array_separator = ','
 ) {
 	if ( ! isset( $options[ $option_name ] ) ) {
 		$options[ $option_name ] = array();
@@ -137,7 +140,7 @@ function vipgoci_option_array_handle(
 
 	else {
 		$options[ $option_name ] = explode(
-			',',
+			$array_separator,
 			strtolower(
 				$options[ $option_name ]
 			)
@@ -354,6 +357,7 @@ function vipgoci_run() {
 			'token:',
 			'review-comments-max:',
 			'review-comments-total-max:',
+			'review-comments-ignore:',
 			'dismiss-stale-reviews:',
 			'branches-ignore:',
 			'output:',
@@ -362,6 +366,7 @@ function vipgoci_run() {
 			'phpcs-path:',
 			'phpcs-standard:',
 			'phpcs-severity:',
+			'phpcs-sniffs-exclude:',
 			'hashes-api-url:',
 			'hashes-oauth-token:',
 			'hashes-oauth-token-secret:',
@@ -416,6 +421,10 @@ function vipgoci_run() {
 			"\t" . '                                    a single Pull-Request by the program -- includes' . PHP_EOL .
 			"\t" . '                                    comments from previous executions. A value of ' . PHP_EOL .
 			"\t" . '                                    \'0\' indicates no limit.' . PHP_EOL .
+			"\t" . '--review-comments-ignore=STRING     Specify which result comments to ignore' . PHP_EOL .
+			"\t" . '                                    -- e.g. useful if one type of message is to be ignored' . PHP_EOL .
+			"\t" . '                                    rather than a whole PHPCS sniff. Should be a ' . PHP_EOL .
+			"\t" . '                                    whole string with items separated by \"|||\".' . PHP_EOL .
 			"\t" . '--dismiss-stale-reviews=BOOL   Dismiss any reviews associated with Pull-Requests ' . PHP_EOL .
 			"\t" . '                               that we process which have no active comments. ' . PHP_EOL .
 			"\t" . '                               The Pull-Requests we process are those associated ' . PHP_EOL .
@@ -426,6 +435,7 @@ function vipgoci_run() {
 			"\t" . '--phpcs-path=FILE              Full path to PHPCS script' . PHP_EOL .
 			"\t" . '--phpcs-standard=STRING        Specify which PHPCS standard to use' . PHP_EOL .
 			"\t" . '--phpcs-severity=NUMBER        Specify severity for PHPCS' . PHP_EOL .
+			"\t" . '--phpcs-sniffs-exclude=STRING  Specify which sniff to exclude from PHPCS scanning' . PHP_EOL .
 			"\t" . '--autoapprove=BOOL             Whether to auto-approve Pull-Requests' . PHP_EOL .
 			"\t" . '                               altering only files of certain types' . PHP_EOL .
 			"\t" . '--autoapprove-filetypes=STRING Specify what file-types can be auto-' . PHP_EOL .
@@ -515,6 +525,40 @@ function vipgoci_run() {
 		$options['phpcs-standard']
 	);
 
+	/*
+	 * Process --phpcs-sniffs-exclude -- expected to be
+	 * a string.
+	 */
+	if ( empty( $options['phpcs-sniffs-exclude'] ) ) {
+		$options['phpcs-sniffs-exclude'] = null;
+	}
+
+	else {
+		$options['phpcs-sniffs-exclude'] = trim(
+			$options['phpcs-sniffs-exclude']
+		);
+	}
+
+	/*
+	 * Process --review-comments-ignore -- expected
+	 * to be an array (items separated by "|||"). 
+	 * Then transform all of the messages to lower-case.
+	 */
+
+	vipgoci_option_array_handle(
+		$options,
+		'review-comments-ignore',
+		array(),
+		array(),
+		'|||'
+	);
+
+	if ( ! empty( $options[ 'review-comments-ignore' ] ) ) {
+		$options['review-comments-ignore'] = array_map(
+			'strtolower',
+			$options['review-comments-ignore']
+		);
+	}
 
 	/*
 	 * Process --phpcs-severity -- expected to be
@@ -1153,6 +1197,18 @@ function vipgoci_run() {
 		$results,
 		true
 	);
+
+	/*
+	 * Remove ignorable comments from $results.
+	 */
+
+	if ( ! empty( $options['review-comments-ignore'] ) ) {
+		$file_issues_arr_master =
+			vipgoci_results_filter_ignorable(
+				$options,
+				$results
+			);
+	}
 
 	/*
 	 * Keep records of how many issues we found.

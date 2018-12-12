@@ -1244,7 +1244,7 @@ function vipgoci_github_results_filter_comments_to_max(
 
 				$comments_removed[
 					$pr_number
-				] = $pr_issue;
+				][] = $pr_issue;
 
 				$comments_to_remove--;
 			}
@@ -1274,6 +1274,111 @@ function vipgoci_github_results_filter_comments_to_max(
 		array(
 			'review_comments_total_max'	=> $options['review-comments-total-max'],
 			'comments_removed'		=> $comments_removed,
+		)
+	);
+}
+
+/*
+ * Filter away issues that we should ignore from the set
+ * of results, according to --review-comments-ignore argument.
+ * The issues to be ignored are specified as an array of
+ * string-messages, all in lower-case.
+ */
+
+function vipgoci_results_filter_ignorable(
+	$options,
+	&$results
+) {
+	$comments_removed = array();
+
+	vipgoci_log(
+		'Removing comments to be ignored from results before submission',
+		array(
+			'messages-ignore' =>
+				$options['review-comments-ignore'],
+		)
+	);
+
+
+	foreach(
+		$results['issues'] as
+			$pr_number => $pr_issues_comments
+	) {
+		foreach(
+			$pr_issues_comments as
+				$pr_issue_key =>
+				$pr_issue
+		) {
+			if ( in_array(
+				strtolower(
+					$pr_issue['issue']['message']
+				),
+				$options['review-comments-ignore'],
+				true
+			) ) {
+				/*
+				 * Found a message to ignore,
+				 * remove it from the results-array.
+				 */
+				unset(
+					$results[
+						'issues'
+					][
+						$pr_number
+					][
+						$pr_issue_key
+					]
+				);
+
+				/*
+				 * Keep track of what we remove
+				 */
+				if ( ! isset(
+					$comments_removed[
+						$pr_number
+					]
+				) ) {
+					$comments_removed[
+						$pr_number
+					] = array();
+				}
+
+				$comments_removed[
+					$pr_number
+				][] = $pr_issue;
+
+	
+				/*
+				 * Keep statistics up-to-date
+				 */
+				$results[
+					'stats'
+				][
+					$pr_issue['type']
+				][
+					$pr_number
+				][
+					strtolower(
+						$pr_issue['issue']['type']
+					)
+				]--;
+			}
+		}
+
+		/*
+		 * Re-create the array in
+		 * case of changes to keys,
+		 */
+
+		$results['issues'][ $pr_number ] = array_values(
+			$results['issues'][ $pr_number ]
+		);
+	}
+
+	vipgoci_log(
+		'Removed ignorable comments',
+		array(
+			'comments-removed' => $comments_removed
 		)
 	);
 }
@@ -1326,3 +1431,5 @@ function vipgoci_markdown_comment_add_pagebreak(
 
 	$comment .= $pagebreak_style . "\n\r";
 }
+
+
