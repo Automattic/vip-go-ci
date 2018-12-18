@@ -1276,6 +1276,10 @@ function vipgoci_github_results_filter_comments_to_max(
 			'comments_removed'		=> $comments_removed,
 		)
 	);
+
+	$ret = ( ! empty( $comments_removed ) );
+
+	return $ret;
 }
 
 /*

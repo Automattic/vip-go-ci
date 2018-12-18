@@ -1696,9 +1696,6 @@ function vipgoci_github_pr_comments_error_msg(
 
 /*
  * Remove any comments made by us earlier.
- *
- * FIXME: For future alterations, move comments
- * to be removed to arguments of this function.
  */
 
 function vipgoci_github_pr_comments_cleanup(
@@ -1707,6 +1704,7 @@ function vipgoci_github_pr_comments_cleanup(
 	$commit_id,
 	$github_token,
 	$branches_ignore,
+	$comments_remove,
 	$dry_run
 ) {
 	vipgoci_log(
@@ -1717,6 +1715,7 @@ function vipgoci_github_pr_comments_cleanup(
 			'repo_name' => $repo_name,
 			'commit_id' => $commit_id,
 			'branches_ignore' => $branches_ignore,
+			'comments_remove' => $comments_remove,
 			'dry_run' => $dry_run,
 		)
 	);
@@ -1765,15 +1764,10 @@ function vipgoci_github_pr_comments_cleanup(
 			 */
 
 			if (
-				( strpos(
+				in_array(
 					$pr_comment->body,
-					VIPGOCI_SYNTAX_ERROR_STR
-				) !== false )
-				||
-				( strpos(
-					$pr_comment->body,
-					VIPGOCI_GITHUB_ERROR_STR
-				) !== false )
+					$comments_remove
+				)
 			) {
 				// Actually delete the comment
 				vipgoci_github_pr_generic_comment_delete(

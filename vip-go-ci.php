@@ -1094,6 +1094,11 @@ function vipgoci_run() {
 		$options['commit'],
 		$options['token'],
 		$options['branches-ignore'],
+		array(
+			VIPGOCI_SYNTAX_ERROR_STR,
+			VIPGOCI_GITHUB_ERROR_STR,
+			VIPGOCI_REVIEW_COMMENTS_TOTAL_MAX,
+		),
 		$options['dry-run']
 	);
 
@@ -1224,10 +1229,11 @@ function vipgoci_run() {
 	 */
 
 	if ( 0 !== $options['review-comments-total-max'] ) {
-		vipgoci_github_results_filter_comments_to_max(
-			$options,
-			$results
-		);
+		$total_comments_maxed =
+			vipgoci_github_results_filter_comments_to_max(
+				$options,
+				$results
+			);
 	}
 
 	/*
@@ -1274,6 +1280,27 @@ function vipgoci_run() {
 			);
 		}
 	}
+
+	/*
+	 * If we reached maximum number of
+	 * comments earlier, put a message out
+	 * so people actually know it.
+	 */
+
+	if (
+		( 0 !== $options['review-comments-total-max'] &&
+		( true === $total_comments_maxed )
+	) {
+		// FIXME: Send out message
+	}
+
+
+	/*
+	 * At this point, we have started to prepare
+	 * for shutdown and exit -- no review-critical
+	 * actions should be performed after this point.
+	 */
+
 
 	/*
 	 * Send out to IRC API any alerts
