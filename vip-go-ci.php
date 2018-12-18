@@ -1288,7 +1288,7 @@ function vipgoci_run() {
 	 */
 
 	if (
-		( 0 !== $options['review-comments-total-max'] &&
+		( 0 !== $options['review-comments-total-max'] ) &&
 		( true === $total_comments_maxed )
 	) {
 		// FIXME: Send out message
