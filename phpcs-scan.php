@@ -9,6 +9,7 @@ function vipgoci_phpcs_do_scan(
 	$filename_tmp,
 	$phpcs_path,
 	$phpcs_standard,
+	$phpcs_sniffs_exclude,
 	$phpcs_severity
 ) {
 	/*
@@ -26,6 +27,18 @@ function vipgoci_phpcs_do_scan(
 		escapeshellarg( $phpcs_severity ),
 		escapeshellarg( 'json' )
 	);
+
+	/*
+	 * If we have sniffs to exclude, add them
+	 * to the command-line string.
+	 */
+
+	if ( ! empty( $phpcs_sniffs_exclude ) ) {
+		$cmd .= sprintf(
+			' --exclude=%s',
+			escapeshellarg( $phpcs_sniffs_exclude )
+		);
+	}
 
 	/*
 	 * Lastly, append the target filename
@@ -99,6 +112,7 @@ function vipgoci_phpcs_scan_single_file(
 		$temp_file_name,
 		$options['phpcs-path'],
 		$options['phpcs-standard'],
+		$options['phpcs-sniffs-exclude'],
 		$options['phpcs-severity']
 	);
 
