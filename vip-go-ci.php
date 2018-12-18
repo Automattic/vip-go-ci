@@ -1335,6 +1335,9 @@ function vipgoci_run() {
 	);
 }
 
+/*
+ * 'main()' called
+ */
 $ret = vipgoci_run();
 
 exit( $ret );
