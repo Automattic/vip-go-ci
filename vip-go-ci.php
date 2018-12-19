@@ -1228,12 +1228,14 @@ function vipgoci_run() {
 	 * If set to zero, skip this part.
 	 */
 
-	if ( 0 !== $options['review-comments-total-max'] ) {
-		$total_comments_maxed =
-			vipgoci_github_results_filter_comments_to_max(
-				$options,
-				$results
-			);
+	if ( $options['review-comments-total-max'] > 0 ) {
+		$prs_comments_maxed = array();
+
+		vipgoci_github_results_filter_comments_to_max(
+			$options,
+			$results,
+			$prs_comments_maxed
+		);
 	}
 
 	/*
@@ -1287,11 +1289,19 @@ function vipgoci_run() {
 	 * so people actually know it.
 	 */
 
-	if (
-		( 0 !== $options['review-comments-total-max'] ) &&
-		( true === $total_comments_maxed )
-	) {
-		// FIXME: Send out message
+	if ( $options['review-comments-total-max'] > 0 ) {
+		foreach( array_keys(
+			$prs_comments_maxed
+		) as $pr_number ) {
+			vipgoci_github_pr_comments_error_msg(
+				$options['repo-owner'],
+				$options['repo-name'],
+				$options['token'],
+				$options['commit'],
+				$pr_number,
+				VIPGOCI_REVIEW_COMMENTS_TOTAL_MAX
+			);
+		}
 	}
 
 
