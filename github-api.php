@@ -1651,8 +1651,7 @@ function vipgoci_github_pr_comments_error_msg(
 	$message
 ) {
 	vipgoci_log(
-		'GitHub reported a failure, posting a ' .
-			'comment about this to the Pull-Request',
+		'Posting a comment to the Pull-Request',
 		array(
 			'repo_owner' => $repo_owner,
 			'repo_name' => $repo_name,
