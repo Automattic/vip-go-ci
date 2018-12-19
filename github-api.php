@@ -1639,8 +1639,7 @@ function vipgoci_github_pr_generic_comment_submit(
 }
 
 /*
- * Post a generic PR comment to GitHub, reporting
- * an error.
+ * Post a generic PR comment to GitHub.
  */
 function vipgoci_github_pr_comments_error_msg(
 	$repo_owner,
@@ -1675,16 +1674,9 @@ function vipgoci_github_pr_comments_error_msg(
 
 	$github_postfields = array();
 	$github_postfields['body'] =
-		'**' . VIPGOCI_GITHUB_ERROR_STR . '**' .
-		"\n\r\n\r" .
-
 		$message .
-			" (commit-ID: " . $commit_id . ")" .
+			' (commit-ID: ' . $commit_id . ').' .
 			"\n\r";
-
-	vipgoci_markdown_comment_add_pagebreak(
-		$github_postfields['body']
-	);
 
 	vipgoci_github_post_url(
 		$github_url,
@@ -1762,19 +1754,19 @@ function vipgoci_github_pr_comments_cleanup(
 			 * not want to remove those. Avoid that.
 			 */
 
-			if (
-				in_array(
+			foreach( $comments_remove as $comments_remove_item ) {
+				if ( strpos(
 					$pr_comment->body,
-					$comments_remove
-				)
-			) {
-				// Actually delete the comment
-				vipgoci_github_pr_generic_comment_delete(
-					$repo_owner,
-					$repo_name,
-					$github_token,
-					$pr_comment->id
-				);
+					$comments_remove_item
+				) !== false ) {
+					// Actually delete the comment
+					vipgoci_github_pr_generic_comment_delete(
+						$repo_owner,
+						$repo_name,
+						$github_token,
+						$pr_comment->id
+					);
+				}
 			}
 		}
 	}
@@ -2336,8 +2328,7 @@ function vipgoci_github_pr_review_submit(
 				$github_token,
 				$commit_id,
 				$pr_number,
-				'Error while communicating to the GitHub ' .
-					'API. Please contact a human.'
+				VIPGOCI_GITHUB_ERROR_STR
 			);
 		}
 	}
