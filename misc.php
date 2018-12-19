@@ -1069,7 +1069,8 @@ function vipgoci_approved_files_comments_remove(
  */
 function vipgoci_github_results_filter_comments_to_max(
 	$options,
-	&$results
+	&$results,
+	&$prs_comments_maxed
 ) {
 
 	vipgoci_log(
@@ -1268,6 +1269,17 @@ function vipgoci_github_results_filter_comments_to_max(
 		);
 	}
 
+	/*
+	 * Populate '$prs_comments_maxed' which
+	 * indicates which Pull-Requests have
+	 * had number of comments posted limited.
+	 */
+	$prs_comments_maxed = array_map(
+		'is_array',
+		$comments_removed
+	);
+
+
 	vipgoci_log(
 		'Removed issue comments from array of to be submitted ' .
 			'comments to PRs due to limit constraints',
@@ -1277,9 +1289,7 @@ function vipgoci_github_results_filter_comments_to_max(
 		)
 	);
 
-	$ret = ( ! empty( $comments_removed ) );
-
-	return $ret;
+	return;
 }
 
 /*
