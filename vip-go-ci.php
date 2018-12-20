@@ -1348,6 +1348,8 @@ function vipgoci_run() {
 					'-' .
 					$options['repo-name']
 				=> array(
+					'github_pr_approval',
+					'github_pr_non_approval',
 					'github_pr_files_scanned',
 					'github_pr_lines_scanned',
 					'github_pr_files_linted',
