@@ -194,7 +194,9 @@ function vipgoci_ap_hashes_api_file_approved(
 				'hashes_to_hashes_url'	=> $hashes_to_hashes_url,
 				'file_path'		=> $file_path,
 				'http_reply'		=> $file_hashes_info,
-			)
+			),
+			0,
+			true // log to IRC
 		);
 
 		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'hashes_api_scan_file' );

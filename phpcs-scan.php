@@ -502,7 +502,9 @@ function vipgoci_phpcs_scan_commit(
 						$file_issues_arr_master,
 					'file_issues_str' =>
 						$file_issues_str,
-				)
+				),
+				0,
+				true // log to IRC
 			);
 		}
 
