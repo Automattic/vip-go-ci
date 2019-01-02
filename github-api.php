@@ -1639,8 +1639,7 @@ function vipgoci_github_pr_generic_comment_submit(
 }
 
 /*
- * Post a generic PR comment to GitHub, reporting
- * an error.
+ * Post a generic PR comment to GitHub.
  */
 function vipgoci_github_pr_comments_error_msg(
 	$repo_owner,
@@ -1651,8 +1650,7 @@ function vipgoci_github_pr_comments_error_msg(
 	$message
 ) {
 	vipgoci_log(
-		'GitHub reported a failure, posting a ' .
-			'comment about this to the Pull-Request',
+		'Posting a comment to the Pull-Request',
 		array(
 			'repo_owner' => $repo_owner,
 			'repo_name' => $repo_name,
@@ -1676,16 +1674,9 @@ function vipgoci_github_pr_comments_error_msg(
 
 	$github_postfields = array();
 	$github_postfields['body'] =
-		'**' . VIPGOCI_GITHUB_ERROR_STR . '**' .
-		"\n\r\n\r" .
-
 		$message .
-			" (commit-ID: " . $commit_id . ")" .
+			' (commit-ID: ' . $commit_id . ').' .
 			"\n\r";
-
-	vipgoci_markdown_comment_add_pagebreak(
-		$github_postfields['body']
-	);
 
 	vipgoci_github_post_url(
 		$github_url,
@@ -1696,9 +1687,6 @@ function vipgoci_github_pr_comments_error_msg(
 
 /*
  * Remove any comments made by us earlier.
- *
- * FIXME: For future alterations, move comments
- * to be removed to arguments of this function.
  */
 
 function vipgoci_github_pr_comments_cleanup(
@@ -1707,6 +1695,7 @@ function vipgoci_github_pr_comments_cleanup(
 	$commit_id,
 	$github_token,
 	$branches_ignore,
+	$comments_remove,
 	$dry_run
 ) {
 	vipgoci_log(
@@ -1717,6 +1706,7 @@ function vipgoci_github_pr_comments_cleanup(
 			'repo_name' => $repo_name,
 			'commit_id' => $commit_id,
 			'branches_ignore' => $branches_ignore,
+			'comments_remove' => $comments_remove,
 			'dry_run' => $dry_run,
 		)
 	);
@@ -1764,24 +1754,19 @@ function vipgoci_github_pr_comments_cleanup(
 			 * not want to remove those. Avoid that.
 			 */
 
-			if (
-				( strpos(
+			foreach( $comments_remove as $comments_remove_item ) {
+				if ( strpos(
 					$pr_comment->body,
-					VIPGOCI_SYNTAX_ERROR_STR
-				) !== false )
-				||
-				( strpos(
-					$pr_comment->body,
-					VIPGOCI_GITHUB_ERROR_STR
-				) !== false )
-			) {
-				// Actually delete the comment
-				vipgoci_github_pr_generic_comment_delete(
-					$repo_owner,
-					$repo_name,
-					$github_token,
-					$pr_comment->id
-				);
+					$comments_remove_item
+				) !== false ) {
+					// Actually delete the comment
+					vipgoci_github_pr_generic_comment_delete(
+						$repo_owner,
+						$repo_name,
+						$github_token,
+						$pr_comment->id
+					);
+				}
 			}
 		}
 	}
@@ -2343,8 +2328,7 @@ function vipgoci_github_pr_review_submit(
 				$github_token,
 				$commit_id,
 				$pr_number,
-				'Error while communicating to the GitHub ' .
-					'API. Please contact a human.'
+				VIPGOCI_GITHUB_ERROR_STR
 			);
 		}
 	}

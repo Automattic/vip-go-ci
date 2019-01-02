@@ -6,7 +6,9 @@
 
 define( 'VIPGOCI_CLIENT_ID',		'automattic-vip-go-ci' );
 define( 'VIPGOCI_SYNTAX_ERROR_STR',	'PHP Syntax Errors Found' );
-define( 'VIPGOCI_GITHUB_ERROR_STR',	'GitHub API communication error');
+define( 'VIPGOCI_GITHUB_ERROR_STR',	'GitHub API communication error. ' .
+						'Please contact a human.' );
+
 define( 'VIPGOCI_GITHUB_BASE_URL',	'https://api.github.com' );
 
 define( 'VIPGOCI_INFORMATIONAL_MESSAGE',
@@ -17,6 +19,13 @@ define( 'VIPGOCI_INFORMATIONAL_MESSAGE',
 
 define( 'VIPGOCI_FILE_IS_APPROVED_MSG', 'File is approved in ' .
 					'hashes-to-hashes database' );
+
+define( 'VIPGOCI_REVIEW_COMMENTS_TOTAL_MAX',
+					'Total number of active review comments per ' .
+					'Pull-Request has been reached and some ' .
+					'comments might not appear as a result. ' .
+					'Please resolve some issues to see more' );
+				
 /*
  * Define exit-codes
  */
