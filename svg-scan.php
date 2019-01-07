@@ -16,7 +16,7 @@ function vipgoci_svg_do_scan_with_scanner(
 		'%s %s %s',
 		escapeshellcmd( 'php' ),
 		escapeshellcmd( $svg_scanner_path ),
-		escapeshellarg( $temp_file_name ),
+		escapeshellarg( $temp_file_name )
 	);
 
 	$cmd .= ' 2>&1';
@@ -41,8 +41,12 @@ function vipgoci_svg_do_scan_with_scanner(
 
 function vipgoci_svg_look_for_specific_tags(
 	$disallowed_tokens,
-	$temp_file_name
+	$temp_file_name,
+	&$results
 ) {
+
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'svg_scanner_specific' );
+
 	$file_contents = file_get_contents(
 		$temp_file_name
 	);
@@ -55,25 +59,6 @@ function vipgoci_svg_look_for_specific_tags(
 		PHP_EOL,
 		$file_contents
 	);
-
-	/*
-	 * Array for scanning results,
-	 * line counter.
-	 */
-	$results_files = array();
-
-	/*
-	 * Prepare results array, assume nothing
-	 * is wrong until proven otherwise.
-	 */
-	if ( ! isset( $results_files[ $temp_file_name ] ) ) {
-		$results_files[ $temp_file_name ] = array(
-			'errors'	=> 0,
-			'warnings'	=> 0,
-			'fixable'	=> 0,
-			'messages'	=> array(),
-		);
-	}
 
 	$line_no = 1; // Line numbers begin at 1
 
@@ -103,10 +88,20 @@ function vipgoci_svg_look_for_specific_tags(
 			/*
 			 * Found a problem, adding to results.
 			 */
+			$results['totals']['errors']++;
 
-			$results_files[ $temp_file_name ]['errors']++;
+			if ( ! isset(
+				$results['files'][ $temp_file_name ]
+			) ) {
+				$results['files'][ $temp_file_name ] = array(
+					'errors' => 0,
+					'messages' => array()
+				);
+			}
 
-			$results_files[ $temp_file_name ]['messages'][] =
+			$results['files'][ $temp_file_name ]['errors']++;
+	
+			$results['files'][ $temp_file_name ]['messages'][] =
 				array(
 					'message'	=>
 						'Found forbidden tag in SVG ' .
@@ -114,22 +109,18 @@ function vipgoci_svg_look_for_specific_tags(
 							$disallowed_token .
 							'\'',
 
-					'source'	=>
-						'WordPressVIPMinimum.' .
-						'Security.SVG.DisallowedTags',
-
-					'severity'	=> 5,
-					'fixable'	=> false,
-					'type'		=> 'ERROR',
 					'line'		=> $line_no,
-					'column'	=> $token_pos,
+					'level'		=> 'ERROR',
 				);
 		}
 
 		$line_no++;
 	}
 
-	return $results_files;
+
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'svg_scanner_specific' );
+
+	return $results;
 }
 
 
@@ -229,14 +220,36 @@ function vipgoci_svg_scan_single_file(
 	 */
 
 	$results = vipgoci_svg_do_scan_with_scanner(
-		$svg_scanner_path,
+		$options['svg-scanner-path'],
 		$temp_file_name
 	);
 
-	$results = vipgoci_svg_look_for_specific_tags(
-		$disallowed_tokens,
-		$temp_file_name
+	// FIXME: Check
+	$results = json_decode(
+		$results,
+		true
 	);
+
+	vipgoci_svg_look_for_specific_tags(
+		$disallowed_tokens,
+		$temp_file_name,
+		$results
+	);
+
+	$results['files'][ $temp_file_name ]['messages'] = array_map(
+		function( $issue_item ) {
+			$issue_item['severity'] = 5;
+			$issue_item['type'] = 'ERROR';
+			$issue_item['source'] = 'WordPressVIPMinimum.Security.SVG.DisallowedTags';
+			$issue_item['level'] = $issue_item['type'];
+			$issue_item['fixable'] = false;
+			$issue_item['column'] = 0;
+
+			return $issue_item;
+		},
+		$results['files'][ $temp_file_name ]['messages']
+	);
+
 
 	unlink( $temp_file_name );
 
@@ -245,28 +258,11 @@ function vipgoci_svg_scan_single_file(
 	 * by vipgoci_phpcs_scan_single_file().
 	 */
 
-	$results = array(
-		'totals' => array(
-			'errors' => $results_files[
-				$temp_file_name
-			]['errors'],
-
-			'warnings' => $results_files[
-				$temp_file_name
-			]['warnings'],
-
-			'fixable' => $results_files[
-				$temp_file_name
-			]['fixable'],
-		),
-
-		'files' => array(
-			$temp_file_name =>
-				$results_files[
-					$temp_file_name
-				]
-		)
-	);
+	foreach( array( 'errors', 'warnings', 'fixable' ) as $stats_key ) {
+		if ( ! isset( $results['totals']['errors'] ) ) {
+			$results['totals'][ $stats_key ] = 0;
+		}
+	}
 
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'svg_scan_single_file' );
 
