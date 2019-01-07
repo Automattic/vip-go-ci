@@ -384,6 +384,7 @@ function vipgoci_run() {
 			'lint:',
 			'phpcs:',
 			'svg-checks:',
+			'svg-scanner-path:',
 			'autoapprove:',
 			'autoapprove-filetypes:',
 			'autoapprove-label:',
@@ -448,6 +449,8 @@ function vipgoci_run() {
 			"\t" . '                               checking of these files. Note that if' . PHP_EOL .
 			"\t" . '                               auto-approvals are turned off globally, no' . PHP_EOL .
 			"\t" . '                               auto-approval is performed for SVG files.' . PHP_EOL .
+			"\t" . '--svg-scanner-path=FILE        Path to SVG scanning tool. Should return' . PHP_EOL .
+			"\t" . '                               similar output as PHPCS. ' . PHP_EOL .
 			"\t" . '--hashes-api=BOOL              Whether to do hashes-to-hashes API verfication ' . PHP_EOL .
 			"\t" . '                               with individual PHP files found to be altered ' . PHP_EOL .
 			"\t" . '                               in the branch specified' . PHP_EOL .
@@ -585,13 +588,23 @@ function vipgoci_run() {
 
 
 	/*
-	 * Process --hashes-api and --svg-checks
-	 * -- expected to be a boolean.
+	 * Process --hashes-api -- expected to be a boolean.
 	*/
 
 	vipgoci_option_bool_handle( $options, 'hashes-api', 'false' );
 
+	/*
+	 * Process --svg-checks and --svg-scanner-path -- former expected
+	 * to be a boolean, the latter a file-path.
+	 */
 	vipgoci_option_bool_handle( $options, 'svg-checks', 'false' );
+
+	vipgoci_option_file_handle(
+		$options,
+		'svg-scanner-path',
+		'invalid'
+	);
+
 
 	/*
 	 * Process --hashes-api-url -- expected to
@@ -835,6 +848,22 @@ function vipgoci_run() {
 			'To be able to auto-approve, file-types to approve ' .
 			'must be specified, as well as a label; see --help ' .
 			'for information',
+			array(),
+			VIPGOCI_EXIT_USAGE_ERROR
+		);
+	}
+
+	/*
+	 * Check if --svg-checks is set to true,
+	 * and if a sensible scanning-tool is specified.
+	 */
+	if (
+		( true === $options['svg-checks'] ) &&
+		( 'invalid' === $options['svg-scanner-path'] )
+	) {
+		vipgoci_sysexit(
+			'--svg-checks is set to true, but no scanner is ' .
+				'configured. Please provide a valid path.',
 			array(),
 			VIPGOCI_EXIT_USAGE_ERROR
 		);
