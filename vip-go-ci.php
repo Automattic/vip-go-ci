@@ -541,7 +541,7 @@ function vipgoci_run() {
 
 	/*
 	 * Process --review-comments-ignore -- expected
-	 * to be an array (items separated by "|||"). 
+	 * to be an array (items separated by "|||").
 	 * Then transform all of the messages to lower-case.
 	 */
 

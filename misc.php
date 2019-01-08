@@ -1431,7 +1431,7 @@ function vipgoci_markdown_comment_add_pagebreak(
 	 * out and do nothing to the comment.
 	 */
 
-	if ( 
+	if (
 		( false !== $pagebreak_location ) &&
 		(
 			$pagebreak_location +
