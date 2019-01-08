@@ -924,6 +924,32 @@ function vipgoci_run() {
 		);
 	}
 
+	/*
+	 * Also, we disallow autoapproving SVG files here, as
+	 * we have a dedicated part of vip-go-ci to scan them
+	 * and autoapprove.
+	 */
+
+	if (
+		( true === $options['autoapprove'] ) &&
+		(
+			( in_array(
+				'svg',
+				$options['autoapprove-filetypes'],
+				true
+			) )
+		)
+	) {
+		vipgoci_sysexit(
+			'SVG files cannot be auto-approved on file-type basis, as they ' .
+				'can contain problematic code. Use --svg-checks=true to ' .
+				'allow auto-approval of SVG files',
+			array(
+			),
+			VIPGOCI_EXIT_USAGE_ERROR
+		);
+	}
+
 
 	/*
 	 * Ask GitHub about information about
