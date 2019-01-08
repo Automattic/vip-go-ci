@@ -224,11 +224,27 @@ function vipgoci_svg_scan_single_file(
 		$temp_file_name
 	);
 
-	// FIXME: Check
+
 	$results = json_decode(
 		$results,
 		true
 	);
+
+	if ( null === $results ) {
+		vipgoci_log(
+			'SVG scanning of a single file failed',
+			array(
+				'results' => $results,
+			)
+		);
+
+		return array(
+			'file_issues_arr_master'	=> $results,
+			'file_issues_str'		=> null,
+			'temp_file_name'		=> $temp_file_name,
+		);
+	}
+
 
 	vipgoci_svg_look_for_specific_tags(
 		$disallowed_tokens,
