@@ -136,8 +136,7 @@ function vipgoci_ap_hashes_api_file_approved(
 		array(
 			'file_path'	=> $file_path,
 			'file_sha1'	=> $file_sha1,
-		),
-		2
+		)
 	);
 
 	$hashes_to_hashes_url =
