@@ -1,10 +1,36 @@
 #!/bin/bash
 
 export PHP_CODESNIFFER_VER="3.3.2"
+export PHP_CODESNIFFER_SHA1SUM="1091af07e902c2fcc13730dc51d44cbf99b7dcb9"
+
 export WP_CODING_STANDARDS_VER="1.2.1"
+export WP_CODING_STANDARDS_SHA1SUM="9f4c827b157f84532b2a42961eaa5634b6655974";
+
 export VIP_CODING_STANDARDS_VER="0.4.0"
+export VIP_CODING_STANDARDS_SHA1SUM="89e11f9ac9dd4a305a8919d158d66a4af0149ec8";
+
+export PHP_COMPATIBILITY_VER="9.1.1"
+export PHP_COMPATIBILITY_SHA1SUM="2f2e5163a3dc4328627b48bedfdebd35041ba6c5";
+
+export PHP_COMPATIBILITY_WP_VER="2.0.0"
+export PHP_COMPATIBILITY_SHA1SUM="e898c99749bf2a61ef21995329a222b279fab471"
+
+export PHP_COMPATIBILITY_PARAGONIE_VER="1.0.1"
+export PHP_COMPATIBILITY_PARAGONIE_SHA1SUM="28db0909de7bd505755964537b36a1515c739251"
 
 export TMP_LOCK_FILE="$HOME/.vip-go-ci-tools-init.lck"
+
+function sha1sum_check() {
+	FILENAME=$1
+	CORRECT_HASH=$2
+
+	TMPSUM=`sha1sum $FILENAME|awk '{print $1}'`
+
+	if [ "$TMPSUM" != "$CORRECT_HASH" ] ; then
+		echo "FAILED sha1sum check for $FILENAME; $TMPSUM (downloaded) vs. $CORRECT_HASH (correct)";
+		exit;
+	fi
+}
 
 function lock_place() {
 	# Get lock, if that fails, just exit
@@ -90,7 +116,7 @@ if [ -d ~/vip-go-ci-tools ] ; then
 	export TMP_DO_DELETE="0"
 
 
-	for TMP_FILE in	"vip-coding-standards-$VIP_CODING_STANDARDS_VER.txt" "wp-coding-standards-$WP_CODING_STANDARDS_VER.txt" "php-codesniffer-$PHP_CODESNIFFER_VER.txt" "vip-go-ci-$VIP_GO_CI_VER.txt" ; do
+	for TMP_FILE in	"vip-coding-standards-$VIP_CODING_STANDARDS_VER.txt" "wp-coding-standards-$WP_CODING_STANDARDS_VER.txt" "php-codesniffer-$PHP_CODESNIFFER_VER.txt" "vip-go-ci-$VIP_GO_CI_VER.txt" "php-compatibility-$PHP_COMPATIBILITY_VER.txt" "php-compatibility-wp-$PHP_COMPATIBILITY_WP_VER.txt" "php-compatibility-paragonie-$PHP_COMPATIBILITY_PARAGONIE_VER.txt"  ; do
 		if [ ! -f ~/vip-go-ci-tools/$TMP_FILE ] ; then
 			export TMP_DO_DELETE="1"
 		fi
@@ -121,21 +147,43 @@ else
 
 	cd $TMP_FOLDER && \
 	wget "https://github.com/squizlabs/PHP_CodeSniffer/archive/$PHP_CODESNIFFER_VER.tar.gz" && \
+	sha1sum_check "$PHP_CODESNIFFER_VER.tar.gz" "$PHP_CODESNIFFER_SHA1SUM" && \
 	tar -zxvf "$PHP_CODESNIFFER_VER.tar.gz"  && \
 	rm -fv "$PHP_CODESNIFFER_VER.tar.gz" && \
 	mv "PHP_CodeSniffer-$PHP_CODESNIFFER_VER/" phpcs && \
 	touch $TMP_FOLDER/php-codesniffer-$PHP_CODESNIFFER_VER.txt && \
 	wget "https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards/archive/$WP_CODING_STANDARDS_VER.tar.gz" && \
+	sha1sum_check "$WP_CODING_STANDARDS_VER.tar.gz" "$WP_CODING_STANDARDS_SHA1SUM" && \
 	tar -zxvf "$WP_CODING_STANDARDS_VER.tar.gz"  && \
 	rm -fv "$WP_CODING_STANDARDS_VER.tar.gz" && \
 	mv WordPress-Coding-Standards-$WP_CODING_STANDARDS_VER/WordPress* phpcs/src/Standards/ && \
 	touch $TMP_FOLDER/wp-coding-standards-$WP_CODING_STANDARDS_VER.txt && \
 	wget "https://github.com/Automattic/VIP-Coding-Standards/archive/$VIP_CODING_STANDARDS_VER.tar.gz" && \
+	sha1sum_check "$VIP_CODING_STANDARDS_VER.tar.gz" "$VIP_CODING_STANDARDS_SHA1SUM" && \
 	tar -zxvf "$VIP_CODING_STANDARDS_VER.tar.gz" && \
 	mv "VIP-Coding-Standards-$VIP_CODING_STANDARDS_VER/WordPressVIPMinimum/" phpcs/src/Standards/  && \
 	mv "VIP-Coding-Standards-$VIP_CODING_STANDARDS_VER/WordPress-VIP-Go/" phpcs/src/Standards/  && \
 	rm -f "$VIP_CODING_STANDARDS_VER".tar.gz && \
 	touch $TMP_FOLDER/vip-coding-standards-$VIP_CODING_STANDARDS_VER.txt && \
+	wget "https://github.com/PHPCompatibility/PHPCompatibility/archive/$PHP_COMPATIBILITY_VER.tar.gz" && \
+	sha1sum_check "$PHP_COMPATIBILITY_VER.tar.gz" "$PHP_COMPATIBILITY_SHA1SUM" && \
+	tar -zxvf "$PHP_COMPATIBILITY_VER.tar.gz" && \
+	mv "PHPCompatibility-$PHP_COMPATIBILITY_VER/PHPCompatibility" phpcs/src/Standards/ && \
+	mv "PHPCompatibility-$PHP_COMPATIBILITY_VER/PHPCSAliases.php" phpcs/src/Standards/ && \
+	touch "$TMP_FOLDER/php-compatibility-$PHP_COMPATIBILITY_VER.txt" && \
+	rm -f "$PHP_COMPATIBILITY_VER.tar.gz" && \
+	wget "https://github.com/PHPCompatibility/PHPCompatibilityWP/archive/$PHP_COMPATIBILITY_WP_VER.tar.gz" && \
+	sha1sum_check "$PHP_COMPATIBILITY_WP_VER.tar.gz" "$PHP_COMPATIBILITY_WP_SHA1SUM" && \
+	tar -zxvf "$PHP_COMPATIBILITY_WP_VER.tar.gz" && \
+	mv "PHPCompatibilityWP-$PHP_COMPATIBILITY_WP_VER/PHPCompatibilityWP" phpcs/src/Standards/ && \
+	touch $TMP_FOLDER/php-compatibility-wp-$PHP_COMPATIBILITY_WP_VER.txt && \
+	rm -f "$PHP_COMPATIBILITY_WP_VER.tar.gz" && \
+	wget "https://github.com/PHPCompatibility/PHPCompatibilityParagonie/archive/$PHP_COMPATIBILITY_PARAGONIE_VER.tar.gz" && \
+	sha1sum_check "$PHP_COMPATIBILITY_PARAGONIE_VER.tar.gz" "$PHP_COMPATIBILITY_PARAGONIE_SHA1SUM" && \
+	tar -zxvf "$PHP_COMPATIBILITY_PARAGONIE_VER.tar.gz" && \
+	mv "PHPCompatibilityParagonie-$PHP_COMPATIBILITY_PARAGONIE_VER-PHPCompatibilityParagonie*" phpcs/src/Standards/ && \
+	touch $TMP_FOLDER/php-compatibility-paragonie-$PHP_COMPATIBILITY_PARAGONIE_VER.txt && \
+	rm -f "$PHP_COMPATIBILITY_PARAGONIE_VER.tar.gz" && \
 	wget "https://github.com/Automattic/vip-go-ci/archive/$VIP_GO_CI_VER.tar.gz" && \
 	tar -zxvf "$VIP_GO_CI_VER.tar.gz" && \
 	mv "vip-go-ci-$VIP_GO_CI_VER" vip-go-ci && \
