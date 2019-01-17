@@ -367,6 +367,7 @@ function vipgoci_run() {
 			'phpcs-standard:',
 			'phpcs-severity:',
 			'phpcs-sniffs-exclude:',
+			'phpcs-runtime-set:',
 			'hashes-api-url:',
 			'hashes-oauth-token:',
 			'hashes-oauth-token-secret:',
@@ -436,6 +437,8 @@ function vipgoci_run() {
 			"\t" . '--phpcs-standard=STRING        Specify which PHPCS standard to use' . PHP_EOL .
 			"\t" . '--phpcs-severity=NUMBER        Specify severity for PHPCS' . PHP_EOL .
 			"\t" . '--phpcs-sniffs-exclude=STRING  Specify which sniff to exclude from PHPCS scanning' . PHP_EOL .
+			"\t" . '--phpcs-runtime-set=STRING     Specify --runtime-set values passed on to PHPCS' . PHP_EOL .
+			"\t" . '                               -- expected to be a comma-separated value string.' . PHP_EOL .
 			"\t" . '--autoapprove=BOOL             Whether to auto-approve Pull-Requests' . PHP_EOL .
 			"\t" . '                               altering only files of certain types' . PHP_EOL .
 			"\t" . '--autoapprove-filetypes=STRING Specify what file-types can be auto-' . PHP_EOL .
@@ -545,7 +548,7 @@ function vipgoci_run() {
 	 */
 
 	if ( empty( $options['phpcs-runtime-set'] ) ) {
-		$options['phpcs-runtime-set'] = null;
+		$options['phpcs-runtime-set'] = array();
 	}
 
 	else {
