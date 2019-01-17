@@ -18,6 +18,9 @@ export PHP_COMPATIBILITY_WP_SHA1SUM="e898c99749bf2a61ef21995329a222b279fab471"
 export PHP_COMPATIBILITY_PARAGONIE_VER="1.0.1"
 export PHP_COMPATIBILITY_PARAGONIE_SHA1SUM="28db0909de7bd505755964537b36a1515c739251"
 
+export VIP_GO_SVG_SANITIZER_VER="0.9.4"
+export VIP_GO_SVG_SANITIZER_SHA1SUM="34fdca27c90828c8866a45c7b548ebc24018ffe2"
+
 export TMP_LOCK_FILE="$HOME/.vip-go-ci-tools-init.lck"
 
 function sha1sum_check() {
@@ -184,6 +187,12 @@ else
 	mv PHPCompatibilityParagonie-$PHP_COMPATIBILITY_PARAGONIE_VER/PHPCompatibilityParagonie* phpcs/src/Standards/ && \
 	touch $TMP_FOLDER/php-compatibility-paragonie-$PHP_COMPATIBILITY_PARAGONIE_VER.txt && \
 	rm -f "$PHP_COMPATIBILITY_PARAGONIE_VER.tar.gz" && \
+	wget "https://github.com/Automattic/vip-go-svg-sanitizer/archive/$VIP_GO_SVG_SANITIZER_VER.tar.gz" && \
+	sha1sum_check "$VIP_GO_SVG_SANITIZER_VER.tar.gz" "$VIP_GO_SVG_SANITIZER_SHA1SUM" && \
+	tar -zxvf "$VIP_GO_SVG_SANITIZER_VER.tar.gz" && \
+	mv "vip-go-svg-sanitizer-$VIP_GO_SVG_SANITIZER_VER" vip-go-svg-sanitizer && \
+	touch "$TMP_FOLDER/vip-go-svg-sanitizer-$VIP_GO_SVG_SANITIZER_VER.txt" && \
+	rm -f "$VIP_GO_SVG_SANITIZER_VER.tar.gz" && \
 	wget "https://github.com/Automattic/vip-go-ci/archive/$VIP_GO_CI_VER.tar.gz" && \
 	tar -zxvf "$VIP_GO_CI_VER.tar.gz" && \
 	mv "vip-go-ci-$VIP_GO_CI_VER" vip-go-ci && \
