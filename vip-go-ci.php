@@ -540,6 +540,25 @@ function vipgoci_run() {
 	}
 
 	/*
+	 * Process --phpcs-runtime-set -- expected to be an
+	 * array of values.
+	 */
+
+	if ( empty( $options['phpcs-runtime-set'] ) ) {
+		$options['phpcs-runtime-set'] = null;
+	}
+
+	else {
+		vipgoci_option_array_handle(
+			$options,
+			'phpcs-runtime-set',
+			array(),
+			array(),
+			','
+		);
+	}
+
+	/*
 	 * Process --review-comments-ignore -- expected
 	 * to be an array (items separated by "|||").
 	 * Then transform all of the messages to lower-case.

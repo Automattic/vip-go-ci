@@ -10,7 +10,8 @@ function vipgoci_phpcs_do_scan(
 	$phpcs_path,
 	$phpcs_standard,
 	$phpcs_sniffs_exclude,
-	$phpcs_severity
+	$phpcs_severity,
+	$phpcs_runtime_set
 ) {
 	/*
 	 * Run PHPCS from the shell, making sure we escape everything.
@@ -38,6 +39,19 @@ function vipgoci_phpcs_do_scan(
 			' --exclude=%s',
 			escapeshellarg( $phpcs_sniffs_exclude )
 		);
+	}
+
+	/*
+	 * If we have specific runtime-set values,
+	 * put them in them now.
+	 */
+	if ( ! empty( $phpcs_runtime_set ) ) {
+		foreach( $phpcs_runtime_set as $phpcs_runtime_set_value ) {
+			$cmd .= sprintf(
+				' --runtime-set=%s',
+				escapeshellarg( $phpcs_runtime_set_value )
+			);
+		}
 	}
 
 	/*
