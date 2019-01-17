@@ -13,7 +13,7 @@ export PHP_COMPATIBILITY_VER="9.1.1"
 export PHP_COMPATIBILITY_SHA1SUM="2f2e5163a3dc4328627b48bedfdebd35041ba6c5";
 
 export PHP_COMPATIBILITY_WP_VER="2.0.0"
-export PHP_COMPATIBILITY_SHA1SUM="e898c99749bf2a61ef21995329a222b279fab471"
+export PHP_COMPATIBILITY_WP_SHA1SUM="e898c99749bf2a61ef21995329a222b279fab471"
 
 export PHP_COMPATIBILITY_PARAGONIE_VER="1.0.1"
 export PHP_COMPATIBILITY_PARAGONIE_SHA1SUM="28db0909de7bd505755964537b36a1515c739251"
@@ -181,7 +181,7 @@ else
 	wget "https://github.com/PHPCompatibility/PHPCompatibilityParagonie/archive/$PHP_COMPATIBILITY_PARAGONIE_VER.tar.gz" && \
 	sha1sum_check "$PHP_COMPATIBILITY_PARAGONIE_VER.tar.gz" "$PHP_COMPATIBILITY_PARAGONIE_SHA1SUM" && \
 	tar -zxvf "$PHP_COMPATIBILITY_PARAGONIE_VER.tar.gz" && \
-	mv "PHPCompatibilityParagonie-$PHP_COMPATIBILITY_PARAGONIE_VER-PHPCompatibilityParagonie*" phpcs/src/Standards/ && \
+	mv PHPCompatibilityParagonie-$PHP_COMPATIBILITY_PARAGONIE_VER/PHPCompatibilityParagonie* phpcs/src/Standards/ && \
 	touch $TMP_FOLDER/php-compatibility-paragonie-$PHP_COMPATIBILITY_PARAGONIE_VER.txt && \
 	rm -f "$PHP_COMPATIBILITY_PARAGONIE_VER.tar.gz" && \
 	wget "https://github.com/Automattic/vip-go-ci/archive/$VIP_GO_CI_VER.tar.gz" && \
