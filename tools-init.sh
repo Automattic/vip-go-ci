@@ -35,7 +35,7 @@ function sha1sum_check() {
 function lock_place() {
 	# Get lock, if that fails, just exit
 	if [ -f "$TMP_LOCK_FILE" ] ; then
-		echo "$0: Lock in place, not doing anything."
+		echo "$0: Lock in place already, not doing anything."
 		exit 0
 	fi
 
