@@ -27,10 +27,10 @@ function sha1sum_check() {
 	FILENAME=$1
 	CORRECT_HASH=$2
 
-	TMPSUM=`sha1sum $FILENAME|awk '{print $1}'`
+	TMP_HASH=`sha1sum $FILENAME|awk '{print $1}'`
 
-	if [ "$TMPSUM" != "$CORRECT_HASH" ] ; then
-		echo "FAILED sha1sum check for $FILENAME; $TMPSUM (downloaded) vs. $CORRECT_HASH (correct)";
+	if [ "$TMP_HASH" != "$CORRECT_HASH" ] ; then
+		echo "FAILED sha1sum check for $FILENAME; $TMP_HASH (downloaded) vs. $CORRECT_HASH (correct)";
 		exit;
 	fi
 }
