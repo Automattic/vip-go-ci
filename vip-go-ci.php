@@ -567,19 +567,39 @@ function vipgoci_run() {
 
 		foreach(
 			$options['phpcs-runtime-set'] as
-			$tmp_runtime_key => $tmp_runtime_set
+				$tmp_runtime_key =>
+					$tmp_runtime_set
 		) {
 			$options
 				['phpcs-runtime-set']
 				[ $tmp_runtime_key ] =
 				explode( ' ', $tmp_runtime_set, 2 );
 
+			/*
+			 * Catch any abnormalities with
+		 	 * the --phpcs-runtime-set parameter, such
+			 * as key/value being missing, or set to empty.
+			 */
 
-			if ( count(
-				$options
+			if (
+				( count(
+					$options
 					['phpcs-runtime-set']
 					[ $tmp_runtime_key ]
-			) < 2 ) {
+				) < 2 )
+				||
+				( empty( $options
+					['phpcs-runtime-set']
+					[ $tmp_runtime_key ]
+					[0]
+				) )
+				||
+				( empty( $options
+					['phpcs-runtime-set']
+					[ $tmp_runtime_key ]
+					[1]
+				) )
+			) {
 				vipgoci_sysexit(
 					'--phpcs-runtime-set is incorrectly formed; it should ' . PHP_EOL .
 					'be a comma separated string of keys and values.' . PHP_EOL .
