@@ -46,10 +46,14 @@ function vipgoci_phpcs_do_scan(
 	 * put them in them now.
 	 */
 	if ( ! empty( $phpcs_runtime_set ) ) {
-		foreach( $phpcs_runtime_set as $phpcs_runtime_set_value ) {
+		foreach(
+			$phpcs_runtime_set as
+				$phpcs_runtime_set_value
+		) {
 			$cmd .= sprintf(
-				' --runtime-set=%s',
-				escapeshellarg( $phpcs_runtime_set_value )
+				' --runtime-set %s %s',
+				escapeshellarg( $phpcs_runtime_set_value[0] ),
+				escapeshellarg( $phpcs_runtime_set_value[1] )
 			);
 		}
 	}
@@ -127,7 +131,8 @@ function vipgoci_phpcs_scan_single_file(
 		$options['phpcs-path'],
 		$options['phpcs-standard'],
 		$options['phpcs-sniffs-exclude'],
-		$options['phpcs-severity']
+		$options['phpcs-severity'],
+		$options['phpcs-runtime-set']
 	);
 
 	/* Get rid of temporary file */
