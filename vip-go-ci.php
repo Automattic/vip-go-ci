@@ -367,6 +367,7 @@ function vipgoci_run() {
 			'phpcs-standard:',
 			'phpcs-severity:',
 			'phpcs-sniffs-exclude:',
+			'phpcs-runtime-set:',
 			'hashes-api-url:',
 			'hashes-oauth-token:',
 			'hashes-oauth-token-secret:',
@@ -436,6 +437,10 @@ function vipgoci_run() {
 			"\t" . '--phpcs-standard=STRING        Specify which PHPCS standard to use' . PHP_EOL .
 			"\t" . '--phpcs-severity=NUMBER        Specify severity for PHPCS' . PHP_EOL .
 			"\t" . '--phpcs-sniffs-exclude=STRING  Specify which sniff to exclude from PHPCS scanning' . PHP_EOL .
+			"\t" . '--phpcs-runtime-set=STRING     Specify --runtime-set values passed on to PHPCS' . PHP_EOL .
+			"\t" . '                               -- expected to be a comma-separated value string of ' . PHP_EOL .
+			"\t" . '                               key-value pairs.' . PHP_EOL .
+			"\t" . '                               For example: --phpcs-runtime-set="foo1 bar1, foo2,bar2"' . PHP_EOL .
 			"\t" . '--autoapprove=BOOL             Whether to auto-approve Pull-Requests' . PHP_EOL .
 			"\t" . '                               altering only files of certain types' . PHP_EOL .
 			"\t" . '--autoapprove-filetypes=STRING Specify what file-types can be auto-' . PHP_EOL .
@@ -538,6 +543,53 @@ function vipgoci_run() {
 			$options['phpcs-sniffs-exclude']
 		);
 	}
+
+	/*
+	 * Process --phpcs-runtime-set -- expected to be an
+	 * array of values.
+	 */
+
+	if ( empty( $options['phpcs-runtime-set'] ) ) {
+		$options['phpcs-runtime-set'] = array();
+	}
+
+	else {
+		vipgoci_option_array_handle(
+			$options,
+			'phpcs-runtime-set',
+			array(),
+			array(),
+			','
+		);
+
+		foreach(
+			$options['phpcs-runtime-set'] as
+			$tmp_runtime_key => $tmp_runtime_set
+		) {
+			$options
+				['phpcs-runtime-set']
+				[ $tmp_runtime_key ] =
+				explode( ' ', $tmp_runtime_set, 2 );
+
+
+			if ( count(
+				$options
+					['phpcs-runtime-set']
+					[ $tmp_runtime_key ]
+			) < 2 ) {
+				vipgoci_sysexit(
+					'--phpcs-runtime-set is incorrectly formed; it should ' . PHP_EOL .
+					'be a comma separated string of keys and values.' . PHP_EOL .
+					'For instance: --phpcs-runtime-set="foo1 bar1,foo2 bar2"',
+					array(
+						$options['phpcs-runtime-set']
+					),
+					VIPGOCI_EXIT_USAGE_ERROR
+				);
+			}
+		}
+	}
+
 
 	/*
 	 * Process --review-comments-ignore -- expected
