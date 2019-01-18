@@ -1,6 +1,144 @@
 <?php
 
 /*
+ * Use SVG scanner to scan for any issues
+ * in the file specified, and return the
+ * results.
+ */
+function vipgoci_svg_do_scan_with_scanner(
+	$svg_scanner_path,
+	$temp_file_name
+) {
+	/*
+	 * Run SVG scanner from the shell, making sure we escape everything.
+	 */
+	$cmd = sprintf(
+		'%s %s %s',
+		escapeshellcmd( 'php' ),
+		escapeshellcmd( $svg_scanner_path ),
+		escapeshellarg( $temp_file_name )
+	);
+
+	$cmd .= ' 2>&1';
+
+	vipgoci_log(
+		'Running SVG scanner now',
+		array(
+			'cmd' => $cmd,
+		),
+		2
+	);
+
+
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'svg_scanner_cli' );
+
+	$result = shell_exec( $cmd );
+
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'svg_scanner_cli' );
+
+	return $result;
+}
+
+function vipgoci_svg_look_for_specific_tokens(
+	$disallowed_tokens,
+	$temp_file_name,
+	&$results
+) {
+
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'svg_scanner_specific' );
+
+	$file_contents = file_get_contents(
+		$temp_file_name
+	);
+
+	if ( false === $file_contents ) {
+		vipgoci_log(
+			'Unable to open file for SVG specific tag scanning',
+			array(
+				'temp_file_name'	=> $temp_file_name,
+				'disallowed_tokens'	=> $disallowed_tokens,
+			)
+		);
+
+		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'svg_scanner_specific' );
+
+		return;
+	}
+
+	/*
+	 * Explode each line into
+	 * each item in an array.
+	 */
+	$file_lines_arr = explode(
+		PHP_EOL,
+		$file_contents
+	);
+
+	$line_no = 1; // Line numbers begin at 1
+
+	/*
+	 * Loop through each line of the
+	 * file, look for disallowed tokens,
+	 * record any found and keep statistics.
+	 */
+	foreach ( $file_lines_arr as $file_line_item ) {
+
+		/*
+		 * Scan for each disallowed token
+		 */
+		foreach( $disallowed_tokens as $disallowed_token ) {
+			/*
+			 * Do a case insensitive search
+			 */
+			$token_pos = stripos(
+				$file_line_item,
+				$disallowed_token
+			);
+
+			if ( false === $token_pos ) {
+				continue;
+			}
+
+			/*
+			 * Found a problem, adding to results.
+			 */
+			$results['totals']['errors']++;
+
+			if ( ! isset(
+				$results['files'][ $temp_file_name ]
+			) ) {
+				$results['files'][ $temp_file_name ] = array(
+					'errors' => 0,
+					'messages' => array()
+				);
+			}
+
+			$results['files'][ $temp_file_name ]['errors']++;
+	
+			$results['files'][ $temp_file_name ]['messages'][] =
+				array(
+					'message'	=>
+						'Found forbidden tag in SVG ' .
+							'file: \'' .
+							$disallowed_token .
+							'\'',
+
+					'line'		=> $line_no,
+					'level'		=> 'ERROR',
+				);
+		}
+
+		$line_no++;
+	}
+
+
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'svg_scanner_specific' );
+
+	return $results;
+}
+
+
+/*
  * Scan a SVG-file for disallowed
  * tokens. Will return results in the
  * same format as PHPCS does.
@@ -35,7 +173,6 @@ function vipgoci_svg_scan_single_file(
 	$disallowed_tokens = array(
 		'<?php',
 		'<?=',
-		'<script ',
 	);
 
 	/*
@@ -90,120 +227,85 @@ function vipgoci_svg_scan_single_file(
 		$file_contents
 	);
 
-	$file_contents = file_get_contents(
+
+	/*
+	 * Use the svg-sanitizer's library scanner
+	 * to scan the file.
+	 */
+
+	$results = vipgoci_svg_do_scan_with_scanner(
+		$options['svg-scanner-path'],
 		$temp_file_name
 	);
 
-	unlink( $temp_file_name );
+
+	$results = json_decode(
+		$results,
+		true
+	);
+
+	if ( null === $results ) {
+		vipgoci_log(
+			'SVG scanning of a single file failed',
+			array(
+				'results'		=> $results,
+				'file_name'		=> $file_name,
+				'temp_file_name'	=> $temp_file_name,
+			)
+		);
+
+		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'svg_scan_single_file' );
+
+		return array(
+			'file_issues_arr_master'	=> $results,
+			'file_issues_str'		=> null,
+			'temp_file_name'		=> $temp_file_name,
+		);
+	}
 
 	/*
-	 * Explode each line into
-	 * each item in an array.
+	 * Use custom scanning to look for
+	 * forbidden tags.
 	 */
-	$file_lines_arr = explode(
-		PHP_EOL,
-		$file_contents
+
+	vipgoci_svg_look_for_specific_tokens(
+		$disallowed_tokens,
+		$temp_file_name,
+		$results
 	);
 
 	/*
-	 * Array for scanning results,
-	 * line counter.
+	 * Add in missing information to
+	 * the results -- this will emulate
+	 * PHPCS results as possible.
 	 */
-	$results_files = array();
+	$results['files'][ $temp_file_name ]['messages'] = array_map(
+		function( $issue_item ) {
+			$issue_item['severity'] = 5;
+			$issue_item['type'] = 'ERROR';
+			$issue_item['source'] = 'WordPressVIPMinimum.Security.SVG.DisallowedTags';
+			$issue_item['level'] = $issue_item['type'];
+			$issue_item['fixable'] = false;
+			$issue_item['column'] = 0;
 
-	$line_no = 1; // Line numbers begin at 1
+			return $issue_item;
+		},
+		$results['files'][ $temp_file_name ]['messages']
+	);
 
-	/*
-	 * Loop through each line of the
-	 * file, look for disallowed tokens,
-	 * record any found and keep statistics.
-	 */
-	foreach ( $file_lines_arr as $file_line_item ) {
-		/*
-		 * Prepare results array, assume nothing
-		 * is wrong until proven otherwise.
-		 */
-		if ( ! isset( $results_files[ $temp_file_name ] ) ) {
-			$results_files[ $temp_file_name ] = array(
-				'errors'	=> 0,
-				'warnings'	=> 0,
-				'fixable'	=> 0,
-				'messages'	=> array(),
-			);
-		}
 
-		/*
-		 * Scan for each disallowed token
-		 */
-		foreach( $disallowed_tokens as $disallowed_token ) {
-			/*
-			 * Do a case insensitive search
-			 */
-			$token_pos = stripos(
-				$file_line_item,
-				$disallowed_token
-			);
-
-			if ( false === $token_pos ) {
-				continue;
-			}
-
-			/*
-			 * Found a problem, adding to results.
-			 */
-
-			$results_files[ $temp_file_name ]['errors']++;
-
-			$results_files[ $temp_file_name ]['messages'][] =
-				array(
-					'message'	=>
-						'Found forbidden tag in SVG ' .
-							'file: \'' .
-							$disallowed_token .
-							'\'',
-
-					'source'	=>
-						'WordPressVIPMinimum.' .
-						'Security.SVG.DisallowedTags',
-
-					'severity'	=> 5,
-					'fixable'	=> false,
-					'type'		=> 'ERROR',
-					'line'		=> $line_no,
-					'column'	=> $token_pos,
-				);
-		}
-
-		$line_no++;
-	}
+	unlink( $temp_file_name );
 
 	/*
 	 * Emulate results returned
 	 * by vipgoci_phpcs_scan_single_file().
 	 */
 
-	$results = array(
-		'totals' => array(
-			'errors' => $results_files[
-				$temp_file_name
-			]['errors'],
-
-			'warnings' => $results_files[
-				$temp_file_name
-			]['warnings'],
-
-			'fixable' => $results_files[
-				$temp_file_name
-			]['fixable'],
-		),
-
-		'files' => array(
-			$temp_file_name =>
-				$results_files[
-					$temp_file_name
-				]
-		)
-	);
+	foreach( array( 'errors', 'warnings', 'fixable' ) as $stats_key ) {
+		if ( ! isset( $results['totals']['errors'] ) ) {
+			$results['totals'][ $stats_key ] = 0;
+		}
+	}
 
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'svg_scan_single_file' );
 

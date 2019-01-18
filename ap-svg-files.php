@@ -118,7 +118,9 @@ function vipgoci_ap_svg_files(
 							$pr_diff_file_name,
 						'file_issues_arr_master' =>
 							$file_issues_arr_master,
-					)
+					),
+					0,
+					true // log to IRC
 				);
 			}
 
