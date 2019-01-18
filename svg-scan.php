@@ -39,7 +39,7 @@ function vipgoci_svg_do_scan_with_scanner(
 	return $result;
 }
 
-function vipgoci_svg_look_for_specific_tags(
+function vipgoci_svg_look_for_specific_tokens(
 	$disallowed_tokens,
 	$temp_file_name,
 	&$results
@@ -50,6 +50,20 @@ function vipgoci_svg_look_for_specific_tags(
 	$file_contents = file_get_contents(
 		$temp_file_name
 	);
+
+	if ( false === $file_contents ) {
+		vipgoci_log(
+			'Unable to open file for SVG specific tag scanning',
+			array(
+				'temp_file_name'	=> $temp_file_name,
+				'disallowed_tokens'	=> $disallowed_tokens,
+			)
+		);
+
+		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'svg_scanner_specific' );
+
+		return;
+	}
 
 	/*
 	 * Explode each line into
@@ -234,9 +248,13 @@ function vipgoci_svg_scan_single_file(
 		vipgoci_log(
 			'SVG scanning of a single file failed',
 			array(
-				'results' => $results,
+				'results'		=> $results,
+				'file_name'		=> $file_name,
+				'temp_file_name'	=> $temp_file_name,
 			)
 		);
+
+		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'svg_scan_single_file' );
 
 		return array(
 			'file_issues_arr_master'	=> $results,
@@ -245,13 +263,22 @@ function vipgoci_svg_scan_single_file(
 		);
 	}
 
+	/*
+	 * Use custom scanning to look for
+	 * forbidden tags.
+	 */
 
-	vipgoci_svg_look_for_specific_tags(
+	vipgoci_svg_look_for_specific_tokens(
 		$disallowed_tokens,
 		$temp_file_name,
 		$results
 	);
 
+	/*
+	 * Add in missing information to
+	 * the results -- this will emulate
+	 * PHPCS results as possible.
+	 */
 	$results['files'][ $temp_file_name ]['messages'] = array_map(
 		function( $issue_item ) {
 			$issue_item['severity'] = 5;
