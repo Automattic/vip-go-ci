@@ -78,6 +78,7 @@ final class StatsTests extends TestCase {
 		);
 	}
 
+
 	/*
 	 * Test vipgoci_runtime_measure()
 	 */
@@ -189,6 +190,7 @@ final class StatsTests extends TestCase {
 		);
 	}
 
+
 	/*
 	 * Test vipgoci_counter_update_with_issues_found()
 	 */
@@ -229,5 +231,12 @@ final class StatsTests extends TestCase {
 			)
 		);	
 	}
+
+
+	/*
+	 * FIXME:
+	 * Missing tests for:
+	 * 	vipgoci_stats_per_file()
+	 */
 }
 
