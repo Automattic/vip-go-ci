@@ -2824,47 +2824,7 @@ function vipgoci_github_prs_commits_list(
 	return $pr_commits;
 }
 
-/*
- * Fetch all files that were changed as a part
- * of a particular Pull-Request. Allow filtering
- * of file-endings according to $filter.
- */
-function vipgoci_github_pr_files_changed(
-	$repo_owner,
-	$repo_name,
-	$github_token,
-	$pr_base_sha,
-	$current_commit_id,
-	$filter
-) {
 
-	$files_changed = vipgoci_github_diffs_fetch(
-		$repo_owner,
-		$repo_name,
-		$github_token,
-		$pr_base_sha,
-		$current_commit_id,
-		true
-	);
-
-	$files_changed_ret = array();
-
-	foreach ( $files_changed as $file_name => $tmp_patch ) {
-		if (
-			( null !== $filter ) &&
-			( false === vipgoci_filter_file_path(
-				$file_name,
-				$filter
-			) )
-		) {
-			continue;
-		}
-
-		$files_changed_ret[] = $file_name;
-	}
-
-	return $files_changed_ret;
-}
 
 /*
  * Fetch diffs between two commits.
@@ -2875,7 +2835,10 @@ function vipgoci_github_diffs_fetch(
 	$github_token,
 	$commit_id_a,
 	$commit_id_b,
-	$empty_patches_also = false
+	$renamed_files_also = false,
+	$removed_files_also = true,
+	$permission_changes_also = false
+	$filter = null
 ) {
 
 	/*
@@ -2887,7 +2850,6 @@ function vipgoci_github_diffs_fetch(
 	);
 
 	$cached_data = vipgoci_cache( $cached_id );
-
 
 	vipgoci_log(
 		'Fetching diffs between two commits ' .
@@ -2902,55 +2864,107 @@ function vipgoci_github_diffs_fetch(
 		)
 	);
 
-	if ( false !== $cached_data ) {
-		return $cached_data;
+	if ( false === $cached_data ) {
+		/*
+		 * Nothing cached; ask GitHub.
+		 */
+
+		// FIXME: Use local git-repo for this, if possible.
+
+		$github_url =
+			VIPGOCI_GITHUB_BASE_URL . '/' .
+			'repos/' .
+			rawurlencode( $repo_owner ) . '/' .
+			rawurlencode( $repo_name ) . '/' .
+			'compare/' .
+			rawurlencode( $commit_id_a ) .
+				'...' .
+				rawurlencode( $commit_id_b );
+
+		// FIXME: Error-handling
+		$resp_raw = json_decode(
+			vipgoci_github_fetch_url(
+				$github_url,
+				$github_token
+			)
+		);
+
+		/*
+		 * Save a copy in cache.
+		 */
+		vipgoci_cache( $cached_id, $resp_raw );
 	}
 
-
-	/*
-	 * Nothing cached; ask GitHub.
-	 */
-
-	// FIXME: Use local git-repo for this, if possible.
-	$diffs = array();
-
-	$github_url =
-		VIPGOCI_GITHUB_BASE_URL . '/' .
-		'repos/' .
-		rawurlencode( $repo_owner ) . '/' .
-		rawurlencode( $repo_name ) . '/' .
-		'compare/' .
-		rawurlencode( $commit_id_a ) .
-			'...' .
-			rawurlencode( $commit_id_b );
-
-	// FIXME: Error-handling
-	$resp_raw = json_decode(
-		vipgoci_github_fetch_url(
-			$github_url,
-			$github_token
-		)
-	);
 
 	/*
 	 * Loop through all files, save patch in an array
 	 */
+
+	$diffs = array();
+
 	foreach( $resp_raw->files as $file_item ) {
+		/*
+		 * Skip removed files if desired.
+		 */
+
 		if (
-			( false === $empty_patches_also ) &&
-			( ! isset( $file_item->patch ) )
+			( false === $removed_files_also ) &&
+			( 'removed' === $file_item->status )
 		) {
 			continue;
 		}
 
+
+		/*
+		 * Skip renamed files if so requested.
+		 */
+		if (
+			( false === $renamed_files_also ) &&
+			( 'renamed' === $file_item->status )
+		) {
+			continue;
+		}
+
+
+		/*
+		 * If file is modified, but there are no changed lines,
+		 * the file likely had only permission-changes made to
+		 * it. Skip these, if so requested.
+		 */
+		if (
+			( false === $permission_changes_also ) &&
+			( 'modified' === $file_item->status ) &&
+			( 0 === $file_item->changes )
+		) {
+			continue;
+		}
+
+
+		/*
+		 * Allow filtering of files returned.		
+		 */
+
+		if (
+			( null !== $filter ) &&
+			( false === vipgoci_filter_file_path(
+				$file_name,
+				$filter
+			) )
+		) {
+			continue;
+		}
+
+		/*
+		 * In case of no patch specified by
+		 * GitHub, we add it.
+		 */
 		if ( ! isset( $file_item->patch ) ) {
 			$file_item->patch = null;
 		}
 
+
 		$diffs[ $file_item->filename ] = $file_item->patch;
 	}
-
-	vipgoci_cache( $cached_id, $diffs );
 
 	return $diffs;
 }
