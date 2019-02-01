@@ -142,8 +142,8 @@ final class StatsTests extends TestCase {
 	 * Test vipgoci_counter_report()
 	 */
 
-}	function testCounterReport1() {
-		$this->assertEqual(
+	function testCounterReport1() {
+		$this->assertEquals(
 			vipgoci_counter_report(
 				'illegalaction',
 				'mycounter1',
@@ -152,7 +152,7 @@ final class StatsTests extends TestCase {
 			false
 		);
 
-		$this->assertEqual(
+		$this->assertEquals(
 			vipgoci_counter_report(
 				VIPGOCI_COUNTERS_DUMP
 			),
@@ -161,7 +161,7 @@ final class StatsTests extends TestCase {
 	}
 
 	function testCounterReport2() {
-		$this->assertEqual(
+		$this->assertEquals(
 			vipgoci_counter_report(
 				VIPGOCI_COUNTERS_DO,
 				'mycounter2',
@@ -170,7 +170,7 @@ final class StatsTests extends TestCase {
 			true
 		);
 
-		$this->assertEqual(
+		$this->assertEquals(
 			vipgoci_counter_report(
 				VIPGOCI_COUNTERS_DO,
 				'mycounter2',
@@ -179,7 +179,7 @@ final class StatsTests extends TestCase {
 			true
 		);
 
-		$this->assertEqual(
+		$this->assertEquals(
 			vipgoci_counter_report(
 				VIPGOCI_COUNTERS_DUMP
 			),
@@ -189,8 +189,45 @@ final class StatsTests extends TestCase {
 		);
 	}
 
+	/*
+	 * Test vipgoci_counter_update_with_issues_found()
+	 */
+	function testCounterUpdateWithIssuesFound1() {
+		$results = array(
+			'stats' => array(
+				'unique_issue' => array(
+					120 => array(
+						'errors' => 1,
+						'warnings' => 1,
+					),
+
+					121 => array(
+						'errors' => 2,
+						'warnings' => 1,
+					),
+				)
+			)
+		);
 
 
+		vipgoci_counter_update_with_issues_found(
+			$results
+		);
+
+		$report = vipgoci_counter_report(
+			VIPGOCI_COUNTERS_DUMP
+		);
 
 
+		unset( $report['mycounter2'] );
+
+	
+		$this->assertEquals(
+			$report,
+			array(
+				'github_pr_unique_issue_issues' => 3,
+			)
+		);	
+	}
+}
 
