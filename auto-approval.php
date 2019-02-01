@@ -455,7 +455,9 @@ function vipgoci_auto_approval(
 			$options['token'],
 			$pr_item->base->sha,
 			$options['commit'],
-			true
+			true, // include renamed files
+			true, // include removed files
+			true  // include permission changes
 		);
 
 

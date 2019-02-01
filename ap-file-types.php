@@ -51,9 +51,22 @@ function vipgoci_ap_file_types(
 			$options['token'],
 			$pr_item->base->sha,
 			$options['commit'],
-			true
+			true, // renamed files included
+			true, // removed files included
+			true, // permission changes included
+			null
 		);
 
+		/*
+		 * Note: We will here loop through files
+		 * that have been renamed, removed, had their
+		 * permission changed, or had their contents
+		 * modified -- and then we might auto-approve
+		 * them. This is slightly different from what
+		 * we do in other parts of vip-go-ci, were we
+		 * exclude files that have been renamed, removed,
+	 	 * or had their permission changed.
+		 */
 
 		foreach ( $pr_diff as
 			$pr_diff_file_name => $pr_diff_contents

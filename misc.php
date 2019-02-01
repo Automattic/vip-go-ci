@@ -110,6 +110,8 @@ function vipgoci_patch_changed_lines(
 		$github_token,
 		$pr_base_sha,
 		$commit_id,
+		false,
+		false,
 		false
 	);
 
