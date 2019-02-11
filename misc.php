@@ -635,7 +635,7 @@ function vipgoci_github_comment_match(
 		 * -- remove the source, the brackets and the ending dot.
 		 */
 		$comment_made_body = preg_replace(
-			'/ \([_\.a-zA-Z0-9]*\)\.$/',
+			'/ \([\*_\.a-zA-Z0-9]+\)\.$/',
         		'',
 			$comment_made_body
 		); 
