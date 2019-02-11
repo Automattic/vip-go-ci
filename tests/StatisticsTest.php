@@ -7,8 +7,8 @@ require_once( __DIR__ . '/../defines.php' );
 require_once( __DIR__ . '/../statistics.php' );
 
 final class StatsTests extends TestCase {
-	/*
-	 * Test vipgoci_stats_init(
+	/**
+	 * @covers vipgoci_stats_init
 	 */
 	public function testStatsInit() {
 		$pr_item1 = new stdClass();
@@ -79,8 +79,8 @@ final class StatsTests extends TestCase {
 	}
 
 
-	/*
-	 * Test vipgoci_runtime_measure()
+	/**
+	 * @covers vipgoci_runtime_measure
 	 */
 	function testRuntimeMeasure1() {
 		return $this->assertEquals(
@@ -89,6 +89,9 @@ final class StatsTests extends TestCase {
 		);
 	}
 
+	/**
+	 * @covers vipgoci_runtime_measure
+	 */
 	function testRuntimeMeasure2() {
 		return $this->assertEquals(
 			vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'mytimer2' ),
@@ -96,6 +99,9 @@ final class StatsTests extends TestCase {
 		);
 	}
 
+	/**
+	 * @covers vipgoci_runtime_measure
+	 */
 	function testRuntimeMeasure3() {
 		$this->assertEquals(
 			vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'mytimer3' ),
@@ -119,6 +125,9 @@ final class StatsTests extends TestCase {
 		);
 	}
 
+	/**
+	 * @cover vipgoci_runtime_measure
+	 */
 	function testRuntimeMeasure4() {
 		$this->assertEquals(
 			vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'mytimer4' ),
@@ -139,10 +148,9 @@ final class StatsTests extends TestCase {
 	}
 
 
-	/*
-	 * Test vipgoci_counter_report()
+	/**
+	 * @covers vipgoci_counter_report
 	 */
-
 	function testCounterReport1() {
 		$this->assertEquals(
 			vipgoci_counter_report(
@@ -161,6 +169,9 @@ final class StatsTests extends TestCase {
 		);
 	}
 
+	/**
+	 * @covers vipgoci_counter_report
+	 */
 	function testCounterReport2() {
 		$this->assertEquals(
 			vipgoci_counter_report(
@@ -192,7 +203,7 @@ final class StatsTests extends TestCase {
 
 
 	/*
-	 * Test vipgoci_counter_update_with_issues_found()
+	 * @covers vipgoci_counter_update_with_issues_found
 	 */
 	function testCounterUpdateWithIssuesFound1() {
 		$results = array(
@@ -231,12 +242,5 @@ final class StatsTests extends TestCase {
 			)
 		);	
 	}
-
-
-	/*
-	 * FIXME:
-	 * Missing tests for:
-	 * 	vipgoci_stats_per_file()
-	 */
 }
 
