@@ -6,7 +6,10 @@ use PHPUnit\Framework\TestCase;
 require_once( __DIR__ . '/../defines.php' );
 require_once( __DIR__ . '/../misc.php' );
 
-final class MiscTests extends TestCase {
+final class MiscCacheTest extends TestCase {
+	/**
+	 * @covers vipgoci_cache
+	 */
 	public function testCache1() {
 		$cache_id1 =
 			__CLASS__ .
