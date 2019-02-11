@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 
-require( __DIR__ . '/../defines.php' );
-require( __DIR__ . '/../statistics.php' );
+require_once( __DIR__ . '/../defines.php' );
+require_once( __DIR__ . '/../statistics.php' );
 
 final class StatsTests extends TestCase {
 	/*
