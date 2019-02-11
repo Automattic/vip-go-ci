@@ -8,7 +8,7 @@ require_once( __DIR__ . '/../statistics.php' );
 
 final class StatsTests extends TestCase {
 	/**
-	 * @covers vipgoci_stats_init
+	 * @covers ::vipgoci_stats_init
 	 */
 	public function testStatsInit() {
 		$pr_item1 = new stdClass();
@@ -80,7 +80,7 @@ final class StatsTests extends TestCase {
 
 
 	/**
-	 * @covers vipgoci_runtime_measure
+	 * @covers ::vipgoci_runtime_measure
 	 */
 	function testRuntimeMeasure1() {
 		return $this->assertEquals(
@@ -90,7 +90,7 @@ final class StatsTests extends TestCase {
 	}
 
 	/**
-	 * @covers vipgoci_runtime_measure
+	 * @covers ::vipgoci_runtime_measure
 	 */
 	function testRuntimeMeasure2() {
 		return $this->assertEquals(
@@ -100,7 +100,7 @@ final class StatsTests extends TestCase {
 	}
 
 	/**
-	 * @covers vipgoci_runtime_measure
+	 * @covers ::vipgoci_runtime_measure
 	 */
 	function testRuntimeMeasure3() {
 		$this->assertEquals(
@@ -149,7 +149,7 @@ final class StatsTests extends TestCase {
 
 
 	/**
-	 * @covers vipgoci_counter_report
+	 * @covers ::vipgoci_counter_report
 	 */
 	function testCounterReport1() {
 		$this->assertEquals(
@@ -170,7 +170,7 @@ final class StatsTests extends TestCase {
 	}
 
 	/**
-	 * @covers vipgoci_counter_report
+	 * @covers ::vipgoci_counter_report
 	 */
 	function testCounterReport2() {
 		$this->assertEquals(
@@ -203,7 +203,7 @@ final class StatsTests extends TestCase {
 
 
 	/*
-	 * @covers vipgoci_counter_update_with_issues_found
+	 * @covers ::vipgoci_counter_update_with_issues_found
 	 */
 	function testCounterUpdateWithIssuesFound1() {
 		$results = array(
