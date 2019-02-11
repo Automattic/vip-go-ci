@@ -2040,7 +2040,10 @@ function vipgoci_github_pr_review_submit(
 
 					// Then the message it self
 					htmlentities(
-						$commit_issue['issue']['message']
+						rtrim(
+							$commit_issue['issue']['message'],
+							'.'
+						)
 					)
 
 
@@ -2048,7 +2051,7 @@ function vipgoci_github_pr_review_submit(
 					htmlentities(
 						$commit_issue['issue']['source']
 					)
-					. '*)',
+					. '*).',
 
 				'position'	=> $commit_issue['file_line'],
 				'path'		=> $commit_issue['file_name']

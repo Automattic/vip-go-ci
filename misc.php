@@ -629,14 +629,43 @@ function vipgoci_github_comment_match(
 		);
 
 		/*
-		 * Transform strings to lowercase.
+		 * The comment might include PHPCS source
+		 * of the error at the end (e.g.
+		 * "... (*WordPress.WP.AlternativeFunctions.json_encode_json_encode*)."
+		 * -- remove the source, the brackets and the ending dot.
+		 */
+		$comment_made_body = preg_replace(
+			'/ \([_\.a-zA-Z0-9]*\)\.$/',
+        		'',
+			$comment_made_body
+		); 
+
+		/*
+		 * Transform string to lowercase,
+		 * remove ending '.' just in case if
+		 * not removed earlier.
 		 */
 		$comment_made_body = strtolower(
 			$comment_made_body
 		);
 
+		$comment_made_body = rtrim(
+			$comment_made_body,
+			'.'
+		);
+
+		/*
+		 * Transform the string to lowercase,
+		 * and remove potential '.' at the end
+		 * of it.
+		 */
 		$file_issue_comment = strtolower(
 			$file_issue_comment
+		);
+
+		$file_issue_comment = rtrim(
+			$file_issue_comment,
+			'.'
 		);
 
 		/*
