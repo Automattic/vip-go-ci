@@ -8,7 +8,7 @@ require_once( __DIR__ . '/../misc.php' );
 
 final class MiscCacheTest extends TestCase {
 	/**
-	 * @covers vipgoci_cache
+	 * @covers ::vipgoci_cache
 	 */
 	public function testCache1() {
 		$cache_id1 =
