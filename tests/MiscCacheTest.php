@@ -8,33 +8,61 @@ require_once( __DIR__ . '/../misc.php' );
 
 final class MiscTests extends TestCase {
 	public function testCache1() {
-		$cache_id =
+		$cache_id1 =
 			__CLASS__ .
 			'_' . 
 			__FUNCTION__ .
-			'_mytest';
+			'_mytest1';
 
-		$r = openssl_random_pseudo_bytes(
+		$cache_id2 =
+			__CLASS__ .
+			'_' . 
+			__FUNCTION__ .
+			'_mytest2';
+
+		$r1 = openssl_random_pseudo_bytes(
 			100
 		);
 
-		vipgoci_cache(
-			$cache_id,
-			$r
-		);
+		$r2 = $r1 . $r1;
 
 		vipgoci_cache(
-			$cache_id . '_nonrelated',
-			$r . $r
+			$cache_id1,
+			$r1
 		);
 
-		$r_retrieved = vipgoci_cache(
-			$cache_id
+		vipgoci_cache(
+			$cache_id2,
+			$r2
 		);
 
-		return $this->assertEquals(
-			$r,
-			$r_retrieved
+		$r1_retrieved = vipgoci_cache(
+			$cache_id1
+		);
+
+		$r2_retrieved = vipgoci_cache(
+			$cache_id2
+		);
+
+		$this->assertEquals(
+			$r1,
+			$r1_retrieved
+		);
+
+		$this->assertEquals(
+			$r2,
+			$r2_retrieved
+		);
+
+
+		$this->assertNotEquals(
+			$r1,
+			$r2
+		);
+
+		$this->assertNotEquals(
+			$r1_retrieved,
+			$r2_retrieved
 		);
 	}
 }
