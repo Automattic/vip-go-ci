@@ -1,12 +1,8 @@
 <?php
-declare(strict_types=1);
+
+require_once( __DIR__ . '/IncludesForTests.php' );
 
 use PHPUnit\Framework\TestCase;
-
-require_once( __DIR__ . '/../defines.php' );
-require_once( __DIR__ . '/../misc.php' );
-require_once( __DIR__ . '/../statistics.php' );
-
 
 final class MiscTempTest extends TestCase {
 	/**
