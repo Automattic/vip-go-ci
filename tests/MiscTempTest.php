@@ -10,7 +10,7 @@ require_once( __DIR__ . '/../statistics.php' );
 
 final class MiscTempTest extends TestCase {
 	/**
-	 * @covers ::vipgoci_file_extension
+	 * @covers ::vipgoci_save_temp_file
 	 */
 	public function testTempFile1() {
 		$file_name_prefix = 'myfilename1';
@@ -52,7 +52,7 @@ final class MiscTempTest extends TestCase {
 	}
 
 	/**
-	 * @covers ::vipgoci_file_extension
+	 * @covers ::vipgoci_save_temp_file
 	 */
 	public function testTempFile2() {
 		$file_name_prefix = 'myfilename2';

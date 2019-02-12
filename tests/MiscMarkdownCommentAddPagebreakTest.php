@@ -8,7 +8,7 @@ require_once( __DIR__ . '/../misc.php' );
 
 final class MiscMarkdownCommentAddPagebreakTest extends TestCase {
 	/**
-	 * @covers ::vipgoci_file_extension
+	 * @covers ::vipgoci_markdown_comment_add_pagebreak
 	 */
 	public function testPageBreak1() {
 		$mycomment = 'Here is my text. ' . "\n\r";
