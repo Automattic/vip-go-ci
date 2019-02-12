@@ -1558,8 +1558,17 @@ function vipgoci_run() {
 }
 
 /*
- * 'main()' called
+ * Call main() when not running a
+ * unit-test.
  */
-$ret = vipgoci_run();
+if (
+	( ! defined( 'VIPGOCI_UNIT_TESTING' ) ) ||
+	( false === VIPGOCI_UNIT_TESTING )
+) {
+	/*
+	 * 'main()' called
+	 */
+	$ret = vipgoci_run();
 
-exit( $ret );
+	exit( $ret );
+}
