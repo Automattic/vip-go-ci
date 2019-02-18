@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
 
 final class MiscBlameFilterCommentsTest extends TestCase {
 	/**
-	 * @covers ::
+	 * @covers ::vipgoci_blame_filter_commits
 	 */
 	public function testBlameFilterComments1() {
 		$blame_log = json_decode(
