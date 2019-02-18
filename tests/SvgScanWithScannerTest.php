@@ -9,6 +9,7 @@ final class SvgScanWithScannerTest extends TestCase {
 
 	protected function setUp() {
 		$this->svg_scanner_path = vipgoci_unittests_get_config_value(
+			'unittests',
 			'svg-scanner-path'
 		);
 
