@@ -4,7 +4,7 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 
 use PHPUnit\Framework\TestCase;
 
-final class StatsTests extends TestCase {
+final class StatsRunTimeMeasureTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_runtime_measure
 	 */
