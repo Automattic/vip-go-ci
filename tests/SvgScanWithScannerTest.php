@@ -5,12 +5,34 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 use PHPUnit\Framework\TestCase;
 
 final class SvgScanWithScannerTest extends TestCase {
-	var $svg_scanner_path = '/home/phpunit/vip-go-ci-tools/vip-go-svg-sanitizer/svg-scanner.php';
+	var $svg_scanner_path = null;
+
+	protected function setUp() {
+		$this->svg_scanner_path = vipgoci_unittests_get_config_value(
+			'svg-scanner-path'
+		);
+
+		if ( ! file_exists( $this->svg_scanner_path ) ) {
+			$this->svg_scanner_path = null;
+		}
+	}
+
+	protected function tearDown() {
+		$this->svg_scanner_path = null;
+	}
 
 	/**
 	 * @covers ::vipgoci_svg_do_scan_with_scanner
 	 */
 	public function testScanner1() {
+		if ( empty( $this->svg_scanner_path ) ) {
+			$this->markTestSkipped(
+				'Must set up SVG scanner.'
+			);
+
+			return;
+		}
+
 		$temp_file_name = tempnam(
 			sys_get_temp_dir(),
 			'svg-scan-with-scanner-test1.svg'
@@ -65,6 +87,14 @@ final class SvgScanWithScannerTest extends TestCase {
 	 * @covers ::vipgoci_svg_do_scan_with_scanner
 	 */
 	public function testScanner2() {
+		if ( empty( $this->svg_scanner_path ) ) {
+			$this->markTestSkipped(
+				'Must set up SVG scanner.'
+			);
+
+			return;
+		}
+
 		$temp_file_name = tempnam(
 			sys_get_temp_dir(),
 			'svg-scan-with-scanner-test2.svg'
