@@ -7,6 +7,7 @@ if ( ! defined( 'VIPGOCI_UNIT_TESTING' ) ) {
 }
 
 function vipgoci_unittests_get_config_value(
+	$section,
 	$key
 ) {
 	$ini_array = parse_ini_file(
@@ -20,11 +21,11 @@ function vipgoci_unittests_get_config_value(
 
 	if ( isset(
 		$ini_array
-			['unittests']
+			[ $section ]
 			[ $key ]
 	) ) {
 		return $ini_array
-			['unittests']
+			[ $section ]
 			[ $key ];
 	}
 
