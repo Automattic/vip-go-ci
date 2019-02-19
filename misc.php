@@ -1427,6 +1427,114 @@ function vipgoci_results_filter_ignorable(
 }
 
 /*
+ * Filter out any issues in the code that were not
+ * touched up on by the changed lines -- i.e., any issues
+ * that existed prior to the change.
+ */
+function vipgoci_issues_filter_irrellevant(
+	$file_name,
+	$file_issues_arr,
+	$file_blame_log,
+	$pr_item_commits,
+	$file_relative_lines
+) {
+	/*
+	 * Filter out any issues
+	 * that are due to commits outside
+	 * of the Pull-Request
+	 */
+
+	$file_blame_log_filtered =
+		vipgoci_blame_filter_commits(
+			$file_blame_log,
+			$pr_item_commits
+		);
+
+
+	$file_issues_ret = array();
+
+	/*
+	 * Loop through all the issues affecting
+	 * this particular file
+	 */
+	foreach (
+		$file_issues_arr[ $file_name ] as
+			$file_issue_key =>
+			$file_issue_val
+	) {
+		$keep_issue = false;
+
+		/*
+		 * Filter out issues outside of the blame log
+		 */
+
+		foreach ( $file_blame_log_filtered as $blame_log_item ) {
+			if (
+				$blame_log_item['line_no'] ===
+					$file_issue_val['line']
+			) {
+				$keep_issue = true;
+			}
+		}
+
+		if ( false === $keep_issue ) {
+			continue;
+		}
+
+		unset( $keep_issue );
+
+		/*
+		 * Filter out any issues that are outside
+		 * of the current patch
+		 */
+
+		if ( ! isset(
+			$file_relative_lines[ $file_issue_val['line'] ]
+		) ) {
+			continue;
+		}
+
+		// Passed all tests, keep this issue
+		$file_issues_ret[] = $file_issue_val;
+	}
+
+	return $file_issues_ret;
+}
+
+/*
+ * In case of some issues being reported in duplicate
+ * by PHPCS, remove those. Only issues reported
+ * twice in the same file on the same line are considered
+ * a duplicate.
+ */
+function vipgoci_issues_filter_duplicate( $file_issues_arr ) {
+	$issues_hashes = array();
+	$file_issues_arr_new = array();
+
+	foreach(
+		$file_issues_arr as
+			$issue_item_key => $issue_item_value
+	) {
+		$issue_item_hash = md5(
+			$issue_item_value['message']
+		)
+		. ':' .
+		$issue_item_value['line'];
+
+		if ( in_array( $issue_item_hash, $issues_hashes, true ) ) {
+			continue;
+		}
+
+		$issues_hashes[] = $issue_item_hash;
+
+		$file_issues_arr_new[] = $issue_item_value;
+	}
+
+	return $file_issues_arr_new;
+}
+
+
+/*
  * Add pagebreak to a Markdown-style comment
  * string -- but only if a pagebreak is not
  * already the latest addition to the comment.
