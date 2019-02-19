@@ -6,11 +6,11 @@ use PHPUnit\Framework\TestCase;
 
 final class MiscPatchChangedLinesTest extends TestCase {
 	var $github_config = array(
-		'repo_owner'	=> null,
-		'repo_name'	=> null,
-		'github_token'	=> null,
-		'pr_base_sha'	=> null,
-		'commit_id'	=> null,
+		'repo-owner'	=> null,
+		'repo-name'	=> null,
+		'github-token'	=> null,
+		'pr-base-sha'	=> null,
+		'commit-id'	=> null,
 	);
 
 	protected function setUp() {
@@ -23,7 +23,7 @@ final class MiscPatchChangedLinesTest extends TestCase {
 					$config_key
 				);
 
-			if ( $config_key === 'github_token' ) {
+			if ( $config_key === 'github-token' ) {
 				continue;
 			}
 
@@ -47,19 +47,19 @@ final class MiscPatchChangedLinesTest extends TestCase {
 		}
 
 		if ( empty(
-			$this->github_config['github_token']
+			$this->github_config['github-token']
 		) ) {
-			$this->github_config['github_token'] = null;
+			$this->github_config['github-token'] = null;
 		}
 
 		ob_start();
 
 		$patch_arr = vipgoci_patch_changed_lines(
-			$this->github_config['repo_owner'],
-			$this->github_config['repo_name'],
-			$this->github_config['github_token'],
-			$this->github_config['pr_base_sha'],
-			$this->github_config['commit_id'],
+			$this->github_config['repo-owner'],
+			$this->github_config['repo-name'],
+			$this->github_config['github-token'],
+			$this->github_config['pr-base-sha'],
+			$this->github_config['commit-id'],
 			'ap-hashes-api.php'
 		);
 

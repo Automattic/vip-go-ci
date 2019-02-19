@@ -6,11 +6,11 @@ use PHPUnit\Framework\TestCase;
 
 final class PhpcsScanDoScanTest extends TestCase {
 	var $phpcs_config = array(
-		'phpcs_path'		=> null,
-		'phpcs_standard'	=> null,
-		'phpcs_sniffs_exclude'	=> null,
-		'phpcs_severity'	=> null,
-		'phpcs_runtime_set'	=> null,
+		'phpcs-path'		=> null,
+		'phpcs-standard'	=> null,
+		'phpcs-sniffs-exclude'	=> null,
+		'phpcs-severity'	=> null,
+		'phpcs-runtime-set'	=> null,
 	);
 
 	protected function setUp() {
@@ -29,9 +29,9 @@ final class PhpcsScanDoScanTest extends TestCase {
 	 */
 	public function testDoScanTest1() {
 		if (
-			( empty( $this->phpcs_config['phpcs_path'] ) ) ||
-			( empty( $this->phpcs_config['phpcs_standard'] ) ) ||
-			( empty( $this->phpcs_config['phpcs_severity'] ) )
+			( empty( $this->phpcs_config['phpcs-path'] ) ) ||
+			( empty( $this->phpcs_config['phpcs-standard'] ) ) ||
+			( empty( $this->phpcs_config['phpcs-severity'] ) )
 		) {
 			$this->markTestSkipped(
 				'Must configure PHPCS first'
@@ -57,11 +57,11 @@ final class PhpcsScanDoScanTest extends TestCase {
 
 		$phpcs_res = vipgoci_phpcs_do_scan(
 			$temp_file_path,
-			$this->phpcs_config['phpcs_path'],
-			$this->phpcs_config['phpcs_standard'],
-			$this->phpcs_config['phpcs_sniffs_exclude'],
-			$this->phpcs_config['phpcs_severity'],
-			$this->phpcs_config['phpcs_runtime_set']
+			$this->phpcs_config['phpcs-path'],
+			$this->phpcs_config['phpcs-standard'],
+			$this->phpcs_config['phpcs-sniffs-exclude'],
+			$this->phpcs_config['phpcs-severity'],
+			$this->phpcs_config['phpcs-runtime-set']
 		);
 
 		unlink( $temp_file_path );
