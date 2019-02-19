@@ -32,6 +32,22 @@ function vipgoci_unittests_get_config_value(
 	return null;
 }
 
+function vipgoci_unittests_get_config_values( $section, &$config_arr ) {
+	foreach (
+		array_keys( $config_arr ) as $config_key
+	) {
+		$config_arr[ $config_key ] =
+			vipgoci_unittests_get_config_value(
+				$section,
+				$config_key
+			);
+
+		if ( empty( $config_arr[ $config_key ] ) ) {
+			$config_arr[ $config_key ] = null;
+		}
+	}
+}
+
 require_once( __DIR__ . '/../vip-go-ci.php' );
 
 
