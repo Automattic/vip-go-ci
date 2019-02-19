@@ -61,6 +61,5 @@ final class ApFileTypesTest extends TestCase {
 				'auto-approvable-3.jpg' => 'autoapprove-filetypes',
 			)
 		);
-
 	}
 }
