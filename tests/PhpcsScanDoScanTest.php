@@ -25,7 +25,7 @@ final class PhpcsScanDoScanTest extends TestCase {
 	}
 
 	/**
-	 * @covers ::
+	 * @covers ::vipgoci_phpcs_do_scan
 	 */
 	public function testDoScanTest1() {
 		if (
