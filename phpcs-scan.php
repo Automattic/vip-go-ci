@@ -17,8 +17,6 @@ function vipgoci_phpcs_do_scan(
 	 * Run PHPCS from the shell, making sure we escape everything.
 	 *
 	 * Feed PHPCS the temporary file specified by our caller.
-	 *
-	 * Make sure to use wide enough output, so we can catch all of it.
 	 */
 	$cmd = sprintf(
 		'%s %s --standard=%s --severity=%s --report=%s',
