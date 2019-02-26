@@ -59,6 +59,12 @@ final class GitRepoRepoGetHeadTest extends TestCase {
 			$this->options['local-git-repo']
 		);
 
+		$ret = str_replace(
+			"'",
+			"",
+			$ret
+		);
+
 		ob_end_clean();
 
 		$this->assertEquals(
