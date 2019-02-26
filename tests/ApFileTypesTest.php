@@ -5,25 +5,41 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 use PHPUnit\Framework\TestCase;
 
 final class ApFileTypesTest extends TestCase {
-	var $options = array(
-		'repo-owner'		=> null,
-		'repo-name'		=> null,
-		'github-token'		=> null,
-		'commit'		=> null,
-		'autoapprove-filetypes'	=> null,
+	var $options_git = array(
+		'repo-owner'			=> null,
+		'repo-name'			=> null,
+		'github-token'			=> null,
+	);
+
+	var $options_auto_approvals = array(
+		'commit-test-file-types-1'	=> null,	
+		'autoapprove-filetypes'		=> null,
 	);
 
 	protected function setUp() {
 		vipgoci_unittests_get_config_values(
+			'git',
+			$this->options_git
+		);
+
+		vipgoci_unittests_get_config_values(
 			'auto-approvals',
-			$this->options
+			$this->options_auto_approvals
+		);
+
+		$this->options = array_merge(
+			$this->options_git,
+			$this->options_auto_approvals
 		);
 
 		$this->options['token'] =
 			$this->options['github-token'];
 
 		unset( $this->options['github-token'] );
-		
+	
+		$this->options['commit'] =
+			$this->options['commit-test-file-types-1'];
+	
 		$this->options['autoapprove'] = true;
 		$this->options['autoapprove-filetypes'] =
 			explode(
@@ -36,6 +52,8 @@ final class ApFileTypesTest extends TestCase {
 
 	protected function tearDown() {
 		$this->options = null;
+		$this->options_git = null;
+		$this->options_auto_approval = null;
 	}
 
 	/**
