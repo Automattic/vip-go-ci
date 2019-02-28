@@ -38,15 +38,29 @@ final class GitRepoRepoOkTest extends TestCase {
 	 * @covers ::vipgoci_gitrepo_ok
 	 */
 	public function testRepoOk1() {
+		foreach ( $this->options as $option_key => $option_value ) {
+			if ( 'github-token' === $option_key ) {
+				continue;
+			}
+
+			if ( null === $option_value ) {
+				$this->markTestSkipped(
+					'Skipping test, not configured correctly'
+				);
+
+				return;
+			}
+		}
+
 		$this->options['commit'] = 
 			$this->options['commit-test-repo-ok-1'];
+
+		ob_start();
 
 		$this->options['local-git-repo'] =
 			vipgoci_unittests_setup_git_repo(
 				$this->options
 			);
-
-		ob_start();
 
 		if ( false === $this->options['local-git-repo'] ) {
 			$this->markTestSkipped(

@@ -31,23 +31,38 @@ final class GitRepoRepoBlameForFileTest extends TestCase {
 		$this->options = array_merge(
 			$this->options_git,
 			$this->options_git_repo_tests
-		);	
+		);
 	}
 
 	/**
-	 * @covers ::vipgoci_gitrepo_fetch_committed_file
+	 * @covers ::vipgoci_gitrepo_blame_for_file
 	 */
 	public function testRepoFetchTree1() {
+		foreach ( $this->options as $option_key => $option_value ) {
+			if ( 'github-token' === $option_key ) {
+				continue;
+			}
+
+			if ( null === $option_value ) {
+				$this->markTestSkipped(
+					'Skipping test, not configured correctly'
+				);
+
+				return;
+			}
+		}
+
 		$this->options['commit'] =
 			$this->options['commit-test-repo-blame-for-file-1'];
+
+		ob_start();
 
 		$this->options['local-git-repo'] =
 			vipgoci_unittests_setup_git_repo(
 				$this->options
 			);
 
-		ob_start();
-
+	
 		if ( false === $this->options['local-git-repo'] ) {
 			$this->markTestSkipped(
 				'Could not set up git repository: ' .
