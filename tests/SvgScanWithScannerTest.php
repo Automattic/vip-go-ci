@@ -63,13 +63,8 @@ final class SvgScanWithScannerTest extends TestCase {
 			true
 		);
 
-		$temp_file_name_extension = pathinfo(
-			$temp_file_name,
-			PATHINFO_EXTENSION
-		);
-
 		$scanner_results_expected = json_decode(
-			'{"totals":{"errors":4,"warnings":0,"fixable":0},"files":{"\/tmp\/svg-scan-with-scanner-test1.' . $temp_file_name_extension . '":{"errors":4,"messages":[{"message":"Suspicious attribute \'href\'","line":8},{"message":"Suspicious attribute \'href\'","line":7},{"message":"Suspicious attribute \'href\'","line":3},{"message":"Suspicious attribute \'href\'","line":2}]}}}',
+			'{"totals":{"errors":4,"warnings":0,"fixable":0},"files":{"' . addcslashes( $temp_file_name, '/' ) . '":{"errors":4,"messages":[{"message":"Suspicious attribute \'href\'","line":8},{"message":"Suspicious attribute \'href\'","line":7},{"message":"Suspicious attribute \'href\'","line":3},{"message":"Suspicious attribute \'href\'","line":2}]}}}',
 			true
 		);
 
@@ -124,13 +119,8 @@ final class SvgScanWithScannerTest extends TestCase {
 			true
 		);
 
-		$temp_file_name_extension = pathinfo(
-			$temp_file_name,
-			PATHINFO_EXTENSION
-		);
-
 		$scanner_results_expected = json_decode(
-			'{"totals":{"errors":0,"warnings":0,"fixable":0},"files":{"\/tmp\/svg-scan-with-scanner-test2.' . $temp_file_name_extension . '":{"errors":0,"messages":[]}}}',
+			'{"totals":{"errors":0,"warnings":0,"fixable":0},"files":{"' . addcslashes( $temp_file_name, '/' ) . '":{"errors":0,"messages":[]}}}',
 			true
 		);
 
