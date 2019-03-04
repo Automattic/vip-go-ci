@@ -302,8 +302,10 @@ function vipgoci_exit_status( $results ) {
 }
 
 
-/*
+/**
  * Main invocation function.
+ *
+ * @codeCoverageIgnore
  */
 function vipgoci_run() {
 	global $argv;
