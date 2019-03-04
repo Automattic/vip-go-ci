@@ -52,7 +52,7 @@ final class StatsRunTimeMeasureTest extends TestCase {
 	}
 
 	/**
-	 * @covers vipgoci_runtime_measure
+	 * @covers ::vipgoci_runtime_measure
 	 */
 	function testRuntimeMeasure4() {
 		$this->assertEquals(

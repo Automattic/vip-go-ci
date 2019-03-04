@@ -17,6 +17,9 @@ final class GitHubApiCurlHeadersTest extends TestCase {
 			null
 		);
 
+		/*
+		 * Populate headers
+		 */
 		vipgoci_curl_headers(
 			'',
 			'Content-Type: text/plain'
@@ -32,6 +35,11 @@ final class GitHubApiCurlHeadersTest extends TestCase {
 			'Location: https://www.ruv.is/'
 		);
 
+		vipgoci_curl_headers(
+			'',
+			'Status: 200 OK'
+		);
+
 
 		$actual_results = vipgoci_curl_headers(
 			null,
@@ -44,6 +52,7 @@ final class GitHubApiCurlHeadersTest extends TestCase {
 				'content-type'	=> array( 'text/plain' ),
 				'date'		=> array( 'Mon, 04 Mar 2019 16:43:35 GMT' ),
 				'location'	=> array( 'https://www.ruv.is/' ),
+				'status'	=> array( 200, 'OK' ),
 			)
 		);
 	}
