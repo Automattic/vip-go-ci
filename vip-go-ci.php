@@ -135,7 +135,7 @@ function vipgoci_option_array_handle(
 	$array_separator = ','
 ) {
 	if ( ! isset( $options[ $option_name ] ) ) {
-		$options[ $option_name ] = array();
+		$options[ $option_name ] = $default_value;
 	}
 
 	else {
@@ -200,12 +200,14 @@ function vipgoci_option_file_handle(
 	}
 }
 
-/*
+/**
  * Handle parameter that we expect to be a URL.
  *
  * If the parameter is not empty, and is not really
  * a URL (not starting with http:// or https://),
  * exit with error. If empty, sets a default.
+ *
+ * @codeCoverageIgnore
  */
 
 function vipgoci_option_url_handle(
@@ -254,7 +256,7 @@ function vipgoci_option_url_handle(
 	}
 }
 
-/*
+/**
  * Determine exit status.
  *
  * If any 'error'-type issues were submitted to
