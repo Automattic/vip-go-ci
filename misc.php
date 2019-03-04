@@ -56,9 +56,11 @@ function vipgoci_log(
 	}
 }
 
-/*
+/**
  * Exit program, using vipgoci_log() to print a
  * message before doing so.
+ *
+ * @codeCoverageIgnore
  */
 
 function vipgoci_sysexit(

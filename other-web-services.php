@@ -22,9 +22,11 @@ function vipgoci_irc_api_alert_queue(
 	$msg_queue[] = $message;
 }
 
-/*
+/**
  * Empty IRC message queue and send off
  * to the IRC API.
+ *
+ * @codeCoverageIgnore
  */
 function vipgoci_irc_api_alerts_send(
 	$irc_api_url,
@@ -122,10 +124,12 @@ function vipgoci_irc_api_alerts_send(
 	}
 }
 
-/*
+/**
  * Send statistics to pixel API so
  * we can keep track of actions we
  * take during runtime.
+ *
+ * @codeCoverageIgnore
  */
 function vipgoci_send_stats_to_pixel_api(
 	$pixel_api_url,
