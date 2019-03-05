@@ -137,6 +137,8 @@ function vipgoci_github_rate_limit_usage(
  *
  * See here for background:
  * https://developer.github.com/v3/guides/best-practices-for-integrators/#dealing-with-abuse-rate-limits
+ *
+ * @codeCoverageIgnore
  */
 
 function vipgoci_github_wait() {
@@ -245,7 +247,6 @@ function vipgoci_oauth1_signature_get_hmac_sha1(
 		$base_string_tmp
 	);
 
-
 	/*
 	 * Now calculate hash, using the
 	 * 'base string' as input, and
@@ -351,7 +352,7 @@ function vipgoci_oauth1_headers_get(
 }
 
 
-/*
+/**
  * Send a POST/DELETE request to GitHub -- attempt
  * to retry if errors were encountered.
  *
@@ -578,7 +579,7 @@ function vipgoci_github_post_url(
 	return $ret_val;
 }
 
-/*
+/**
  * Make a GET request to GitHub, for the URL
  * provided, using the access-token specified.
  *
