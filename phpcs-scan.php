@@ -151,9 +151,11 @@ function vipgoci_phpcs_scan_single_file(
 }
 
 
-/*
+/**
  * Dump output of scan-analysis to a file,
  * if possible.
+ *
+ * @codeCoverageIgnore
  */
 
 function vipgoci_phpcs_scan_output_dump( $output_file, $data ) {
