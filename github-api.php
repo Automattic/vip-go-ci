@@ -74,9 +74,11 @@ function vipgoci_curl_headers( $ch, $header ) {
 }
 
 
-/*
+/**
  * Detect if we exceeded the GitHub rate-limits,
  * and if so, exit with error.
+ *
+ * @codeCoverageIgnore
  */
 
 function vipgoci_github_rate_limits_check(
@@ -112,6 +114,8 @@ function vipgoci_github_rate_limits_check(
  *
  * The results are not cached, as we want fresh data
  * every time.
+ *
+ * @codeCoverageIgnore
  */
 
 function vipgoci_github_rate_limit_usage(
@@ -358,6 +362,8 @@ function vipgoci_oauth1_headers_get(
  *
  * Note that the '$http_delete' parameter will determine
  * if a POST or DELETE request will be sent.
+ *
+ * @codeCoverageIgnore
  */
 
 function vipgoci_github_post_url(
@@ -730,8 +736,10 @@ function vipgoci_github_fetch_url(
 	return $resp_data;
 }
 
-/*
+/**
  * Submit PUT request to the GitHub API.
+ *
+ * @codeCoverageIgnore
  */
 function vipgoci_github_put_url(
 	$github_url,
@@ -2945,9 +2953,11 @@ function vipgoci_github_diffs_fetch(
 }
 
 
-/*
+/**
  * Get information from GitHub on the user
  * authenticated.
+ *
+ * @codeCoverageIgnore
  */
 function vipgoci_github_authenticated_user_get( $github_token ) {
 	$cached_id = array(
