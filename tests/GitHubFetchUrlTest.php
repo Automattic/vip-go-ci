@@ -15,8 +15,8 @@ final class GitHubFetchUrlTest extends TestCase {
 		);
 
 		$ret = json_decode(
-			$ret
-			true,
+			$ret,
+			false
 		);
 
 		$this->assertTrue(

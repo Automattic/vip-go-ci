@@ -86,12 +86,14 @@ final class StatsStatsPerFileTest extends TestCase {
 			VIPGOCI_COUNTERS_DUMP
 		);
 
-		$this->assertEquals(
-			$stats,
-			array(
-				'github_pr_files_myspecifictest'	=> 1,
-				'github_pr_lines_myspecifictest'	=> 2,
-			)
+		$this->assertTrue(
+			( isset( $stats['github_pr_files_myspecifictest'] ) ) &&
+			( $stats['github_pr_files_myspecifictest'] == 1 )
+		);
+
+		$this->assertTrue(
+			( isset( $stats['github_pr_lines_myspecifictest'] ) ) &&
+			( $stats['github_pr_lines_myspecifictest'] == 2 )
 		);
 	}
 }
