@@ -71,11 +71,35 @@ final class ApHashesApiFileApprovedTest extends TestCase {
 		$this->options_git = null;
 	}
 
+	protected function validOptionsCheck() {
+		foreach( array_keys(
+			$this->options
+		) as $option_key ) {
+			if ( 'github-token' === $option_key ) {
+				continue;
+			}
+
+			if ( 'token' === $option_key ) {
+				continue;
+			}
+
+			if ( null === $this->options[ $option_key ] ) {
+				$this->markTestskipped(
+					'Missing option: ' . $option_key . ' -- cannot continue'
+				);
+
+				continue;
+			}
+		}
+	}
+
 	/**
 	 * @covers ::vipgoci_ap_hashes_api_file_approved
 	 */
 	public function testApHashesApiFileApproved1() {
 		$auto_approved_files_arr = array();
+
+		$this->validOptionsCheck();
 
 		ob_start();
 
@@ -106,6 +130,8 @@ final class ApHashesApiFileApprovedTest extends TestCase {
 	public function testApHashesApiFileApproved2() {
 		$auto_approved_files_arr = array();
 
+		$this->validOptionsCheck();
+
 		ob_start();
 
 		if ( false === $this->options['local-git-repo'] ) {
@@ -134,6 +160,8 @@ final class ApHashesApiFileApprovedTest extends TestCase {
 	 */
 	public function testApHashesApiFileApproved3() {
 		$auto_approved_files_arr = array();
+
+		$this->validOptionsCheck();
 
 		ob_start();
 
