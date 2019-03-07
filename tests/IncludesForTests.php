@@ -8,12 +8,23 @@ if ( ! defined( 'VIPGOCI_UNIT_TESTING' ) ) {
 
 function vipgoci_unittests_get_config_value(
 	$section,
-	$key
+	$key,
+	$secret_file = false
 ) {
-	$ini_array = parse_ini_file(
-		dirname( __FILE__ ) . '/../unittests.ini',
-		true
-	);
+	if ( false === $secret_file ) {
+		$ini_array = parse_ini_file(
+			dirname( __FILE__ ) . '/../unittests.ini',
+			true
+		);
+	}
+
+	else {
+		$ini_array = parse_ini_file(
+			dirname( __FILE__ ) . '/../unittests-secrets.ini',
+			true
+		);
+	}
+
 
 	if ( false === $ini_array ) {
 		return null;
