@@ -47,7 +47,7 @@ final class GitHubFetchCommitInfoTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_github_fetch_commit_info
 	 */
-	public function testLintDoScan1() {
+	public function testFetchCommitInfo1() {
 		foreach( array_keys( $this->options ) as $option_key ) {
 			if ( 'github-token' === $option_key ) {
 				continue;
