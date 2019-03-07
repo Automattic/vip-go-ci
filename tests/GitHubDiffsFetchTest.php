@@ -48,7 +48,7 @@ final class GitHubDiffsFetchTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_github_diffs_fetch
 	 */
-	public function testGitHubPrFilesChanged1() {
+	public function testGitHubDiffsFetch1() {
 		foreach( array_keys( $this->options ) as $option_key ) {
 			if ( 'github-token' === $option_key ) {
 				continue;
