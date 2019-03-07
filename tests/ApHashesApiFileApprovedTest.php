@@ -55,6 +55,14 @@ final class ApHashesApiFileApprovedTest extends TestCase {
 					true // Fetch from secrets file
 				);
 		}
+	
+		$this->options['commit'] =
+			$this->options['commit-test-ap-hashes-file-approved-1'];
+
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
 	}
 
 	protected function tearDown() {
@@ -69,16 +77,7 @@ final class ApHashesApiFileApprovedTest extends TestCase {
 	public function testApHashesApiFileApproved1() {
 		$auto_approved_files_arr = array();
 
-		$this->options['commit'] =
-			$this->options['commit-test-ap-hashes-file-approved-1'];
-
-
 		ob_start();
-
-		$this->options['local-git-repo'] =
-			vipgoci_unittests_setup_git_repo(
-				$this->options
-			);
 
 		if ( false === $this->options['local-git-repo'] ) {
 			$this->markTestSkipped(
@@ -99,11 +98,24 @@ final class ApHashesApiFileApprovedTest extends TestCase {
 		$this->assertTrue(
 			$file_status
 		);
+	}
 
-		unset( $file_status );
-
+	/**
+	 * @covers ::vipgoci_ap_hashes_api_file_approved
+	 */
+	public function testApHashesApiFileApproved2() {
+		$auto_approved_files_arr = array();
 
 		ob_start();
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped(
+				'Could not set up git repository: ' .
+				ob_get_flush()
+			);
+
+			return;
+		}
 
 		$file_status = vipgoci_ap_hashes_api_file_approved(
 			$this->options,
@@ -113,6 +125,38 @@ final class ApHashesApiFileApprovedTest extends TestCase {
 		ob_end_clean();
 
 		$this->assertFalse(
+			$file_status
+		);
+	}
+
+	/**
+	 * @covers ::vipgoci_ap_hashes_api_file_approved
+	 */
+	public function testApHashesApiFileApproved3() {
+		$auto_approved_files_arr = array();
+
+		ob_start();
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped(
+				'Could not set up git repository: ' .
+				ob_get_flush()
+			);
+
+			return;
+		}
+
+		// Invalid config
+		$this->options['hashes-api-url'] .= "////";
+
+		$file_status = vipgoci_ap_hashes_api_file_approved(
+			$this->options,
+			'not-approved-1.php'
+		);
+
+		ob_end_clean();
+
+		$this->assertNull(
 			$file_status
 		);
 	}
