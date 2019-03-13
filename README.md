@@ -235,3 +235,30 @@ docker-compose up -d --scale agent=3
 Alternatively, if you do not wish to run TeamCity in a Docker-instance, you can download it and set it up manually.
 
 
+## Unittests
+
+To run the unitests for `vip-go-ci`, you will need to install `phpunit` and any dependencies needed (this would include `xdebug`). Then run the unittests using the following command:
+
+> phpunit tests/ -vv
+
+By using this command, you will run the whole test-suite and get feeback on any errors or warnings. 
+
+Note that by default, some tests will be skipped, as these will require a GitHub token to write to GitHub in order to complete, or access to the hashes-to-hashes database. To enable the testing of these, you need to set up a `unittests-secrets.ini` file in the root of the repository. It should include the following fields:
+
+```
+[auto-approvals-secrets]
+hashes-api-url=
+hashes-oauth-consumer-key=
+hashes-oauth-consumer-secret=
+hashes-oauth-token=
+hashes-oauth-token-secret=
+
+[labels-secrets]
+labels-pr-to-modify=
+
+[git-secrets]
+github-token=
+```
+
+This file is not included, and needs to be configured manually. When that is complete, the tests can be re-run.
+
