@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare( strict_types=1 );
 
 if ( ! defined( 'VIPGOCI_UNIT_TESTING' ) ) {
 	define( 'VIPGOCI_UNIT_TESTING', true );
@@ -35,6 +35,14 @@ function vipgoci_unittests_get_config_value(
 			[ $section ]
 			[ $key ]
 	) ) {
+		if ( empty(
+			$ini_array
+				[ $section ]
+				[ $key ]
+		) ) {
+			return null;
+		}
+			
 		return $ini_array
 			[ $section ]
 			[ $key ];
@@ -146,6 +154,50 @@ function vipgoci_unittests_setup_git_repo(
 
 
 	return $temp_dir;
+}
+
+function vipgoci_unittests_options_test(
+	$options,
+	$options_not_required,
+	&$test_instance
+) {
+	$missing_options_str = '';
+
+	$options_keys = array_keys(
+		$options
+	);
+
+	foreach(
+		$options_keys as $option_key
+	) {
+		if ( in_array(
+			$option_key,
+			$options_not_required
+		) ) {
+			continue;
+		}
+
+		if (
+			( '' === $options[ $option_key ] ) ||
+			( null === $options[ $option_key ] )
+		) {
+			if ( '' !== $missing_options_str ) {
+				$missing_options_str .= ', ';
+			}
+
+			$missing_options_str .= $option_key;
+		}
+	}
+
+	if ( '' !== $missing_options_str ) {
+		$test_instance->markTestSkipped(
+			'Skipping test, not configured correctly, as some options are missing (' . $missing_options_str . ')'
+		);
+
+		return -1;
+	}
+
+	return 0;
 }
 
 require_once( __DIR__ . '/../vip-go-ci.php' );

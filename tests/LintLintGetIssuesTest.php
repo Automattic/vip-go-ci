@@ -24,11 +24,13 @@ final class LintLintGetIssuesTest extends TestCase {
 	 * @covers ::vipgoci_lint_get_issues
 	 */
 	public function testLintGetIssues1() {
-		if ( null === $this->options_php['php-path'] ) {
-			$this->markTestSkipped(
-				'Skipping test, not configured correctly'
-			);
+		$options_test = vipgoci_unittests_options_test(
+			$this->options_php,
+			array(  ),
+			$this
+		);
 
+		if ( -1 === $options_test ) {
 			return;
 		}
 
@@ -65,11 +67,13 @@ final class LintLintGetIssuesTest extends TestCase {
 	 * @covers ::vipgoci_lint_get_issues
 	 */
 	public function testLintDoScan2() {
-		if ( null === $this->options_php['php-path'] ) {
-			$this->markTestSkipped(
-				'Skipping test, not configured correctly'
-			);
+		$options_test = vipgoci_unittests_options_test(
+			$this->options_php,
+			array(  ),
+			$this
+		);
 
+		if ( -1 === $options_test ) {
 			return;
 		}
 

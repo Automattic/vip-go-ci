@@ -43,13 +43,13 @@ final class PhpcsScanIssuesFilterIrrellevant extends TestCase {
 			array(
 				array(
 					'message' => 'json_encode() is discouraged. Use wp_json_encode() instead.',
-            				'source' => 'WordPress.WP.AlternativeFunctions.json_encode_json_encode',
-            				'severity' => 5,
-            				'fixable' => false,
-            				'type' => 'WARNING',
-            				'line' => 7,
-            				'column' => 6,
-            				'level' => 'WARNING',
+					'source' => 'WordPress.WP.AlternativeFunctions.json_encode_json_encode',
+					'severity' => 5,
+					'fixable' => false,
+					'type' => 'WARNING',
+					'line' => 7,
+					'column' => 6,
+					'level' => 'WARNING',
 				)
 			)
 		);

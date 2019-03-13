@@ -17,7 +17,6 @@ final class PhpcsScanScanCommitTest extends TestCase {
 	var $options_git_repo = array(
 		'repo-owner'				=> null,
 		'repo-name'				=> null,
-		'github-token'				=> null,
 		'git-path'				=> null,
 		'github-repo-url'			=> null,
 	);
@@ -37,6 +36,13 @@ final class PhpcsScanScanCommitTest extends TestCase {
 			$this->options_git_repo,
 			$this->options_phpcs
 		);
+
+		$this->options[ 'github-token' ] =
+			vipgoci_unittests_get_config_value(
+				'git-secrets',
+				'github-token',
+				true // Fetch from secrets file
+			);
 
 		$this->options['token'] =
 			$this->options['github-token'];
@@ -58,16 +64,13 @@ final class PhpcsScanScanCommitTest extends TestCase {
 	 * @covers ::vipgoci_phpcs_scan_commit
 	 */
 	public function testDoScanTest1() {
-		if (
-			( empty( $this->options['phpcs-path'] ) ) ||
-			( empty( $this->options['phpcs-standard'] ) ) ||
-			( empty( $this->options['phpcs-severity'] ) ) ||
-			( empty( $this->options['commit-test-phpcs-scan-commit-1'] ) )
-		) {
-			$this->markTestSkipped(
-				'Must optionsure PHPCS first'
-			);
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( 'phpcs-runtime-set', 'phpcs-sniffs-exclude', 'github-token', 'token' ),
+			$this
+		);
 
+		if ( -1 === $options_test ) {
 			return;
 		}
 
@@ -89,11 +92,11 @@ final class PhpcsScanScanCommitTest extends TestCase {
 
 
 		foreach( $prs_implicated as $pr_item ) {
-		        $issues_stats[
+			$issues_stats[
 				$pr_item->number
-		        ][
+			][
 				'error'
-		        ] = 0;
+			] = 0;
 		}
 
 
@@ -107,7 +110,7 @@ final class PhpcsScanScanCommitTest extends TestCase {
 				'Could not set up git repository: ' .
 					ob_get_flush()
 			);
-		        
+				
 			return;
 		}
 		

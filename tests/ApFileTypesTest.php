@@ -8,7 +8,6 @@ final class ApFileTypesTest extends TestCase {
 	var $options_git = array(
 		'repo-owner'			=> null,
 		'repo-name'			=> null,
-		'github-token'			=> null,
 	);
 
 	var $options_auto_approvals = array(
@@ -31,6 +30,13 @@ final class ApFileTypesTest extends TestCase {
 			$this->options_git,
 			$this->options_auto_approvals
 		);
+
+		$this->options[ 'github-token' ] =
+			vipgoci_unittests_get_config_value(
+				'git',
+				'github-token',
+				true // Fetch from secrets file
+			);
 
 		$this->options['token'] =
 			$this->options['github-token'];
@@ -60,6 +66,16 @@ final class ApFileTypesTest extends TestCase {
 	 * @covers ::vipgoci_ap_file_types
 	 */
 	public function testFileTypes1() {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( 'github-token', 'token' ),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
 		$auto_approved_files_arr = array();
 
 		ob_start();

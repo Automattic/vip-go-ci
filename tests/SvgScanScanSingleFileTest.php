@@ -10,7 +10,6 @@ final class SvgScanScanSingleFileTest extends TestCase {
 		'github-repo-url'	=> null,
 		'repo-name'		=> null,
 		'repo-owner'		=> null,
-		'github-token'		=> null,
 	);
 
 	var $options_svg_scan = array(
@@ -34,6 +33,13 @@ final class SvgScanScanSingleFileTest extends TestCase {
 			$this->options_svg_scan
 		);
 
+		$this->options[ 'github-token' ] =
+			vipgoci_unittests_get_config_value(
+				'git-secrets',
+				'github-token',
+				true // Fetch from secrets file
+			);
+
 		$this->options['token'] =
 			$this->options['github-token'];
 
@@ -50,6 +56,16 @@ final class SvgScanScanSingleFileTest extends TestCase {
 	 * @covers ::vipgoci_svg_scan_single_file
 	 */
 	public function testSvgScanSingleFileTest1() {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( 'github-token', 'token' ),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
 		$this->options['commit'] =
 			$this->options['commit-test-svg-scan-single-file-test-1'];
 

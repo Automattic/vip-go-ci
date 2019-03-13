@@ -10,7 +10,6 @@ final class MiscScandirGitRepoTest extends TestCase {
 		'github-repo-url'	=> null,
 		'repo-name'		=> null,
 		'repo-owner'		=> null,
-		'github-token'		=> null,
 	);
 
 	var $git_repo_tests = array(
@@ -34,6 +33,13 @@ final class MiscScandirGitRepoTest extends TestCase {
 			$this->git_repo_tests
 		);
 
+		$this->options[ 'github-token' ] =
+			vipgoci_unittests_get_config_value(
+				'git-secrets',
+				'github-token',
+				true // Fetch from secrets file
+			);
+
 		$this->options['token'] =
 			$this->options['github-token'];
 	}
@@ -48,6 +54,16 @@ final class MiscScandirGitRepoTest extends TestCase {
 	 * @covers ::vipgoci_svg_scan_single_file
 	 */
 	public function testSvgScandirRepoTest1() {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( 'github-token', 'token' ),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
 		$this->options['commit'] =
 			$this->options['commit-test-scandir-repo-test-1'];
 
@@ -78,7 +94,7 @@ final class MiscScandirGitRepoTest extends TestCase {
 			$ret,
 			array(
 				'README.md',
-    				'myfile1.txt',	
+ 				'myfile1.txt',	
 				'myfile2.txt',
 				'myfolder5/myotherfolder6/somefile2.txt',
 				'myfolder5/somefile1.txt'
@@ -90,6 +106,16 @@ final class MiscScandirGitRepoTest extends TestCase {
 	 * @covers ::vipgoci_svg_scan_single_file
 	 */
 	public function testSvgScandirRepoTest2() {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( 'github-token', 'token' ),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
 		$this->options['commit'] =
 			$this->options['commit-test-scandir-repo-test-2'];
 

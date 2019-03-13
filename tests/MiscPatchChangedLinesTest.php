@@ -8,48 +8,44 @@ final class MiscPatchChangedLinesTest extends TestCase {
 	var $github_config = array(
 		'repo-owner'	=> null,
 		'repo-name'	=> null,
-		'github-token'	=> null,
 		'pr-base-sha'	=> null,
 		'commit-id'	=> null,
 	);
 
 	protected function setUp() {
-		foreach (
-			array_keys( $this->github_config ) as $config_key
-		) {
-			$this->github_config[ $config_key ] =
-				vipgoci_unittests_get_config_value(
-					'patch-changed-lines',
-					$config_key
-				);
+		vipgoci_unittests_get_config_values(
+			'patch-changed-lines',
+			$this->github_config
+		);
 
-			if ( $config_key === 'github-token' ) {
-				continue;
-			}
-
-			if ( empty( $this->github_config[ $config_key ] ) ) {
-				$this->github_config = null;
-				break;
-			}
-		}
+		$this->github_config[ 'github-token' ] =
+			vipgoci_unittests_get_config_value(
+				'git-secrets',
+				'github-token',
+				true // Fetch from secrets file
+			);
 	}
 
 	/**
 	 * @covers ::vipgoci_patch_changed_lines
 	 */
 	public function testPatchChangedLines1() {
+		$options_test = vipgoci_unittests_options_test(
+			$this->github_config,
+			array( 'github-token' ),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
 		if ( empty( $this->github_config ) ) {
 			$this->markTestSkipped(
 				'Must set up vipgoci_patch_changed_lines() test'
 			);
 
 			return;
-		}
-
-		if ( empty(
-			$this->github_config['github-token']
-		) ) {
-			$this->github_config['github-token'] = null;
 		}
 
 		ob_start();

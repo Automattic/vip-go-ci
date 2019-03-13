@@ -28,15 +28,13 @@ final class PhpcsScanDoScanTest extends TestCase {
 	 * @covers ::vipgoci_phpcs_do_scan
 	 */
 	public function testDoScanTest1() {
-		if (
-			( empty( $this->phpcs_config['phpcs-path'] ) ) ||
-			( empty( $this->phpcs_config['phpcs-standard'] ) ) ||
-			( empty( $this->phpcs_config['phpcs-severity'] ) )
-		) {
-			$this->markTestSkipped(
-				'Must configure PHPCS first'
-			);
+		$options_test = vipgoci_unittests_options_test(
+			$this->phpcs_config,
+			array( 'phpcs-runtime-set', 'phpcs-sniffs-exclude' ),
+			$this
+		);
 
+		if ( -1 === $options_test ) {
 			return;
 		}
 

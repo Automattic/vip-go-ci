@@ -13,52 +13,39 @@ final class GitHubLabelsTest extends TestCase {
 		'repo-owner'		=> null,
 	);
 
-	var $options_labels_secrets = array(
-		'labels-github-token'	=> null,
-		'labels-pr-to-modify'	=> null,
+	var $options_secrets = array(
 	);
 
-        protected function setUp() {
+	protected function setUp() {
 		vipgoci_unittests_get_config_values(
 			'git',
 			$this->options_git
 		);
 
-		foreach(
-			array_keys(
-				$this->options_labels_secrets
-			) as $option_key
-		) {
-			$this->options_labels_secrets[ $option_key ] =
-				vipgoci_unittests_get_config_value(
-					'labels-secrets',
-					$option_key,
-					true // Fetch from secrets file
-				);
-		}
+		$this->options_secrets[ 'github-token' ] =
+			vipgoci_unittests_get_config_value(
+				'git-secrets',
+				'github-token',
+				true // Fetch from secrets file
+			);
+
+		$this->options_secrets[ 'labels-pr-to-modify' ] =
+			vipgoci_unittests_get_config_value(
+				'labels-secrets',
+				'labels-pr-to-modify',
+				true // Fetch from secrets file
+			);
+
 
 		$this->options = array_merge(
-			$this->options_git,
-			$this->options_labels_secrets
+			$this->options_secrets,
+			$this->options_git
 		);
-
-		foreach( array_keys( $this->options ) as $option_key ) {
-			if ( null === $this->options[ $option_key ] ) {
-				$this->markTestSkipped(
-					'Skipping test, not configured correctly (missing option ' . $option_key . ')'
-				);
-
-				return;
-			}
-		}
-	
-		$this->options['github-token'] =
-		$this->options['labels-github-token'];
 	}
 
 	protected function tearDown() {
 		$this->options_git = null;
-		$this->options_labels_secrets = null;
+		$this->options_secrets = null;
 		$this->options = null;
 	}
 
@@ -66,9 +53,19 @@ final class GitHubLabelsTest extends TestCase {
 	 * @covers ::vipgoci_github_label_add_to_pr
 	 */
 	public function testGitHubAddLabel1() {
-		$labels_before = $this->labels_get();
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( ),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
 
 		ob_start();
+
+		$labels_before = $this->labels_get();
 
 		vipgoci_github_label_add_to_pr(
 			$this->options['repo-owner'],
@@ -98,9 +95,19 @@ final class GitHubLabelsTest extends TestCase {
 	 * @covers ::vipgoci_github_label_remove_from_pr
 	 */
 	public function testGitHubRemoveLabel1() {
-		$labels_before = $this->labels_get();
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( ),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
 
 		ob_start();
+
+		$labels_before = $this->labels_get();
 
 		vipgoci_github_label_remove_from_pr(
 			$this->options['repo-owner'],

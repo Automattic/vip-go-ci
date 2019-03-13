@@ -24,7 +24,7 @@ final class MiscTempTest extends TestCase {
 			false
 		);
 
-        
+		
 		$temp_file_extension = pathinfo(
 			$temp_file_name,
 			PATHINFO_EXTENSION
@@ -66,7 +66,7 @@ final class MiscTempTest extends TestCase {
 			false
 		);
 
-        
+		
 		$temp_file_extension = pathinfo(
 			$temp_file_name,
 			PATHINFO_EXTENSION

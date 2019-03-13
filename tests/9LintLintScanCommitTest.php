@@ -16,7 +16,6 @@ final class LintLintScanCommitTest extends TestCase {
 		'github-repo-url'	=> null,
 		'repo-name'		=> null,
 		'repo-owner'		=> null,
-		'github-token'		=> null,
 	);
 
 	protected function setUp() {
@@ -34,6 +33,13 @@ final class LintLintScanCommitTest extends TestCase {
 			$this->options_lint_scan,
 			$this->options_git
 		);
+
+		$this->options[ 'github-token' ] =
+			vipgoci_unittests_get_config_value(
+				'git',
+				'github-token',
+				true // Fetch from secrets file
+			);
 
 		$this->options['token'] =
 			$this->options['github-token'];
@@ -56,11 +62,13 @@ final class LintLintScanCommitTest extends TestCase {
 	 * @covers ::vipgoci_lint_scan_commit
 	 */
 	public function testLintDoScan1() {
-		if ( null === $this->options_lint_scan['php-path'] ) {
-			$this->markTestSkipped(
-				'Skipping test, not configured correctly'
-			);
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( 'github-token', 'token' ),
+			$this
+		);
 
+		if ( -1 === $options_test ) {
 			return;
 		}
 

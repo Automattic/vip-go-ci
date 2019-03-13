@@ -10,7 +10,6 @@ final class GitHubLabelsFetchTest extends TestCase {
 		'github-repo-url'		=> null,
 		'repo-owner'			=> null,
 		'repo-name'			=> null,
-		'github-token'			=> null,
 	);
 
 	var $options_git_repo_tests = array(
@@ -32,6 +31,13 @@ final class GitHubLabelsFetchTest extends TestCase {
 			$this->options_git,
 			$this->options_git_repo_tests
 		);
+
+		$this->options[ 'github-token' ] =
+			vipgoci_unittests_get_config_value(
+				'git',
+				'github-token',
+				true // Fetch from secrets file
+			);
 	}
 
 	protected function tearDown() {
@@ -44,6 +50,16 @@ final class GitHubLabelsFetchTest extends TestCase {
 	 * @covers ::vipgoci_github_labels_get
 	 */
 	public function testLabelsFetch1() {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( 'github-token' ),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
 		ob_start();
 
 		$labels = vipgoci_github_labels_get(

@@ -10,7 +10,6 @@ final class GitRepoRepoFetchTreeTest extends TestCase {
 		'github-repo-url'		=> null,
 		'repo-owner'			=> null,
 		'repo-name'			=> null,
-		'github-token'			=> null,
 	);
 
 	var $options_git_repo_tests = array(
@@ -33,24 +32,27 @@ final class GitRepoRepoFetchTreeTest extends TestCase {
 			$this->options_git,
 			$this->options_git_repo_tests
 		);
+
+		$this->options[ 'github-token' ] =
+			vipgoci_unittests_get_config_value(
+				'git-secrets',
+				'github-token',
+				true // Fetch from secrets file
+			);
 	}
 
 	/**
 	 * @covers ::vipgoci_gitrepo_fetch_tree
 	 */
 	public function testRepoFetchTree1() {
-		foreach ( $this->options as $option_key => $option_value ) {
-			if ( 'github-token' === $option_key ) {
-				continue;
-			}
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( 'github-token', 'token' ),
+			$this
+		);
 
-			if ( null === $option_value ) {
-				$this->markTestSkipped(
-					'Skipping test, not configured correctly'
-				);
-
-				return;
-			}
+		if ( -1 === $options_test ) {
+			return;
 		}
 
 		$this->options['commit'] =
@@ -97,18 +99,14 @@ final class GitRepoRepoFetchTreeTest extends TestCase {
 	 * @covers ::vipgoci_gitrepo_fetch_tree
 	 */
 	public function testRepoFetchTree2() {
-		foreach ( $this->options as $option_key => $option_value ) {
-			if ( 'github-token' === $option_key ) {
-				continue;
-			}
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( 'github-token', 'token' ),
+			$this
+		);
 
-			if ( null === $option_value ) {
-				$this->markTestSkipped(
-					'Skipping test, not configured correctly'
-				);
-
-				return;
-			}
+		if ( -1 === $options_test ) {
+			return;
 		}
 
 		$this->options['commit'] =

@@ -86,8 +86,8 @@ final class GitHubOauth1HeadersGetTest extends TestCase {
 		);
 
 		$signature_expected = hash_hmac(
-	                'sha1',
-        	        strtoupper( $oauth_method ) . '&' .
+			'sha1',
+			strtoupper( $oauth_method ) . '&' .
 				rawurlencode( $oauth_url ) . '&' .
 				rawurlencode(
 					rawurlencode( 'oauth_consumer_key' ) . '=' . rawurlencode( $oauth_keys[ 'oauth_consumer_key' ] ) . '&' .

@@ -15,7 +15,6 @@ final class GitHubDiffsFetchTest extends TestCase {
 		'github-repo-url'	=> null,
 		'repo-name'		=> null,
 		'repo-owner'		=> null,
-		'github-token'		=> null,
 	);
 
 	protected function setUp() {
@@ -34,6 +33,13 @@ final class GitHubDiffsFetchTest extends TestCase {
 			$this->options_git
 		);
 
+		$this->options[ 'github-token' ] =
+			vipgoci_unittests_get_config_value(
+				'git',
+				'github-token',
+				true // Fetch from secrets file
+			);
+
 		$this->options['skip-folders'] = array();
 
 		$this->options['branches-ignore'] = array();
@@ -49,18 +55,14 @@ final class GitHubDiffsFetchTest extends TestCase {
 	 * @covers ::vipgoci_github_diffs_fetch
 	 */
 	public function testGitHubDiffsFetch1() {
-		foreach( array_keys( $this->options ) as $option_key ) {
-			if ( 'github-token' === $option_key ) {
-				continue;
-			}
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( 'github-token', 'token' ),
+			$this
+		);
 
-			if ( null === $this->options[ $option_key ] ) {
-				$this->markTestSkipped(
-					'Skipping test, not configured correctly, missing option ' . $option_key
-				);
-
-				return;
-			}
+		if ( -1 === $options_test ) {
+			return;
 		}
 
 		ob_start();

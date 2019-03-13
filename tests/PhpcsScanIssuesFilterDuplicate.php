@@ -12,7 +12,7 @@ final class PhpcsScanIssuesFilterDuplicate extends TestCase {
 		$issues_filtered = vipgoci_issues_filter_duplicate(
 			array(
 				array(
-            				'message' => 'json_encode() is discouraged. Use wp_json_encode() instead.',
+					'message' => 'json_encode() is discouraged. Use wp_json_encode() instead.',
 					'source' => 'WordPress.WP.AlternativeFunctions.json_encode_json_encode',
 					'severity' => 5,
 					'fixable' => false,
@@ -23,7 +23,7 @@ final class PhpcsScanIssuesFilterDuplicate extends TestCase {
 				),
 
 				array(
-            				'message' => 'json_encode() is discouraged. Use wp_json_encode() instead.',
+					'message' => 'json_encode() is discouraged. Use wp_json_encode() instead.',
 					'source' => 'WordPress.WP.AlternativeFunctions.json_encode_json_encode',
 					'severity' => 5,
 					'fixable' => false,
@@ -34,7 +34,7 @@ final class PhpcsScanIssuesFilterDuplicate extends TestCase {
 				),
 
 				array(
-            				'message' => 'json_encode() is discouraged. Use wp_json_encode() instead.',
+					'message' => 'json_encode() is discouraged. Use wp_json_encode() instead.',
 					'source' => 'WordPress.WP.AlternativeFunctions.json_encode_json_encode',
 					'severity' => 5,
 					'fixable' => false,
@@ -50,7 +50,7 @@ final class PhpcsScanIssuesFilterDuplicate extends TestCase {
 			$issues_filtered,
 			array(
 				array(
-            				'message' => 'json_encode() is discouraged. Use wp_json_encode() instead.',
+					'message' => 'json_encode() is discouraged. Use wp_json_encode() instead.',
 					'source' => 'WordPress.WP.AlternativeFunctions.json_encode_json_encode',
 					'severity' => 5,
 					'fixable' => false,

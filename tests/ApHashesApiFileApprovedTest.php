@@ -8,7 +8,6 @@ final class ApHashesApiFileApprovedTest extends TestCase {
 	var $options_git = array(
 		'repo-owner'			=> null,
 		'repo-name'			=> null,
-		'github-token'			=> null,
 		'github-repo-url'		=> null,
 		'git-path'			=> null,
 	);
@@ -31,6 +30,13 @@ final class ApHashesApiFileApprovedTest extends TestCase {
 			$this->options_git,
 			$this->options_auto_approvals
 		);
+
+		$this->options[ 'github-token' ] =
+			vipgoci_unittests_get_config_value(
+				'git',
+				'github-token',
+				true // Fetch from secrets file
+			);
 
 		$this->options['token'] =
 			$this->options['github-token'];
@@ -71,35 +77,21 @@ final class ApHashesApiFileApprovedTest extends TestCase {
 		$this->options_git = null;
 	}
 
-	protected function validOptionsCheck() {
-		foreach( array_keys(
-			$this->options
-		) as $option_key ) {
-			if ( 'github-token' === $option_key ) {
-				continue;
-			}
-
-			if ( 'token' === $option_key ) {
-				continue;
-			}
-
-			if ( null === $this->options[ $option_key ] ) {
-				$this->markTestskipped(
-					'Missing option: ' . $option_key . ' -- cannot continue'
-				);
-
-				continue;
-			}
-		}
-	}
-
 	/**
 	 * @covers ::vipgoci_ap_hashes_api_file_approved
 	 */
 	public function testApHashesApiFileApproved1() {
-		$auto_approved_files_arr = array();
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( 'github-token', 'token' ),
+			$this
+		);
 
-		$this->validOptionsCheck();
+		if ( -1 === $options_test ) {
+			return;
+		}
+
+		$auto_approved_files_arr = array();
 
 		ob_start();
 
@@ -128,9 +120,17 @@ final class ApHashesApiFileApprovedTest extends TestCase {
 	 * @covers ::vipgoci_ap_hashes_api_file_approved
 	 */
 	public function testApHashesApiFileApproved2() {
-		$auto_approved_files_arr = array();
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( 'github-token', 'token' ),
+			$this
+		);
 
-		$this->validOptionsCheck();
+		if ( -1 === $options_test ) {
+			return;
+		}
+
+		$auto_approved_files_arr = array();
 
 		ob_start();
 
@@ -159,9 +159,17 @@ final class ApHashesApiFileApprovedTest extends TestCase {
 	 * @covers ::vipgoci_ap_hashes_api_file_approved
 	 */
 	public function testApHashesApiFileApproved3() {
-		$auto_approved_files_arr = array();
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( 'github-token', 'token' ),
+			$this
+		);
 
-		$this->validOptionsCheck();
+		if ( -1 === $options_test ) {
+			return;
+		}
+
+		$auto_approved_files_arr = array();
 
 		ob_start();
 

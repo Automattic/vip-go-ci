@@ -8,7 +8,6 @@ final class ApSvgFilesTest extends TestCase {
 	var $options_git = array(
 		'repo-owner'			=> null,
 		'repo-name'			=> null,
-		'github-token'			=> null,
 		'github-repo-url'		=> null,
 		'git-path'			=> null,
 	);
@@ -44,6 +43,13 @@ final class ApSvgFilesTest extends TestCase {
 			$this->options_auto_approvals
 		);
 
+		$this->options[ 'github-token' ] =
+			vipgoci_unittests_get_config_value(
+				'git',
+				'github-token',
+				true // Fetch from secrets file
+			);
+
 		$this->options['token'] =
 			$this->options['github-token'];
 
@@ -71,6 +77,16 @@ final class ApSvgFilesTest extends TestCase {
 	 * @covers ::vipgoci_ap_svg_files
 	 */
 	public function testApSvgFiles1() {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( 'github-token', 'token' ),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
 		$auto_approved_files_arr = array();
 
 		$this->options['svg-checks'] = true;

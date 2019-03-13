@@ -5,10 +5,10 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 use PHPUnit\Framework\TestCase;
 
 final class MiscFilterFilePathTest extends TestCase {
-        /**
-         * @covers ::vipgoci_filter_file_path
-         */
-        public function testFilterFilePath1() {
+	/**
+	  * @covers ::vipgoci_filter_file_path
+	  */
+	public function testFilterFilePath1() {
 		$file_name = 'folder1/file1.txt';
 
 		$this->assertTrue(
@@ -35,10 +35,10 @@ final class MiscFilterFilePathTest extends TestCase {
 	}
 
 
-        /**
-         * @covers ::vipgoci_filter_file_path
-         */
-        public function testFilterFilePath2() {
+		/**
+		  * @covers ::vipgoci_filter_file_path
+		  */
+	public function testFilterFilePath2() {
 		$file_name = 'folder1/file1.txt';
 
 		$this->assertTrue(
@@ -65,10 +65,10 @@ final class MiscFilterFilePathTest extends TestCase {
 	}
 
 
-        /**
-         * @covers ::vipgoci_filter_file_path
-         */
-        public function testFilterFilePath3() {
+	/**
+	  * @covers ::vipgoci_filter_file_path
+	  */
+	public function testFilterFilePath3() {
 		$file_name = 'folder1/file1.txt';
 
 		$this->assertTrue(
@@ -95,10 +95,10 @@ final class MiscFilterFilePathTest extends TestCase {
 	}
 
 
-        /**
-         * @covers ::vipgoci_filter_file_path
-         */
-        public function testFilterFilePath4() {
+	/**
+	  * @covers ::vipgoci_filter_file_path
+	  */
+	public function testFilterFilePath4() {
 		$file_name = 'folder1/file1.txt';
 
 		$this->assertTrue(

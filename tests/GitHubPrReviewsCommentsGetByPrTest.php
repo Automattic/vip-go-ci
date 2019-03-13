@@ -12,7 +12,6 @@ final class GitHubPrReviewsCommentsGetByPrTest extends TestCase {
 	var $options_git = array(
 		'repo-owner'				=> null,
 		'repo-name'				=> null,
-		'github-token'				=> null,
 	);
 
 	protected function setUp() {
@@ -31,8 +30,15 @@ final class GitHubPrReviewsCommentsGetByPrTest extends TestCase {
 			$this->options_git_repo_tests
 		);
 
+		$this->options[ 'github-token' ] =
+			vipgoci_unittests_get_config_value(
+				'git',
+				'github-token',
+				true // Fetch from secrets file
+			);
+
 		$this->options['token'] =
-		$this->options['github-token'];
+			$this->options['github-token'];
 	}
 
 	protected function tearDown() {
@@ -45,6 +51,16 @@ final class GitHubPrReviewsCommentsGetByPrTest extends TestCase {
 	 * @covers ::vipgoci_github_pr_reviews_comments_get_by_pr
 	 */
 	public function testGitHubPrReviewsCommentsGetByPr1() {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( 'github-token', 'token' ),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
 		ob_start();
 
 		$comments_actual = vipgoci_github_pr_reviews_comments_get_by_pr(
