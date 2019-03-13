@@ -319,7 +319,7 @@ function vipgoci_autoapproval_do_approve(
 			'contains only auto-approvable files' .
 			' -- either pre-approved files or file-types that are ' .
 			'auto-approvable (' .
-			implode( ', ', $options['autoapprove-filetypes'] ) .
+			implode( ', ', array_map( function( $type ) { return '`'.$type.'`'; }, $options['autoapprove-filetypes'] ) ) .
 			').',
 		$options['dry-run']
 	);
