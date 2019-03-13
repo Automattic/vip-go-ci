@@ -317,7 +317,7 @@ function vipgoci_autoapproval_do_approve(
 		'Auto-approved Pull-Request #' .
 			(int) $pr_item->number . ' as it ' .
 			'contains only auto-approvable files' .
-			' -- either pre-approved files or file-types that are ' .
+			' -- either pre-approved files _or_ file-types that are ' .
 			'auto-approvable (' .
 			implode( ', ', array_map( function( $type ) { return '`'.$type.'`'; }, $options['autoapprove-filetypes'] ) ) .
 			').',
