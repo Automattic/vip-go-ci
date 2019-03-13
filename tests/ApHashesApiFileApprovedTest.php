@@ -91,8 +91,6 @@ final class ApHashesApiFileApprovedTest extends TestCase {
 			return;
 		}
 
-		$auto_approved_files_arr = array();
-
 		ob_start();
 
 		if ( false === $this->options['local-git-repo'] ) {
@@ -130,8 +128,6 @@ final class ApHashesApiFileApprovedTest extends TestCase {
 			return;
 		}
 
-		$auto_approved_files_arr = array();
-
 		ob_start();
 
 		if ( false === $this->options['local-git-repo'] ) {
@@ -168,8 +164,6 @@ final class ApHashesApiFileApprovedTest extends TestCase {
 		if ( -1 === $options_test ) {
 			return;
 		}
-
-		$auto_approved_files_arr = array();
 
 		ob_start();
 
