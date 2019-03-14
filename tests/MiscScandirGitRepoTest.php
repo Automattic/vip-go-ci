@@ -51,9 +51,9 @@ final class MiscScandirGitRepoTest extends TestCase {
 	}
 
 	/**
-	 * @covers ::vipgoci_svg_scan_single_file
+	 * @covers ::vipgoci_scandir_git_repo
 	 */
-	public function testSvgScandirRepoTest1() {
+	public function testScandirRepoTest1() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
@@ -103,9 +103,9 @@ final class MiscScandirGitRepoTest extends TestCase {
 	}
 
 	/**
-	 * @covers ::vipgoci_svg_scan_single_file
+	 * @covers ::vipgoci_scandir_git_repo
 	 */
-	public function testSvgScandirRepoTest2() {
+	public function testScandirRepoTest2() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
