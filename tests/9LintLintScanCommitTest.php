@@ -53,6 +53,12 @@ final class LintLintScanCommitTest extends TestCase {
 	}
 
 	protected function tearDown() {
+		if ( false !== $this->options['local-git-repo'] ) {
+			vipgoci_unittests_remove_git_repo(
+				$this->options['local-git-repo']
+			);
+		}
+
 		$this->options_lint_scan = null;
 		$this->options_git = null;
 		$this->options = null;

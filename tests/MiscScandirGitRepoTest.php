@@ -45,6 +45,12 @@ final class MiscScandirGitRepoTest extends TestCase {
 	}
 
 	protected function tearDown() {
+		if ( false !== $this->options['local-git-repo'] ) {
+			vipgoci_unittests_remove_git_repo(
+				$this->options['local-git-repo']
+			);
+		}
+
 		$this->options_git = null;
 		$this->git_repo_tests = null;
 		$this->options = null;

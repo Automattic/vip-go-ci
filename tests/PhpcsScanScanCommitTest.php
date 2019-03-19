@@ -55,6 +55,12 @@ final class PhpcsScanScanCommitTest extends TestCase {
 	}
 
 	protected function tearDown() {
+		if ( false !== $this->options['local-git-repo'] ) {
+			vipgoci_unittests_remove_git_repo(
+				$this->options['local-git-repo']
+			);
+		}
+
 		$this->options_phpcs = null;
 		$this->options_git_repo = null;
 		$this->options = null;

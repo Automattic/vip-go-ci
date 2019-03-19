@@ -41,6 +41,14 @@ final class GitRepoRepoFetchTreeTest extends TestCase {
 			);
 	}
 
+	protected function tearDown() {
+		if ( false !== $this->options['local-git-repo'] ) {
+			vipgoci_unittests_remove_git_repo(
+				$this->options['local-git-repo']
+			);
+		}
+	}
+
 	/**
 	 * @covers ::vipgoci_gitrepo_fetch_tree
 	 */

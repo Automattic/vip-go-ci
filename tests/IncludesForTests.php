@@ -156,6 +156,74 @@ function vipgoci_unittests_setup_git_repo(
 	return $temp_dir;
 }
 
+/*
+ * Remove temporary git-repository folder
+ * created by vipgoci_unittests_setup_git_repo()
+ */
+
+function vipgoci_unittests_remove_git_repo( $repo_path ) {
+	$temp_dir = sys_get_temp_dir();
+
+	/*
+	 * If not a string, do not do anything.
+	 */
+	if ( ! is_string( $repo_path ) ) {
+		return false;
+	}
+
+	/*
+	 * If this does not look like
+	 * a path to a temporary directory,
+	 * do not do anything.
+	 */
+	if ( false === strstr(
+		$repo_path,
+		$temp_dir
+	) ) {
+		return false;
+	}
+
+	/*
+	 * If not a directory, do not do anything.
+	 */
+
+	if ( ! is_dir( $repo_path ) ) {
+		return false;
+	}
+
+	/*
+	 * Prepare to run the rm -rf command.
+	 */
+	
+	$cmd = sprintf(
+		'%s -rf %s',
+		escapeshellcmd( 'rm' ),
+		escapeshellarg( $repo_path )
+	);
+
+	$cmd_output = '';
+	$cmd_status = 0;
+
+	/* 
+	 * Run it and check results.
+	 */
+	$res = exec( $cmd, $cmd_output, $cmd_status );
+
+	if ( $cmd_status === 0 ) {
+		return true;
+	}
+
+	else {
+		printf(
+			"Warning: Not able to remove temporary directory successfully; %i, %s",
+			$cmd_status,
+			$cmd_output
+		);
+
+		return false;
+	}
+}
+
 function vipgoci_unittests_options_test(
 	$options,
 	$options_not_required,
