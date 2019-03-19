@@ -192,6 +192,13 @@ function vipgoci_unittests_remove_git_repo( $repo_path ) {
 	}
 
 	/*
+	 * Check if it is really a git-repository.
+	 */
+	if ( ! is_dir( $repo_path . '/.git' ) ) {
+		return false;
+	}
+
+	/*
 	 * Prepare to run the rm -rf command.
 	 */
 	
