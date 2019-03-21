@@ -80,7 +80,7 @@ final class PhpcsScanScanCommitTest extends TestCase {
 		$issues_submit = array();
 		$issues_stats = array();
 
-		ob_start();
+		vipgoci_unittests_output_suppress();
 
 		$prs_implicated = vipgoci_github_prs_implicated(
 			$this->options['repo-owner'],
@@ -108,7 +108,7 @@ final class PhpcsScanScanCommitTest extends TestCase {
 		if ( false === $this->options['local-git-repo'] ) {
 			$this->markTestSkipped(
 				'Could not set up git repository: ' .
-					ob_get_flush()
+					vipgoci_unittests_output_get()
 			);
 				
 			return;
@@ -120,7 +120,7 @@ final class PhpcsScanScanCommitTest extends TestCase {
 			$issues_stats
 		);
 
-		ob_end_clean();
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertEquals(
 			array(

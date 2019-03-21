@@ -48,7 +48,7 @@ final class MiscPatchChangedLinesTest extends TestCase {
 			return;
 		}
 
-		ob_start();
+		vipgoci_unittests_output_suppress();
 
 		$patch_arr = vipgoci_patch_changed_lines(
 			$this->github_config['repo-owner'],
@@ -59,7 +59,7 @@ final class MiscPatchChangedLinesTest extends TestCase {
 			'ap-hashes-api.php'
 		);
 
-		ob_end_clean();
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertEquals(
 			json_decode(

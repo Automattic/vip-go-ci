@@ -58,7 +58,7 @@ final class GitHubPrReviewsGetTest extends TestCase {
 			return;
 		}
 
-		ob_start();
+		vipgoci_unittests_output_suppress();
 
 		$reviews_actual = vipgoci_github_pr_reviews_get(
 			$this->options['repo-owner'],
@@ -68,7 +68,7 @@ final class GitHubPrReviewsGetTest extends TestCase {
 			array()
 		);
 
-		ob_end_clean();
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertEquals(
 			1,

@@ -69,7 +69,7 @@ final class SvgScanScanSingleFileTest extends TestCase {
 		$this->options['commit'] =
 			$this->options['commit-test-svg-scan-single-file-test-1'];
 
-		ob_start();
+		vipgoci_unittests_output_suppress();
 
 		$this->options['local-git-repo'] =
 			vipgoci_unittests_setup_git_repo(
@@ -79,7 +79,7 @@ final class SvgScanScanSingleFileTest extends TestCase {
 		if ( false === $this->options['local-git-repo'] ) {
 			$this->markTestSkipped(
 				'Could not set up git repository: ' .
-					ob_get_flush()
+					vipgoci_unittests_output_get()
 			);
 
 			return;
@@ -90,7 +90,7 @@ final class SvgScanScanSingleFileTest extends TestCase {
 			'svg-file-with-issues-1.svg'
 		);
 
-		ob_end_clean();
+		vipgoci_unittests_output_unsuppress();
 
 		$temp_file_name = $ret['temp_file_name'];
 

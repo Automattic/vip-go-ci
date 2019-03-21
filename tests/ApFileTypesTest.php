@@ -78,14 +78,14 @@ final class ApFileTypesTest extends TestCase {
 
 		$auto_approved_files_arr = array();
 
-		ob_start();
+		vipgoci_unittests_output_suppress();
 
 		vipgoci_ap_file_types(
 			$this->options,
 			$auto_approved_files_arr
 		);
 
-		ob_end_clean();
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertEquals(
 			$auto_approved_files_arr,

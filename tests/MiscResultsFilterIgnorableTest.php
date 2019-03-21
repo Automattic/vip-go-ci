@@ -30,14 +30,14 @@ final class MiscResultsFilterIgnorableTest extends TestCase {
 			true
 		);
 
-		ob_start();
+		vipgoci_unittests_output_suppress();
 
 		vipgoci_results_filter_ignorable(
 			$options,
 			$results_altered
 		);
 
-		ob_end_clean();
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertEquals(
 			json_encode(

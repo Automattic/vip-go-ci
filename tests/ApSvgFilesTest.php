@@ -95,7 +95,7 @@ final class ApSvgFilesTest extends TestCase {
 			$this->options['commit-test-svg-files-1'];
 
 
-		ob_start();
+		vipgoci_unittests_output_suppress();
 
 		$this->options['local-git-repo'] =
 			vipgoci_unittests_setup_git_repo(
@@ -105,7 +105,7 @@ final class ApSvgFilesTest extends TestCase {
 		if ( false === $this->options['local-git-repo'] ) {
 			$this->markTestSkipped(
 				'Could not set up git repository: ' .
-				ob_get_flush()
+				vipgoci_unittests_output_get()
 			);
 
 			return;
@@ -116,7 +116,7 @@ final class ApSvgFilesTest extends TestCase {
 			$auto_approved_files_arr
 		);
 
-		ob_end_clean();
+		vipgoci_unittests_output_unsuppress();
 
 
 		$this->assertEquals(

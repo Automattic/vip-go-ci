@@ -91,12 +91,12 @@ final class ApHashesApiFileApprovedTest extends TestCase {
 			return;
 		}
 
-		ob_start();
+		vipgoci_unittests_output_suppress();
 
 		if ( false === $this->options['local-git-repo'] ) {
 			$this->markTestSkipped(
 				'Could not set up git repository: ' .
-				ob_get_flush()
+				vipgoci_unittests_output_get()
 			);
 
 			return;
@@ -107,7 +107,7 @@ final class ApHashesApiFileApprovedTest extends TestCase {
 			'approved-1.php'
 		);
 
-		ob_end_clean();
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertTrue(
 			$file_status
@@ -128,12 +128,12 @@ final class ApHashesApiFileApprovedTest extends TestCase {
 			return;
 		}
 
-		ob_start();
+		vipgoci_unittests_output_suppress();
 
 		if ( false === $this->options['local-git-repo'] ) {
 			$this->markTestSkipped(
 				'Could not set up git repository: ' .
-				ob_get_flush()
+				vipgoci_unittests_output_get()
 			);
 
 			return;
@@ -144,7 +144,7 @@ final class ApHashesApiFileApprovedTest extends TestCase {
 			'not-approved-1.php'
 		);
 
-		ob_end_clean();
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertFalse(
 			$file_status
@@ -165,12 +165,12 @@ final class ApHashesApiFileApprovedTest extends TestCase {
 			return;
 		}
 
-		ob_start();
+		vipgoci_unittests_output_suppress();
 
 		if ( false === $this->options['local-git-repo'] ) {
 			$this->markTestSkipped(
 				'Could not set up git repository: ' .
-				ob_get_flush()
+				vipgoci_unittests_output_get()
 			);
 
 			return;
@@ -184,7 +184,7 @@ final class ApHashesApiFileApprovedTest extends TestCase {
 			'not-approved-1.php'
 		);
 
-		ob_end_clean();
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertNull(
 			$file_status

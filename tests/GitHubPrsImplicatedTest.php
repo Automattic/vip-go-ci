@@ -67,7 +67,7 @@ final class GitHubPrsImplicatedTest extends TestCase {
 		$this->options['commit'] =
 			$this->options['commit-test-repo-pr-files-changed-1'];
 
-		ob_start();
+		vipgoci_unittests_output_suppress();
 
 		$prs_implicated = vipgoci_github_prs_implicated(
 			$this->options['repo-owner'],
@@ -77,7 +77,7 @@ final class GitHubPrsImplicatedTest extends TestCase {
 			$this->options['branches-ignore']
 		);
 
-		ob_end_clean();
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertEquals(
 			259078544,
