@@ -86,6 +86,8 @@ final class ApAutoApprovalTest extends TestCase {
 			return;
 		}
 
+		ob_start();
+
 		$prs_implicated = vipgoci_github_prs_implicated(
 			$this->options['repo-owner'],
 			$this->options['repo-name'],
@@ -93,6 +95,8 @@ final class ApAutoApprovalTest extends TestCase {
 			$this->options['token'],
 			$this->options['branches-ignore']
 		);
+
+		ob_end_clean();
 
 		foreach ( $prs_implicated as $pr_item ) {
 			if (
@@ -118,6 +122,8 @@ final class ApAutoApprovalTest extends TestCase {
 				}
 			}
 
+			ob_start();
+
 			$pr_item_reviews = vipgoci_github_pr_reviews_get(
 				$this->options['repo-owner'],
 				$this->options['repo-name'],
@@ -139,6 +145,8 @@ final class ApAutoApprovalTest extends TestCase {
 					$this->options['token']
 				);
 			}
+
+			ob_end_clean();
 		}
 	}
 
@@ -254,16 +262,22 @@ final class ApAutoApprovalTest extends TestCase {
 
 		$results = array();
 
+		ob_start();
+
 		vipgoci_auto_approval(
 			$this->options,
 			$auto_approved_files_arr,
 			$results
 		);
 
+		ob_end_clean();
+
 		$this->assertEquals(
 			array(),
 			$results
 		);
+
+		ob_start();
 
 		$prs_implicated = vipgoci_github_prs_implicated(
 			$this->options['repo-owner'],
@@ -272,6 +286,8 @@ final class ApAutoApprovalTest extends TestCase {
 			$this->options['token'],
 			$this->options['branches-ignore']
 		);
+
+		ob_end_clean();
 
 		$this->assertEquals(
 			1,
@@ -284,6 +300,8 @@ final class ApAutoApprovalTest extends TestCase {
 				$this->options['pr-test-ap-auto-approval-1']
 			);
 
+			ob_start();
+
 			$pr_item_reviews = vipgoci_github_pr_reviews_get(
 				$this->options['repo-owner'],
 				$this->options['repo-name'],
@@ -294,6 +312,8 @@ final class ApAutoApprovalTest extends TestCase {
 					'state' => array( 'APPROVED' ),
 				)
 			);
+
+			ob_end_clean();
 
 			$this->assertEquals(
 				1,
@@ -349,16 +369,22 @@ final class ApAutoApprovalTest extends TestCase {
 
 		$results = array();
 
+		ob_start();
+
 		vipgoci_auto_approval(
 			$this->options,
 			$auto_approved_files_arr,
 			$results
 		);
 
+		ob_end_clean();
+
 		$this->assertEquals(
 			array(),
 			$results
 		);
+
+		ob_start();
 
 		$prs_implicated = vipgoci_github_prs_implicated(
 			$this->options['repo-owner'],
@@ -367,6 +393,8 @@ final class ApAutoApprovalTest extends TestCase {
 			$this->options['token'],
 			$this->options['branches-ignore']
 		);
+
+		ob_end_clean();
 
 		$this->assertEquals(
 			count( $prs_implicated ),
@@ -379,6 +407,8 @@ final class ApAutoApprovalTest extends TestCase {
 				$this->options['pr-test-ap-auto-approval-1']
 			);
 
+			ob_start();
+
 			$pr_item_reviews = vipgoci_github_pr_reviews_get(
 				$this->options['repo-owner'],
 				$this->options['repo-name'],
@@ -389,6 +419,8 @@ final class ApAutoApprovalTest extends TestCase {
 					'state' => array( 'APPROVED' ),
 				)
 			);
+
+			ob_end_clean();
 
 			$this->assertEquals(
 				0,
@@ -448,6 +480,8 @@ final class ApAutoApprovalTest extends TestCase {
 			)
 		);
 
+		ob_start();
+
 		vipgoci_auto_approval(
 			$this->options,
 			$auto_approved_files_arr,
@@ -462,6 +496,8 @@ final class ApAutoApprovalTest extends TestCase {
 			$this->options['branches-ignore']
 		);
 
+		ob_end_clean();
+
 		$this->assertEquals(
 			count( $prs_implicated ),
 			1
@@ -473,6 +509,8 @@ final class ApAutoApprovalTest extends TestCase {
 				$this->options['pr-test-ap-auto-approval-1']
 			);
 
+			ob_start();
+
 			$pr_item_reviews = vipgoci_github_pr_reviews_get(
 				$this->options['repo-owner'],
 				$this->options['repo-name'],
@@ -483,6 +521,8 @@ final class ApAutoApprovalTest extends TestCase {
 					'state' => array( 'APPROVED' ),
 				)
 			);
+
+			ob_end_clean();
 
 			$this->assertEquals(
 				0,
