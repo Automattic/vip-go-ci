@@ -10,7 +10,7 @@ final class ApAutoApprovalTest extends TestCase {
 	protected function setUp() {
 		$this->options_git = array(
 			'repo-owner'				=> null,
-			'repo-name'				=> null,	
+			'repo-name'				=> null,
 		);
 
 		$this->options_auto_approvals = array(
@@ -33,7 +33,7 @@ final class ApAutoApprovalTest extends TestCase {
 			$this->options_auto_approvals
 		);
 
-		$this->options['github-token'] = 
+		$this->options['github-token'] =
 			vipgoci_unittests_get_config_value(
 				'git-secrets',
 				'github-token',
@@ -43,7 +43,7 @@ final class ApAutoApprovalTest extends TestCase {
 		$this->options['token'] =
 			$this->options['github-token'];
 
-		$this->options['commit'] = 
+		$this->options['commit'] =
 			$this->options['commit-test-ap-auto-approval-1'];
 
 		$this->options['dry-run'] = false;
@@ -76,6 +76,16 @@ final class ApAutoApprovalTest extends TestCase {
 	}
 
 	private function cleanup_prs() {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( ),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
 		$prs_implicated = vipgoci_github_prs_implicated(
 			$this->options['repo-owner'],
 			$this->options['repo-name'],
@@ -115,7 +125,7 @@ final class ApAutoApprovalTest extends TestCase {
 				$this->options['token'],
 				array(
 					'login' => 'myself',
-					'state' => array( 'APPROVED' ), 
+					'state' => array( 'APPROVED' ),
 				)
 			);
 
@@ -132,6 +142,35 @@ final class ApAutoApprovalTest extends TestCase {
 		}
 	}
 
+	private function pr_get_labels() {
+		$github_url =
+			VIPGOCI_GITHUB_BASE_URL . '/' .
+			'repos/' .
+			rawurlencode( $this->options['repo-owner'] ) . '/' .
+			rawurlencode( $this->options['repo-name'] ) . '/' .
+			'issues/' .
+			rawurlencode( $this->options['pr-test-ap-auto-approval-1'] ) . '/' .
+			'labels';
+
+		$data = vipgoci_github_fetch_url(
+			$github_url,
+			$this->options['token']
+		);
+
+		$data = json_decode( $data );
+
+		foreach( $data as $data_item ) {
+			if (
+				$data_item->name ===
+				$this->options['autoapprove-label']
+			) {
+				return $data_item;
+			}
+		}
+
+		return false;
+	}
+
 	/**
 	 * Test which PRs we get; make sure these
 	 * are only the relevant ones. Mimics behaviour
@@ -139,7 +178,7 @@ final class ApAutoApprovalTest extends TestCase {
 	 *
 	 * @covers ::vipgoci_auto_approval
 	 */
-	
+
 	public function testAutoApproval1() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
@@ -151,12 +190,27 @@ final class ApAutoApprovalTest extends TestCase {
 			return;
 		}
 
+		if ( false === $this->safe_to_run ) {
+			$this->markTestSkipped(
+				'Test not safe to run due to earlier warnings'
+			);
+		}
+
+		ob_start();
+
 		$prs_implicated = vipgoci_github_prs_implicated(
 			$this->options['repo-owner'],
 			$this->options['repo-name'],
 			$this->options['commit'],
 			$this->options['token'],
 			$this->options['branches-ignore']
+		);
+
+		ob_end_clean();
+
+		$this->assertEquals(
+			1,
+			count( $prs_implicated )
 		);
 
 		foreach ( $prs_implicated as $pr_item ) {
@@ -184,6 +238,12 @@ final class ApAutoApprovalTest extends TestCase {
 			return;
 		}
 
+		if ( false === $this->safe_to_run ) {
+			$this->markTestSkipped(
+				'Test not safe to run due to earlier warnings'
+			);
+		}
+
 		$auto_approved_files_arr = array(
 			'file-1.php' => 'autoapprove-hashes-to-hashes',
 			'file-2.css' => 'autoapprove-filetypes',
@@ -197,6 +257,11 @@ final class ApAutoApprovalTest extends TestCase {
 		vipgoci_auto_approval(
 			$this->options,
 			$auto_approved_files_arr,
+			$results
+		);
+
+		$this->assertEquals(
+			array(),
 			$results
 		);
 
@@ -226,7 +291,7 @@ final class ApAutoApprovalTest extends TestCase {
 				$this->options['token'],
 				array(
 					'login' => 'myself',
-					'state' => array( 'APPROVED' ), 
+					'state' => array( 'APPROVED' ),
 				)
 			);
 
@@ -242,6 +307,13 @@ final class ApAutoApprovalTest extends TestCase {
 				);
 			}
 		}
+
+		$labels = $this->pr_get_labels();
+
+		$this->assertEquals(
+			$this->options['autoapprove-label'],
+			$labels->name
+		);
 	}
 
 	/**
@@ -251,10 +323,194 @@ final class ApAutoApprovalTest extends TestCase {
 	 * @covers ::vipgoci_auto_approval
 	 */
 	public function testAutoApproval3() {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( ),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
+		if ( false === $this->safe_to_run ) {
+			$this->markTestSkipped(
+				'Test not safe to run due to earlier warnings'
+			);
+		}
+
+		$auto_approved_files_arr = array(
+			// note: file-1.php is NOT approved
+			'file-2.css' => 'autoapprove-filetypes',
+			'file-3.txt' => 'autoapprove-filetypes',
+			'file-4.json' => 'autoapprove-filetypes',
+			'README.md' => 'autoapprove-filetypes',
+		);
+
+		$results = array();
 
 		vipgoci_auto_approval(
+			$this->options,
+			$auto_approved_files_arr,
+			$results
+		);
+
+		$this->assertEquals(
+			array(),
+			$results
+		);
+
+		$prs_implicated = vipgoci_github_prs_implicated(
+			$this->options['repo-owner'],
+			$this->options['repo-name'],
+			$this->options['commit'],
+			$this->options['token'],
+			$this->options['branches-ignore']
+		);
+
+		$this->assertEquals(
+			count( $prs_implicated ),
+			1
+		);
+
+		foreach ( $prs_implicated as $pr_item ) {
+			$this->assertEquals(
+				$pr_item->number,
+				$this->options['pr-test-ap-auto-approval-1']
+			);
+
+			$pr_item_reviews = vipgoci_github_pr_reviews_get(
+				$this->options['repo-owner'],
+				$this->options['repo-name'],
+				(int) $pr_item->number,
+				$this->options['token'],
+				array(
+					'login' => 'myself',
+					'state' => array( 'APPROVED' ),
+				)
+			);
+
+			$this->assertEquals(
+				0,
+				count( $pr_item_reviews )
+			);
+		}
+
+		$label = $this->pr_get_labels();
+
+		$this->assertEquals(
+			false,
+			$label
 		);
 	}
 
+	/**
+	 * Test auto-approvals for PR that should
+	 * not auto-appove, but should leave a comment
+	 * about one PHP file that is approved.
+	 *
+	 * @covers ::vipgoci_auto_approval
+	 */
+	public function testAutoApproval4() {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( ),
+			$this
+		);
 
+		if ( -1 === $options_test ) {
+			return;
+		}
+
+		if ( false === $this->safe_to_run ) {
+			$this->markTestSkipped(
+				'Test not safe to run due to earlier warnings'
+			);
+		}
+
+		$auto_approved_files_arr = array(
+			// note: file-1.php is approved, but
+			// some of the other files are not
+			'file-1.php' => 'autoapprove-hashes-to-hashes',
+			'file-2.css' => 'autoapprove-filetypes',
+			'file-3.txt' => 'autoapprove-filetypes',
+			// file-4.json is not approved
+			'README.md' => 'autoapprove-filetypes',
+		);
+
+		$results = array(
+			'stats' => array(
+				VIPGOCI_STATS_HASHES_API => array(
+					$this->options['pr-test-ap-auto-approval-1'] => array(
+						'info' => 0
+					)
+				)
+			)
+		);
+
+		vipgoci_auto_approval(
+			$this->options,
+			$auto_approved_files_arr,
+			$results
+		);
+
+		$prs_implicated = vipgoci_github_prs_implicated(
+			$this->options['repo-owner'],
+			$this->options['repo-name'],
+			$this->options['commit'],
+			$this->options['token'],
+			$this->options['branches-ignore']
+		);
+
+		$this->assertEquals(
+			count( $prs_implicated ),
+			1
+		);
+
+		foreach ( $prs_implicated as $pr_item ) {
+			$this->assertEquals(
+				$pr_item->number,
+				$this->options['pr-test-ap-auto-approval-1']
+			);
+
+			$pr_item_reviews = vipgoci_github_pr_reviews_get(
+				$this->options['repo-owner'],
+				$this->options['repo-name'],
+				(int) $pr_item->number,
+				$this->options['token'],
+				array(
+					'login' => 'myself',
+					'state' => array( 'APPROVED' ),
+				)
+			);
+
+			$this->assertEquals(
+				0,
+				count( $pr_item_reviews )
+			);
+		}
+
+		$label = $this->pr_get_labels();
+
+		$this->assertEquals(
+			false,
+			$label
+		);
+
+		$this->assertEquals(
+			1,
+			$results['stats']
+				[ VIPGOCI_STATS_HASHES_API ]
+				[ $this->options['pr-test-ap-auto-approval-1'] ]
+				[ 'info' ]
+		);
+
+		$this->assertEquals(
+			'file-1.php',
+			$results['issues']
+				[ $this->options['pr-test-ap-auto-approval-1'] ]
+				[ 0 ]
+				['file_name']
+		);
+	}
 }
