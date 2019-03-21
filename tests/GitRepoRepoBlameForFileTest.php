@@ -40,6 +40,14 @@ final class GitRepoRepoBlameForFileTest extends TestCase {
 			);
 	}
 
+	protected function tearDown() {
+		if ( false !== $this->options['local-git-repo'] ) {
+			vipgoci_unittests_remove_git_repo(
+				$this->options['local-git-repo']
+			);
+		}
+	}
+
 	/**
 	 * @covers ::vipgoci_gitrepo_blame_for_file
 	 */

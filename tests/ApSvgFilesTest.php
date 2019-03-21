@@ -66,7 +66,12 @@ final class ApSvgFilesTest extends TestCase {
 	}
 
 	protected function tearDown() {
-		// FIXME: Remove temporary git repository
+		if ( false !== $this->options['local-git-repo'] ) {
+			vipgoci_unittests_remove_git_repo(
+				$this->options['local-git-repo']
+			);
+		}
+
 		$this->options = null;
 		$this->options_auto_approvals = null;
 		$this->options_svg_scan = null;

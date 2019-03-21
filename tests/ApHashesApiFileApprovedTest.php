@@ -72,6 +72,12 @@ final class ApHashesApiFileApprovedTest extends TestCase {
 	}
 
 	protected function tearDown() {
+		if ( false !== $this->options['local-git-repo'] ) {
+			vipgoci_unittests_remove_git_repo(
+				$this->options['local-git-repo']
+			);
+		}
+
 		$this->options = null;
 		$this->options_auto_approvals = null;
 		$this->options_git = null;
