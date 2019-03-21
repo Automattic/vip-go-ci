@@ -3079,14 +3079,6 @@ function vipgoci_github_labels_get(
 	$pr_number,
 	$label_to_look_for = null
 ) {
-	vipgoci_log(
-		'Getting labels associated with GitHub issue',
-		array(
-			'repo_owner' => $repo_owner,
-			'repo_name' => $repo_name,
-			'pr_number' => $pr_number,
-		)
-	);
 	/*
 	 * Check first if we have
 	 * got the information cached
@@ -3098,6 +3090,15 @@ function vipgoci_github_labels_get(
 
 	$cached_data = vipgoci_cache( $cache_id );
 
+	vipgoci_log(
+		'Getting labels associated with GitHub issue' .
+			( $cached_data === false ? ' (cached)' : '' ),
+		array(
+			'repo_owner' => $repo_owner,
+			'repo_name' => $repo_name,
+			'pr_number' => $pr_number,
+		)
+	);
 
 	/*
 	 * If there is nothing cached, fetch it
