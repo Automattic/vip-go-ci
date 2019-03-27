@@ -65,7 +65,7 @@ final class GitHubPrsCommitsListTest extends TestCase {
 			return;
 		}
 
-		ob_start();
+		vipgoci_unittests_output_suppress();
 
 		$commits_list = vipgoci_github_prs_commits_list(
 			$this->options['repo-owner'],
@@ -74,7 +74,7 @@ final class GitHubPrsCommitsListTest extends TestCase {
 			$this->options['github-token']
 		);
 
-		ob_end_clean();
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertEquals(
 			array(

@@ -63,7 +63,7 @@ final class GitHubLabelsTest extends TestCase {
 			return;
 		}
 
-		ob_start();
+		vipgoci_unittests_output_suppress();
 
 		$labels_before = $this->labels_get();
 
@@ -76,7 +76,7 @@ final class GitHubLabelsTest extends TestCase {
 			false
 		);
 
-		ob_end_clean();
+		vipgoci_unittests_output_unsuppress();
 
 		$labels_after = $this->labels_get();
 
@@ -105,7 +105,7 @@ final class GitHubLabelsTest extends TestCase {
 			return;
 		}
 
-		ob_start();
+		vipgoci_unittests_output_suppress();
 
 		$labels_before = $this->labels_get();
 
@@ -118,7 +118,7 @@ final class GitHubLabelsTest extends TestCase {
 			false
 		);
 
-		ob_end_clean();
+		vipgoci_unittests_output_unsuppress();
 
 		$labels_after = $this->labels_get();
 

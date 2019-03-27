@@ -24,7 +24,7 @@ final class MiscApprovedFilesCommentsRemoveTest extends TestCase {
 
 		$results_altered = $results;
 
-		ob_start();
+		vipgoci_unittests_output_suppress();
 	
 		vipgoci_approved_files_comments_remove(
 			array(),
@@ -32,7 +32,7 @@ final class MiscApprovedFilesCommentsRemoveTest extends TestCase {
 			$auto_approved_files_arr
 		);
 
-		ob_end_clean();
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertEquals(
 			$results_desired,

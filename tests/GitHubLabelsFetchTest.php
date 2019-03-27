@@ -60,7 +60,7 @@ final class GitHubLabelsFetchTest extends TestCase {
 			return;
 		}
 
-		ob_start();
+		vipgoci_unittests_output_suppress();
 
 		$labels = vipgoci_github_labels_get(
 			$this->options['repo-owner'],
@@ -70,7 +70,7 @@ final class GitHubLabelsFetchTest extends TestCase {
 			null
 		);
 
-		ob_end_clean();
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertEquals(
 			'enhancement',

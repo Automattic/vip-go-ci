@@ -63,7 +63,7 @@ final class GitHubPrReviewsCommentsGet extends TestCase {
 
 		$prs_comments = array();
 
-		ob_start();
+		vipgoci_unittests_output_suppress();
 
 		vipgoci_github_pr_reviews_comments_get(
 			$this->options,
@@ -72,7 +72,7 @@ final class GitHubPrReviewsCommentsGet extends TestCase {
 			$prs_comments
 		);
 
-		ob_end_clean();
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertEquals(
 			1,

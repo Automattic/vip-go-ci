@@ -63,7 +63,7 @@ final class GitHubPrGenericCommentsGetTest extends TestCase {
 
 		$pr_comments = array();
 
-		ob_start();
+		vipgoci_unittests_output_suppress();
 
 		$pr_comments = vipgoci_github_pr_generic_comments_get(
 			$this->options['repo-owner'],
@@ -72,7 +72,7 @@ final class GitHubPrGenericCommentsGetTest extends TestCase {
 			$this->options['github-token']
 		);
 
-		ob_end_clean();
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertEquals(
 			1,
