@@ -99,7 +99,7 @@ final class GitHubDiffsFetchTest extends TestCase {
  	 * Test diff between commits; do ask for
 	 * files with changed permissions to be included
 	 * in the results.
-	 * 
+	 *
 	 * @covers ::vipgoci_github_diffs_fetch
 	 */
 	public function testGitHubDiffsFetch2() {
@@ -141,7 +141,7 @@ final class GitHubDiffsFetchTest extends TestCase {
  	 * Test diff between commits; do ask for
 	 * renamed files to be included
 	 * in the results.
-	 * 
+	 *
 	 * @covers ::vipgoci_github_diffs_fetch
 	 */
 	public function testGitHubDiffsFetch3() {
@@ -182,7 +182,7 @@ final class GitHubDiffsFetchTest extends TestCase {
  	 * Test diff between commits; do ask for
 	 * removed files to be included
 	 * in the results.
-	 * 
+	 *
 	 * @covers ::vipgoci_github_diffs_fetch
 	 */
 	public function testGitHubDiffsFetch4() {
@@ -213,7 +213,7 @@ final class GitHubDiffsFetchTest extends TestCase {
 
 		$this->assertEquals(
 			array(
-				'renamed-file2.txt'	=> 
+				'renamed-file2.txt'	=>
 					'@@ -1,2 +0,0 @@' . PHP_EOL .
 					'-# vip-go-ci-testing' . PHP_EOL .
 					'-Pull-Requests, commits and data to test <a href="https://github.com/automattic/vip-go-ci/">vip-go-ci</a>\'s functionality. Please do not remove or alter unless you\'ve contacted the VIP Team first. '
@@ -225,7 +225,7 @@ final class GitHubDiffsFetchTest extends TestCase {
 	/**
  	 * Test diff between commits; do ask for
 	 * all files to be included.
-	 * 
+	 *
 	 * @covers ::vipgoci_github_diffs_fetch
 	 */
 	public function testGitHubDiffsFetch5() {
@@ -246,7 +246,7 @@ final class GitHubDiffsFetchTest extends TestCase {
 			$this->options['repo-name'],
 			$this->options['github-token'],
 			$this->options['commit-test-repo-pr-diffs-1-a'],
-			$this->options['commit-test-repo-pr-diffs-1-e'],
+			$this->options['commit-test-repo-pr-diffs-1-d'],
 			true,
 			true,
 			true
@@ -256,6 +256,8 @@ final class GitHubDiffsFetchTest extends TestCase {
 
 		$this->assertEquals(
 			array(
+				'content-changed-file.txt' => '@@ -0,0 +1 @@\n+Test file',
+				'renamed-file2.txt' => null,
 			),
 			$diff
 		);
