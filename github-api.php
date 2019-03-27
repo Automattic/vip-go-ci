@@ -2837,7 +2837,7 @@ function vipgoci_github_diffs_fetch(
 	$commit_id_b,
 	$renamed_files_also = false,
 	$removed_files_also = true,
-	$permission_changes_also = false
+	$permission_changes_also = false,
 	$filter = null
 ) {
 
@@ -2948,7 +2948,7 @@ function vipgoci_github_diffs_fetch(
 		if (
 			( null !== $filter ) &&
 			( false === vipgoci_filter_file_path(
-				$file_name,
+				$file_item->filename,
 				$filter
 			) )
 		) {
