@@ -277,12 +277,15 @@ function vipgoci_phpcs_scan_commit(
 		 * in this Pull-Request.
 		 */
 
-		$pr_item_files_tmp = vipgoci_github_pr_files_changed(
+		$pr_item_files_tmp = vipgoci_github_diffs_fetch(
 			$repo_owner,
 			$repo_name,
 			$github_token,
 			$pr_item->base->sha,
 			$commit_id,
+			false, // exclude renamed files
+			false, // exclude removed files
+			false, // exclude permission changes
 			array(
 				'file_extensions' =>
 					/*

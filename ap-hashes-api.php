@@ -296,7 +296,9 @@ function vipgoci_ap_hashes_api_scan_commit(
 			$options['token'],
 			$pr_item->base->sha,
 			$options['commit'],
-			true
+			false, // exclude renamed files
+			false, // exclude removed files
+			false // exclude permission changes
 		);
 
 
