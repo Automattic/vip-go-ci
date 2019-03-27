@@ -1,10 +1,15 @@
 <?php
 
-/*
+/**
  * Pull-Request is not approved,
  * remove label if needed, leave messages
  * on files that are approved, dismiss
  * any previously approving PRs.
+ *
+ * Note that the testing of this function is
+ * covered by tests of vipgoci_auto_approval().
+ *
+ * @codeCoverageIgnore
  */
 
 function vipgoci_auto_approval_non_approval(
@@ -238,11 +243,16 @@ function vipgoci_auto_approval_non_approval(
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'vipgoci_auto_approval_non_approval' );
 }
 
-/*
+/**
  * Approve a particular Pull-Request,
  * alter label for the PR if needed,
  * remove old comments, and log everything
  * we do.
+ *
+ * Note that the testing of this function is
+ * covered by tests of vipgoci_auto_approval().
+ *
+ * @codeCoverageIgnore
  */
 function vipgoci_autoapproval_do_approve(
 	$options,
