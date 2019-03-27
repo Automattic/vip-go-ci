@@ -2941,7 +2941,7 @@ function vipgoci_github_diffs_fetch(
 
 
 		/*
-		 * Allow filtering of files returned.		
+		 * Allow filtering of files returned.
 		 */
 
 		if (
