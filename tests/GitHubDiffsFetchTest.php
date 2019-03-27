@@ -256,7 +256,7 @@ final class GitHubDiffsFetchTest extends TestCase {
 
 		$this->assertEquals(
 			array(
-				'content-changed-file.txt' => '@@ -0,0 +1 @@\n+Test file',
+				'content-changed-file.txt' => '@@ -0,0 +1 @@' . PHP_EOL . '+Test file',
 				'renamed-file2.txt' => null,
 			),
 			$diff
