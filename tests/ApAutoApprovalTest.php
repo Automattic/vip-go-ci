@@ -106,8 +106,8 @@ final class ApAutoApprovalTest extends TestCase {
 			) {
 				printf(
 					'Warning: Got unexpected Pull-Request item; pr-number=%d, expected-pr-number=%d, pr_item=%s',
-					$pr_item->number,
-					$this->options['pr-test-ap-auto-approval-1'],
+					(int) $pr_item->number,
+					(int) $this->options['pr-test-ap-auto-approval-1'],
 					print_r( $pr_item, true )
 				);
 
