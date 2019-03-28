@@ -305,7 +305,7 @@ function vipgoci_phpcs_scan_commit(
 		);
 
 
-		foreach ( $pr_item_files_tmp as $pr_item_file_name ) {
+		foreach ( $pr_item_files_tmp as $pr_item_file_name => $_tmp ) {
 			if ( in_array(
 				$pr_item_file_name,
 				$pr_item_files_changed['all'],
