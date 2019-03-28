@@ -179,13 +179,53 @@ final class GitHubDiffsFetchTest extends TestCase {
 	}
 
 	/**
+ 	 * Test diff between commits; do not ask
+	 * for renamed files to be included
+	 * in the results.
+	 *
+	 * @covers ::vipgoci_github_diffs_fetch
+	 */
+	public function testGitHubDiffsFetch4() {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( 'github-token', 'token' ),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
+		vipgoci_unittests_output_suppress();
+
+		$diff = vipgoci_github_diffs_fetch(
+			$this->options['repo-owner'],
+			$this->options['repo-name'],
+			$this->options['github-token'],
+			$this->options['commit-test-repo-pr-diffs-1-c'],
+			$this->options['commit-test-repo-pr-diffs-1-d'],
+			false,
+			false,
+			false
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		$this->assertEquals(
+			array(
+			),
+			$diff
+		);
+	}
+
+	/**
  	 * Test diff between commits; do ask for
 	 * removed files to be included
 	 * in the results.
 	 *
 	 * @covers ::vipgoci_github_diffs_fetch
 	 */
-	public function testGitHubDiffsFetch4() {
+	public function testGitHubDiffsFetch5() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
@@ -223,12 +263,53 @@ final class GitHubDiffsFetchTest extends TestCase {
 	}
 
 	/**
+ 	 * Test diff between commits; do not ask for
+	 * removed files to be included
+	 * in the results.
+	 *
+	 * @covers ::vipgoci_github_diffs_fetch
+	 */
+	public function testGitHubDiffsFetch6() {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( 'github-token', 'token' ),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
+		vipgoci_unittests_output_suppress();
+
+		$diff = vipgoci_github_diffs_fetch(
+			$this->options['repo-owner'],
+			$this->options['repo-name'],
+			$this->options['github-token'],
+			$this->options['commit-test-repo-pr-diffs-1-d'],
+			$this->options['commit-test-repo-pr-diffs-1-e'],
+			false,
+			false,
+			false
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		$this->assertEquals(
+			array(
+			),
+			$diff
+		);
+	}
+
+
+	/**
  	 * Test diff between commits; do ask for
 	 * all files to be included.
 	 *
 	 * @covers ::vipgoci_github_diffs_fetch
 	 */
-	public function testGitHubDiffsFetch5() {
+	public function testGitHubDiffsFetch7() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
@@ -262,4 +343,146 @@ final class GitHubDiffsFetchTest extends TestCase {
 			$diff
 		);
 	}
+
+	/**
+ 	 * Test diff between commits; do ask for
+	 * all files to be included. Test filtering
+	 * of files.
+	 *
+	 * @covers ::vipgoci_github_diffs_fetch
+	 */
+	public function testGitHubDiffsFetch8() {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( 'github-token', 'token' ),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
+		vipgoci_unittests_output_suppress();
+
+		$diff = vipgoci_github_diffs_fetch(
+			$this->options['repo-owner'],
+			$this->options['repo-name'],
+			$this->options['github-token'],
+			$this->options['commit-test-repo-pr-diffs-1-a'],
+			$this->options['commit-test-repo-pr-diffs-1-d'],
+			true,
+			true,
+			true,
+			array(
+				'file_extensions' => array(
+					'ini'
+				)
+			)
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		$this->assertEquals(
+			array(
+			),
+			$diff
+		);
+	}
+
+	/**
+ 	 * Test diff between commits; do ask for
+	 * all files to be included. Test filtering
+	 * of files.
+	 *
+	 * @covers ::vipgoci_github_diffs_fetch
+	 */
+	public function testGitHubDiffsFetch9() {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( 'github-token', 'token' ),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
+		vipgoci_unittests_output_suppress();
+
+		$diff = vipgoci_github_diffs_fetch(
+			$this->options['repo-owner'],
+			$this->options['repo-name'],
+			$this->options['github-token'],
+			$this->options['commit-test-repo-pr-diffs-1-a'],
+			$this->options['commit-test-repo-pr-diffs-1-d'],
+			true,
+			true,
+			true,
+			array(
+				'file_extensions' => array(
+					'txt'
+				)
+			)
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		$this->assertEquals(
+			array(
+				'content-changed-file.txt' => '@@ -0,0 +1 @@' . PHP_EOL . '+Test file',
+				'renamed-file2.txt' => null,
+			),
+			$diff
+		);
+	}
+
+	/**
+ 	 * Test diff between commits; do ask for
+	 * some files to be included. Test filtering
+	 * of files. Also, test interaction between
+	 * filtering and files to be included.
+	 *
+	 * @covers ::vipgoci_github_diffs_fetch
+	 */
+	public function testGitHubDiffsFetch10() {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( 'github-token', 'token' ),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
+		vipgoci_unittests_output_suppress();
+
+		$diff = vipgoci_github_diffs_fetch(
+			$this->options['repo-owner'],
+			$this->options['repo-name'],
+			$this->options['github-token'],
+			$this->options['commit-test-repo-pr-diffs-1-a'],
+			$this->options['commit-test-repo-pr-diffs-1-d'],
+			false,
+			true,
+			true,
+			array(
+				'file_extensions' => array(
+					'txt'
+				)
+			)
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		$this->assertEquals(
+			array(
+				'content-changed-file.txt' => '@@ -0,0 +1 @@' . PHP_EOL . '+Test file',
+			),
+			$diff
+		);
+	}
+
+
+
 }
