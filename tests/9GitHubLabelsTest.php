@@ -13,6 +13,10 @@ final class GitHubLabelsTest extends TestCase {
 		'repo-owner'		=> null,
 	);
 
+	var $options_labels = array(
+		'labels-pr-to-modify'	=> null,
+	);
+
 	var $options_secrets = array(
 	);
 
@@ -22,6 +26,11 @@ final class GitHubLabelsTest extends TestCase {
 			$this->options_git
 		);
 
+		vipgoci_unittests_get_config_values(
+			'labels',
+			$this->options_labels
+		);
+
 		$this->options_secrets[ 'github-token' ] =
 			vipgoci_unittests_get_config_value(
 				'git-secrets',
@@ -29,23 +38,17 @@ final class GitHubLabelsTest extends TestCase {
 				true // Fetch from secrets file
 			);
 
-		$this->options_secrets[ 'labels-pr-to-modify' ] =
-			vipgoci_unittests_get_config_value(
-				'labels-secrets',
-				'labels-pr-to-modify',
-				true // Fetch from secrets file
-			);
-
-
 		$this->options = array_merge(
 			$this->options_secrets,
-			$this->options_git
+			$this->options_git,
+			$this->options_labels
 		);
 	}
 
 	protected function tearDown() {
 		$this->options_git = null;
 		$this->options_secrets = null;
+		$this->options_labels = null;
 		$this->options = null;
 	}
 
