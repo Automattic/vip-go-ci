@@ -253,9 +253,6 @@ hashes-oauth-consumer-secret=
 hashes-oauth-token=
 hashes-oauth-token-secret=
 
-[labels-secrets]
-labels-pr-to-modify=
-
 [git-secrets]
 github-token=
 ```
