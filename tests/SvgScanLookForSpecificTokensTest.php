@@ -60,8 +60,8 @@ final class SvgScanLookForSpecificTokensTest extends TestCase {
 		);
 
 		$this->assertEquals(
-			$results,
-			$results_expected
+			$results_expected,
+			$results
 		);
 	}
 }

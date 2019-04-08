@@ -47,13 +47,13 @@ final class GitHubApiCurlHeadersTest extends TestCase {
 		);
 
 		$this->assertEquals(
-			$actual_results,
 			array(
 				'content-type'	=> array( 'text/plain' ),
 				'date'		=> array( 'Mon, 04 Mar 2019 16:43:35 GMT' ),
 				'location'	=> array( 'https://www.ruv.is/' ),
 				'status'	=> array( 200, 'OK' ),
-			)
+			),
+			$actual_results
 		);
 	}
 }

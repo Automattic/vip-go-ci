@@ -124,10 +124,10 @@ final class ApHashesApiScanCommitTest extends TestCase {
 		vipgoci_unittests_output_unsuppress();
 
 		$this->assertEquals(
-			$auto_approved_files_arr,
 			array(
 				'auto-approvable-6.php' => 'autoapprove-hashes-to-hashes',
-			)
+			),
+			$auto_approved_files_arr
 		);
 	}
 }

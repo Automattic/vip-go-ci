@@ -80,7 +80,6 @@ final class GitHubPrsCommitsListTest extends TestCase {
 			array(
 				$this->options['commit-test-repo-prs-commits-list-1']
 			),
-
 			$commits_list
 		);
 	}

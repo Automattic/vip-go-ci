@@ -95,8 +95,8 @@ final class GitRepoRepoFetchCommittedFileTest extends TestCase {
 		vipgoci_unittests_output_unsuppress();
 
 		$this->assertEquals(
-			$ret,
-			'Test file contents. Some text.' . PHP_EOL
+			'Test file contents. Some text.' . PHP_EOL,
+			$ret
 		);
 	}
 }

@@ -223,8 +223,8 @@ final class ApAutoApprovalTest extends TestCase {
 
 		foreach ( $prs_implicated as $pr_item ) {
 			$this->assertEquals(
-				$pr_item->number,
-				$this->options['pr-test-ap-auto-approval-1']
+				$this->options['pr-test-ap-auto-approval-1'],
+				$pr_item->number
 			);
 		}
 	}
@@ -296,8 +296,8 @@ final class ApAutoApprovalTest extends TestCase {
 
 		foreach ( $prs_implicated as $pr_item ) {
 			$this->assertEquals(
-				$pr_item->number,
-				$this->options['pr-test-ap-auto-approval-1']
+				$this->options['pr-test-ap-auto-approval-1'],
+				$pr_item->number
 			);
 
 			vipgoci_unittests_output_suppress();
@@ -397,14 +397,14 @@ final class ApAutoApprovalTest extends TestCase {
 		vipgoci_unittests_output_unsuppress();
 
 		$this->assertEquals(
-			count( $prs_implicated ),
-			1
+			1,
+			count( $prs_implicated )
 		);
 
 		foreach ( $prs_implicated as $pr_item ) {
 			$this->assertEquals(
-				$pr_item->number,
-				$this->options['pr-test-ap-auto-approval-1']
+				$this->options['pr-test-ap-auto-approval-1'],
+				$pr_item->number
 			);
 
 			vipgoci_unittests_output_suppress();
@@ -499,14 +499,14 @@ final class ApAutoApprovalTest extends TestCase {
 		vipgoci_unittests_output_unsuppress();
 
 		$this->assertEquals(
-			count( $prs_implicated ),
-			1
+			1,
+			count( $prs_implicated )
 		);
 
 		foreach ( $prs_implicated as $pr_item ) {
 			$this->assertEquals(
-				$pr_item->number,
-				$this->options['pr-test-ap-auto-approval-1']
+				$this->options['pr-test-ap-auto-approval-1'],
+				$pr_item->number
 			);
 
 			vipgoci_unittests_output_suppress();

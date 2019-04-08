@@ -19,10 +19,10 @@ final class VipgociOptionsIntegerHandleTest extends TestCase {
 		);
 
 		$this->assertEquals(
-			$options,
 			array(
 				'mytestoption'	=> 5
-			)
+			),
+			$options
 		);
 	}
 }

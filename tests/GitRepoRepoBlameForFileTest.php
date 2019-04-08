@@ -93,8 +93,8 @@ final class GitRepoRepoBlameForFileTest extends TestCase {
 		vipgoci_unittests_output_unsuppress();
 
 		$this->assertEquals(
-			json_encode( $ret ),
-			'[{"commit_id":"4869335189752462325aaef4838c9761d56195ce","file_name":"README.md","line_no":1},{"commit_id":"45b9e6479dfba4d54b584d53ace1814ce155d35e","file_name":"README.md","line_no":2}]'
+			'[{"commit_id":"4869335189752462325aaef4838c9761d56195ce","file_name":"README.md","line_no":1},{"commit_id":"45b9e6479dfba4d54b584d53ace1814ce155d35e","file_name":"README.md","line_no":2}]',
+			json_encode( $ret )
 		);
 	}
 }

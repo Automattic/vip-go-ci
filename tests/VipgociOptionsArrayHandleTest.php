@@ -21,10 +21,10 @@ final class VipgociOptionsArrayHandleTest extends TestCase {
 		);
 
 		$this->assertEquals(
-			$options['mytestoption'],
 			array(
 				'myvalue',
-			)
+			),
+			$options['mytestoption']
 		);
 	}
 
@@ -45,12 +45,12 @@ final class VipgociOptionsArrayHandleTest extends TestCase {
 		);
 
 		$this->assertEquals(
-			$options['mytestoption'],
 			array(
 				'myvalue1',
 				'myvalue2',
 				'myvalue3',
-			)
+			),
+			$options['mytestoption']
 		);
 	}
 }

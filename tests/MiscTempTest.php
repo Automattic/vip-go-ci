@@ -20,8 +20,8 @@ final class MiscTempTest extends TestCase {
 		);
 
 		$this->assertNotEquals(
-			$temp_file_name,
-			false
+			false,
+			$temp_file_name
 		);
 
 		
@@ -35,8 +35,8 @@ final class MiscTempTest extends TestCase {
 		);
 
 		$this->assertEquals(
-			$temp_file_extension,
-			$file_name_extension
+			$file_name_extension,
+			$temp_file_extension
 		);
 
 		$this->assertEquals(
@@ -62,8 +62,8 @@ final class MiscTempTest extends TestCase {
 		);
 
 		$this->assertNotEquals(
-			$temp_file_name,
-			false
+			false,
+			$temp_file_name
 		);
 
 		
@@ -77,8 +77,8 @@ final class MiscTempTest extends TestCase {
 		);
 
 		$this->assertEquals(
-			$temp_file_extension,
-			$file_name_extension
+			$file_name_extension,
+			$temp_file_extension
 		);
 
 		$this->assertEquals(

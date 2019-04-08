@@ -38,8 +38,8 @@ final class VipgociOptionsBoolHandleTest extends TestCase {
 		);
 
 		$this->assertEquals(
-			$options['mytestoption'],
-			false
+			false,
+			$options['mytestoption']
 		);
 	}
 
@@ -58,8 +58,8 @@ final class VipgociOptionsBoolHandleTest extends TestCase {
 		);
 
 		$this->assertEquals(
-			$options['mytestoption'],
-			true
+			true,
+			$options['mytestoption']
 		);
 	}
 }

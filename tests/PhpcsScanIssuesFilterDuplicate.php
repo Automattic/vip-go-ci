@@ -47,7 +47,6 @@ final class PhpcsScanIssuesFilterDuplicate extends TestCase {
 		);
 
 		$this->assertEquals(
-			$issues_filtered,
 			array(
 				array(
 					'message' => 'json_encode() is discouraged. Use wp_json_encode() instead.',
@@ -59,7 +58,8 @@ final class PhpcsScanIssuesFilterDuplicate extends TestCase {
 					'column' => 6,
 					'level' => 'WARNING',
 				)
-			)
+			),
+			$issues_filtered
 		);
 	}
 
@@ -118,7 +118,6 @@ final class PhpcsScanIssuesFilterDuplicate extends TestCase {
 		);
 
 		$this->assertEquals(
-			$issues_filtered,
 			array(
 				array(
 					'message' => 'json_encode() is discouraged. Use wp_json_encode() instead.',
@@ -141,7 +140,8 @@ final class PhpcsScanIssuesFilterDuplicate extends TestCase {
 					'column' => 6,
 					'level' => 'WARNING',
 				),
-			)
+			),
+			$issues_filtered
 		);
 	}
 }
