@@ -19,10 +19,10 @@ final class StatsCountersTest extends TestCase {
 		);
 
 		$this->assertEquals(
+			array(),
 			vipgoci_counter_report(
 				VIPGOCI_COUNTERS_DUMP
-			),
-			array()
+			)
 		);
 	}
 
@@ -31,29 +31,29 @@ final class StatsCountersTest extends TestCase {
 	 */
 	function testCounterReport2() {
 		$this->assertEquals(
+			true,
 			vipgoci_counter_report(
 				VIPGOCI_COUNTERS_DO,
 				'mycounter2',
 				100
-			),
-			true
+			)
 		);
 
 		$this->assertEquals(
+			true,
 			vipgoci_counter_report(
 				VIPGOCI_COUNTERS_DO,
 				'mycounter2',
 				1
-			),
-			true
+			)
 		);
 
 		$this->assertEquals(
-			vipgoci_counter_report(
-				VIPGOCI_COUNTERS_DUMP
-			),
 			array(
 				'mycounter2' => 101,
+			),
+			vipgoci_counter_report(
+				VIPGOCI_COUNTERS_DUMP
 			)
 		);
 	}
@@ -93,10 +93,10 @@ final class StatsCountersTest extends TestCase {
 
 	
 		$this->assertEquals(
-			$report,
 			array(
 				'github_pr_unique_issue_issues' => 3,
-			)
+			),
+			$report
 		);	
 	}
 }

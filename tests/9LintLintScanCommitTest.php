@@ -140,7 +140,6 @@ final class LintLintScanCommitTest extends TestCase {
 		vipgoci_unittests_output_unsuppress();
 
 		$this->assertEquals(
-			$issues_submit,
 			array(
 				$pr_item->number => array(
 					array(
@@ -153,16 +152,17 @@ final class LintLintScanCommitTest extends TestCase {
 						)
 					)
 				)
-			)
+			),
+			$issues_submit
 		);
 
 		$this->assertEquals(
-			$issues_stat,
 			array(
 				$pr_item->number => array(
 					'error' => 1,
 				)
-			)
+			),
+			$issues_stat
 		);
 
 		unset( $this->options['commit'] );

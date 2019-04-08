@@ -57,9 +57,9 @@ final class LintLintGetIssuesTest extends TestCase {
 		);
 
 		$this->assertEquals(
-			$lint_issues_parsed,
 			array(
-			)
+			),
+			$lint_issues_parsed
 		);
 	}
 
@@ -100,7 +100,6 @@ final class LintLintGetIssuesTest extends TestCase {
 		);
 
 		$this->assertEquals(
-			$lint_issues_parsed,
 			array(
 				3 => array(
 					array(
@@ -108,7 +107,8 @@ final class LintLintGetIssuesTest extends TestCase {
 						'level'		=> 'ERROR',
 					)
 				)
-			)
+			),
+			$lint_issues_parsed
 		);
 	}
 }

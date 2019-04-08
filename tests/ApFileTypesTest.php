@@ -88,13 +88,13 @@ final class ApFileTypesTest extends TestCase {
 		vipgoci_unittests_output_unsuppress();
 
 		$this->assertEquals(
-			$auto_approved_files_arr,
 			array(
 				'auto-approvable-1.txt' => 'autoapprove-filetypes',
 				'auto-approvable-2.txt' => 'autoapprove-filetypes',
 				'auto-approvable-3.jpg' => 'autoapprove-filetypes',
 				'README.md'		=> 'autoapprove-filetypes',
-			)
+			),
+			$auto_approved_files_arr
 		);
 	}
 }

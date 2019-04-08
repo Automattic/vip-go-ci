@@ -51,10 +51,10 @@ final class LintLintDoScanTest extends TestCase {
 		);
 
 		$this->assertEquals(
-			$ret,
 			array(
 				'No syntax errors detected in ' . $php_file_path
-			)
+			),
+			$ret
 		);
 	}
 
@@ -89,11 +89,11 @@ final class LintLintDoScanTest extends TestCase {
 		);
 
 		$this->assertEquals(
-			$ret,
 			array(
 				"PHP Parse error:  syntax error, unexpected end of file, expecting ',' or ';' in " . $php_file_path . " on line 3",
 				'Errors parsing ' . $php_file_path
-			)
+			),
+			$ret
 		);
 	}
 }

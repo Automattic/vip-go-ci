@@ -92,8 +92,8 @@ final class GitRepoRepoGetHeadTest extends TestCase {
 		vipgoci_unittests_output_unsuppress();
 
 		$this->assertEquals(
-			$ret,
-			$this->options['commit-test-repo-get-head-1']
+			$this->options['commit-test-repo-get-head-1'],
+			$ret
 		);
 	}
 }

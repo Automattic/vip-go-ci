@@ -22,8 +22,8 @@ final class VipgociExitStatusTest extends TestCase {
 		);
 
 		$this->assertEquals(
-			$exit_status,
-			0
+			0,
+			$exit_status
 		);
 	}
 
@@ -44,8 +44,8 @@ final class VipgociExitStatusTest extends TestCase {
 		);
 
 		$this->assertEquals(
-			$exit_status,
-			250
+			250,
+			$exit_status
 		);
 	}
 }

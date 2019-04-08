@@ -73,8 +73,8 @@ final class SvgScanWithScannerTest extends TestCase {
 		);
 
 		$this->assertEquals(
-			$scanner_results,
-			$scanner_results_expected
+			$scanner_results_expected,
+			$scanner_results
 		);
 	}
 
@@ -130,8 +130,8 @@ final class SvgScanWithScannerTest extends TestCase {
 		);
 
 		$this->assertEquals(
-			$scanner_results,
-			$scanner_results_expected
+			$scanner_results_expected,
+			$scanner_results
 		);
 	}
 }

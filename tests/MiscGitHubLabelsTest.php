@@ -10,10 +10,10 @@ final class MiscGitHubLabelsTest extends TestCase {
 	 */
 	public function testGitHubLabel1() {
 		$this->assertEquals(
+			':exclamation:',
 			vipgoci_github_labels(
 				'warning'
-			),
-			':exclamation:'
+			)
 		);
 	}
 }

@@ -126,11 +126,11 @@ final class ApSvgFilesTest extends TestCase {
 
 
 		$this->assertEquals(
-			$auto_approved_files_arr,
 			array(
 				'auto-approvable-1.svg' => 'ap-svg-files',
 				'auto-approvable-2.svg' => 'ap-svg-files',
-			)
+			),
+			$auto_approved_files_arr
 		);
 
 		unset( $this->options['svg-checks'] );
@@ -187,14 +187,14 @@ final class ApSvgFilesTest extends TestCase {
 
 
 		$this->assertEquals(
-			$auto_approved_files_arr,
 			array(
 				'auto-approvable-1.svg' => 'ap-svg-files',
 				'auto-approvable-2-renamed.svg' => 'ap-svg-files',
 				'auto-approvable3.svg' => 'ap-svg-files',
 				'auto-approvable4.svg' => 'ap-svg-files',
 				'auto-approvable-7.svg' => 'ap-svg-files',
-			)
+			),
+			$auto_approved_files_arr
 		);
 
 		unset( $this->options['svg-checks'] );

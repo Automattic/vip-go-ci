@@ -16,8 +16,8 @@ final class MiscFileExtensionTest extends TestCase {
 		);
 
 		$this->assertEquals(
-			$file_extension,
-			'exe'
+			'exe',
+			$file_extension
 		);
 	}
 
@@ -32,8 +32,8 @@ final class MiscFileExtensionTest extends TestCase {
 		);
 
 		$this->assertEquals(
-			$file_extension,
-			'exe'
+			'exe',
+			$file_extension
 		);
 	}
 
@@ -48,8 +48,8 @@ final class MiscFileExtensionTest extends TestCase {
 		);
 
 		$this->assertEquals(
-			$file_extension,
-			null
+			null,
+			$file_extension
 		);
 	}
 }

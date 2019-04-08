@@ -145,8 +145,8 @@ final class SvgScanScanSingleFileTest extends TestCase {
 		);
 	
 		$this->assertEquals(
-			$ret,
-			$expected_result
+			$expected_result,
+			$ret
 		);
 	}
 }

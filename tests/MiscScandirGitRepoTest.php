@@ -97,14 +97,14 @@ final class MiscScandirGitRepoTest extends TestCase {
 		vipgoci_unittests_output_unsuppress();
 
 		$this->assertEquals(
-			$ret,
 			array(
 				'README.md',
  				'myfile1.txt',	
 				'myfile2.txt',
 				'myfolder5/myotherfolder6/somefile2.txt',
 				'myfolder5/somefile1.txt'
-			)
+			),
+			$ret
 		);
 	}
 
@@ -151,10 +151,10 @@ final class MiscScandirGitRepoTest extends TestCase {
 		vipgoci_unittests_output_unsuppress();
 
 		$this->assertEquals(
-			$ret,
 			array(
 				'README.md'
-			)
+			),
+			$ret
 		);
 	}
 }
