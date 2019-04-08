@@ -62,10 +62,7 @@ function vipgoci_ap_file_types(
 		 * that have been renamed, removed, had their
 		 * permission changed, or had their contents
 		 * modified -- and then we might auto-approve
-		 * them. This is slightly different from what
-		 * we do in other parts of vip-go-ci, were we
-		 * exclude files that have been renamed, removed,
-	 	 * or had their permission changed.
+		 * them (if their file-type is auto-approvable).
 		 */
 
 		foreach ( $pr_diff as
