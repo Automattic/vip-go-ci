@@ -290,6 +290,14 @@ function vipgoci_ap_hashes_api_scan_commit(
 
 
 	foreach ( $prs_implicated as $pr_item ) {
+		/*
+		 * Do not auto-approve renamed, 
+		 * removed or permission-changed files,
+		 * even if they might be auto-approved: the
+		 * reason is that renaming might be harmful to
+		 * stability, there could be removal of vital
+		 * files, and permission changes might be dangerous.
+		 */
 		$pr_diff = vipgoci_github_diffs_fetch(
 			$options['repo-owner'],
 			$options['repo-name'],
