@@ -19,6 +19,7 @@ final class ApSvgFilesTest extends TestCase {
 	var $options_auto_approvals = array(
 		'autoapprove-filetypes'		=> null,
 		'commit-test-svg-files-1'	=> null,
+		'commit-test-svg-files-2b'	=> null,
 	);
 	
 	protected function setUp() {
@@ -129,6 +130,70 @@ final class ApSvgFilesTest extends TestCase {
 			array(
 				'auto-approvable-1.svg' => 'ap-svg-files',
 				'auto-approvable-2.svg' => 'ap-svg-files',
+			)
+		);
+
+		unset( $this->options['svg-checks'] );
+	}
+
+	/**
+	 * Test auto-approvals of SVG files that
+	 * have been renamed, removed, or had their
+	 * permissions changed.
+	 *
+	 * @covers ::vipgoci_ap_svg_files
+	 */
+	public function testApSvgFiles2() {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( 'github-token', 'token' ),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
+		$auto_approved_files_arr = array();
+
+		$this->options['svg-checks'] = true;
+
+		$this->options['commit'] =
+			$this->options['commit-test-svg-files-2b'];
+
+
+		vipgoci_unittests_output_suppress();
+
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped(
+				'Could not set up git repository: ' .
+				vipgoci_unittests_output_get()
+			);
+
+			return;
+		}
+
+		vipgoci_ap_svg_files(
+			$this->options,
+			$auto_approved_files_arr
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+
+		$this->assertEquals(
+			$auto_approved_files_arr,
+			array(
+				'auto-approvable-1.svg' => 'ap-svg-files',
+				'auto-approvable-2-renamed.svg' => 'ap-svg-files',
+				'auto-approvable3.svg' => 'ap-svg-files',
+				'auto-approvable4.svg' => 'ap-svg-files',
+				'auto-approvable-7.svg' => 'ap-svg-files',
 			)
 		);
 

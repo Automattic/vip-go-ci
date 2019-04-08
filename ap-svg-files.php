@@ -47,7 +47,9 @@ function vipgoci_ap_svg_files(
 			$options['token'],
 			$pr_item->base->sha,
 			$options['commit'],
-			true
+			true, // include renamed files
+			true, // include removed files
+			true // include permission changes
 		);
 
 
@@ -79,6 +81,29 @@ function vipgoci_ap_svg_files(
 				]
 			) ) {
 				continue;
+			}
+
+			/*
+			 * No patch found for file, so likely
+			 * there were only changes in file-name,
+			 * permissions, removal or other -- we 
+			 * can auto-approve SVG files in such cases.
+			 */
+			if ( null === $pr_diff_contents ) {
+				vipgoci_log(
+					'Adding SVG file to list of approved ' .
+						'files, as no material changes ' .
+						'were being done, only renaming, ' .
+						'permission changes, or removal. ',
+					array(
+						'file_name' =>
+							$pr_diff_file_name,
+					)
+				);
+
+				$auto_approved_files_arr[
+					$pr_diff_file_name
+				] = 'ap-svg-files';
 			}
 
 			/*

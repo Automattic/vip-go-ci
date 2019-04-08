@@ -93,6 +93,7 @@ final class ApFileTypesTest extends TestCase {
 				'auto-approvable-1.txt' => 'autoapprove-filetypes',
 				'auto-approvable-2.txt' => 'autoapprove-filetypes',
 				'auto-approvable-3.jpg' => 'autoapprove-filetypes',
+				'README.md'		=> 'autoapprove-filetypes',
 			)
 		);
 	}
