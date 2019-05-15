@@ -350,7 +350,7 @@ function vipgoci_file_extension( $file_name ) {
 function vipgoci_github_labels( $text_string ) {
 	switch( strtolower( $text_string ) ) {
 		case 'warning':
-			return ':exclamation:';
+			return ':warning:';
 
 		case 'error':
 			return ':no_entry_sign:';
