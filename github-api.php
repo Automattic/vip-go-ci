@@ -3214,3 +3214,232 @@ function vipgoci_github_label_remove_from_pr(
 		true // DELETE request will be sent
 	);
 }
+
+
+/*
+ * Get organization teams available to the calling
+ * user from the GitHub API.
+ */
+function vipgoci_github_org_teams(
+	$options,
+	$org_id,
+	$filter = null
+) {
+	$cached_id = array(
+		__FUNCTION__, $options['token'], $org_id
+	);
+
+	$cached_data = vipgoci_cache( $cached_id );
+
+	vipgoci_log(
+		'Getting organization teams from GitHub API' .
+		( $cached_data ? ' (cached)' : '' ),
+		array(
+			'org_id' => $org_id,
+		)
+	);
+
+	if ( false === $cached_data ) {
+		$github_url =
+			VIPGOCI_GITHUB_BASE_URL . '/' .
+			'orgs/' .
+			rawurlencode( $org_id ) . '/' .
+			'teams';
+
+		$org_teams = vipgoci_github_fetch_url(
+			$github_url,
+			$options['token']
+		);
+
+		$org_teams = json_decode(
+			$org_teams
+		);
+
+		vipgoci_cache(
+			$cached_id,
+			$org_teams
+		);
+	}
+
+	else {
+		$org_teams = $cached_data;
+	}
+
+	if (
+		( null !== $filter ) &&
+		( ! empty( $filter['slug'] ) ) &&
+		( is_string( $filter['slug'] ) )
+	) {
+		$org_teams_filtered = array();
+
+		foreach( $org_teams as $org_team ) {
+			if ( $filter['slug'] === $org_team->slug ) {
+				array_push(
+					$org_teams_filtered,
+					$org_team
+				);
+			}
+		}
+
+		$org_teams = $org_teams_filtered;
+	}
+
+	return $org_teams;
+}
+
+
+/*
+ * Get team members for a team.
+ */
+function vipgoci_github_team_members(
+	$options,
+	$team_id
+) {
+	$cached_id = array(
+		__FUNCTION__, $options['token'], $team_id
+	);
+
+	$cached_data = vipgoci_cache( $cached_id );
+
+	vipgoci_log(
+		'Getting team members for team organization' .
+		( $cached_data ? ' (cached)' : '' ),
+		array(
+			'team_id' => $team_id,
+		)
+	);
+
+	if ( false === $cached_data ) {
+		$github_url =
+			VIPGOCI_GITHUB_BASE_URL . '/' .
+			'teams/' .
+			rawurlencode( $team_id ) . '/' .
+			'members/';
+
+		$team_members = vipgoci_github_fetch_url(
+			$github_url,
+			$options['token']
+		);
+
+		$team_members = json_decode(
+			$team_members
+		);
+
+		vipgoci_cache(
+			$cached_id,
+			$team_members
+		);
+	}
+
+	else {
+		$team_members = $cached_data;
+	}
+
+	return $team_members;
+}
+
+
+/*
+ * Get all events issues related to a Pull-Request
+ * from the GitHub API, and filter away any items that
+ * do not match a given criteria (if applicable).
+ */
+function vipgoci_github_pr_review_events_get(
+	$options,
+	$pr_number,
+	$filter = null
+) {
+	$cached_id = array(
+		__FUNCTION__, $options['repo-owner'], $options['repo-name'],
+		$options['token'], $pr_number
+	);
+
+	$cached_data = vipgoci_cache( $cached_id );
+
+	vipgoci_log(
+		'Getting issue events for Pull-Request from GitHub API' .
+		( $cached_data ? ' (cached)' : '' ),
+		array(
+			'repo_owner' => $options['repo-owner'],
+			'repo_name' => $options['repo-name'],
+			'pr_number' => $pr_number,
+		)
+	);
+
+	if ( false === $cached_data ) {
+		$github_url =
+			VIPGOCI_GITHUB_BASE_URL . '/' .
+			'repos/' .
+			rawurlencode( $options['repo-owner'] ) . '/' .
+			rawurlencode( $options['repo-name'] ) . '/' .
+			'issues/' .
+			rawurlencode( $pr_number ) . '/' .
+			'events';
+
+		$issue_events = vipgoci_github_fetch_url(
+			$github_url,
+			$options['token']
+		);
+
+		$issue_events = json_decode(
+			$issue_events
+		);
+
+		vipgoci_cache(
+			$cached_id,
+			$issue_events
+		);
+	}
+
+	else {
+		$issue_events = $cached_data;
+	}
+
+	/*
+	 * Filter results if requested. We can filter
+	 * by type of event and/or by actors that initiated
+	 * the event.
+	 */
+	if (
+		( null !== $filter ) &&
+		(
+			(
+				( ! empty( $filter['event_type'] ) ) &&
+				( is_string( $filter['event_type'] ) )
+			)
+			||
+			(
+				( ! empty( $filter['actors_logins'] ) ) &&
+				( is_array( $filter['actors_logins'] ) )
+			)
+		)
+	) {
+		$filtered_issue_events = array();
+
+		foreach( $issue_events as $issue_event ) {
+			if (
+				( ! empty( $filter['event_type'] ) ) &&
+				(
+					$issue_event->event ===
+					$filter['event_type']
+				)
+			) {
+				$filtered_issue_events[] = $issue_event;
+			}
+
+			if (
+				( ! empty( $filter['actors_logins'] ) ) ||
+				( in_array(
+					$issue_event->actor->login,
+					$filter['actors_logins']
+				) )
+			) {
+				$filtered_issue_events[] = $issue_event;
+			}
+		}
+
+		$issue_events = $filtered_issue_events;
+	}
+
+	return $issue_events;
+}
