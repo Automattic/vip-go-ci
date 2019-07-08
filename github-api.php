@@ -3420,22 +3420,24 @@ function vipgoci_github_pr_review_events_get(
 			if (
 				( ! empty( $filter['event_type'] ) ) &&
 				(
-					$issue_event->event ===
+					$issue_event->event !==
 					$filter['event_type']
 				)
 			) {
-				$filtered_issue_events[] = $issue_event;
+				continue;
 			}
 
 			if (
-				( ! empty( $filter['actors_logins'] ) ) ||
-				( in_array(
+				( ! empty( $filter['actors_logins'] ) ) &&
+				( false === in_array(
 					$issue_event->actor->login,
 					$filter['actors_logins']
 				) )
 			) {
-				$filtered_issue_events[] = $issue_event;
+				continue;
 			}
+
+			$filtered_issue_events[] = $issue_event;
 		}
 
 		$issue_events = $filtered_issue_events;
