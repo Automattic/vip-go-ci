@@ -363,6 +363,7 @@ function vipgoci_run() {
 			'review-comments-total-max:',
 			'review-comments-ignore:',
 			'dismiss-stale-reviews:',
+			'dismissed-reviews-ignore-comments:',
 			'branches-ignore:',
 			'output:',
 			'dry-run:',
@@ -435,6 +436,10 @@ function vipgoci_run() {
 			"\t" . '                               that we process which have no active comments. ' . PHP_EOL .
 			"\t" . '                               The Pull-Requests we process are those associated ' . PHP_EOL .
 			"\t" . '                               with the commit specified.' . PHP_EOL .
+			"\t" . '--dismissed-reviews-ignore-comments=BOOL  When avoiding double-posting comments,' . PHP_EOL .
+			"\t" . '                                          do not take into consideration comments ' . PHP_EOL .
+			"\t" . '                                          posted against reviews that have now been ' . PHP_EOL .
+			"\t" . '                                          dismissed. ' . PHP_EOL . 
 			"\t" . '--informational-url=STRING     URL to documentation on what this bot does. Should ' . PHP_EOL .
 			"\t" . '                               start with https:// or https:// ' . PHP_EOL .
 			"\t" . '--phpcs=BOOL                   Whether to run PHPCS (true/false)' . PHP_EOL .
@@ -800,6 +805,8 @@ function vipgoci_run() {
 	vipgoci_option_bool_handle( $options, 'lint', 'true' );
 
 	vipgoci_option_bool_handle( $options, 'dismiss-stale-reviews', 'false' );
+
+	vipgoci_option_bool_handle( $options, 'dismissed-reviews-ignore-comments', 'true' );
 
 	if (
 		( false === $options['lint'] ) &&
@@ -1331,7 +1338,7 @@ function vipgoci_run() {
 		$options,
 		$prs_implicated,
 		$results,
-		true
+		$options['dismissed-reviews-ignore-comments']
 	);
 
 	/*
