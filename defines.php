@@ -17,8 +17,7 @@ define( 'VIPGOCI_INFORMATIONAL_MESSAGE',
 					'read more [here](%s).'
 );
 
-define( 'VIPGOCI_FILE_IS_APPROVED_MSG', 'File is approved in ' .
-					'hashes-to-hashes database' );
+define( 'VIPGOCI_FILE_IS_APPROVED_MSG', 'File is approved in review database' );
 
 define( 'VIPGOCI_REVIEW_COMMENTS_TOTAL_MAX',
 					'Total number of active review comments per ' .
