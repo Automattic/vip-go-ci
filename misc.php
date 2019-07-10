@@ -805,6 +805,19 @@ function vipgoci_remove_existing_github_comments_from_results(
 					$pr_item->number
 				]
 			) ) {
+				vipgoci_log(
+					'Excluding certain reviews from a ' .
+						'list of reviews, comments ' .
+						'of which are not to be ' .
+						'posted again',
+					array(
+						'review_ids' =>
+							$prs_events_dismissed_by_team[
+								$pr_item->number
+							],
+					)
+				);
+
 				$dismissed_reviews = array_diff(
 					$dismissed_reviews,
 					$prs_events_dismissed_by_team[
