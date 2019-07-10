@@ -3302,7 +3302,7 @@ function vipgoci_github_team_members(
 	$cached_data = vipgoci_cache( $cached_id );
 
 	vipgoci_log(
-		'Getting team members for team organization' .
+		'Getting team members for organization team' .
 		( $cached_data ? ' (cached)' : '' ),
 		array(
 			'team_id' => $team_id,
