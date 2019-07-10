@@ -364,6 +364,7 @@ function vipgoci_run() {
 			'review-comments-ignore:',
 			'dismiss-stale-reviews:',
 			'dismissed-reviews-ignore-comments:',
+			'dismissed-reviews-exclude-reviews-from-team:',
 			'branches-ignore:',
 			'output:',
 			'dry-run:',
@@ -439,7 +440,14 @@ function vipgoci_run() {
 			"\t" . '--dismissed-reviews-ignore-comments=BOOL  When avoiding double-posting comments,' . PHP_EOL .
 			"\t" . '                                          do not take into consideration comments ' . PHP_EOL .
 			"\t" . '                                          posted against reviews that have now been ' . PHP_EOL .
-			"\t" . '                                          dismissed. ' . PHP_EOL . 
+			"\t" . '                                          dismissed. ' . PHP_EOL .
+			"\t" . '--dismissed-reviews-exclude-reviews-from-team=STRING  With this parameter set, ' . PHP_EOL .
+			"\t" . '                                                      comments that are part of reviews ' . PHP_EOL .
+			"\t" . '                                                      dismissed by members of the teams specified,  ' . PHP_EOL .
+			"\t" . '                                                      would be taken into consideration when ' . PHP_EOL .
+			"\t" . '                                                      avoiding double-posting. Note that this ' . PHP_EOL .
+			"\t" . '                                                      parameter only works in conjection ' . PHP_EOL .
+			"\t" . '                                                      with --dismissed-reviews-ignore-comments' . PHP_EOL .
 			"\t" . '--informational-url=STRING     URL to documentation on what this bot does. Should ' . PHP_EOL .
 			"\t" . '                               start with https:// or https:// ' . PHP_EOL .
 			"\t" . '--phpcs=BOOL                   Whether to run PHPCS (true/false)' . PHP_EOL .
@@ -644,6 +652,20 @@ function vipgoci_run() {
 		);
 	}
 
+	/*
+	 * Process --dismissed-reviews-exclude-reviews-from-team,
+	 * expected to be a string.
+	 */
+
+	vipgoci_option_array_handle(
+		$options,
+		'dismissed-reviews-exclude-reviews-from-team',
+		array(),
+		array(),
+		','
+	);
+
+	
 	/*
 	 * Process --phpcs-severity -- expected to be
 	 * an integer-value.
@@ -1065,6 +1087,62 @@ function vipgoci_run() {
 		);
 	}
 
+	/*
+	 * Check if the teams specified in the
+	 * --dismissed-reviews-exclude-reviews-from-team parameter are
+	 * really valid. If some of them are not, log that and erase
+	 * the parameters that are invalid.
+	 */
+
+	$options['dismissed-reviews-exclude-reviews-from-team'] =
+		array_map(
+			function( $team_id_value ) {
+				return strtolower( ltrim( rtrim(
+					$team_id_value
+				) ) );
+			},
+			$options['dismissed-reviews-exclude-reviews-from-team']
+		);
+
+	foreach(
+		$options['dismissed-reviews-exclude-reviews-from-team'] as
+		$team_id_key =>	$team_id_value
+	) {
+		$team_id_members = vipgoci_github_team_members(
+			$options,
+			$team_id_value
+		);
+
+		if (
+			'not found' ===
+				strtolower( $team_id_members->message )
+		) {
+			vipgoci_log(
+				'Invalid team ID found in ' .
+				'--dismissed-reviews-exclude-reviews-from-team ' .
+				'parameter; ignoring it.',
+				array(
+					'team_id' => $team_id_value,
+				)
+			);
+
+			unset(
+				$options
+					['dismissed-reviews-exclude-reviews-from-team']
+					[ $team_id_key ]
+			);
+		}
+	}
+
+	unset( $team_id_key );
+	unset( $team_id_value );
+	unset( $team_id_members );
+
+	/* Reconstruct array from the previous one */
+	$options['dismissed-reviews-exclude-reviews-from-team'] = array_values(
+		$options['dismissed-reviews-exclude-reviews-from-team']
+	);
+
 
 	/*
 	 * Log that we started working,
@@ -1329,6 +1407,65 @@ function vipgoci_run() {
 		$auto_approved_files_arr
 	);
 
+
+	/*
+	 * Get all events on dismissed reviews
+	 * from members of the specified team,
+	 * by Pull-Request.
+	 */
+
+	$team_members_logins_arr = array();
+
+	if ( ! empty(
+		$options['dismissed-reviews-exclude-reviews-from-team']
+	) ) {
+		foreach(
+			$options['dismissed-reviews-exclude-reviews-from-team']
+			as $team_id
+		) {
+			$team_id_members = vipgoci_github_team_members(
+				$options,
+				$team_id
+			);
+
+			$team_members_logins_arr = array_merge(
+				$team_members_logins_arr,
+				array_column(
+					$team_id_members,
+					'login'
+				)
+			);
+		}
+
+		unset( $team_id_members );
+		unset( $team_id );
+	}
+
+
+	/*
+	 * If we have any team member's logins,
+	 * get any Pull-Request review dismissal events
+	 * by members of that team.
+	 */
+	$prs_events_dismissed_by_team = array();
+
+	if ( ! empty( $team_members_logins_arr ) ) {
+		foreach ( $prs_implicated as $pr_item ) {
+			$prs_events_dismissed_by_team[ $pr_item->number ] =
+				vipgoci_github_pr_review_events_get(
+					$options,
+					$pr_item->number,
+					array(
+						'event_type' => 'review_dismissed',
+						'actors_logins' => $team_members_logins_arr,
+					)
+				);
+		}
+	}
+
+	unset( $team_members_logins_arr );
+
+
 	/*
 	 * Remove comments from $results that have
 	 * already been submitted.
@@ -1338,7 +1475,8 @@ function vipgoci_run() {
 		$options,
 		$prs_implicated,
 		$results,
-		$options['dismissed-reviews-ignore-comments']
+		$options['dismissed-reviews-ignore-comments'],
+		$prs_events_dismissed_by_team
 	);
 
 	/*
