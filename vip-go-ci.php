@@ -1110,8 +1110,13 @@ function vipgoci_run() {
 		);
 
 		if (
-			'not found' ===
+			( isset(
+				$team_id_members->message
+			) )
+			&&
+			( 'not found' ===
 				strtolower( $team_id_members->message )
+			)
 		) {
 			vipgoci_log(
 				'Invalid team ID found in ' .
