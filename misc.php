@@ -794,6 +794,7 @@ function vipgoci_remove_existing_github_comments_from_results(
 				'id'
 			);
 
+			unset( $pr_reviews );
 
 			/*
 			 * Here we make sure not to ignore certain
@@ -811,8 +812,6 @@ function vipgoci_remove_existing_github_comments_from_results(
 					]
 				);
 			}
-
-			unset( $pr_reviews );
 
 
 			/*
@@ -1616,4 +1615,14 @@ function vipgoci_markdown_comment_add_pagebreak(
 	$comment .= $pagebreak_style . "\n\r";
 }
 
+
+/*
+ * Sanitize a string, removing any whitespace-characters
+ * from the beginning and and, and transform to lowercase.
+ */
+function vipgoci_sanitize_string( $str ) {
+	return strtolower( ltrim( rtrim(
+		$str
+	) ) );
+}
 

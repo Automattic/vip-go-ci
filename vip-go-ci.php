@@ -1096,11 +1096,7 @@ function vipgoci_run() {
 
 	$options['dismissed-reviews-exclude-reviews-from-team'] =
 		array_map(
-			function( $team_id_value ) {
-				return strtolower( ltrim( rtrim(
-					$team_id_value
-				) ) );
-			},
+			'vipgoci_sanitize_string',
 			$options['dismissed-reviews-exclude-reviews-from-team']
 		);
 
