@@ -707,7 +707,8 @@ function vipgoci_remove_existing_github_comments_from_results(
 	$options,
 	$prs_implicated,
 	&$results,
-	$ignore_dismissed_reviews = false
+	$ignore_dismissed_reviews = false,
+	$prs_events_dismissed_by_team = array()
 ) {
 	vipgoci_log(
 		'Removing existing GitHub comments from results' .
@@ -717,6 +718,7 @@ function vipgoci_remove_existing_github_comments_from_results(
 			'repo_name' => $options['repo-name'],
 			'prs_implicated' => array_keys( $prs_implicated ),
 			'ignore_dismissed_reviews' => $ignore_dismissed_reviews,
+			'prs_events_dismissed_by_team' => $prs_events_dismissed_by_team,
 		)
 	);
 
@@ -764,6 +766,15 @@ function vipgoci_remove_existing_github_comments_from_results(
 		 * Ignore dismissed reviews, if requested.
 		 */
 		if ( true === $ignore_dismissed_reviews ) {
+			vipgoci_log(
+				'Getting reviews that have been dismissed, ' .
+					'and filtering out comments ' .
+					'that are part of such reviews ' .
+					'before removing comments from ' .
+					'results for submission',
+				array()
+			);
+
 			/*
 			 * Get dismissed reviews and extract ID of each.
 			 */
@@ -782,6 +793,24 @@ function vipgoci_remove_existing_github_comments_from_results(
 				$pr_reviews,
 				'id'
 			);
+
+
+			/*
+			 * Here we make sure not to ignore certain
+			 * reviews, determined by our caller.
+			 */
+			if ( ! empty(
+				$prs_events_dismissed_by_team[
+					$pr_item->number
+				]
+			) ) {
+				$dismissed_reviews = array_diff(
+					$dismissed_reviews,
+					$prs_events_dismissed_by_team[
+						$pr_item->number
+					]
+				);
+			}
 
 			unset( $pr_reviews );
 
