@@ -3242,7 +3242,7 @@ function vipgoci_github_team_members(
 			VIPGOCI_GITHUB_BASE_URL . '/' .
 			'teams/' .
 			rawurlencode( $team_id ) . '/' .
-			'members/';
+			'members';
 
 		$team_members = vipgoci_github_fetch_url(
 			$github_url,
@@ -3264,6 +3264,101 @@ function vipgoci_github_team_members(
 	}
 
 	return $team_members;
+}
+
+
+/*
+ * Get organization teams available to the calling
+ * user from the GitHub API.
+ */
+function vipgoci_github_org_teams(
+	$options,
+	$org_id,
+	$filter = null,
+	$keyed_by = null
+) {
+	$cached_id = array(
+		__FUNCTION__, $options['token'], $org_id
+	);
+
+	$cached_data = vipgoci_cache( $cached_id );
+
+	vipgoci_log(
+		'Getting organization teams from GitHub API' .
+		( $cached_data ? ' (cached)' : '' ),
+		array(
+			'org_id' => $org_id,
+		)
+	);
+
+	if ( false === $cached_data ) {
+		$github_url =
+			VIPGOCI_GITHUB_BASE_URL . '/' .
+			'orgs/' .
+			rawurlencode( $org_id ) . '/' .
+			'teams';
+
+		$org_teams = vipgoci_github_fetch_url(
+			$github_url,
+			$options['token']
+		);
+
+		$org_teams = json_decode(
+			$org_teams
+		);
+
+		vipgoci_cache(
+			$cached_id,
+			$org_teams
+		);
+	}
+
+	else {
+		$org_teams = $cached_data;
+	}
+
+
+	/*
+	 * Filter the results according to criteria.
+	 */
+	if (
+		( null !== $filter ) &&
+		( ! empty( $filter['slug'] ) ) &&
+		( is_string( $filter['slug'] ) )
+	) {
+		$org_teams_filtered = array();
+
+		foreach( $org_teams as $org_team ) {
+			if ( $filter['slug'] === $org_team->slug ) {
+				$org_teams_filtered[] = $org_team;
+			}
+		}
+
+		$org_teams = $org_teams_filtered;
+	}
+
+
+	/*
+	 * If asked for, let the resulting
+	 * array be keyed with a certain field.
+	 */
+	if ( null !== $keyed_by ) {
+		$org_teams_keyed = array();
+
+		foreach( $org_teams as $org_team ) {
+			$org_team_arr = (array) $org_team;
+
+			$org_teams_keyed[
+				$org_team_arr[
+					$keyed_by
+				]
+			][] = $org_team;
+		}
+
+		$org_teams = $org_teams_keyed;
+	}
+
+	return $org_teams;
 }
 
 
@@ -3373,3 +3468,6 @@ function vipgoci_github_pr_review_events_get(
 
 	return $issue_events;
 }
+
+
+
