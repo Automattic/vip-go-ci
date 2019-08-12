@@ -446,7 +446,7 @@ function vipgoci_run() {
 			"\t" . '                                                      dismissed by members of the teams specified,  ' . PHP_EOL .
 			"\t" . '                                                      would be taken into consideration when ' . PHP_EOL .
 			"\t" . '                                                      avoiding double-posting. Note that this ' . PHP_EOL .
-			"\t" . '                                                      parameter only works in conjection ' . PHP_EOL .
+			"\t" . '                                                      parameter only works in conjunction ' . PHP_EOL .
 			"\t" . '                                                      with --dismissed-reviews-ignore-comments' . PHP_EOL .
 			"\t" . '--informational-url=STRING     URL to documentation on what this bot does. Should ' . PHP_EOL .
 			"\t" . '                               start with https:// or https:// ' . PHP_EOL .
@@ -1467,15 +1467,13 @@ function vipgoci_run() {
 		) {
 			$team_id_members = vipgoci_github_team_members(
 				$options,
-				$team_id
+				$team_id,
+				true
 			);
 
 			$team_members_logins_arr = array_merge(
 				$team_members_logins_arr,
-				array_column(
-					$team_id_members,
-					'login'
-				)
+				$team_id_members
 			);
 		}
 
@@ -1500,9 +1498,20 @@ function vipgoci_run() {
 					array(
 						'event_type' => 'review_dismissed',
 						'actors_logins' => $team_members_logins_arr,
-					)
+					),
+					true
 				);
 		}
+
+		vipgoci_log(
+			'Fetched list of Pull-Request reviews dismissed by members of a team',
+			array(
+				'team_members' =>
+					$team_members_logins_arr,
+				'reviews_dismissed_by_team' =>
+					$prs_events_dismissed_by_team,
+			)
+		);
 	}
 
 	unset( $team_members_logins_arr );

@@ -815,6 +815,9 @@ function vipgoci_remove_existing_github_comments_from_results(
 							$prs_events_dismissed_by_team[
 								$pr_item->number
 							],
+
+						'all_review_ids' =>
+							$dismissed_reviews,
 					)
 				);
 

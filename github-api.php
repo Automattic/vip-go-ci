@@ -3221,7 +3221,8 @@ function vipgoci_github_label_remove_from_pr(
  */
 function vipgoci_github_team_members(
 	$options,
-	$team_id
+	$team_id,
+	$ids_only = false
 ) {
 	$cached_id = array(
 		__FUNCTION__, $options['token'], $team_id
@@ -3261,6 +3262,13 @@ function vipgoci_github_team_members(
 
 	else {
 		$team_members = $cached_data;
+	}
+
+	if ( true === $ids_only ) {
+		$issue_events = array_column(
+			$team_members,
+			'id'
+		);
 	}
 
 	return $team_members;
@@ -3370,7 +3378,8 @@ function vipgoci_github_org_teams(
 function vipgoci_github_pr_review_events_get(
 	$options,
 	$pr_number,
-	$filter = null
+	$filter = null,
+	$review_ids_only = false
 ) {
 	$cached_id = array(
 		__FUNCTION__, $options['repo-owner'], $options['repo-name'],
@@ -3464,6 +3473,17 @@ function vipgoci_github_pr_review_events_get(
 		}
 
 		$issue_events = $filtered_issue_events;
+	}
+
+	if ( true === $review_ids_only ) {
+		$issue_events_ret = array();
+
+		foreach( $issue_events as $issue_event ) {
+			$issue_events_ret[] =
+				$issue_event->dismissed_review->review_id;
+		}
+
+		$issue_events = $issue_events_ret;
 	}
 
 	return $issue_events;
