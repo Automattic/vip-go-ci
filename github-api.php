@@ -3217,7 +3217,7 @@ function vipgoci_github_label_remove_from_pr(
 
 
 /*
- * Get team members for a team.
+ * Get members for a team.
  */
 function vipgoci_github_team_members(
 	$options,
@@ -3231,10 +3231,11 @@ function vipgoci_github_team_members(
 	$cached_data = vipgoci_cache( $cached_id );
 
 	vipgoci_log(
-		'Getting team members for organization team' .
+		'Getting members for organization team' .
 		( $cached_data ? ' (cached)' : '' ),
 		array(
 			'team_id' => $team_id,
+			'ids_only' => $ids_only,
 		)
 	);
 
