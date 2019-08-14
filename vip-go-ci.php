@@ -363,7 +363,7 @@ function vipgoci_run() {
 			'review-comments-total-max:',
 			'review-comments-ignore:',
 			'dismiss-stale-reviews:',
-			'dismissed-reviews-ignore-comments:',
+			'dismissed-reviews-repost-comments:',
 			'dismissed-reviews-exclude-reviews-from-team:',
 			'branches-ignore:',
 			'output:',
@@ -437,7 +437,7 @@ function vipgoci_run() {
 			"\t" . '                               that we process which have no active comments. ' . PHP_EOL .
 			"\t" . '                               The Pull-Requests we process are those associated ' . PHP_EOL .
 			"\t" . '                               with the commit specified.' . PHP_EOL .
-			"\t" . '--dismissed-reviews-ignore-comments=BOOL  When avoiding double-posting comments,' . PHP_EOL .
+			"\t" . '--dismissed-reviews-repost-comments=BOOL  When avoiding double-posting comments,' . PHP_EOL .
 			"\t" . '                                          do not take into consideration comments ' . PHP_EOL .
 			"\t" . '                                          posted against reviews that have now been ' . PHP_EOL .
 			"\t" . '                                          dismissed. ' . PHP_EOL .
@@ -447,7 +447,7 @@ function vipgoci_run() {
 			"\t" . '                                                      would be taken into consideration when ' . PHP_EOL .
 			"\t" . '                                                      avoiding double-posting. Note that this ' . PHP_EOL .
 			"\t" . '                                                      parameter only works in conjunction ' . PHP_EOL .
-			"\t" . '                                                      with --dismissed-reviews-ignore-comments' . PHP_EOL .
+			"\t" . '                                                      with --dismissed-reviews-repost-comments' . PHP_EOL .
 			"\t" . '--informational-url=STRING     URL to documentation on what this bot does. Should ' . PHP_EOL .
 			"\t" . '                               start with https:// or https:// ' . PHP_EOL .
 			"\t" . '--phpcs=BOOL                   Whether to run PHPCS (true/false)' . PHP_EOL .
@@ -828,7 +828,7 @@ function vipgoci_run() {
 
 	vipgoci_option_bool_handle( $options, 'dismiss-stale-reviews', 'false' );
 
-	vipgoci_option_bool_handle( $options, 'dismissed-reviews-ignore-comments', 'true' );
+	vipgoci_option_bool_handle( $options, 'dismissed-reviews-repost-comments', 'true' );
 
 	if (
 		( false === $options['lint'] ) &&
@@ -1461,6 +1461,16 @@ function vipgoci_run() {
 	if ( ! empty(
 		$options['dismissed-reviews-exclude-reviews-from-team']
 	) ) {
+		vipgoci_log(
+			'Preparing to excluding comments that ' .
+				'are part of dismissed reviews ' .
+				'by members of particular team(s).',
+			array(
+				'teams' => 
+				'dismissed-reviews-exclude-reviews-from-team'
+			)
+		);
+
 		foreach(
 			$options['dismissed-reviews-exclude-reviews-from-team']
 			as $team_id
@@ -1489,7 +1499,15 @@ function vipgoci_run() {
 	 */
 	$prs_events_dismissed_by_team = array();
 
-	if ( ! empty( $team_members_logins_arr ) ) {
+	if (
+		( ! empty(
+			$options['dismissed-reviews-exclude-reviews-from-team'
+		) )
+		&&
+		( ! empty(
+			$team_members_logins_arr
+		) )
+	) {
 		foreach ( $prs_implicated as $pr_item ) {
 			$prs_events_dismissed_by_team[ $pr_item->number ] =
 				vipgoci_github_pr_review_events_get(
@@ -1526,7 +1544,7 @@ function vipgoci_run() {
 		$options,
 		$prs_implicated,
 		$results,
-		$options['dismissed-reviews-ignore-comments'],
+		$options['dismissed-reviews-repost-comments'],
 		$prs_events_dismissed_by_team
 	);
 
