@@ -3297,6 +3297,8 @@ function vipgoci_github_org_teams(
 		( $cached_data ? ' (cached)' : '' ),
 		array(
 			'org_id' => $org_id,
+			'filter' => $filter,
+			'keyed_by' => $keyed_by,
 		)
 	);
 
@@ -3396,6 +3398,8 @@ function vipgoci_github_pr_review_events_get(
 			'repo_owner' => $options['repo-owner'],
 			'repo_name' => $options['repo-name'],
 			'pr_number' => $pr_number,
+			'filter' => $filter,
+			'review_ids_only' => $review_ids_only,
 		)
 	);
 
