@@ -1456,7 +1456,7 @@ function vipgoci_run() {
 
 	/*
 	 * Get all events on dismissed reviews
-	 * from members of the specified team,
+	 * from members of the specified team(s),
 	 * by Pull-Request.
 	 */
 
@@ -1466,12 +1466,11 @@ function vipgoci_run() {
 		$options['dismissed-reviews-exclude-reviews-from-team']
 	) ) {
 		vipgoci_log(
-			'Preparing to excluding comments that ' .
-				'are part of dismissed reviews ' .
-				'by members of particular team(s).',
+			'Getting members of teams specified by caller',
+
 			array(
 				'teams' => 
-				'dismissed-reviews-exclude-reviews-from-team'
+					'dismissed-reviews-exclude-reviews-from-team'
 			)
 		);
 
