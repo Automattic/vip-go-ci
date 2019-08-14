@@ -707,7 +707,7 @@ function vipgoci_remove_existing_github_comments_from_results(
 	$options,
 	$prs_implicated,
 	&$results,
-	$ignore_dismissed_reviews = false,
+	$repost_comments_from_dismissed_reviews = false,
 	$prs_events_dismissed_by_team = array()
 ) {
 	vipgoci_log(
@@ -717,7 +717,7 @@ function vipgoci_remove_existing_github_comments_from_results(
 			'repo_owner' => $options['repo-owner'],
 			'repo_name' => $options['repo-name'],
 			'prs_implicated' => array_keys( $prs_implicated ),
-			'ignore_dismissed_reviews' => $ignore_dismissed_reviews,
+			'ignore_dismissed_reviews' => $repost_comments_from_dismissed_reviews,
 			'prs_events_dismissed_by_team' => $prs_events_dismissed_by_team,
 		)
 	);
@@ -765,7 +765,7 @@ function vipgoci_remove_existing_github_comments_from_results(
 		/*
 		 * Ignore dismissed reviews, if requested.
 		 */
-		if ( true === $ignore_dismissed_reviews ) {
+		if ( true === $repost_comments_from_dismissed_reviews ) {
 			vipgoci_log(
 				'Later on, will make sure comments ' .
 					'that are part of dismissed reviews ' .
