@@ -440,14 +440,18 @@ function vipgoci_run() {
 			"\t" . '--dismissed-reviews-repost-comments=BOOL  When avoiding double-posting comments,' . PHP_EOL .
 			"\t" . '                                          do not take into consideration comments ' . PHP_EOL .
 			"\t" . '                                          posted against reviews that have now been ' . PHP_EOL .
-			"\t" . '                                          dismissed. ' . PHP_EOL .
+			"\t" . '                                          dismissed. Setting this to true entails ' . PHP_EOL .
+			"\t" . '                                          that comments from dismissed reviews will ' . PHP_EOL .
+			"\t" . '                                          be posted again, should the underlying issue . ' PHP_EOL .
+			"\t" . '                                          be detected during the run.' . PHP_EOL .
 			"\t" . '--dismissed-reviews-exclude-reviews-from-team=STRING  With this parameter set, ' . PHP_EOL .
 			"\t" . '                                                      comments that are part of reviews ' . PHP_EOL .
 			"\t" . '                                                      dismissed by members of the teams specified,  ' . PHP_EOL .
 			"\t" . '                                                      would be taken into consideration when ' . PHP_EOL .
-			"\t" . '                                                      avoiding double-posting. Note that this ' . PHP_EOL .
-			"\t" . '                                                      parameter only works in conjunction ' . PHP_EOL .
-			"\t" . '                                                      with --dismissed-reviews-repost-comments' . PHP_EOL .
+			"\t" . '                                                      avoiding double-posting; they would be ' . PHP_EOL . 
+			"\t" . '                                                      excluded. Note that this parameter ' . PHP_EOL .
+			"\t" . '                                                      only works in conjunction with ' . PHP_EOL .
+			"\t" . '                                                      --dismissed-reviews-repost-comments' . PHP_EOL .
 			"\t" . '--informational-url=STRING     URL to documentation on what this bot does. Should ' . PHP_EOL .
 			"\t" . '                               start with https:// or https:// ' . PHP_EOL .
 			"\t" . '--phpcs=BOOL                   Whether to run PHPCS (true/false)' . PHP_EOL .
@@ -1118,7 +1122,7 @@ function vipgoci_run() {
 
 	foreach(
 		$options['dismissed-reviews-exclude-reviews-from-team'] as
-		$team_id_key =>	$team_id_value
+			$team_id_key =>	$team_id_value
 	) {
 		$team_id_value_original = $team_id_value;
 
