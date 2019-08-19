@@ -394,3 +394,41 @@ function vipgoci_ap_hashes_api_scan_commit(
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'hashes_api_scan' );
 }
 
+
+/*
+ * Look for comments to Pull-Requests indicating approval of
+ * file for hashes-to-hashes API.
+ *
+ * Look through all comments that are part of the Pull-Requests.
+ * If we find particular comments (e.g., "MyTeam: Approved file")
+ * that are submitted by member of a particular team (e.g., "myteam"),
+ * and if we find any, submit the file that the comment is made against
+ * to the hashes-to-hashes API. Note that we do this only for newly
+ * created files, and not files that are only modified.
+ */
+
+function vipgoci_ap_hashes_api_submit_approved_files(
+	$options,
+	$prs_implicated
+) {
+	foreach ( $prs_implicated as $pr_item ) {
+		vipgoci_log(
+			'Looking for comments submitted to Pull-Requests ' .
+				'indicating that files are approved, but ' .
+				'only if submitted by a particular team',
+			array(
+				'repo_owner' => $options['repo-owner'],
+				'repo_name' => $options['repo-name'],
+				'pr_number' => $pr_item->number,
+			)
+		);
+
+		$pr_comments = vipgoci_github_pr_generic_comments_get(
+			$options['repo-owner'],
+			$options['repo-name'],
+			$pr_item->number,
+			$github_token
+		);
+	}
+}
+
