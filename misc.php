@@ -770,9 +770,9 @@ function vipgoci_remove_existing_github_comments_from_results(
 				'Later on, will make sure comments ' .
 					'that are part of dismissed reviews ' .
 					'will be submitted again, if the ' .
-					'underlying issue was detected' . 
+					'underlying issue was detected ' . 
 					'during the run. In case of such a setting' .
-					'and such reviews existing, excluding  ' .
+					'and such reviews existing, excluding ' .
 					'reviews (and thus comments) that are submitted ' .
 					'by members of a particular team ' .
 					'from this process',
@@ -932,11 +932,6 @@ function vipgoci_remove_existing_github_comments_from_results(
 				array(
 					'removed_comments' =>
 						$removed_comments,
-
-					'excluded_review_ids' =>
-						$prs_events_dismissed_by_team[
-							$pr_item->number
-						]
 				)
 			);
 
