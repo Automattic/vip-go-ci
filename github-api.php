@@ -3359,6 +3359,14 @@ function vipgoci_github_org_teams(
 		foreach( $org_teams as $org_team ) {
 			$org_team_arr = (array) $org_team;
 
+			/*
+			 * In case of invalid response,
+			 * ignore item.
+			 */
+			if ( ! isset( $org_team_arr[ $keyed_by ] ) ) {
+				continue;
+			}
+
 			$org_teams_keyed[
 				$org_team_arr[
 					$keyed_by
