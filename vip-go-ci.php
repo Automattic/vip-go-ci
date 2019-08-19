@@ -1435,6 +1435,21 @@ function vipgoci_run() {
 		}
 	}
 
+	/*
+	 * Submit approved files to the hashes-to-hashes API.
+	 * Do this by looking through all comments posted to
+	 * all Pull-Requests implicated, search for specific
+	 * comments (e.g., "VIP: Approved file.") submitted by
+	 * member of a particular GitHub team, and if they are
+	 * existing submit to Hashes-to-hashes API.
+	 */
+
+	vipgoci_ap_hashes_api_submit_approved_files(
+		$options,
+		$prs_implicated
+	);
+
+
 
 	/*
 	 * At this point, we have started to prepare
