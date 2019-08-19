@@ -85,7 +85,7 @@ final class GitHubPrsImplicatedTest extends TestCase {
 		);
 
 		$this->assertEquals(
-			'5d57f5ba2c299cc6cb170e57d5c1139e41b86b80',
+			'80ebd6d65db88e87665b6ff1aa045f68d17ddeb7',
 			$prs_implicated[9]->merge_commit_sha
 		);
 
