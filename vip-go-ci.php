@@ -442,7 +442,7 @@ function vipgoci_run() {
 			"\t" . '                                          posted against reviews that have now been ' . PHP_EOL .
 			"\t" . '                                          dismissed. Setting this to true entails ' . PHP_EOL .
 			"\t" . '                                          that comments from dismissed reviews will ' . PHP_EOL .
-			"\t" . '                                          be posted again, should the underlying issue . ' PHP_EOL .
+			"\t" . '                                          be posted again, should the underlying issue ' . PHP_EOL .
 			"\t" . '                                          be detected during the run.' . PHP_EOL .
 			"\t" . '--dismissed-reviews-exclude-reviews-from-team=STRING  With this parameter set, ' . PHP_EOL .
 			"\t" . '                                                      comments that are part of reviews ' . PHP_EOL .
@@ -1504,7 +1504,7 @@ function vipgoci_run() {
 
 	if (
 		( ! empty(
-			$options['dismissed-reviews-exclude-reviews-from-team'
+			$options['dismissed-reviews-exclude-reviews-from-team']
 		) )
 		&&
 		( ! empty(
