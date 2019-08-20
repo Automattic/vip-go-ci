@@ -499,10 +499,10 @@ function vipgoci_ap_hashes_api_submit_single_approved_file(
 	if ( null !== $submitter_github_username ) {
 		$hashes_to_hashes_data['human_note'] =
 			'Submitted via vip-go-ci, by GitHub instruction, ' .
-			'user=' . rawurlencode( $submitter_github_username ) . ', ' .
-			'commit_id=' . rawurlencode( $options['commit'] ) . ', ' .
 			'repo_owner=' . rawurlencode( $options['repo-owner'] ) . ', ' .
 			'repo_name=' . rawurlencode( $options['repo-name'] ) . ', ';
+			'commit_id=' . rawurlencode( $options['commit'] ) . ', ' .
+			'submitting_comment_user=' . rawurlencode( $submitter_github_username ) . ', ' .
 	}
 
 	// FIXME: Implement submission logic
