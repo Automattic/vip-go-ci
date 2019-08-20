@@ -377,6 +377,7 @@ function vipgoci_run() {
 			'hashes-oauth-token-secret:',
 			'hashes-oauth-consumer-key:',
 			'hashes-oauth-consumer-secret:',
+			'hashes-submit-approved-file-comment-string:',
 			'irc-api-url:',
 			'irc-api-token:',
 			'irc-api-bot:',
