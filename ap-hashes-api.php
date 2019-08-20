@@ -423,7 +423,8 @@ function vipgoci_ap_hashes_api_scan_commit(
 
 function vipgoci_ap_hashes_api_submit_single_approved_file(
 	$options,
-	$file_path
+	$file_path,
+	$submitter_github_username = null
 ) {
 	vipgoci_runtime_measure(
 		VIPGOCI_RUNTIME_START,
@@ -433,7 +434,11 @@ function vipgoci_ap_hashes_api_submit_single_approved_file(
 	vipgoci_log(
 		'Submitting approved file to hashes-to-hashes API',
 		array(
-			'file_path' => $file_path
+			'file_path' =>
+				$file_path,
+
+			'submitter_github_username' =>
+				$submitter_github_username
 		)
 	);
 
@@ -457,7 +462,47 @@ function vipgoci_ap_hashes_api_submit_single_approved_file(
 			)
 		);
 
+		vipgoci_runtime_measure(
+			VIPGOCI_RUNTIME_STOP,
+			'hashes_api_submit_single_file'
+		);
+
 		return;
+	}
+
+	/* Get info about token-holder */
+	$current_user_info = vipgoci_github_authenticated_user_get(
+		$options['token']
+	);
+
+
+	/*
+	 * Construct information for hashes-to-hashes
+	 * submission.
+	 */
+
+        $hashes_to_hashes_url =
+                $options['hashes-api-url'] .
+                '/v1/create_item';
+
+	$hashes_to_hashes_data = array(
+		array(
+			'hash' => $file_sha1,
+			'user' => $current_user_info->login,
+			'status' => true,
+			'notes' => null,
+			'date' => time(),
+			'human_note' => null,
+		)
+	);
+
+	if ( null !== $submitter_github_username ) {
+		$hashes_to_hashes_data['human_note'] =
+			'Submitted via vip-go-ci, by GitHub instruction, ' .
+			'user=' . rawurlencode( $submitter_github_username ) . ', ' .
+			'commit_id=' . rawurlencode( $options['commit'] ) . ', ' .
+			'repo_owner=' . rawurlencode( $options['repo-owner'] ) . ', ' .
+			'repo_name=' . rawurlencode( $options['repo-name'] ) . ', ';
 	}
 
 	// FIXME: Implement submission logic
@@ -700,7 +745,8 @@ function vipgoci_ap_hashes_api_submit_approved_files(
 
 			vipgoci_ap_hashes_api_submit_single_approved_file(
 				$options,
-				$pr_comment->path
+				$pr_comment->path,
+				$pr_comment->user->login
 			);
 			
 
