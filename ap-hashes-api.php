@@ -396,6 +396,36 @@ function vipgoci_ap_hashes_api_scan_commit(
 
 
 /*
+ * Submit a single file to hashes-to-hashes API, file
+ * that has been indicated as approved by an earlier process.
+ */
+
+function vipgoci_ap_hashes_api_submit_single_approved_file(
+	$options,
+	$file_path
+) {
+	vipgoci_runtime_measure(
+		VIPGOCI_RUNTIME_START,
+		'hashes_api_submit_single_file'
+	);
+
+	vipgoci_log(
+		'Submitting approved file to hashes-to-hashes API',
+		array(
+			'file_path' => $file_path
+		)
+	);
+
+	// FIXME: Implement submission logic
+
+	vipgoci_runtime_measure(
+		VIPGOCI_RUNTIME_STOP,
+		'hashes_api_submit_single_file'
+	);
+}
+
+
+/*
  * Look for comments to Pull-Requests indicating approval of
  * file for hashes-to-hashes API.
  *
@@ -411,24 +441,242 @@ function vipgoci_ap_hashes_api_submit_approved_files(
 	$options,
 	$prs_implicated
 ) {
+	vipgoci_runtime_measure(
+		VIPGOCI_RUNTIME_START,
+		'hashes_api_submit_approved_files'
+	);
+
+	vipgoci_log(
+		'Looking for comments submitted to Pull-Requests ' .
+			'indicating that files are approved, but ' .
+			'only if submitted by a member of a ' .
+			'particular team',
+		array(
+			'repo_owner' =>
+				$options['repo-owner'],
+
+			'repo_name' =>
+				$options['repo-name'],
+
+			'pr_numbers' =>
+				array_keys( $prs_implicated ),
+
+			'submission_string_used' =>
+				$options['hashes-submission-comment-string'],
+
+			'hashes_submission_team_members_allowed' =>
+				$options['hashes-submission-team-members-allowed']
+		)
+	);
+
+
 	foreach ( $prs_implicated as $pr_item ) {
-		vipgoci_log(
-			'Looking for comments submitted to Pull-Requests ' .
-				'indicating that files are approved, but ' .
-				'only if submitted by a particular team',
-			array(
-				'repo_owner' => $options['repo-owner'],
-				'repo_name' => $options['repo-name'],
-				'pr_number' => $pr_item->number,
-			)
+		$pr_comments = vipgoci_github_pr_reviews_comments_get_by_pr(
+			$options,
+			$pr_item->number
 		);
 
-		$pr_comments = vipgoci_github_pr_generic_comments_get(
-			$options['repo-owner'],
-			$options['repo-name'],
-			$pr_item->number,
-			$github_token
-		);
+		foreach ( $pr_comments as $pr_comment ) {
+			/*
+			 * Keep this debug-detail array ready
+			 * for use, so we don't have to keep
+			 * repeating the same code again and again.
+			 */
+			$log_detail_arr = array(
+				'repo_owner' =>
+					$options['repo-owner'],
+
+				'repo_name' =>
+					$options['repo-name'],
+
+				'pr_comment_id' =>
+					$pr_comment->id,
+
+				'pull_request_review_id' =>
+					$pr_comment->pull_request_review_id,
+
+				'pr_comment_body' =>
+					$pr_comment->body,
+
+				'user_submitting' =>
+					$pr_comment->user->login,
+
+				'hashes_submission_team_members_allowed' =>
+					$options['hashes-submission-team-members-allowed'],
+
+				'submission_string_used' =>
+					$options['hashes-submission-comment-string'],
+
+				'file_path' =>
+					$pr_comment->path,
+			);
+
+			/*
+			 * Search for a specific string in comment
+			 * indicating that a file is approved.
+			 */
+
+			if ( strpos(
+				$pr_comment->body,
+				$options['hashes-submission-comment-string']
+			) === false ) {
+				continue;
+			}
+
+
+			/*
+			 * Skip if the comment seems to contain alot of other
+			 * content -- we don't want to accidentally approve a file.
+			 */
+
+			if (
+				strlen( $pr_comment->body )
+				>
+				( strlen(
+					$options['hashes-submission-comment-string']
+				) * 1.75 )
+			) {
+				vipgoci_log(
+					'Skipping comment, as it is much ' .
+						'longer than anticipated ' .
+						'than if a simple approving' .
+						'comment',
+					$log_detail_arr
+				);
+
+				continue;
+			}
+
+
+			/*
+			 * Only consider comments made by users who can
+			 * approve files, by being members of a
+			 * particular team.
+			 */
+			if ( in_array(
+				$pr_comment->user->login,
+				$options['hashes-submission-team-members-allowed']
+			) !== true ) {
+				vipgoci_log(
+					'Skipping comment, as submitting ' .
+						'user does not have ' .
+						'permission to approve files',
+					$log_detail_arr
+				);
+
+				continue;
+			}
+
+
+			/*
+			 * Skip comment if the file is not new,
+			 * or if file is not PHP/JS/TWIG.
+			 */
+
+			$pr_altered_files = vipgoci_github_diffs_fetch(
+				$options['repo-owner'],
+				$options['repo-name'],
+				$options['token'],
+				$pr_item->base->sha,
+				$options['commit'],
+				false,
+				false,
+				false,
+				array(
+					'file_extensions' => 
+						array(
+							'php', 'js', 'twig'
+						),
+
+					'skip_folders' => 
+						$options['skip-folders'],
+				)
+			);
+	
+			/*
+			 * Make sure the comment the file is made
+			 * against is a new file.
+			 */	
+
+			if (
+				( isset(
+					$pr_altered_files[ $pr_comment->path ]
+				) )
+				//&&
+				//( $pr_altered_files[ $pr_comment->path ] 
+			)
+ 			{
+				// FIXME: Check if new
+				continue;
+			}
+
+
+			/*
+			 * Skip files that are approved already or
+			 * whose approval-status cannot be determined.
+			 */
+			$file_approved = vipgoci_ap_hashes_api_file_approved(
+				$options,
+				$pr_comment->path
+			);
+
+			if (
+				( true === $file_approved ) ||
+				( null === $file_approved )
+			) {
+
+				if ( true === $file_approved ) {
+					$file_approval_status_comment = 'Skipping comment, as file is already approved';
+				}
+
+				else if ( null === $file_approved ) {
+					$file_approval_status_comment = 'Skipping comment, as unable to determine approval status';
+				}
+
+				vipgoci_log(
+					$file_approval_status_comment,
+					$log_detail_arr
+				);
+
+				continue;
+			}
+
+			/*
+			 * All checks passed, actually send to
+			 * hashes-to-hashes API for approval.
+			 */
+
+			vipgoci_ap_hashes_api_submit_single_approved_file(
+				$options,
+				$pr_comment->path
+			);
+			
+
+			/*
+			 * Submit comment saying that we approved the file.
+			 */
+
+			// FIXME: Send comment.
+		}
 	}
+
+
+	/*
+	 * Clean up variables and
+	 * free memory (as possible).
+	 */
+	unset( $pr_comments );
+	unset( $pr_comment );
+	unset( $pr_altered_files );
+	unset( $file_approved );
+	unset( $file_approval_status_comment );
+	unset( $log_detail_arr );
+
+	gc_collect_cycles();
+
+	vipgoci_runtime_measure(
+		VIPGOCI_RUNTIME_STOP,
+		'hashes_api_submit_approved_files'
+	);
 }
 
