@@ -473,6 +473,21 @@ function vipgoci_run() {
 			"\t" . '                               consumer secret needed for hashes-to-hashes HTTP requests' . PHP_EOL .
 			"\t" . '                               All required for hashes-to-hashes requests.' . PHP_EOL .
 			PHP_EOL .
+			"\t" . '--hashes-submission-teams-allowed=ARRAY              List of GitHub usernames used to ' . PHP_EOL . 
+			"\t" . '                                                     indicate which users can approve ' . PHP_EOL . 
+			"\t" . '                                                     files for the hashes-to-hashes API. ' . PHP_EOL .
+			"\t" . '                                                     This indication is done by submitting ' . PHP_EOL .
+			"\t" . '                                                     inline comments to GitHub, ' . PHP_EOL .
+			"\t" . '                                                     Pull-Requests containing a specific string' . PHP_EOL .
+			"\t" . '                                                     ( see --hashes-submit-approved-file-comment-string )' . PHP_EOL .
+			"\t" . '                                                     If the string is found in a comment, the ' . PHP_EOL .
+			"\t" . '                                                     submitting user is a member of the team, ' . PHP_EOL .
+			"\t" . '                                                     and some other conditions are fulfilled, ' . PHP_EOL .
+			"\t" . '                                                     the file is submitted.' . PHP_EOL . 
+			"\t" . '--hashes-submit-approved-file-comment-string=STRING  String used to indicate that a file is' . PHP_EOL .
+			"\t" . '                                                     approved and to be submitted to the ' . PHP_EOL .
+			"\t" . '                                                     hashes-to-hashes API. ' . PHP_EOL .
+			PHP_EOL .
 			"\t" . '--irc-api-url=STRING           URL to IRC API to send alerts' . PHP_EOL .
 			"\t" . '--irc-api-token=STRING         Access-token to use to communicate with the IRC ' . PHP_EOL .
 			"\t" . '                               API' . PHP_EOL .
