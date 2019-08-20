@@ -57,6 +57,7 @@ function vipgoci_ap_hashes_calculate_sha1sum_for_file(
 	return $file_sha1;
 }
 
+
 /*
  * Ask the hashes-to-hashes database API if the
  * specified file is approved.
