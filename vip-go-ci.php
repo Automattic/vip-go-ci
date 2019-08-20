@@ -712,6 +712,28 @@ function vipgoci_run() {
 		) );
 	}
 
+	/*
+	 * Process --hashes-submit-approved-file-comment-string argument
+	 * -- this is used to indicate files approved and should
+	 * be submitted to the hashes-to-hashes API by us.
+	 */
+
+	if ( isset(
+		$options['hashes-submit-approved-file-comment-string']
+	) ) {
+		$options['hashes-submit-approved-file-comment-string'] =
+			ltrim( rtrim(
+				$options['hashes-submit-approved-file-comment-string']
+			) );
+
+		if (
+			strlen(
+				$options['hashes-submit-approved-file-comment-string']
+			) === 0
+		) {
+			unset( $options['hashes-submit-approved-file-comment-string'] );
+		}
+	}
 
 	/*
 	 * Handle --local-git-repo parameter
@@ -1444,11 +1466,29 @@ function vipgoci_run() {
 	 * existing submit to Hashes-to-hashes API.
 	 */
 
-	vipgoci_ap_hashes_api_submit_approved_files(
-		$options,
-		$prs_implicated
-	);
+	$options['hashes-submission-teams-allowed'] = array( );
+	$options['hashes-submission-team-members-allowed'] = array( );
 
+	if (
+		( true === $options['hashes-api'] )
+		&&
+		( ! empty(
+			$options['hashes-submission-team-members-allowed']
+		) )
+		&&
+		( ! empty(
+			$options['hashes-submission-teams-allowed']
+		) )
+		&&
+		( ! empty(
+			$options['hashes-submit-approved-file-comment-string']
+		) )
+	) {
+		vipgoci_ap_hashes_api_submit_approved_files(
+			$options,
+			$prs_implicated
+		);
+	}
 
 
 	/*
