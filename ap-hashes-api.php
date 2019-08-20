@@ -689,6 +689,14 @@ function vipgoci_ap_hashes_api_submit_approved_files(
 			 * hashes-to-hashes API for approval.
 			 */
 
+			vipgoci_log(
+				'Found comment from user who is allowed to ' .
+					'indicate approved file, the file ' .
+					'passed other checks as well. ' .
+					'Now processing for submission',
+				$log_detail_arr
+			);
+
 			vipgoci_ap_hashes_api_submit_single_approved_file(
 				$options,
 				$pr_comment->path
