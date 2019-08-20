@@ -1472,6 +1472,7 @@ function vipgoci_run() {
 		}
 	}
 
+
 	/*
 	 * Submit approved files to the hashes-to-hashes API.
 	 * Do this by looking through all comments posted to
