@@ -1,6 +1,63 @@
 <?php
 
 /*
+ * Get and return SHA1-sum for file passed, after having removed
+ * whitespacing (using a specific function).
+ */
+function vipgoci_ap_hashes_calculate_sha1sum_for_file(
+	$options,
+	$file_path
+) {
+	/*
+	 * Get file content.
+	 */	
+	$file_contents = vipgoci_gitrepo_fetch_committed_file(
+		$options['repo-owner'],
+		$options['repo-name'],
+		$options['token'],
+		$options['commit'],
+		$file_path,
+		$options['local-git-repo']
+	);
+
+	if ( false === $file_contents ) {
+		vipgoci_log(
+			'Unable to read file',
+			array(
+				'file_path' => $file_path,
+			)
+		);
+
+		return null;
+	}
+
+
+	/*
+	 * Save temporary copy of the file passed
+	 * to us, strip whitespace from the file
+	 * and calculate SHA1-sum of the result.
+	 */
+	$file_temp_path = vipgoci_save_temp_file(
+		$file_path,
+		null,
+		$file_contents
+	);
+
+	$file_contents_stripped = php_strip_whitespace(
+		$file_temp_path
+	);
+
+
+	$file_sha1 = sha1( $file_contents_stripped );
+
+	unlink( $file_temp_path );
+	unset( $file_contents );
+	unset( $file_contents_stripped );
+
+	return $file_sha1;
+}
+
+/*
  * Ask the hashes-to-hashes database API if the
  * specified file is approved.
  */
@@ -69,60 +126,23 @@ function vipgoci_ap_hashes_api_file_approved(
 		)
 	);
 
-	/*
-	 * Try to read file from disk, then
-	 * get rid of whitespaces in the file
-	 * and calculate SHA1 hash from the whole.
-	 */
-
-	$file_contents = vipgoci_gitrepo_fetch_committed_file(
-		$options['repo-owner'],
-		$options['repo-name'],
-		$options['token'],
-		$options['commit'],
-		$file_path,
-		$options['local-git-repo']
+	$file_sha1 = vipgoci_ap_hashes_calculate_sha1sum_for_file(
+		$options,
+		$file_path
 	);
 
-	if ( false === $file_contents ) {
+	if ( null === $file_sha1 ) {
 		vipgoci_log(
-			'Unable to read file',
+			'Unable to get SHA1-sum for file, not able to ' .
+				'check if file is approved',
 			array(
 				'file_path' => $file_path,
+				'file_sha1' => $file_sha1,
 			)
 		);
 
 		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'hashes_api_scan_file' );
-
-		return null;
 	}
-
-	vipgoci_log(
-		'Saving file from git-repository into temporary file ' .
-			'in order to strip any whitespacing from it',
-		array(
-			'file_path' => $file_path,
-		),
-		2
-	);
-
-
-	$file_temp_path = vipgoci_save_temp_file(
-		$file_path,
-		null,
-		$file_contents
-	);
-
-	$file_contents_stripped = php_strip_whitespace(
-		$file_temp_path
-	);
-
-
-	$file_sha1 = sha1( $file_contents_stripped );
-
-	unlink( $file_temp_path );
-	unset( $file_contents );
-	unset( $file_contents_stripped );
 
 
 	/*
@@ -416,6 +436,29 @@ function vipgoci_ap_hashes_api_submit_single_approved_file(
 		)
 	);
 
+	/*
+	 * Determine SHA1-sum for file, after having
+	 * processed it specifically.
+	 */
+	$file_sha1 = vipgoci_ap_hashes_calculate_sha1sum_for_file(
+		$options,
+		$file_path
+	);
+
+	if ( null === $file_sha1 ) {
+		vipgoci_log(
+			'Unable to submit approved file to ' .
+				'hashes-to-hashes API as SHA1 for file ' .
+				'could not be deteremined',
+			array(
+				'file_path' => $file_path,
+				'file_sha1' => $file_sha1,
+			)
+		);
+
+		return;
+	}
+
 	// FIXME: Implement submission logic
 
 	vipgoci_runtime_measure(
@@ -607,7 +650,7 @@ function vipgoci_ap_hashes_api_submit_approved_files(
 			)
  			{
 				// FIXME: Check if new
-				continue;
+				// continue;
 			}
 
 
