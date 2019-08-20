@@ -462,7 +462,7 @@ function vipgoci_ap_hashes_api_submit_approved_files(
 				array_keys( $prs_implicated ),
 
 			'submission_string_used' =>
-				$options['hashes-submission-comment-string'],
+				$options['hashes-submit-approved-file-comment-string'],
 
 			'hashes_submission_team_members_allowed' =>
 				$options['hashes-submission-team-members-allowed']
@@ -505,7 +505,7 @@ function vipgoci_ap_hashes_api_submit_approved_files(
 					$options['hashes-submission-team-members-allowed'],
 
 				'submission_string_used' =>
-					$options['hashes-submission-comment-string'],
+					$options['hashes-submit-approved-file-comment-string'],
 
 				'file_path' =>
 					$pr_comment->path,
@@ -518,7 +518,7 @@ function vipgoci_ap_hashes_api_submit_approved_files(
 
 			if ( strpos(
 				$pr_comment->body,
-				$options['hashes-submission-comment-string']
+				$options['hashes-submit-approved-file-comment-string']
 			) === false ) {
 				continue;
 			}
@@ -533,7 +533,7 @@ function vipgoci_ap_hashes_api_submit_approved_files(
 				strlen( $pr_comment->body )
 				>
 				( strlen(
-					$options['hashes-submission-comment-string']
+					$options['hashes-submit-approved-file-comment-string']
 				) * 1.75 )
 			) {
 				vipgoci_log(
