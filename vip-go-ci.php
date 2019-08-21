@@ -378,6 +378,7 @@ function vipgoci_run() {
 			'hashes-oauth-consumer-key:',
 			'hashes-oauth-consumer-secret:',
 			'hashes-submit-approved-file-comment-string:',
+			'hashes-submission-teams-allowed:',
 			'irc-api-url:',
 			'irc-api-token:',
 			'irc-api-bot:',
@@ -1483,8 +1484,8 @@ function vipgoci_run() {
 	 * existing submit to Hashes-to-hashes API.
 	 */
 
-	$options['hashes-submission-teams-allowed'] = array( );
-	$options['hashes-submission-team-members-allowed'] = array( );
+	$options['hashes-submission-teams-allowed'] = array( 'vip' );
+	$options['hashes-submission-team-members-allowed'] = array( 'gudmdharalds' );
 
 	if (
 		( true === $options['hashes-api'] )
