@@ -502,7 +502,7 @@ function vipgoci_ap_hashes_api_submit_single_approved_file(
 			'repo_owner=' . rawurlencode( $options['repo-owner'] ) . ', ' .
 			'repo_name=' . rawurlencode( $options['repo-name'] ) . ', ';
 			'commit_id=' . rawurlencode( $options['commit'] ) . ', ' .
-			'submitting_comment_user=' . rawurlencode( $submitter_github_username ) . ', ' .
+			'submitting_comment_user=' . rawurlencode( $submitter_github_username ) . ', ';
 	}
 
 	// FIXME: Implement submission logic
