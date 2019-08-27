@@ -3220,12 +3220,12 @@ function vipgoci_github_label_remove_from_pr(
  * Get members for a team.
  */
 function vipgoci_github_team_members(
-	$options,
+	$github_token,
 	$team_id,
 	$ids_only = false
 ) {
 	$cached_id = array(
-		__FUNCTION__, $options['token'], $team_id
+		__FUNCTION__, $github_token, $team_id
 	);
 
 	$cached_data = vipgoci_cache( $cached_id );
@@ -3248,7 +3248,7 @@ function vipgoci_github_team_members(
 
 		$team_members = vipgoci_github_fetch_url(
 			$github_url,
-			$options['token']
+			$github_token
 		);
 
 		$team_members = json_decode(
@@ -3266,7 +3266,7 @@ function vipgoci_github_team_members(
 	}
 
 	if ( true === $ids_only ) {
-		$issue_events = array_column(
+		$team_members = array_column(
 			$team_members,
 			'id'
 		);
@@ -3281,13 +3281,13 @@ function vipgoci_github_team_members(
  * user from the GitHub API.
  */
 function vipgoci_github_org_teams(
-	$options,
+	$github_token,
 	$org_id,
 	$filter = null,
 	$keyed_by = null
 ) {
 	$cached_id = array(
-		__FUNCTION__, $options['token'], $org_id
+		__FUNCTION__, $github_token, $org_id
 	);
 
 	$cached_data = vipgoci_cache( $cached_id );
@@ -3311,7 +3311,7 @@ function vipgoci_github_org_teams(
 
 		$org_teams = vipgoci_github_fetch_url(
 			$github_url,
-			$options['token']
+			$github_token
 		);
 
 		$org_teams = json_decode(
