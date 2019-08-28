@@ -54,12 +54,16 @@ final class GitHubOrgTeamsTest extends TestCase {
 		 * filters and without any output sorting.
 		 */
 
+		vipgoci_unittests_output_suppress();
+
 		$teams_res_actual = vipgoci_github_org_teams(
 			$this->options['github-token'],
 			$this->options['org-name'],
 			null,
 			null
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertNotEmpty(
 			$teams_res_actual,
@@ -81,12 +85,17 @@ final class GitHubOrgTeamsTest extends TestCase {
 		/*
 		 * Test the caching-functionality
 		 */
+
+		vipgoci_unittests_output_suppress();
+
 		$teams_res_actual_cached = vipgoci_github_org_teams(
 			$this->options['github-token'],
 			$this->options['org-name'],
 			null,
 			null
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		unset( $teams_res_actual );
 		unset( $teams_res_actual_cached );
@@ -119,6 +128,8 @@ final class GitHubOrgTeamsTest extends TestCase {
 		 * without any output sorting.
 		 */
 
+		vipgoci_unittests_output_suppress();
+
 		$teams_res_actual = vipgoci_github_org_teams(
 			$this->options['github-token'],
 			$this->options['org-name'],
@@ -127,6 +138,8 @@ final class GitHubOrgTeamsTest extends TestCase {
 			),
 			null
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 
 		$this->assertNotEmpty(
@@ -150,6 +163,8 @@ final class GitHubOrgTeamsTest extends TestCase {
 		 * Test again, now the cached version.
 		 */
 
+		vipgoci_unittests_output_suppress();
+
 		$teams_res_actual_cached = vipgoci_github_org_teams(
 			$this->options['github-token'],
 			$this->options['org-name'],
@@ -158,6 +173,8 @@ final class GitHubOrgTeamsTest extends TestCase {
 			),
 			null
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertEquals(
 			$teams_res_actual,
@@ -195,6 +212,7 @@ final class GitHubOrgTeamsTest extends TestCase {
 		 * Test vipgoci_github_org_teams() without filters but
 		 * with output keyed.
 		 */
+		vipgoci_unittests_output_suppress();
 
 		$teams_res_actual = vipgoci_github_org_teams(
 			$this->options['github-token'],
@@ -202,6 +220,8 @@ final class GitHubOrgTeamsTest extends TestCase {
 			null,
 			'slug'
 		);
+	
+		vipgoci_unittests_output_unsuppress();
 
 
 		$this->assertNotEmpty(
@@ -241,12 +261,16 @@ final class GitHubOrgTeamsTest extends TestCase {
 		 * Test again, now the cached version.
 		 */
 
+		vipgoci_unittests_output_suppress();
+
 		$teams_res_actual_cached = vipgoci_github_org_teams(
 			$this->options['github-token'],
 			$this->options['org-name'],
 			null,
 			'slug'
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertEquals(
 			$teams_res_actual,
