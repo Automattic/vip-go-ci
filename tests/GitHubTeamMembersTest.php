@@ -52,11 +52,15 @@ final class GitHubTeamMembersTest extends TestCase {
 		 * Test with ids_only = false
 		 */
 
+		vipgoci_unittests_output_suppress();
+
 		$team_members_res1_actual = vipgoci_github_team_members(
 			$this->options['github-token'],
 			$this->options['team-id'],
 			false
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertNotEmpty(
 			$team_members_res1_actual,
@@ -79,11 +83,16 @@ final class GitHubTeamMembersTest extends TestCase {
 		/*
 		 * Test again to make sure the cache behaves correctly.
 		 */
+
+		vipgoci_unittests_output_suppress();
+
 		$team_members_res1_actual_cached = vipgoci_github_team_members(
 			$this->options['github-token'],
 			$this->options['team-id'],
 			false
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertEquals(
 			$team_members_res1_actual,
@@ -120,11 +129,15 @@ final class GitHubTeamMembersTest extends TestCase {
 		 * Second test, with $ids_only = true
 		 */
 
+		vipgoci_unittests_output_suppress();
+
 		$team_members_res2_actual = vipgoci_github_team_members(
 			$this->options['github-token'],
 			$this->options['team-id'],
 			true
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertNotEmpty(
 			$team_members_res2_actual,
@@ -144,11 +157,16 @@ final class GitHubTeamMembersTest extends TestCase {
 		);
 
 		// Again, for caching.
+
+		vipgoci_unittests_output_suppress();
+
 		$team_members_res2_actual_cached = vipgoci_github_team_members(
 			$this->options['github-token'],
 			$this->options['team-id'],
 			true
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertEquals(
 			$team_members_res2_actual,
