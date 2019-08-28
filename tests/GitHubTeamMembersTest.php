@@ -41,7 +41,7 @@ final class GitHubTeamMembersTest extends TestCase {
 
 		if ( empty( $this->options ) ) {
 			$this->markTestSkipped(
-				'Must set up testTeamMembers_ids_only_false() test'
+				'Must set up ' . __FUNCTION__ . '() test'
 			);
 
 			return;
@@ -52,26 +52,26 @@ final class GitHubTeamMembersTest extends TestCase {
 		 * Test with ids_only = false
 		 */
 
-		$teams_res1_actual = vipgoci_github_team_members(
+		$team_members_res1_actual = vipgoci_github_team_members(
 			$this->options['github-token'],
 			$this->options['team-id'],
 			false
 		);
 
 		$this->assertNotEmpty(
-			$teams_res1_actual,
+			$team_members_res1_actual,
 			'Got no team members from vipgoci_github_team_members()'
 		);
 
 		$this->assertTrue(
 			isset(
-				$teams_res1_actual[0]->login
+				$team_members_res1_actual[0]->login
 			)
 		);
 
 		$this->assertTrue(
 			strlen(
-				$teams_res1_actual[0]->login
+				$team_members_res1_actual[0]->login
 			) > 0
 		);
 
@@ -79,19 +79,19 @@ final class GitHubTeamMembersTest extends TestCase {
 		/*
 		 * Test again to make sure the cache behaves correctly.
 		 */
-		$teams_res1_actual_cached = vipgoci_github_team_members(
+		$team_members_res1_actual_cached = vipgoci_github_team_members(
 			$this->options['github-token'],
 			$this->options['team-id'],
 			false
 		);
 
 		$this->assertEquals(
-			$teams_res1_actual,
-			$teams_res1_actual_cached
+			$team_members_res1_actual,
+			$team_members_res1_actual_cached
 		);
 
-		unset( $teams_res1_actual );
-		unset( $teams_res1_actual_cached );
+		unset( $team_members_res1_actual );
+		unset( $team_members_res1_actual_cached );
 	}
 
 	/**
@@ -110,7 +110,7 @@ final class GitHubTeamMembersTest extends TestCase {
 
 		if ( empty( $this->options ) ) {
 			$this->markTestSkipped(
-				'Must set up testTeamMembers_ids_only_true() test'
+				'Must set up ' . __FUNCTION__ . '() test'
 			);
 
 			return;
@@ -120,42 +120,42 @@ final class GitHubTeamMembersTest extends TestCase {
 		 * Second test, with $ids_only = true
 		 */
 
-		$teams_res2_actual = vipgoci_github_team_members(
+		$team_members_res2_actual = vipgoci_github_team_members(
 			$this->options['github-token'],
 			$this->options['team-id'],
 			true
 		);
 
 		$this->assertNotEmpty(
-			$teams_res2_actual,
+			$team_members_res2_actual,
 			'Got empty results when calling vipgoci_github_team_members()'
 		);
 
 		$this->assertTrue(
 			isset(
-				$teams_res2_actual[0]
+				$team_members_res2_actual[0]
 			)
 		);
 
 		$this->assertTrue(
 			is_numeric(
-				$teams_res2_actual[0]
+				$team_members_res2_actual[0]
 			)
 		);
 
 		// Again, for caching.
-		$teams_res2_actual_cached = vipgoci_github_team_members(
+		$team_members_res2_actual_cached = vipgoci_github_team_members(
 			$this->options['github-token'],
 			$this->options['team-id'],
 			true
 		);
 
 		$this->assertEquals(
-			$teams_res2_actual,
-			$teams_res2_actual_cached
+			$team_members_res2_actual,
+			$team_members_res2_actual_cached
 		);
 
-		unset( $teams_res2_actual );
-		unset( $teams_res2_actual_cached );
+		unset( $team_members_res2_actual );
+		unset( $team_members_res2_actual_cached );
 	}
 }
