@@ -2942,7 +2942,7 @@ function vipgoci_github_diffs_fetch(
 
 
 		/*
-		 * Allow filtering of files returned.		
+		 * Allow filtering of files returned.
 		 */
 
 		if (
@@ -3301,7 +3301,7 @@ function vipgoci_github_team_members_many(
 			$team_id_item,
 			true
 		);
-			
+
 		$team_members_logins_arr = array_merge(
 			$team_members_logins_arr,
 			$team_id_members
