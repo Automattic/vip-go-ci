@@ -1656,4 +1656,3 @@ function vipgoci_markdown_comment_add_pagebreak(
 
 	$comment .= $pagebreak_style . "\n\r";
 }
-

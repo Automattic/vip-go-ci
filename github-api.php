@@ -3230,11 +3230,12 @@ function vipgoci_github_pr_review_events_get(
 	$cached_id = array(
 		__FUNCTION__, $options['repo-owner'], $options['repo-name'],
 		$options['token'], $pr_number
-	);
 
-	$cached_data = vipgoci_cache( $cached_id );
+  $cached_data = vipgoci_cache(
+			$cached_id
+		);
 
-	vipgoci_log(
+  vipgoci_log(
 		'Getting issue events for Pull-Request from GitHub API' .
 		( $cached_data ? ' (cached)' : '' ),
 		array(
@@ -3243,12 +3244,12 @@ function vipgoci_github_pr_review_events_get(
 			'pr_number' => $pr_number,
 			'filter' => $filter,
 			'review_ids_only' => $review_ids_only,
-		)
-	);
-
-	if ( false === $cached_data ) {
-		$github_url =
-			VIPGOCI_GITHUB_BASE_URL . '/' .
+    )
+  );
+  
+    if ( false === $cached_data ) {
+		  $github_url =
+			VIPGOCI_GITHUB_BASE_URL . '/' .  
 			'repos/' .
 			rawurlencode( $options['repo-owner'] ) . '/' .
 			rawurlencode( $options['repo-name'] ) . '/' .
@@ -3263,17 +3264,12 @@ function vipgoci_github_pr_review_events_get(
 
 		$issue_events = json_decode(
 			$issue_events
-		);
-
-		vipgoci_cache(
-			$cached_id,
-			$issue_events
-		);
-	}
-
-	else {
-		$issue_events = $cached_data;
-	}
+    );
+    }
+    
+    else {
+        $issue_events = $cached_data;
+	  }
 
 	/*
 	 * Filter results if requested. We can filter
@@ -3337,5 +3333,209 @@ function vipgoci_github_pr_review_events_get(
 	return $issue_events;
 }
 
+      
+/*    
+ * Get members for a team.
+ */
+function vipgoci_github_team_members(
+	$github_token,
+	$team_id,
+	$ids_only = false
+) {
+	$cached_id = array(
+		__FUNCTION__, $github_token, $team_id
+	);
 
+	$cached_data = vipgoci_cache( $cached_id );
+
+	vipgoci_log(
+		'Getting members for organization team' .
+		( $cached_data ? ' (cached)' : '' ),
+		array(
+			'team_id' => $team_id,
+			'ids_only' => $ids_only,
+		)
+	);
+
+	if ( false === $cached_data ) {
+		$github_url =
+			VIPGOCI_GITHUB_BASE_URL . '/' .
+			'teams/' .
+			rawurlencode( $team_id ) . '/' .
+			'members';
+
+		$team_members = vipgoci_github_fetch_url(
+			$github_url,
+			$github_token
+		);
+
+		$team_members = json_decode(
+			$team_members
+		);
+
+		vipgoci_cache(
+			$cached_id,
+			$team_members
+		);
+	}
+
+	else {
+		$team_members = $cached_data;
+	}
+
+	if ( true === $ids_only ) {
+		$team_members = array_column(
+			(array) $team_members,
+			'id'
+		);
+	}
+
+	return $team_members;
+}
+
+
+/*
+ * Get team members for one or more teams,
+ * return members as a merged array.
+ *
+ * @codeCoverageIgnore
+ */
+function vipgoci_github_team_members_many(
+	$github_token,
+	$team_ids_arr = array()
+) {
+	vipgoci_log(
+		'Getting members of teams specified by caller',
+		array(
+			'teams_ids' => $team_ids_arr,
+		)
+	);
+
+	$team_members_logins_arr = array();
+
+	foreach( $team_ids_arr as $team_id_item ) {
+		$team_id_members = vipgoci_github_team_members(
+			$github_token,
+			$team_id_item,
+			true
+		);
+			
+		$team_members_logins_arr = array_merge(
+			$team_members_logins_arr,
+			$team_id_members
+		);
+	}
+
+	$team_members_logins_arr = array_unique(
+		$team_members_logins_arr
+	);
+
+	return $team_members_logins_arr;
+}
+
+
+/*
+ * Get organization teams available to the calling
+ * user from the GitHub API.
+ */
+function vipgoci_github_org_teams(
+	$github_token,
+	$org_id,
+	$filter = null,
+	$keyed_by = null
+) {
+	$cached_id = array(
+		__FUNCTION__, $github_token, $org_id
+	);
+
+	$cached_data = vipgoci_cache( $cached_id );
+
+	vipgoci_log(
+		'Getting organization teams from GitHub API' .
+		( $cached_data ? ' (cached)' : '' ),
+		array(
+			'org_id' => $org_id,
+			'filter' => $filter,
+			'keyed_by' => $keyed_by,
+
+		)
+	);
+
+	if ( false === $cached_data ) {
+		$github_url =
+			VIPGOCI_GITHUB_BASE_URL . '/' .
+			'orgs/' .
+			rawurlencode( $org_id ) . '/' .
+			'teams';
+
+		$org_teams = vipgoci_github_fetch_url(
+			$github_url,
+			$github_token
+		);
+
+		$org_teams = json_decode(
+			$org_teams
+		);
+
+		vipgoci_cache(
+			$cached_id,			
+			$org_teams
+		);
+	}
+
+	else {
+		$org_teams = $cached_data;
+	}
+
+
+	/*
+	 * Filter the results according to criteria.
+	 */
+	if (
+		( null !== $filter ) &&
+		( ! empty( $filter['slug'] ) ) &&
+		( is_string( $filter['slug'] ) )
+	) {
+		$org_teams_filtered = array();
+
+		foreach( $org_teams as $org_team ) {
+			if ( $filter['slug'] === $org_team->slug ) {
+				$org_teams_filtered[] = $org_team;
+			}
+		}
+
+		$org_teams = $org_teams_filtered;
+	}
+
+
+	/*
+	 * If asked for, let the resulting
+	 * array be keyed with a certain field.
+	 */
+	if ( null !== $keyed_by ) {
+		$org_teams_keyed = array();
+
+		foreach( $org_teams as $org_team ) {
+			$org_team_arr = (array) $org_team;
+
+			/*
+			 * In case of invalid response,
+			 * ignore item.
+			 */
+			if ( ! isset( $org_team_arr[ $keyed_by ] ) ) {
+				continue;
+			}
+
+			$org_teams_keyed[
+				$org_team_arr[
+					$keyed_by
+				]
+			][] = $org_team;
+		}
+
+		$org_teams = $org_teams_keyed;
+	}
+
+	return $org_teams;
+}
 
