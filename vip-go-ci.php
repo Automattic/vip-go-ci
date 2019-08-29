@@ -1194,99 +1194,12 @@ function vipgoci_run() {
 	/*
 	 * Check if the teams specified in the
 	 * --dismissed-reviews-exclude-reviews-from-team parameter are
-	 * really valid. If some of them are not, log that and erase
-	 * the parameters that are invalid.
+	 * really valid, etc.
 	 */
-
-	$options['dismissed-reviews-exclude-reviews-from-team'] =
-		array_map(
-			'vipgoci_sanitize_string',
-			$options['dismissed-reviews-exclude-reviews-from-team']
-		);
-
-	/*
-	 * If we have any teams specified, we
-	 * will need to get list of teams to
-	 * verify the teams specified in the options.
-	 */
-	if ( ! empty( $options['dismissed-reviews-exclude-reviews-from-team'] ) ) {
-		$teams_info = vipgoci_github_org_teams(
-			$options,
-			$options['repo-owner'],
-			null,
-			'slug'
-		);
-	}
-
-
-	foreach(
-		$options['dismissed-reviews-exclude-reviews-from-team'] as
-			$team_id_key =>	$team_id_value
-	) {
-		$team_id_value_original = $team_id_value;
-
-		/*
-		 * If a string, transform team_id_value into integer ID
-		 * for team.
-		 */
-
-		if (
-			( ! is_numeric( $team_id_value ) ) &&
-			( ! empty( $teams_info[ $team_id_value ] ) )
-		) {
-			$team_id_value = $teams_info[ $team_id_value ][0]->id;
-		}
-
-
-		/*
-		 * If $team_id_value is a numeric,
-		 * the team exists, so put in
-		 * the integer-value in the options.
-		 */
-
-		if ( is_numeric( $team_id_value ) ) {
-			$options
-				['dismissed-reviews-exclude-reviews-from-team']
-				[ $team_id_key ] = (int) $team_id_value;
-		}
-
-		/*
-		 * Something failed; we might have
-		 * failed to transform $team_id_value into
-		 * a numeric representation (ID) and/or
-		 * it may have been invalid, so remove
-		 * it from the options array.
-		 */
-
-		else {
-			vipgoci_log(
-				'Invalid team ID found in ' .
-				'--dismissed-reviews-exclude-reviews-from-team ' .
-				'parameter; ignoring it.',
-				array(
-					'team_id' => $team_id_value,
-					'team_id_original' => $team_id_value_original,
-				)
-			);
-
-			unset(
-				$options
-					['dismissed-reviews-exclude-reviews-from-team']
-					[ $team_id_key ]
-			);
-		}
-	}
-
-	unset( $teams_info );
-	unset( $team_id_key );
-	unset( $team_id_value );
-	unset( $team_id_value_original );
-
-	/* Reconstruct array from the previous one */
-	$options['dismissed-reviews-exclude-reviews-from-team'] =
-		array_values( array_unique(
-			$options['dismissed-reviews-exclude-reviews-from-team']
-		) );
+	vipgoci_option_teams_handle(
+		$options,
+		'dismissed-reviews-exclude-reviews-from-team'
+	);
 
 
 	/*
