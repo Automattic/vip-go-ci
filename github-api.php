@@ -3278,15 +3278,8 @@ function vipgoci_github_pr_review_events_get(
 	if (
 		( null !== $filter ) &&
 		(
-			(
-				( ! empty( $filter['event_type'] ) ) &&
-				( is_string( $filter['event_type'] ) )
-			)
-			||
-			(
-				( ! empty( $filter['actors_logins'] ) ) &&
-				( is_array( $filter['actors_logins'] ) )
-			)
+			( ! empty( $filter['event_type'] ) ) ||
+			( ! empty( $filter['actors_logins'] ) )
 		)
 	) {
 		$filtered_issue_events = array();
@@ -3294,7 +3287,8 @@ function vipgoci_github_pr_review_events_get(
 		foreach( $issue_events as $issue_event ) {
 			if (
 				( ! empty( $filter['event_type'] ) ) &&
-				(
+				( is_string( $filter['event_type'] ) )
+			(
 					$issue_event->event !==
 					$filter['event_type']
 				)
@@ -3304,6 +3298,7 @@ function vipgoci_github_pr_review_events_get(
 
 			if (
 				( ! empty( $filter['actors_logins'] ) ) &&
+				( is_array( $filter['actors_logins'] ) ) &&
 				( false === in_array(
 					$issue_event->actor->login,
 					$filter['actors_logins']
