@@ -3343,20 +3343,39 @@ function vipgoci_github_org_teams(
 	);
 
 	if ( false === $cached_data ) {
-		$github_url =
-			VIPGOCI_GITHUB_BASE_URL . '/' .
-			'orgs/' .
-			rawurlencode( $org_id ) . '/' .
-			'teams';
+		$page = 1;
+		$per_page = 100;
 
-		$org_teams = vipgoci_github_fetch_url(
-			$github_url,
-			$github_token
-		);
+		$org_teams_all = array();
 
-		$org_teams = json_decode(
-			$org_teams
-		);
+		do {
+			$github_url =
+				VIPGOCI_GITHUB_BASE_URL . '/' .
+				'orgs/' .
+				rawurlencode( $org_id ) . '/' .
+				'teams?' .
+				'page=' . rawurlencode( $page ) . '&' .
+				'per_page=' . rawurlencode( $per_page );
+
+
+			$org_teams = vipgoci_github_fetch_url(
+				$github_url,
+				$github_token
+			);
+
+			$org_teams = json_decode(
+				$org_teams
+			);
+
+			foreach( $org_teams as $org_team ) {
+				$org_teams_all[] = $org_team;
+			}
+
+			$page++;
+		} while ( count( $org_teams ) >= $per_page ); 
+
+		$org_teams = $org_teams_all;
+		unset( $org_teams_all );
 
 		vipgoci_cache(
 			$cached_id,
