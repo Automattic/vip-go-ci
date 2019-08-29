@@ -1590,7 +1590,7 @@ function vipgoci_markdown_comment_add_pagebreak(
 
 /*
  * Sanitize a string, removing any whitespace-characters
- * from the beginning and and, and transform to lowercase.
+ * from the beginning and end, and transform to lowercase.
  */
 function vipgoci_sanitize_string( $str ) {
 	return strtolower( ltrim( rtrim(
