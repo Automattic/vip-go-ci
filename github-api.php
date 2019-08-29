@@ -3267,12 +3267,52 @@ function vipgoci_github_team_members(
 
 	if ( true === $ids_only ) {
 		$team_members = array_column(
-			$team_members,
+			(array) $team_members,
 			'id'
 		);
 	}
 
 	return $team_members;
+}
+
+
+/*
+ * Get team members for one or more teams,
+ * return members as a merged array.
+ *
+ * @codeCoverageIgnore
+ */
+function vipgoci_github_team_members_many(
+	$github_token,
+	$team_ids_arr = array()
+) {
+	vipgoci_log(
+		'Getting members of teams specified by caller',
+		array(
+			'teams_ids' => $team_ids_arr,
+		)
+	);
+
+	$team_members_logins_arr = array();
+
+	foreach( $team_ids_arr as $team_id_item ) {
+		$team_id_members = vipgoci_github_team_members(
+			$github_token,
+			$team_id_item,
+			true
+		);
+			
+		$team_members_logins_arr = array_merge(
+			$team_members_logins_arr,
+			$team_id_members
+		);
+	}
+
+	$team_members_logins_arr = array_unique(
+		$team_members_logins_arr
+	);
+
+	return $team_members_logins_arr;
 }
 
 
