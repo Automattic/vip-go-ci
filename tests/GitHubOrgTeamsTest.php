@@ -97,6 +97,11 @@ final class GitHubOrgTeamsTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
+		$this->assertEquals(
+			$teams_res_actual,
+			$teams_res_actual_cached
+		);
+
 		unset( $teams_res_actual );
 		unset( $teams_res_actual_cached );
 	}
