@@ -3456,7 +3456,6 @@ function vipgoci_github_org_teams(
 			'org_id' => $org_id,
 			'filter' => $filter,
 			'keyed_by' => $keyed_by,
-
 		)
 	);
 
@@ -3477,7 +3476,7 @@ function vipgoci_github_org_teams(
 		);
 
 		vipgoci_cache(
-			$cached_id,			
+			$cached_id,
 			$org_teams
 		);
 	}
