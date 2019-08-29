@@ -1472,39 +1472,10 @@ function vipgoci_run() {
 	 * by Pull-Request.
 	 */
 
-	$team_members_logins_arr = array();
-
-	if ( ! empty(
+	$team_members_logins_arr = vipgoci_github_team_members_many(
+		$options['token'],
 		$options['dismissed-reviews-exclude-reviews-from-team']
-	) ) {
-		vipgoci_log(
-			'Getting members of teams specified by caller',
-
-			array(
-				'teams' => 
-					'dismissed-reviews-exclude-reviews-from-team'
-			)
-		);
-
-		foreach(
-			$options['dismissed-reviews-exclude-reviews-from-team']
-			as $team_id
-		) {
-			$team_id_members = vipgoci_github_team_members(
-				$options,
-				$team_id,
-				true
-			);
-
-			$team_members_logins_arr = array_merge(
-				$team_members_logins_arr,
-				$team_id_members
-			);
-		}
-
-		unset( $team_id_members );
-		unset( $team_id );
-	}
+	);
 
 
 	/*
