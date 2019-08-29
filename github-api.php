@@ -3220,6 +3220,9 @@ function vipgoci_github_label_remove_from_pr(
  * Get all events issues related to a Pull-Request
  * from the GitHub API, and filter away any items that
  * do not match a given criteria (if applicable).
+ *
+ * Note: Using $review_ids_only = true will imply
+ * selecting only certain types of events (i.e. dismissed_review).
  */
 function vipgoci_github_pr_review_events_get(
 	$options,
@@ -3311,6 +3314,12 @@ function vipgoci_github_pr_review_events_get(
 		$issue_events_ret = array();
 
 		foreach( $issue_events as $issue_event ) {
+			if ( ! isset(
+				$issue_event->dismissed_review->review_id
+			) ) {
+				continue;
+			}
+
 			$issue_events_ret[] =
 				$issue_event->dismissed_review->review_id;
 		}
