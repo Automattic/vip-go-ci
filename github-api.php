@@ -3245,10 +3245,10 @@ function vipgoci_github_pr_review_events_get(
 			'review_ids_only' => $review_ids_only,
 		)
 	);
-  
+
 	if ( false === $cached_data ) {
 		$github_url =
-			VIPGOCI_GITHUB_BASE_URL . '/' .  
+			VIPGOCI_GITHUB_BASE_URL . '/' .
 			'repos/' .
 			rawurlencode( $options['repo-owner'] ) . '/' .
 			rawurlencode( $options['repo-name'] ) . '/' .
@@ -3263,7 +3263,7 @@ function vipgoci_github_pr_review_events_get(
 
 		$issue_events = json_decode(
 			$issue_events
-    		);
+		);
 	}
 
 	else {
@@ -3332,8 +3332,8 @@ function vipgoci_github_pr_review_events_get(
 	return $issue_events;
 }
 
-      
-/*    
+
+/*
  * Get members for a team.
  */
 function vipgoci_github_team_members(
