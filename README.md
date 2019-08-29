@@ -254,7 +254,10 @@ hashes-oauth-token=
 hashes-oauth-token-secret=
 
 [git-secrets]
-github-token=
+github-token= ; Personal access token from GitHub
+team-id=      ; Team ID to test if present, this is a numeric
+team-slug=    ; Team slug to test if present, is a string. Should be referencing the same team as team-id.
+org-name=     ; GitHub organisation name to use in testing
 ```
 
 This file is not included, and needs to be configured manually. When that is complete, the tests can be re-run.

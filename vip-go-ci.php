@@ -256,6 +256,105 @@ function vipgoci_option_url_handle(
 	}
 }
 
+/*
+ * Handle parameter that we expect to contain teams,
+ * either as an ID (numeric) or a string (slug).
+ *
+ * Will check if the teams are valid, removing invalid ones,
+ * transforming strings into IDs, and reconstruct the option 
+ * afterwards.
+ */
+
+function vipgoci_option_teams_handle(
+	&$options,
+	$option_name
+) {
+	if ( ! empty( $options[ $option_name ] ) ) {
+		$options[ $option_name ] = array_map(
+			'vipgoci_sanitize_string',
+			$options[ $option_name ]
+		);
+	}
+
+	if ( empty( $options[ $option_name ] ) ) {
+		return;
+	}
+
+	$teams_info = vipgoci_github_org_teams(
+		$options['token'],
+		$options['repo-owner'],
+		null,
+		'slug'
+	);
+
+	foreach(
+		$options[ $option_name ] as
+			$team_id_key =>	$team_id_value
+	) {
+		$team_id_value_original = $team_id_value;
+
+		/*
+		 * If a string, transform team_id_value into integer ID
+		 * for team.
+		 */
+		if (
+			( ! is_numeric( $team_id_value ) ) &&
+			( ! empty( $teams_info[ $team_id_value ] ) )
+		) {
+			$team_id_value = $teams_info[ $team_id_value ][0]->id;
+		}
+
+		/*
+		 * If $team_id_value is a numeric,
+		 * the team exists, so put in
+		 * the integer-value in the options.
+		 */
+		if ( is_numeric( $team_id_value ) ) {
+			$options
+				[ $option_name ]
+				[ $team_id_key ] = (int) $team_id_value;
+		}
+
+		/*
+		 * Something failed; we might have
+		 * failed to transform $team_id_value into
+		 * a numeric representation (ID) and/or
+		 * it may have been invalid, so remove
+		 * it from the options array.
+		 */
+
+		else {
+			vipgoci_log(
+				'Invalid team ID found in ' .
+				'--' . $option_name .
+				' parameter; ignoring it.',
+				array(
+					'team_id' => $team_id_value,
+					'team_id_original' => $team_id_value_original,
+				)
+			);
+
+			unset(
+				$options
+					[ $option_name ]
+					[ $team_id_key ]
+			);
+		}
+	}
+
+	/* Reconstruct array from the previous one */
+	$options[ $option_name ] =
+		array_values( array_unique(
+			$options[ $option_name ]
+		) );
+
+	unset( $teams_info );
+	unset( $team_id_key );
+	unset( $team_id_value );
+	unset( $team_id_value_original );
+}
+
+
 /**
  * Determine exit status.
  *
