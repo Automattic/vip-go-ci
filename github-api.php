@@ -3240,20 +3240,40 @@ function vipgoci_github_team_members(
 	);
 
 	if ( false === $cached_data ) {
-		$github_url =
-			VIPGOCI_GITHUB_BASE_URL . '/' .
-			'teams/' .
-			rawurlencode( $team_id ) . '/' .
-			'members';
+		$page = 1;
+		$per_page = 100;
 
-		$team_members = vipgoci_github_fetch_url(
-			$github_url,
-			$github_token
-		);
+		$team_members_all = array();
 
-		$team_members = json_decode(
-			$team_members
-		);
+		do {
+			$github_url =
+				VIPGOCI_GITHUB_BASE_URL . '/' .
+				'teams/' .
+				rawurlencode( $team_id ) . '/' .
+				'members?' .
+				'page=' . rawurlencode( $page ) . '&' .
+				'per_page=' . rawurlencode( $per_page );
+
+
+			$team_members = vipgoci_github_fetch_url(
+				$github_url,
+				$github_token
+			);
+
+			$team_members = json_decode(
+				$team_members
+			);
+
+			foreach( $team_members as $team_member ) {
+				$team_members_all[] = $team_member;
+			}
+
+			$page++;
+		} while ( count( $team_members ) >= $per_page );
+
+		$team_members = $team_members_all;
+		unset( $team_members_all );
+		unset( $team_member );
 
 		vipgoci_cache(
 			$cached_id,
