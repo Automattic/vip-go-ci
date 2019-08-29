@@ -3275,20 +3275,14 @@ function vipgoci_github_pr_review_events_get(
 	 * by type of event and/or by actors that initiated
 	 * the event.
 	 */
-	if (
-		( null !== $filter ) &&
-		(
-			( ! empty( $filter['event_type'] ) ) ||
-			( ! empty( $filter['actors_logins'] ) )
-		)
-	) {
+	if ( null !== $filter ) {
 		$filtered_issue_events = array();
 
 		foreach( $issue_events as $issue_event ) {
 			if (
 				( ! empty( $filter['event_type'] ) ) &&
-				( is_string( $filter['event_type'] ) )
-			(
+				( is_string( $filter['event_type'] ) ) &&
+				(
 					$issue_event->event !==
 					$filter['event_type']
 				)
