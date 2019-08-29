@@ -3230,12 +3230,11 @@ function vipgoci_github_pr_review_events_get(
 	$cached_id = array(
 		__FUNCTION__, $options['repo-owner'], $options['repo-name'],
 		$options['token'], $pr_number
+	);
 
-  $cached_data = vipgoci_cache(
-			$cached_id
-		);
+	$cached_data = vipgoci_cache( $cached_id );
 
-  vipgoci_log(
+	vipgoci_log(
 		'Getting issue events for Pull-Request from GitHub API' .
 		( $cached_data ? ' (cached)' : '' ),
 		array(
@@ -3244,11 +3243,11 @@ function vipgoci_github_pr_review_events_get(
 			'pr_number' => $pr_number,
 			'filter' => $filter,
 			'review_ids_only' => $review_ids_only,
-    )
-  );
+		)
+	);
   
-    if ( false === $cached_data ) {
-		  $github_url =
+	if ( false === $cached_data ) {
+		$github_url =
 			VIPGOCI_GITHUB_BASE_URL . '/' .  
 			'repos/' .
 			rawurlencode( $options['repo-owner'] ) . '/' .
@@ -3264,12 +3263,12 @@ function vipgoci_github_pr_review_events_get(
 
 		$issue_events = json_decode(
 			$issue_events
-    );
-    }
-    
-    else {
-        $issue_events = $cached_data;
-	  }
+    		);
+	}
+
+	else {
+		$issue_events = $cached_data;
+	}
 
 	/*
 	 * Filter results if requested. We can filter
