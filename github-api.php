@@ -1838,25 +1838,32 @@ function vipgoci_github_pr_reviews_get(
 	$repo_name,
 	$pr_number,
 	$github_token,
-	$filter = array()
+	$filter = array(),
+	$skip_cache = false
 ) {
+
+	$cache_id = array(
+		__FUNCTION__, $repo_owner, $repo_name, $pr_number,
+		$github_token, 
+	);
+
+	$cached_data = vipgoci_cache( $cache_id );
+
+	if ( true === $skip_cache ) {
+		$cached_data = false;
+	}
+
 	vipgoci_log(
-		'Fetching reviews for Pull-Request',
+		'Fetching reviews for Pull-Request ' .
+			( $cached_data ? ' (cached)' : '' ),
 		array(
 			'repo_owner' => $repo_owner,
 			'repo_name' => $repo_name,
 			'pr_number' => $pr_number,
 			'filter' => $filter,
+			'skip_cache' => $skip_cache,
 		)
 	);
-
-
-	$cache_id = array(
-		__FUNCTION__, $repo_owner, $repo_name, $pr_number,
-		$github_token
-	);
-
-	$cached_data = vipgoci_cache( $cache_id );
 
 
 	if ( false === $cached_data ) {
