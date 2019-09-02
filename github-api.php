@@ -3248,21 +3248,47 @@ function vipgoci_github_pr_review_events_get(
 	);
 
 	if ( false === $cached_data ) {
-		$github_url =
-			VIPGOCI_GITHUB_BASE_URL . '/' .
-			'repos/' .
-			rawurlencode( $options['repo-owner'] ) . '/' .
-			rawurlencode( $options['repo-name'] ) . '/' .
-			'issues/' .
-			rawurlencode( $pr_number ) . '/' .
-			'events';
+		$page = 1;
+		$per_page = 100;
 
-		$issue_events = vipgoci_github_fetch_url(
-			$github_url,
-			$options['token']
-		);
+		$all_issue_events = array();
 
-		$issue_events = json_decode(
+		do {
+			$github_url =
+				VIPGOCI_GITHUB_BASE_URL . '/' .
+				'repos/' .
+				rawurlencode( $options['repo-owner'] ) . '/' .
+				rawurlencode( $options['repo-name'] ) . '/' .
+				'issues/' .
+				rawurlencode( $pr_number ) . '/' .
+				'events?' .
+				'page=' . rawurlencode( $page ) . '&' .
+				'per_page=' . rawurlencode( $per_page );
+
+
+			$issue_events = vipgoci_github_fetch_url(
+				$github_url,
+				$options['token']
+			);
+
+			$issue_events = json_decode(
+				$issue_events
+			);
+
+			foreach( $issue_events as $issue_event ) {
+				$all_issue_events[] = $issue_event;
+			}
+
+			unset( $issue_event );
+
+			$page++;
+		} while ( count( $issue_events ) >= $per_page );
+
+		$issue_events = $all_issue_events;
+		unset( $all_issue_events );
+
+		vipgoci_cache(
+			$cached_id,
 			$issue_events
 		);
 	}
