@@ -1849,6 +1849,12 @@ function vipgoci_github_pr_reviews_get(
 		)
 	);
 
+	$ret_reviews = array();
+
+	$page = 1;
+	$per_page = 100;
+
+
 	/*
 	 * Figure out login name.
 	 */
@@ -1862,10 +1868,6 @@ function vipgoci_github_pr_reviews_get(
 
 		$filter['login'] = $current_user_info->login;
 	}
-
-	$ret_reviews = array();
-	$page = 1;
-	$per_page = 100;
 
 	/*
 	 * Fetch reviews, paged, from GitHub.
