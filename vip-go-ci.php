@@ -269,16 +269,22 @@ function vipgoci_option_teams_handle(
 	&$options,
 	$option_name
 ) {
-	if ( ! empty( $options[ $option_name ] ) ) {
-		$options[ $option_name ] = array_map(
-			'vipgoci_sanitize_string',
-			$options[ $option_name ]
-		);
+	if (
+		( ! isset( $options[ $option_name ] ) ) ||
+		( ! is_array( $options[ $option_name ] ) )
+	) {
+		$options[ $option_name ] = array();
 	}
 
 	if ( empty( $options[ $option_name ] ) ) {
 		return;
 	}
+
+	$options[ $option_name ] = array_map(
+		'vipgoci_sanitize_string',
+		$options[ $option_name ]
+	);
+
 
 	$teams_info = vipgoci_github_org_teams(
 		$options['token'],
