@@ -786,7 +786,8 @@ function vipgoci_remove_existing_github_comments_from_results(
 			);
 
 			/*
-			 * Get dismissed reviews and extract ID of each.
+			 * Get dismissed reviews submitted by us
+			 * and extract ID of each.
 			 */
 			$pr_reviews = vipgoci_github_pr_reviews_get(
 				$options['repo-owner'],
@@ -842,7 +843,7 @@ function vipgoci_remove_existing_github_comments_from_results(
 						'all_review_ids' =>
 							$all_review_ids,
 
-						'kept_review_ids' =>
+						'dismissed_reviews' =>
 							$dismissed_reviews,
 					)
 				);
