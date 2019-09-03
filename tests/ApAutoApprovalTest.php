@@ -310,7 +310,8 @@ final class ApAutoApprovalTest extends TestCase {
 				array(
 					'login' => 'myself',
 					'state' => array( 'APPROVED' ),
-				)
+				),
+				true
 			);
 
 			vipgoci_unittests_output_unsuppress();
