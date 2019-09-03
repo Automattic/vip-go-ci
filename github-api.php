@@ -1838,21 +1838,86 @@ function vipgoci_github_pr_reviews_get(
 	$repo_name,
 	$pr_number,
 	$github_token,
-	$filter = array()
+	$filter = array(),
+	$skip_cache = false
 ) {
+
+	$cache_id = array(
+		__FUNCTION__, $repo_owner, $repo_name, $pr_number,
+		$github_token, 
+	);
+
+	$cached_data = vipgoci_cache( $cache_id );
+
+	if ( true === $skip_cache ) {
+		$cached_data = false;
+	}
+
 	vipgoci_log(
-		'Fetching reviews for Pull-Request',
+		'Fetching reviews for Pull-Request ' .
+			( $cached_data ? ' (cached)' : '' ),
 		array(
 			'repo_owner' => $repo_owner,
 			'repo_name' => $repo_name,
 			'pr_number' => $pr_number,
+			'filter' => $filter,
+			'skip_cache' => $skip_cache,
 		)
 	);
 
-	$ret_reviews = array();
 
-	$page = 1;
-	$per_page = 100;
+	if ( false === $cached_data ) {
+		/*
+		 * Fetch reviews, paged, from GitHub.
+		 */
+
+		$ret_reviews = array();
+
+		$page = 1;
+		$per_page = 100;
+
+		do {
+			$github_url =
+				VIPGOCI_GITHUB_BASE_URL . '/' .
+				'repos/' .
+				rawurlencode( $repo_owner ) . '/' .
+				rawurlencode( $repo_name ) . '/' .
+				'pulls/' .
+				rawurlencode( $pr_number ) . '/' .
+				'reviews' .
+				'?per_page=' . rawurlencode( $per_page ) . '&' .
+				'page=' . rawurlencode( $page );
+	
+
+			/*
+			 * Fetch reviews, decode result.
+			 */
+			$pr_reviews = json_decode(
+				vipgoci_github_fetch_url(
+					$github_url,
+					$github_token
+				)
+			);
+
+			foreach( $pr_reviews as $pr_review ) {
+				$ret_reviews[] = $pr_review;
+			}
+
+			unset( $pr_review );
+
+			$page++;
+		} while( count( $pr_reviews ) >= $per_page );
+
+
+		vipgoci_cache(
+			$cache_id,
+			$ret_reviews
+		);
+	}
+
+	else {
+		$ret_reviews = $cached_data;
+	}
 
 
 	/*
@@ -1870,76 +1935,48 @@ function vipgoci_github_pr_reviews_get(
 	}
 
 	/*
-	 * Fetch reviews, paged, from GitHub.
+	 * Loop through each review-item,
+	 * do filtering and save the ones
+	 * we want to keep.
 	 */
 
-	do {
-		$github_url =
-			VIPGOCI_GITHUB_BASE_URL . '/' .
-			'repos/' .
-			rawurlencode( $repo_owner ) . '/' .
-			rawurlencode( $repo_name ) . '/' .
-			'pulls/' .
-			rawurlencode( $pr_number ) . '/' .
-			'reviews' .
-			'?per_page=' . rawurlencode( $per_page ) . '&' .
-			'page=' . rawurlencode( $page );
+	$ret_reviews_filtered = array();
 
-
-		/*
-		 * Fetch reviews, decode result.
-		 */
-		$pr_reviews = json_decode(
-			vipgoci_github_fetch_url(
-				$github_url,
-				$github_token
-			)
-		);
-
-
-		/*
-		 * Loop through each review-item,
-		 * do filtering and save the ones
-		 * we want to keep.
-		 */
-
-		foreach( $pr_reviews as $pr_review ) {
-			if ( ! empty( $filter['login'] ) ) {
-				if (
-					$pr_review->user->login !==
-					$filter['login']
-				) {
-					continue;
-				}
+	foreach( $ret_reviews as $pr_review ) {
+		if ( ! empty( $filter['login'] ) ) {
+			if (
+				$pr_review->user->login !==
+				$filter['login']
+			) {
+				continue;
 			}
-
-			if ( ! empty( $filter['state'] ) ) {
-				$match = false;
-
-				foreach(
-					$filter['state'] as
-						$allowed_state
-				) {
-					if (
-						$pr_review->state ===
-						$allowed_state
-					) {
-						$match = true;
-					}
-				}
-
-				if ( false === $match ) {
-					continue;
-				}
-			}
-
-			$ret_reviews[] = $pr_review;
 		}
 
-		$page++;
-	} while( count( $pr_reviews ) >= $per_page );
+		if ( ! empty( $filter['state'] ) ) {
+			$match = false;
 
-	return $ret_reviews;
+			foreach(
+				$filter['state'] as
+					$allowed_state
+			) {
+				if (
+					$pr_review->state ===
+					$allowed_state
+				) {
+					$match = true;
+				}
+			}
+
+			if ( false === $match ) {
+				continue;
+			}
+		}
+
+		$ret_reviews_filtered[] = $pr_review;
+	}
+
+
+	return $ret_reviews_filtered;
 }
 
 /*

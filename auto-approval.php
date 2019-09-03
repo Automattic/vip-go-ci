@@ -222,7 +222,8 @@ function vipgoci_auto_approval_non_approval(
 		array(
 			'login' => 'myself',
 			'state' => array( 'APPROVED' ),
-		)
+		),
+		true // bypass caching
 	);
 
 	/*
