@@ -707,7 +707,8 @@ function vipgoci_remove_existing_github_comments_from_results(
 	$options,
 	$prs_implicated,
 	&$results,
-	$ignore_dismissed_reviews = false
+	$repost_comments_from_dismissed_reviews = false,
+	$prs_events_dismissed_by_team = array()
 ) {
 	vipgoci_log(
 		'Removing existing GitHub comments from results' .
@@ -716,7 +717,8 @@ function vipgoci_remove_existing_github_comments_from_results(
 			'repo_owner' => $options['repo-owner'],
 			'repo_name' => $options['repo-name'],
 			'prs_implicated' => array_keys( $prs_implicated ),
-			'ignore_dismissed_reviews' => $ignore_dismissed_reviews,
+			'repost_comments_from_dismissed_reviews' => $repost_comments_from_dismissed_reviews,
+			'prs_events_dismissed_by_team' => $prs_events_dismissed_by_team,
 		)
 	);
 
@@ -753,7 +755,7 @@ function vipgoci_remove_existing_github_comments_from_results(
 				$options,
 				$pr_item_commit_id,
 				$pr_item->created_at,
-				$prs_comments
+				$prs_comments // pointer used
 			);
 
 			unset( $pr_item_commit_id );
@@ -763,7 +765,26 @@ function vipgoci_remove_existing_github_comments_from_results(
 		/*
 		 * Ignore dismissed reviews, if requested.
 		 */
-		if ( true === $ignore_dismissed_reviews ) {
+		if ( true === $repost_comments_from_dismissed_reviews ) {
+			vipgoci_log(
+				'Later on, will make sure comments ' .
+					'that are part of dismissed reviews ' .
+					'will be submitted again, if the ' .
+					'underlying issue was detected ' . 
+					'during the run. In case of such a setting' .
+					'and such reviews existing, excluding ' .
+					'reviews (and thus comments) that are submitted ' .
+					'by members of a particular team ' .
+					'from this process',
+				array(
+					'teams' =>
+						$options['dismissed-reviews-exclude-reviews-from-team'],
+
+					'pr_number' =>
+						$pr_item->number,
+				)
+			);
+
 			/*
 			 * Get dismissed reviews and extract ID of each.
 			 */
@@ -785,6 +806,50 @@ function vipgoci_remove_existing_github_comments_from_results(
 
 			unset( $pr_reviews );
 
+			/*
+			 * Some reviews (and comments) should not be posted,
+			 * again, as per setting determined by our caller;
+			 * honor this here.
+			 */
+			if ( ! empty(
+				$prs_events_dismissed_by_team[
+					$pr_item->number
+				]
+			) ) {
+
+				$all_review_ids = $dismissed_reviews;
+
+				$dismissed_reviews = array_diff(
+					$all_review_ids,
+					$prs_events_dismissed_by_team[
+						$pr_item->number
+					]
+				);
+	
+				vipgoci_log(
+					'Excluding certain reviews from ' .
+						'list of previously gathered dismissed reviews; ' .
+						'will only keep reviews that were not dismissed by ' .
+						'members of a particular team. The comments of ' .
+						'the outstanding, kept, reviews might be posted again ' .
+						'if the underlying issue was detected',
+					array(
+						'review_ids' =>
+							$prs_events_dismissed_by_team[
+								$pr_item->number
+							],
+
+						'all_review_ids' =>
+							$all_review_ids,
+
+						'kept_review_ids' =>
+							$dismissed_reviews,
+					)
+				);
+
+				unset( $all_review_ids );
+			}
+
 
 			/*
 			 * Loop through each file to have comments
@@ -799,6 +864,9 @@ function vipgoci_remove_existing_github_comments_from_results(
 			 * such comments, even though they could be
 			 * considered duplictes. The aim is to make
 			 * them more visible and part of a blocking review.
+			 *
+			 * Note that some comments might be excluded
+			 * from this, as per above.
 			 */
 
 			$removed_comments = array();
@@ -840,8 +908,9 @@ function vipgoci_remove_existing_github_comments_from_results(
 
 
 					/*
-					 * Comment is a part of a dismissed review,
-					 * get rid of the comment -- act as if was
+					 * Comment is a part of a dismissed review
+					 * (that was not excluded), now get
+					 * rid of the comment -- act as if was
 					 * never there.
 					 */
 					unset(
@@ -857,11 +926,12 @@ function vipgoci_remove_existing_github_comments_from_results(
 			vipgoci_log(
 				'Removed following comments from list of previously submitted ' .
 					'comments to older PR reviews, as they are ' .
-					'part of dismissed reviews',
+					'part of dismissed reviews. Note that some ' .
+					'dismissed reviews might have been excluded previously',
 
 				array(
 					'removed_comments' =>
-						$removed_comments
+						$removed_comments,
 				)
 			);
 

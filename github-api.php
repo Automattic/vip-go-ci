@@ -3254,6 +3254,147 @@ function vipgoci_github_label_remove_from_pr(
 
 
 /*
+ * Get all events issues related to a Pull-Request
+ * from the GitHub API, and filter away any items that
+ * do not match a given criteria (if applicable).
+ *
+ * Note: Using $review_ids_only = true will imply
+ * selecting only certain types of events (i.e. dismissed_review).
+ */
+function vipgoci_github_pr_review_events_get(
+	$options,
+	$pr_number,
+	$filter = null,
+	$review_ids_only = false
+) {
+	$cached_id = array(
+		__FUNCTION__, $options['repo-owner'], $options['repo-name'],
+		$options['token'], $pr_number
+	);
+
+	$cached_data = vipgoci_cache( $cached_id );
+
+	vipgoci_log(
+		'Getting issue events for Pull-Request from GitHub API' .
+		( $cached_data ? ' (cached)' : '' ),
+		array(
+			'repo_owner' => $options['repo-owner'],
+			'repo_name' => $options['repo-name'],
+			'pr_number' => $pr_number,
+			'filter' => $filter,
+			'review_ids_only' => $review_ids_only,
+		)
+	);
+
+	if ( false === $cached_data ) {
+		$page = 1;
+		$per_page = 100;
+
+		$all_issue_events = array();
+
+		do {
+			$github_url =
+				VIPGOCI_GITHUB_BASE_URL . '/' .
+				'repos/' .
+				rawurlencode( $options['repo-owner'] ) . '/' .
+				rawurlencode( $options['repo-name'] ) . '/' .
+				'issues/' .
+				rawurlencode( $pr_number ) . '/' .
+				'events?' .
+				'page=' . rawurlencode( $page ) . '&' .
+				'per_page=' . rawurlencode( $per_page );
+
+
+			$issue_events = vipgoci_github_fetch_url(
+				$github_url,
+				$options['token']
+			);
+
+			$issue_events = json_decode(
+				$issue_events
+			);
+
+			foreach( $issue_events as $issue_event ) {
+				$all_issue_events[] = $issue_event;
+			}
+
+			unset( $issue_event );
+
+			$page++;
+		} while ( count( $issue_events ) >= $per_page );
+
+		$issue_events = $all_issue_events;
+		unset( $all_issue_events );
+
+		vipgoci_cache(
+			$cached_id,
+			$issue_events
+		);
+	}
+
+	else {
+		$issue_events = $cached_data;
+	}
+
+	/*
+	 * Filter results if requested. We can filter
+	 * by type of event and/or by actors that initiated
+	 * the event.
+	 */
+	if ( null !== $filter ) {
+		$filtered_issue_events = array();
+
+		foreach( $issue_events as $issue_event ) {
+			if (
+				( ! empty( $filter['event_type'] ) ) &&
+				( is_string( $filter['event_type'] ) ) &&
+				(
+					$issue_event->event !==
+					$filter['event_type']
+				)
+			) {
+				continue;
+			}
+
+			if (
+				( ! empty( $filter['actors_logins'] ) ) &&
+				( is_array( $filter['actors_logins'] ) ) &&
+				( false === in_array(
+					$issue_event->actor->login,
+					$filter['actors_logins']
+				) )
+			) {
+				continue;
+			}
+
+			$filtered_issue_events[] = $issue_event;
+		}
+
+		$issue_events = $filtered_issue_events;
+	}
+
+	if ( true === $review_ids_only ) {
+		$issue_events_ret = array();
+
+		foreach( $issue_events as $issue_event ) {
+			if ( ! isset(
+				$issue_event->dismissed_review->review_id
+			) ) {
+				continue;
+			}
+
+			$issue_events_ret[] =
+				$issue_event->dismissed_review->review_id;
+		}
+
+		$issue_events = $issue_events_ret;
+	}
+
+	return $issue_events;
+}
+
+
+/*
  * Get members for a team.
  */
 function vipgoci_github_team_members(

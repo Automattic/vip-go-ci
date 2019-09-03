@@ -468,6 +468,8 @@ function vipgoci_run() {
 			'review-comments-total-max:',
 			'review-comments-ignore:',
 			'dismiss-stale-reviews:',
+			'dismissed-reviews-repost-comments:',
+			'dismissed-reviews-exclude-reviews-from-team:',
 			'branches-ignore:',
 			'output:',
 			'dry-run:',
@@ -540,6 +542,21 @@ function vipgoci_run() {
 			"\t" . '                               that we process which have no active comments. ' . PHP_EOL .
 			"\t" . '                               The Pull-Requests we process are those associated ' . PHP_EOL .
 			"\t" . '                               with the commit specified.' . PHP_EOL .
+			"\t" . '--dismissed-reviews-repost-comments=BOOL  When avoiding double-posting comments,' . PHP_EOL .
+			"\t" . '                                          do not take into consideration comments ' . PHP_EOL .
+			"\t" . '                                          posted against reviews that have now been ' . PHP_EOL .
+			"\t" . '                                          dismissed. Setting this to true entails ' . PHP_EOL .
+			"\t" . '                                          that comments from dismissed reviews will ' . PHP_EOL .
+			"\t" . '                                          be posted again, should the underlying issue ' . PHP_EOL .
+			"\t" . '                                          be detected during the run.' . PHP_EOL .
+			"\t" . '--dismissed-reviews-exclude-reviews-from-team=STRING  With this parameter set, ' . PHP_EOL .
+			"\t" . '                                                      comments that are part of reviews ' . PHP_EOL .
+			"\t" . '                                                      dismissed by members of the teams specified,  ' . PHP_EOL .
+			"\t" . '                                                      would be taken into consideration when ' . PHP_EOL .
+			"\t" . '                                                      avoiding double-posting; they would be ' . PHP_EOL . 
+			"\t" . '                                                      excluded. Note that this parameter ' . PHP_EOL .
+			"\t" . '                                                      only works in conjunction with ' . PHP_EOL .
+			"\t" . '                                                      --dismissed-reviews-repost-comments' . PHP_EOL .
 			"\t" . '--informational-url=STRING     URL to documentation on what this bot does. Should ' . PHP_EOL .
 			"\t" . '                               start with https:// or https:// ' . PHP_EOL .
 			"\t" . '--phpcs=BOOL                   Whether to run PHPCS (true/false)' . PHP_EOL .
@@ -745,6 +762,20 @@ function vipgoci_run() {
 	}
 
 	/*
+	 * Process --dismissed-reviews-exclude-reviews-from-team,
+	 * expected to be a string.
+	 */
+
+	vipgoci_option_array_handle(
+		$options,
+		'dismissed-reviews-exclude-reviews-from-team',
+		array(),
+		array(),
+		','
+	);
+
+	
+	/*
 	 * Process --phpcs-severity -- expected to be
 	 * an integer-value.
 	 */
@@ -905,6 +936,8 @@ function vipgoci_run() {
 	vipgoci_option_bool_handle( $options, 'lint', 'true' );
 
 	vipgoci_option_bool_handle( $options, 'dismiss-stale-reviews', 'false' );
+
+	vipgoci_option_bool_handle( $options, 'dismissed-reviews-repost-comments', 'true' );
 
 	if (
 		( false === $options['lint'] ) &&
@@ -1162,6 +1195,17 @@ function vipgoci_run() {
 			)
 		);
 	}
+
+
+	/*
+	 * Check if the teams specified in the
+	 * --dismissed-reviews-exclude-reviews-from-team parameter are
+	 * really valid, etc.
+	 */
+	vipgoci_option_teams_handle(
+		$options,
+		'dismissed-reviews-exclude-reviews-from-team'
+	);
 
 
 	/*
@@ -1427,6 +1471,62 @@ function vipgoci_run() {
 		$auto_approved_files_arr
 	);
 
+
+	/*
+	 * Get all events on dismissed reviews
+	 * from members of the specified team(s),
+	 * by Pull-Request.
+	 */
+
+	$team_members_logins_arr = vipgoci_github_team_members_many(
+		$options['token'],
+		$options['dismissed-reviews-exclude-reviews-from-team']
+	);
+
+
+	/*
+	 * If we have any team member's logins,
+	 * get any Pull-Request review dismissal events
+	 * by members of that team.
+	 */
+	$prs_events_dismissed_by_team = array();
+
+	if (
+		( ! empty(
+			$options['dismissed-reviews-exclude-reviews-from-team']
+		) )
+		&&
+		( ! empty(
+			$team_members_logins_arr
+		) )
+	) {
+		foreach ( $prs_implicated as $pr_item ) {
+			$prs_events_dismissed_by_team[ $pr_item->number ] =
+				vipgoci_github_pr_review_events_get(
+					$options,
+					$pr_item->number,
+					array(
+						'event_type' => 'review_dismissed',
+						'actors_logins' => $team_members_logins_arr,
+					),
+					true
+				);
+		}
+
+		vipgoci_log(
+			'Fetched list of Pull-Request reviews dismissed by members of a team',
+			array(
+				'team_members' =>
+					$team_members_logins_arr,
+				'reviews_dismissed_by_team' =>
+					$prs_events_dismissed_by_team,
+			)
+		);
+	}
+
+	unset( $team_members_logins_arr );
+
+
 	/*
 	 * Remove comments from $results that have
 	 * already been submitted.
@@ -1436,7 +1536,8 @@ function vipgoci_run() {
 		$options,
 		$prs_implicated,
 		$results,
-		true
+		$options['dismissed-reviews-repost-comments'],
+		$prs_events_dismissed_by_team
 	);
 
 	/*
