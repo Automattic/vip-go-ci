@@ -717,7 +717,7 @@ function vipgoci_remove_existing_github_comments_from_results(
 			'repo_owner' => $options['repo-owner'],
 			'repo_name' => $options['repo-name'],
 			'prs_implicated' => array_keys( $prs_implicated ),
-			'ignore_dismissed_reviews' => $repost_comments_from_dismissed_reviews,
+			'repost_comments_from_dismissed_reviews' => $repost_comments_from_dismissed_reviews,
 			'prs_events_dismissed_by_team' => $prs_events_dismissed_by_team,
 		)
 	);
