@@ -3367,6 +3367,18 @@ function vipgoci_github_pr_review_events_get(
 				continue;
 			}
 
+			if (
+				( ! empty( $filter['actors_ids'] ) ) &&
+				( is_array( $filter['actors_ids'] ) ) &&
+				( false === in_array(
+					$issue_event->actor->id,
+					$filter['actors_ids']
+				) )
+			) {
+				continue;
+			}
+
+
 			$filtered_issue_events[] = $issue_event;
 		}
 
@@ -3400,7 +3412,7 @@ function vipgoci_github_pr_review_events_get(
 function vipgoci_github_team_members(
 	$github_token,
 	$team_id,
-	$ids_only = false
+	$return_values_only = null
 ) {
 	$cached_id = array(
 		__FUNCTION__, $github_token, $team_id
@@ -3413,7 +3425,7 @@ function vipgoci_github_team_members(
 		( $cached_data ? ' (cached)' : '' ),
 		array(
 			'team_id' => $team_id,
-			'ids_only' => $ids_only,
+			'return_values_only' => $return_values_only,
 		)
 	);
 
@@ -3463,10 +3475,14 @@ function vipgoci_github_team_members(
 		$team_members = $cached_data;
 	}
 
-	if ( true === $ids_only ) {
+	/*
+	 * If caller specified only certain value from
+	 * each item to be return, honor that.
+	 */
+	if ( null !== $return_values_only ) {
 		$team_members = array_column(
 			(array) $team_members,
-			'id'
+			$return_values_only
 		);
 	}
 
@@ -3491,26 +3507,26 @@ function vipgoci_github_team_members_many(
 		)
 	);
 
-	$team_members_logins_arr = array();
+	$team_members_ids_arr = array();
 
 	foreach( $team_ids_arr as $team_id_item ) {
 		$team_id_members = vipgoci_github_team_members(
 			$github_token,
 			$team_id_item,
-			true
+			'id'
 		);
 
-		$team_members_logins_arr = array_merge(
-			$team_members_logins_arr,
+		$team_members_ids_arr = array_merge(
+			$team_members_ids_arr,
 			$team_id_members
 		);
 	}
 
-	$team_members_logins_arr = array_unique(
-		$team_members_logins_arr
+	$team_members_ids_arr = array_unique(
+		$team_members_ids_arr
 	);
 
-	return $team_members_logins_arr;
+	return $team_members_ids_arr;
 }
 
 
