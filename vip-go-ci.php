@@ -1478,7 +1478,7 @@ function vipgoci_run() {
 	 * by Pull-Request.
 	 */
 
-	$team_members_logins_arr = vipgoci_github_team_members_many(
+	$team_members_ids_arr = vipgoci_github_team_members_many(
 		$options['token'],
 		$options['dismissed-reviews-exclude-reviews-from-team']
 	);
@@ -1497,7 +1497,7 @@ function vipgoci_run() {
 		) )
 		&&
 		( ! empty(
-			$team_members_logins_arr
+			$team_members_ids_arr
 		) )
 	) {
 		foreach ( $prs_implicated as $pr_item ) {
@@ -1507,7 +1507,7 @@ function vipgoci_run() {
 					$pr_item->number,
 					array(
 						'event_type' => 'review_dismissed',
-						'actors_logins' => $team_members_logins_arr,
+						'actors_ids' => $team_members_ids_arr,
 					),
 					true
 				);
@@ -1517,14 +1517,14 @@ function vipgoci_run() {
 			'Fetched list of Pull-Request reviews dismissed by members of a team',
 			array(
 				'team_members' =>
-					$team_members_logins_arr,
+					$team_members_ids_arr,
 				'reviews_dismissed_by_team' =>
 					$prs_events_dismissed_by_team,
 			)
 		);
 	}
 
-	unset( $team_members_logins_arr );
+	unset( $team_members_ids_arr );
 
 
 	/*
