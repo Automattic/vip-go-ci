@@ -57,7 +57,7 @@ final class GitHubTeamMembersTest extends TestCase {
 		$team_members_res1_actual = vipgoci_github_team_members(
 			$this->options['github-token'],
 			$this->options['team-id'],
-			false
+			null
 		);
 
 		vipgoci_unittests_output_unsuppress();
@@ -134,7 +134,7 @@ final class GitHubTeamMembersTest extends TestCase {
 		$team_members_res2_actual = vipgoci_github_team_members(
 			$this->options['github-token'],
 			$this->options['team-id'],
-			true
+			'id'
 		);
 
 		vipgoci_unittests_output_unsuppress();
