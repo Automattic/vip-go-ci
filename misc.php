@@ -835,7 +835,7 @@ function vipgoci_remove_existing_github_comments_from_results(
 						'the outstanding, kept, reviews might be posted again ' .
 						'if the underlying issue was detected',
 					array(
-						'review_ids' =>
+						'prs_events_dismissed_by_team_and_pr' =>
 							$prs_events_dismissed_by_team[
 								$pr_item->number
 							],
