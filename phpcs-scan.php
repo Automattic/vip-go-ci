@@ -420,6 +420,11 @@ function vipgoci_phpcs_scan_commit(
 				0,
 				true // log to IRC
 			);
+
+			/*
+			 * No further processing in case of an error.
+			 */
+			continue;
 		}
 
 		unset( $file_issues_str );
