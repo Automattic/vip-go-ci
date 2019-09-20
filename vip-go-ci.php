@@ -428,7 +428,13 @@ function vipgoci_run() {
 
 	vipgoci_log(
 		'Initializing...',
-		array()
+		array(
+			'debug_info' => array(
+				'php_version' => phpversion(),
+				'hostname' => gethostname(),
+				'php_uname' => php_uname(),
+			)
+		)
 	);
 
 	/*
