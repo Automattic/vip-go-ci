@@ -345,13 +345,13 @@ function vipgoci_phpcs_scan_commit(
 		)
 	);
 
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'phpcs_scan_single_file' );
 
 	foreach ( $pr_item_files_changed['all'] as $file_name ) {
 		/*
 		 * Loop through each file affected by
 		 * the commit.
 		 */
-		vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'phpcs_scan_single_file' );
 
 		$file_extension = vipgoci_file_extension(
 			$file_name
@@ -423,7 +423,11 @@ function vipgoci_phpcs_scan_commit(
 
 			/*
 			 * No further processing in case of an error.
+			 * 
+			 * Set an empty array just in case to avoid warnings.
 			 */
+			$files_issues_arr[ $file_name ] = array();
+
 			continue;
 		}
 
@@ -487,10 +491,9 @@ function vipgoci_phpcs_scan_commit(
 		unset( $file_issues_str );
 
 		gc_collect_cycles();
-
-		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'phpcs_scan_single_file' );
 	}
 
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'phpcs_scan_single_file' );
 
 	/*
 	 * Loop through each Pull-Request implicated,
