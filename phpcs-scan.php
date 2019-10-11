@@ -72,7 +72,7 @@ function vipgoci_phpcs_do_scan(
 		array(
 			'cmd' => $cmd,
 		),
-		2
+		0	
 	);
 
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'phpcs_cli' );
