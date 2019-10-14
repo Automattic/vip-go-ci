@@ -2633,6 +2633,19 @@ function vipgoci_github_approve_pr(
 		return;
 	}
 
+	vipgoci_log(
+		'Sending request to GitHub to approve Pull-Request',
+		array(
+			'repo_owner'		=> $repo_owner,
+			'repo_name'		=> $repo_name,
+			'pr_number'		=> $pr_number,
+			'latest_commit_id'	=> $latest_commit_id,
+			'github_url'		=> $github_url,
+			'github_postfields'	=> $github_postfields,
+		),
+		2
+	);
+
 	// Actually approve
 	vipgoci_github_post_url(
 		$github_url,
