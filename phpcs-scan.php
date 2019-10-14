@@ -626,7 +626,6 @@ function vipgoci_phpcs_scan_commit(
 		}
 
 		unset( $pr_item_commits );
-		unset( $pr_item_files_changed );
 		unset( $file_blame_log );
 		unset( $file_changed_lines );
 		unset( $file_relative_lines );
@@ -634,7 +633,6 @@ function vipgoci_phpcs_scan_commit(
 
 		gc_collect_cycles();
 	}
-
 
 	/*
 	 * Clean up a bit
@@ -645,6 +643,7 @@ function vipgoci_phpcs_scan_commit(
 	);
 
 	unset( $prs_implicated );
+	unset( $pr_item_files_changed );
 
 	gc_collect_cycles();
 
