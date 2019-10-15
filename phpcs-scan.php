@@ -310,16 +310,20 @@ function vipgoci_phpcs_scan_commit(
 				$pr_item_file_name,
 				$pr_item_files_changed['all'],
 				true
-			) ) {
-				continue;
+			) === false ) {
+				$pr_item_files_changed['all'][] =
+					$pr_item_file_name;
 			}
 
-			$pr_item_files_changed['all'][] =
-				$pr_item_file_name;
-
-			$pr_item_files_changed[
-				$pr_item->number
-			][] = $pr_item_file_name;
+			if ( in_array(
+				$pr_item_file_name,
+				$pr_item_files_changed[ $pr_item->number ],
+				true
+			) === false ) {
+				$pr_item_files_changed[
+					$pr_item->number
+				][] = $pr_item_file_name;
+			}
 		}
 	}
 
