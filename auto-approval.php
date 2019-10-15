@@ -18,7 +18,8 @@ function vipgoci_auto_approval_non_approval(
 	$pr_item,
 	$pr_label,
 	&$auto_approved_files_arr,
-	$files_seen
+	$files_seen,
+	$pr_files_changed
 ) {
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'vipgoci_auto_approval_non_approval' );
 
@@ -58,6 +59,8 @@ function vipgoci_auto_approval_non_approval(
 				$auto_approved_files_arr,
 
 			'files_seen' => $files_seen,
+
+			'pr_files_changed' => $pr_files_changed,
 		),
 		0,
 		true // Send to IRC
@@ -102,6 +105,25 @@ function vipgoci_auto_approval_non_approval(
 			$approved_file =>
 			$approved_file_system
 	) {
+
+		if ( in_array(
+			$approved_file,
+			$pr_files_changed,
+			true
+		) === false ) {
+			vipgoci_log(
+				'Not adding auto-approved in hashes-api ' .
+				'database to results for file, as it ' .
+				'was not altered by the Pull-Request',
+				array(
+					'pr_number'		=> $pr_item->number,
+					'file_name'		=> $approved_file,
+					'pr_files_changed'	=> $pr_files_changed,
+				)
+			);
+
+			continue;
+		}
 
 		if (
 			$approved_file_system !==
@@ -553,7 +575,8 @@ function vipgoci_auto_approval(
 				$pr_item,
 				$pr_label,
 				$auto_approved_files_arr,
-				$files_seen
+				$files_seen,
+				array_keys( $pr_diff )
 			);
 		}
 
