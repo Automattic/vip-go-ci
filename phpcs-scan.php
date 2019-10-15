@@ -546,10 +546,10 @@ function vipgoci_phpcs_scan_commit(
 			$repo_name,
 			$github_token,
 			$pr_item->number,
-			'skip-phpcs'
+			'skip-phpcs-scan'
 		);
 
-		if ( empty( $pr_label_skip_phpcs ) ) {
+		if ( ! empty( $pr_label_skip_phpcs ) ) {
 			vipgoci_log(
 				'Label on Pull-Request indicated to skip ' .
 					'PHPCS-scanning; scanning will be ' .
