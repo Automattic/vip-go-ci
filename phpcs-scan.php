@@ -535,10 +535,10 @@ function vipgoci_phpcs_scan_commit(
 
 
 		/*
-		 * Check if calling user decided to turn off PHPCS
-		 * scanning for the Pull-Request, and if so,
-		 * skip scanning. Make sure to indicate so in
-		 * the statistics.
+		 * Check if user requested to turn off PHPCS
+		 * scanning for the Pull-Request by adding a label
+		 * to the Pull-Request, and if so, skip scanning.
+		 * Make sure to indicate so in the statistics.
 		 */
 
 		$pr_label_skip_phpcs = vipgoci_github_labels_get(
