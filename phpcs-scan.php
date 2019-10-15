@@ -515,6 +515,21 @@ function vipgoci_phpcs_scan_commit(
 
 
 	foreach ( $prs_implicated as $pr_item ) {
+		vipgoci_log(
+			'Preparing to process PHPCS scanned files in ' .
+				'Pull-Request, to construct results ' .
+				'to be submitted',
+			array(
+				'repo_owner'    => $repo_owner,
+				'repo_name'     => $repo_name,
+				'commit_id'     => $commit_id,
+				'pr_number'     => $pr_item->number,
+				'files_changed' =>
+					$pr_item_files_changed[ $pr_item->number ]
+			)
+		);
+
+
 		/*
 		 * Get all commits related to the current
 		 * Pull-Request.
