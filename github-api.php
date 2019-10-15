@@ -3599,7 +3599,7 @@ function vipgoci_github_org_teams(
 			}
 
 			$page++;
-		} while ( count( $org_teams ) >= $per_page ); 
+		} while ( count( (array) $org_teams ) >= $per_page ); 
 
 		$org_teams = $org_teams_all;
 		unset( $org_teams_all );
