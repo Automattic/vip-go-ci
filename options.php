@@ -98,7 +98,7 @@ function vipgoci_read_repo_options_file(
 				$option_overwritable_name
 			];
 
-			// FIXME: Need to check if values are okay.
+			// FIXME: Need to check if set values are valid.
 		}		
 	}
 
