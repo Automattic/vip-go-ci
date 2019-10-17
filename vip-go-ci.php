@@ -1223,7 +1223,10 @@ function vipgoci_run() {
 		$options,
 		'.vipgoci_options',
 		array(
-			'phpcs-severity',
+			'phpcs-severity' => array(
+				'type'		=> 'integer',
+				'valid_values'	=> array( 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ),
+			),
 		)
 	);
 
