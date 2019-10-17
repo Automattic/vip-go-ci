@@ -18,7 +18,7 @@ function vipgoci_options_read_repo_file(
 			'repo_owner'		=> $options['repo-owner'],
 			'repo_name'		=> $options['repo-name'],
 			'commit'		=> $options['commit'],
-			'filename'		=> $filename,
+			'filename'		=> $repo_options_file_name,
 			'options_overwritable'	=> $options_overwritable,
 		)
 	);
@@ -34,7 +34,7 @@ function vipgoci_options_read_repo_file(
 		$options['repo-name'],
 		$options['token'],
 		$options['commit'],
-		$filename,
+		$repo_options_file_name,
 		$options['local-git-repo']
 	);
 
@@ -42,7 +42,7 @@ function vipgoci_options_read_repo_file(
 		vipgoci_log(
 			'No options found, nothing further to do',
 			array(
-				'filename'		=> $filename,		
+				'filename'		=> $repo_options_file_name,		
 			)
 		);
 
@@ -59,7 +59,7 @@ function vipgoci_options_read_repo_file(
 			'Options not parsable, nothing further to do',
 			array(
 				'filename'
-					=> $filename,
+					=> $repo_options_file_name,
 
 				'repo_options_arr'
 					=> $repo_options_arr,
