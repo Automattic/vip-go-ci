@@ -1213,6 +1213,19 @@ function vipgoci_run() {
 		'dismissed-reviews-exclude-reviews-from-team'
 	);
 
+	/*
+	 * Certain options are configurable via
+	 * options-file in the repository. Set
+	 * these options here.
+	 */
+	vipgoci_read_repo_options_file(
+		$options,
+		'.vipgoci_options',
+		array(
+			'phpcs-severity',
+		)
+	);
+
 
 	/*
 	 * Log that we started working,
