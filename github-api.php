@@ -1838,21 +1838,86 @@ function vipgoci_github_pr_reviews_get(
 	$repo_name,
 	$pr_number,
 	$github_token,
-	$filter = array()
+	$filter = array(),
+	$skip_cache = false
 ) {
+
+	$cache_id = array(
+		__FUNCTION__, $repo_owner, $repo_name, $pr_number,
+		$github_token, 
+	);
+
+	$cached_data = vipgoci_cache( $cache_id );
+
+	if ( true === $skip_cache ) {
+		$cached_data = false;
+	}
+
 	vipgoci_log(
-		'Fetching reviews for Pull-Request',
+		'Fetching reviews for Pull-Request ' .
+			( $cached_data ? ' (cached)' : '' ),
 		array(
 			'repo_owner' => $repo_owner,
 			'repo_name' => $repo_name,
 			'pr_number' => $pr_number,
+			'filter' => $filter,
+			'skip_cache' => $skip_cache,
 		)
 	);
 
-	$ret_reviews = array();
 
-	$page = 1;
-	$per_page = 100;
+	if ( false === $cached_data ) {
+		/*
+		 * Fetch reviews, paged, from GitHub.
+		 */
+
+		$ret_reviews = array();
+
+		$page = 1;
+		$per_page = 100;
+
+		do {
+			$github_url =
+				VIPGOCI_GITHUB_BASE_URL . '/' .
+				'repos/' .
+				rawurlencode( $repo_owner ) . '/' .
+				rawurlencode( $repo_name ) . '/' .
+				'pulls/' .
+				rawurlencode( $pr_number ) . '/' .
+				'reviews' .
+				'?per_page=' . rawurlencode( $per_page ) . '&' .
+				'page=' . rawurlencode( $page );
+	
+
+			/*
+			 * Fetch reviews, decode result.
+			 */
+			$pr_reviews = json_decode(
+				vipgoci_github_fetch_url(
+					$github_url,
+					$github_token
+				)
+			);
+
+			foreach( $pr_reviews as $pr_review ) {
+				$ret_reviews[] = $pr_review;
+			}
+
+			unset( $pr_review );
+
+			$page++;
+		} while( count( $pr_reviews ) >= $per_page );
+
+
+		vipgoci_cache(
+			$cache_id,
+			$ret_reviews
+		);
+	}
+
+	else {
+		$ret_reviews = $cached_data;
+	}
 
 
 	/*
@@ -1870,76 +1935,48 @@ function vipgoci_github_pr_reviews_get(
 	}
 
 	/*
-	 * Fetch reviews, paged, from GitHub.
+	 * Loop through each review-item,
+	 * do filtering and save the ones
+	 * we want to keep.
 	 */
 
-	do {
-		$github_url =
-			VIPGOCI_GITHUB_BASE_URL . '/' .
-			'repos/' .
-			rawurlencode( $repo_owner ) . '/' .
-			rawurlencode( $repo_name ) . '/' .
-			'pulls/' .
-			rawurlencode( $pr_number ) . '/' .
-			'reviews' .
-			'?per_page=' . rawurlencode( $per_page ) . '&' .
-			'page=' . rawurlencode( $page );
+	$ret_reviews_filtered = array();
 
-
-		/*
-		 * Fetch reviews, decode result.
-		 */
-		$pr_reviews = json_decode(
-			vipgoci_github_fetch_url(
-				$github_url,
-				$github_token
-			)
-		);
-
-
-		/*
-		 * Loop through each review-item,
-		 * do filtering and save the ones
-		 * we want to keep.
-		 */
-
-		foreach( $pr_reviews as $pr_review ) {
-			if ( ! empty( $filter['login'] ) ) {
-				if (
-					$pr_review->user->login !==
-					$filter['login']
-				) {
-					continue;
-				}
+	foreach( $ret_reviews as $pr_review ) {
+		if ( ! empty( $filter['login'] ) ) {
+			if (
+				$pr_review->user->login !==
+				$filter['login']
+			) {
+				continue;
 			}
-
-			if ( ! empty( $filter['state'] ) ) {
-				$match = false;
-
-				foreach(
-					$filter['state'] as
-						$allowed_state
-				) {
-					if (
-						$pr_review->state ===
-						$allowed_state
-					) {
-						$match = true;
-					}
-				}
-
-				if ( false === $match ) {
-					continue;
-				}
-			}
-
-			$ret_reviews[] = $pr_review;
 		}
 
-		$page++;
-	} while( count( $pr_reviews ) >= $per_page );
+		if ( ! empty( $filter['state'] ) ) {
+			$match = false;
 
-	return $ret_reviews;
+			foreach(
+				$filter['state'] as
+					$allowed_state
+			) {
+				if (
+					$pr_review->state ===
+					$allowed_state
+				) {
+					$match = true;
+				}
+			}
+
+			if ( false === $match ) {
+				continue;
+			}
+		}
+
+		$ret_reviews_filtered[] = $pr_review;
+	}
+
+
+	return $ret_reviews_filtered;
 }
 
 /*
@@ -2596,6 +2633,19 @@ function vipgoci_github_approve_pr(
 		return;
 	}
 
+	vipgoci_log(
+		'Sending request to GitHub to approve Pull-Request',
+		array(
+			'repo_owner'		=> $repo_owner,
+			'repo_name'		=> $repo_name,
+			'pr_number'		=> $pr_number,
+			'latest_commit_id'	=> $latest_commit_id,
+			'github_url'		=> $github_url,
+			'github_postfields'	=> $github_postfields,
+		),
+		2
+	);
+
 	// Actually approve
 	vipgoci_github_post_url(
 		$github_url,
@@ -2942,7 +2992,7 @@ function vipgoci_github_diffs_fetch(
 
 
 		/*
-		 * Allow filtering of files returned.		
+		 * Allow filtering of files returned.
 		 */
 
 		if (
@@ -3214,3 +3264,406 @@ function vipgoci_github_label_remove_from_pr(
 		true // DELETE request will be sent
 	);
 }
+
+
+/*
+ * Get all events issues related to a Pull-Request
+ * from the GitHub API, and filter away any items that
+ * do not match a given criteria (if applicable).
+ *
+ * Note: Using $review_ids_only = true will imply
+ * selecting only certain types of events (i.e. dismissed_review).
+ */
+function vipgoci_github_pr_review_events_get(
+	$options,
+	$pr_number,
+	$filter = null,
+	$review_ids_only = false
+) {
+	$cached_id = array(
+		__FUNCTION__, $options['repo-owner'], $options['repo-name'],
+		$options['token'], $pr_number
+	);
+
+	$cached_data = vipgoci_cache( $cached_id );
+
+	vipgoci_log(
+		'Getting issue events for Pull-Request from GitHub API' .
+		( $cached_data ? ' (cached)' : '' ),
+		array(
+			'repo_owner' => $options['repo-owner'],
+			'repo_name' => $options['repo-name'],
+			'pr_number' => $pr_number,
+			'filter' => $filter,
+			'review_ids_only' => $review_ids_only,
+		)
+	);
+
+	if ( false === $cached_data ) {
+		$page = 1;
+		$per_page = 100;
+
+		$all_issue_events = array();
+
+		do {
+			$github_url =
+				VIPGOCI_GITHUB_BASE_URL . '/' .
+				'repos/' .
+				rawurlencode( $options['repo-owner'] ) . '/' .
+				rawurlencode( $options['repo-name'] ) . '/' .
+				'issues/' .
+				rawurlencode( $pr_number ) . '/' .
+				'events?' .
+				'page=' . rawurlencode( $page ) . '&' .
+				'per_page=' . rawurlencode( $per_page );
+
+
+			$issue_events = vipgoci_github_fetch_url(
+				$github_url,
+				$options['token']
+			);
+
+			$issue_events = json_decode(
+				$issue_events
+			);
+
+			foreach( $issue_events as $issue_event ) {
+				$all_issue_events[] = $issue_event;
+			}
+
+			unset( $issue_event );
+
+			$page++;
+		} while ( count( $issue_events ) >= $per_page );
+
+		$issue_events = $all_issue_events;
+		unset( $all_issue_events );
+
+		vipgoci_cache(
+			$cached_id,
+			$issue_events
+		);
+	}
+
+	else {
+		$issue_events = $cached_data;
+	}
+
+	/*
+	 * Filter results if requested. We can filter
+	 * by type of event and/or by actors that initiated
+	 * the event.
+	 */
+	if ( null !== $filter ) {
+		$filtered_issue_events = array();
+
+		foreach( $issue_events as $issue_event ) {
+			if (
+				( ! empty( $filter['event_type'] ) ) &&
+				( is_string( $filter['event_type'] ) ) &&
+				(
+					$issue_event->event !==
+					$filter['event_type']
+				)
+			) {
+				continue;
+			}
+
+			if (
+				( ! empty( $filter['actors_logins'] ) ) &&
+				( is_array( $filter['actors_logins'] ) ) &&
+				( false === in_array(
+					$issue_event->actor->login,
+					$filter['actors_logins']
+				) )
+			) {
+				continue;
+			}
+
+			if (
+				( ! empty( $filter['actors_ids'] ) ) &&
+				( is_array( $filter['actors_ids'] ) ) &&
+				( false === in_array(
+					$issue_event->actor->id,
+					$filter['actors_ids']
+				) )
+			) {
+				continue;
+			}
+
+
+			$filtered_issue_events[] = $issue_event;
+		}
+
+		$issue_events = $filtered_issue_events;
+	}
+
+	if ( true === $review_ids_only ) {
+		$issue_events_ret = array();
+
+		foreach( $issue_events as $issue_event ) {
+			if ( ! isset(
+				$issue_event->dismissed_review->review_id
+			) ) {
+				continue;
+			}
+
+			$issue_events_ret[] =
+				$issue_event->dismissed_review->review_id;
+		}
+
+		$issue_events = $issue_events_ret;
+	}
+
+	return $issue_events;
+}
+
+
+/*
+ * Get members for a team.
+ */
+function vipgoci_github_team_members(
+	$github_token,
+	$team_id,
+	$return_values_only = null
+) {
+	$cached_id = array(
+		__FUNCTION__, $github_token, $team_id
+	);
+
+	$cached_data = vipgoci_cache( $cached_id );
+
+	vipgoci_log(
+		'Getting members for organization team' .
+		( $cached_data ? ' (cached)' : '' ),
+		array(
+			'team_id' => $team_id,
+			'return_values_only' => $return_values_only,
+		)
+	);
+
+	if ( false === $cached_data ) {
+		$page = 1;
+		$per_page = 100;
+
+		$team_members_all = array();
+
+		do {
+			$github_url =
+				VIPGOCI_GITHUB_BASE_URL . '/' .
+				'teams/' .
+				rawurlencode( $team_id ) . '/' .
+				'members?' .
+				'page=' . rawurlencode( $page ) . '&' .
+				'per_page=' . rawurlencode( $per_page );
+
+
+			$team_members = vipgoci_github_fetch_url(
+				$github_url,
+				$github_token
+			);
+
+			$team_members = json_decode(
+				$team_members
+			);
+
+			foreach( $team_members as $team_member ) {
+				$team_members_all[] = $team_member;
+			}
+
+			$page++;
+		} while ( count( $team_members ) >= $per_page );
+
+		$team_members = $team_members_all;
+		unset( $team_members_all );
+		unset( $team_member );
+
+		vipgoci_cache(
+			$cached_id,
+			$team_members
+		);
+	}
+
+	else {
+		$team_members = $cached_data;
+	}
+
+	/*
+	 * If caller specified only certain value from
+	 * each item to be return, honor that.
+	 */
+	if ( null !== $return_values_only ) {
+		$team_members = array_column(
+			(array) $team_members,
+			$return_values_only
+		);
+	}
+
+	return $team_members;
+}
+
+
+/*
+ * Get team members for one or more teams,
+ * return members as a merged array.
+ *
+ * @codeCoverageIgnore
+ */
+function vipgoci_github_team_members_many(
+	$github_token,
+	$team_ids_arr = array()
+) {
+	vipgoci_log(
+		'Getting members of teams specified by caller',
+		array(
+			'teams_ids' => $team_ids_arr,
+		)
+	);
+
+	$team_members_ids_arr = array();
+
+	foreach( $team_ids_arr as $team_id_item ) {
+		$team_id_members = vipgoci_github_team_members(
+			$github_token,
+			$team_id_item,
+			'id'
+		);
+
+		$team_members_ids_arr = array_merge(
+			$team_members_ids_arr,
+			$team_id_members
+		);
+	}
+
+	$team_members_ids_arr = array_unique(
+		$team_members_ids_arr
+	);
+
+	return $team_members_ids_arr;
+}
+
+
+/*
+ * Get organization teams available to the calling
+ * user from the GitHub API.
+ */
+function vipgoci_github_org_teams(
+	$github_token,
+	$org_id,
+	$filter = null,
+	$keyed_by = null
+) {
+	$cached_id = array(
+		__FUNCTION__, $github_token, $org_id
+	);
+
+	$cached_data = vipgoci_cache( $cached_id );
+
+	vipgoci_log(
+		'Getting organization teams from GitHub API' .
+		( $cached_data ? ' (cached)' : '' ),
+		array(
+			'org_id' => $org_id,
+			'filter' => $filter,
+			'keyed_by' => $keyed_by,
+		)
+	);
+
+	if ( false === $cached_data ) {
+		$page = 1;
+		$per_page = 100;
+
+		$org_teams_all = array();
+
+		do {
+			$github_url =
+				VIPGOCI_GITHUB_BASE_URL . '/' .
+				'orgs/' .
+				rawurlencode( $org_id ) . '/' .
+				'teams?' .
+				'page=' . rawurlencode( $page ) . '&' .
+				'per_page=' . rawurlencode( $per_page );
+
+
+			$org_teams = vipgoci_github_fetch_url(
+				$github_url,
+				$github_token
+			);
+
+			$org_teams = json_decode(
+				$org_teams
+			);
+
+			foreach( $org_teams as $org_team ) {
+				$org_teams_all[] = $org_team;
+			}
+
+			$page++;
+		} while ( count( (array) $org_teams ) >= $per_page ); 
+
+		$org_teams = $org_teams_all;
+		unset( $org_teams_all );
+
+		vipgoci_cache(
+			$cached_id,
+			$org_teams
+		);
+	}
+
+	else {
+		$org_teams = $cached_data;
+	}
+
+
+	/*
+	 * Filter the results according to criteria.
+	 */
+	if (
+		( null !== $filter ) &&
+		( ! empty( $filter['slug'] ) ) &&
+		( is_string( $filter['slug'] ) )
+	) {
+		$org_teams_filtered = array();
+
+		foreach( $org_teams as $org_team ) {
+			if ( $filter['slug'] === $org_team->slug ) {
+				$org_teams_filtered[] = $org_team;
+			}
+		}
+
+		$org_teams = $org_teams_filtered;
+	}
+
+
+	/*
+	 * If asked for, let the resulting
+	 * array be keyed with a certain field.
+	 */
+	if ( null !== $keyed_by ) {
+		$org_teams_keyed = array();
+
+		foreach( $org_teams as $org_team ) {
+			$org_team_arr = (array) $org_team;
+
+			/*
+			 * In case of invalid response,
+			 * ignore item.
+			 */
+			if ( ! isset( $org_team_arr[ $keyed_by ] ) ) {
+				continue;
+			}
+
+			$org_teams_keyed[
+				$org_team_arr[
+					$keyed_by
+				]
+			][] = $org_team;
+		}
+
+		$org_teams = $org_teams_keyed;
+	}
+
+	return $org_teams;
+}
+
+

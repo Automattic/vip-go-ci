@@ -72,7 +72,7 @@ function vipgoci_phpcs_do_scan(
 		array(
 			'cmd' => $cmd,
 		),
-		2
+		0	
 	);
 
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'phpcs_cli' );
@@ -310,16 +310,20 @@ function vipgoci_phpcs_scan_commit(
 				$pr_item_file_name,
 				$pr_item_files_changed['all'],
 				true
-			) ) {
-				continue;
+			) === false ) {
+				$pr_item_files_changed['all'][] =
+					$pr_item_file_name;
 			}
 
-			$pr_item_files_changed['all'][] =
-				$pr_item_file_name;
-
-			$pr_item_files_changed[
-				$pr_item->number
-			][] = $pr_item_file_name;
+			if ( in_array(
+				$pr_item_file_name,
+				$pr_item_files_changed[ $pr_item->number ],
+				true
+			) === false ) {
+				$pr_item_files_changed[
+					$pr_item->number
+				][] = $pr_item_file_name;
+			}
 		}
 	}
 
@@ -345,13 +349,13 @@ function vipgoci_phpcs_scan_commit(
 		)
 	);
 
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'phpcs_scan_single_file' );
 
 	foreach ( $pr_item_files_changed['all'] as $file_name ) {
 		/*
 		 * Loop through each file affected by
 		 * the commit.
 		 */
-		vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'phpcs_scan_single_file' );
 
 		$file_extension = vipgoci_file_extension(
 			$file_name
@@ -420,6 +424,15 @@ function vipgoci_phpcs_scan_commit(
 				0,
 				true // log to IRC
 			);
+
+			/*
+			 * No further processing in case of an error.
+			 * 
+			 * Set an empty array just in case to avoid warnings.
+			 */
+			$files_issues_arr[ $file_name ] = array();
+
+			continue;
 		}
 
 		unset( $file_issues_str );
@@ -482,10 +495,9 @@ function vipgoci_phpcs_scan_commit(
 		unset( $file_issues_str );
 
 		gc_collect_cycles();
-
-		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'phpcs_scan_single_file' );
 	}
 
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'phpcs_scan_single_file' );
 
 	/*
 	 * Loop through each Pull-Request implicated,
@@ -507,6 +519,21 @@ function vipgoci_phpcs_scan_commit(
 
 
 	foreach ( $prs_implicated as $pr_item ) {
+		vipgoci_log(
+			'Preparing to process PHPCS scanned files in ' .
+				'Pull-Request, to construct results ' .
+				'to be submitted',
+			array(
+				'repo_owner'    => $repo_owner,
+				'repo_name'     => $repo_name,
+				'commit_id'     => $commit_id,
+				'pr_number'     => $pr_item->number,
+				'files_changed' =>
+					$pr_item_files_changed[ $pr_item->number ]
+			)
+		);
+
+
 		/*
 		 * Get all commits related to the current
 		 * Pull-Request.
@@ -618,7 +645,6 @@ function vipgoci_phpcs_scan_commit(
 		}
 
 		unset( $pr_item_commits );
-		unset( $pr_item_files_changed );
 		unset( $file_blame_log );
 		unset( $file_changed_lines );
 		unset( $file_relative_lines );
@@ -626,7 +652,6 @@ function vipgoci_phpcs_scan_commit(
 
 		gc_collect_cycles();
 	}
-
 
 	/*
 	 * Clean up a bit
@@ -637,6 +662,7 @@ function vipgoci_phpcs_scan_commit(
 	);
 
 	unset( $prs_implicated );
+	unset( $pr_item_files_changed );
 
 	gc_collect_cycles();
 
