@@ -485,6 +485,7 @@ function vipgoci_run() {
 			'phpcs-severity:',
 			'phpcs-sniffs-exclude:',
 			'phpcs-runtime-set:',
+			'phpcs-skip-scanning-via-labels-allowed:',
 			'hashes-api-url:',
 			'hashes-oauth-token:',
 			'hashes-oauth-token-secret:',
@@ -574,6 +575,9 @@ function vipgoci_run() {
 			"\t" . '                               -- expected to be a comma-separated value string of ' . PHP_EOL .
 			"\t" . '                               key-value pairs.' . PHP_EOL .
 			"\t" . '                               For example: --phpcs-runtime-set="foo1 bar1, foo2,bar2"' . PHP_EOL .
+			"\t" . '--phpcs-skip-scanning-via-labels-allowed=BOOL    Whether to allow users to skip ' . PHP_EOL .
+			"\t" . '                                                 PHPCS scanning of Pull-Requests ' . PHP_EOL .
+			"\t" . '                                                 via labels attached to them. ' . PHP_EOL .
 			"\t" . '--autoapprove=BOOL             Whether to auto-approve Pull-Requests' . PHP_EOL .
 			"\t" . '                               altering only files of certain types' . PHP_EOL .
 			"\t" . '--autoapprove-filetypes=STRING Specify what file-types can be auto-' . PHP_EOL .
@@ -944,6 +948,8 @@ function vipgoci_run() {
 	vipgoci_option_bool_handle( $options, 'dismiss-stale-reviews', 'false' );
 
 	vipgoci_option_bool_handle( $options, 'dismissed-reviews-repost-comments', 'true' );
+
+	vipgoci_option_bool_handle( $options, 'phpcs-skip-scanning-via-labels-allowed', 'false' );
 
 	if (
 		( false === $options['lint'] ) &&
