@@ -1219,7 +1219,7 @@ function vipgoci_run() {
 	 * options-file in the repository. Set
 	 * these options here.
 	 */
-	vipgoci_read_repo_options_file(
+	vipgoci_options_read_repo_file(
 		$options,
 		'.vipgoci_options',
 		array(

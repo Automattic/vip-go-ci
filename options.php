@@ -5,7 +5,7 @@
  * repository, but only allow certain options
  * to be configured. 
  */
-function vipgoci_read_repo_options_file(
+function vipgoci_options_read_repo_file(
 	&$options,
 	$repo_options_file_name,
 	$options_overwritable
