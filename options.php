@@ -42,7 +42,7 @@ function vipgoci_options_read_repo_file(
 		vipgoci_log(
 			'No options found, nothing further to do',
 			array(
-				'filename'		=> $repo_options_file_name,		
+				'filename' => $repo_options_file_name,		
 			)
 		);
 
@@ -80,26 +80,83 @@ function vipgoci_options_read_repo_file(
 	 */
 	$options_read = array();
 
-	foreach( $options_overwritable as $option_overwritable_name ) {
-		if ( isset(
-			$repo_options_arr[
-				$option_overwritable_name
-			]
-		) ) {
-			$options[
-				$option_overwritable_name
-			]
-			=
-			$options_read[
-				$option_overwritable_name
-			]
-			=
-			$repo_options_arr[
-				$option_overwritable_name
-			];
+	foreach(
+		$options_overwritable as
+			$option_overwritable_name =>
+			$option_overwritable_conf
+	) {
+		/*
+		 * Detect possible issues with
+		 * the arguments given, or value not defined
+		 * in the options-file.
+		 */
+		if (
+			( ! isset(
+				$repo_options_arr[
+					$option_overwritable_name
+				]
+			) )
+			||
+			( ! isset(
+				$option_overwritable_conf['type']
+			) )
+		) {
+			continue;
+		}
 
-			// FIXME: Need to check if set values are valid.
-		}		
+
+		$do_skip = false;
+
+		if ( 'integer' === $option_overwritable_conf['type'] ) {
+			if ( ! isset(
+				$option_overwritable_conf['valid_values']
+			) ) {
+				$do_skip = true;
+			}
+
+			if ( ! in_array(
+				$repo_options_arr[
+					$option_overwritable_name
+				],
+				$option_overwritable_conf['valid_values'],
+				true
+			) ) {
+				$do_skip = true;
+			}
+		}
+
+		else {
+			$do_skip = true;
+		}
+
+
+		if ( true === $do_skip ) {
+			vipgoci_log(
+				'Found invalid value for option in option-file, or invalid arguments passed internally',
+				array(
+					'option_overwritable_name'
+						=> $option_overwritable_name,
+
+					'option_overwritable_conf'
+						=> $option_overwritable_conf,
+				)
+			);
+
+			continue;
+		}
+
+			
+		$options[
+			$option_overwritable_name
+		]
+		=
+		$options_read[
+			$option_overwritable_name
+		]
+		=
+		$repo_options_arr[
+			$option_overwritable_name
+		];
 	}
 
 	vipgoci_log(
