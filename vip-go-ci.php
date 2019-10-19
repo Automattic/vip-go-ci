@@ -486,6 +486,7 @@ function vipgoci_run() {
 			'phpcs-severity:',
 			'phpcs-sniffs-exclude:',
 			'phpcs-runtime-set:',
+			'phpcs-severity-repo-options-file:',
 			'hashes-api-url:',
 			'hashes-oauth-token:',
 			'hashes-oauth-token-secret:',
@@ -575,6 +576,9 @@ function vipgoci_run() {
 			"\t" . '                               -- expected to be a comma-separated value string of ' . PHP_EOL .
 			"\t" . '                               key-value pairs.' . PHP_EOL .
 			"\t" . '                               For example: --phpcs-runtime-set="foo1 bar1, foo2,bar2"' . PHP_EOL .
+			"\t" . '--phpcs-severity-repo-options-file=BOOL     Whether to allow configuring phpcs-severity' . PHP_EOL .
+			"\t" . '                                            option via options file placed ' . PHP_EOL .
+			"\t" . '                                            in repository.' . PHP_EOL .
 			"\t" . '--autoapprove=BOOL             Whether to auto-approve Pull-Requests' . PHP_EOL .
 			"\t" . '                               altering only files of certain types' . PHP_EOL .
 			"\t" . '--autoapprove-filetypes=STRING Specify what file-types can be auto-' . PHP_EOL .
@@ -939,6 +943,8 @@ function vipgoci_run() {
 	vipgoci_option_bool_handle( $options, 'dry-run', 'false' );
 
 	vipgoci_option_bool_handle( $options, 'phpcs', 'true' );
+
+	vipgoci_option_bool_handle( $options, 'phpcs-severity-repo-options-file', 'true' );
 
 	vipgoci_option_bool_handle( $options, 'lint', 'true' );
 
