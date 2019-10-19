@@ -944,7 +944,7 @@ function vipgoci_run() {
 
 	vipgoci_option_bool_handle( $options, 'phpcs', 'true' );
 
-	vipgoci_option_bool_handle( $options, 'phpcs-severity-repo-options-file', 'true' );
+	vipgoci_option_bool_handle( $options, 'phpcs-severity-repo-options-file', 'false' );
 
 	vipgoci_option_bool_handle( $options, 'lint', 'true' );
 
