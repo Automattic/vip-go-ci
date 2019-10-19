@@ -5,6 +5,7 @@ require_once( __DIR__ . '/defines.php' );
 require_once( __DIR__ . '/github-api.php' );
 require_once( __DIR__ . '/git-repo.php' );
 require_once( __DIR__ . '/misc.php' );
+require_once( __DIR__ . '/options.php' ) ;
 require_once( __DIR__ . '/statistics.php' );
 require_once( __DIR__ . '/phpcs-scan.php' );
 require_once( __DIR__ . '/lint-scan.php' );
@@ -485,6 +486,7 @@ function vipgoci_run() {
 			'phpcs-severity:',
 			'phpcs-sniffs-exclude:',
 			'phpcs-runtime-set:',
+			'phpcs-severity-repo-options-file:',
 			'hashes-api-url:',
 			'hashes-oauth-token:',
 			'hashes-oauth-token-secret:',
@@ -574,6 +576,9 @@ function vipgoci_run() {
 			"\t" . '                               -- expected to be a comma-separated value string of ' . PHP_EOL .
 			"\t" . '                               key-value pairs.' . PHP_EOL .
 			"\t" . '                               For example: --phpcs-runtime-set="foo1 bar1, foo2,bar2"' . PHP_EOL .
+			"\t" . '--phpcs-severity-repo-options-file=BOOL     Whether to allow configuring phpcs-severity' . PHP_EOL .
+			"\t" . '                                            option via options file placed ' . PHP_EOL .
+			"\t" . '                                            in repository.' . PHP_EOL .
 			"\t" . '--autoapprove=BOOL             Whether to auto-approve Pull-Requests' . PHP_EOL .
 			"\t" . '                               altering only files of certain types' . PHP_EOL .
 			"\t" . '--autoapprove-filetypes=STRING Specify what file-types can be auto-' . PHP_EOL .
@@ -939,6 +944,8 @@ function vipgoci_run() {
 
 	vipgoci_option_bool_handle( $options, 'phpcs', 'true' );
 
+	vipgoci_option_bool_handle( $options, 'phpcs-severity-repo-options-file', 'false' );
+
 	vipgoci_option_bool_handle( $options, 'lint', 'true' );
 
 	vipgoci_option_bool_handle( $options, 'dismiss-stale-reviews', 'false' );
@@ -1211,6 +1218,22 @@ function vipgoci_run() {
 	vipgoci_option_teams_handle(
 		$options,
 		'dismissed-reviews-exclude-reviews-from-team'
+	);
+
+	/*
+	 * Certain options are configurable via
+	 * options-file in the repository. Set
+	 * these options here.
+	 */
+	vipgoci_options_read_repo_file(
+		$options,
+		'.vipgoci_options',
+		array(
+			'phpcs-severity' => array(
+				'type'		=> 'integer',
+				'valid_values'	=> array( 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ),
+			),
+		)
 	);
 
 
