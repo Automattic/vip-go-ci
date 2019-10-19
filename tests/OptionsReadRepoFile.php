@@ -42,6 +42,8 @@ final class OptionsReadRepoFile extends TestCase {
 			$this->options_options
 		);
 
+		$this->options[ 'phpcs-severity-repo-options-file' ] = true;
+
 		$this->options['token'] = null;
 
 	}
@@ -63,10 +65,6 @@ final class OptionsReadRepoFile extends TestCase {
 	 * @covers ::vipgoci_options_read_repo_file
 	 */
 	public function testOptionsReadRepoFileTest1() {
-		/*
-		 * File does not exist in repository,
-		 * so the test should not succeed.
-		 */
 		$this->options['commit'] =
 			$this->options['commit-test-options-read-repo-file-no-file'];
 
@@ -102,7 +100,7 @@ final class OptionsReadRepoFile extends TestCase {
 		vipgoci_unittests_output_unsuppress();
 
 		$this->assertEquals(
-			-100,
+			-100, // Should remain unchanged, no option file exists.
 			$this->options['phpcs-severity']
 		);
 	}
@@ -111,10 +109,6 @@ final class OptionsReadRepoFile extends TestCase {
 	 * @covers ::vipgoci_options_read_repo_file
 	 */
 	public function testOptionsReadRepoFileTest2() {
-		/*
-		 * File does exist in repository,
-		 * so the test should succeed.
-		 */
 		$this->options['commit'] =
 			$this->options['commit-test-options-read-repo-file-with-file'];
 
@@ -155,16 +149,13 @@ final class OptionsReadRepoFile extends TestCase {
 		);
 	}
 
-	/*
-	 * The following are tests to make sure internal
-	 * checks in the vipgoci_options_read_repo_file() function
-	 * work correctly.
-	 */
 
 	/**
 	 * @covers ::vipgoci_options_read_repo_file
 	 */
 	public function testOptionsReadRepoFileTest3() {
+		$this->options['phpcs-severity-repo-options-file'] = false;
+
 		$this->options['commit'] =
 			$this->options['commit-test-options-read-repo-file-with-file'];
 
@@ -184,14 +175,14 @@ final class OptionsReadRepoFile extends TestCase {
 		}
 
 
-		$this->options['phpcs-severity'] = 1;
+		$this->options['phpcs-severity'] = -100;
 
 		vipgoci_options_read_repo_file(
 			$this->options,
 			'.vipgoci_options',
 			array(
 				'phpcs-severity' => array(
-					'type'		=> 'integerrr', // invalid type here
+					'type'		=> 'integer',
 					'valid_values'	=> array( 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ),
 				),
 			)
@@ -200,10 +191,16 @@ final class OptionsReadRepoFile extends TestCase {
 		vipgoci_unittests_output_unsuppress();
 
 		$this->assertEquals(
-			1, // Should remain 1, as checks failed
+			-100, // Should remain unchanged, feature is turned off.
 			$this->options['phpcs-severity']
 		);
 	}
+
+	/*
+	 * The following are tests to make sure internal
+	 * checks in the vipgoci_options_read_repo_file() function
+	 * work correctly.
+	 */
 
 	/**
 	 * @covers ::vipgoci_options_read_repo_file
@@ -228,7 +225,51 @@ final class OptionsReadRepoFile extends TestCase {
 		}
 
 
-		$this->options['phpcs-severity'] = 1;
+		$this->options['phpcs-severity'] = -100;
+
+		vipgoci_options_read_repo_file(
+			$this->options,
+			'.vipgoci_options',
+			array(
+				'phpcs-severity' => array(
+					'type'		=> 'integerrr', // invalid type here
+					'valid_values'	=> array( 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ),
+				),
+			)
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		$this->assertEquals(
+			-100, // Should remain unchanged, as checks failed
+			$this->options['phpcs-severity']
+		);
+	}
+
+	/**
+	 * @covers ::vipgoci_options_read_repo_file
+	 */
+	public function testOptionsReadRepoFileTest5() {
+		$this->options['commit'] =
+			$this->options['commit-test-options-read-repo-file-with-file'];
+
+		vipgoci_unittests_output_suppress();
+
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
+
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped(
+				'Could not set up git repository: ' .
+					vipgoci_unittests_output_get()
+			);
+		}
+
+
+		$this->options['phpcs-severity'] = -100;
 
 		vipgoci_options_read_repo_file(
 			$this->options,
@@ -244,7 +285,7 @@ final class OptionsReadRepoFile extends TestCase {
 		vipgoci_unittests_output_unsuppress();
 
 		$this->assertEquals(
-			1, // Should remain 1
+			-100, // Should remain unchanged
 			$this->options['phpcs-severity']
 		);
 	}
