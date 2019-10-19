@@ -15,7 +15,7 @@ function vipgoci_options_read_repo_file(
 		vipgoci_log(
 			'Skipping possibly overwriting options ' .
 				'using data from repository settings file ' .
-				'as this is disabled via options',
+				'as this is disabled via command-line options',
 			array(
 				'phpcs_severity_repo_options_file'
 					=> $options[ 'phpcs-severity-repo-options-file' ],
