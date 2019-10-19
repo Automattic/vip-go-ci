@@ -27,7 +27,7 @@ function vipgoci_options_read_repo_file(
 
 	vipgoci_log(
 		'Reading options from repository, overwriting ' .
-			'already set values if applicable',
+			'already set option values if applicable',
 		array(
 			'repo_owner'		=> $options['repo-owner'],
 			'repo_name'		=> $options['repo-name'],
