@@ -11,6 +11,20 @@ function vipgoci_options_read_repo_file(
 	$options_overwritable
 ) {
 
+	if ( false === $options[ 'phpcs-severity-repo-options-file' ] ) {
+		vipgoci_log(
+			'Skipping possibly overwriting options ' .
+				'using data from repository settings file ' .
+				'as this is disabled via options',
+			array(
+				'phpcs-severity-repo-options-file'
+					=> $options[ 'phpcs-severity-repo-options-file' ],
+			)
+		);
+
+		return true;
+	}
+
 	vipgoci_log(
 		'Reading options from repository, overwriting ' .
 			'already set values if applicable',
@@ -163,4 +177,6 @@ function vipgoci_options_read_repo_file(
 		'Set or overwrote the following options',
 		$options_read
 	);
+
+	return true;
 }
