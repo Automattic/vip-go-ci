@@ -292,76 +292,134 @@ function vipgoci_autoapproval_do_approve(
 ) {
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'vipgoci_autoapproval_do_approve' );
 
-	vipgoci_counter_report(
-		VIPGOCI_COUNTERS_DO,
-		'github_pr_approval',
-		1
-	);
+	$pr_item_approval_reviews =
+		vipgoci_github_pr_reviews_get(
+			$options['repo-owner'],
+			$options['repo-name'],
+			$pr_item->number,
+			$options['token'],
+			array(
+				'login'	=> 'myself',
+				'state'	=> array( 'APPROVED' )
+			),
+			true
+		);
 
-	vipgoci_log(
-		( $options['dry-run'] === true
-			? 'Would ' : 'Will ' ) .
-			'auto-approve Pull-Request #' .
-			(int) $pr_item->number . ' ' .
-			'as it alters or creates ' .
-			'only files that can be ' .
-			'automatically approved' .
-			' -- PR URL: https://github.com/' .
-			rawurlencode( $options['repo-owner'] ) .
-			'/' .
-			rawurlencode( $options['repo-name'] ) .
-			'/pull/' .
-			(int) $pr_item->number . ' ',
+	if ( empty( $pr_item_approval_reviews ) ) {
+		vipgoci_counter_report(
+			VIPGOCI_COUNTERS_DO,
+			'github_pr_approval',
+			1
+		);
 
-		array(
-			'repo_owner'
-				=> $options['repo-owner'],
+		vipgoci_log(
+			( $options['dry-run'] === true
+				? 'Would ' : 'Will ' ) .
+				'auto-approve Pull-Request #' .
+				(int) $pr_item->number . ' ' .
+				'as it alters or creates ' .
+				'only files that can be ' .
+				'automatically approved' .
+				' -- PR URL: https://github.com/' .
+				rawurlencode( $options['repo-owner'] ) .
+				'/' .
+				rawurlencode( $options['repo-name'] ) .
+				'/pull/' .
+				(int) $pr_item->number . ' ',
 
-			'repo_name'
-				=> $options['repo-name'],
+			array(
+				'repo_owner'
+					=> $options['repo-owner'],
 
-			'pr_number'
-				=> (int) $pr_item->number,
+				'repo_name'
+					=> $options['repo-name'],
 
-			'commit_id'
-				=> $options['commit'],
+				'pr_number'
+					=> (int) $pr_item->number,
 
-			'dry_run'
-				=> $options['dry-run'],
+				'commit_id'
+					=> $options['commit'],
 
-			'autoapprove-filetypes' =>
-				$options['autoapprove-filetypes'],
+				'dry_run'
+					=> $options['dry-run'],
 
-			'auto_approved_files_arr' =>
-				$auto_approved_files_arr,
+				'autoapprove-filetypes' =>
+					$options['autoapprove-filetypes'],
 
-			'files_seen' => $files_seen,
-		),
-		0,
-		true // Send to IRC
-	);
+				'auto_approved_files_arr' =>
+					$auto_approved_files_arr,
+
+				'files_seen' => $files_seen,
+			),
+			0,
+			true // Send to IRC
+		);
 
 
-	/*
-	 * Actually approve, if not in dry-mode.
-	 * Also add a label to the Pull-Request
-	 * if applicable.
-	 */
-	vipgoci_github_approve_pr(
-		$options['repo-owner'],
-		$options['repo-name'],
-		$options['token'],
-		$pr_item->number,
-		$options['commit'],
-		'Auto-approved Pull-Request #' .
-			(int) $pr_item->number . ' as it ' .
-			'contains only auto-approvable files' .
-			' -- either pre-approved files _or_ file-types that are ' .
-			'auto-approvable (' .
-			implode( ', ', array_map( function( $type ) { return '`'.$type.'`'; }, $options['autoapprove-filetypes'] ) ) .
-			').',
-		$options['dry-run']
-	);
+		/*
+		 * Actually approve, if not in dry-mode.
+		 * Also add a label to the Pull-Request
+		 * if applicable.
+		 */
+		vipgoci_github_approve_pr(
+			$options['repo-owner'],
+			$options['repo-name'],
+			$options['token'],
+			$pr_item->number,
+			$options['commit'],
+			'Auto-approved Pull-Request #' .
+				(int) $pr_item->number . ' as it ' .
+				'contains only auto-approvable files' .
+				' -- either pre-approved files _or_ file-types that are ' .
+				'auto-approvable (' .
+				implode(
+					', ',
+					array_map(
+						function( $type ) {
+							return '`' . $type . '`';
+						},
+						$options['autoapprove-filetypes']
+					)
+				) .
+				').',
+			$options['dry-run']
+		);
+	}
+
+	else {
+		vipgoci_log(
+			'Will not actually approve Pull-Request #' .
+				(int) $pr_item->number .
+				', as it is already approved by us',
+			array(
+				'repo_owner' =>
+					$options['repo-owner'],
+
+				'repo_name' =>
+					$options['repo-name'],
+
+				'pr_number' =>
+					$pr_item->number,
+
+				'commit_id'
+					=> $options['commit'],
+
+				'dry_run'
+					=> $options['dry-run'],
+
+				'autoapprove-filetypes' =>
+					$options['autoapprove-filetypes'],
+
+				'auto_approved_files_arr' =>
+					$auto_approved_files_arr,
+
+				'files_seen' =>
+					$files_seen,
+			),
+			0,
+			true
+		);
+	}
 
 
 	/*
