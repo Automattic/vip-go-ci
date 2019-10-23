@@ -1827,7 +1827,9 @@ function vipgoci_github_pr_generic_comment_delete(
  * Get all reviews for a particular Pull-Request,
  * and allow filtering by:
  * - User submitted (parameter: login)
- * - State of review (parameter: state, values are: CHANGES_REQUESTED, COMMENTED, APPROVED)
+ * - State of review (parameter: state, 
+ *	values are an array of: CHANGES_REQUESTED, 
+ *	COMMENTED, APPROVED)
  *
  * Note that parameter login can be assigned a magic
  * value, 'myself', in which case the actual username
