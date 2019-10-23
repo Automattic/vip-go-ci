@@ -262,7 +262,7 @@ function vipgoci_option_url_handle(
  * either as an ID (numeric) or a string (slug).
  *
  * Will check if the teams are valid, removing invalid ones,
- * transforming strings into IDs, and reconstruct the option 
+ * transforming strings into IDs, and reconstruct the option
  * afterwards.
  */
 
@@ -561,7 +561,7 @@ function vipgoci_run() {
 			"\t" . '                                                      comments that are part of reviews ' . PHP_EOL .
 			"\t" . '                                                      dismissed by members of the teams specified,  ' . PHP_EOL .
 			"\t" . '                                                      would be taken into consideration when ' . PHP_EOL .
-			"\t" . '                                                      avoiding double-posting; they would be ' . PHP_EOL . 
+			"\t" . '                                                      avoiding double-posting; they would be ' . PHP_EOL .
 			"\t" . '                                                      excluded. Note that this parameter ' . PHP_EOL .
 			"\t" . '                                                      only works in conjunction with ' . PHP_EOL .
 			"\t" . '                                                      --dismissed-reviews-repost-comments' . PHP_EOL .
@@ -785,7 +785,7 @@ function vipgoci_run() {
 		','
 	);
 
-	
+
 	/*
 	 * Process --phpcs-severity -- expected to be
 	 * an integer-value.

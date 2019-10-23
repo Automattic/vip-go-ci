@@ -72,7 +72,7 @@ function vipgoci_phpcs_do_scan(
 		array(
 			'cmd' => $cmd,
 		),
-		0	
+		0
 	);
 
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'phpcs_cli' );
@@ -427,7 +427,7 @@ function vipgoci_phpcs_scan_commit(
 
 			/*
 			 * No further processing in case of an error.
-			 * 
+			 *
 			 * Set an empty array just in case to avoid warnings.
 			 */
 			$files_issues_arr[ $file_name ] = array();

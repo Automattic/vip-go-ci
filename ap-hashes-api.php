@@ -291,7 +291,7 @@ function vipgoci_ap_hashes_api_scan_commit(
 
 	foreach ( $prs_implicated as $pr_item ) {
 		/*
-		 * Do not auto-approve renamed, 
+		 * Do not auto-approve renamed,
 		 * removed or permission-changed files,
 		 * even if they might be auto-approved: the
 		 * reason is that renaming might be harmful to

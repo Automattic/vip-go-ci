@@ -1844,7 +1844,7 @@ function vipgoci_github_pr_reviews_get(
 
 	$cache_id = array(
 		__FUNCTION__, $repo_owner, $repo_name, $pr_number,
-		$github_token, 
+		$github_token,
 	);
 
 	$cached_data = vipgoci_cache( $cache_id );
@@ -1887,7 +1887,7 @@ function vipgoci_github_pr_reviews_get(
 				'reviews' .
 				'?per_page=' . rawurlencode( $per_page ) . '&' .
 				'page=' . rawurlencode( $page );
-	
+
 
 			/*
 			 * Fetch reviews, decode result.
@@ -3599,7 +3599,7 @@ function vipgoci_github_org_teams(
 			}
 
 			$page++;
-		} while ( count( (array) $org_teams ) >= $per_page ); 
+		} while ( count( (array) $org_teams ) >= $per_page );
 
 		$org_teams = $org_teams_all;
 		unset( $org_teams_all );

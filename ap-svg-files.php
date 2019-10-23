@@ -86,7 +86,7 @@ function vipgoci_ap_svg_files(
 			/*
 			 * No patch found for file, so likely
 			 * there were only changes in file-name,
-			 * permissions, removal or other -- we 
+			 * permissions, removal or other -- we
 			 * can auto-approve SVG files in such cases.
 			 */
 			if ( null === $pr_diff_contents ) {

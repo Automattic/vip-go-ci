@@ -205,7 +205,7 @@ function vipgoci_auto_approval_non_approval(
 		) ) {
 			continue;
 		}
-	
+
 		/*
 		 * If we find the 'approved in hashes-to-hashes ...'
 		 * message, we can safely remove the comment.

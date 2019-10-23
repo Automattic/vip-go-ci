@@ -3,7 +3,7 @@
 /*
  * Read settings from a options file in the
  * repository, but only allow certain options
- * to be configured. 
+ * to be configured.
  */
 function vipgoci_options_read_repo_file(
 	&$options,
@@ -56,7 +56,7 @@ function vipgoci_options_read_repo_file(
 		vipgoci_log(
 			'No options found, nothing further to do',
 			array(
-				'filename' => $repo_options_file_name,		
+				'filename' => $repo_options_file_name,
 			)
 		);
 
@@ -162,7 +162,7 @@ function vipgoci_options_read_repo_file(
 			continue;
 		}
 
-			
+
 		$options[
 			$option_overwritable_name
 		]

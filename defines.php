@@ -25,7 +25,7 @@ define( 'VIPGOCI_REVIEW_COMMENTS_TOTAL_MAX',
 					'Pull-Request has been reached and some ' .
 					'comments might not appear as a result. ' .
 					'Please resolve some issues to see more' );
-				
+
 /*
  * Define exit-codes
  */

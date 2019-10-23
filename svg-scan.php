@@ -114,7 +114,7 @@ function vipgoci_svg_look_for_specific_tokens(
 			}
 
 			$results['files'][ $temp_file_name ]['errors']++;
-	
+
 			$results['files'][ $temp_file_name ]['messages'][] =
 				array(
 					'message'	=>
