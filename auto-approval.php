@@ -106,6 +106,12 @@ function vipgoci_auto_approval_non_approval(
 			$approved_file_system
 	) {
 
+		/*
+		 * Make sure that the file was
+		 * really altered in the Pull-Request;
+		 * this is to avoid any errors when
+		 * submitting inline comments.
+		 */
 		if ( in_array(
 			$approved_file,
 			$pr_files_changed,
