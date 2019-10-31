@@ -132,7 +132,8 @@ final class ApAutoApprovalTest extends TestCase {
 				array(
 					'login' => 'myself',
 					'state' => array( 'APPROVED' ),
-				)
+				),
+				true // skip cache
 			);
 
 			foreach( $pr_item_reviews as $pr_item_review ) {
@@ -311,7 +312,7 @@ final class ApAutoApprovalTest extends TestCase {
 					'login' => 'myself',
 					'state' => array( 'APPROVED' ),
 				),
-				true
+				true // skip cache
 			);
 
 			vipgoci_unittests_output_unsuppress();
@@ -418,7 +419,8 @@ final class ApAutoApprovalTest extends TestCase {
 				array(
 					'login' => 'myself',
 					'state' => array( 'APPROVED' ),
-				)
+				),
+				true // skip cache
 			);
 
 			vipgoci_unittests_output_unsuppress();
@@ -520,7 +522,8 @@ final class ApAutoApprovalTest extends TestCase {
 				array(
 					'login' => 'myself',
 					'state' => array( 'APPROVED' ),
-				)
+				),
+				true // skip cache
 			);
 
 			vipgoci_unittests_output_unsuppress();
