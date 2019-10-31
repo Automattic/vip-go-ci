@@ -543,7 +543,8 @@ function vipgoci_auto_approval(
 			$options['repo-name'],
 			$options['token'],
 			(int) $pr_item->number,
-			$options['autoapprove-label']
+			$options['autoapprove-label'],
+			true
 		);
 
 		if ( false == $did_foreach ) {

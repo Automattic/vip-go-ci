@@ -3142,7 +3142,8 @@ function vipgoci_github_labels_get(
 	$repo_name,
 	$github_token,
 	$pr_number,
-	$label_to_look_for = null
+	$label_to_look_for = null,
+	$skip_cache = false
 ) {
 	/*
 	 * Check first if we have
@@ -3155,13 +3156,25 @@ function vipgoci_github_labels_get(
 
 	$cached_data = vipgoci_cache( $cache_id );
 
+	/*
+	 * If asked to skip cache, imitate no cached
+	 * data available.
+	 */
+	if ( 
+		( false !== $cached_data ) &&
+		( true === $skip_cache )
+	) {
+		$cached_data = false;
+	}
+
 	vipgoci_log(
 		'Getting labels associated with GitHub issue' .
-			( $cached_data === false ? ' (cached)' : '' ),
+			( $cached_data === false ? '' : ' (cached)' ),
 		array(
 			'repo_owner' => $repo_owner,
 			'repo_name' => $repo_name,
 			'pr_number' => $pr_number,
+			'skip_cache' => $skip_cache,
 		)
 	);
 
