@@ -45,10 +45,14 @@ final class LintLintDoScanTest extends TestCase {
 			PATHINFO_FILENAME
 		);
 
+		vipgoci_unittests_output_suppress();
+
 		$ret = vipgoci_lint_do_scan(
 			$this->options_php['php-path'],
 			$php_file_path
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertEquals(
 			array(
@@ -83,10 +87,14 @@ final class LintLintDoScanTest extends TestCase {
 			PATHINFO_FILENAME
 		);
 
+		vipgoci_unittests_output_suppress();
+
 		$ret = vipgoci_lint_do_scan(
 			$this->options_php['php-path'],
 			$php_file_path
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertEquals(
 			array(
