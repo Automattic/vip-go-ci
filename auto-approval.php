@@ -429,7 +429,7 @@ function vipgoci_autoapproval_do_approve(
 		 */
 		if ( false !== strpos(
 			$pr_comment_item->body,
-			VIPGOCI_FILE_IS_APPROVED_MSG
+			rtrim( VIPGOCI_FILE_IS_APPROVED_MSG, '.' )
 		) ) {
 			vipgoci_github_pr_reviews_comments_delete(
 				$options,
