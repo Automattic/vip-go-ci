@@ -52,11 +52,14 @@ final class SvgScanWithScannerTest extends TestCase {
 			</svg>'
 		);
 
+		vipgoci_unittests_output_suppress();
 
 		$scanner_results_json = vipgoci_svg_do_scan_with_scanner(
 			$this->svg_scanner_path,
 			$temp_file_name
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		$scanner_results = json_decode(
 			$scanner_results_json,
@@ -109,6 +112,8 @@ final class SvgScanWithScannerTest extends TestCase {
 			</svg>'
 		);
 
+		vipgoci_unittests_output_suppress();
+
 		$scanner_results_json = vipgoci_svg_do_scan_with_scanner(
 			$this->svg_scanner_path,
 			$temp_file_name
@@ -118,6 +123,8 @@ final class SvgScanWithScannerTest extends TestCase {
 			$scanner_results_json,
 			true
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		$scanner_results_expected = json_decode(
 			'{"totals":{"errors":0,"warnings":0,"fixable":0},"files":{"' . addcslashes( $temp_file_name, '/' ) . '":{"errors":0,"messages":[]}}}',
