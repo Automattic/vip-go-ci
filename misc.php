@@ -218,7 +218,7 @@ function vipgoci_cache( $cache_id_arr, $data = null ) {
 	 * the cache to be cleared.
 	 */
 	if (
-		( ! is_string(
+		( is_string(
 			$cache_id_arr
 		) )
 		&&
