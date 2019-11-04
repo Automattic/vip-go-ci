@@ -71,3 +71,9 @@ define( 'VIPGOCI_RUNTIME_DUMP', 'dump' );
 
 define( 'VIPGOCI_COUNTERS_DUMP',	'dump' );
 define( 'VIPGOCI_COUNTERS_DO',		'do' );
+
+/*
+ * Define for vipgoci_cache()
+ */
+
+define( 'VIPGOCI_CACHE_CLEAR',		'--VIPGOCI-CACHE-CLEAR-0x321--' );

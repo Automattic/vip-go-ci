@@ -419,6 +419,14 @@ function vipgoci_run() {
 	global $argv;
 	global $vipgoci_debug_level;
 
+	/*
+	 * Clear the internal
+	 * cache before doing anything.
+	 */
+	vipgoci_cache(
+		VIPGOCI_CACHE_CLEAR
+	);
+
 	$hashes_oauth_arguments =
 		array(
 			'hashes-oauth-token',

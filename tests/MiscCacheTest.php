@@ -66,4 +66,58 @@ final class MiscCacheTest extends TestCase {
 			$r2_retrieved
 		);
 	}
+
+	/**
+	 * Test clearing of cache.
+	 *
+	 * @covers ::vipgoci_cache
+	 */
+	public function testCache2() {
+		$cache_id =
+			__CLASS__ .
+			'_' . 
+			__FUNCTION__;
+
+		/*
+		 * Clear cache.
+		 */
+		vipgoci_cache(
+			VIPGOCI_CACHE_CLEAR
+		);
+
+		/*
+		 * Cache something,
+		 * be sure it cached properly.
+		 */
+		vipgoci_cache(
+			$cache_id,
+			'mytext'
+		);
+
+		$cached_data = vipgoci_cache(
+			$cache_id
+		);
+
+		$this->assertEquals(
+			'mytext',
+			$cached_data
+		);
+
+		/*
+		 * Clear the cache,
+		 * make sure it cleared.
+		 */
+		vipgoci_cache(
+			VIPGOCI_CACHE_CLEAR
+		);
+
+		$cached_data = vipgoci_cache(
+			$cache_id
+		);
+
+		$this->assertEquals(
+			false,
+			$cached_data
+		);
+	}
 }

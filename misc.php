@@ -213,6 +213,25 @@ function vipgoci_patch_changed_lines(
 function vipgoci_cache( $cache_id_arr, $data = null ) {
 	global $vipgoci_cache_buffer;
 
+	/*
+	 * Special invocation: Allow for
+	 * the cache to be cleared.
+	 */
+	if (
+		( is_string(
+			$cache_id_arr
+		) )
+		&&
+		(
+			VIPGOCI_CACHE_CLEAR ===
+			$cache_id_arr
+		)
+	) {
+		$vipgoci_cache_buffer = array();
+
+		return true;
+	}
+
 	$cache_id = json_encode(
 		$cache_id_arr
 	);
