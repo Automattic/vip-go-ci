@@ -79,6 +79,13 @@ final class MiscCacheTest extends TestCase {
 			__FUNCTION__;
 
 		/*
+		 * Clear cache.
+		 */
+		vipgoci_cache(
+			VIPGOCI_CACHE_CLEAR
+		);
+
+		/*
 		 * Cache something,
 		 * be sure it cached properly.
 		 */
