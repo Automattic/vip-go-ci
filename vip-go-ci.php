@@ -424,8 +424,7 @@ function vipgoci_run() {
 	 * cache before doing anything.
 	 */
 	vipgoci_cache(
-		VIPGOCI_CACHE_CLEAR,
-		null
+		VIPGOCI_CACHE_CLEAR
 	);
 
 	$hashes_oauth_arguments =
