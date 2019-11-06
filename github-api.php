@@ -75,6 +75,18 @@ function vipgoci_curl_headers( $ch, $header ) {
 
 
 /**
+ * Support function for other functions
+ * that use the internal cache and need to indicate
+ * that information from the cache was used. 
+ *
+ * @codeCoverageIgnore
+ */
+function vipgoci_github_cached_str( $cache_used ) {
+	return $cached_used ? ' (cached)' : '';
+}
+
+
+/**
  * Detect if we exceeded the GitHub rate-limits,
  * and if so, exit with error.
  *
@@ -963,7 +975,7 @@ function vipgoci_github_fetch_commit_info(
 
 	vipgoci_log(
 		'Fetching commit info from GitHub' .
-			( $cached_data ? ' (cached)' : '' ),
+			vipgoci_github_cached_str( $cached_data ),
 		array(
 			'repo_owner' => $repo_owner,
 			'repo_name' => $repo_name,
@@ -1117,7 +1129,7 @@ function vipgoci_github_pr_reviews_comments_get(
 
 	vipgoci_log(
 		'Fetching Pull-Requests comments info from GitHub' .
-			( $cached_data ? ' (cached)' : '' ),
+			vipgoci_github_cached_str( $cached_data ),
 
 		array(
 			'repo_owner' => $repo_owner,
@@ -1242,7 +1254,7 @@ function vipgoci_github_pr_reviews_comments_get_by_pr(
 
 	vipgoci_log(
 		'Fetching all review comments submitted to a Pull-Request' .
-		(( $cached_data !== false ) ? ' (cached)' : '' ),
+			vipgoci_github_cached_str( $cached_data ),
 		array(
 			'repo_owner'	=> $options['repo-owner'],
 			'repo_name'	=> $options['repo-name'],
@@ -1387,7 +1399,7 @@ function vipgoci_github_pr_generic_comments_get(
 
 	vipgoci_log(
 		'Fetching Pull-Requests generic comments from GitHub' .
-			( $cached_data ? ' (cached)' : '' ),
+			vipgoci_github_cached_str( $cached_data ),
 
 		array(
 			'repo_owner' => $repo_owner,
@@ -1857,7 +1869,7 @@ function vipgoci_github_pr_reviews_get(
 
 	vipgoci_log(
 		'Fetching reviews for Pull-Request ' .
-			( $cached_data ? ' (cached)' : '' ),
+			vipgoci_github_cached_str( $cached_data ),
 		array(
 			'repo_owner' => $repo_owner,
 			'repo_name' => $repo_name,
@@ -2688,7 +2700,7 @@ function vipgoci_github_prs_implicated(
 
 	vipgoci_log(
 		'Fetching all open Pull-Requests from GitHub' .
-			( $cached_data ? ' (cached)' : '' ),
+			vipgoci_github_cached_str( $cached_data ),
 		array(
 			'repo_owner' => $repo_owner,
 			'repo_name' => $repo_name,
@@ -2820,7 +2832,7 @@ function vipgoci_github_prs_commits_list(
 		'Fetching information about all commits made' .
 			' to Pull-Request #' .
 			(int) $pr_number . ' from GitHub' .
-			( $cached_data ? ' (cached)' : '' ),
+			vipgoci_github_cached_str( $cached_data ),
 
 		array(
 			'repo_owner' => $repo_owner,
@@ -2906,7 +2918,7 @@ function vipgoci_github_diffs_fetch(
 	vipgoci_log(
 		'Fetching diffs between two commits ' .
 			'from GitHub' .
-			( $cached_data ? ' (cached)' : '' ),
+			vipgoci_github_cached_str( $cached_data ),
 
 		array(
 			'repo_owner' => $repo_owner,
@@ -3038,7 +3050,7 @@ function vipgoci_github_authenticated_user_get( $github_token ) {
 
 	vipgoci_log(
 		'Trying to get information about the user the GitHub-token belongs to' .
-			( $cached_data ? ' (cached)' : '' ),
+			vipgoci_github_cached_str( $cached_data ),
 		array(
 		)
 	);
@@ -3171,7 +3183,7 @@ function vipgoci_github_labels_get(
 
 	vipgoci_log(
 		'Getting labels associated with GitHub issue' .
-			( $cached_data === false ? '' : ' (cached)' ),
+			vipgoci_github_cached_str( $cached_data ),
 		array(
 			'repo_owner' => $repo_owner,
 			'repo_name' => $repo_name,
@@ -3304,7 +3316,7 @@ function vipgoci_github_pr_review_events_get(
 
 	vipgoci_log(
 		'Getting issue events for Pull-Request from GitHub API' .
-		( $cached_data ? ' (cached)' : '' ),
+		vipgoci_github_cached_str( $cached_data ),
 		array(
 			'repo_owner' => $options['repo-owner'],
 			'repo_name' => $options['repo-name'],
@@ -3450,7 +3462,7 @@ function vipgoci_github_team_members(
 
 	vipgoci_log(
 		'Getting members for organization team' .
-		( $cached_data ? ' (cached)' : '' ),
+		vipgoci_github_cached_str( $cached_data ),
 		array(
 			'team_id' => $team_id,
 			'return_values_only' => $return_values_only,
@@ -3576,7 +3588,7 @@ function vipgoci_github_org_teams(
 
 	vipgoci_log(
 		'Getting organization teams from GitHub API' .
-		( $cached_data ? ' (cached)' : '' ),
+		vipgoci_github_cached_str( $cached_data ),
 		array(
 			'org_id' => $org_id,
 			'filter' => $filter,
