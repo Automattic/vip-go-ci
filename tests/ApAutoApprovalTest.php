@@ -595,7 +595,8 @@ final class ApAutoApprovalTest extends TestCase {
 			array(
 				'login' => 'myself',
 				'state' => array( 'APPROVED' ),
-			)
+			),
+			true // skip cache
 		);
 
 		vipgoci_unittests_output_unsuppress();
@@ -649,7 +650,8 @@ final class ApAutoApprovalTest extends TestCase {
 			array(
 				'login' => 'myself',
 				'state' => array( 'APPROVED' ),
-			)
+			),
+			true // skip cache
 		);
 
 		vipgoci_unittests_output_unsuppress();
