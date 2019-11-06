@@ -273,7 +273,7 @@ function vipgoci_cache( $cache_id_arr, $data = null ) {
  * @codeCoverageIgnore
  */
 function vipgoci_cached_indication_str( $cache_used ) {
-	return $cached_used ? ' (cached)' : '';
+	return $cache_used ? ' (cached)' : '';
 }
 
 
