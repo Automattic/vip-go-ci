@@ -265,6 +265,18 @@ function vipgoci_cache( $cache_id_arr, $data = null ) {
 }
 
 
+/**
+ * Support function for other functions
+ * that use the internal cache and need to indicate
+ * that information from the cache was used.
+ *
+ * @codeCoverageIgnore
+ */
+function vipgoci_cached_indication_str( $cache_used ) {
+	return $cached_used ? ' (cached)' : '';
+}
+
+
 /*
  * Create a temporary file, and return the
  * full-path to the file.
