@@ -24,6 +24,7 @@ function vipgoci_ap_hashes_calculate_sha1sum_for_file(
 		vipgoci_log(
 			'Unable to read file',
 			array(
+				'local-git-repo' => $options['local-git-repo'],
 				'file_path' => $file_path,
 			)
 		);
@@ -143,6 +144,8 @@ function vipgoci_ap_hashes_api_file_approved(
 		);
 
 		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'hashes_api_scan_file' );
+
+		return null;
 	}
 
 
@@ -434,6 +437,9 @@ function vipgoci_ap_hashes_api_submit_single_approved_file(
 	vipgoci_log(
 		'Submitting approved file to hashes-to-hashes API',
 		array(
+			'hashes-api-url' =>
+				$options['hashes-api-url'],
+
 			'file_path' =>
 				$file_path,
 
@@ -455,7 +461,7 @@ function vipgoci_ap_hashes_api_submit_single_approved_file(
 		vipgoci_log(
 			'Unable to submit approved file to ' .
 				'hashes-to-hashes API as SHA1 for file ' .
-				'could not be deteremined',
+				'could not be determined',
 			array(
 				'file_path' => $file_path,
 				'file_sha1' => $file_sha1,
@@ -467,7 +473,7 @@ function vipgoci_ap_hashes_api_submit_single_approved_file(
 			'hashes_api_submit_single_file'
 		);
 
-		return;
+		return false;
 	}
 
 	/* Get info about token-holder */
@@ -487,12 +493,12 @@ function vipgoci_ap_hashes_api_submit_single_approved_file(
 
 	$hashes_to_hashes_data = array(
 		array(
-			'hash' => $file_sha1,
-			'user' => $current_user_info->login,
-			'status' => true,
-			'notes' => null,
-			'date' => time(),
-			'human_note' => null,
+			'hash'		=> $file_sha1,
+			'user'		=> $current_user_info->login,
+			'status'	=> true,
+			'notes'		=> null,
+			'date'		=> time(),
+			'human_note'	=> null,
 		)
 	);
 
@@ -505,6 +511,7 @@ function vipgoci_ap_hashes_api_submit_single_approved_file(
 			'submitting_comment_user=' . rawurlencode( $submitter_github_username ) . ', ';
 	}
 
+	
 	// FIXME: Implement submission logic
 
 	vipgoci_runtime_measure(
