@@ -427,6 +427,8 @@ function vipgoci_ap_hashes_api_scan_commit(
 function vipgoci_ap_hashes_api_submit_single_approved_file(
 	$options,
 	$file_path,
+	$pr_number,
+	$pr_comment_id,
 	$submitter_github_username = null
 ) {
 	vipgoci_runtime_measure(
@@ -529,6 +531,8 @@ function vipgoci_ap_hashes_api_submit_single_approved_file(
 			'repo_owner=' . rawurlencode( $options['repo-owner'] ) . ', ' .
 			'repo_name=' . rawurlencode( $options['repo-name'] ) . ', ';
 			'commit_id=' . rawurlencode( $options['commit'] ) . ', ' .
+			'pr_number=' . rawurlencode( $pr_number ) . ', ' .
+			'comment_id' . rawurlencode( $pr_comment_id ) . ', ' .
 			'submitting_comment_user=' . rawurlencode( $submitter_github_username ) . ', ';
 	}
 
@@ -847,6 +851,7 @@ function vipgoci_ap_hashes_api_submit_approved_files(
 			vipgoci_ap_hashes_api_submit_single_approved_file(
 				$options,
 				$pr_comment->path,
+				$pr_comment->id,
 				$pr_comment->user->login
 			);
 			
