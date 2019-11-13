@@ -1425,6 +1425,7 @@ function vipgoci_run() {
 	 * existing submit to Hashes-to-hashes API.
 	 */
 
+	// FIXME: Temporary, remove.
 	$options['hashes-submission-teams-allowed'] = array( 'vip' );
 	$options['hashes-submission-team-members-allowed'] = array( 'gudmdharalds' );
 
