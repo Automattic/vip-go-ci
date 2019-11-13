@@ -851,6 +851,7 @@ function vipgoci_ap_hashes_api_submit_approved_files(
 			vipgoci_ap_hashes_api_submit_single_approved_file(
 				$options,
 				$pr_comment->path,
+				$pr_item->number,
 				$pr_comment->id,
 				$pr_comment->user->login
 			);
