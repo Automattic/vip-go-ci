@@ -448,6 +448,27 @@ function vipgoci_ap_hashes_api_submit_single_approved_file(
 		)
 	);
 
+	if ( null === $submitter_github_username ) {
+		vipgoci_log(
+			'Unable to submit file to hashes-to-hashes API, as ' .
+			'the commenting user is invalid',
+			array(
+				'file_path'
+					=> $file_path,
+
+				'submitter_github_username'
+					=> $submitter_github_username
+			)
+		);
+
+		vipgoci_runtime_measure(
+			VIPGOCI_RUNTIME_STOP,
+			'hashes_api_submit_single_file'
+		);
+
+		return false;
+	}
+
 	/*
 	 * Determine SHA1-sum for file, after having
 	 * processed it specifically.
@@ -514,6 +535,14 @@ function vipgoci_ap_hashes_api_submit_single_approved_file(
 	
 	// FIXME: Implement submission logic
 
+	if ( $submission ) {
+		return true;
+	}
+
+	else {
+		return false;
+	}
+
 	vipgoci_runtime_measure(
 		VIPGOCI_RUNTIME_STOP,
 		'hashes_api_submit_single_file'
@@ -544,9 +573,9 @@ function vipgoci_ap_hashes_api_submit_approved_files(
 
 	vipgoci_log(
 		'Looking for comments submitted to Pull-Requests ' .
-			'indicating that files are approved, but ' .
-			'only if submitted by a member of a ' .
-			'particular team',
+			'indicating that files are approved. ' .
+			'Comments submitted by a member of a ' .
+			'particular team are acknowledged',
 		array(
 			'repo_owner' =>
 				$options['repo-owner'],
@@ -565,6 +594,7 @@ function vipgoci_ap_hashes_api_submit_approved_files(
 		)
 	);
 
+	$files_looked_at = array();
 
 	foreach ( $prs_implicated as $pr_item ) {
 		$pr_comments = vipgoci_github_pr_reviews_comments_get_by_pr(
@@ -607,6 +637,7 @@ function vipgoci_ap_hashes_api_submit_approved_files(
 					$pr_comment->path,
 			);
 
+
 			/*
 			 * Search for a specific string in comment
 			 * indicating that a file is approved.
@@ -618,6 +649,32 @@ function vipgoci_ap_hashes_api_submit_approved_files(
 			) === false ) {
 				continue;
 			}
+
+
+			/*
+			 * Avoid looking at the same file twice.
+			 */
+			if ( isset(
+				$files_looked_at[
+					$pr_item->number
+				][
+					$pr_comment->path
+				]
+			) ) {
+				vipgoci_log(
+					'Not looking at the same file again',
+					$log_detail_arr
+				);
+
+				continue;
+			}
+
+
+			$files_looked_at[
+				$pr_item->number
+			][
+				$pr_comment->path
+			] = true;
 
 
 			/*
@@ -686,7 +743,8 @@ function vipgoci_ap_hashes_api_submit_approved_files(
 
 					'skip_folders' => 
 						$options['skip-folders'],
-				)
+				),
+				true // include more details about each file
 			);
 	
 			/*
@@ -695,15 +753,21 @@ function vipgoci_ap_hashes_api_submit_approved_files(
 			 */	
 
 			if (
-				( isset(
+				( ! isset(
 					$pr_altered_files[ $pr_comment->path ]
 				) )
-				//&&
-				//( $pr_altered_files[ $pr_comment->path ] 
-			)
- 			{
-				// FIXME: Check if new
-				// continue;
+				||
+				( 'added' !==
+					$pr_altered_files[ $pr_comment->path ]->status
+				)
+			) {
+				vipgoci_log(
+					'Skipping comment, as it referes ' .
+						'to file not newly added',
+					$log_detail_arr
+				);
+
+				continue;
 			}
 
 
@@ -737,6 +801,35 @@ function vipgoci_ap_hashes_api_submit_approved_files(
 				continue;
 			}
 
+
+			/*
+			 * Check if we have already posted an emoji.
+			 */
+
+			$my_comment_reactions = vipgoci_github_pr_review_reactions_get(
+				$options['repo-owner'],
+				$options['repo-name'],
+				$pr_comment->id,
+				$options['token'],
+				array(
+					'login'		=> 'myself',
+					'content'	=> '+1',
+				)
+			);
+
+			if ( ! empty( $my_comment_reactions ) ) {
+				vipgoci_log(
+					'Found an earlier indication of us ' .
+						'acknowledging a comment ' .
+						'using an emjoi; not ' .
+						'continuing',
+					$log_detail_arr
+				);
+
+				continue;
+			}
+
+
 			/*
 			 * All checks passed, actually send to
 			 * hashes-to-hashes API for approval.
@@ -746,7 +839,8 @@ function vipgoci_ap_hashes_api_submit_approved_files(
 				'Found comment from user who is allowed to ' .
 					'indicate approved file, the file ' .
 					'passed other checks as well. ' .
-					'Now processing for submission',
+					'Now processing for submission ' .
+					'to hashes-to-hashes database',
 				$log_detail_arr
 			);
 
@@ -758,10 +852,16 @@ function vipgoci_ap_hashes_api_submit_approved_files(
 			
 
 			/*
-			 * Submit comment saying that we approved the file.
+			 * Submit emoji indicating that we submitted the file.
 			 */
 
-			// FIXME: Send comment.
+			vipgoci_github_pr_review_reaction_add(
+				$options['repo-owner'],
+				$options['repo-name'],
+				$pr_comment->id,
+				'+1',
+				$options['token']
+			);
 		}
 	}
 
@@ -776,6 +876,7 @@ function vipgoci_ap_hashes_api_submit_approved_files(
 	unset( $file_approved );
 	unset( $file_approval_status_comment );
 	unset( $log_detail_arr );
+	unset( $all_comment_reactions );
 
 	gc_collect_cycles();
 
