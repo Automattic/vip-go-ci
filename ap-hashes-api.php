@@ -437,7 +437,7 @@ function vipgoci_ap_hashes_api_submit_single_approved_file(
 	);
 
 	vipgoci_log(
-		'Submitting approved file to hashes-to-hashes API',
+		'Attempting to submit approved file to hashes-to-hashes API',
 		array(
 			'hashes-api-url' =>
 				$options['hashes-api-url'],
@@ -512,40 +512,76 @@ function vipgoci_ap_hashes_api_submit_single_approved_file(
 
         $hashes_to_hashes_url =
                 $options['hashes-api-url'] .
-                '/v1/create_item';
+                '/v1/hashes';
 
-	$hashes_to_hashes_data = array(
+	$hashes_to_hashes_data_raw = 
 		array(
-			'hash'		=> $file_sha1,
-			'user'		=> $current_user_info->login,
-			'status'	=> true,
-			'notes'		=> null,
-			'date'		=> time(),
-			'human_note'	=> null,
+			array(
+				'hash'		=> $file_sha1,
+				'user'		=> $current_user_info->login,
+				'status'	=> (string) 'true',
+				'notes'		=> null,
+				'date'		=> time(),
+				'human_note'	=>
+					'Submitted via vip-go-ci, by GitHub instruction, ' .
+					'repo_owner=' . rawurlencode( $options['repo-owner'] ) . ', ' .
+					'repo_name=' . rawurlencode( $options['repo-name'] ) . ', ' .
+					'commit_id=' . rawurlencode( $options['commit'] ) . ', ' .
+					'pr_number=' . rawurlencode( $pr_number ) . ', ' .
+					'comment_id=' . rawurlencode( $pr_comment_id ) . ', ' .
+					'submitting_comment_user=' . rawurlencode( $submitter_github_username ) . ', '
+			)
+		);
+
+	$hashes_to_hashes_data =
+		array(
+			'data' => base64_encode(
+				json_encode(
+					$hashes_to_hashes_data_raw
+				)
+			)
+		);
+
+
+	/*
+	 * Submit to hashes-to-hashes API.
+	 */
+
+ 	$file_hashes_info =
+		vipgoci_github_post_url(
+			$hashes_to_hashes_url,
+			$hashes_to_hashes_data,
+			array(
+				'oauth_consumer_key' =>
+					$options['hashes-oauth-consumer-key'],
+
+				'oauth_consumer_secret' =>
+					$options['hashes-oauth-consumer-secret'],
+
+				'oauth_token' =>
+					$options['hashes-oauth-token'],
+
+				'oauth_token_secret' =>
+					$options['hashes-oauth-token-secret'],
+			)
+		);
+
+	vipgoci_log(
+		'Submitted approved file to hashes-to-hashes API',
+		array(
+			'file_path'
+				=> $file_path,
+
+			'file_sha1'
+				=> $file_sha1,
+
+			'hashes_to_hashes_url'
+				=> $hashes_to_hashes_url,
+
+			'hashes_to_hashes_data_raw'
+				=> $hashes_to_hashes_data_raw,
 		)
 	);
-
-	if ( null !== $submitter_github_username ) {
-		$hashes_to_hashes_data['human_note'] =
-			'Submitted via vip-go-ci, by GitHub instruction, ' .
-			'repo_owner=' . rawurlencode( $options['repo-owner'] ) . ', ' .
-			'repo_name=' . rawurlencode( $options['repo-name'] ) . ', ';
-			'commit_id=' . rawurlencode( $options['commit'] ) . ', ' .
-			'pr_number=' . rawurlencode( $pr_number ) . ', ' .
-			'comment_id' . rawurlencode( $pr_comment_id ) . ', ' .
-			'submitting_comment_user=' . rawurlencode( $submitter_github_username ) . ', ';
-	}
-
-	
-	// FIXME: Implement submission logic
-
-	if ( $submission ) {
-		return true;
-	}
-
-	else {
-		return false;
-	}
 
 	vipgoci_runtime_measure(
 		VIPGOCI_RUNTIME_STOP,
@@ -833,6 +869,9 @@ function vipgoci_ap_hashes_api_submit_approved_files(
 				continue;
 			}
 
+			// FIXME: Check if file was altered after the comment
+			// was posted; this would indicate that the file was
+			// updated and might not pass tests any longer.
 
 			/*
 			 * All checks passed, actually send to
