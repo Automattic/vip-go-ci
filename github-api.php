@@ -437,9 +437,36 @@ function vipgoci_github_post_url(
 			'vipgoci_curl_headers'
 		);
 
-		$ch_http_headers = array(
-			'Authorization: token ' . $github_token,
-		);
+
+		$ch_http_headers = array();
+
+		$ch_http_headers[] = 'Content-Type: application/json';
+
+		if ( is_string( $github_token ) ) {
+			$ch_http_headers[] =
+			'Authorization: token ' . $github_token;
+		}
+
+		else if ( is_array( $github_token ) ) {
+			if (
+				( isset( $github_token[ 'oauth_consumer_key' ] ) ) &&
+				( isset( $github_token[ 'oauth_consumer_secret' ] ) ) &&
+				( isset( $github_token[ 'oauth_token' ] ) ) &&
+				( isset( $github_token[ 'oauth_token_secret' ] ) )
+			) {
+
+				$github_auth_header = vipgoci_oauth1_headers_get(
+					'POST',
+					$github_url,
+					$github_token
+				);
+
+				$ch_http_headers[] =
+					'Authorization: ' .
+					$github_auth_header;
+			}
+		}
+
 
 		if ( true === $preview_feature ) {
 			/*
@@ -450,7 +477,8 @@ function vipgoci_github_post_url(
 			$ch_http_headers[] =
 				'Accept: application/vnd.github.squirrel-girl-preview+json';
 		}
-		
+
+	
 		curl_setopt(
 			$ch,
 			CURLOPT_HTTPHEADER,
@@ -492,6 +520,7 @@ function vipgoci_github_post_url(
 		if (
 			(
 				( false === $http_delete ) &&
+				( isset( $resp_headers['status'][0] ) ) &&
 				( intval( $resp_headers['status'][0] ) !== 200 ) &&
 				( intval( $resp_headers['status'][0] ) !== 201 )
 			)
@@ -500,6 +529,7 @@ function vipgoci_github_post_url(
 
 			(
 				( true === $http_delete ) &&
+				( isset( $resp_headers['status'][0] ) ) &&
 				( intval( $resp_headers['status'][0] ) !== 204 ) &&
 				( intval( $resp_headers['status'][0] ) !== 200 )
 			)
@@ -536,9 +566,11 @@ function vipgoci_github_post_url(
 			}
 
 			else if (
+				( isset( $resp_data->message ) ) &&
 				( $resp_data->message ==
 					'Validation Failed' ) &&
 
+				( isset( $resp_data->errors[0] ) ) &&
 				( $resp_data->errors[0] ==
 					'was submitted too quickly ' .
 					'after a previous comment' )
@@ -554,6 +586,7 @@ function vipgoci_github_post_url(
 			}
 
 			else if (
+				( isset( $resp_data->message ) ) &&
 				( $resp_data->message ==
 					'Validation Failed' )
 			) {
@@ -561,6 +594,7 @@ function vipgoci_github_post_url(
 			}
 
 			else if (
+				( isset( $resp_data->message ) ) &&
 				( $resp_data->message ==
 					'Server Error' )
 			) {
@@ -633,13 +667,14 @@ function vipgoci_github_fetch_url(
 			VIPGOCI_CLIENT_ID
 		);
 
-		$ch_http_headers = array(
-		);
-
 		curl_setopt(
 			$ch,
 			CURLOPT_HEADERFUNCTION,
 			'vipgoci_curl_headers'
+		);
+
+
+		$ch_http_headers = array(
 		);
 
 		if ( is_string( $github_token ) ) {
@@ -673,8 +708,9 @@ function vipgoci_github_fetch_url(
 			 */
 
 			$ch_http_headers[] =
-					'Accept: application/vnd.github.squirrel-girl-preview+json';
+				'Accept: application/vnd.github.squirrel-girl-preview+json';
 		}
+
 
 		if ( ! empty( $ch_http_headers ) ) {
 			curl_setopt(
