@@ -440,7 +440,9 @@ function vipgoci_github_post_url(
 
 		$ch_http_headers = array();
 
-		$ch_http_headers[] = 'Content-Type: application/json';
+		if ( false === $http_delete ) {
+			$ch_http_headers[] = 'Content-Type: application/json';
+		}
 
 		if ( is_string( $github_token ) ) {
 			$ch_http_headers[] =
@@ -3886,38 +3888,44 @@ function vipgoci_github_pr_review_reactions_get(
 	/*
 	 * Apply filter, if needed.
 	 */
-	if ( isset( $filter['posting_author'] ) ) {
-		if ( 'myself' === $filter['login'] ) {
-			/*
-			 * Get info about token-holder
-			 */
-			$current_user_info = vipgoci_github_authenticated_user_get(
-				$github_token
-			);
+	if (
+		( isset( $filter['login'] ) ) &&
+		( 'myself' === $filter['login'] )
+	) {
+		/*
+		 * Get info about token-holder
+		 */
+		$current_user_info = vipgoci_github_authenticated_user_get(
+			$github_token
+		);
 
-			$filter['login'] = $current_user_info->login;
-		}
-
+		$filter['login'] = $current_user_info->login;
 	}
 
 	if ( ! empty( $filter ) ) { 
 		$all_reactions_new = array();
 
 		foreach( $all_reactions as $reaction ) {
+			$reaction_passed = true;
+
 			if (
 				( isset( $filter['login'] ) ) &&
-				( $reaction->user->login ===
+				( $reaction->user->login !==
 					$filter['login'] )
 			) {
-				$all_reactions_new[] = $reaction;
+				$reaction_passed = false;
 			}
 
 
 			if (
 				( isset( $filter['content'] ) ) &&
-				( $reaction->content ===
+				( $reaction->content !==
 				$filter['content'] )
 			) {
+				$reaction_passed = false;
+			}
+
+			if ( true === $reaction_passed ) {
 				$all_reactions_new[] = $reaction;
 			}
 		}
@@ -3926,5 +3934,35 @@ function vipgoci_github_pr_review_reactions_get(
 	}
 
 	return $all_reactions;
+}
+
+
+/*
+ * Instruct GitHub to delete a particular 
+ * reaction by ID.
+ */
+function vipgoci_github_reaction_delete(
+	$reaction_id,
+	$github_token
+) {
+	vipgoci_log(
+		'Deleting a reaction',
+		array(
+			'reaction_id'	=> $reaction_id,
+		)
+	);
+
+	$github_url =
+		VIPGOCI_GITHUB_BASE_URL . '/' .
+		'reactions/' .
+		rawurlencode( $reaction_id );
+
+	vipgoci_github_post_url(
+		$github_url,
+		null,
+		$github_token,
+		true, // Indicates a DELETE
+		true // Using a preview feature
+	);	
 }
 
