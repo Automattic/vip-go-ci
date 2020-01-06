@@ -895,6 +895,31 @@ function vipgoci_run() {
 	}
 
 	/*
+	 * Process --hashes-submission-teams-allowed
+	 * parameter.
+	 */
+	
+	vipgoci_option_array_handle(
+		$options,
+		'hashes-submission-teams-allowed',
+		array(),
+		array(),
+		','
+	);
+
+	vipgoci_option_teams_handle(
+		$options,
+		'hashes-submission-teams-allowed'
+	);
+
+	$options['hashes-submission-team-members-allowed'] =
+		vipgoci_github_team_members_many(
+			$options['token'],
+			$options['hashes-submission-teams-allowed']
+		);
+
+
+	/*
 	 * Handle --local-git-repo parameter
 	 */
 
@@ -1688,7 +1713,9 @@ function vipgoci_run() {
 
 
 	/*
-	 * Submit approved files to the hashes-to-hashes API.
+	 * Submit approved files to the hashes-to-hashes API
+	 * if configured to do so and everything is set up correctly.
+	 *
 	 * Do this by looking through all comments posted to
 	 * all Pull-Requests implicated, search for specific
 	 * comments (e.g., "VIP: Approved file.") submitted by
@@ -1696,9 +1723,10 @@ function vipgoci_run() {
 	 * existing submit to Hashes-to-hashes API.
 	 */
 
-	// FIXME: Temporary, remove.
+     	// FIXME: Temporary, remove. Use team options.
 	$options['hashes-submission-teams-allowed'] = array( 'vip' );
 	$options['hashes-submission-team-members-allowed'] = array( 'gudmdharalds' );
+
 
 	if (
 		( true === $options['hashes-api'] )
