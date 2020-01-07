@@ -94,7 +94,7 @@ final class VipgociOptionsArrayHandleTest extends TestCase {
 			'myvalue',
 			null,
 			',',
-			false
+			false // do not strtolower()
 		);
 
 		$this->assertEquals(
