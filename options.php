@@ -185,6 +185,187 @@ function vipgoci_options_read_repo_file(
 }
 
 /*
+ * Read options from environmental variables
+ * as specified on the command-line. Does not overwrite
+ * options already specified on the command-line even if
+ * the environment specifies them.
+ */
+function vipgoci_options_read_env(
+	&$options,
+	$options_recognized
+) {
+
+	if ( ! isset( $options['env-options'] ) ) {
+		return;
+	}
+
+	vipgoci_log(
+		'Attempting to read configuration from environmental variables',
+		array(
+			'env-options' => $options['env-options'],
+			'options-recognized' => $options_recognized,
+		)
+	);
+
+	$options_configured = array();
+
+	foreach(
+		$options['env-options'] as $option
+	) {
+		/*
+		 * Try to parse option from the command-line
+		 * to figure out which environmental variable to use
+		 * for which option.
+		 */
+		$option_val = explode(
+			'=',
+			$option,
+			2 // Max one '='; any extra will be preserved in the option-env-var
+		);
+
+		$option_name = $option_val[0];
+		$option_env_var = $option_val[1];
+		unset( $option_val );
+
+		/*
+		 * If option-name or env-var is too short, skip.
+		 */
+		if (
+			( strlen(
+				$option_name
+			) < 1 )
+			||
+			( strlen(
+				$option_env_var
+			) < 1 )
+		) {
+			vipgoci_log(
+				'Skipping option name/var-name from environment as it is too short',
+				array(
+					'option_name' =>
+						$option_name,
+
+					'option_env_var' =>
+						$option_env_var,
+				)
+			);
+
+			continue;
+		}
+
+		/*
+		 * If not a recognized option, skip.
+		 */
+		if ( ! in_array(
+			$option_name . ':',
+			$options_recognized,
+			true
+		) ) {
+			vipgoci_log(
+				'Skipping option from environment as it is not recognized',
+				array(
+					'option_name' => 
+						$option_name,
+
+					'option_env_var' =>
+						$option_env_var,
+
+					'options_recognized' =>
+						$options_recognized,
+				)
+			);
+
+			continue;
+		}
+
+		/*
+		 * Check for invalid options.
+		 */
+		if ( in_array(
+			$option_name,
+			array( 'env-options' )
+		) ) {
+			vipgoci_log(
+				'Skipping option from environment as it is not allowed',
+				array(
+					'option_name' =>
+						$option_name,
+
+					'option_env_var' =>
+						$option_env_var,
+				)
+			);
+
+			continue;
+		}
+
+		/*
+		 * Already configured? Skip.
+		 */
+		if ( isset(
+			$options[
+				$option_name
+			]
+		) ) {
+			vipgoci_log(
+				'Skipping option from environment as it is already configured via command-line parameter',
+				array(
+					'option_name' =>
+						$option_name,
+
+					'option_env_var'
+						=> $option_env_var,
+				)
+			);
+
+			continue;
+		}
+
+		$option_env_var_value = getenv(
+			$option_env_var,
+			true
+		);
+
+		if ( false === $option_env_var_value ) {
+			vipgoci_log(
+				'Skipping option from environment as the variable is not defined',
+				array(
+					'option_name' =>
+						$option_name,
+
+					'option_env_var' =>
+						$option_env_var,
+
+					'option_env_var_value' =>
+						$option_env_var_value,
+				)
+			);
+
+			continue;
+		}
+
+		/*
+		 * All checks passed.
+		 * Actually set value.
+		 */
+		$options[
+			$option_name
+		] = $option_env_var_value;
+
+		$options_configured[
+			$option_name
+		] = $option_env_var_value;
+	}
+
+	vipgoci_log(
+		'Read and set options from environment',
+		array(
+			'options-configured' => $options_configured
+		)
+	);
+}
+
+/*
  * Handle boolean parameters given on the command-line.
  *
  * Will set a default value for the given parameter name,
@@ -301,19 +482,29 @@ function vipgoci_option_array_handle(
 	$option_name,
 	$default_value = array(),
 	$forbidden_value = null,
-	$array_separator = ','
+	$array_separator = ',',
+	$strlower_option_value = true
 ) {
 	if ( ! isset( $options[ $option_name ] ) ) {
 		$options[ $option_name ] = $default_value;
 	}
 
 	else {
-		$options[ $option_name ] = explode(
-			$array_separator,
-			strtolower(
+		if ( false === $strlower_option_value ) {
+			$options[ $option_name ] = explode(
+				$array_separator,
 				$options[ $option_name ]
-			)
-		);
+			);
+		}
+
+		else {
+			$options[ $option_name ] = explode(
+				$array_separator,
+				strtolower(
+					$options[ $option_name ]
+				)
+			);
+		}
 
 		if ( ! empty( $forbidden_value ) ) {
 			if ( in_array(
