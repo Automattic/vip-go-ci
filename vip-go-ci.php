@@ -315,7 +315,17 @@ function vipgoci_run() {
 			"\t" . '                               on GitHub -- no comments will be submitted, etc.' . PHP_EOL .
 			"\t" . '--output=FILE                  Where to save output made from running PHPCS' . PHP_EOL .
 			"\t" . '--lint=BOOL                    Whether to do PHP linting (true/false)' . PHP_EOL .
+			PHP_EOL .
 			"\t" . '--help                         Displays this message' . PHP_EOL .
+			"\t" . '--env-options=STRING           Specifies configuration options to be read from environmental ' . PHP_EOL .
+			"\t" . '                               variables -- any variable can be specified. For instance, with ' . PHP_EOL . 
+			"\t" . '                               --env-options="repo-owner=U_ROWNER,output=U_FOUTPUT" specified ' . PHP_EOL .
+			"\t" . '                               vip-go-ci will attempt to read the --repo-owner and --output ' . PHP_EOL .
+			"\t" . '                               from the $U_ROWNER and $U_FOUTPUT environmental variables, ' . PHP_EOL .
+			"\t" . '                               respectively. This is useful for environments, such as ' . PHP_EOL .
+			"\t" . '                               TeamCity or GitHub Actions, where vital configuration. ' . PHP_EOL .
+			"\t" . '                               are specified via environmental variables. ' . PHP_EOL .
+			PHP_EOL .
 			"\t" . '--debug-level=NUMBER           Specify minimum debug-level of messages to print' . PHP_EOL .
 			"\t" . '                                -- higher number indicates more detailed debugging-messages.' . PHP_EOL .
 			"\t" . '                               Default is zero' . PHP_EOL;
