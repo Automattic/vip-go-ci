@@ -127,9 +127,9 @@ function vipgoci_run() {
 
 	$startup_time = time();
 
-	$options = getopt(
-		null,
+	$options_recognized = 
 		array(
+			'env-options:',
 			'repo-owner:',
 			'repo-name:',
 			'commit:',
@@ -174,7 +174,34 @@ function vipgoci_run() {
 			'help',
 			'debug-level:',
 			'hashes-api:',
-	)
+		);
+
+	/*
+	 * Try to read options from command-line parameters.
+	 */
+
+	$options = getopt(
+		null,
+		$options_recognized
+	);
+
+	/*
+	 * Try to read configuration from
+	 * environmental variables.
+	 */
+
+	vipgoci_option_array_handle(
+		$options,
+		'env-options',
+		array(),
+		null,
+		',',
+		false
+	);
+
+	vipgoci_options_read_env(
+		$options,
+		$options_recognized
 	);
 
 	// Validate args
