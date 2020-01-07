@@ -10,12 +10,20 @@ final class VipgociOptionsReadEnvTest extends TestCase {
 		putenv(
 			'PHP_ROWNER=repo-test-owner'
 		);
+
+		putenv(
+			'PHP_ROWNER2=repo-test-owner2'
+		);
 	}
 
 	protected function tearDown() {
 		// Remove environmental variable
 		putenv(
 			'PHP_ROWNER'
+		);
+	
+		putenv(
+			'PHP_ROWNER2'
 		);
 	}
 
@@ -301,4 +309,56 @@ final class VipgociOptionsReadEnvTest extends TestCase {
 			$options
 		);
 	}
+
+	/**
+	 * @covers ::vipgoci_options_read_env
+	 */
+	public function testOptionsReadEnv7() {
+		$options = array(
+			'repo-name' => 'repo-test-name',
+			'env-options' => 'repo-owner=PHP_ROWNER,repo-owner=PHP_ROWNER2', // Should be allowed to overwrite
+		);
+
+		$options_recognized = array(
+			'repo-name:',
+			'repo-owner:',
+			'env-options:',
+		);
+
+		vipgoci_unittests_output_suppress();
+ 
+		vipgoci_option_array_handle(
+			$options,
+			'env-options',
+			array(),
+			null,
+			',',
+			false
+		);
+       
+		vipgoci_options_read_env(
+			$options,
+			$options_recognized
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		/*
+		 * Should not have read from environment.
+		 */
+		$this->assertEquals(
+			array(
+				'repo-name' => 'repo-test-name',
+				'repo-owner' => 'repo-test-owner2',
+				'env-options' => array(
+					0 => 'repo-owner=PHP_ROWNER',
+					1 => 'repo-owner=PHP_ROWNER2',
+				),
+			),
+			$options
+		);
+	}
+
+
+
 }
