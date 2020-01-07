@@ -210,22 +210,22 @@ function vipgoci_options_read_env(
 	$options_configured = array();
 
 	foreach(
-		$options['env-options'] as $option
+		$options['env-options'] as $option_unparsed
 	) {
 		/*
 		 * Try to parse option from the command-line
 		 * to figure out which environmental variable to use
 		 * for which option.
 		 */
-		$option_val = explode(
+		$option_parsed = explode(
 			'=',
-			$option,
+			$option_unparsed,
 			2 // Max one '='; any extra will be preserved in the option-env-var
 		);
 
-		$option_name = $option_val[0];
-		$option_env_var = $option_val[1];
-		unset( $option_val );
+		$option_name = $option_parsed[0];
+		$option_env_var = $option_parsed[1];
+		unset( $option_parsed );
 
 		/*
 		 * If option-name or env-var is too short, skip.
@@ -300,15 +300,25 @@ function vipgoci_options_read_env(
 		}
 
 		/*
-		 * Already configured? Skip.
+		 * Already configured and not
+		 * configured by us in an earlier
+		 * round? Then skip.
 		 */
-		if ( isset(
-			$options[
-				$option_name
-			]
-		) ) {
+		if (
+			( isset(
+				$options[
+					$option_name
+				]
+			) )
+			&&
+			( ! isset(
+				$options_configured[
+					$option_name
+				]
+			) )
+		) {
 			vipgoci_log(
-				'Skipping option from environment as it is already configured via command-line parameter',
+				'Skipping option from environment as it is already configured',
 				array(
 					'option_name' =>
 						$option_name,
