@@ -53,4 +53,57 @@ final class VipgociOptionsArrayHandleTest extends TestCase {
 			$options['mytestoption']
 		);
 	}
+
+	/**
+	 * @covers ::vipgoci_option_array_handle
+	 */
+	public function testOptionsArrayHandle3() {
+		$options = array(
+			'mytestoption' => 'myvalue1,myvalue2,MYVALUE3',
+		);
+
+		vipgoci_option_array_handle(
+			$options,
+			'mytestoption',
+			'myvalue',
+			null,
+			','
+		);
+
+		$this->assertEquals(
+			array(
+				'myvalue1',
+				'myvalue2',
+				'myvalue3', // should be transformed to lower-case by default
+			),
+			$options['mytestoption']
+		);
+	}
+
+	/**
+	 * @covers ::vipgoci_option_array_handle
+	 */
+	public function testOptionsArrayHandle4() {
+		$options = array(
+			'mytestoption' => 'myvalue1,myvalue2,MYVALUE3',
+		);
+
+		vipgoci_option_array_handle(
+			$options,
+			'mytestoption',
+			'myvalue',
+			null,
+			',',
+			false
+		);
+
+		$this->assertEquals(
+			array(
+				'myvalue1',
+				'myvalue2',
+				'MYVALUE3',
+			),
+			$options['mytestoption']
+		);
+	}
 }
