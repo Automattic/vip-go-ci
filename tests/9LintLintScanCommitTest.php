@@ -143,7 +143,7 @@ final class LintLintScanCommitTest extends TestCase {
 		 * Some versions of PHP reverse the ',' and ';'
 		 * in the string below; deal with that.
 		 */
-		$issues_submit = array_map(
+		$issues_submit[ $pr_item->number][0]['issue'] = array_map(
 			function ( $str ) {
 				return str_replace(
 					"syntax error, unexpected end of file, expecting ';' or ','",
@@ -151,7 +151,7 @@ final class LintLintScanCommitTest extends TestCase {
 					$str
 				);
 			},
-			$issues_submit
+			$issues_submit[ $pr_item->number][0]['issue']
 		);
 
 		$this->assertEquals(
