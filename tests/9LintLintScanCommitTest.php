@@ -139,6 +139,21 @@ final class LintLintScanCommitTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
+		/*
+		 * Some versions of PHP reverse the ',' and ';'
+		 * in the string below; deal with that.
+		 */
+		$issues_submit = array_map(
+			function ( $str ) {
+				return str_replace(
+					"syntax error, unexpected end of file, expecting ';' or ','",
+					"syntax error, unexpected end of file, expecting ',' or ';'",
+					$str
+				);
+			},
+			$issues_submit
+		);
+
 		$this->assertEquals(
 			array(
 				$pr_item->number => array(
