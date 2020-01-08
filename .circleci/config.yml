@@ -7,7 +7,7 @@ jobs:
   build:
     docker:
       # Specify the version you desire here
-      - image: circleci/php:7.1-node-browsers
+      - image: circleci/php:7.1-apache
 
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
@@ -22,7 +22,6 @@ jobs:
       - checkout
       - run: sudo apt update 
       - run: sudo docker-php-ext-install zip
-      - run: sudo apt install phpunit
 
       - run: find .
       - run: phpunit -vv  
