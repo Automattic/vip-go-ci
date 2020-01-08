@@ -6,7 +6,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/php:7.3.9-stretch
+      - image: circleci/php:7.4.1-cli
 
       # List of images at: https://circleci.com/docs/2.0/circleci-images/
 
