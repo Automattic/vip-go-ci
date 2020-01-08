@@ -20,7 +20,8 @@ jobs:
       - checkout
       - run: sudo apt update 
       - run: sudo docker-php-ext-install zip
-      - run: sudo apt search phpunit
-#      - run: sudo apt install -y phpunit
-      - run: find .
-      - run: phpunit -vv  
+      - run: sudo ln -s /usr/local/bin/php /usr/bin/php
+      - run: composer require --dev phpunit/phpunit ^7
+      - run: bash ~/projects/tools-init.sh
+      - run: rm -rf ~/vip-go-ci-tools/vip-go-ci
+      - run: ./vendor/bin/phpunit -vv ~/project/tests
