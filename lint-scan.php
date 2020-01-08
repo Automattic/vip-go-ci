@@ -24,7 +24,7 @@ function vipgoci_lint_do_scan(
 		escapeshellcmd( $php_path ),
 		escapeshellarg( 'error_reporting=24575' ),
 		escapeshellarg( 'error_log=null' ),
-		escapeshellarg( 'display_errors=off' ),
+		escapeshellarg( 'display_errors=on' ),
 		escapeshellarg( $temp_file_name )
 	);
 
