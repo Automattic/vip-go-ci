@@ -55,8 +55,7 @@ function vipgoci_lint_do_scan(
 					return '' !== $array_item;
 				}
 			)
-		)
-	);
+		);
 
 
 	vipgoci_log(
