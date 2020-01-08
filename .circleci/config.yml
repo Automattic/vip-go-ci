@@ -7,7 +7,7 @@ jobs:
   build:
     docker:
       # Specify the version you desire here
-      - image: circleci/php:7.4.1-buster
+      - image: circleci/php:7.3.9-stretch
 
       # List of images at: https://circleci.com/docs/2.0/circleci-images/
       # Using the RAM variation mitigates I/O contention
