@@ -42,6 +42,22 @@ function vipgoci_lint_do_scan(
 
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'php_lint_cli' );
 
+	/*
+	 * Some PHP version output empty lines 
+	 * when linting PHP files, remove them.
+	 */
+
+	$file_issues_arr = 
+		array_values(
+			array_filter(
+				$file_issues_arr,
+				function( $array_item ) {
+					return '' !== $array_item;
+				}
+			)
+		)
+	);
+
 
 	vipgoci_log(
 		'PHP linting execution details',
@@ -88,7 +104,7 @@ function vipgoci_lint_get_issues(
 
 		if (
 			( false !== strpos( $message, ' on line ' ) ) &&
-			( false !== strpos( $message, 'PHP Parse error:' ) )
+			( false !== strpos( $message, 'Parse error:' ) )
 		) {
 			/*
 			 * Get rid of 'PHP Parse...' which is not helpful
@@ -96,8 +112,14 @@ function vipgoci_lint_get_issues(
 			 */
 
 			$message = str_replace(
-				'PHP Parse error:',
-				'',
+				array(
+					'PHP Parse error:',
+					'Parse error:',
+				),
+				array(
+					'',
+					'',
+				),
 				$message
 			);
 
