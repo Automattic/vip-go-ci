@@ -26,4 +26,5 @@ jobs:
       - run: rm -rf ~/vip-go-ci-tools/vip-go-ci
       - run: sed 's/\/home\/phpunit\//\/home\/circleci\//' < ~/project/unittests.ini > ~/project/unittests2.ini 
       - run: mv ~/project/unittests2.ini ~/project/unittests.ini
+      - run: touch ~/project/unittests-secrets.ini
       - run: ./vendor/bin/phpunit -vv ~/project/tests
