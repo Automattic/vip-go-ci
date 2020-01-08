@@ -24,7 +24,7 @@ function vipgoci_lint_do_scan(
 		escapeshellcmd( $php_path ),
 		escapeshellarg( 'error_reporting=24575' ),
 		escapeshellarg( 'error_log=null' ),
-		escapeshellarg( 'display_errors=off' ), // Needs to be off, otherwise errors may be reported twice
+		escapeshellarg( 'display_errors=on' ),
 		escapeshellarg( $temp_file_name )
 	);
 
@@ -43,17 +43,23 @@ function vipgoci_lint_do_scan(
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'php_lint_cli' );
 
 	/*
-	 * Some PHP version output empty lines 
+	 * Some PHP version output empty lines
 	 * when linting PHP files, remove them.
+	 *
+	 * Also, for some reason some PHP versions
+	 * output the same errors two times, remove
+	 * any duplicates.
 	 */
 
 	$file_issues_arr = 
 		array_values(
-			array_filter(
-				$file_issues_arr,
-				function( $array_item ) {
-					return '' !== $array_item;
-				}
+			array_unique(
+				array_filter(
+					$file_issues_arr,
+					function( $array_item ) {
+						return '' !== $array_item;
+					}
+				)
 			)
 		);
 
