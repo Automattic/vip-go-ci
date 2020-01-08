@@ -22,6 +22,6 @@ jobs:
       - checkout
       - run: sudo apt update 
       - run: sudo docker-php-ext-install zip
-
+      - run: sudo apt install -y phpunit
       - run: find .
       - run: phpunit -vv  
