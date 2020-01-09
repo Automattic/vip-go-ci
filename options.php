@@ -500,21 +500,16 @@ function vipgoci_option_array_handle(
 	}
 
 	else {
-		if ( false === $strlower_option_value ) {
-			$options[ $option_name ] = explode(
-				$array_separator,
+		if ( true === $strlower_option_value ) {
+			$options[ $option_name ] = strtolower(
 				$options[ $option_name ]
 			);
 		}
 
-		else {
-			$options[ $option_name ] = explode(
-				$array_separator,
-				strtolower(
-					$options[ $option_name ]
-				)
-			);
-		}
+		$options[ $option_name ] = explode(
+			$array_separator,
+			$options[ $option_name ]
+		);
 
 		if ( ! empty( $forbidden_value ) ) {
 			if ( in_array(
