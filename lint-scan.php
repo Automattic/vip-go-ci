@@ -43,8 +43,8 @@ function vipgoci_lint_do_scan(
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'php_lint_cli' );
 
 	/*
-	 * Some PHP version output empty lines
-	 * when linting PHP files, remove them.
+	 * Some PHP versions output empty lines
+	 * when linting PHP files, remove those.
 	 *
 	 */
 	$file_issues_arr =
@@ -56,7 +56,7 @@ function vipgoci_lint_do_scan(
 		);
 
 	/*
-	 * Some PHP versions of PHP use slightly
+	 * Some PHP versions use slightly
 	 * different output when linting PHP files,
 	 * make the output compatibile.
 	 */
