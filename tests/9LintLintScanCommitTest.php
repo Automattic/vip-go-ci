@@ -147,7 +147,7 @@ final class LintLintScanCommitTest extends TestCase {
 			str_replace(
 				"syntax error, unexpected end of file, expecting ';' or ','",
 				"syntax error, unexpected end of file, expecting ',' or ';'",
-				$issues_submit[ $pr_item->number][0]['issue']
+				$issues_submit[ $pr_item->number][0]['issue']['message']
 			);
 
 		$this->assertEquals(
