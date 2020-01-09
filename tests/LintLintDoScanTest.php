@@ -96,21 +96,6 @@ final class LintLintDoScanTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		/*
-		 * Some PHP version have different
-		 * output format, this is compatibility
-		 * for that.
-		 */
-		$ret = array_map(
-			function( $str ) {
-				return str_replace(
-					'PHP Parse error:  s',
-					'Parse error: s',
-					$str
-				);
-			},
-			$ret
-		);
 
 		$ret[0] = vipgoci_unittests_php_syntax_error_compat(
 			$ret[0]
@@ -118,7 +103,7 @@ final class LintLintDoScanTest extends TestCase {
 
 		$this->assertEquals(
 			array(
-				"Parse error: syntax error, unexpected end of file, expecting ',' or ';' in " . $php_file_path . " on line 3",
+				"PHP Parse error:  syntax error, unexpected end of file, expecting ',' or ';' in " . $php_file_path . " on line 3",
 				'Errors parsing ' . $php_file_path
 			),
 			$ret
