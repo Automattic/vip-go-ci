@@ -132,7 +132,8 @@ final class ApAutoApprovalTest extends TestCase {
 				array(
 					'login' => 'myself',
 					'state' => array( 'APPROVED' ),
-				)
+				),
+				true // skip cache
 			);
 
 			foreach( $pr_item_reviews as $pr_item_review ) {
@@ -311,7 +312,7 @@ final class ApAutoApprovalTest extends TestCase {
 					'login' => 'myself',
 					'state' => array( 'APPROVED' ),
 				),
-				true
+				true // skip cache
 			);
 
 			vipgoci_unittests_output_unsuppress();
@@ -418,7 +419,8 @@ final class ApAutoApprovalTest extends TestCase {
 				array(
 					'login' => 'myself',
 					'state' => array( 'APPROVED' ),
-				)
+				),
+				true // skip cache
 			);
 
 			vipgoci_unittests_output_unsuppress();
@@ -520,7 +522,8 @@ final class ApAutoApprovalTest extends TestCase {
 				array(
 					'login' => 'myself',
 					'state' => array( 'APPROVED' ),
-				)
+				),
+				true // skip cache
 			);
 
 			vipgoci_unittests_output_unsuppress();
@@ -552,6 +555,110 @@ final class ApAutoApprovalTest extends TestCase {
 				[ $this->options['pr-test-ap-auto-approval-1'] ]
 				[ 0 ]
 				['file_name']
+		);
+	}
+
+	/**
+	 * In vipgoci_autoapproval_do_approve() we make
+	 * sure we do not re-approve already approved
+	 * Pull-Requests. Make sure this really works.
+	 *
+	 * @covers ::vipgoci_auto_approval
+	 */
+	public function testAutoApproval5() {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( ),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
+		if ( false === $this->safe_to_run ) {
+			$this->markTestSkipped(
+				'Test not safe to run due to earlier warnings'
+			);
+		}
+
+		/*
+		 * Make sure no reviews indicate approval currently.
+		 */
+		vipgoci_unittests_output_suppress();
+
+		$pr_item_reviews = vipgoci_github_pr_reviews_get(
+			$this->options['repo-owner'],
+			$this->options['repo-name'],
+			$this->options['pr-test-ap-auto-approval-1'],
+			$this->options['token'],
+			array(
+				'login' => 'myself',
+				'state' => array( 'APPROVED' ),
+			),
+			true // skip cache
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		$this->assertEquals(
+			0,
+			count( $pr_item_reviews )
+		);
+
+		/*
+		 * Auto-approve the PR twice.
+		 */
+
+		$auto_approved_files_arr = array(
+			// all files in the PR are approvable
+			'file-1.php' => 'autoapprove-hashes-to-hashes', 
+			'file-2.css' => 'autoapprove-filetypes',
+			'file-3.txt' => 'autoapprove-filetypes',
+			'file-4.json' => 'autoapprove-filetypes',
+		);
+		
+		$results = array(
+			'stats' => array(
+				VIPGOCI_STATS_HASHES_API => array(
+					$this->options['pr-test-ap-auto-approval-1'] => array(
+						'info' => 0
+					)
+				)
+			)
+		);
+
+		vipgoci_unittests_output_suppress();
+
+		vipgoci_auto_approval(
+			$this->options,
+			$auto_approved_files_arr,
+			$results
+		);
+
+		vipgoci_auto_approval(
+			$this->options,
+			$auto_approved_files_arr,
+			$results
+		);
+
+		$pr_item_reviews = vipgoci_github_pr_reviews_get(
+			$this->options['repo-owner'],
+			$this->options['repo-name'],
+			$this->options['pr-test-ap-auto-approval-1'],
+			$this->options['token'],
+			array(
+				'login' => 'myself',
+				'state' => array( 'APPROVED' ),
+			),
+			true // skip cache
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		$this->assertEquals(
+			1,
+			count( $pr_item_reviews )
 		);
 	}
 }

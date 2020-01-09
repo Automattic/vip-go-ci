@@ -963,7 +963,7 @@ function vipgoci_github_fetch_commit_info(
 
 	vipgoci_log(
 		'Fetching commit info from GitHub' .
-			( $cached_data ? ' (cached)' : '' ),
+			vipgoci_cached_indication_str( $cached_data ),
 		array(
 			'repo_owner' => $repo_owner,
 			'repo_name' => $repo_name,
@@ -1117,7 +1117,7 @@ function vipgoci_github_pr_reviews_comments_get(
 
 	vipgoci_log(
 		'Fetching Pull-Requests comments info from GitHub' .
-			( $cached_data ? ' (cached)' : '' ),
+			vipgoci_cached_indication_str( $cached_data ),
 
 		array(
 			'repo_owner' => $repo_owner,
@@ -1242,7 +1242,7 @@ function vipgoci_github_pr_reviews_comments_get_by_pr(
 
 	vipgoci_log(
 		'Fetching all review comments submitted to a Pull-Request' .
-		(( $cached_data !== false ) ? ' (cached)' : '' ),
+			vipgoci_cached_indication_str( $cached_data ),
 		array(
 			'repo_owner'	=> $options['repo-owner'],
 			'repo_name'	=> $options['repo-name'],
@@ -1387,7 +1387,7 @@ function vipgoci_github_pr_generic_comments_get(
 
 	vipgoci_log(
 		'Fetching Pull-Requests generic comments from GitHub' .
-			( $cached_data ? ' (cached)' : '' ),
+			vipgoci_cached_indication_str( $cached_data ),
 
 		array(
 			'repo_owner' => $repo_owner,
@@ -1827,7 +1827,9 @@ function vipgoci_github_pr_generic_comment_delete(
  * Get all reviews for a particular Pull-Request,
  * and allow filtering by:
  * - User submitted (parameter: login)
- * - State of review (parameter: state, values are: CHANGES_REQUESTED, COMMENTED, APPROVED)
+ * - State of review (parameter: state, 
+ *	values are an array of: CHANGES_REQUESTED, 
+ *	COMMENTED, APPROVED)
  *
  * Note that parameter login can be assigned a magic
  * value, 'myself', in which case the actual username
@@ -1844,7 +1846,7 @@ function vipgoci_github_pr_reviews_get(
 
 	$cache_id = array(
 		__FUNCTION__, $repo_owner, $repo_name, $pr_number,
-		$github_token, 
+		$github_token,
 	);
 
 	$cached_data = vipgoci_cache( $cache_id );
@@ -1855,7 +1857,7 @@ function vipgoci_github_pr_reviews_get(
 
 	vipgoci_log(
 		'Fetching reviews for Pull-Request ' .
-			( $cached_data ? ' (cached)' : '' ),
+			vipgoci_cached_indication_str( $cached_data ),
 		array(
 			'repo_owner' => $repo_owner,
 			'repo_name' => $repo_name,
@@ -1887,7 +1889,7 @@ function vipgoci_github_pr_reviews_get(
 				'reviews' .
 				'?per_page=' . rawurlencode( $per_page ) . '&' .
 				'page=' . rawurlencode( $page );
-	
+
 
 			/*
 			 * Fetch reviews, decode result.
@@ -2687,7 +2689,7 @@ function vipgoci_github_prs_implicated(
 
 	vipgoci_log(
 		'Fetching all open Pull-Requests from GitHub' .
-			( $cached_data ? ' (cached)' : '' ),
+			vipgoci_cached_indication_str( $cached_data ),
 		array(
 			'repo_owner' => $repo_owner,
 			'repo_name' => $repo_name,
@@ -2819,7 +2821,7 @@ function vipgoci_github_prs_commits_list(
 		'Fetching information about all commits made' .
 			' to Pull-Request #' .
 			(int) $pr_number . ' from GitHub' .
-			( $cached_data ? ' (cached)' : '' ),
+			vipgoci_cached_indication_str( $cached_data ),
 
 		array(
 			'repo_owner' => $repo_owner,
@@ -2905,7 +2907,7 @@ function vipgoci_github_diffs_fetch(
 	vipgoci_log(
 		'Fetching diffs between two commits ' .
 			'from GitHub' .
-			( $cached_data ? ' (cached)' : '' ),
+			vipgoci_cached_indication_str( $cached_data ),
 
 		array(
 			'repo_owner' => $repo_owner,
@@ -3037,7 +3039,7 @@ function vipgoci_github_authenticated_user_get( $github_token ) {
 
 	vipgoci_log(
 		'Trying to get information about the user the GitHub-token belongs to' .
-			( $cached_data ? ' (cached)' : '' ),
+			vipgoci_cached_indication_str( $cached_data ),
 		array(
 		)
 	);
@@ -3143,7 +3145,8 @@ function vipgoci_github_labels_get(
 	$repo_name,
 	$github_token,
 	$pr_number,
-	$label_to_look_for = null
+	$label_to_look_for = null,
+	$skip_cache = false
 ) {
 	/*
 	 * Check first if we have
@@ -3156,13 +3159,25 @@ function vipgoci_github_labels_get(
 
 	$cached_data = vipgoci_cache( $cache_id );
 
+	/*
+	 * If asked to skip cache, imitate no cached
+	 * data available.
+	 */
+	if ( 
+		( false !== $cached_data ) &&
+		( true === $skip_cache )
+	) {
+		$cached_data = false;
+	}
+
 	vipgoci_log(
 		'Getting labels associated with GitHub issue' .
-			( $cached_data === false ? ' (cached)' : '' ),
+			vipgoci_cached_indication_str( $cached_data ),
 		array(
 			'repo_owner' => $repo_owner,
 			'repo_name' => $repo_name,
 			'pr_number' => $pr_number,
+			'skip_cache' => $skip_cache,
 		)
 	);
 
@@ -3290,7 +3305,7 @@ function vipgoci_github_pr_review_events_get(
 
 	vipgoci_log(
 		'Getting issue events for Pull-Request from GitHub API' .
-		( $cached_data ? ' (cached)' : '' ),
+		vipgoci_cached_indication_str( $cached_data ),
 		array(
 			'repo_owner' => $options['repo-owner'],
 			'repo_name' => $options['repo-name'],
@@ -3436,7 +3451,7 @@ function vipgoci_github_team_members(
 
 	vipgoci_log(
 		'Getting members for organization team' .
-		( $cached_data ? ' (cached)' : '' ),
+		vipgoci_cached_indication_str( $cached_data ),
 		array(
 			'team_id' => $team_id,
 			'return_values_only' => $return_values_only,
@@ -3562,7 +3577,7 @@ function vipgoci_github_org_teams(
 
 	vipgoci_log(
 		'Getting organization teams from GitHub API' .
-		( $cached_data ? ' (cached)' : '' ),
+		vipgoci_cached_indication_str( $cached_data ),
 		array(
 			'org_id' => $org_id,
 			'filter' => $filter,
@@ -3600,7 +3615,7 @@ function vipgoci_github_org_teams(
 			}
 
 			$page++;
-		} while ( count( (array) $org_teams ) >= $per_page ); 
+		} while ( count( (array) $org_teams ) >= $per_page );
 
 		$org_teams = $org_teams_all;
 		unset( $org_teams_all );

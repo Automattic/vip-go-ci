@@ -24,7 +24,7 @@ function vipgoci_lint_do_scan(
 		escapeshellcmd( $php_path ),
 		escapeshellarg( 'error_reporting=24575' ),
 		escapeshellarg( 'error_log=null' ),
-		escapeshellarg( 'display_errors=off' ),
+		escapeshellarg( 'display_errors=on' ),
 		escapeshellarg( $temp_file_name )
 	);
 
@@ -41,6 +41,56 @@ function vipgoci_lint_do_scan(
 	exec( $cmd, $file_issues_arr );
 
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'php_lint_cli' );
+
+	/*
+	 * Some PHP versions output empty lines
+	 * when linting PHP files, remove those.
+	 *
+	 */
+	$file_issues_arr =
+		array_filter(
+			$file_issues_arr,
+			function( $array_item ) {
+				return '' !== $array_item;
+			}
+		);
+
+	/*
+	 * Some PHP versions use slightly
+	 * different output when linting PHP files,
+	 * make the output compatibile.
+	 */
+
+	$file_issues_arr = array_map(
+		function ( $str ) {
+			if ( strpos(
+				$str,
+				'Parse error: '
+			) === 0 ) {
+				$str = str_replace(
+					'Parse error: ',
+					'PHP Parse error:  ',
+					$str
+				);
+			}
+
+			return $str;
+		},
+		$file_issues_arr
+	);
+
+	/*
+	 * For some reason some PHP versions
+	 * output the same errors two times, remove
+	 * any duplicates. 
+	 */
+
+	$file_issues_arr =
+		array_values(
+			array_unique(
+				$file_issues_arr
+			)
+		);
 
 
 	vipgoci_log(

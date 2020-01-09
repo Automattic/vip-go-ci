@@ -53,6 +53,8 @@ final class PhpcsScanDoScanTest extends TestCase {
 			$temp_file_contents
 		);
 
+		vipgoci_unittests_output_suppress();
+
 		$phpcs_res = vipgoci_phpcs_do_scan(
 			$temp_file_path,
 			$this->phpcs_config['phpcs-path'],
@@ -61,6 +63,8 @@ final class PhpcsScanDoScanTest extends TestCase {
 			$this->phpcs_config['phpcs-severity'],
 			$this->phpcs_config['phpcs-runtime-set']
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		unlink( $temp_file_path );
 

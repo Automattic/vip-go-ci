@@ -45,6 +45,8 @@ final class LintLintGetIssuesTest extends TestCase {
 			PATHINFO_FILENAME
 		);
 
+		vipgoci_unittests_output_suppress();
+
 		$lint_issues = vipgoci_lint_do_scan(
 			$this->options_php['php-path'],
 			$php_file_path
@@ -55,6 +57,8 @@ final class LintLintGetIssuesTest extends TestCase {
 			$php_file_name,
 			$lint_issues
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertEquals(
 			array(
@@ -88,6 +92,8 @@ final class LintLintGetIssuesTest extends TestCase {
 			PATHINFO_FILENAME
 		);
 
+		vipgoci_unittests_output_suppress();
+
 		$lint_issues = vipgoci_lint_do_scan(
 			$this->options_php['php-path'],
 			$php_file_path
@@ -98,6 +104,14 @@ final class LintLintGetIssuesTest extends TestCase {
 			$php_file_path,
 			$lint_issues
 		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		/* Fix PHP compatibility issue */
+		$lint_issues_parsed[3][0]['message'] = 
+			vipgoci_unittests_php_syntax_error_compat(
+				$lint_issues_parsed[3][0]['message']
+			);
 
 		$this->assertEquals(
 			array(

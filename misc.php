@@ -213,6 +213,25 @@ function vipgoci_patch_changed_lines(
 function vipgoci_cache( $cache_id_arr, $data = null ) {
 	global $vipgoci_cache_buffer;
 
+	/*
+	 * Special invocation: Allow for
+	 * the cache to be cleared.
+	 */
+	if (
+		( is_string(
+			$cache_id_arr
+		) )
+		&&
+		(
+			VIPGOCI_CACHE_CLEAR ===
+			$cache_id_arr
+		)
+	) {
+		$vipgoci_cache_buffer = array();
+
+		return true;
+	}
+
 	$cache_id = json_encode(
 		$cache_id_arr
 	);
@@ -243,6 +262,18 @@ function vipgoci_cache( $cache_id_arr, $data = null ) {
 	$vipgoci_cache_buffer[ $cache_id ] = $data;
 
 	return $data;
+}
+
+
+/**
+ * Support function for other functions
+ * that use the internal cache and need to indicate
+ * that information from the cache was used.
+ *
+ * @codeCoverageIgnore
+ */
+function vipgoci_cached_indication_str( $cache_used ) {
+	return $cache_used ? ' (cached)' : '';
 }
 
 
@@ -642,7 +673,7 @@ function vipgoci_github_comment_match(
 			'/ \([\*_\.a-zA-Z0-9]+\)\.$/',
 			'',
 			$comment_made_body
-		); 
+		);
 
 		/*
 		 * Transform string to lowercase,
@@ -770,7 +801,7 @@ function vipgoci_remove_existing_github_comments_from_results(
 				'Later on, will make sure comments ' .
 					'that are part of dismissed reviews ' .
 					'will be submitted again, if the ' .
-					'underlying issue was detected ' . 
+					'underlying issue was detected ' .
 					'during the run. In case of such a setting' .
 					'and such reviews existing, excluding ' .
 					'reviews (and thus comments) that are submitted ' .
@@ -826,7 +857,7 @@ function vipgoci_remove_existing_github_comments_from_results(
 						$pr_item->number
 					]
 				);
-	
+
 				vipgoci_log(
 					'Excluding certain reviews from ' .
 						'list of previously gathered dismissed reviews; ' .
@@ -1465,7 +1496,7 @@ function vipgoci_results_filter_ignorable(
 					$pr_number
 				][] = $pr_issue;
 
-	
+
 				/*
 				 * Keep statistics up-to-date
 				 */
@@ -1628,7 +1659,7 @@ function vipgoci_markdown_comment_add_pagebreak(
 	$comment_copy = rtrim( $comment );
 	$comment_copy = rtrim( $comment_copy, " \n\r" );
 
-	/*	
+	/*
 	 * Find the last pagebreak in the comment.
 	 */
 	$pagebreak_location = strrpos(
