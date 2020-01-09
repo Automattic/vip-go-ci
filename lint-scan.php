@@ -46,20 +46,49 @@ function vipgoci_lint_do_scan(
 	 * Some PHP version output empty lines
 	 * when linting PHP files, remove them.
 	 *
-	 * Also, for some reason some PHP versions
-	 * output the same errors two times, remove
-	 * any duplicates.
+	 */
+	$file_issues_arr =
+		array_filter(
+			$file_issues_arr,
+			function( $array_item ) {
+				return '' !== $array_item;
+			}
+		);
+
+	/*
+	 * Some PHP versions of PHP use slightly
+	 * different output when linting PHP files,
+	 * make the output compatibile.
 	 */
 
-	$file_issues_arr = 
+	$file_issues_arr = array_map(
+		function ( $str ) {
+			if ( strpos(
+				$str,
+				'Parse error: '
+			) === 0 ) {
+				$str = str_replace(
+					'Parse error: ',
+					'PHP Parse error:  ',
+					$str
+				);
+			}
+
+			return $str;
+		},
+		$file_issues_arr
+	);
+
+	/*
+	 * For some reason some PHP versions
+	 * output the same errors two times, remove
+	 * any duplicates. 
+	 */
+
+	$file_issues_arr =
 		array_values(
 			array_unique(
-				array_filter(
-					$file_issues_arr,
-					function( $array_item ) {
-						return '' !== $array_item;
-					}
-				)
+				$file_issues_arr
 			)
 		);
 
@@ -117,14 +146,8 @@ function vipgoci_lint_get_issues(
 			 */
 
 			$message = str_replace(
-				array(
-					'PHP Parse error:',
-					'Parse error:',
-				),
-				array(
-					'',
-					'',
-				),
+				'PHP Parse error:',
+				'',
 				$message
 			);
 
