@@ -138,7 +138,7 @@ function vipgoci_lint_get_issues(
 
 		if (
 			( false !== strpos( $message, ' on line ' ) ) &&
-			( false !== strpos( $message, 'Parse error:' ) )
+			( false !== strpos( $message, 'PHP Parse error:' ) )
 		) {
 			/*
 			 * Get rid of 'PHP Parse...' which is not helpful
