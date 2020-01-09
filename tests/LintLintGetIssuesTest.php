@@ -107,6 +107,12 @@ final class LintLintGetIssuesTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
+		/* Fix PHP compatibility issue */
+		$lint_issues_parsed[3][0]['message'] = 
+			vipgoci_unittests_php_syntax_error_compat(
+				$lint_issues_parsed[3][0]['message']
+			);
+
 		$this->assertEquals(
 			array(
 				3 => array(

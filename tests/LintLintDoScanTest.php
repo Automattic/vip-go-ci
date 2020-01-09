@@ -96,6 +96,11 @@ final class LintLintDoScanTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
+
+		$ret[0] = vipgoci_unittests_php_syntax_error_compat(
+			$ret[0]
+		);
+
 		$this->assertEquals(
 			array(
 				"PHP Parse error:  syntax error, unexpected end of file, expecting ',' or ';' in " . $php_file_path . " on line 3",

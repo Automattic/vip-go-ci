@@ -139,6 +139,15 @@ final class LintLintScanCommitTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
+		/*
+		 * Some versions of PHP reverse the ',' and ';'
+		 * in the string below; deal with that.
+		 */
+		$issues_submit[ $pr_item->number ][0]['issue']['message'] =
+			vipgoci_unittests_php_syntax_error_compat(
+				$issues_submit[ $pr_item->number][0]['issue']['message']
+			);
+
 		$this->assertEquals(
 			array(
 				$pr_item->number => array(
