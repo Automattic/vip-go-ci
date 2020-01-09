@@ -313,5 +313,17 @@ function vipgoci_unittests_output_unsuppress() {
 	}
 }
 
+/*
+ * Some versions of PHP reverse the ',' and ';'
+ * in output from PHP linting; deal with that here.
+ */
+function vipgoci_unittests_php_syntax_error_compat( $str ) {
+	return str_replace(
+		"syntax error, unexpected end of file, expecting ';' or ','",
+		"syntax error, unexpected end of file, expecting ',' or ';'",
+		$str
+	);
+}
+
 require_once( __DIR__ . '/../vip-go-ci.php' );
 
