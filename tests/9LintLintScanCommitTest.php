@@ -144,9 +144,7 @@ final class LintLintScanCommitTest extends TestCase {
 		 * in the string below; deal with that.
 		 */
 		$issues_submit[ $pr_item->number ][0]['issue']['message'] =
-			str_replace(
-				"syntax error, unexpected end of file, expecting ';' or ','",
-				"syntax error, unexpected end of file, expecting ',' or ';'",
+			vipgoci_unittests_php_syntax_error_compat(
 				$issues_submit[ $pr_item->number][0]['issue']['message']
 			);
 
