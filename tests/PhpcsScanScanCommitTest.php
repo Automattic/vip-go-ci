@@ -245,6 +245,27 @@ final class PhpcsScanScanCommitTest extends TestCase {
 			] = 0;
 		}
 
+		vipgoci_unittests_output_unsuppress();
+
+		/*
+		 * We should have found two PRs, and
+		 * we should have initialised statistics
+		 * for both. Make sure it is so.
+		 */
+		$this->assertEquals(
+			array(
+				21 => array(
+					'error' => 0,
+				),
+
+				22 => array(
+					'error' => 0,
+				),
+			),
+			$issues_stats
+		);
+
+		vipgoci_unittests_output_suppress();
 
 		$this->options['local-git-repo'] =
 			vipgoci_unittests_setup_git_repo(
