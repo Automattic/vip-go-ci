@@ -32,7 +32,7 @@ final class ApHashesApiFileApprovedTest extends TestCase {
 			$this->options_git_repo_tests
 		);
 
-		$this->options['branches-ignore'] = array();
+		$this->options['branches-ignore'] = array(); 
 	
 		$this->options['commit'] =
 			$this->options['commit-test-sha1sum-calculate'];
