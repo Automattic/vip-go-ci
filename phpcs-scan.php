@@ -578,11 +578,6 @@ function vipgoci_phpcs_scan_commit(
 					)
 				);
 
-				unset(
-					$commit_issues_stats
-						[ $pr_item->number ]
-				);
-
 				continue;
 			}
 		}
