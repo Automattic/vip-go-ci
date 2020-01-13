@@ -2195,6 +2195,7 @@ function vipgoci_github_pr_review_submit(
 				$results
 					['stats']
 					[ strtolower( $stats_type ) ]
+					[ $pr_number ]
 			) ) {
 				$github_postfields['body'] .=
 					'**' . $stats_type . '**' .

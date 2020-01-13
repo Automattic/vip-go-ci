@@ -535,6 +535,60 @@ function vipgoci_phpcs_scan_commit(
 
 
 		/*
+		 * Check if user requested to turn off PHPCS
+		 * scanning for the Pull-Request by adding a label
+		 * to the Pull-Request, and if so, skip scanning.
+		 * Make sure to indicate so in the statistics.
+		 *
+		 * This is only done if allowed via option.
+		 */
+
+		if (
+			true ===
+			$options['phpcs-skip-scanning-via-labels-allowed']
+		) {
+			$pr_label_skip_phpcs = vipgoci_github_labels_get(
+				$repo_owner,
+				$repo_name,
+				$github_token,
+				$pr_item->number,
+				'skip-phpcs-scan'
+			);
+
+			if ( ! empty( $pr_label_skip_phpcs ) ) {
+				vipgoci_log(
+					'Label on Pull-Request indicated to ' .
+						'skip PHPCS-scanning; ' .
+						'scanning will be skipped',
+					array(
+						'repo_owner'
+							=> $repo_owner,
+
+						'repo_name'
+							=> $repo_name,
+
+						'commit_id'
+							=> $commit_id,
+
+						'pr_number'
+							=> $pr_item->number,
+
+						'pr_label_skip_phpcs'
+							=> $pr_label_skip_phpcs,
+					)
+				);
+
+				unset(
+					$commit_issues_stats
+						[ $pr_item->number ]
+				);
+
+				continue;
+			}
+		}
+
+
+		/*
 		 * Get all commits related to the current
 		 * Pull-Request.
 		 */
