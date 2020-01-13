@@ -12,6 +12,7 @@ final class PhpcsScanScanCommitTest extends TestCase {
 		'phpcs-severity'			=> null,
 		'phpcs-runtime-set'			=> null,
 		'commit-test-phpcs-scan-commit-1'	=> null,
+		'commit-test-phpcs-scan-commit-2'	=> null,
 	);
 
 	var $options_git_repo = array(
@@ -83,6 +84,9 @@ final class PhpcsScanScanCommitTest extends TestCase {
 		$this->options['commit'] =
 			$this->options['commit-test-phpcs-scan-commit-1'];
 
+		$this->options['phpcs-skip-scanning-via-labels-allowed'] =
+			false;
+
 		$issues_submit = array();
 		$issues_stats = array();
 
@@ -119,7 +123,7 @@ final class PhpcsScanScanCommitTest extends TestCase {
 				
 			return;
 		}
-		
+
 		vipgoci_phpcs_scan_commit(
 			$this->options,
 			$issues_submit,
@@ -189,6 +193,133 @@ final class PhpcsScanScanCommitTest extends TestCase {
 				8 => array(
 					'error' => 3,
 				)
+			),
+			$issues_stats
+		);
+	}
+
+	/**
+	 * @covers ::vipgoci_phpcs_scan_commit
+	 */
+	public function testDoScanTest2() {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( 'phpcs-runtime-set', 'phpcs-sniffs-exclude', 'github-token', 'token' ),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
+		$this->options['commit'] =
+			$this->options['commit-test-phpcs-scan-commit-2'];
+
+		/*
+		 * Skipping PHPCS scanning via PR labels is allowed,
+		 * one PR should be set up to ask to skip but another
+		 * should not.
+		 */
+		$this->options['phpcs-skip-scanning-via-labels-allowed'] =
+			true;
+
+		$issues_submit = array();
+		$issues_stats = array();
+
+		vipgoci_unittests_output_suppress();
+
+		$prs_implicated = vipgoci_github_prs_implicated(
+			$this->options['repo-owner'],
+			$this->options['repo-name'],
+			$this->options['commit'],
+			$this->options['github-token'],
+			$this->options['branches-ignore']
+		);
+
+
+		foreach( $prs_implicated as $pr_item ) {
+			$issues_stats[
+				$pr_item->number
+			][
+				'error'
+			] = 0;
+		}
+
+
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped(
+				'Could not set up git repository: ' .
+					vipgoci_unittests_output_get()
+			);
+				
+			return;
+		}
+		
+		vipgoci_phpcs_scan_commit(
+			$this->options,
+			$issues_submit,
+			$issues_stats
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		$this->assertEquals(
+			array(
+				21 => array(
+					array(
+						'type'		=> 'phpcs',
+						'file_name'	=> 'test.php',
+						'file_line'	=> 3,
+						'issue'	=> array(
+							'message' => "All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found 'time'.",
+							'source' => 'WordPress.Security.EscapeOutput.OutputNotEscaped',
+							'severity' => 5,
+							'fixable' => false,
+							'type' => 'ERROR',
+							'line' => 3,
+							'column' => 20,
+							'level' => 'ERROR',
+						)
+					),
+
+					array(
+						'type'		=> 'phpcs',
+						'file_name'	=> 'test.php',
+						'file_line'	=> 7,
+						'issue'		=> array(
+							'message' => "All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found 'time'.",
+							'source' => 'WordPress.Security.EscapeOutput.OutputNotEscaped',
+							'severity' => 5,
+							'fixable' => false,
+							'type' => 'ERROR',
+							'line' => 7,
+							'column' => 20,
+							'level' => 'ERROR',
+						)
+					),
+				),
+
+				// No errors for PR #22 because
+				// label is set to skip PHPCS scanning.
+			),
+
+			$issues_submit
+		);
+
+		$this->assertEquals(
+			array(
+				21 => array(
+					'error' => 2,
+				),
+
+				22 => array(
+					'error' => 0,
+				),
 			),
 			$issues_stats
 		);
