@@ -304,8 +304,10 @@ final class PhpcsScanScanCommitTest extends TestCase {
 					),
 				),
 
-				// No errors for PR #22 because
-				// label is set to skip PHPCS scanning.
+				/*
+				 * No errors for PR #22 because
+				 * label is set to skip PHPCS scanning.
+				 */
 			),
 
 			$issues_submit
@@ -317,9 +319,11 @@ final class PhpcsScanScanCommitTest extends TestCase {
 					'error' => 2,
 				),
 
-				22 => array(
-					'error' => 0,
-				),
+				/*
+				 * Statistics for this scan-type gets
+				 * removed when PHPCS scanning is skipped,
+				 * so don't expect anything for PR #22.
+				 */
 			),
 			$issues_stats
 		);
