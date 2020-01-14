@@ -144,6 +144,9 @@ function vipgoci_run() {
 			'output:',
 			'dry-run:',
 			'informational-url:',
+			'post-generic-pr-support-comments:',
+			'post-generic-pr-support-comments-string:',
+			'post-generic-pr-support-comments-branches:',
 			'phpcs-path:',
 			'phpcs-standard:',
 			'phpcs-severity:',
@@ -258,6 +261,15 @@ function vipgoci_run() {
 			"\t" . '                                                      --dismissed-reviews-repost-comments' . PHP_EOL .
 			"\t" . '--informational-url=STRING     URL to documentation on what this bot does. Should ' . PHP_EOL .
 			"\t" . '                               start with https:// or https:// ' . PHP_EOL .
+			PHP_EOL .
+			"\t" . '--post-generic-pr-support-comments=BOOL            Post generic comment to Pull-Requests with ' . PHP_EOL .
+			"\t" . '                                                   support-related information for users. Will ' . PHP_EOL .
+			"\t" . '                                                   be posted only once per Pull-Request. ' . PHP_EOL .
+			"\t" . '--post-generic-pr-support-comments-string=STRING   String to use when posting support-comment. ' . PHP_EOL .
+			"\t" . '--post-generic-pr-support-comments-branches=ARRAY  Only post support-comments to Pull-Requests ' . PHP_EOL .
+			"\t" . '                                                   with these target branches. The parameter can  ' . PHP_EOL .
+			"\t" . '                                                   be a string with one value, or comma separated. ' . PHP_EOL .
+			PHP_EOL .
 			"\t" . '--phpcs=BOOL                   Whether to run PHPCS (true/false)' . PHP_EOL .
 			"\t" . '--phpcs-path=FILE              Full path to PHPCS script' . PHP_EOL .
 			"\t" . '--phpcs-standard=STRING        Specify which PHPCS standard to use' . PHP_EOL .
@@ -683,6 +695,25 @@ function vipgoci_run() {
 		array(),
 		'php'
 	);
+
+	/*
+	 * Handle parameters that enable posting of support-comments
+	 * to Pull-Requests.
+	 */
+
+	vipgoci_option_bool_handle( $options, 'post-generic-pr-support-comments', 'false' );
+
+	$options['post-generic-pr-support-comments-string'] =
+		ltrim( rtrim(
+			$options['post-generic-pr-support-comments-string']
+		) );
+
+	vipgoci_option_array_handle(
+		$options,
+		'post-generic-pr-support-comments-branches',
+		array()
+	);
+
 
 	/*
 	 * Handle IRC API parameters
@@ -1118,6 +1149,24 @@ function vipgoci_run() {
 	);
 
 	/*
+	 * If configured to do so, post a generic comment
+	 * on the Pull-Request(s) with some helpful information.
+	 * Comment is set via option.
+	 * 
+	 * Make sure not to post comment again if it is already posted.
+	 */
+	if (
+		( true === $options['post-generic-pr-support-comments'] ) &&
+		( ! empty( $options['post-generic-pr-support-comments-string'] ) ) &&
+		( ! empty( $options['post-generic-pr-support-comments-branches'] ) )
+	) {
+		vipgoci_github_pr_generic_support_comment(
+			$options,
+			$prs_implicated
+		);
+	}
+
+	/*
 	 * Run all checks requested and store the
 	 * results in an array
 	 */
@@ -1365,13 +1414,13 @@ function vipgoci_run() {
 		foreach( array_keys(
 			$prs_comments_maxed
 		) as $pr_number ) {
-			vipgoci_github_pr_comments_error_msg(
+			vipgoci_github_pr_comments_generic_submit(
 				$options['repo-owner'],
 				$options['repo-name'],
 				$options['token'],
-				$options['commit'],
 				$pr_number,
-				VIPGOCI_REVIEW_COMMENTS_TOTAL_MAX
+				VIPGOCI_REVIEW_COMMENTS_TOTAL_MAX,
+				$options['commit']
 			);
 		}
 	}
