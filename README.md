@@ -2,7 +2,7 @@
 
 Continuous integration for VIP Go repositories.
 
-`vip-go-ci` is a PHP-program that can be called for latest commits pushed to Pull-Requests on GitHub, looking for problems in the code using PHP linting, PHPCS, and a SVG scanner -- and then posting back to GitHub comments and reviews, detailing the issues found. `vip-go-ci` can also automatically approve Pull-Requests that contain already-approved files (registered in a special database) and/or contain file-types that are approvable by default.
+`vip-go-ci` is a PHP-program that can be called for latest commits pushed to Pull-Requests on GitHub, looking for problems in the code using PHP linting, [PHPCS](https://github.com/squizlabs/PHP_CodeSniffer/), and a [SVG scanner](https://github.com/Automattic/vip-go-svg-sanitizer) -- and then posting back to GitHub comments and reviews, detailing the issues found. `vip-go-ci` can also automatically approve Pull-Requests that contain already-approved files (registered in a special database) and/or contain file-types that are approvable by default.
 
 `vip-go-ci` is to be called from the commandline, using several arguments specifying the repository and commit-ID to scan, and various other options. During execution, `vip-go-ci` will provide a detailed log of its actions and what it encounters. The program expects a fully-functional git-repository to be stored locally on the computer running it, were from it can extract various information.
 
@@ -274,6 +274,16 @@ To have a URL posted, simply run `vip-go-ci` with a `--informational-url` parame
 The URL will be included in any generic Pull-Request comments or Pull-Request reviews submitted.
 
 ### PHPCS configuration
+
+Support for checking for issues in PHP files by using [PHPCS](https://github.com/squizlabs/PHP_CodeSniffer/) scanning is supported. The behaviour of PHPCS scanning can be configured using several options.
+
+An example of how PHPCS can be used:
+
+> ./vip-go-ci.php --phpcs=true --phpcs-path="$HOME/vip-go-ci-tools/phpcs/bin/phpcs" --phpcs-standard="WordPress-VIP-Go,PHPCompatibilityWP" --phpcs-sniffs-exclude="WordPress.WP.PostsPerPage.posts_per_page_posts_per_page" --phpcs-severity=1 --phpcs-runtime-set="testVersion 7.3-" --phpcs-skip-scanning-via-labels-allowed=true 
+
+With these settings, PHPCS is turned on, is expected to be found in the path shown above, should use two PHPCS standards (`WordPress-VIP-Go` and `PHPCompatibilityWP`), while excluding one particular PHPCS sniff. When executing PHPCS, one runtime option should be set (`testVersion 7.3-`) and severity level should be `1`. Also, users can ask to skip scanning particular Pull-Requests by setting a label named `skip-phpcs-scan`.
+
+Any number of PHPCS standards can be specified, and any number of runtime settings as well. See section above about configuring options via repository file.
 
 ### SVG scanning
 
