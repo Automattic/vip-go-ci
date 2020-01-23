@@ -287,6 +287,14 @@ Any number of PHPCS standards can be specified, and any number of runtime settin
 
 ### SVG scanning
 
+`vip-go-ci` supports scanning SVG files for dangerous tags. The scanning is accomplished by a [SVG scanner](https://github.com/Automattic/vip-go-svg-sanitizer), while `vip-go-ci` takes care of posting the issues found.
+
+To make use of this feature, the `--svg-checks` and `--svg-scanner-path` options should be used. For example:
+
+> ./vip-go-ci.php --svg-checks=true --svg-scanner-path="$HOME/vip-go-ci-tools/vip-go-svg-sanitizer/svg-scanner.php"
+
+With these options, SVG scanning is turned on and a scanner at a particular path location is to be used. 
+
 ### Autoapprovals
 
 ### Hashes API
