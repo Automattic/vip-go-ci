@@ -251,6 +251,14 @@ Any parameter can be read from the environment, not just those shown. Parameters
 
 ### Informational URL
 
+To help users understand better why a bot is posting comments and reviews on their Pull-Requests, and sometimes automatically approving them, it can be helpful to have a bit of information added to the comments `vip-go-ci` posts. This feature serves this purpose.
+
+To have a URL posted, simply run `vip-go-ci` with a `--informational-url` parameter:
+
+> ./vip-go-ci.php --informational-url=https://myservice.mycompany.is/info-on-scanning
+
+The URL will be included in any generic Pull-Request comments or Pull-Request reviews submitted.
+
 ### PHPCS configuration
 
 ### SVG scanning
