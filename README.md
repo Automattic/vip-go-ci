@@ -2,31 +2,27 @@
 
 Continuous integration for VIP Go repositories.
 
-`vip-go-ci` is a PHP-program that can be called for latest commits pushed to Pull-Requests on GitHub, looking for problems in the code using PHP lint and PHPCS, and posting back to GitHub comments and reviews, detailing the issues found.
+`vip-go-ci` is a PHP-program that can be called for latest commits pushed to Pull-Requests on GitHub, looking for problems in the code using PHP linting, PHPCS, and a SVG scanner -- and then posting back to GitHub comments and reviews, detailing the issues found. `vip-go-ci` can also automatically approve Pull-Requests that contain already-approved files (registered in a special database) and/or contain file-types that are approvable by default.
 
-`vip-go-ci` is to be called from the commandline, using several arguments specifying the repository, commit-ID, and other options. The program will then scan the code. The program expects a fully-functional git-repository to be stored locally on the computer running it, were from it can extract various information.
+`vip-go-ci` is to be called from the commandline, using several arguments specifying the repository and commit-ID to scan, and various other options. During execution, `vip-go-ci` will provide a detailed log of its actions and what it encounters. The program expects a fully-functional git-repository to be stored locally on the computer running it, were from it can extract various information.
 
-The program has different behaviours for different scanning-methods. For PHP linting, it will loop through every file existing in the code-base, and post a generic Pull-Request comment for any issues it finds with the PHP-code. In case of PHPCS scanning, however, it will scan only the files affected by the Pull-Request using PHPCS, and for any issues outputted by PHPCS, post a comment on the commit with the issue, in the form of a 'GitHub Review' (this includes inline comments and a review-message).
+It has different behaviours for different scanning-methods. For PHP linting, it will loop through every file existing in the code-base, and post a generic Pull-Request comment for any issues it finds with the PHP-code. In case of PHPCS scanning, however, it will scan only the files affected by the Pull-Request using PHPCS, and for any issues outputted by PHPCS, post a comment on the commit with the issue, in the form of a 'GitHub Review' (this includes inline comments and a review-message). SVG scanning behaves similar to PHPCS scanning. What scanning is performed can be customised on the command-line.
 
-If so desired, the program can only do PHPCS scanning, or PHP-linting. It should be called only for the latest commit pushed.
-
-This program comes with a small utility, `tools-init.sh`, that will install PHPCS and related tools in your home-directory upon execution. This utility will check if the tools required are installed, and if not, install them, or if they are, check if they are of the latest version, and upgrade them as needed.
+This program comes with a small utility, `tools-init.sh`, that will install PHPCS and related tools in your home-directory upon execution. This utility will check if the tools required are installed, and if not, install them, or if they are, check if they are of the latest version, and upgrade them as needed. It is highly recommended to run this utility on a regular basis.
 
 ## Setting up
 
 ### On the console, standalone
 
-It is possible to run `vip-go-ci` standalone on the console, although it has limited functionality. It is mainly useful for debugging purposes and to understand if everything is correctly configured.
-
-To run this standalone on your local console, PHPCS has to be installed and configured with a certain profile. The `tools-init.sh` script that is included will install the tools needed.
+`vip-go-ci` can be run standalone on the console. This is mainly useful for debugging purposes and to understand if everything is correctly configured, but for production purposes it should ideally be run via some kind of build management software (for instance TeamCity or GitHub Actions). To run `vip-go-ci` on the console, a few tools are required. The `tools-init.sh` script that is included will install the tools needed.
 
 After the tools have been installed, `vip-go-ci.php` can be run on your local console to scan a particular commit in a particular repository:
 
-> ./vip-go-ci.php --repo-owner=`repo-owner` --repo-name=`repo-name` --commit=`commit-ID` --token=`GitHub-Access-Token` --phpcs-path=`phpcs-path` --phpcs=true --lint=true
+> ./vip-go-ci.php --repo-owner=`repo-owner` --repo-name=`repo-name` --commit=`commit-ID` --token=`GitHub-Access-Token` --local-git-repo=`Local-Git-Repo` --phpcs-path=`phpcs-path` --phpcs=true --lint=true --autoapprove=true --autoapprove-filetypes=`File-Types`
 
--- where `repo-owner` is the GitHub repository-owner, `repo-name` is the name of the repository, `commit-ID` is the SHA-hash identifying the commit, `GitHub-Access-Token` is a access-token created on GitHub that allows reading and commenting on the repository in question, and `path-to-phpcs` is a full path to PHPCS.
+-- where `repo-owner` is the GitHub repository-owner, `repo-name` is the name of the repository, `commit-ID` is the SHA-hash identifying the commit, `Local-Git-Repo` is a path to the git-repository used to scan, `GitHub-Access-Token` is a access-token created on GitHub that allows reading and commenting on the repository in question, `path-to-phpcs` is a full path to PHPCS, and `File-Types` refers to a list of file-types to be approved (such as `css,txt,pdf`). 
 
-The output from `vip-go-ci` you will get should be something like this:
+The output from `vip-go-ci` you will get by running the command above should be something like this:
 
 ```
 [ 2018-04-16T14:10:04+00:00 -- 0 ]  Initializing...; []
@@ -43,6 +39,8 @@ The output from `vip-go-ci` you will get should be something like this:
         "phpcs-standard": "WordPress-VIP-Go",
         "phpcs-severity": 5,
         "branches-ignore": [],
+        "autoapprove": true,
+        "autoapprove-filetypes": [ "css", "txt", "pdf ],
         "php-path": "php",
         "debug-level": 0,
         "dry-run": false
@@ -162,7 +160,7 @@ The output from `vip-go-ci` you will get should be something like this:
 
 ### Configuring TeamCity runner
 
-You can set up `vip-go-ci` with TeamCity, so that when a commit gets pushed to GitHub, `vip-go-ci.php` will run and scan the commit.
+You can set up `vip-go-ci` with TeamCity, so that when a commit gets pushed to GitHub, `vip-go-ci.php` will run and scan the commit. TeamCity is not required, any other similar build management software can be used. 
 
 This flowchart shows how `vip-go-ci` interacts with TeamCity, git, GitHub, and the utilities it uses:
 
@@ -210,7 +208,7 @@ PHPCS_ENABLED=${PHPCS_ENABLED:-false}
 php ~/vip-go-ci-tools/vip-go-ci/vip-go-ci.php --repo-owner="$REPO_ORG" --repo-name="$REPO_NAME" --commit="$BUILD_VCS_NUMBER"  --token="$REPO_TOKEN" --local-git-repo="%system.teamcity.build.checkoutDir%" --phpcs="$PHPCS_ENABLED" --lint="$LINTING_ENABLED"  --phpcs-path="$HOME/vip-go-ci-tools/phpcs/bin/phpcs"
 ```
 
-Note that the script has built-in commands to install all the utilities `vip-go-ci` relies on, so that they will be configured automatically, and maintained automatically as well.
+Note that the script has built-in commands to install all the utilities `vip-go-ci` relies on (via `tools-init.sh`), so that they will be configured automatically, and updated automatically as well.
 
 The parameters should be pretty-much self-explanatory. Note that --commit should be left exactly as shown above, as `$BUILD_VCS_NUMBER` is populated by TeamCity. Other variables, `$REPO_ORG`, `$REPO_NAME` and `$REPO_TOKEN` are populated by TeamCity on run-time according to your settings (see above).
 
@@ -233,6 +231,63 @@ docker-compose up -d --scale agent=3
 ```
 
 Alternatively, if you do not wish to run TeamCity in a Docker-instance, you can download it and set it up manually.
+
+
+## Other features
+
+`vip-go-ci` has support for various features not documented above, such as dismissing stale reviews, setting specific options via the repository being scanned and more. These features are configurable via the command-line or the environment, and are documented below.
+
+Note: To make it easier to read the documention below, some required parameters are not shown (such as `--repo-owner`, `--repo-name`, etc).
+
+### Configuring via environmental variables
+
+If you run `vip-go-ci` in an environment such as `TeamCity` or `GitHub Actions`, it can be useful to configure certain parameters via environmental variables. This way, the parameters are not visible in any logs and cannot be seen in the process-tree during run-time. With `vip-go-ci`, this can easily be done by running it this way:
+
+> ./vip-go-ci.php --commit="$COMMIT_ID" --phpcs=true --lint=true --autoapprove=true --autoapprove-filetypes="css,txt,pdf" --env-options="repo-owner=GH_REPO_OWNER,repo-name=GH_REPO_NAME,token=GH_TOKEN"
+
+In this case, `--repo-owner` will be read from the `$GH_REPO_OWNER` environmental variable, `--repo-name` from `$GH_REPO_NAME`, and so forth. Other parameters are set via the command-line.
+
+Any parameter can be read from the environment, not just those shown. Parameters read from environmental variables are processed and sanitized exactly the same way as parameters directly specified on the command-line. You can configure some parameters from the command-line directly, while others are read from the environment. Parameters configured via the command-line cannot be configured also from the environment; the latter ones will be ignored on run-time.
+
+### Informational URL
+
+### PHPCS configuration
+
+### SVG scanning
+
+### Autoapprovals
+
+### Hashes API
+
+This feature is useful when you want to automatically approve Pull-Requests containing PHP or JavaScript files that are already known to be good and are approved already, so no manual reviewing is needed. To make use of this feature, you will need a database of files already approved. You will also have to be using the auto-approvals feature. 
+
+The feature can be activated using the `--hashes-api` parameter and by specifying a HTTP API endpoint. For instance:
+
+> ./vip-go-ci.php --autoapprove=true --hashes-api=true --hashes-api-url=https://myservice.mycompany.is/wp-json/viphash/
+
+Configured this way, `vip-go-ci` will make HTTP API requests for any PHP or JavaScript file it sees being altereed in Pull-Requests it scans. The HTTP API requests would look like this:
+
+> https://myservice.mycompany.is/wp-json/viphash/v1/hashes/id/[HASH]
+
+where `[HASH]` is a SHA1 hash of a particular PHP or JavaScript file, after it all comments and whitespaces have been removed from them. `vip-go-ci` expectes a JSON result like this from the HTTP API:
+
+```
+[{"status":"true"},{"status":"true"}]
+```
+
+The JSON result can contain other fields, but they are not used. Note that a single "false" status is enough to make sure a file is considered _not_ approved.
+
+An open-source tool to label files as approved or non-approved is available [here](https://github.com/Automattic/vip-hash/). It requires a HTTP API service that `vip-go-ci` communicates with as well.
+
+### Limiting review comments 
+
+### Dismissing stale reviews
+
+### Ignore certain branches
+
+### Skipping certain folders
+
+### IRC support
 
 
 ## Unittests
