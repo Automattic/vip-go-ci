@@ -329,11 +329,51 @@ An open-source tool to label files as approved or non-approved is available [her
 
 ### Ignore certain branches
 
+Sometimes users do not want specific branches scanned for any issues -- they want them effectively to be ignored. To do this, you can use the `--branches-ignore` option. 
+
+For example:
+
+> ./vip-go-ci.php --branches-ignore="foo,bar"
+
+-- with this option in place, any Pull-Requests targetting branches called `foo` or `bar` will be ignored and no feedback will be posted to them. 
+
+
 ### Skipping certain folders
+
+If any specific folders should be ignored when scanning, one can use the `--skip-folders` option. Files in any folders set in the option, relative to the git repository root, will be ignored.
+
+For example:
+
+> ./vip-go-ci.php --skip-folders="foo,bar"
+
+-- with this option in place, any files in the `foo` or `bar` folders altered by Pull-Requests will be examped from scanning. The folders are relative to the git repository. 
 
 ### Limiting review comments 
 
+One can limit the number of review comments posted to GitHub Pull-Requests. Also, one can ignore certain comments so that they will not be posted to Pull-Request reviews. This is useful when Pull-Requests are created or updated, and contain many issues. 
+
+The options can be used in this way:
+
+> ./vip-go-ci.php --review-comments-max=15 --review-comments-total-max=70 --review-comments-ignore="Some error message"
+
+-- with these options, the maximum number of noted issues per Pull-Request review comment is 15, and if any additional ones are found these are posted in a separate review comment. Also, total number of active (i.e., not obsolete or deleted) comments authored by the current `vip-go-ci` user is 70 for the whole Pull-Request -- no more will be posted when this is reached. Any issues from PHPCS or SVG scanning containing `Some error message` will be ignored.
+
 ### Dismissing stale reviews
+
+Sometimes Pull-Request reviews become obsolete, for instance because all the inline comments attached to them become obsolete as the code evolves and problems are fixed. `vip-go-ci` can automatically dismiss those reviews so that they do not impede work.
+
+For instance:
+
+> ./vip-go-ci.php --dismiss-stale-reviews=true
+ 
+The first parameter, `--dismiss-stale-reviews`, enables or disables the feature in whole. 
+
+There are further parameters for more advanced usage:
+
+* `--dismissed-reviews-repost-comments=BOOL` 
+* `--dismissed-reviews-exclude-reviews-from-team` 
+
+-- see the` --help` for usage instructions.
 
 ### IRC support
 
