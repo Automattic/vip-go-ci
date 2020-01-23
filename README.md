@@ -297,6 +297,14 @@ With these options, SVG scanning is turned on and a scanner at a particular path
 
 ### Autoapprovals
 
+`vip-go-ci` can auto-approve Pull-Requests that only alter particular types of files. The 'type' is based on file-ending, such as `.txt`. The idea is to allow faster approvals of Pull-Requests that do not need to be reviewed or do not need any automated feedback.
+
+For instance:
+
+> ./vip-go-ci.php --autoapprove=true --autoapprove-filetypes="css,gif,ico,png,jpg" --autoapprove-label="auto-approved"
+
+-- with this configuration, any Pull-Requests that only alter files ending with `.css`, `.gif`, etc., are automatically approved by `vip-go-ci`. Also, a label will be added to the automatically approved Pull-Requests, named `auto-approved`.
+
 ### Hashes API
 
 This feature is useful when you want to automatically approve Pull-Requests containing PHP or JavaScript files that are already known to be good and are approved already, so no manual reviewing is needed. To make use of this feature, you will need a database of files already approved. You will also have to be using the auto-approvals feature. 
@@ -326,7 +334,6 @@ An open-source tool to label files as approved or non-approved is available [her
 ### Limiting review comments 
 
 ### Dismissing stale reviews
-
 
 ### IRC support
 
