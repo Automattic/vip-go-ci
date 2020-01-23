@@ -249,6 +249,20 @@ In this case, `--repo-owner` will be read from the `$GH_REPO_OWNER` environmenta
 
 Any parameter can be read from the environment, not just those shown. Parameters read from environmental variables are processed and sanitized exactly the same way as parameters directly specified on the command-line. You can configure some parameters from the command-line directly, while others are read from the environment. Parameters configured via the command-line cannot be configured also from the environment; the latter ones will be ignored on run-time.
 
+### Configuration via repository config-file
+
+One option can currently be configured via a repository config-file. This way, users with commit-access to a git repository can influence the behaviour of `vip-go-ci`. The idea is to allow users flexibility in how scanning is performed. Various checks are made to the configuration option read.
+
+Currently, the option that can be specified via repository is `--phpcs-severity`. Any default configuration is overwritten during run-time by the new value, should it be valid. This feature can be enabled or disabled via `--phpcs-severity-repo-options-file`.
+
+To use the feature, make sure a `.vipgoci_options` file can be found at the root of the relevant git-repository, and run `vip-go-ci` like this:
+
+> ./vip-go-ci.php --phpcs-severity-repo-options-file=true 
+
+Should the file not be found, the value not be valid, or altering of the option is not available, the option will not be altered on run-time.
+
+This feature might be extended to other options in the future.
+
 ### Informational URL
 
 To help users understand better why a bot is posting comments and reviews on their Pull-Requests, and sometimes automatically approving them, it can be helpful to have a bit of information added to the comments `vip-go-ci` posts. This feature serves this purpose.
@@ -287,13 +301,14 @@ The JSON result can contain other fields, but they are not used. Note that a sin
 
 An open-source tool to label files as approved or non-approved is available [here](https://github.com/Automattic/vip-hash/). It requires a HTTP API service that `vip-go-ci` communicates with as well.
 
+### Ignore certain branches
+
+### Skipping certain folders
+
 ### Limiting review comments 
 
 ### Dismissing stale reviews
 
-### Ignore certain branches
-
-### Skipping certain folders
 
 ### IRC support
 
