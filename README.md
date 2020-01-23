@@ -337,6 +337,13 @@ An open-source tool to label files as approved or non-approved is available [her
 
 ### IRC support
 
+`vip-go-ci` supports posting certain information to a HTTP API that will eventually relay the information to a IRC channel. This can of course be any IRC-like system, as long as the HTTP API behaves the same. This is useful if you need to have some information submitted to a monitoring system, for instance.
+
+This feature can be used in this fashion:
+
+> ./vip-go-ci.php --irc-api-url='https://myservice.mycompany.is/irc-gateway' --irc-api-bot='mycompany-vip-go-ci' --irc-api-room='#vip-go-ci' --irc-api-token='MY-TOKEN'
+
+At this time, only certain messages are posted to IRC, all indicated by a special parameter to the `vipgoci_log()` function. See the code for implementation details.
 
 ## Unittests
 
