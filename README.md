@@ -247,7 +247,7 @@ If you run `vip-go-ci` in an environment such as `TeamCity` or `GitHub Actions`,
 
 In this case, `--repo-owner` will be read from the `$GH_REPO_OWNER` environmental variable, `--repo-name` from `$GH_REPO_NAME`, and so forth. Other parameters are set via the command-line.
 
-Any parameter can be read from the environment, not just those shown. Parameters read from environmental variables are processed and sanitized exactly the same way as parameters directly specified on the command-line. You can configure some parameters from the command-line directly, while others are read from the environment. Parameters configured via the command-line cannot be configured also from the environment; the latter ones will be ignored on run-time.
+Any parameter can be read from the environment, not just those shown. Parameters read from environmental variables are processed and sanitized exactly the same way as parameters directly specified on the command-line. You can configure some parameters from the command-line directly, while others are read from the environment. Parameters configured via the command-line cannot be configured also from the environment; in such situations, the latter ones will be ignored on run-time.
 
 ### Configuration via repository config-file
 
@@ -255,7 +255,13 @@ One option can currently be configured via a repository config-file. This way, u
 
 Currently, the option that can be specified via repository is `--phpcs-severity`. Any default configuration is overwritten during run-time by the new value, should it be valid. This feature can be enabled or disabled via `--phpcs-severity-repo-options-file`.
 
-To use the feature, make sure a `.vipgoci_options` file can be found at the root of the relevant git-repository, and run `vip-go-ci` like this:
+To use the feature, make sure a `.vipgoci_options` file can be found at the root of the relevant git-repository, containing something like this:
+
+```
+{"phpcs-severity":5}
+```
+
+Then run `vip-go-ci` like this:
 
 > ./vip-go-ci.php --phpcs-severity-repo-options-file=true 
 
@@ -283,7 +289,7 @@ An example of how PHPCS can be used:
 
 With these settings, PHPCS is turned on, is expected to be found in the path shown above, should use two PHPCS standards (`WordPress-VIP-Go` and `PHPCompatibilityWP`), while excluding one particular PHPCS sniff. When executing PHPCS, one runtime option should be set (`testVersion 7.3-`) and severity level should be `1`. Also, users can ask to skip scanning particular Pull-Requests by setting a label named `skip-phpcs-scan`.
 
-Any number of PHPCS standards can be specified, and any number of runtime settings as well. See section above about configuring options via repository file.
+Any number of PHPCS standards can be specified, and any number of runtime settings as well. Also, see section above about configuring options via repository file.
 
 ### SVG scanning
 
@@ -356,7 +362,7 @@ The options can be used in this way:
 
 > ./vip-go-ci.php --review-comments-max=15 --review-comments-total-max=70 --review-comments-ignore="Some error message"
 
--- with these options, the maximum number of noted issues per Pull-Request review comment is 15, and if any additional ones are found these are posted in a separate review comment. Also, total number of active (i.e., not obsolete or deleted) comments authored by the current `vip-go-ci` user is 70 for the whole Pull-Request -- no more will be posted when this is reached. Any issues from PHPCS or SVG scanning containing `Some error message` will be ignored.
+-- with these options, the maximum number of noted issues per Pull-Request review comment is 15, and if any additional ones are found these are posted in a separate review comment. Also, total number of active (i.e., not obsolete or deleted) comments authored by the current `vip-go-ci` user is 70 for the whole Pull-Request -- no more will be posted when this is reached. Any issues from PHPCS, SVG, etc. scanning containing `Some error message` will be ignored.
 
 ### Dismissing stale reviews
 
