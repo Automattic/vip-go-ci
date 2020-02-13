@@ -437,6 +437,9 @@ function vipgoci_filter_file_path(
 		( null !== $filter ) &&
 		( isset( $filter['skip_folders'] ) )
 	) {
+		/*
+		 * Loop through all skip-folders.
+		 */
 		foreach(
 			$filter['skip_folders'] as $tmp_skip_folder_item
 		) {
@@ -453,9 +456,16 @@ function vipgoci_filter_file_path(
 				'/' . $tmp_skip_folder_item . '/'
 			);
 
+			/*
+			 * Check if the file matches any of the folders
+			 * that are to be skipped -- note that we enforce
+			 * that the folder has to be at the root of the
+			 * path to be a match.
+			 */
 			if (
 				( false !== $file_folders_match ) &&
-				( is_numeric( $file_folders_match ) )
+				( is_numeric( $file_folders_match ) ) &&
+				( 0 === $file_folders_match )
 			) {
 				$file_folders_match = true;
 				break;
