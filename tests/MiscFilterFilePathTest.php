@@ -145,7 +145,71 @@ final class MiscFilterFilePathTest extends TestCase {
 				)
 			)
 		);
+	}
 
+
+	/**
+	  * @covers ::vipgoci_filter_file_path
+	  */
+	public function testFilterFilePath5() {
+		$file_name = '/my/unit-tests/folder1/subfolder/file1.txt';
+
+		$this->assertTrue(
+			vipgoci_filter_file_path(
+				$file_name,
+				array(
+					'skip_folders' => array(
+						'folder200',
+						'folder3000',
+						'SubFolder' // Note: capital 'F'
+					),
+				)
+			)
+		);
+
+		$this->assertTrue(
+			vipgoci_filter_file_path(
+				$file_name,
+				array(
+					'skip_folders' => array(
+						'unit-tests/folder1/subfolder', // Note: not at root level
+					),
+				)
+			)
+		);
+
+		$this->assertFalse(
+			vipgoci_filter_file_path(
+				$file_name,
+				array(
+					'skip_folders' => array(
+						'my/unit-tests/folder1/subfolder',
+					),
+				)
+			)
+		);
+
+		$this->assertFalse(
+			vipgoci_filter_file_path(
+				$file_name,
+				array(
+					'skip_folders' => array(
+						'my/unit-tests',
+					),
+				)
+			)
+		);
+
+		$this->assertFalse(
+			vipgoci_filter_file_path(
+				$file_name,
+				array(
+					'skip_folders' => array(
+						'my',
+					),
+				)
+			)
+		);
 
 	}
 
