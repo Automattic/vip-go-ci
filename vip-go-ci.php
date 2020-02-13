@@ -151,6 +151,7 @@ function vipgoci_run() {
 			'phpcs-runtime-set:',
 			'phpcs-skip-scanning-via-labels-allowed:',
 			'phpcs-severity-repo-options-file:',
+			'phpcs-skip-folders:',
 			'hashes-api-url:',
 			'hashes-oauth-token:',
 			'hashes-oauth-token-secret:',
@@ -164,8 +165,8 @@ function vipgoci_run() {
 			'pixel-api-groupprefix:',
 			'php-path:',
 			'local-git-repo:',
-			'skip-folders:',
 			'lint:',
+			'lint-skip-folders:',
 			'phpcs:',
 			'svg-checks:',
 			'svg-scanner-path:',
@@ -582,13 +583,19 @@ function vipgoci_run() {
 
 
 	/*
-	 * Handle --skip-folders parameter
+	 * Handle --phpcs-skip-folders and
+	 * --lint-skip-folder parameters
 	 */
-	vipgoci_option_array_handle(
+	vipgoci_option_skip_folder_handle(
 		$options,
-		'skip-folders',
-		array()
+		'phpcs-skip-folders'
 	);
+
+	vipgoci_option_skip_folder_handle(
+		$options,
+		'lint-skip-folders'
+	);
+
 
 	/*
 	 * Handle optional --debug-level parameter
