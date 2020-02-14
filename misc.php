@@ -589,20 +589,20 @@ function vipgoci_scandir_git_repo( $path, $filter, $base_path = null ) {
 		if ( null !== $filter ) {
 			/*
 			 * Remove the portion of the path
-			 * that simply leads to the git repository,
+			 * that leads to the git repository,
 			 * as we only want to filter by files in the
 			 * git repository it self here. This is to
 			 * make sure "skip_folders" filtering works
 			 * correctly and does not accidentally take into
 			 * consideration the path leading to the git repository.
 			 */
-			$file_path_relative = substr(
+			$file_path_without_git_repo = substr(
 				$path . DIRECTORY_SEPARATOR . $value,
 				strlen( $base_path ) // Send in what looks like an absolute path
 			);
 
 			if ( false === vipgoci_filter_file_path(
-				$file_path_relative,
+				$file_path_without_git_repo,
 				$filter
 			) ) {
 				continue;
