@@ -53,9 +53,9 @@ final class PhpcsScanScanCommitTest extends TestCase {
 
 		$this->options['svg-checks'] = false;
 
-		$this->options['phpcs-skip-folders'] = array();
-
 		$this->options['lint-skip-folders'] = array();
+
+		$this->options['phpcs-skip-folders'] = array();
 	}
 
 	protected function tearDown() {
@@ -372,6 +372,8 @@ final class PhpcsScanScanCommitTest extends TestCase {
 
 		$this->options['phpcs-skip-scanning-via-labels-allowed'] =
 			false;
+
+		$this->options['lint-skip-folders'] = array();
 
 		$this->options['phpcs-skip-folders'] = array(
 			'tests2',

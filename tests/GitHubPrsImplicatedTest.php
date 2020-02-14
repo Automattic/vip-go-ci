@@ -39,7 +39,9 @@ final class GitHubPrsImplicatedTest extends TestCase {
 				true // Fetch from secrets file
 			);
 
-		$this->options['skip-folders'] = array();
+		$this->options['lint-skip-folders'] = array();
+
+		$this->options['phpcs-skip-folders'] = array();
 
 		$this->options['branches-ignore'] = array();
 	}
