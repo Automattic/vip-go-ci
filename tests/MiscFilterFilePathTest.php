@@ -161,6 +161,7 @@ final class MiscFilterFilePathTest extends TestCase {
 					'skip_folders' => array(
 						'folder200',
 						'folder3000',
+						'folder4000/folder5000/folder6000',
 						'SubFolder' // Note: capital 'F'
 					),
 				)
@@ -183,6 +184,8 @@ final class MiscFilterFilePathTest extends TestCase {
 				$file_name,
 				array(
 					'skip_folders' => array(
+						'somefoldertesting/otherfolder/foobar123',
+						'somefoldertesting/otherfolder/foobar321',
 						'my/unit-tests/folder1/subfolder',
 					),
 				)
