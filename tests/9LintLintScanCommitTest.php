@@ -270,6 +270,12 @@ final class LintLintScanCommitTest extends TestCase {
 				$issues_submit[ $pr_item->number][0]['issue']['message']
 			);
 
+		$issues_submit[ $pr_item->number ][1]['issue']['message'] =
+			vipgoci_unittests_php_syntax_error_compat(
+				$issues_submit[ $pr_item->number][1]['issue']['message']
+			);
+
+
 		$this->assertEquals(
 			array(
 				$pr_item->number => array(
