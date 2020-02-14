@@ -750,6 +750,24 @@ function vipgoci_run() {
 		);
 	}
 
+	/*
+	 * Check if the --output parameter looks
+	 * good, if defined.
+	 */
+	if (
+		( ! empty( $options['output'] ) ) &&
+		( ! is_string( $options['output'] ) )
+	) {
+		vipgoci_sysexit(
+			'The --options argument should be a single string,' .
+			'but it looks like it is something else. Please check ' .
+			'if it is specified twice',
+			array(
+				'options' => print_r( $options['output'], true ),
+			),
+			VIPGOCI_EXIT_USAGE_ERROR
+		);
+	}
 
 	/*
 	 * Do some sanity-checking on the parameters
