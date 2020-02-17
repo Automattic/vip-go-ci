@@ -9,9 +9,6 @@
  * are any such issues, these have to be looked into
  * manually, but if not, theses kind of files should be
  * safe to be deployed.
- *
- * Note that the --skip-folders argument is ignored
- * in this function.
  */
 
 function vipgoci_ap_svg_files(

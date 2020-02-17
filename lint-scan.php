@@ -240,7 +240,7 @@ function vipgoci_lint_scan_commit(
 			'file_extensions'
 				=> array( 'php' ),
 			'skip_folders'
-				=> $options['skip-folders'],
+				=> $options['lint-skip-folders'],
 		)
 	);
 

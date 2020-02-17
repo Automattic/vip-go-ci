@@ -726,3 +726,47 @@ function vipgoci_option_teams_handle(
 }
 
 
+/*
+ * Handles --skip-folder like parameters;
+ * they are mostly handled as arrays, but
+ * in addition we remove certain strings
+ * from the beginning and end of each array
+ * element.
+*/
+function vipgoci_option_skip_folder_handle(
+	&$options,
+	$option_name	
+) {
+	vipgoci_option_array_handle(
+		$options,
+		$option_name,
+		array(),
+		null,
+		',',
+		false // no strtolower
+	);
+
+	/*
+	 * Remove "/" from the beginning
+	 * and end of each element, as they
+	 * should be treated as relative paths.
+	 */
+	$options[
+		$option_name
+	] = array_map(
+		function( $skip_folder_item ) {
+			$skip_folder_item = ltrim(
+				$skip_folder_item,
+				'/'
+			);
+			$skip_folder_item = rtrim(
+				$skip_folder_item,
+				'/'
+			);
+			return $skip_folder_item;
+		},
+		$options[
+			$option_name
+		]
+	);
+}

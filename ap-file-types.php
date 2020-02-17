@@ -9,9 +9,6 @@
  * fit the criteria of having certain file-endings.
  * The allowable file-endings are specifiable
  * via the command-line.
- *
- * Note that the --skip-folders argument is ignored
- * in this function.
  */
 
 function vipgoci_ap_file_types(

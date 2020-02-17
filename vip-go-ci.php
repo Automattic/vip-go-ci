@@ -151,6 +151,7 @@ function vipgoci_run() {
 			'phpcs-runtime-set:',
 			'phpcs-skip-scanning-via-labels-allowed:',
 			'phpcs-severity-repo-options-file:',
+			'phpcs-skip-folders:',
 			'hashes-api-url:',
 			'hashes-oauth-token:',
 			'hashes-oauth-token-secret:',
@@ -164,8 +165,8 @@ function vipgoci_run() {
 			'pixel-api-groupprefix:',
 			'php-path:',
 			'local-git-repo:',
-			'skip-folders:',
 			'lint:',
+			'lint-skip-folders:',
 			'phpcs:',
 			'svg-checks:',
 			'svg-scanner-path:',
@@ -270,10 +271,13 @@ function vipgoci_run() {
 			"\t" . '--phpcs-skip-scanning-via-labels-allowed=BOOL    Whether to allow users to skip ' . PHP_EOL .
 			"\t" . '                                                 PHPCS scanning of Pull-Requests ' . PHP_EOL .
 			"\t" . '                                                 via labels attached to them. ' . PHP_EOL .
-                        "\t" . '                                                 The labels should be named "skip-phpcs-scan".' . PHP_EOL .
+			"\t" . '                                                 The labels should be named "skip-phpcs-scan".' . PHP_EOL .
 			"\t" . '--phpcs-severity-repo-options-file=BOOL     Whether to allow configuring phpcs-severity' . PHP_EOL .
 			"\t" . '                                            option via options file placed ' . PHP_EOL .
 			"\t" . '                                            in repository.' . PHP_EOL .
+			"\t" . '--phpcs-skip-folders=STRING    Specify folders relative to root of the git repository in which ' . PHP_EOL .
+			"\t" . '                               files are not to be scanned using PHPCS. Values are comma' . PHP_EOL .
+			"\t" . '                               separated' . PHP_EOL .
 			"\t" . '--autoapprove=BOOL             Whether to auto-approve Pull-Requests' . PHP_EOL .
 			"\t" . '                               altering only files of certain types' . PHP_EOL .
 			"\t" . '--autoapprove-filetypes=STRING Specify what file-types can be auto-' . PHP_EOL .
@@ -312,14 +316,12 @@ function vipgoci_run() {
 			"\t" . '                               some branches never get scanned. Separate branches' . PHP_EOL .
 			"\t" . '                               with commas' . PHP_EOL .
 			"\t" . '--local-git-repo=FILE          The local git repository to use for direct access to code' . PHP_EOL .
-			"\t" . '--skip-folders=STRING          Specify folders relative to the git repository in which not ' . PHP_EOL .
-			"\t" . '                               to look into for files to PHP lint or scan using PHPCS. ' . PHP_EOL .
-			"\t" . '                               Note that this argument is not employed with auto-approvals. ' . PHP_EOL .
-			"\t" . '                               Values are comma separated' . PHP_EOL .
 			"\t" . '--dry-run=BOOL                 If set to true, will not make any changes to any data' . PHP_EOL .
 			"\t" . '                               on GitHub -- no comments will be submitted, etc.' . PHP_EOL .
 			"\t" . '--output=FILE                  Where to save output made from running PHPCS' . PHP_EOL .
 			"\t" . '--lint=BOOL                    Whether to do PHP linting (true/false)' . PHP_EOL .
+			"\t" . '--lint-skip-folders=STRING     Specify folders relative to root of the git repository in which ' . PHP_EOL .
+			"\t" . '                               files should not be PHP linted. Values are comma separated.' . PHP_EOL .
 			PHP_EOL .
 			"\t" . '--help                         Displays this message' . PHP_EOL .
 			"\t" . '--env-options=STRING           Specifies configuration options to be read from environmental ' . PHP_EOL .
@@ -455,6 +457,10 @@ function vipgoci_run() {
 		}
 	}
 
+	vipgoci_option_skip_folder_handle(
+		$options,
+		'phpcs-skip-folders'
+	);
 
 	/*
 	 * Process --review-comments-ignore -- expected
@@ -580,15 +586,6 @@ function vipgoci_run() {
 		$options['local-git-repo']
 	);
 
-
-	/*
-	 * Handle --skip-folders parameter
-	 */
-	vipgoci_option_array_handle(
-		$options,
-		'skip-folders',
-		array()
-	);
 
 	/*
 	 * Handle optional --debug-level parameter
@@ -750,6 +747,22 @@ function vipgoci_run() {
 		);
 	}
 
+
+	/*
+	 * Handle --lint-skip-folders
+	 */
+	vipgoci_option_skip_folder_handle(
+		$options,
+		'lint-skip-folders'
+	);
+
+	/*
+	 * Do some sanity-checking on the parameters
+	 *
+	 * Note: Parameters should not be set after
+	 * this point.
+	 */
+
 	/*
 	 * Check if the --output parameter looks
 	 * good, if defined.
@@ -800,13 +813,6 @@ function vipgoci_run() {
 			);
 		}
 	}
-
-	/*
-	 * Do some sanity-checking on the parameters
-	 *
-	 * Note: Parameters should not be set after
-	 * this point.
-	 */
 
 	$options['autoapprove-filetypes'] = array_map(
 		'strtolower',

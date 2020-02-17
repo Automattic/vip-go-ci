@@ -300,7 +300,7 @@ function vipgoci_phpcs_scan_commit(
 						)
 					),
 				'skip_folders' =>
-					$options['skip-folders'],
+					$options['phpcs-skip-folders'],
 			)
 		);
 

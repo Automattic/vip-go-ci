@@ -3001,7 +3001,7 @@ function vipgoci_github_diffs_fetch(
 		if (
 			( null !== $filter ) &&
 			( false === vipgoci_filter_file_path(
-				$file_item->filename,
+				$file_item->filename, // Send in what looks like a relative path
 				$filter
 			) )
 		) {
