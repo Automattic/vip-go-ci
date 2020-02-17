@@ -754,19 +754,48 @@ function vipgoci_run() {
 	 * Check if the --output parameter looks
 	 * good, if defined.
 	 */
-	if (
-		( ! empty( $options['output'] ) ) &&
-		( ! is_string( $options['output'] ) )
-	) {
-		vipgoci_sysexit(
-			'The --options argument should be a single string,' .
-			'but it looks like it is something else. Please check ' .
-			'if it is specified twice',
-			array(
-				'options' => print_r( $options['output'], true ),
-			),
-			VIPGOCI_EXIT_USAGE_ERROR
+	if ( ! empty( $options['output'] ) ) {
+		if ( ! is_string( $options['output'] ) ) {
+			vipgoci_sysexit(
+				'The --options argument should be a single string,' .
+				'but it looks like it is something else. Please check ' .
+				'if it is specified twice',
+				array(
+					'options' => print_r( $options['output'], true ),
+				),
+				VIPGOCI_EXIT_USAGE_ERROR
+			);
+		}
+
+		if ( is_dir( $options['output'] ) ) {
+			vipgoci_sysexit(
+				'The file specified in --output argument is invalid, ' .
+				'should not be a directory',
+				array(
+					'options' => print_r( $options['output'], true ),
+				),
+				VIPGOCI_EXIT_USAGE_ERROR
+			);
+		}
+
+		/*
+		 * Try writing empty string to it
+		 */
+		@file_put_contents(
+			$options['output'],
+			'',
+			FILE_APPEND
 		);
+
+		if ( ! is_file( $options['output'] ) ) {
+			vipgoci_sysexit(
+				'The file specified in --output argument is invalid.',
+				array(
+					'options' => print_r( $options['output'], true ),
+				),
+				VIPGOCI_EXIT_USAGE_ERROR
+			);
+		}
 	}
 
 	/*
