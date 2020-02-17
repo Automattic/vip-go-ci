@@ -346,13 +346,13 @@ For example:
 
 ### Skipping certain folders
 
-If any specific folders should be ignored when linting or PHPCS scanning, one can use the `--phpcs-skip-folders` and/or `--lint-skip-folders` options. Files in any folders set in the options, relative to the git repository root, will be ignored when performing linting or PHPCS scanning.
+If any specific folders should be ignored when linting or PHPCS scanning, one can use the `--lint-skip-folders` and/or `--phpcs-skip-folders` option parameters. Files in any folders specified in the options, relative to the git repository root, will be ignored when performing linting or PHPCS scanning.
 
 For example:
 
 > ./vip-go-ci.php --lint-skip-folders="foo,Tests/bar"
 
--- with this option in place, any files in the `foo/` or `Tests/bar` folders and subfolders will be examped from PHP linting. The folders are relative to the git repository. 
+-- with this option in place, any files in the `foo/` or `Tests/bar` folders and subfolders will be exempt from PHP linting. The folders are relative to the git repository.
 
 ### Limiting review comments 
 
