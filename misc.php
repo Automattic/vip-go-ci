@@ -398,6 +398,9 @@ function vipgoci_github_labels( $text_string ) {
  * Determine if the presented file has an
  * allowable file-ending, and if the file presented
  * is in a directory that is can be scanned.
+ *
+ * Note: $filename is expected to be a relative
+ * path to the git-repository root.
  */
 function vipgoci_filter_file_path(
 	$filename,
@@ -448,7 +451,7 @@ function vipgoci_filter_file_path(
 			 * end and beginning, this is performed in vip-go-ci.php.
 			 * We assume that we the data we get is like this too.
 			 *
-			 * $filename we expect to be an absolute path.
+			 * $filename we expect to be a relative path.
 			 */
 
 			$file_folders_match = strpos(
