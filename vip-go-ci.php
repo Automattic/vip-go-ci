@@ -275,6 +275,9 @@ function vipgoci_run() {
 			"\t" . '--phpcs-severity-repo-options-file=BOOL     Whether to allow configuring phpcs-severity' . PHP_EOL .
 			"\t" . '                                            option via options file placed ' . PHP_EOL .
 			"\t" . '                                            in repository.' . PHP_EOL .
+			"\t" . '--phpcs-skip-folders=STRING    Specify folders relative to root of the git repository in which ' . PHP_EOL .
+			"\t" . '                               files are not to be scanned using PHPCS. Values are comma' . PHP_EOL .
+			"\t" . '                               separated' . PHP_EOL .
 			"\t" . '--autoapprove=BOOL             Whether to auto-approve Pull-Requests' . PHP_EOL .
 			"\t" . '                               altering only files of certain types' . PHP_EOL .
 			"\t" . '--autoapprove-filetypes=STRING Specify what file-types can be auto-' . PHP_EOL .
@@ -313,14 +316,12 @@ function vipgoci_run() {
 			"\t" . '                               some branches never get scanned. Separate branches' . PHP_EOL .
 			"\t" . '                               with commas' . PHP_EOL .
 			"\t" . '--local-git-repo=FILE          The local git repository to use for direct access to code' . PHP_EOL .
-			"\t" . '--skip-folders=STRING          Specify folders relative to the git repository in which not ' . PHP_EOL .
-			"\t" . '                               to look into for files to PHP lint or scan using PHPCS. ' . PHP_EOL .
-			"\t" . '                               Note that this argument is not employed with auto-approvals. ' . PHP_EOL .
-			"\t" . '                               Values are comma separated' . PHP_EOL .
 			"\t" . '--dry-run=BOOL                 If set to true, will not make any changes to any data' . PHP_EOL .
 			"\t" . '                               on GitHub -- no comments will be submitted, etc.' . PHP_EOL .
 			"\t" . '--output=FILE                  Where to save output made from running PHPCS' . PHP_EOL .
 			"\t" . '--lint=BOOL                    Whether to do PHP linting (true/false)' . PHP_EOL .
+			"\t" . '--lint-skip-folders=STRING     Specify folders relative to root of the git repository in which ' . PHP_EOL .
+			"\t" . '                               files should not be PHP linted. Values are comma separated.' . PHP_EOL .
 			PHP_EOL .
 			"\t" . '--help                         Displays this message' . PHP_EOL .
 			"\t" . '--env-options=STRING           Specifies configuration options to be read from environmental ' . PHP_EOL .
