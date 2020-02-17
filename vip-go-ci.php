@@ -271,7 +271,7 @@ function vipgoci_run() {
 			"\t" . '--phpcs-skip-scanning-via-labels-allowed=BOOL    Whether to allow users to skip ' . PHP_EOL .
 			"\t" . '                                                 PHPCS scanning of Pull-Requests ' . PHP_EOL .
 			"\t" . '                                                 via labels attached to them. ' . PHP_EOL .
-                        "\t" . '                                                 The labels should be named "skip-phpcs-scan".' . PHP_EOL .
+			"\t" . '                                                 The labels should be named "skip-phpcs-scan".' . PHP_EOL .
 			"\t" . '--phpcs-severity-repo-options-file=BOOL     Whether to allow configuring phpcs-severity' . PHP_EOL .
 			"\t" . '                                            option via options file placed ' . PHP_EOL .
 			"\t" . '                                            in repository.' . PHP_EOL .
@@ -748,7 +748,7 @@ function vipgoci_run() {
 	}
 
 
-  /*
+	/*
 	 * Handle --lint-skip-folders
 	 */
 	vipgoci_option_skip_folder_handle(
@@ -763,7 +763,7 @@ function vipgoci_run() {
 	 * this point.
 	 */
 
-  /*
+	/*
 	 * Check if the --output parameter looks
 	 * good, if defined.
 	 */
