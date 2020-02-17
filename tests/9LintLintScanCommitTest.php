@@ -297,6 +297,11 @@ final class LintLintScanCommitTest extends TestCase {
 							'level'		=> 'ERROR',
 						)
 					),
+					/*
+					 * Note: tests3/myfile1.php should be skipped, 
+					 * according to --lint-skip-folders option
+					 * set above.
+					 */
 				)
 			),
 			$issues_submit
