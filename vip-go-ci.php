@@ -457,6 +457,10 @@ function vipgoci_run() {
 		}
 	}
 
+	vipgoci_option_skip_folder_handle(
+		$options,
+		'phpcs-skip-folders'
+	);
 
 	/*
 	 * Process --review-comments-ignore -- expected
@@ -580,21 +584,6 @@ function vipgoci_run() {
 	vipgoci_gitrepo_ok(
 		$options['commit'],
 		$options['local-git-repo']
-	);
-
-
-	/*
-	 * Handle --phpcs-skip-folders and
-	 * --lint-skip-folder parameters
-	 */
-	vipgoci_option_skip_folder_handle(
-		$options,
-		'phpcs-skip-folders'
-	);
-
-	vipgoci_option_skip_folder_handle(
-		$options,
-		'lint-skip-folders'
 	);
 
 
@@ -757,6 +746,14 @@ function vipgoci_run() {
 			$options['pixel-api-groupprefix']
 		);
 	}
+
+	/*
+	 * Handle --lint-skip-folders
+	 */
+	vipgoci_option_skip_folder_handle(
+		$options,
+		'lint-skip-folders'
+	);
 
 
 	/*
