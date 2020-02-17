@@ -69,7 +69,7 @@ final class MiscFilterFilePathTest extends TestCase {
 	  * @covers ::vipgoci_filter_file_path
 	  */
 	public function testFilterFilePath3() {
-		$file_name = '/folder1/file1.txt';
+		$file_name = 'folder1/file1.txt';
 
 		$this->assertTrue(
 			vipgoci_filter_file_path(
@@ -99,7 +99,7 @@ final class MiscFilterFilePathTest extends TestCase {
 	  * @covers ::vipgoci_filter_file_path
 	  */
 	public function testFilterFilePath4() {
-		$file_name = '/folder1/file1.txt';
+		$file_name = 'folder1/file1.txt';
 
 		$this->assertTrue(
 			vipgoci_filter_file_path(
@@ -152,7 +152,7 @@ final class MiscFilterFilePathTest extends TestCase {
 	  * @covers ::vipgoci_filter_file_path
 	  */
 	public function testFilterFilePath5() {
-		$file_name = '/my/unit-tests/folder1/subfolder/file1.txt';
+		$file_name = 'my/unit-tests/folder1/subfolder/file1.txt';
 
 		$this->assertTrue(
 			vipgoci_filter_file_path(

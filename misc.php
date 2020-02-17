@@ -453,7 +453,7 @@ function vipgoci_filter_file_path(
 
 			$file_folders_match = strpos(
 				$filename,
-				'/' . $tmp_skip_folder_item . '/'
+				$tmp_skip_folder_item . '/'
 			);
 
 			/*
@@ -598,7 +598,7 @@ function vipgoci_scandir_git_repo( $path, $filter, $base_path = null ) {
 			 */
 			$file_path_without_git_repo = substr(
 				$path . DIRECTORY_SEPARATOR . $value,
-				strlen( $base_path ) // Send in what looks like an absolute path
+				strlen( $base_path ) + 1 // Send in what looks like a relative path
 			);
 
 			if ( false === vipgoci_filter_file_path(
