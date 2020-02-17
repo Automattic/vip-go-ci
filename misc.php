@@ -448,8 +448,7 @@ function vipgoci_filter_file_path(
 		) {
 			/*
 			 * Note: All 'skip_folder' options should lack '/' at the
-			 * end and beginning, this is performed in vip-go-ci.php.
-			 * We assume that we the data we get is like this too.
+			 * end and beginning.
 			 *
 			 * $filename we expect to be a relative path.
 			 */
