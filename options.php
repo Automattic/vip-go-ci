@@ -766,15 +766,10 @@ function vipgoci_option_skip_folder_handle(
 		$option_name
 	] = array_map(
 		function( $skip_folder_item ) {
-			$skip_folder_item = ltrim(
+			return trim(
 				$skip_folder_item,
 				'/'
 			);
-			$skip_folder_item = rtrim(
-				$skip_folder_item,
-				'/'
-			);
-			return $skip_folder_item;
 		},
 		$options[
 			$option_name
