@@ -1648,7 +1648,8 @@ function vipgoci_github_pr_generic_comment_submit(
 }
 
 /*
- * Post a generic PR comment to GitHub.
+ * Post a generic PR comment to GitHub. Will
+ * include a commit_id in the comment if provided.
  */
 function vipgoci_github_pr_comments_generic_submit(
 	$repo_owner,
@@ -1659,12 +1660,12 @@ function vipgoci_github_pr_comments_generic_submit(
 	$commit_id = null
 ) {
 	vipgoci_log(
-		'Posting a comment to the Pull-Request',
+		'Posting a comment to a Pull-Request',
 		array(
 			'repo_owner' => $repo_owner,
 			'repo_name' => $repo_name,
-			'commit_id' => $commit_id,
 			'pr_number' => $pr_number,
+			'commit_id' => $commit_id,
 			'message' => $message,
 		),
 		0,
