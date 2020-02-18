@@ -33,7 +33,9 @@ final class GitHubPrsCommitsListTest extends TestCase {
 			$this->options_git
 		);
 
-		$this->options['skip-folders'] = array();
+		$this->options['lint-skip-folders'] = array();
+
+		$this->options['phpcs-skip-folders'] = array();
 
 		$this->options['branches-ignore'] = array();
 

@@ -51,7 +51,9 @@ final class PhpcsScanSingleFileTest extends TestCase {
 
 		$this->options['svg-checks'] = false;
 
-		$this->options['skip-folders'] = array();
+		$this->options['lint-skip-folders'] = array();
+
+		$this->options['phpcs-skip-folders'] = array();
 	}
 	
 	protected function tearDown() {
