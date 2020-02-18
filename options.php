@@ -54,7 +54,7 @@ function vipgoci_options_read_repo_file(
 
 	if ( false === $repo_options_file_contents ) {
 		vipgoci_log(
-			'No options found, nothing further to do',
+			'No options found in repository settings-file, nothing further to do',
 			array(
 				'filename' => $repo_options_file_name,
 			)
@@ -222,6 +222,17 @@ function vipgoci_options_read_env(
 			$option_unparsed,
 			2 // Max one '='; any extra will be preserved in the option-env-var
 		);
+
+		if ( count( $option_parsed ) !== 2 ) {
+			vipgoci_log(
+				'Invalid option provided via environment, skipping',
+				array(
+					'option_parsed'	=> $option_parsed,
+				)
+			);
+
+			continue;
+		}
 
 		$option_name = $option_parsed[0];
 		$option_env_var = $option_parsed[1];
