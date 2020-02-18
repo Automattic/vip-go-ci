@@ -269,6 +269,8 @@ function vipgoci_run() {
 			"\t" . '--post-generic-pr-support-comments-branches=ARRAY  Only post support-comments to Pull-Requests ' . PHP_EOL .
 			"\t" . '                                                   with these target branches. The parameter can  ' . PHP_EOL .
 			"\t" . '                                                   be a string with one value, or comma separated. ' . PHP_EOL .
+			"\t" . '                                                   A single "any" value will cause the message to ' . PHP_EOL .
+			"\t" . '                                                   be posted to any branch.' . PHP_EOL .
 			PHP_EOL .
 			"\t" . '--phpcs=BOOL                   Whether to run PHPCS (true/false)' . PHP_EOL .
 			"\t" . '--phpcs-path=FILE              Full path to PHPCS script' . PHP_EOL .
@@ -704,9 +706,9 @@ function vipgoci_run() {
 	vipgoci_option_bool_handle( $options, 'post-generic-pr-support-comments', 'false' );
 
 	$options['post-generic-pr-support-comments-string'] =
-		ltrim( rtrim(
+		trim(
 			$options['post-generic-pr-support-comments-string']
-		) );
+		);
 
 	vipgoci_option_array_handle(
 		$options,
