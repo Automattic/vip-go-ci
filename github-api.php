@@ -1863,11 +1863,19 @@ function vipgoci_github_pr_generic_support_comment(
 		 * If not one of the target-branches,
 		 * skip this PR.
 		 */
-		if ( in_array(
-			$pr_item->base->ref,
-			$options['post-generic-pr-support-comments-branches'],
-			true
-		) === false ) {
+		if (
+			( in_array(
+				'any',
+				$options['post-generic-pr-support-comments-branches'],
+				true
+			) === false )
+			&&
+			( ( in_array(
+				$pr_item->base->ref,
+				$options['post-generic-pr-support-comments-branches'],
+				true
+			) === false ) )
+		) {
 			vipgoci_log(
 				'Not posting support-comment to PR, not in list of target branches',
 				array(
