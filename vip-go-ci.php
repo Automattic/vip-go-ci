@@ -262,15 +262,16 @@ function vipgoci_run() {
 			"\t" . '--informational-url=STRING     URL to documentation on what this bot does. Should ' . PHP_EOL .
 			"\t" . '                               start with https:// or https:// ' . PHP_EOL .
 			PHP_EOL .
-			"\t" . '--post-generic-pr-support-comments=BOOL            Post generic comment to Pull-Requests with ' . PHP_EOL .
-			"\t" . '                                                   support-related information for users. Will ' . PHP_EOL .
+			"\t" . '--post-generic-pr-support-comments=BOOL            Whether to post generic comment to Pull-Requests ' . PHP_EOL .
+			"\t" . '                                                   with support-related information for users. Will ' . PHP_EOL .
 			"\t" . '                                                   be posted only once per Pull-Request. ' . PHP_EOL .
 			"\t" . '--post-generic-pr-support-comments-string=STRING   String to use when posting support-comment. ' . PHP_EOL .
 			"\t" . '--post-generic-pr-support-comments-branches=ARRAY  Only post support-comments to Pull-Requests ' . PHP_EOL .
-			"\t" . '                                                   with these target branches. The parameter can  ' . PHP_EOL .
-			"\t" . '                                                   be a string with one value, or comma separated. ' . PHP_EOL .
-			"\t" . '                                                   A single "any" value will cause the message to ' . PHP_EOL .
-			"\t" . '                                                   be posted to any branch.' . PHP_EOL .
+			"\t" . '                                                   with the target branches specified. The ' . PHP_EOL .
+			"\t" . '                                                   parameter can be a string with one value, or ' . PHP_EOL .
+			"\t" . '                                                   comma separated. A single "any" value will ' . PHP_EOL .
+			"\t" . '                                                   cause the message to be posted to any ' . PHP_EOL .
+			"\t" . '                                                   branch.' . PHP_EOL .
 			PHP_EOL .
 			"\t" . '--phpcs=BOOL                   Whether to run PHPCS (true/false)' . PHP_EOL .
 			"\t" . '--phpcs-path=FILE              Full path to PHPCS script' . PHP_EOL .
