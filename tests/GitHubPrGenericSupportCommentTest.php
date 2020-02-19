@@ -63,6 +63,12 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 		$this->options['commit'] =
 			$this->options['test-github-pr-generic-support-comment-1'];
 
+		if ( empty( $this->current_user_info ) ) {
+			$this->current_user_info = vipgoci_github_authenticated_user_get(
+				$this->options['github-token']
+			);
+		}
+
 		$this->_clearOldSupportComments();
 	}
 
@@ -140,10 +146,6 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 	protected function _clearOldSupportComments() {
 		$prs_implicated = $this->_getPrsImplicated();
 
-		$current_user_info = vipgoci_github_authenticated_user_get(
-			$this->options['github-token']
-		);
-
 		foreach( $prs_implicated as $pr_item ) {
 			// Check if any comments already exist
 			$pr_comments = $this->_getPrGenericComments(
@@ -151,7 +153,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 			);
 
 			foreach ( $pr_comments as $pr_comment ) {
-				if ( $pr_comment->user->login !== $current_user_info->login ) {
+				if ( $pr_comment->user->login !== $this->current_user_info->login ) {
 					continue;
 				}
 
@@ -181,14 +183,10 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 	protected function _countSupportCommentsFromUs(
 		$pr_comments
 	) {	
-		$current_user_info = vipgoci_github_authenticated_user_get(
-			$this->options['github-token']
-		);
-
 		$valid_comments_found = 0;
 
 		foreach( $pr_comments as $pr_comment ) {
-			if ( $pr_comment->user->login !== $current_user_info->login ) {
+			if ( $pr_comment->user->login !== $this->current_user_info->login ) {
 				continue;
 			}
 
