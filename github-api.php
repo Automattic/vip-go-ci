@@ -1879,6 +1879,8 @@ function vipgoci_github_pr_generic_support_comment(
 			vipgoci_log(
 				'Not posting support-comment to PR, not in list of target branches',
 				array(
+					'repo-owner'	=> $options['repo-owner'],
+					'repo-name'	=> $options['repo-name'],
 					'pr_number'	=> $pr_item->number,
 					'pr_base_ref'	=> $pr_item->base->ref,
 					'post-generic-pr-support-comments-branches' =>
