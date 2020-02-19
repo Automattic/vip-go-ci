@@ -381,6 +381,16 @@ There are further parameters for more advanced usage:
 
 -- see the` --help` for usage instructions.
 
+### General support messages
+
+`vip-go-ci` supports posting general support message to newly created Pull-Requests. With this feature configured, `vip-go-ci` will post the support message to every Pull-Request that does not have it, given that the Pull-Request is opened against a predefined list of branches. This list is configurable, along with the support message. The messages will be posted only once per Pull-Request.
+
+The feature can be used in the following fashion:
+
+> ./vip-go-ci.php --post-generic-pr-support-comments=true --post-generic-pr-support-comments-string="This is a generic support message from `vip-go-ci`. We hope this is useful." --post-generic-pr-support-comments-branches="master"
+
+The last parameter can be specified as 'any' to allow posting to any branch.
+
 ### IRC support
 
 `vip-go-ci` supports posting certain information to a HTTP API that will eventually relay the information to a IRC channel. This can of course be any IRC-like system, as long as the HTTP API behaves the same. This is useful if you need to have some information submitted to a monitoring system, for instance.
