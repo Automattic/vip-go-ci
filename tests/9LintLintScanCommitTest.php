@@ -36,7 +36,7 @@ final class LintLintScanCommitTest extends TestCase {
 
 		$this->options[ 'github-token' ] =
 			vipgoci_unittests_get_config_value(
-				'git',
+				'git-secrets',
 				'github-token',
 				true // Fetch from secrets file
 			);
