@@ -11,14 +11,14 @@ function vipgoci_options_read_repo_file(
 	$options_overwritable
 ) {
 
-	if ( false === $options[ 'phpcs-severity-repo-options-file' ] ) {
+	if ( false === $options[ 'repo-options' ] ) {
 		vipgoci_log(
 			'Skipping possibly overwriting options ' .
 				'using data from repository settings file ' .
 				'as this is disabled via command-line options',
 			array(
 				'phpcs_severity_repo_options_file'
-					=> $options[ 'phpcs-severity-repo-options-file' ],
+					=> $options[ 'repo-options' ],
 			)
 		);
 
@@ -114,6 +114,10 @@ function vipgoci_options_read_repo_file(
 			( ! isset(
 				$option_overwritable_conf['type']
 			) )
+			||
+			( ! isset(
+				$option_overwritable_conf['valid_values']
+			) )
 		) {
 			continue;
 		}
@@ -122,13 +126,34 @@ function vipgoci_options_read_repo_file(
 		$do_skip = false;
 
 		if ( 'integer' === $option_overwritable_conf['type'] ) {
-			if ( ! isset(
-				$option_overwritable_conf['valid_values']
+			if ( ! is_numeric( $repo_options_arr[
+					$option_overwritable_name
+				]
 			) ) {
 				$do_skip = true;
 			}
 
-			if ( ! in_array(
+			else if ( ! in_array(
+				$repo_options_arr[
+					$option_overwritable_name
+				],
+				$option_overwritable_conf['valid_values'],
+				true
+			) ) {
+				$do_skip = true;
+			}
+		}
+
+		else if ( 'boolean' === $option_overwritable_conf['type'] ) {
+			if ( ! is_bool(
+				$repo_options_arr[
+					$option_overwritable_name
+				]
+			) ) {
+				$do_skip = true;
+			}
+
+			else if ( ! in_array(
 				$repo_options_arr[
 					$option_overwritable_name
 				],
