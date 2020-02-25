@@ -17,7 +17,7 @@ function vipgoci_options_read_repo_file(
 				'using data from repository settings file ' .
 				'as this is disabled via command-line options',
 			array(
-				'phpcs_severity_repo_options_file'
+				'repo-options'
 					=> $options[ 'repo-options' ],
 			)
 		);
