@@ -153,7 +153,7 @@ function vipgoci_run() {
 			'phpcs-sniffs-exclude:',
 			'phpcs-runtime-set:',
 			'phpcs-skip-scanning-via-labels-allowed:',
-			'phpcs-severity-repo-options-file:',
+			'repo-options:',
 			'phpcs-skip-folders:',
 			'hashes-api-url:',
 			'hashes-oauth-token:',
@@ -287,9 +287,6 @@ function vipgoci_run() {
 			"\t" . '                                                 PHPCS scanning of Pull-Requests ' . PHP_EOL .
 			"\t" . '                                                 via labels attached to them. ' . PHP_EOL .
 			"\t" . '                                                 The labels should be named "skip-phpcs-scan".' . PHP_EOL .
-			"\t" . '--phpcs-severity-repo-options-file=BOOL     Whether to allow configuring phpcs-severity' . PHP_EOL .
-			"\t" . '                                            option via options file placed ' . PHP_EOL .
-			"\t" . '                                            in repository.' . PHP_EOL .
 			"\t" . '--phpcs-skip-folders=STRING    Specify folders relative to root of the git repository in which ' . PHP_EOL .
 			"\t" . '                               files are not to be scanned using PHPCS. Values are comma' . PHP_EOL .
 			"\t" . '                               separated' . PHP_EOL .
@@ -347,6 +344,9 @@ function vipgoci_run() {
 			"\t" . '                               respectively. This is useful for environments, such as ' . PHP_EOL .
 			"\t" . '                               TeamCity or GitHub Actions, where vital configuration. ' . PHP_EOL .
 			"\t" . '                               are specified via environmental variables. ' . PHP_EOL .
+			"\t" . '--repo-options=BOOL            Whether to allow configuring of --phpcs-severity ' . PHP_EOL .
+			"\t" . '                               and --post-generic-pr-support-comments via options file' . PHP_EOL .
+			"\t" . '                               (".vipgoci_options") placed in root of the repository.' . PHP_EOL .
 			PHP_EOL .
 			"\t" . '--debug-level=NUMBER           Specify minimum debug-level of messages to print' . PHP_EOL .
 			"\t" . '                                -- higher number indicates more detailed debugging-messages.' . PHP_EOL .
@@ -661,7 +661,7 @@ function vipgoci_run() {
 
 	vipgoci_option_bool_handle( $options, 'phpcs', 'true' );
 
-	vipgoci_option_bool_handle( $options, 'phpcs-severity-repo-options-file', 'false' );
+	vipgoci_option_bool_handle( $options, 'repo-options', 'false' );
 
 	vipgoci_option_bool_handle( $options, 'lint', 'true' );
 
@@ -1029,6 +1029,11 @@ function vipgoci_run() {
 			'phpcs-severity' => array(
 				'type'		=> 'integer',
 				'valid_values'	=> array( 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ),
+			),
+
+			'post-generic-pr-support-comments' => array(
+				'type'		=> 'boolean',
+				'valid_values'	=> array( true, false ),
 			),
 		)
 	);
