@@ -34,6 +34,7 @@ function vipgoci_options_read_repo_file(
 			'commit'		=> $options['commit'],
 			'filename'		=> $repo_options_file_name,
 			'options_overwritable'	=> $options_overwritable,
+			'repo_options_allowed'	=> $options['repo-options-allowed'],
 		)
 	);
 
@@ -80,6 +81,9 @@ function vipgoci_options_read_repo_file(
 
 				'repo_options_file_contents'
 					=> $repo_options_file_contents,
+
+				'repo_options_allowed'
+					=> $options['repo-options-allowed'],
 			)
 		);
 
@@ -122,7 +126,38 @@ function vipgoci_options_read_repo_file(
 			continue;
 		}
 
+		/*
+		 * Limit which options are configurable via repository
+		 * options file. Skip the current option if not found 
+		 * the list of allowed options.
+		 */
+		if ( ! in_array(
+			$option_overwritable_name,
+			$options['repo-options-allowed'],
+			true
+		) ) {
+			vipgoci_log(
+				'Found option to be configured that cannot ' .
+					'be configured via repository ' .
+					'options file, skipping',
+				array(
+					'option_overwritable_name'
+						=> $option_overwritable_name,
 
+					'option_overwritable_conf'
+						=> $option_overwritable_conf,
+
+					'repo_options_arr[' . $option_overwritable_name .' ]'
+						=> $repo_options_arr[ $option_overwritable_name ],
+
+					'repo_options_allowed'
+						=> $options['repo-options-allowed'],
+				)
+			);
+
+			continue;
+		}
+	
 		$do_skip = false;
 
 		if ( 'integer' === $option_overwritable_conf['type'] ) {

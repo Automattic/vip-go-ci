@@ -154,6 +154,7 @@ function vipgoci_run() {
 			'phpcs-runtime-set:',
 			'phpcs-skip-scanning-via-labels-allowed:',
 			'repo-options:',
+			'repo-options-allowed:',
 			'phpcs-skip-folders:',
 			'hashes-api-url:',
 			'hashes-oauth-token:',
@@ -347,6 +348,8 @@ function vipgoci_run() {
 			"\t" . '--repo-options=BOOL            Whether to allow configuring of --phpcs-severity ' . PHP_EOL .
 			"\t" . '                               and --post-generic-pr-support-comments via options file' . PHP_EOL .
 			"\t" . '                               (".vipgoci_options") placed in root of the repository.' . PHP_EOL .
+			"\t" . '--repo-options-allowed=STRING  Limits the options that can be set via repository options ' . PHP_EOL .
+			"\t" . '                               configuration file. Values are separated by commas. ' . PHP_EOL .
 			PHP_EOL .
 			"\t" . '--debug-level=NUMBER           Specify minimum debug-level of messages to print' . PHP_EOL .
 			"\t" . '                                -- higher number indicates more detailed debugging-messages.' . PHP_EOL .
@@ -788,6 +791,19 @@ function vipgoci_run() {
 	vipgoci_option_skip_folder_handle(
 		$options,
 		'lint-skip-folders'
+	);
+
+	/*
+	 * Handle --repo-options-allowed parameter
+	 */
+
+	vipgoci_option_array_handle(
+		$options,
+		'repo-options-allowed',
+		array(
+			'phpcs-severity',
+			'post-generic-pr-support-comments'
+		)
 	);
 
 	/*
