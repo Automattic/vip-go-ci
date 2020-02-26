@@ -47,6 +47,10 @@ final class OptionsReadRepoFile extends TestCase {
 
 		$this->options['token'] = null;
 
+		$this->options['repo-options-allowed'] = array(
+			'post-generic-pr-support-comments',
+			'phpcs-severity',
+		);
 	}
 
 	protected function tearDown() {
@@ -485,6 +489,69 @@ final class OptionsReadRepoFile extends TestCase {
 		$this->assertEquals(
 			true, // Should have changed, repo setting is true
 			$this->options['post-generic-pr-support-comments']
+		);
+	}
+
+	
+	/**
+	 * @covers ::vipgoci_options_read_repo_file
+	 *
+	 * Tests against the --repo-options-allowed option.
+	 */
+	public function testOptionsReadRepoFileOptionAllowedTest1() {
+		$this->options['commit'] =
+			$this->options['commit-test-options-read-repo-file-with-file-2'];
+
+		vipgoci_unittests_output_suppress();
+
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
+
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped(
+				'Could not set up git repository: ' .
+					vipgoci_unittests_output_get()
+			);
+		}
+
+		// Limit options configurable to only this one.
+		$this->options['repo-options-allowed'] = array(
+			'post-generic-pr-support-comments',
+		);
+
+		$this->options['post-generic-pr-support-comments'] = false;
+		$this->options['phpcs-severity'] = -100;
+
+		vipgoci_options_read_repo_file(
+			$this->options,
+			'.vipgoci_options',
+			array(
+				'post-generic-pr-support-comments' => array(
+					'type'		=> 'boolean',
+					'valid_values'	=> array( false, true ),
+				),
+
+				// phpcs-severity set up, but not allowed to be configured
+				'phpcs-severity' => array(
+					'type'		=> 'integer',
+					'valid_values'	=> array( 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ),
+				)
+			)
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		$this->assertEquals(
+			true, // Should have changed, repo setting is true
+			$this->options['post-generic-pr-support-comments']
+		);
+
+		$this->assertEquals(
+			-100, // Should not have changed, repo setting is set, but cannot be set
+			$this->options['phpcs-severity']
 		);
 	}
 }
