@@ -263,7 +263,11 @@ Then run `vip-go-ci` like this:
 
 > ./vip-go-ci.php --repo-options=true 
 
-Should the file not be found, the value not be valid, or altering of the option is not allowed, the option will not be altered on run-time. Note that not both options need to be specified, only the desired one.
+If you wish to limit the options configurable via repository options file, you can specify which options can be configured by using --repo-options-allowed, like this:
+
+> ./vip-go-ci.php --repo-options=true --repo-options-allowed="phpcs-severity,post-generic-pr-support-comments"
+
+Should the configuration file not be found, the configuration value not be valid, or altering of the option is not allowed, the option will not be altered on run-time. Note that not all options need to be set in the configuration file, only those desired.
 
 This feature might be extended to other options in the future.
 
