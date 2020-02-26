@@ -251,21 +251,23 @@ Any parameter can be read from the environment, not just those shown. Parameters
 
 ### Configuration via repository config-file
 
-One option can currently be configured via a repository config-file. This way, users with commit-access to a git repository can influence the behaviour of `vip-go-ci`. The idea is to allow users flexibility in how scanning is performed. Various checks are made to the configuration option read.
+Two options can currently be configured via a repository config-file. This way, users with commit-access to a git repository can influence the behaviour of `vip-go-ci`. The idea is to allow users flexibility in how scanning is performed. Various sanity checks are made to the configuration options read. Currently, the options that can be specified via repository options are `--phpcs-severity` and `--post-generic-pr-support-comments`. Any default configuration is overwritten during run-time by the new value, should it be valid. 
 
-Currently, the option that can be specified via repository is `--phpcs-severity`. Any default configuration is overwritten during run-time by the new value, should it be valid. This feature can be enabled or disabled via `--phpcs-severity-repo-options-file`.
-
-To use the feature, make sure a `.vipgoci_options` file can be found at the root of the relevant git-repository, containing something like this:
+The feature can be enabled or disabled via `--repo-options`; by default it is disabled. To use the feature, make sure a `.vipgoci_options` file can be found at the root of the relevant git-repository, containing something like this:
 
 ```
-{"phpcs-severity":5}
-```
+{"phpcs-severity":5,"post-generic-pr-support-comments":false}
+
 
 Then run `vip-go-ci` like this:
 
-> ./vip-go-ci.php --phpcs-severity-repo-options-file=true 
+> ./vip-go-ci.php --repo-options=true 
 
-Should the file not be found, the value not be valid, or altering of the option is not available, the option will not be altered on run-time.
+If you wish to limit the options configurable via repository options file, you can specify which options can be configured by using --repo-options-allowed, like this:
+
+> ./vip-go-ci.php --repo-options=true --repo-options-allowed="phpcs-severity,post-generic-pr-support-comments"
+
+Should the configuration file not be found, the configuration value not be valid, or altering of the option is not allowed, the option will not be altered on run-time. Note that not all options need to be set in the configuration file, only those desired.
 
 This feature might be extended to other options in the future.
 

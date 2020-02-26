@@ -11,14 +11,14 @@ function vipgoci_options_read_repo_file(
 	$options_overwritable
 ) {
 
-	if ( false === $options[ 'phpcs-severity-repo-options-file' ] ) {
+	if ( false === $options[ 'repo-options' ] ) {
 		vipgoci_log(
 			'Skipping possibly overwriting options ' .
 				'using data from repository settings file ' .
 				'as this is disabled via command-line options',
 			array(
-				'phpcs_severity_repo_options_file'
-					=> $options[ 'phpcs-severity-repo-options-file' ],
+				'repo-options'
+					=> $options[ 'repo-options' ],
 			)
 		);
 
@@ -34,6 +34,7 @@ function vipgoci_options_read_repo_file(
 			'commit'		=> $options['commit'],
 			'filename'		=> $repo_options_file_name,
 			'options_overwritable'	=> $options_overwritable,
+			'repo_options_allowed'	=> $options['repo-options-allowed'],
 		)
 	);
 
@@ -80,6 +81,9 @@ function vipgoci_options_read_repo_file(
 
 				'repo_options_file_contents'
 					=> $repo_options_file_contents,
+
+				'repo_options_allowed'
+					=> $options['repo-options-allowed'],
 			)
 		);
 
@@ -114,21 +118,77 @@ function vipgoci_options_read_repo_file(
 			( ! isset(
 				$option_overwritable_conf['type']
 			) )
+			||
+			( ! isset(
+				$option_overwritable_conf['valid_values']
+			) )
 		) {
 			continue;
 		}
 
+		/*
+		 * Limit which options are configurable via repository
+		 * options file. Skip the current option if not found 
+		 * the list of allowed options.
+		 */
+		if ( ! in_array(
+			$option_overwritable_name,
+			$options['repo-options-allowed'],
+			true
+		) ) {
+			vipgoci_log(
+				'Found option to be configured that cannot ' .
+					'be configured via repository ' .
+					'options file, skipping',
+				array(
+					'option_overwritable_name'
+						=> $option_overwritable_name,
 
+					'option_overwritable_conf'
+						=> $option_overwritable_conf,
+
+					'repo_options_arr[' . $option_overwritable_name .' ]'
+						=> $repo_options_arr[ $option_overwritable_name ],
+
+					'repo_options_allowed'
+						=> $options['repo-options-allowed'],
+				)
+			);
+
+			continue;
+		}
+	
 		$do_skip = false;
 
 		if ( 'integer' === $option_overwritable_conf['type'] ) {
-			if ( ! isset(
-				$option_overwritable_conf['valid_values']
+			if ( ! is_numeric( $repo_options_arr[
+					$option_overwritable_name
+				]
 			) ) {
 				$do_skip = true;
 			}
 
-			if ( ! in_array(
+			else if ( ! in_array(
+				$repo_options_arr[
+					$option_overwritable_name
+				],
+				$option_overwritable_conf['valid_values'],
+				true
+			) ) {
+				$do_skip = true;
+			}
+		}
+
+		else if ( 'boolean' === $option_overwritable_conf['type'] ) {
+			if ( ! is_bool(
+				$repo_options_arr[
+					$option_overwritable_name
+				]
+			) ) {
+				$do_skip = true;
+			}
+
+			else if ( ! in_array(
 				$repo_options_arr[
 					$option_overwritable_name
 				],
