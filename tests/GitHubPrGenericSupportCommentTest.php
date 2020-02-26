@@ -84,6 +84,8 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 	 * Get Pull-Requests implicated.
 	 */
 	protected function _getPrsImplicated() {
+		vipgoci_unittests_output_suppress();
+
 		return vipgoci_github_prs_implicated(
 			$this->options['repo-owner'],
 			$this->options['repo-name'],
@@ -91,6 +93,8 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 			$this->options['github-token'],
 			array()
 		);
+
+		vipgoci_unittests_output_unsuppress();
 	}
 
 	/*
