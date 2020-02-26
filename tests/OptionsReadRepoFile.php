@@ -19,6 +19,7 @@ final class OptionsReadRepoFile extends TestCase {
 		'commit-test-options-read-repo-file-no-file'	=> null,
 		'commit-test-options-read-repo-file-with-file'	=> null,
 		'commit-test-options-read-repo-file-with-file-2'=> null,
+		'commit-test-options-read-repo-file-with-file-3'=> null,
 	);
 
 	protected function setUp() {
@@ -500,7 +501,7 @@ final class OptionsReadRepoFile extends TestCase {
 	 */
 	public function testOptionsReadRepoFileOptionAllowedTest1() {
 		$this->options['commit'] =
-			$this->options['commit-test-options-read-repo-file-with-file-2'];
+			$this->options['commit-test-options-read-repo-file-with-file-3'];
 
 		vipgoci_unittests_output_suppress();
 
