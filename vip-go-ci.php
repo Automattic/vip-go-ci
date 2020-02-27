@@ -707,10 +707,12 @@ function vipgoci_run() {
 
 	vipgoci_option_bool_handle( $options, 'post-generic-pr-support-comments', 'false' );
 
-	$options['post-generic-pr-support-comments-string'] =
-		trim(
-			$options['post-generic-pr-support-comments-string']
-		);
+	if ( ! empty( $options['post-generic-pr-support-comments-string'] ) ) {
+		$options['post-generic-pr-support-comments-string'] =
+			trim(
+				$options['post-generic-pr-support-comments-string']
+			);
+	}
 
 	vipgoci_option_array_handle(
 		$options,
