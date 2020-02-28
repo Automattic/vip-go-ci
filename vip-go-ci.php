@@ -1284,6 +1284,12 @@ function vipgoci_run() {
 	 */
 	if ( true === $options['autoapprove'] ) {
 		/*
+		 * FIXME: Move the function-calls below
+		 * to auto-approval.php -- place them
+		 * in a wrapper, and not vipgoci_auto_approval()
+		 */
+
+		/*
 		 * If to auto-approve based on file-types,
 		 * scan through the files in the PR, and
 		 * register which can be auto-approved.
