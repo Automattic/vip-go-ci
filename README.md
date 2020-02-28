@@ -257,7 +257,7 @@ The feature can be enabled or disabled via `--repo-options`; by default it is di
 
 ```
 {"phpcs-severity":5,"post-generic-pr-support-comments":false}
-
+```
 
 Then run `vip-go-ci` like this:
 
