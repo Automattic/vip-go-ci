@@ -90,6 +90,17 @@ function vipgoci_run() {
 			'hashes-oauth-consumer-secret'
 		);
 
+	/*
+	 * Ask for the hashes-oauth-* arguments
+	 * to be considered as sensitive options
+	 * when cleaning options for printing.
+	 */
+	vipgoci_options_sensitive_clean(
+		null,
+		$hashes_oauth_arguments
+	);
+
+
 	vipgoci_log(
 		'Initializing...',
 		array(
@@ -1064,23 +1075,12 @@ function vipgoci_run() {
 	 * Make sure not to print out any secrets.
 	 */
 
-	$options_clean = $options;
-	$options_clean['token'] = '***';
-
-	if ( isset( $options_clean['irc-api-token'] ) ) {
-		$options_clean['irc-api-token'] = '***';
-	}
-
-	foreach( $hashes_oauth_arguments as $hashes_oauth_argument ) {
-		if ( isset( $options_clean[ $hashes_oauth_argument ] ) ) {
-			$options_clean[ $hashes_oauth_argument ] = '***';
-		}
-	}
-
 	vipgoci_log(
 		'Starting up...',
 		array(
-			'options' => $options_clean
+			'options' => vipgoci_options_sensitive_clean(
+				$options
+			)
 		)
 	);
 
@@ -1093,9 +1093,6 @@ function vipgoci_run() {
 			VIPGOCI_STATS_HASHES_API => null,
 		),
 	);
-
-	unset( $options_clean );
-
 
 
 	/*
