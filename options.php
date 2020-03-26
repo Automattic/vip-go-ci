@@ -449,9 +449,10 @@ function vipgoci_options_read_env(
 }
 
 /*
- * Replace any sensitive options from
+ * Replace any sensitive option value from
  * a given option array with something
- * that can be printed safely.
+ * that can be printed safely and return
+ * a new array.
  */
 function vipgoci_options_sensitive_clean(
 	$options,
