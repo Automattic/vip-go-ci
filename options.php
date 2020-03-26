@@ -441,9 +441,58 @@ function vipgoci_options_read_env(
 	vipgoci_log(
 		'Read and set options from environment',
 		array(
-			'options-configured' => $options_configured
+			'options-configured' => vipgoci_options_sensitive_clean(
+				$options_configured
+			)
 		)
 	);
+}
+
+/*
+ * Replace any sensitive options from
+ * a given option array with something
+ * that can be printed safely.
+ */
+function vipgoci_options_sensitive_clean(
+	$options,
+	$options_add_to_sensitive = array()
+) {
+	static $sensitive_options = array(
+		'token',
+		'irc-api-token',
+	);
+
+	if ( ! empty ( $options_add_to_sensitive ) ) {
+		$sensitive_options = array_merge(
+			$sensitive_options,
+			$options_add_to_sensitive
+		);
+
+		return;
+	}
+
+	$options_clean = $options;
+
+	foreach(
+		$options_clean as
+			$option_key => $option_value
+	) {
+		if ( ! in_array(
+			$option_key,
+			$sensitive_options,
+			true
+		) ) {
+			continue;
+		}
+
+		if ( ! isset( $options_clean[ $option_key ] ) ) {
+			continue;
+		}
+
+		$options_clean[ $option_key ] = '***';
+	}	
+
+	return $options_clean;
 }
 
 /*
