@@ -441,7 +441,11 @@ function vipgoci_options_read_env(
 	vipgoci_log(
 		'Read and set options from environment',
 		array(
-			'options-configured' => vipgoci_options_sensitive_clean(
+			/*
+			 * Note: Do not print out the actual
+			 * values, so not to expose them in logs.
+			 */
+			'options_configured_keys' => array_keys(
 				$options_configured
 			)
 		)
@@ -459,8 +463,6 @@ function vipgoci_options_sensitive_clean(
 	$options_add_to_sensitive = array()
 ) {
 	static $sensitive_options = array(
-		'token',
-		'irc-api-token',
 	);
 
 	if ( ! empty ( $options_add_to_sensitive ) ) {

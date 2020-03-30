@@ -90,16 +90,6 @@ function vipgoci_run() {
 			'hashes-oauth-consumer-secret'
 		);
 
-	/*
-	 * Ask for the hashes-oauth-* arguments
-	 * to be considered as sensitive options
-	 * when cleaning options for printing.
-	 */
-	vipgoci_options_sensitive_clean(
-		null,
-		$hashes_oauth_arguments
-	);
-
 
 	vipgoci_log(
 		'Initializing...',
@@ -599,6 +589,16 @@ function vipgoci_run() {
 		) );
 	}
 
+	/*
+	 * Ask for the hashes-oauth-* arguments
+	 * to be considered as sensitive options
+	 * when cleaning options for printing.
+	 */
+	vipgoci_options_sensitive_clean(
+		null,
+		$hashes_oauth_arguments
+	);
+
 
 	/*
 	 * Handle --local-git-repo parameter
@@ -779,6 +779,18 @@ function vipgoci_run() {
 	}
 
 	unset( $irc_params_defined );
+
+	/*
+	 * Make sure the IRC API token
+	 * will be removed from output
+	 * of options.	
+	 */
+	vipgoci_options_sensitive_clean(
+		null,
+		array(
+			'irc-api-token',
+		)
+	);
 
 	/*
 	 * Handle settings for the pixel API.
@@ -1034,6 +1046,16 @@ function vipgoci_run() {
 			)
 		);
 	}
+
+	/*
+	 * Hide GitHub token from printed options output.
+	 */
+	vipgoci_options_sensitive_clean(
+		null,
+		array(
+			'token',
+		)
+	);
 
 
 	/*
