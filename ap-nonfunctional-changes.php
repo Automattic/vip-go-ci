@@ -108,6 +108,16 @@ function vipgoci_ap_nonfunctional_changes(
 				 * We need an older version to make
 				 * comparisons.
 				 */
+
+				vipgoci_log(
+					'Skipping PHP file ("old version"), as it could not be fetched from git-repository',
+					array(
+						'pr_base_sha'		=> $pr_item->base->sha,
+						'pr_diff_file_name'	=> $pr_diff_file_name,
+						'local_git_repo'	=> $options['local-git-repo'],
+					)
+				);
+
 				continue;
 			}
 
@@ -133,6 +143,25 @@ function vipgoci_ap_nonfunctional_changes(
 				$pr_diff_file_name,
 				$options['local-git-repo']
 			);
+
+			if ( null === $pr_diff_file_new_contents ) {
+				/*
+				 * If we could not find the file
+				 * in this commit, skip and continue.
+				 */
+
+				vipgoci_log(
+					'Skipping PHP file ("new version"), as it could not be fetched from git-repository',
+					array(
+						'commit'		=> $options['commit'],
+						'pr_diff_file_name'	=> $pr_diff_file_name,
+						'local_git_repo'	=> $options['local-git-repo'],
+					)
+				);
+
+				continue;
+			}
+
 
 			$tmp_file_new = vipgoci_save_temp_file(
 				$pr_diff_file_name,
@@ -202,6 +231,8 @@ function vipgoci_ap_nonfunctional_changes(
 	unset( $pr_item );
 	unset( $pr_diff_file_extension );
 	unset( $pr_diff_file_name );
+	unset( $tmp_file_old );
+	unset( $tmp_file_new );
 
 	gc_collect_cycles();
 
