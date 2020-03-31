@@ -370,7 +370,12 @@ function vipgoci_autoapproval_do_approve(
 			'Auto-approved Pull-Request #' .
 				(int) $pr_item->number . ' as it ' .
 				'contains only auto-approvable files' .
-				' -- either pre-approved files _or_ file-types that are ' .
+				' -- either pre-approved files' .
+				(
+					true === $options['autoapprove-php-nonfunctional-changes'] ?
+					', non-functional changes to PHP files ' : ''
+				) .
+				' _or_ file-types that are ' .
 				'auto-approvable (' .
 				implode(
 					', ',
