@@ -317,7 +317,7 @@ Auto-approvals can be configured so to auto-approve Pull-Requests that only chan
 
 > ./vip-go-ci.php --autoapprove=true --autoapprove-php-nonfunctional-changes=true --autoapprove-label="auto-approved"
 
-With this setting, any PHP files having only whitespacing changes or updating to commments, will be automatically approved.
+With this setting, any PHP files having only whitespacing changes or updating to comments, will be automatically approved.
 
 Note that `vip-go-ci` will collect which files of the relevant Pull-Request are approved, whether `.css`, `.gif`, `.php` or other, and if _all_ the files altered by it have been found to be auto-approvable, the whole Pull-Request will be approved automatically. This applies also to the Hashes API (see below).
 
