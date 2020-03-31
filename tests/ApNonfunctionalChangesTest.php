@@ -87,8 +87,8 @@ final class ApNonfunctionalChangesTest extends TestCase {
 
 		$this->assertEquals(
 			array(
-				'file1.php'	=> 'autoapprove-hashes-to-hashes', // FIXME: Alter
-				'file2.php'	=> 'autoapprove-hashes-to-hashes',
+				'file1.php'	=> 'autoapprove-nonfunctional-changes',
+				'file2.php'	=> 'autoapprove-nonfunctional-changes',
 				/*
 				 * - file3.php is not approved, has changed functionally
 				 * - file100.txt is not approvable by this function

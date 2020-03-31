@@ -192,7 +192,7 @@ function vipgoci_ap_nonfunctional_changes(
 
 				$auto_approved_files_arr[
 					$pr_diff_file_name
-				] = 'autoapprove-hashes-to-hashes'; // FIXME: Change to different category
+				] = 'autoapprove-nonfunctional-changes';
 			}
 
 			else {
