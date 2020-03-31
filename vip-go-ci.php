@@ -11,6 +11,7 @@ require_once( __DIR__ . '/phpcs-scan.php' );
 require_once( __DIR__ . '/lint-scan.php' );
 require_once( __DIR__ . '/auto-approval.php' );
 require_once( __DIR__ . '/ap-file-types.php' );
+require_once( __DIR__ . '/ap-nonfunctional-changes.php' );
 require_once( __DIR__ . '/ap-hashes-api.php' );
 require_once( __DIR__ . '/ap-svg-files.php' );
 require_once( __DIR__ . '/svg-scan.php' );
@@ -178,6 +179,7 @@ function vipgoci_run() {
 			'autoapprove:',
 			'autoapprove-filetypes:',
 			'autoapprove-label:',
+			'autoapprove-php-nonfunctional-changes:',
 			'help',
 			'debug-level:',
 			'hashes-api:',
@@ -293,9 +295,14 @@ function vipgoci_run() {
 			"\t" . '                               files are not to be scanned using PHPCS. Values are comma' . PHP_EOL .
 			"\t" . '                               separated' . PHP_EOL .
 			"\t" . '--autoapprove=BOOL             Whether to auto-approve Pull-Requests' . PHP_EOL .
-			"\t" . '                               altering only files of certain types' . PHP_EOL .
+			"\t" . '                               altering only files of certain types or ' . PHP_EOL .
+			"\t" . '                               already approved files. ' . PHP_EOL .
 			"\t" . '--autoapprove-filetypes=STRING Specify what file-types can be auto-' . PHP_EOL .
-			"\t" . '                               approved. PHP files cannot be specified' . PHP_EOL .
+			"\t" . '                               approved. PHP files cannot be specified.' . PHP_EOL .
+			"\t" . '--autoapprove-php-nonfunctional-changes=BOOL    For autoapprovals, also consider ' . PHP_EOL .
+			"\t" . '                                                PHP files approved that contain ' . PHP_EOL .
+			"\t" . '                                                non-functional changes, such as  ' . PHP_EOL .
+			"\t" . '                                                whitespacing and comments alterations. ' . PHP_EOL .
 			"\t" . '--autoapprove-label=STRING     String to use for labels when auto-approving' . PHP_EOL .
 			"\t" . '--php-path=FILE                Full path to PHP, if not specified the' . PHP_EOL .
 			"\t" . '                               default in $PATH will be used instead' . PHP_EOL .
@@ -703,6 +710,8 @@ function vipgoci_run() {
 	 */
 
 	vipgoci_option_bool_handle( $options, 'autoapprove', 'false' );
+
+	vipgoci_option_bool_handle( $options, 'autoapprove-php-nonfunctional-changes', 'false' );
 
 	vipgoci_option_array_handle(
 		$options,
@@ -1317,6 +1326,20 @@ function vipgoci_run() {
 
 		if ( ! empty( $options[ 'autoapprove-filetypes' ] ) ) {
 			vipgoci_ap_file_types(
+				$options,
+				$auto_approved_files_arr
+			);
+		}
+
+		/*
+		 * Check if any of the files changed
+		 * contain any non-functional changes --
+		 * i.e., only whitespacing changes and
+		 * commenting changes -- and if so,
+		 * approve those files.
+		 */
+		if ( true === $options['autoapprove-php-nonfunctional-changes'] ) {
+			vipgoci_ap_nonfunctional_changes(
 				$options,
 				$auto_approved_files_arr
 			);
