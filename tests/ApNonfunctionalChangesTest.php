@@ -1,0 +1,93 @@
+<?php
+
+require_once( __DIR__ . '/IncludesForTests.php' );
+
+use PHPUnit\Framework\TestCase;
+
+final class ApNonfunctionalChangesTest extends TestCase {
+	var $options_git = array(
+		'repo-owner'			=> null,
+		'repo-name'			=> null,
+	);
+
+	var $options_auto_approvals_nonfunc = array(
+		''
+	);
+
+	protected function setUp() {
+		vipgoci_unittests_get_config_values(
+			'git',
+			$this->options_git
+		);
+
+		vipgoci_unittests_get_config_values(
+			'auto-approvals',
+			$this->options_auto_approvals_nonfunc
+		);
+
+		$this->options = array_merge(
+			$this->options_git,
+			$this->options_auto_approvals_nonfunc
+		);
+
+		$this->options[ 'github-token' ] =
+			vipgoci_unittests_get_config_value(
+				'git-secrets',
+				'github-token',
+				true // Fetch from secrets file
+			);
+
+		$this->options['token'] =
+			$this->options['github-token'];
+
+		unset( $this->options['github-token'] );
+	
+		$this->options['commit'] =
+			$this->options['commit-test-ap-nonfunctionalchanges-1b'];
+	
+		$this->options['autoapprove'] = true;
+		$this->options['autoapprove-filetypes'] =
+			explode(
+				',',
+				$this->options['autoapprove-filetypes']
+			);
+
+		$this->options['branches-ignore'] = array();
+	}
+
+	protected function tearDown() {
+		$this->options = null;
+		$this->options_git = null;
+		$this->options_auto_approval = null;
+	}
+
+	/**
+	 * @covers ::vipgoci_ap_nonfunctional_changes
+	 */
+	public function testNonFunctionalChanges1() {
+
+		$auto_approved_files_arr = array();
+
+		vipgoci_unittests_output_suppress();
+
+		vipgoci_ap_nonfunctional_changes(
+			$this->options,
+			$auto_approved_files_arr
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		$this->assertEquals(
+			array(
+				'file1.php'	=> 'autoapprove-hashes-to-hashes', // FIXME: Alter
+				'file2.php'	=> 'autoapprove-hashes-to-hashes',
+				/*
+				 * - file3.php is not approved, has changed functionally
+				 * - file100.txt is not approvable by this function
+				 * - file101.png, same.
+				 */
+			),
+			$auto_approved_files_arr
+		);
+	}
+}
