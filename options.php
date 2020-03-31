@@ -441,9 +441,61 @@ function vipgoci_options_read_env(
 	vipgoci_log(
 		'Read and set options from environment',
 		array(
-			'options-configured' => $options_configured
+			/*
+			 * Note: Do not print out the actual
+			 * values, so not to expose them in logs.
+			 */
+			'options_configured_keys' => array_keys(
+				$options_configured
+			)
 		)
 	);
+}
+
+/*
+ * Replace any sensitive option value from
+ * a given option array with something
+ * that can be printed safely and return
+ * a new array.
+ */
+function vipgoci_options_sensitive_clean(
+	$options,
+	$options_add_to_sensitive = array()
+) {
+	static $sensitive_options = array(
+	);
+
+	if ( ! empty ( $options_add_to_sensitive ) ) {
+		$sensitive_options = array_merge(
+			$sensitive_options,
+			$options_add_to_sensitive
+		);
+
+		return;
+	}
+
+	$options_clean = $options;
+
+	foreach(
+		$options_clean as
+			$option_key => $option_value
+	) {
+		if ( ! in_array(
+			$option_key,
+			$sensitive_options,
+			true
+		) ) {
+			continue;
+		}
+
+		if ( ! isset( $options_clean[ $option_key ] ) ) {
+			continue;
+		}
+
+		$options_clean[ $option_key ] = '***';
+	}	
+
+	return $options_clean;
 }
 
 /*

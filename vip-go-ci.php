@@ -90,6 +90,7 @@ function vipgoci_run() {
 			'hashes-oauth-consumer-secret'
 		);
 
+
 	vipgoci_log(
 		'Initializing...',
 		array(
@@ -588,6 +589,16 @@ function vipgoci_run() {
 		) );
 	}
 
+	/*
+	 * Ask for the hashes-oauth-* arguments
+	 * to be considered as sensitive options
+	 * when cleaning options for printing.
+	 */
+	vipgoci_options_sensitive_clean(
+		null,
+		$hashes_oauth_arguments
+	);
+
 
 	/*
 	 * Handle --local-git-repo parameter
@@ -768,6 +779,18 @@ function vipgoci_run() {
 	}
 
 	unset( $irc_params_defined );
+
+	/*
+	 * Make sure the IRC API token
+	 * will be removed from output
+	 * of options.	
+	 */
+	vipgoci_options_sensitive_clean(
+		null,
+		array(
+			'irc-api-token',
+		)
+	);
 
 	/*
 	 * Handle settings for the pixel API.
@@ -1024,6 +1047,16 @@ function vipgoci_run() {
 		);
 	}
 
+	/*
+	 * Hide GitHub token from printed options output.
+	 */
+	vipgoci_options_sensitive_clean(
+		null,
+		array(
+			'token',
+		)
+	);
+
 
 	/*
 	 * Check if the teams specified in the
@@ -1064,23 +1097,12 @@ function vipgoci_run() {
 	 * Make sure not to print out any secrets.
 	 */
 
-	$options_clean = $options;
-	$options_clean['token'] = '***';
-
-	if ( isset( $options_clean['irc-api-token'] ) ) {
-		$options_clean['irc-api-token'] = '***';
-	}
-
-	foreach( $hashes_oauth_arguments as $hashes_oauth_argument ) {
-		if ( isset( $options_clean[ $hashes_oauth_argument ] ) ) {
-			$options_clean[ $hashes_oauth_argument ] = '***';
-		}
-	}
-
 	vipgoci_log(
 		'Starting up...',
 		array(
-			'options' => $options_clean
+			'options' => vipgoci_options_sensitive_clean(
+				$options
+			)
 		)
 	);
 
@@ -1093,9 +1115,6 @@ function vipgoci_run() {
 			VIPGOCI_STATS_HASHES_API => null,
 		),
 	);
-
-	unset( $options_clean );
-
 
 
 	/*
@@ -1283,6 +1302,12 @@ function vipgoci_run() {
 	 * auto-approval if possible.
 	 */
 	if ( true === $options['autoapprove'] ) {
+		/*
+		 * FIXME: Move the function-calls below
+		 * to auto-approval.php -- place them
+		 * in a wrapper, and not vipgoci_auto_approval()
+		 */
+
 		/*
 		 * If to auto-approve based on file-types,
 		 * scan through the files in the PR, and
