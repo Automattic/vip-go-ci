@@ -377,9 +377,10 @@ function vipgoci_gitrepo_get_file_at_commit(
 	vipgoci_log(
 		'Fetching contents of a particular file from the local git repository',
 		array(
-			'commmit_id'		=> $commit_id,
-			'file_name'		=> $file_name,
-			'local_git_repo'	=> $local_git_repo,
+			'commmit_id'			=> $commit_id,
+			'file_name'			=> $file_name,
+			'local_git_repo'		=> $local_git_repo,
+			'local_git_repo_head_commit_id'	=> $local_git_repo_head_commit_id,
 		)
 	);
 
