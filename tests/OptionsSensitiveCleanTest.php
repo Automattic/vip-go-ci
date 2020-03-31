@@ -4,7 +4,7 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 
 use PHPUnit\Framework\TestCase;
 
-final class OptionsSensitiveClean extends TestCase {
+final class OptionsSensitiveCleanTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_options_sensitive_clean
 	 */
