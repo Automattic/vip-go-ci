@@ -8,10 +8,12 @@ final class ApNonfunctionalChangesTest extends TestCase {
 	var $options_git = array(
 		'repo-owner'			=> null,
 		'repo-name'			=> null,
+		'git-path'			=> null,
+		'github-repo-url'		=> null,
 	);
 
 	var $options_auto_approvals_nonfunc = array(
-		''
+		'commit-test-ap-nonfunctionalchanges-1b'	=> null,
 	);
 
 	protected function setUp() {
@@ -46,16 +48,22 @@ final class ApNonfunctionalChangesTest extends TestCase {
 			$this->options['commit-test-ap-nonfunctionalchanges-1b'];
 	
 		$this->options['autoapprove'] = true;
-		$this->options['autoapprove-filetypes'] =
-			explode(
-				',',
-				$this->options['autoapprove-filetypes']
-			);
 
 		$this->options['branches-ignore'] = array();
+
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
 	}
 
 	protected function tearDown() {
+		if ( false !== $this->options['local-git-repo'] ) {
+			vipgoci_unittests_remove_git_repo(
+				$this->options['local-git-repo']
+			);
+		}
+
 		$this->options = null;
 		$this->options_git = null;
 		$this->options_auto_approval = null;
