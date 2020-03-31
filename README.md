@@ -313,6 +313,14 @@ For instance:
 
 -- with this configuration, any Pull-Requests that only alter files ending with `.css`, `.gif`, etc., are automatically approved by `vip-go-ci`. Also, a label will be added to the automatically approved Pull-Requests, named `auto-approved`.
 
+Auto-approvals can be configured so to auto-approve Pull-Requests that only change comments or whitespacing in PHP files. For instance:
+
+> ./vip-go-ci.php --autoapprove=true autoapprove-php-nonfunctional-changes=true --autoapprove-label="auto-approved"
+
+With this setting, any PHP files having only whitespacing changes or updating to commments, will be automatically approved.
+
+Note that `vip-go-ci` will collect which files of the relevant Pull-Request are approved, whether `.css`, `.gif`, `.php` or other, and if _all_ the files altered by it have been found to be auto-approvable, the whole Pull-Request will be approved automatically. This applies also to the Hashes API (see below).
+
 ### Hashes API
 
 This feature is useful when you want to automatically approve Pull-Requests containing PHP or JavaScript files that are already known to be good and are approved already, so no manual reviewing is needed. To make use of this feature, you will need a database of files already approved. You will also have to be using the auto-approvals feature. 
