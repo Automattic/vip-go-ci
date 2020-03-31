@@ -301,7 +301,7 @@ function vipgoci_run() {
 			"\t" . '--autoapprove-php-nonfunctional-changes=BOOL    For autoapprovals, also consider ' . PHP_EOL .
 			"\t" . '                                                PHP files approved that contain ' . PHP_EOL .
 			"\t" . '                                                non-functional changes, such as  ' . PHP_EOL .
-			"\t" . '                                                whitespacing and comments. ' . PHP_EOL .
+			"\t" . '                                                whitespacing and comments alterations. ' . PHP_EOL .
 			"\t" . '--autoapprove-label=STRING     String to use for labels when auto-approving' . PHP_EOL .
 			"\t" . '--php-path=FILE                Full path to PHP, if not specified the' . PHP_EOL .
 			"\t" . '                               default in $PATH will be used instead' . PHP_EOL .
