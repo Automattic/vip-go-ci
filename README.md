@@ -315,7 +315,7 @@ For instance:
 
 Auto-approvals can be configured so to auto-approve Pull-Requests that only change comments or whitespacing in PHP files. For instance:
 
-> ./vip-go-ci.php --autoapprove=true autoapprove-php-nonfunctional-changes=true --autoapprove-label="auto-approved"
+> ./vip-go-ci.php --autoapprove=true --autoapprove-php-nonfunctional-changes=true --autoapprove-label="auto-approved"
 
 With this setting, any PHP files having only whitespacing changes or updating to commments, will be automatically approved.
 
