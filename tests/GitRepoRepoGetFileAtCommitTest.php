@@ -59,6 +59,19 @@ final class GitRepoRepoGetFileAtCommitTest extends TestCase {
 	 * @covers ::vipgoci_gitrepo_get_file_at_commit
 	 */
 	public function testGetFileData1() {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array(
+				'commit-test-repo-get-file-at-commit-1',
+				'commit-test-repo-get-file-at-commit-2'
+			),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
 		/*
 		 * Get file1.php from two different
 		 * commits, check SHA1 sum.
