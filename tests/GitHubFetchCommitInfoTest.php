@@ -34,12 +34,14 @@ final class GitHubFetchCommitInfoTest extends TestCase {
 
 		$this->options[ 'github-token' ] =
 			vipgoci_unittests_get_config_value(
-				'git',
+				'git-secrets',
 				'github-token',
 				true // Fetch from secrets file
 			);
 
-		$this->options['skip-folders'] = array();
+		$this->options['lint-skip-folders'] = array();
+
+		$this->options['phpcs-skip-folders'] = array();
 
 		$this->options['branches-ignore'] = array();
 	}

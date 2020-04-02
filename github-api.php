@@ -1715,23 +1715,24 @@ function vipgoci_github_pr_generic_comment_submit(
 }
 
 /*
- * Post a generic PR comment to GitHub.
+ * Post a generic PR comment to GitHub. Will
+ * include a commit_id in the comment if provided.
  */
-function vipgoci_github_pr_comments_error_msg(
+function vipgoci_github_pr_comments_generic_submit(
 	$repo_owner,
 	$repo_name,
 	$github_token,
-	$commit_id,
 	$pr_number,
-	$message
+	$message,
+	$commit_id = null
 ) {
 	vipgoci_log(
-		'Posting a comment to the Pull-Request',
+		'Posting a comment to a Pull-Request',
 		array(
 			'repo_owner' => $repo_owner,
 			'repo_name' => $repo_name,
-			'commit_id' => $commit_id,
 			'pr_number' => $pr_number,
+			'commit_id' => $commit_id,
 			'message' => $message,
 		),
 		0,
@@ -1750,9 +1751,15 @@ function vipgoci_github_pr_comments_error_msg(
 
 	$github_postfields = array();
 	$github_postfields['body'] =
-		$message .
-			' (commit-ID: ' . $commit_id . ').' .
-			"\n\r";
+		$message;
+
+	if ( ! empty( $commit_id ) ) {
+		$github_postfields['body'] .=
+			' (commit-ID: ' . $commit_id . ').';
+	}
+
+	$github_postfields['body'] .=
+		"\n\r";
 
 	vipgoci_github_post_url(
 		$github_url,
@@ -1888,6 +1895,119 @@ function vipgoci_github_pr_generic_comment_delete(
 		$github_token,
 		true
 	);
+}
+
+/*
+ * Post generic comment to each Pull-Request
+ * that has target branch that matches the
+ * options given, but only if the same generic
+ * comment has not been posted before. Uses a
+ * comment given by one of the options.
+ */
+function vipgoci_github_pr_generic_support_comment(
+	$options,
+	$prs_implicated
+) {
+	vipgoci_log(
+		'Posting support-comments on Pull-Requests',
+		array(
+			'post-generic-pr-support-comments' =>
+				$options['post-generic-pr-support-comments'],
+
+			'post-generic-pr-support-comments-string' =>
+				$options['post-generic-pr-support-comments-string'],
+
+			'post-generic-pr-support-comments-branches' =>
+				$options['post-generic-pr-support-comments-branches']
+		)
+	);
+
+
+	foreach(
+		$prs_implicated as $pr_item
+	) {
+		/*
+		 * If not one of the target-branches,
+		 * skip this PR.
+		 */
+		if (
+			( in_array(
+				'any',
+				$options['post-generic-pr-support-comments-branches'],
+				true
+			) === false )
+			&&
+			( ( in_array(
+				$pr_item->base->ref,
+				$options['post-generic-pr-support-comments-branches'],
+				true
+			) === false ) )
+		) {
+			vipgoci_log(
+				'Not posting support-comment to PR, not in list of target branches',
+				array(
+					'repo-owner'	=> $options['repo-owner'],
+					'repo-name'	=> $options['repo-name'],
+					'pr_number'	=> $pr_item->number,
+					'pr_base_ref'	=> $pr_item->base->ref,
+					'post-generic-pr-support-comments-branches' =>
+						$options['post-generic-pr-support-comments-branches'],
+				)
+			);
+
+			continue;
+		}
+
+		/*
+		 * Check if the comment we are set to
+		 * post already exists, and if so, do
+		 * not post anything.
+		 */
+
+		$existing_comments = vipgoci_github_pr_generic_comments_get(
+			$options['repo-owner'],
+			$options['repo-name'],
+			$pr_item->number,
+			$options['token']
+		);
+
+		$comment_exists_already = false;
+
+		foreach(
+			$existing_comments as
+				$existing_comment_item
+		) {
+
+			if ( strpos(
+				$existing_comment_item->body,
+				$options['post-generic-pr-support-comments-string']
+			) !== false ) {
+				$comment_exists_already = true;
+			}	
+		}
+
+		if ( true === $comment_exists_already ) {
+			vipgoci_log(
+				'Not submitting support-comment to Pull-Request as it already exists',
+				array(
+					'pr_number'	=> $pr_item->number,
+				)
+			);
+
+			continue;
+		}
+
+		/*
+		 * All checks successful, post comment.
+		 */
+		vipgoci_github_pr_comments_generic_submit(
+			$options['repo-owner'],
+			$options['repo-name'],
+			$options['token'],
+			$pr_item->number,
+			$options['post-generic-pr-support-comments-string']
+		);
+	}
 }
 
 /*
@@ -2448,13 +2568,13 @@ function vipgoci_github_pr_review_submit(
 		 * let humans know that there was a problem.
 		 */
 		if ( -1 === $github_post_res ) {
-			vipgoci_github_pr_comments_error_msg(
+			vipgoci_github_pr_comments_generic_submit(
 				$repo_owner,
 				$repo_name,
 				$github_token,
-				$commit_id,
 				$pr_number,
-				VIPGOCI_GITHUB_ERROR_STR
+				VIPGOCI_GITHUB_ERROR_STR,
+				$commit_id
 			);
 		}
 	}
@@ -3071,7 +3191,7 @@ function vipgoci_github_diffs_fetch(
 		if (
 			( null !== $filter ) &&
 			( false === vipgoci_filter_file_path(
-				$file_item->filename,
+				$file_item->filename, // Send in what looks like a relative path
 				$filter
 			) )
 		) {

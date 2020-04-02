@@ -11,6 +11,7 @@ require_once( __DIR__ . '/phpcs-scan.php' );
 require_once( __DIR__ . '/lint-scan.php' );
 require_once( __DIR__ . '/auto-approval.php' );
 require_once( __DIR__ . '/ap-file-types.php' );
+require_once( __DIR__ . '/ap-nonfunctional-changes.php' );
 require_once( __DIR__ . '/ap-hashes-api.php' );
 require_once( __DIR__ . '/ap-svg-files.php' );
 require_once( __DIR__ . '/svg-scan.php' );
@@ -90,6 +91,7 @@ function vipgoci_run() {
 			'hashes-oauth-consumer-secret'
 		);
 
+
 	vipgoci_log(
 		'Initializing...',
 		array(
@@ -144,13 +146,18 @@ function vipgoci_run() {
 			'output:',
 			'dry-run:',
 			'informational-url:',
+			'post-generic-pr-support-comments:',
+			'post-generic-pr-support-comments-string:',
+			'post-generic-pr-support-comments-branches:',
 			'phpcs-path:',
 			'phpcs-standard:',
 			'phpcs-severity:',
 			'phpcs-sniffs-exclude:',
 			'phpcs-runtime-set:',
 			'phpcs-skip-scanning-via-labels-allowed:',
-			'phpcs-severity-repo-options-file:',
+			'repo-options:',
+			'repo-options-allowed:',
+			'phpcs-skip-folders:',
 			'hashes-api-url:',
 			'hashes-oauth-token:',
 			'hashes-oauth-token-secret:',
@@ -166,14 +173,15 @@ function vipgoci_run() {
 			'pixel-api-groupprefix:',
 			'php-path:',
 			'local-git-repo:',
-			'skip-folders:',
 			'lint:',
+			'lint-skip-folders:',
 			'phpcs:',
 			'svg-checks:',
 			'svg-scanner-path:',
 			'autoapprove:',
 			'autoapprove-filetypes:',
 			'autoapprove-label:',
+			'autoapprove-php-nonfunctional-changes:',
 			'help',
 			'debug-level:',
 			'hashes-api:',
@@ -260,6 +268,18 @@ function vipgoci_run() {
 			"\t" . '                                                      --dismissed-reviews-repost-comments' . PHP_EOL .
 			"\t" . '--informational-url=STRING     URL to documentation on what this bot does. Should ' . PHP_EOL .
 			"\t" . '                               start with https:// or https:// ' . PHP_EOL .
+			PHP_EOL .
+			"\t" . '--post-generic-pr-support-comments=BOOL            Whether to post generic comment to Pull-Requests ' . PHP_EOL .
+			"\t" . '                                                   with support-related information for users. Will ' . PHP_EOL .
+			"\t" . '                                                   be posted only once per Pull-Request. ' . PHP_EOL .
+			"\t" . '--post-generic-pr-support-comments-string=STRING   String to use when posting support-comment. ' . PHP_EOL .
+			"\t" . '--post-generic-pr-support-comments-branches=ARRAY  Only post support-comments to Pull-Requests ' . PHP_EOL .
+			"\t" . '                                                   with the target branches specified. The ' . PHP_EOL .
+			"\t" . '                                                   parameter can be a string with one value, or ' . PHP_EOL .
+			"\t" . '                                                   comma separated. A single "any" value will ' . PHP_EOL .
+			"\t" . '                                                   cause the message to be posted to any ' . PHP_EOL .
+			"\t" . '                                                   branch.' . PHP_EOL .
+			PHP_EOL .
 			"\t" . '--phpcs=BOOL                   Whether to run PHPCS (true/false)' . PHP_EOL .
 			"\t" . '--phpcs-path=FILE              Full path to PHPCS script' . PHP_EOL .
 			"\t" . '--phpcs-standard=STRING        Specify which PHPCS standard to use' . PHP_EOL .
@@ -272,13 +292,19 @@ function vipgoci_run() {
 			"\t" . '--phpcs-skip-scanning-via-labels-allowed=BOOL    Whether to allow users to skip ' . PHP_EOL .
 			"\t" . '                                                 PHPCS scanning of Pull-Requests ' . PHP_EOL .
 			"\t" . '                                                 via labels attached to them. ' . PHP_EOL .
-			"\t" . '--phpcs-severity-repo-options-file=BOOL     Whether to allow configuring phpcs-severity' . PHP_EOL .
-			"\t" . '                                            option via options file placed ' . PHP_EOL .
-			"\t" . '                                            in repository.' . PHP_EOL .
+			"\t" . '                                                 The labels should be named "skip-phpcs-scan".' . PHP_EOL .
+			"\t" . '--phpcs-skip-folders=STRING    Specify folders relative to root of the git repository in which ' . PHP_EOL .
+			"\t" . '                               files are not to be scanned using PHPCS. Values are comma' . PHP_EOL .
+			"\t" . '                               separated' . PHP_EOL .
 			"\t" . '--autoapprove=BOOL             Whether to auto-approve Pull-Requests' . PHP_EOL .
-			"\t" . '                               altering only files of certain types' . PHP_EOL .
+			"\t" . '                               altering only files of certain types or ' . PHP_EOL .
+			"\t" . '                               already approved files. ' . PHP_EOL .
 			"\t" . '--autoapprove-filetypes=STRING Specify what file-types can be auto-' . PHP_EOL .
-			"\t" . '                               approved. PHP files cannot be specified' . PHP_EOL .
+			"\t" . '                               approved. PHP files cannot be specified.' . PHP_EOL .
+			"\t" . '--autoapprove-php-nonfunctional-changes=BOOL    For autoapprovals, also consider ' . PHP_EOL .
+			"\t" . '                                                PHP files approved that contain ' . PHP_EOL .
+			"\t" . '                                                non-functional changes, such as  ' . PHP_EOL .
+			"\t" . '                                                whitespacing and comments alterations. ' . PHP_EOL .
 			"\t" . '--autoapprove-label=STRING     String to use for labels when auto-approving' . PHP_EOL .
 			"\t" . '--php-path=FILE                Full path to PHP, if not specified the' . PHP_EOL .
 			"\t" . '                               default in $PATH will be used instead' . PHP_EOL .
@@ -328,14 +354,12 @@ function vipgoci_run() {
 			"\t" . '                               some branches never get scanned. Separate branches' . PHP_EOL .
 			"\t" . '                               with commas' . PHP_EOL .
 			"\t" . '--local-git-repo=FILE          The local git repository to use for direct access to code' . PHP_EOL .
-			"\t" . '--skip-folders=STRING          Specify folders relative to the git repository in which not ' . PHP_EOL .
-			"\t" . '                               to look into for files to PHP lint or scan using PHPCS. ' . PHP_EOL .
-			"\t" . '                               Note that this argument is not employed with auto-approvals. ' . PHP_EOL .
-			"\t" . '                               Values are comma separated' . PHP_EOL .
 			"\t" . '--dry-run=BOOL                 If set to true, will not make any changes to any data' . PHP_EOL .
 			"\t" . '                               on GitHub -- no comments will be submitted, etc.' . PHP_EOL .
 			"\t" . '--output=FILE                  Where to save output made from running PHPCS' . PHP_EOL .
 			"\t" . '--lint=BOOL                    Whether to do PHP linting (true/false)' . PHP_EOL .
+			"\t" . '--lint-skip-folders=STRING     Specify folders relative to root of the git repository in which ' . PHP_EOL .
+			"\t" . '                               files should not be PHP linted. Values are comma separated.' . PHP_EOL .
 			PHP_EOL .
 			"\t" . '--help                         Displays this message' . PHP_EOL .
 			"\t" . '--env-options=STRING           Specifies configuration options to be read from environmental ' . PHP_EOL .
@@ -346,6 +370,11 @@ function vipgoci_run() {
 			"\t" . '                               respectively. This is useful for environments, such as ' . PHP_EOL .
 			"\t" . '                               TeamCity or GitHub Actions, where vital configuration. ' . PHP_EOL .
 			"\t" . '                               are specified via environmental variables. ' . PHP_EOL .
+			"\t" . '--repo-options=BOOL            Whether to allow configuring of --phpcs-severity ' . PHP_EOL .
+			"\t" . '                               and --post-generic-pr-support-comments via options file' . PHP_EOL .
+			"\t" . '                               (".vipgoci_options") placed in root of the repository.' . PHP_EOL .
+			"\t" . '--repo-options-allowed=STRING  Limits the options that can be set via repository options ' . PHP_EOL .
+			"\t" . '                               configuration file. Values are separated by commas. ' . PHP_EOL .
 			PHP_EOL .
 			"\t" . '--debug-level=NUMBER           Specify minimum debug-level of messages to print' . PHP_EOL .
 			"\t" . '                                -- higher number indicates more detailed debugging-messages.' . PHP_EOL .
@@ -471,6 +500,10 @@ function vipgoci_run() {
 		}
 	}
 
+	vipgoci_option_skip_folder_handle(
+		$options,
+		'phpcs-skip-folders'
+	);
 
 	/*
 	 * Process --review-comments-ignore -- expected
@@ -627,7 +660,17 @@ function vipgoci_run() {
 			$options['hashes-submission-teams-allowed']
 		);
 
+  /*
+	 * Ask for the hashes-oauth-* arguments
+	 * to be considered as sensitive options
+	 * when cleaning options for printing.
+	 */
+	vipgoci_options_sensitive_clean(
+		null,
+		$hashes_oauth_arguments
+	);
 
+  
 	/*
 	 * Handle --local-git-repo parameter
 	 */
@@ -643,15 +686,6 @@ function vipgoci_run() {
 		$options['local-git-repo']
 	);
 
-
-	/*
-	 * Handle --skip-folders parameter
-	 */
-	vipgoci_option_array_handle(
-		$options,
-		'skip-folders',
-		array()
-	);
 
 	/*
 	 * Handle optional --debug-level parameter
@@ -712,7 +746,7 @@ function vipgoci_run() {
 
 	vipgoci_option_bool_handle( $options, 'phpcs', 'true' );
 
-	vipgoci_option_bool_handle( $options, 'phpcs-severity-repo-options-file', 'false' );
+	vipgoci_option_bool_handle( $options, 'repo-options', 'false' );
 
 	vipgoci_option_bool_handle( $options, 'lint', 'true' );
 
@@ -741,12 +775,35 @@ function vipgoci_run() {
 
 	vipgoci_option_bool_handle( $options, 'autoapprove', 'false' );
 
+	vipgoci_option_bool_handle( $options, 'autoapprove-php-nonfunctional-changes', 'false' );
+
 	vipgoci_option_array_handle(
 		$options,
 		'autoapprove-filetypes',
 		array(),
 		'php'
 	);
+
+	/*
+	 * Handle parameters that enable posting of support-comments
+	 * to Pull-Requests.
+	 */
+
+	vipgoci_option_bool_handle( $options, 'post-generic-pr-support-comments', 'false' );
+
+	if ( ! empty( $options['post-generic-pr-support-comments-string'] ) ) {
+		$options['post-generic-pr-support-comments-string'] =
+			trim(
+				$options['post-generic-pr-support-comments-string']
+			);
+	}
+
+	vipgoci_option_array_handle(
+		$options,
+		'post-generic-pr-support-comments-branches',
+		array()
+	);
+
 
 	/*
 	 * Handle IRC API parameters
@@ -797,6 +854,18 @@ function vipgoci_run() {
 	unset( $irc_params_defined );
 
 	/*
+	 * Make sure the IRC API token
+	 * will be removed from output
+	 * of options.	
+	 */
+	vipgoci_options_sensitive_clean(
+		null,
+		array(
+			'irc-api-token',
+		)
+	);
+
+	/*
 	 * Handle settings for the pixel API.
 	 */
 	if ( isset( $options['pixel-api-url'] ) ) {
@@ -815,11 +884,83 @@ function vipgoci_run() {
 
 
 	/*
+	 * Handle --lint-skip-folders
+	 */
+	vipgoci_option_skip_folder_handle(
+		$options,
+		'lint-skip-folders'
+	);
+
+	/*
+	 * Handle --repo-options-allowed parameter
+	 */
+
+	vipgoci_option_array_handle(
+		$options,
+		'repo-options-allowed',
+		array(
+			'phpcs-severity',
+			'post-generic-pr-support-comments'
+		)
+	);
+
+	/*
 	 * Do some sanity-checking on the parameters
 	 *
 	 * Note: Parameters should not be set after
 	 * this point.
 	 */
+
+	/*
+	 * Check if the --output parameter looks
+	 * good, if defined.
+	 */
+	if ( ! empty( $options['output'] ) ) {
+		if ( ! is_string( $options['output'] ) ) {
+			vipgoci_sysexit(
+				'The --output argument should be a single string,' .
+				'but it looks like it is something else. Please check ' .
+				'if it is specified twice',
+				array(
+					'output' => print_r( $options['output'], true ),
+				),
+				VIPGOCI_EXIT_USAGE_ERROR
+			);
+		}
+
+		if ( is_dir( $options['output'] ) ) {
+			vipgoci_sysexit(
+				'The file specified in --output argument is invalid, ' .
+				'should not be a directory',
+				array(
+					'output' => print_r( $options['output'], true ),
+				),
+				VIPGOCI_EXIT_USAGE_ERROR
+			);
+		}
+
+		/*
+		 * Try writing empty string to it
+		 */
+		@file_put_contents(
+			$options['output'],
+			'',
+			FILE_APPEND
+		);
+
+		/*
+		 * Check if writing succeeded.
+		 */
+		if ( ! is_file( $options['output'] ) ) {
+			vipgoci_sysexit(
+				'The file specified in --output argument is invalid.',
+				array(
+					'output' => print_r( $options['output'], true ),
+				),
+				VIPGOCI_EXIT_USAGE_ERROR
+			);
+		}
+	}
 
 	$options['autoapprove-filetypes'] = array_map(
 		'strtolower',
@@ -979,6 +1120,16 @@ function vipgoci_run() {
 		);
 	}
 
+	/*
+	 * Hide GitHub token from printed options output.
+	 */
+	vipgoci_options_sensitive_clean(
+		null,
+		array(
+			'token',
+		)
+	);
+
 
 	/*
 	 * Check if the teams specified in the
@@ -1003,6 +1154,11 @@ function vipgoci_run() {
 				'type'		=> 'integer',
 				'valid_values'	=> array( 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ),
 			),
+
+			'post-generic-pr-support-comments' => array(
+				'type'		=> 'boolean',
+				'valid_values'	=> array( true, false ),
+			),
 		)
 	);
 
@@ -1014,23 +1170,12 @@ function vipgoci_run() {
 	 * Make sure not to print out any secrets.
 	 */
 
-	$options_clean = $options;
-	$options_clean['token'] = '***';
-
-	if ( isset( $options_clean['irc-api-token'] ) ) {
-		$options_clean['irc-api-token'] = '***';
-	}
-
-	foreach( $hashes_oauth_arguments as $hashes_oauth_argument ) {
-		if ( isset( $options_clean[ $hashes_oauth_argument ] ) ) {
-			$options_clean[ $hashes_oauth_argument ] = '***';
-		}
-	}
-
 	vipgoci_log(
 		'Starting up...',
 		array(
-			'options' => $options_clean
+			'options' => vipgoci_options_sensitive_clean(
+				$options
+			)
 		)
 	);
 
@@ -1043,9 +1188,6 @@ function vipgoci_run() {
 			VIPGOCI_STATS_HASHES_API => null,
 		),
 	);
-
-	unset( $options_clean );
-
 
 
 	/*
@@ -1182,6 +1324,24 @@ function vipgoci_run() {
 	);
 
 	/*
+	 * If configured to do so, post a generic comment
+	 * on the Pull-Request(s) with some helpful information.
+	 * Comment is set via option.
+	 * 
+	 * Make sure not to post comment again if it is already posted.
+	 */
+	if (
+		( true === $options['post-generic-pr-support-comments'] ) &&
+		( ! empty( $options['post-generic-pr-support-comments-string'] ) ) &&
+		( ! empty( $options['post-generic-pr-support-comments-branches'] ) )
+	) {
+		vipgoci_github_pr_generic_support_comment(
+			$options,
+			$prs_implicated
+		);
+	}
+
+	/*
 	 * Run all checks requested and store the
 	 * results in an array
 	 */
@@ -1216,6 +1376,12 @@ function vipgoci_run() {
 	 */
 	if ( true === $options['autoapprove'] ) {
 		/*
+		 * FIXME: Move the function-calls below
+		 * to auto-approval.php -- place them
+		 * in a wrapper, and not vipgoci_auto_approval()
+		 */
+
+		/*
 		 * If to auto-approve based on file-types,
 		 * scan through the files in the PR, and
 		 * register which can be auto-approved.
@@ -1224,6 +1390,20 @@ function vipgoci_run() {
 
 		if ( ! empty( $options[ 'autoapprove-filetypes' ] ) ) {
 			vipgoci_ap_file_types(
+				$options,
+				$auto_approved_files_arr
+			);
+		}
+
+		/*
+		 * Check if any of the files changed
+		 * contain any non-functional changes --
+		 * i.e., only whitespacing changes and
+		 * commenting changes -- and if so,
+		 * approve those files.
+		 */
+		if ( true === $options['autoapprove-php-nonfunctional-changes'] ) {
+			vipgoci_ap_nonfunctional_changes(
 				$options,
 				$auto_approved_files_arr
 			);
@@ -1429,13 +1609,13 @@ function vipgoci_run() {
 		foreach( array_keys(
 			$prs_comments_maxed
 		) as $pr_number ) {
-			vipgoci_github_pr_comments_error_msg(
+			vipgoci_github_pr_comments_generic_submit(
 				$options['repo-owner'],
 				$options['repo-name'],
 				$options['token'],
-				$options['commit'],
 				$pr_number,
-				VIPGOCI_REVIEW_COMMENTS_TOTAL_MAX
+				VIPGOCI_REVIEW_COMMENTS_TOTAL_MAX,
+				$options['commit']
 			);
 		}
 	}

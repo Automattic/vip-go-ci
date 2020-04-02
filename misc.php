@@ -398,6 +398,9 @@ function vipgoci_github_labels( $text_string ) {
  * Determine if the presented file has an
  * allowable file-ending, and if the file presented
  * is in a directory that is can be scanned.
+ *
+ * Note: $filename is expected to be a relative
+ * path to the git-repository root.
  */
 function vipgoci_filter_file_path(
 	$filename,
@@ -435,16 +438,39 @@ function vipgoci_filter_file_path(
 
 	if (
 		( null !== $filter ) &&
-		( isset( $filter['skip_folders' ] ) )
+		( isset( $filter['skip_folders'] ) )
 	) {
-		$file_dirs_arr = explode( '/', $file_dirs );
+		/*
+		 * Loop through all skip-folders.
+		 */
+		foreach(
+			$filter['skip_folders'] as $tmp_skip_folder_item
+		) {
+			/*
+			 * Note: All 'skip_folder' options should lack '/' at the
+			 * end and beginning.
+			 *
+			 * $filename we expect to be a relative path.
+			 */
 
-		foreach ( $file_dirs_arr as $file_dir_item ) {
-			if ( in_array(
-				$file_dir_item,
-				$filter['skip_folders']
-			) ) {
+			$file_folders_match = strpos(
+				$filename,
+				$tmp_skip_folder_item . '/'
+			);
+
+			/*
+			 * Check if the file matches any of the folders
+			 * that are to be skipped -- note that we enforce
+			 * that the folder has to be at the root of the
+			 * path to be a match.
+			 */
+			if (
+				( false !== $file_folders_match ) &&
+				( is_numeric( $file_folders_match ) ) &&
+				( 0 === $file_folders_match )
+			) {
 				$file_folders_match = true;
+				break;
 			}
 		}
 	}
@@ -489,8 +515,11 @@ function vipgoci_filter_file_path(
  * Recursively scan the git repository,
  * returning list of files that exist in
  * it, making sure to filter the result
+ *
+ * Note: Do not call with $base_path parameter,
+ * that is reserved for internal use only.
  */
-function vipgoci_scandir_git_repo( $path, $filter ) {
+function vipgoci_scandir_git_repo( $path, $filter, $base_path = null ) {
 	$result = array();
 
 	vipgoci_log(
@@ -499,10 +528,21 @@ function vipgoci_scandir_git_repo( $path, $filter ) {
 		array(
 			'path' => $path,
 			'filter' => $filter,
+			'base_path' => $base_path,
 		),
 		2
 	);
 
+	/*
+	 * If no base path is given,
+	 * use $path. This will be used
+	 * when making sure we do not
+	 * accidentally filter by the filesystem
+	 * outside of the git-repository (see below).
+ 	 */
+	if ( null === $base_path ) {
+		$base_path = $path;
+	}
 
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'git_repo_scandir' );
 
@@ -530,7 +570,8 @@ function vipgoci_scandir_git_repo( $path, $filter ) {
 			 */
 			$tmp_result = vipgoci_scandir_git_repo(
 				$path . DIRECTORY_SEPARATOR . $value,
-				$filter
+				$filter,
+				$base_path
 			);
 
 			foreach ( $tmp_result as $tmp_result_item ) {
@@ -542,10 +583,28 @@ function vipgoci_scandir_git_repo( $path, $filter ) {
 			continue;
 		}
 
-		// Filter out files not with desired line-ending
+		/*
+		 * Filter out files not with desired line-ending
+		 * or are located in directories that should be
+		 * ignored.
+		 */
 		if ( null !== $filter ) {
-			if ( false === vipgoci_filter_file_path(
+			/*
+			 * Remove the portion of the path
+			 * that leads to the git repository,
+			 * as we only want to filter by files in the
+			 * git repository it self here. This is to
+			 * make sure "skip_folders" filtering works
+			 * correctly and does not accidentally take into
+			 * consideration the path leading to the git repository.
+			 */
+			$file_path_without_git_repo = substr(
 				$path . DIRECTORY_SEPARATOR . $value,
+				strlen( $base_path ) + 1 // Send in what looks like a relative path
+			);
+
+			if ( false === vipgoci_filter_file_path(
+				$file_path_without_git_repo,
 				$filter
 			) ) {
 				continue;

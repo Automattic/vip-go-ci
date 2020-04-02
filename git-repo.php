@@ -352,3 +352,69 @@ function vipgoci_gitrepo_blame_for_file(
 
 	return $blame_log;
 }
+
+/*
+ * Get contents of a particular file at a
+ * particular commit-ID from the local git
+ * repository.
+ */
+function vipgoci_gitrepo_get_file_at_commit(
+	$commit_id,
+	$file_name,
+	$local_git_repo,
+	$local_git_repo_head_commit_id
+) {
+	/*
+	 * Check if repository is looking good.
+	 */
+	vipgoci_gitrepo_ok(
+		$local_git_repo_head_commit_id,
+		$local_git_repo
+	);
+
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'git_repo_get_file_at_commit' );
+
+	vipgoci_log(
+		'Fetching contents of a particular file from the local git repository',
+		array(
+			'commmit_id'			=> $commit_id,
+			'file_name'			=> $file_name,
+			'local_git_repo'		=> $local_git_repo,
+			'local_git_repo_head_commit_id'	=> $local_git_repo_head_commit_id,
+		)
+	);
+
+	/*
+	 * Compose command to get the file contents.
+	 */
+
+	$cmd = sprintf(
+		'%s -C %s show %s:%s 2>&1',
+		escapeshellcmd( 'git' ),
+		escapeshellarg( $local_git_repo ),
+		escapeshellarg( $commit_id ),
+		escapeshellarg( $file_name )
+	);
+
+	/* Actually execute */
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'git_cli' );
+
+	$result = shell_exec( $cmd );
+
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'git_cli' );
+
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'git_repo_get_file_at_commit' );
+
+	/*
+	 * If the file did not exist in
+	 * this revision, return null.
+	 */
+	if ( strpos(
+		$result,
+		'fatal: Path '
+	) === 0 ) {
+		return null;
+	}
+
+	return $result;
+} 

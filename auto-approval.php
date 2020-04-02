@@ -370,7 +370,12 @@ function vipgoci_autoapproval_do_approve(
 			'Auto-approved Pull-Request #' .
 				(int) $pr_item->number . ' as it ' .
 				'contains only auto-approvable files' .
-				' -- either pre-approved files _or_ file-types that are ' .
+				' -- either pre-approved files' .
+				(
+					true === $options['autoapprove-php-nonfunctional-changes'] ?
+					', non-functional changes to PHP files ' : ''
+				) .
+				' _or_ file-types that are ' .
 				'auto-approvable (' .
 				implode(
 					', ',
@@ -507,12 +512,6 @@ function vipgoci_autoapproval_do_approve(
  * Pull-Request(s) that only alter files with specific
  * file-type endings. If the PR only alters these kinds
  * of files, the function will auto-approve them, and else not.
- *
- * Note that the --skip-folders argument is ignored
- * in this function. This is intentional, because if this
- * function did not ignore these folders, it might approve
- * Pull-Requests containing files that are actually used
- * in production and could contain dangerous code.
  */
 
 function vipgoci_auto_approval(

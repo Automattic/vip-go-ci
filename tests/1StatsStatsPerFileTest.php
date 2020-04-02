@@ -34,8 +34,8 @@ final class StatsStatsPerFileTest extends TestCase {
 
 		$this->options[ 'github-token' ] =
 			vipgoci_unittests_get_config_value(
-				'github-token',
 				'git-secrets',
+				'github-token',
 				true // Fetch from secrets file
 			);
 	}
