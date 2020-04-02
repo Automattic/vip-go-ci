@@ -4,7 +4,7 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 
 use PHPUnit\Framework\TestCase;
 
-final class ApHashesApiFileApprovedTest extends TestCase {
+final class ApHashesCalculateSha1SumForFileTest extends TestCase {
 	var $options_git = array(
 		'repo-owner'			=> null,
 		'repo-name'			=> null,
