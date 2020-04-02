@@ -16,6 +16,7 @@ require_once( __DIR__ . '/ap-hashes-api.php' );
 require_once( __DIR__ . '/ap-svg-files.php' );
 require_once( __DIR__ . '/svg-scan.php' );
 require_once( __DIR__ . '/other-web-services.php' );
+require_once( __DIR__ . '/support-level-label.php' );
 
 
 /**
@@ -149,6 +150,7 @@ function vipgoci_run() {
 			'post-generic-pr-support-comments:',
 			'post-generic-pr-support-comments-string:',
 			'post-generic-pr-support-comments-branches:',
+			'set-support-level-label:',
 			'phpcs-path:',
 			'phpcs-standard:',
 			'phpcs-severity:',
@@ -277,6 +279,9 @@ function vipgoci_run() {
 			"\t" . '                                                   comma separated. A single "any" value will ' . PHP_EOL .
 			"\t" . '                                                   cause the message to be posted to any ' . PHP_EOL .
 			"\t" . '                                                   branch.' . PHP_EOL .
+			PHP_EOL .
+			"\t" . '--set-support-level-label=BOOL    Whether to attach support level labels to Pull-Requests. ' . PHP_EOL .
+			"\t" . '                                  Will fetch information on support levels from an API. ' . PHP_EOL .
 			PHP_EOL .
 			"\t" . '--phpcs=BOOL                   Whether to run PHPCS (true/false)' . PHP_EOL .
 			"\t" . '--phpcs-path=FILE              Full path to PHPCS script' . PHP_EOL .
@@ -740,6 +745,12 @@ function vipgoci_run() {
 		array()
 	);
 
+	/*
+	 * Handle option for setting support
+	 * labels.
+	 */
+	
+	vipgoci_option_bool_handle( $options, 'set-support-level-label', 'false' );
 
 	/*
 	 * Handle IRC API parameters
@@ -1556,6 +1567,14 @@ function vipgoci_run() {
 		}
 	}
 
+	/*
+	 * Add support level label, if:
+	 * - configured to do so
+	 * - data is available in repo-meta API
+	 */
+	vipgoci_support_level_label_set(
+		$options
+	);
 
 	/*
 	 * At this point, we have started to prepare
