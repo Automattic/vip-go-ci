@@ -18,10 +18,6 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 	);
 
 	protected function setUp() {
-		vipgoci_cache(
-			VIPGOCI_CACHE_CLEAR
-		);
-
 		vipgoci_unittests_get_config_values(
 			'git',
 			$this->options_git
