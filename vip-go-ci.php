@@ -299,6 +299,7 @@ function vipgoci_run() {
 			"\t" . '--phpcs-skip-folders-in-repo-options-file=BOOL   Allows folders that are not to be PHPCS ' . PHP_EOL .
 			"\t" . '                                                 scanned to be specified in options file ' . PHP_EOL .
 			"\t" . '                                                 in repository (.vipgoci_phpcs_skip_folders).' . PHP_EOL .
+			"\t" . '                                                 Folders should be separated by newlines.' . PHP_EOL .
 			PHP_EOL .
 			"\t" . '--autoapprove=BOOL             Whether to auto-approve Pull-Requests' . PHP_EOL .
 			"\t" . '                               altering only files of certain types or ' . PHP_EOL .
@@ -352,7 +353,8 @@ function vipgoci_run() {
 			"\t" . '                               files should not be PHP linted. Values are comma separated.' . PHP_EOL .
 			"\t" . '--lint-skip-folders-in-repo-options-file=BOOL   Allows folders that are not to be PHP Linted ' . PHP_EOL .
 			"\t" . '                                                to be specified in options file in repository ' . PHP_EOL .
-			"\t" . '                                                (.vipgoci_lint_skip_folders).' . PHP_EOL .
+			"\t" . '                                                (.vipgoci_lint_skip_folders). Folders should be ' . PHP_EOL .
+			"\t" . '                                                separated by newlines.' . PHP_EOL .
 			PHP_EOL .
 			"\t" . '--help                         Displays this message' . PHP_EOL .
 			"\t" . '--env-options=STRING           Specifies configuration options to be read from environmental ' . PHP_EOL .
