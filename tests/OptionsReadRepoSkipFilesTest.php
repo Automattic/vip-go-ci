@@ -14,6 +14,7 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 
 	var $options_git_repo_tests = array(
 		'commit-test-options-read-repo-skip-files-1'	=> null,
+		'commit-test-options-read-repo-skip-files-2'	=> null,
 	);
 
 	protected function setUp() {
@@ -36,14 +37,6 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 
 		$this->options['lint-skip-folders-in-repo-options-file'] = false;
 
-		$this->options['commit'] =
-			$this->options['commit-test-options-read-repo-skip-files-1'];
-
-		$this->options['local-git-repo'] =
-			vipgoci_unittests_setup_git_repo(
-				$this->options
-		);
-
 		$this->options['token'] = null;
 	}
 
@@ -65,10 +58,18 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 	 * Tests reading 'skip-options' from file in repository
 	 */
 	public function testOptionsReadRepoFilePhpcsTest1() {
+		$this->options['commit'] =
+			$this->options['commit-test-options-read-repo-skip-files-1'];
+
 		$this->options['phpcs-skip-folders-in-repo-options-file'] = false;
 	
 		$this->options['phpcs-skip-folders'] = array(
 			'qqq-75x-n/plugins'
+		);
+
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
 		);
 
 		vipgoci_options_read_repo_skip_files(
@@ -86,12 +87,19 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_options_read_repo_skip_files
 	 */
-
 	public function testOptionsReadRepoFilePhpcsTest2() {
+		$this->options['commit'] =
+			$this->options['commit-test-options-read-repo-skip-files-1'];
+
 		$this->options['phpcs-skip-folders-in-repo-options-file'] = true;
 
 		$this->options['phpcs-skip-folders'] = array(
 			'qqq-75x-n/plugins'
+		);
+
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
 		);
 
 		vipgoci_options_read_repo_skip_files(
@@ -112,14 +120,52 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 
 	/**
 	 * @covers ::vipgoci_options_read_repo_skip_files
+	 *
+	 * Uses commit without options files for skip-folders.
 	 */
+	public function testOptionsReadRepoFilePhpcsTest3() {
+		$this->options['commit'] =
+			$this->options['commit-test-options-read-repo-skip-files-2'];
 
+		$this->options['phpcs-skip-folders-in-repo-options-file'] = true;
+
+		$this->options['phpcs-skip-folders'] = array(
+			'qqq-75x-n/plugins'
+		);
+
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+		);
+
+		vipgoci_options_read_repo_skip_files(
+			$this->options
+		);
+
+		$this->assertEquals(
+			array(
+				'qqq-75x-n/plugins',
+			),
+			$this->options['phpcs-skip-folders']
+		);		
+	}
+
+	/**
+	 * @covers ::vipgoci_options_read_repo_skip_files
+	 */
 	public function testOptionsReadRepoFileLintTest1() {
-		$this->options['lint-skip-folders-in-repo-options-file'] = false;
+		$this->options['commit'] =
+			$this->options['commit-test-options-read-repo-skip-files-1'];
 
+		$this->options['lint-skip-folders-in-repo-options-file'] = false;
 
 		$this->options['lint-skip-folders'] = array(
 			'qqq-94x-L/plugins'
+		);
+
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
 		);
 
 		vipgoci_options_read_repo_skip_files(
@@ -137,12 +183,19 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_options_read_repo_skip_files
 	 */
-
 	public function testOptionsReadRepoFileLintTest2() {
+		$this->options['commit'] =
+			$this->options['commit-test-options-read-repo-skip-files-1'];
+
 		$this->options['lint-skip-folders-in-repo-options-file'] = true;
 
 		$this->options['lint-skip-folders'] = array(
 			'qqq-94x-L/plugins'
+		);
+
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
 		);
 
 		vipgoci_options_read_repo_skip_files(
@@ -156,6 +209,38 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 				'bar-foo-3/m-900',
 				'foo-foo-9/t-folder-750',
 				'foo-test/folder7',
+			),
+			$this->options['lint-skip-folders']
+		);
+	}
+
+	/**
+	 * @covers ::vipgoci_options_read_repo_skip_files
+	 *
+	 * Uses commit without options files for skip-folders.
+	 */
+	public function testOptionsReadRepoFileLintTest3() {
+		$this->options['commit'] =
+			$this->options['commit-test-options-read-repo-skip-files-2'];
+
+		$this->options['lint-skip-folders-in-repo-options-file'] = true;
+
+		$this->options['lint-skip-folders'] = array(
+			'qqq-94x-L/plugins'
+		);
+
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+		);
+
+		vipgoci_options_read_repo_skip_files(
+			$this->options
+		);
+
+		$this->assertEquals(
+			array(
+				'qqq-94x-L/plugins',
 			),
 			$this->options['lint-skip-folders']
 		);
