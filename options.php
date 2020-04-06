@@ -245,6 +245,167 @@ function vipgoci_options_read_repo_file(
 }
 
 /*
+ * Read from repository files which folders are to
+ * be skipped from PHPCS scanning and PHP Linting,
+ * if configured to do so, and join with any folders
+ * specified on the command line.
+ */
+function vipgoci_options_read_repo_skip_files(
+	&$options
+) {
+	foreach(
+		array( 'phpcs', 'lint' ) as $scan_type
+	) {
+		/*
+		 * If not configured to read
+		 * from options files, skip.
+		 */
+		if ( true !== $options[ $scan_type . '-skip-folders-in-repo-options-file' ] ) {
+			vipgoci_log(
+				'Not reading from repository files which ' .
+				$scan_type . ' folders can be skipped, as not ' .
+				'configured to do so',
+				array(
+					$scan_type . '_skip_folders_in_repo_options_file'	=>
+						$options[ $scan_type . '-skip-folders-in-repo-options-file' ]
+				)
+			);
+
+			continue;
+		}
+	
+		vipgoci_log(
+			'Reading from repository files which folders can ' .
+				'be skipped from ' . $scan_type . ' scanning',
+			array(
+				$scan_type . '_skip_folders_in_repo_options_file'	=>
+					$options[ $scan_type . '-skip-folders-in-repo-options-file' ]
+			)
+		);
+
+		$type_options_file_name = '.vipgoci_' . $scan_type . '_skip_folders';
+
+		$type_options_file_contents =
+			vipgoci_gitrepo_fetch_committed_file(
+				$options['repo-owner'],
+				$options['repo-name'],
+				$options['token'],
+				$options['commit'],
+				$type_options_file_name,
+				$options['local-git-repo']
+			);
+
+		if ( empty(
+			$type_options_file_contents
+		) ) {
+			vipgoci_log(
+				'No folders skippable found in repository for ' . $scan_type . ', so skipping',
+				array(
+					'type_options_file_name'	=> $type_options_file_name,
+				)
+			);
+
+			continue;
+		}
+
+		/*
+		 * Options files can use
+		 * new-lines as separators
+		 * between items. Here we
+		 * emulate the behaviour
+	 	 * found on the command-line,
+		 * which is to use commas.
+		 */
+		$type_options_file_contents =
+			str_replace(
+				"\n",
+				',',
+			$type_options_file_contents
+		);
+
+		/*
+		 * Create temporary options
+		 * to manage folders to be
+		 * skipped, set with value
+		 * read from repository options
+		 * file.
+		 */
+
+		$tmp_options = array(
+			'tmp-skip-folders' =>
+				$type_options_file_contents
+		);
+
+		/*
+		 * Use standard function to
+		 * handle what we read.
+		 */
+		vipgoci_option_skip_folder_handle(
+			$tmp_options,
+			'tmp-skip-folders'
+		);
+
+		/*
+		 * Remove any possible empty
+		 * lines, etc.
+		 */
+		$tmp_options['tmp-skip-folders'] = array_filter(
+			$tmp_options['tmp-skip-folders'],
+			'strlen'
+		);
+
+		/*
+		 * If the parsed result is
+		 * an array, and it is not empty,
+		 * join it with any existing
+		 * folders.
+		 */
+		if (
+			( is_array(
+				$tmp_options[
+					'tmp-skip-folders'
+				]
+			) )
+			&&
+			( count(
+				$tmp_options[
+					'tmp-skip-folders'
+				]
+			) > 0 )
+		) {
+
+			$log_msg = 'Merging folders found in configuration ' .
+					'file with possible other folders';
+
+			$options[ $scan_type . '-skip-folders' ] = array_merge(
+				$options[ $scan_type . '-skip-folders'],
+				$tmp_options['tmp-skip-folders']
+			);
+		}
+
+		else {
+			$log_msg = 'No folders found to merge with options, skipping';
+		}
+
+		vipgoci_log(
+			$log_msg,
+			array(
+				'scan_type'
+					=> $scan_type,
+
+				'file_options_' . $scan_type . '_skip_folders' =>
+					$tmp_options['tmp-skip-folders'],
+
+				'current_' . $scan_type . '_skip_folders' =>
+					$options[ $scan_type . '-skip-folders'],
+			)
+		);
+
+		unset( $tmp_options );
+	}
+}
+
+/*
  * Read options from environmental variables
  * as specified on the command-line. Does not overwrite
  * options already specified on the command-line even if
