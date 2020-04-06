@@ -256,6 +256,10 @@ function vipgoci_options_read_repo_skip_files(
 	foreach(
 		array( 'phpcs', 'lint' ) as $scan_type
 	) {
+		/*
+		 * If not configured to read
+		 * from options files, skip.
+		 */
 		if ( true !== $options[ $scan_type . '-skip-folders-in-repo-options-file' ] ) {
 			vipgoci_log(
 				'Not reading from repository files which ' .
@@ -304,6 +308,14 @@ function vipgoci_options_read_repo_skip_files(
 			continue;
 		}
 
+		/*
+		 * Options files can use
+		 * new-lines as separators
+		 * between items. Here we
+		 * emulate the behaviour
+	 	 * found on the command-line,
+		 * which is to use commas.
+		 */
 		$type_options_file_contents =
 			str_replace(
 				"\n",
@@ -334,6 +346,15 @@ function vipgoci_options_read_repo_skip_files(
 		);
 
 		/*
+		 * Remove any possible empty
+		 * lines, etc.
+		 */
+		$tmp_options['tmp-skip-folders'] = array_filter(
+			$tmp_options['tmp-skip-folders'],
+			'strlen'
+		);
+
+		/*
 		 * If the parsed result is
 		 * an array, and it is not empty,
 		 * join it with any existing
@@ -354,7 +375,7 @@ function vipgoci_options_read_repo_skip_files(
 		) {
 
 			$log_msg = 'Merging folders found in configuration ' .
-					' file with possible other folders';
+					'file with possible other folders';
 
 			$options[ $scan_type . '-skip-folders' ] = array_merge(
 				$options[ $scan_type . '-skip-folders'],
