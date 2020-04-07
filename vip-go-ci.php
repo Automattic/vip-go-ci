@@ -155,9 +155,10 @@ function vipgoci_run() {
 			'phpcs-sniffs-exclude:',
 			'phpcs-runtime-set:',
 			'phpcs-skip-scanning-via-labels-allowed:',
+			'phpcs-skip-folders:',
+			'phpcs-skip-folders-in-repo-options-file:',
 			'repo-options:',
 			'repo-options-allowed:',
-			'phpcs-skip-folders:',
 			'hashes-api-url:',
 			'hashes-oauth-token:',
 			'hashes-oauth-token-secret:',
@@ -175,6 +176,7 @@ function vipgoci_run() {
 			'local-git-repo:',
 			'lint:',
 			'lint-skip-folders:',
+			'lint-skip-folders-in-repo-options-file:',
 			'phpcs:',
 			'svg-checks:',
 			'svg-scanner-path:',
@@ -296,6 +298,11 @@ function vipgoci_run() {
 			"\t" . '--phpcs-skip-folders=STRING    Specify folders relative to root of the git repository in which ' . PHP_EOL .
 			"\t" . '                               files are not to be scanned using PHPCS. Values are comma' . PHP_EOL .
 			"\t" . '                               separated' . PHP_EOL .
+			"\t" . '--phpcs-skip-folders-in-repo-options-file=BOOL   Allows folders that are not to be PHPCS ' . PHP_EOL .
+			"\t" . '                                                 scanned to be specified in file in ' . PHP_EOL .
+			"\t" . '                                                 repository (.vipgoci_phpcs_skip_folders).' . PHP_EOL .
+			"\t" . '                                                 Folders should be separated by newlines.' . PHP_EOL .
+			PHP_EOL .
 			"\t" . '--autoapprove=BOOL             Whether to auto-approve Pull-Requests' . PHP_EOL .
 			"\t" . '                               altering only files of certain types or ' . PHP_EOL .
 			"\t" . '                               already approved files. ' . PHP_EOL .
@@ -357,9 +364,14 @@ function vipgoci_run() {
 			"\t" . '--dry-run=BOOL                 If set to true, will not make any changes to any data' . PHP_EOL .
 			"\t" . '                               on GitHub -- no comments will be submitted, etc.' . PHP_EOL .
 			"\t" . '--output=FILE                  Where to save output made from running PHPCS' . PHP_EOL .
+			PHP_EOL .
 			"\t" . '--lint=BOOL                    Whether to do PHP linting (true/false)' . PHP_EOL .
 			"\t" . '--lint-skip-folders=STRING     Specify folders relative to root of the git repository in which ' . PHP_EOL .
 			"\t" . '                               files should not be PHP linted. Values are comma separated.' . PHP_EOL .
+			"\t" . '--lint-skip-folders-in-repo-options-file=BOOL   Allows folders that are not to be PHP Linted ' . PHP_EOL .
+			"\t" . '                                                to be specified in file in repository ' . PHP_EOL .
+			"\t" . '                                                (.vipgoci_lint_skip_folders). Folders should be ' . PHP_EOL .
+			"\t" . '                                                separated by newlines.' . PHP_EOL .
 			PHP_EOL .
 			"\t" . '--help                         Displays this message' . PHP_EOL .
 			"\t" . '--env-options=STRING           Specifies configuration options to be read from environmental ' . PHP_EOL .
@@ -746,15 +758,20 @@ function vipgoci_run() {
 
 	vipgoci_option_bool_handle( $options, 'phpcs', 'true' );
 
+	vipgoci_option_bool_handle( $options, 'phpcs-skip-folders-in-repo-options-file', 'false' );
+
+	vipgoci_option_bool_handle( $options, 'phpcs-skip-scanning-via-labels-allowed', 'false' );
+
 	vipgoci_option_bool_handle( $options, 'repo-options', 'false' );
 
 	vipgoci_option_bool_handle( $options, 'lint', 'true' );
+
+	vipgoci_option_bool_handle( $options, 'lint-skip-folders-in-repo-options-file', 'false' );
 
 	vipgoci_option_bool_handle( $options, 'dismiss-stale-reviews', 'false' );
 
 	vipgoci_option_bool_handle( $options, 'dismissed-reviews-repost-comments', 'true' );
 
-	vipgoci_option_bool_handle( $options, 'phpcs-skip-scanning-via-labels-allowed', 'false' );
 
 	if (
 		( false === $options['lint'] ) &&
@@ -1162,6 +1179,16 @@ function vipgoci_run() {
 		)
 	);
 
+	/*
+	 * Folders to skip from PHPCS or PHP Linting
+	 * can be read from a config-file in the
+	 * repository. Read this here and set in
+	 * options.
+	 */
+
+	vipgoci_options_read_repo_skip_files(
+		$options
+	);
 
 	/*
 	 * Log that we started working,
