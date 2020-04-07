@@ -52,6 +52,7 @@ function vipgoci_ap_hashes_calculate_sha1sum_for_file(
 	$file_sha1 = sha1( $file_contents_stripped );
 
 	unlink( $file_temp_path );
+
 	unset( $file_contents );
 	unset( $file_contents_stripped );
 
@@ -64,7 +65,7 @@ function vipgoci_ap_hashes_calculate_sha1sum_for_file(
  * specified file is approved.
  */
 
-function vipgoci_ap_hashes_api_file_approved(
+function vipgoci_ap_hashes_api_check_file_approved(
 	$options,
 	$file_path
 ) {
@@ -356,7 +357,7 @@ function vipgoci_ap_hashes_api_scan_commit(
 			 * status.
 			 */
 
-			$approval_status = vipgoci_ap_hashes_api_file_approved(
+			$approval_status = vipgoci_ap_hashes_api_check_file_approved(
 				$options,
 				$pr_diff_file_name
 			);
@@ -842,7 +843,7 @@ function vipgoci_ap_hashes_api_submit_approved_files(
 			 * Skip files that are approved already or
 			 * whose approval-status cannot be determined.
 			 */
-			$file_approved = vipgoci_ap_hashes_api_file_approved(
+			$file_approved = vipgoci_ap_hashes_api_check_file_approved(
 				$options,
 				$pr_comment->path
 			);
