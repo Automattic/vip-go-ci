@@ -12,6 +12,7 @@ final class GitHubPrReviewReactionsTest extends TestCase {
 
 	var $options_git_repo_tests = array(
 		'comment-test-pr-review-reactions-get-1'	=> null,
+		'comment-test-pr-review-reactions-add-1'	=> null,
 	);
 
 	protected function setUp() {
@@ -47,6 +48,37 @@ final class GitHubPrReviewReactionsTest extends TestCase {
 		$this->options			= null;
 	}
 
+	/*
+	 * Local, non-caching, function to
+	 * fetch reactions to a comment.
+	 */
+	protected function _GitHubAPIgetReactions(
+		$comment_id
+	) {
+		$github_url =
+			VIPGOCI_GITHUB_BASE_URL . '/' .
+			'repos/' .
+			rawurlencode( $this->options['repo-owner'] ) . '/' .
+			rawurlencode( $this->options['repo-name'] ) . '/' .
+			'pulls/' .
+			'comments/' .
+			rawurlencode( $comment_id ) . '/' .
+			'reactions?' .
+			'page=' . rawurlencode( 1 ) . '&' .
+			'per_page=' . rawurlencode( 10 );
+
+		$reactions_arr =
+			json_decode(
+				vipgoci_github_fetch_url(
+					$github_url,
+					$this->options['token'],
+					true // Preview feature
+				)
+			);
+
+		return $reactions_arr;
+	}
+
 	/**
 	 * @covers ::vipgoci_github_pr_review_reactions_get
 	 *
@@ -67,7 +99,7 @@ final class GitHubPrReviewReactionsTest extends TestCase {
 		$this->assertCount(
 			2,
 			$reactions_arr
-		);	
+		);
 
 		$this->assertEquals(
 			67509020,
@@ -123,7 +155,7 @@ final class GitHubPrReviewReactionsTest extends TestCase {
 		$this->assertCount(
 			2,
 			$reactions_arr
-		);	
+		);
 
 		$this->assertEquals(
 			67509020,
@@ -139,7 +171,7 @@ final class GitHubPrReviewReactionsTest extends TestCase {
 			'+1',
 			$reactions_arr[0]->content
 		);
-	
+
 		$this->assertEquals(
 			67513318,
 			$reactions_arr[1]->id
@@ -179,7 +211,7 @@ final class GitHubPrReviewReactionsTest extends TestCase {
 		$this->assertCount(
 			0,
 			$reactions_arr
-		);	
+		);
 	}
 
 	/**
@@ -205,7 +237,7 @@ final class GitHubPrReviewReactionsTest extends TestCase {
 		$this->assertCount(
 			1,
 			$reactions_arr
-		);	
+		);
 
 		$this->assertEquals(
 			67509020,
@@ -246,7 +278,7 @@ final class GitHubPrReviewReactionsTest extends TestCase {
 		$this->assertCount(
 			0,
 			$reactions_arr
-		);	
+		);
 	}
 
 	/**
@@ -273,7 +305,7 @@ final class GitHubPrReviewReactionsTest extends TestCase {
 		$this->assertCount(
 			1,
 			$reactions_arr
-		);	
+		);
 
 		$this->assertEquals(
 			67509020,
@@ -315,6 +347,125 @@ final class GitHubPrReviewReactionsTest extends TestCase {
 		$this->assertCount(
 			0,
 			$reactions_arr
-		);	
+		);
+	}
+
+	/**
+	 * @covers ::vipgoci_github_pr_review_reaction_add
+	 *
+	 * Test adding a new reaction to a PR review comment.
+	 */
+	public function testGitHubPrReviewReactionAdd1() {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( ),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
+		/*
+		 * Check if there are no reactions
+		 * already to this comment.
+		 */
+		$reactions_arr = $this->_GitHubAPIgetReactions(
+			$this->options['comment-test-pr-review-reactions-add-1']
+		);
+
+		$this->assertCount(
+			0,
+			$reactions_arr
+		);
+
+		/*
+		 * Try adding a reaction.
+		 */
+		vipgoci_unittests_output_suppress();
+
+		vipgoci_github_pr_review_reaction_add(
+			$this->options['repo-owner'],
+			$this->options['repo-name'],
+			$this->options['comment-test-pr-review-reactions-add-1'],
+			'hooray',
+			$this->options['token']
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		/*
+		 * Check if the reaction got through.
+		 */
+		$reactions_arr = $this->_GitHubAPIgetReactions(
+			$this->options['comment-test-pr-review-reactions-add-1']
+		);
+
+		$this->assertCount(
+			1,
+			$reactions_arr
+		);
+
+		$this->assertEquals(
+			'hooray',
+			$reactions_arr[0]->content
+		);
+	}
+
+	/**
+	 * @covers ::vipgoci_github_pr_review_reaction_delete
+	 *
+	 * Test removing a reaction to a PR review comment.
+	 */
+	public function testGitHubPrReviewReactionDelete1() {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( ),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
+		/*
+		 * There should be one reaction
+		 * left over from previous test.
+		 * Check if it is here, delete it
+		 * and check if it disappeares.
+		 */
+		$reactions_arr = $this->_GitHubAPIgetReactions(
+			$this->options['comment-test-pr-review-reactions-add-1']
+		);
+
+		$this->assertCount(
+			1,
+			$reactions_arr
+		);
+
+		$this->assertEquals(
+			'hooray',
+			$reactions_arr[0]->content
+		);
+
+		/*
+		 * Delete reaction.
+		 */
+		vipgoci_github_reaction_delete(
+			$reactions_arr[0]->id,
+			$this->options['token']
+		);
+
+		/*
+		 * Check if gone.
+		 */
+		$reactions_arr = $this->_GitHubAPIgetReactions(
+			$this->options['comment-test-pr-review-reactions-add-1']
+		);
+
+		$this->assertCount(
+			0,
+			$reactions_arr
+		);
 	}
 }
