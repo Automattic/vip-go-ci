@@ -362,7 +362,7 @@ For example:
 
 > ./vip-go-ci.php --lint-skip-folders="foo,Tests/bar"
 
--- with this option in place, any files in the `foo/` or `Tests/bar` folders and subfolders will be exempt from PHP linting. The folders are relative to the git repository.
+-- with this option in place, any files in the `foo/` or `Tests/bar` folders and subfolders will be exempt from PHP linting. The folders are relative to the git repository. Please note that regular expressions are not supported at this time.
 
 Folders can also be specified in files placed at the root of the repository, `.vipgoci_lint_skip_folders` for PHP linting and `.vipgoci_phpcs_skip_folders` for PHPCS scanning. Each folder should be on a line of its own in the relevant file, and each path should be relative to the root of the repository.  This feature is activated using command-line options, for example:
 
