@@ -419,7 +419,7 @@ To run the unitests for `vip-go-ci`, you will need to install `phpunit` and any 
 
 By using this command, you will run the whole test-suite and get feeback on any errors or warnings. 
 
-Note that by default, some tests will be skipped, as these will require a GitHub token to write to GitHub in order to complete, or access to the hashes-to-hashes database. To enable the testing of these, you need to set up a `unittests-secrets.ini` file in the root of the repository. It should include the following fields:
+Note that by default, some tests will be skipped, as these will require a GitHub token to write to GitHub in order to complete, need access to the hashes-to-hashes database, or to a repo-meta API. To enable the testing of these, you need to set up a `unittests-secrets.ini` file in the root of the repository. It should include the following fields:
 
 ```
 [auto-approvals-secrets]
@@ -434,6 +434,14 @@ github-token= ; Personal access token from GitHub
 team-id=      ; Team ID to test if present, this is a numeric
 team-slug=    ; Team slug to test if present, is a string. Should be referencing the same team as team-id.
 org-name=     ; GitHub organisation name to use in testing
+
+[repo-meta-api-secrets]
+repo-meta-api-base-url=         ; URL to base of meta API
+repo-meta-api-user-id=          ; User ID for the meta API
+repo-meta-api-access-token=     ; Access token for the meta API
+repo-owner=                     ; Repository owner for the test, should be found in meta API
+repo-name=                      ; Repository name for the test
+support-tier-name=              ; Name of support tier given by meta API
 ```
 
 This file is not included, and needs to be configured manually. When that is complete, the tests can be re-run.
