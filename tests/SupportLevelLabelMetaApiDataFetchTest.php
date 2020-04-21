@@ -5,29 +5,29 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 use PHPUnit\Framework\TestCase;
 
 final class SupportLevelLabelMetaApiDataFetchTest extends TestCase {
-	var $options_meta_api = array(
-		'api-base-url'		=> null,
-		'api-user-id'		=> null,
-		'api-access-token'	=> null,
+	var $options_meta_api_secrets = array(
+		'repo-meta-api-base-url'	=> null,
+		'repo-meta-api-user-id'		=> null,
+		'repo-meta-api-access-token'	=> null,
 
-		'repo-owner'		=> null,
-		'repo-name'		=> null,
+		'repo-owner'			=> null,
+		'repo-name'			=> null,
 
-		'support-tier-name'	=> null,
+		'support-tier-name'		=> null,
 	);
 
 	protected function setUp() {
 		vipgoci_unittests_get_config_values(
-			'repo-meta-api',
-			$this->options_meta_api,
+			'repo-meta-api-secrets',
+			$this->options_meta_api_secrets,
 			true
 		);
 
-		$this->options = $this->options_meta_api;
+		$this->options = $this->options_meta_api_secrets;
 	}
 
 	protected function tearDown() {
-		$this->options_meta_api = null;
+		$this->options_meta_api_secrets = null;
 		$this->options = null;
 	}
 
@@ -37,7 +37,7 @@ final class SupportLevelLabelMetaApiDataFetchTest extends TestCase {
 	public function testMetaApiDataFetch() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
-			array( 'api-user-id', 'api-access-token' ),
+			array( 'repo-meta-api-user-id', 'repo-meta-api-access-token' ),
 			$this
 		);
 
@@ -46,9 +46,9 @@ final class SupportLevelLabelMetaApiDataFetchTest extends TestCase {
 		}
 
 		$repo_meta_data = vipgoci_repo_meta_api_data_fetch(
-			$this->options['api-base-url'],
-			$this->options['api-user-id'],
-			$this->options['api-access-token'],
+			$this->options['repo-meta-api-base-url'],
+			$this->options['repo-meta-api-user-id'],
+			$this->options['repo-meta-api-access-token'],
 			$this->options['repo-owner'],
 			$this->options['repo-name']
 		);
@@ -74,9 +74,9 @@ final class SupportLevelLabelMetaApiDataFetchTest extends TestCase {
 		 * Re-test due to caching.
 		 */
 		$repo_meta_data_2 = vipgoci_repo_meta_api_data_fetch(
-			$this->options['api-base-url'],
-			$this->options['api-user-id'],
-			$this->options['api-access-token'],
+			$this->options['repo-meta-api-base-url'],
+			$this->options['repo-meta-api-user-id'],
+			$this->options['repo-meta-api-access-token'],
 			$this->options['repo-owner'],
 			$this->options['repo-name']
 		);
