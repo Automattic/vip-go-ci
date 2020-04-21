@@ -51,14 +51,15 @@ function vipgoci_unittests_get_config_value(
 	return null;
 }
 
-function vipgoci_unittests_get_config_values( $section, &$config_arr ) {
+function vipgoci_unittests_get_config_values( $section, &$config_arr, $secret_file = false ) {
 	foreach (
 		array_keys( $config_arr ) as $config_key
 	) {
 		$config_arr[ $config_key ] =
 			vipgoci_unittests_get_config_value(
 				$section,
-				$config_key
+				$config_key,
+				$secret_file
 			);
 
 		if ( empty( $config_arr[ $config_key ] ) ) {
