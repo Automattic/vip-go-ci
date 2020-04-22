@@ -309,7 +309,7 @@ function vipgoci_run() {
 			"\t" . '                               files are not to be scanned using PHPCS. Values are comma' . PHP_EOL .
 			"\t" . '                               separated' . PHP_EOL .
 			"\t" . '--phpcs-skip-folders-in-repo-options-file=BOOL   Allows folders that are not to be PHPCS ' . PHP_EOL .
-			"\t" . '                                                 scanned to be specified in file in ' . PHP_EOL .
+			"\t" . '                                                 scanned to be specified in file in root of ' . PHP_EOL .
 			"\t" . '                                                 repository (.vipgoci_phpcs_skip_folders).' . PHP_EOL .
 			"\t" . '                                                 Folders should be separated by newlines.' . PHP_EOL .
 			PHP_EOL .
@@ -364,7 +364,7 @@ function vipgoci_run() {
 			"\t" . '--lint-skip-folders=STRING     Specify folders relative to root of the git repository in which ' . PHP_EOL .
 			"\t" . '                               files should not be PHP linted. Values are comma separated.' . PHP_EOL .
 			"\t" . '--lint-skip-folders-in-repo-options-file=BOOL   Allows folders that are not to be PHP Linted ' . PHP_EOL .
-			"\t" . '                                                to be specified in file in repository ' . PHP_EOL .
+			"\t" . '                                                to be specified in file in root of repository ' . PHP_EOL .
 			"\t" . '                                                (.vipgoci_lint_skip_folders). Folders should be ' . PHP_EOL .
 			"\t" . '                                                separated by newlines.' . PHP_EOL .
 			PHP_EOL .
