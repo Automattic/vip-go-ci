@@ -407,6 +407,14 @@ The feature can be used in the following fashion:
 
 The last parameter can be specified as 'any' to allow posting to any branch.
 
+### Support labels
+
+`vip-go-ci` can put labels on Pull-Requests indicating level of support provided. With this feature configured, `vip-go-ci` will attach a label to every new Pull-Request that does not have it. For this to work, it will need access to a `repo-meta API` that needs to be available and `vip-go-ci` has to be configured to work with.
+
+This feature can be used in the following way:
+
+> ./vip-go-ci.php --set-support-level-label=true --repo-meta-api-base-url="http://myrepometa-api.mycompany.is" --repo-meta-api-user-id=7334005 --repo-meta-api-access-token="MY-TOKEN"
+
 ### IRC support
 
 `vip-go-ci` supports posting certain information to a HTTP API that will eventually relay the information to a IRC channel. This can of course be any IRC-like system, as long as the HTTP API behaves the same. This is useful if you need to have some information submitted to a monitoring system, for instance.
@@ -425,7 +433,7 @@ To run the unitests for `vip-go-ci`, you will need to install `phpunit` and any 
 
 By using this command, you will run the whole test-suite and get feeback on any errors or warnings. 
 
-Note that by default, some tests will be skipped, as these will require a GitHub token to write to GitHub in order to complete, or access to the hashes-to-hashes database. To enable the testing of these, you need to set up a `unittests-secrets.ini` file in the root of the repository. It should include the following fields:
+Note that by default, some tests will be skipped, as these will require a GitHub token to write to GitHub in order to complete, need access to the hashes-to-hashes database, or to a repo-meta API. To enable the testing of these, you need to set up a `unittests-secrets.ini` file in the root of the repository. It should include the following fields:
 
 ```
 [auto-approvals-secrets]
@@ -440,6 +448,14 @@ github-token= ; Personal access token from GitHub
 team-id=      ; Team ID to test if present, this is a numeric
 team-slug=    ; Team slug to test if present, is a string. Should be referencing the same team as team-id.
 org-name=     ; GitHub organisation name to use in testing
+
+[repo-meta-api-secrets]
+repo-meta-api-base-url=         ; URL to base of meta API
+repo-meta-api-user-id=          ; User ID for the meta API
+repo-meta-api-access-token=     ; Access token for the meta API
+repo-owner=                     ; Repository owner for the test, should be found in meta API
+repo-name=                      ; Repository name for the test
+support-tier-name=              ; Name of support tier given by meta API
 ```
 
 This file is not included, and needs to be configured manually. When that is complete, the tests can be re-run.
