@@ -66,7 +66,7 @@ function vipgoci_repo_meta_api_data_fetch(
 
 		if ( ! empty( $repo_meta_api_user_id ) ) {
 			$endpoint_send_headers[] =
-				'API-USER-ID: ' . $repo_meta_api_user_id;
+				'API-User-ID: ' . $repo_meta_api_user_id;
 		}
 
 		if ( ! empty( $repo_meta_api_access_token ) ) {
@@ -187,7 +187,9 @@ function vipgoci_support_level_label_set(
 			'repo_meta_api_base_url'	=>
 				( ! empty( $options['repo-meta-api-base-url'] ) ?
 				$options['repo-meta-api-base-url'] : '' ),
-		)
+		),
+		0,
+		true
 	);
 
 	if (
