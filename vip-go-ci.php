@@ -150,6 +150,7 @@ function vipgoci_run() {
 			'post-generic-pr-support-comments:',
 			'post-generic-pr-support-comments-string:',
 			'post-generic-pr-support-comments-branches:',
+			'post-generic-pr-support-comments-repo-meta-match:',
 			'set-support-level-label:',
 			'repo-meta-api-base-url:',
 			'repo-meta-api-user-id:',
@@ -769,6 +770,27 @@ function vipgoci_run() {
 		array()
 	);
 
+	vipgoci_option_array_handle(
+		$options,
+		'post-generic-pr-support-comments-repo-meta-match',
+		array()
+	);
+
+	/*
+	 * If more than two items in array, it is invalid.
+	 */
+	if ( count(
+		$options['post-generic-pr-support-comments-repo-meta-match']
+	) > 2 ) {
+		vipgoci_sysexit(
+			'Invalid configuration of --post-generic-pr-support-comments-repo-meta-match',
+			array(
+				'post-generic-pr-support-comments-repo-meta-match'	=>
+					$options['post-generic-pr-support-comments-repo-meta-match']
+			)
+		);
+	}
+
 	/*
 	 * Handle option for setting support
 	 * labels.
@@ -1342,19 +1364,11 @@ function vipgoci_run() {
 	 * If configured to do so, post a generic comment
 	 * on the Pull-Request(s) with some helpful information.
 	 * Comment is set via option.
-	 * 
-	 * Make sure not to post comment again if it is already posted.
 	 */
-	if (
-		( true === $options['post-generic-pr-support-comments'] ) &&
-		( ! empty( $options['post-generic-pr-support-comments-string'] ) ) &&
-		( ! empty( $options['post-generic-pr-support-comments-branches'] ) )
-	) {
-		vipgoci_github_pr_generic_support_comment(
-			$options,
-			$prs_implicated
-		);
-	}
+	vipgoci_github_pr_generic_support_comment(
+		$options,
+		$prs_implicated
+	);
 
 	/*
 	 * Add support level label, if:

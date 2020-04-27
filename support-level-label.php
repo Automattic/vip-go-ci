@@ -408,3 +408,93 @@ function vipgoci_support_level_label_set(
 
 	return true;
 }
+
+/*
+ * Try to match a field value found in the
+ * repo-meta API results data to a value
+ * given, and if there is a match, return
+ * true. Otherwise, return false.
+ */
+function vipgoci_repo_meta_api_data_match(
+	$options,
+	$field_name,
+	$field_value,
+	$match_all = false
+) {
+	$log_debug_arr = array(
+		'repo_meta_match'	=> $options['post-generic-pr-support-comments-repo-meta-match'],
+		'field_name'		=> $field_name,
+		'field_value'		=> $field_value,
+		'match_all'		=> $match_all,
+	);
+
+	if (
+		( empty( $options['repo-meta-api-base-url'] ) ) ||
+		( empty( $options['post-generic-pr-support-comments-repo-meta-match'] ) )
+	) {
+		vipgoci_log(
+			'Not attempting to match repo-meta API field-value to a criteria',
+			$log_debug_arr
+		);
+
+		return false;
+	}
+
+	else {
+		vipgoci_log(
+			'Attempting to match repo-meta API field-value to a criteria',
+			$log_debug_arr
+		);
+	}
+
+	$repo_meta_data = vipgoci_repo_meta_api_data_fetch(
+		$options['repo-meta-api-base-url'],
+		$options['repo-meta-api-user-id'],
+		$options['repo-meta-api-access-token'],
+		$options['repo-owner'],
+		$options['repo-name']
+	);
+
+	if (
+		( empty(
+			$repo_meta_data['data']
+		) )
+		||
+		( 'error' === $repo_meta_data['status'] )
+	) {
+		return false;
+	}
+
+	$match_cnt = 0;
+
+	foreach( $repo_meta_data['data'] as $repo_meta_data_item ) {
+		if ( ! array_key_exists( $field_name, $repo_meta_data_item ) ) {
+			continue;
+		}
+
+		if ( $repo_meta_data_item[ $field_name ] === $field_value ) {
+			$match_cnt++;
+		}
+	}
+
+	$ret_val = false;
+
+	if ( ( $match_all === true ) && ( count( $repo_meta_data['data'] ) === $match_cnt ) && ( $match_cnt > 0 ) ) {
+		$ret_val = true;
+	}
+
+	else if ( ( $match_all === false ) && ( $match_cnt > 0 ) ) {
+		$ret_val = true;
+	}
+
+	vipgoci_log(
+		'Repo-meta API matching returning',
+		array(
+			'cnt_repo_meta_data'	=> count( $repo_meta_data['data'] ),
+			'ret_val'		=> $ret_val,
+			'match_cnt'		=> $match_cnt,
+		)
+	);
+
+	return $ret_val;
+}
