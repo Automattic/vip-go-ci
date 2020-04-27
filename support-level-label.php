@@ -221,7 +221,15 @@ function vipgoci_support_level_label_set(
 	 * from information found in API,
 	 * if available.
 	 */
-	$support_label_prefix = '[Support Level]';
+
+	if ( ! empty( $options['set-support-level-label-prefix'] ) ) {
+		$support_label_prefix = $options['set-support-level-label-prefix'];
+	}
+
+	else {
+		$support_label_prefix = '[Support Level]';
+	}
+
 	$support_label_from_api = '';
 
 	if (

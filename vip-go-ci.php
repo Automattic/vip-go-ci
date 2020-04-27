@@ -151,6 +151,7 @@ function vipgoci_run() {
 			'post-generic-pr-support-comments-string:',
 			'post-generic-pr-support-comments-branches:',
 			'set-support-level-label:',
+			'set-support-level-label-prefix:',
 			'repo-meta-api-base-url:',
 			'repo-meta-api-user-id:',
 			'repo-meta-api-access-token:',
@@ -287,6 +288,7 @@ function vipgoci_run() {
 			PHP_EOL .
 			"\t" . '--set-support-level-label=BOOL       Whether to attach support level labels to Pull-Requests. ' . PHP_EOL .
 			"\t" . '                                     Will fetch information on support levels from repo-meta API. ' . PHP_EOL .
+			"\t" . '--set-support-level-label-prefix=STRING    Prefix to use for support level labels. Should be longer than five letters.' . PHP_EOL .
 			"\t" . '--repo-meta-api-base-url=STRING      Base URL to repo-meta API, containing support level and other ' . PHP_EOL .
 			"\t" . '                                     information. ' . PHP_EOL .
 			"\t" . '--repo-meta-api-user-id=STRING       Authentication detail for the repo-meta API. ' . PHP_EOL .
@@ -771,10 +773,23 @@ function vipgoci_run() {
 
 	/*
 	 * Handle option for setting support
-	 * labels.
+	 * labels. Handle prefix too.
 	 */
 	
 	vipgoci_option_bool_handle( $options, 'set-support-level-label', 'false' );
+
+	if (
+		( isset( $options['set-support-level-label-prefix'] ) ) && 
+		( strlen( $options['set-support-level-label-prefix'] ) > 5 )
+	) {
+		$options['set-support-level-label-prefix'] = trim(
+			$options['set-support-level-label-prefix']
+		);
+	}
+
+	else {
+		$options['set-support-level-label-prefix'] = null;
+	}
 
 	/*
 	 * Handle options for repo-meta API.
