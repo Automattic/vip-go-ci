@@ -776,20 +776,40 @@ function vipgoci_run() {
 		array()
 	);
 
-	/*
-	 * If more than two items in array, it is invalid.
-	 */
-	if ( count(
-		$options['post-generic-pr-support-comments-repo-meta-match']
-	) > 2 ) {
-		vipgoci_sysexit(
-			'Invalid configuration of --post-generic-pr-support-comments-repo-meta-match',
-			array(
-				'post-generic-pr-support-comments-repo-meta-match'	=>
-					$options['post-generic-pr-support-comments-repo-meta-match']
-			)
+	$tmp_repo_meta_match = array();
+
+	for(
+		$i = 0;
+		$i < count(
+			$options['post-generic-pr-support-comments-repo-meta-match']
+		);
+		$i++
+	) {
+		$options['post-generic-pr-support-comments-repo-meta-match'][ $i ] =
+			explode(
+				'=',
+				$options['post-generic-pr-support-comments-repo-meta-match'][ $i ],
+				2 // Max one '='; any extra will be preserve
+			);
+
+		if ( count( $options['post-generic-pr-support-comments-repo-meta-match'][ $i ] ) != 2 ) {
+			continue;
+		}
+
+		$tmp_repo_meta_match[
+			$options['post-generic-pr-support-comments-repo-meta-match'][ $i ][0]
+		] = vipgoci_convert_string_to_type(
+			$options['post-generic-pr-support-comments-repo-meta-match'][ $i ][1]
 		);
 	}
+
+	$options[
+		'post-generic-pr-support-comments-repo-meta-match'
+	] = $tmp_repo_meta_match;
+
+	unset(
+		$tmp_repo_meta_match
+	);
 
 	/*
 	 * Handle option for setting support
