@@ -148,8 +148,6 @@ function vipgoci_find_fields_in_array( $fields_arr, $data_arr ) {
 			===
 			count( array_keys( $fields_arr ) )
 		);
-
-		$data_item_cnt++;
 	}
 
 	return $res_arr;
