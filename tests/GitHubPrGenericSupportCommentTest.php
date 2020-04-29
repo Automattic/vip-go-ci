@@ -45,13 +45,15 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 				true // Fetch from secrets file
 			);
 
-		// We set this variable, but it has no functional implications
 		$this->options['post-generic-pr-support-comments'] = true;
 
 		$this->options['post-generic-pr-support-comments-string'] =
 			'This is a generic support message from `vip-go-ci`. We hope this is useful.';
 
 		$this->options['post-generic-pr-support-comments-branches'] =
+			array();
+
+		$this->options['post-generic-pr-support-comments-repo-meta-match'] =
 			array();
 
 		$this->options = array_merge(
@@ -86,7 +88,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 	protected function _getPrsImplicated() {
 		vipgoci_unittests_output_suppress();
 
-		return vipgoci_github_prs_implicated(
+		$ret = vipgoci_github_prs_implicated(
 			$this->options['repo-owner'],
 			$this->options['repo-name'],
 			$this->options['commit'],
@@ -95,6 +97,8 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 		);
 
 		vipgoci_unittests_output_unsuppress();
+
+		return $ret;
 	}
 
 	/*
@@ -212,6 +216,76 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_github_pr_generic_support_comment
 	 */
+	public function testPostingNotConfigured() {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array(),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+	
+		// Configure branches we can post against
+		$this->options['post-generic-pr-support-comments-branches'] =
+			array( 'any' );
+
+		// Should not post generic support comments
+		$this->options['post-generic-pr-support-comments'] = false;
+
+		// Get Pull-Requests
+        	$prs_implicated = $this->_getPrsImplicated();
+
+		// Check we have at least one PR
+		$this->assertTrue(
+			count( $prs_implicated ) > 0
+		);
+
+		/*
+		 * vipgoci_github_pr_generic_support_comment() will
+		 * call vipgoci_github_pr_generic_comments_get() that
+		 * caches results, causing it to give back wrong
+		 * results when called again. Clear the internal cache
+		 * here to circumvent this.
+		 */
+
+		vipgoci_cache(
+			VIPGOCI_CACHE_CLEAR
+		);
+
+		// Try to submit support comment
+		vipgoci_github_pr_generic_support_comment(
+			$this->options,
+			$prs_implicated
+		);
+
+		// Check if commenting succeeded
+		foreach( $prs_implicated as $pr_item ) {
+			$pr_comments = $this->_getPrGenericComments(
+				$pr_item->number
+			);
+
+			$this->assertTrue(
+				count( $pr_comments ) === 0
+			);
+
+			$this->assertEquals(
+				0,
+				$this->_countSupportCommentsFromUs(
+					$pr_comments
+				)
+			);
+		}
+	
+		vipgoci_cache(
+			VIPGOCI_CACHE_CLEAR
+		);
+	}
+
+	/**
+	 * @covers ::vipgoci_github_pr_generic_support_comment
+	 */
 	public function testPostingWorksAnyBranch() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
@@ -260,11 +334,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 		}
 
 		/*
-		 * vipgoci_github_pr_generic_support_comment() will
-		 * call vipgoci_github_pr_generic_comments_get() that
-		 * caches results, causing it to give back wrong
-		 * results when called again. Clear the internal cache
-		 * here to circumvent this.
+		 * Clear cache -- see explanation above
 		 */
 
 		vipgoci_cache(
@@ -347,11 +417,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 		}
 
 		/*
-		 * vipgoci_github_pr_generic_support_comment() will
-		 * call vipgoci_github_pr_generic_comments_get() that
-		 * caches results, causing it to give back wrong
-		 * results when called again. Clear the internal cache
-		 * here to circumvent this.
+		 * Clear cache -- see explanation above
 		 */
 
 		vipgoci_cache(
@@ -430,11 +496,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 		}
 
 		/*
-		 * vipgoci_github_pr_generic_support_comment() will
-		 * call vipgoci_github_pr_generic_comments_get() that
-		 * caches results, causing it to give back wrong
-		 * results when called again. Clear the internal cache
-		 * here to circumvent this.
+		 * Clear cache -- see explanation above
 		 */
 
 		vipgoci_cache(
