@@ -8,7 +8,7 @@ final class MiscConvertStringToTypeTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_convert_string_to_type
 	 */
-	public function convertTest1() {
+	public function testConvert1() {
 		$this->assertEquals(
 			true,
 			vipgoci_convert_string_to_type('true')
