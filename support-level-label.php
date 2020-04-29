@@ -410,27 +410,29 @@ function vipgoci_support_level_label_set(
 }
 
 /*
- * Try to match a field value found in the
- * repo-meta API results data to a value
- * given, and if there is a match, return
- * true. Otherwise, return false.
+ * Fetch data from repo-meta API, then try 
+ * to match fields and their values with
+ * the data. The fields and values are those
+ * found in a particular $option parameter
+ * specified as an argument here ($option_name).
+ *
+ * If there is a match, return true. Otherwise, 
+ * return false.
  */
 function vipgoci_repo_meta_api_data_match(
 	$options,
-	$field_name,
-	$field_value,
-	$match_all = false
+	$option_name
 ) {
 	$log_debug_arr = array(
-		'repo_meta_match'	=> $options['post-generic-pr-support-comments-repo-meta-match'],
-		'field_name'		=> $field_name,
-		'field_value'		=> $field_value,
-		'match_all'		=> $match_all,
+		'option_name'			=> $option_name,
+		'repo_meta_match'		=> $options[ $option_name ],
+		'repo_meta_api_base_url'	=> $options['repo-meta-api-base-url'],
 	);
 
 	if (
+		( empty( $option_name ) ) ||
 		( empty( $options['repo-meta-api-base-url'] ) ) ||
-		( empty( $options['post-generic-pr-support-comments-repo-meta-match'] ) )
+		( empty( $options[ $option_name ] ) )
 	) {
 		vipgoci_log(
 			'Not attempting to match repo-meta API field-value to a criteria',
@@ -446,6 +448,7 @@ function vipgoci_repo_meta_api_data_match(
 			$log_debug_arr
 		);
 	}
+
 
 	$repo_meta_data = vipgoci_repo_meta_api_data_fetch(
 		$options['repo-meta-api-base-url'],
@@ -465,34 +468,33 @@ function vipgoci_repo_meta_api_data_match(
 		return false;
 	}
 
-	$match_cnt = 0;
+	$found_fields = vipgoci_find_fields_in_array(
+		$options[ $option_name ],
+		$repo_meta_data['data']
+	);
 
-	foreach( $repo_meta_data['data'] as $repo_meta_data_item ) {
-		if ( ! array_key_exists( $field_name, $repo_meta_data_item ) ) {
-			continue;
-		}
-
-		if ( $repo_meta_data_item[ $field_name ] === $field_value ) {
-			$match_cnt++;
-		}
-	}
-
+	/*
+	 * If we find one data-item that had
+	 * all fields matching the criteria given,
+	 * we return true.
+	 */
 	$ret_val = false;
 
-	if ( ( $match_all === true ) && ( count( $repo_meta_data['data'] ) === $match_cnt ) && ( $match_cnt > 0 ) ) {
-		$ret_val = true;
-	}
-
-	else if ( ( $match_all === false ) && ( $match_cnt > 0 ) ) {
-		$ret_val = true;
+	foreach(
+		$found_fields as
+			$found_field_item_key => $found_field_item_value
+	) {
+		if ( $found_field_item_value === true ) {
+			$ret_val = true;
+		}
 	}
 
 	vipgoci_log(
 		'Repo-meta API matching returning',
 		array(
-			'cnt_repo_meta_data'	=> count( $repo_meta_data['data'] ),
-			'ret_val'		=> $ret_val,
-			'match_cnt'		=> $match_cnt,
+			'found_fields_in_repo_meta_data'	=> $found_fields,
+			'repo_meta_data_item_cnt'		=> count( $repo_meta_data['data'] ),
+			'ret_val'				=> $ret_val,
 		)
 	);
 
