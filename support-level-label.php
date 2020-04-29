@@ -423,12 +423,6 @@ function vipgoci_repo_meta_api_data_match(
 	$options,
 	$option_name
 ) {
-	$log_debug_arr = array(
-		'option_name'			=> $option_name,
-		'repo_meta_match'		=> $options[ $option_name ],
-		'repo_meta_api_base_url'	=> $options['repo-meta-api-base-url'],
-	);
-
 	if (
 		( empty( $option_name ) ) ||
 		( empty( $options['repo-meta-api-base-url'] ) ) ||
@@ -436,7 +430,18 @@ function vipgoci_repo_meta_api_data_match(
 	) {
 		vipgoci_log(
 			'Not attempting to match repo-meta API field-value to a criteria',
-			$log_debug_arr
+			array(
+				'option_name'
+					=> $option_name,
+
+				'repo_meta_api_base_url'
+					=> isset( $options['repo-meta-api-base-url'] ) ?
+						$options['repo-meta-api-base-url'] : '',
+
+				'repo_meta_match'
+					=> ( ( ! empty( $option_name ) ) && ( isset( $options[ $option_name ] ) ) ) ?
+						$options[ $option_name ] : '',
+			)
 		);
 
 		return false;
@@ -445,7 +450,11 @@ function vipgoci_repo_meta_api_data_match(
 	else {
 		vipgoci_log(
 			'Attempting to match repo-meta API field-value to a criteria',
-			$log_debug_arr
+			array(
+				'option_name'			=> $option_name,
+				'repo_meta_match'		=> $options[ $option_name ],
+				'repo_meta_api_base_url'	=> $options['repo-meta-api-base-url'],
+			)
 		);
 	}
 
