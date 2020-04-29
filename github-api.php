@@ -1890,8 +1890,7 @@ function vipgoci_github_pr_generic_support_comment(
 	if ( ! empty( $options['post-generic-pr-support-comments-repo-meta-match'] ) ) {
 		$repo_meta_api_data_match = vipgoci_repo_meta_api_data_match(
 			$options,
-			$options['post-generic-pr-support-comments-repo-meta-match'][0],
-			$options['post-generic-pr-support-comments-repo-meta-match'][1],
+			'post-generic-pr-support-comments-repo-meta-match',
 			false
 		);
 
