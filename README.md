@@ -407,6 +407,14 @@ The feature can be used in the following fashion:
 
 The last parameter can be specified as 'any' to allow posting to any branch.
 
+You can limit what Pull-Requests the generic support message are posted to, given data from the repo-meta API and a criteria specified on the command line. This feature depends on the repo-meta API being configured.
+
+For example:
+
+> ./vip-go-ci.php --post-generic-pr-support-comments=true --post-generic-pr-support-comments-string="This ..." --post-generic-pr-support-comments-branches="master" --post-generic-pr-support-comments-repo-meta-match="support_message=true,support_plan=true" 
+
+With the `--post-generic-pr-support-comments-repo-meta-match` parameter added, `vip-go-ci` will look at the data returned by the repo-meta API, and check if these fields and their values are found in there for at least one entry. If so, the generic support message will be posted, and not otherwise.
+
 ### Support labels
 
 `vip-go-ci` can put labels on Pull-Requests indicating level of support provided. With this feature configured, `vip-go-ci` will attach a label to every new Pull-Request that does not have it. For this to work, it will need access to a `repo-meta API` that needs to be available and `vip-go-ci` has to be configured to work with.
