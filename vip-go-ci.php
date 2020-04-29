@@ -285,6 +285,10 @@ function vipgoci_run() {
 			"\t" . '                                                   comma separated. A single "any" value will ' . PHP_EOL .
 			"\t" . '                                                   cause the message to be posted to any ' . PHP_EOL .
 			"\t" . '                                                   branch.' . PHP_EOL .
+			"\t" . '--post-generic-pr-support-comments-repo-meta-match=ARRAY   Only post generic support ' . PHP_EOL .
+			"\t" . '                                                           messages when data from repo-meta API' . PHP_EOL .
+			"\t" . '                                                           matches the criteria specified here. ' . PHP_EOL .
+			"\t" . '                                                           See README.md for usage. ' . PHP_EOL .
 			PHP_EOL .
 			"\t" . '--set-support-level-label=BOOL       Whether to attach support level labels to Pull-Requests. ' . PHP_EOL .
 			"\t" . '                                     Will fetch information on support levels from repo-meta API. ' . PHP_EOL .
