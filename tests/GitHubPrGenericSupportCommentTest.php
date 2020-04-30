@@ -71,11 +71,31 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 			);
 		}
 
-		$this->_clearOldSupportComments();
+		/*
+		 * Don't attempt cleanup if not configured.
+		 */
+
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array(),
+			$this
+		);
+
+		if ( -1 !== $options_test ) {
+			$this->_clearOldSupportComments();
+		}
 	}
 
 	protected function tearDown() {
-		$this->_clearOldSupportComments();
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array(),
+			$this
+		);
+
+		if ( -1 !== $options_test ) {
+			$this->_clearOldSupportComments();
+		}
 
 		$this->options = null;
 		$this->options_git = null;
