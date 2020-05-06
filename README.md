@@ -415,7 +415,7 @@ This feature can be used in the following way:
 
 > ./vip-go-ci.php --set-support-level-label=true --repo-meta-api-base-url="http://myrepometa-api.mycompany.is" --repo-meta-api-user-id=7334005 --repo-meta-api-access-token="MY-TOKEN"
 
-Note that by default, all support level labels have a prefix: `[Support Level]`. This can be changed by using the `--set-support-level-label-prefix` option. 
+Note that by default, all support level labels have a prefix: `[Support Level]`. This can be changed by using the `--set-support-level-label-prefix` option.
 
 ### IRC support
 
