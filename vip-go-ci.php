@@ -800,6 +800,10 @@ function vipgoci_run() {
 			continue;
 		}
 
+		/*
+		 * Convert "true" strings to true boolean variable,
+		 * same for "false" and "null". 
+		 */
 		$tmp_repo_meta_match[
 			$options['post-generic-pr-support-comments-repo-meta-match'][ $i ][0]
 		] = vipgoci_convert_string_to_type(
