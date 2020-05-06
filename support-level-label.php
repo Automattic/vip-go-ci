@@ -429,7 +429,8 @@ function vipgoci_repo_meta_api_data_match(
 		( empty( $options[ $option_name ] ) )
 	) {
 		vipgoci_log(
-			'Not attempting to match repo-meta API field-value to a criteria',
+			'Not attempting to match repo-meta API field-value ' .
+				'to a criteria due to invalid configuration',
 			array(
 				'option_name'
 					=> $option_name,
