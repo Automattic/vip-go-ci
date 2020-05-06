@@ -296,7 +296,8 @@ function vipgoci_run() {
 			"\t" . '--phpcs-path=FILE              Full path to PHPCS script' . PHP_EOL .
 			"\t" . '--phpcs-standard=STRING        Specify which PHPCS standard to use' . PHP_EOL .
 			"\t" . '--phpcs-severity=NUMBER        Specify severity for PHPCS' . PHP_EOL .
-			"\t" . '--phpcs-sniffs-exclude=STRING  Specify which sniff to exclude from PHPCS scanning' . PHP_EOL .
+			"\t" . '--phpcs-sniffs-exclude=ARRAY   Specify which sniff to exclude from PHPCS scanning, ' . PHP_EOL .
+			"\t" . '                               should be an array with items separated by commas. ' PHP_EOL .
 			"\t" . '--phpcs-runtime-set=STRING     Specify --runtime-set values passed on to PHPCS' . PHP_EOL .
 			"\t" . '                               -- expected to be a comma-separated value string of ' . PHP_EOL .
 			"\t" . '                               key-value pairs.' . PHP_EOL .
@@ -429,15 +430,19 @@ function vipgoci_run() {
 
 	/*
 	 * Process --phpcs-sniffs-exclude -- expected to be
-	 * a string.
+	 * an array.
 	 */
 	if ( empty( $options['phpcs-sniffs-exclude'] ) ) {
-		$options['phpcs-sniffs-exclude'] = null;
+		$options['phpcs-sniffs-exclude'] = array();
 	}
 
 	else {
-		$options['phpcs-sniffs-exclude'] = trim(
-			$options['phpcs-sniffs-exclude']
+		vipgoci_option_array_handle(
+			$options,
+			'phpcs-sniffs-exclude',
+			array(),
+			array(),
+			','
 		);
 	}
 
@@ -905,7 +910,8 @@ function vipgoci_run() {
 		'repo-options-allowed',
 		array(
 			'phpcs-severity',
-			'post-generic-pr-support-comments'
+			'phpcs-sniffs-exclude',
+			'post-generic-pr-support-comments',
 		)
 	);
 
@@ -1163,6 +1169,12 @@ function vipgoci_run() {
 			'post-generic-pr-support-comments' => array(
 				'type'		=> 'boolean',
 				'valid_values'	=> array( true, false ),
+			),
+
+			'phpcs-sniffs-exclude' => array(
+				'type'		=> 'array',
+				'append'	=> true,
+				'valid_values'	=> null,
 			),
 		)
 	);

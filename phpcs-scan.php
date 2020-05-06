@@ -128,7 +128,7 @@ function vipgoci_phpcs_scan_single_file(
 		$temp_file_name,
 		$options['phpcs-path'],
 		$options['phpcs-standard'],
-		$options['phpcs-sniffs-exclude'],
+		join( ',', $options['phpcs-sniffs-exclude'] ),
 		$options['phpcs-severity'],
 		$options['phpcs-runtime-set']
 	);
