@@ -51,6 +51,9 @@ final class SupportLevelLabelSetTest extends TestCase {
 				'repo-meta-api',
 				'commit-support-level-set-test',
 			);
+
+		$this->options['set-support-level-label-prefix'] =
+			'[MySupport Level]';
 	}
 
 	protected function tearDown() {
@@ -100,7 +103,7 @@ final class SupportLevelLabelSetTest extends TestCase {
 
 			foreach( $pr_item_labels as $label_item ) {
 				if ( 
-					'[Support Level] ' . ucfirst( strtolower( $this->options['support-tier-name'] ) )
+					$this->options['set-support-level-label-prefix'] . ' ' . ucfirst( strtolower( $this->options['support-tier-name'] ) )
 					===
 					$label_item->name
 				) {
@@ -214,7 +217,7 @@ final class SupportLevelLabelSetTest extends TestCase {
 
 			foreach( $pr_item_labels as $label_item ) {
 				if (
-					'[Support Level] ' . ucfirst( strtolower( $this->options['support-tier-name'] ) ) ===
+					$this->options['set-support-level-label-prefix'] . ' ' . ucfirst( strtolower( $this->options['support-tier-name'] ) ) ===
 					$label_item->name
 				) {
 					/*
