@@ -260,7 +260,7 @@ function vipgoci_options_read_repo_file(
 				$option_overwritable_name
 			] = array_merge(
 				$options[
-					$option_overwritable_name,
+					$option_overwritable_name
 				],
 				$repo_options_arr[
 					$option_overwritable_name
