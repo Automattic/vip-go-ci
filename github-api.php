@@ -1841,8 +1841,8 @@ function vipgoci_github_pr_generic_support_comment(
 	$options,
 	$prs_implicated
 ) {
-	vipgoci_log(
-		'Posting support-comments on Pull-Requests',
+
+	$log_debugmsg = 
 		array(
 			'post-generic-pr-support-comments' =>
 				$options['post-generic-pr-support-comments'],
@@ -1851,9 +1851,59 @@ function vipgoci_github_pr_generic_support_comment(
 				$options['post-generic-pr-support-comments-string'],
 
 			'post-generic-pr-support-comments-branches' =>
-				$options['post-generic-pr-support-comments-branches']
-		)
-	);
+				$options['post-generic-pr-support-comments-branches'],
+
+			'post-generic-pr-support-comments-repo-meta-match' =>
+				$options['post-generic-pr-support-comments-repo-meta-match'],
+		);
+
+	/*
+	 * Detect if to run, or invalid configuration. 
+	 */
+	if (
+		( true !== $options['post-generic-pr-support-comments'] ) ||
+		( empty( $options['post-generic-pr-support-comments-string'] ) ) ||
+		( empty( $options['post-generic-pr-support-comments-branches'] ) )
+	) {
+		vipgoci_log(
+			'Not posting support-comments on Pull-Requests, as ' .
+				'either not configured to do so, or ' .
+				'incorrectly configured',
+			$log_debugmsg
+		);
+
+		return;
+	}
+
+	else {
+		vipgoci_log(
+			'Posting support-comments on Pull-Requests',
+			$log_debugmsg
+		);
+	}
+
+	/*
+	 * Check if a field value in response
+	 * from repo-meta API service
+	 * matches the field value given here.
+	 */
+	if ( ! empty( $options['post-generic-pr-support-comments-repo-meta-match'] ) ) {
+		$repo_meta_api_data_match = vipgoci_repo_meta_api_data_match(
+			$options,
+			'post-generic-pr-support-comments-repo-meta-match',
+			false
+		);
+
+		if ( true !== $repo_meta_api_data_match ) {
+			vipgoci_log(
+				'Not posting generic support comment, as repo-meta API field-value did not match a given criteria',
+				array(
+				)
+			);
+
+			return;
+		}
+	}
 
 
 	foreach(

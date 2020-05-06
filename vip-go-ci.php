@@ -150,6 +150,7 @@ function vipgoci_run() {
 			'post-generic-pr-support-comments:',
 			'post-generic-pr-support-comments-string:',
 			'post-generic-pr-support-comments-branches:',
+			'post-generic-pr-support-comments-repo-meta-match:',
 			'set-support-level-label:',
 			'set-support-level-label-prefix:',
 			'repo-meta-api-base-url:',
@@ -285,6 +286,10 @@ function vipgoci_run() {
 			"\t" . '                                                   comma separated. A single "any" value will ' . PHP_EOL .
 			"\t" . '                                                   cause the message to be posted to any ' . PHP_EOL .
 			"\t" . '                                                   branch.' . PHP_EOL .
+			"\t" . '--post-generic-pr-support-comments-repo-meta-match=ARRAY   Only post generic support ' . PHP_EOL .
+			"\t" . '                                                           messages when data from repo-meta API' . PHP_EOL .
+			"\t" . '                                                           matches the criteria specified here. ' . PHP_EOL .
+			"\t" . '                                                           See README.md for usage. ' . PHP_EOL .
 			PHP_EOL .
 			"\t" . '--set-support-level-label=BOOL       Whether to attach support level labels to Pull-Requests. ' . PHP_EOL .
 			"\t" . '                                     Will fetch information on support levels from repo-meta API. ' . PHP_EOL .
@@ -769,6 +774,51 @@ function vipgoci_run() {
 		$options,
 		'post-generic-pr-support-comments-branches',
 		array()
+	);
+
+	vipgoci_option_array_handle(
+		$options,
+		'post-generic-pr-support-comments-repo-meta-match',
+		array()
+	);
+
+	$tmp_repo_meta_match = array();
+
+	for(
+		$i = 0;
+		$i < count(
+			$options['post-generic-pr-support-comments-repo-meta-match']
+		);
+		$i++
+	) {
+		$options['post-generic-pr-support-comments-repo-meta-match'][ $i ] =
+			explode(
+				'=',
+				$options['post-generic-pr-support-comments-repo-meta-match'][ $i ],
+				2 // Max one '='; any extra will be preserve
+			);
+
+		if ( count( $options['post-generic-pr-support-comments-repo-meta-match'][ $i ] ) != 2 ) {
+			continue;
+		}
+
+		/*
+		 * Convert "true" strings to true boolean variable,
+		 * same for "false" and "null". 
+		 */
+		$tmp_repo_meta_match[
+			$options['post-generic-pr-support-comments-repo-meta-match'][ $i ][0]
+		] = vipgoci_convert_string_to_type(
+			$options['post-generic-pr-support-comments-repo-meta-match'][ $i ][1]
+		);
+	}
+
+	$options[
+		'post-generic-pr-support-comments-repo-meta-match'
+	] = $tmp_repo_meta_match;
+
+	unset(
+		$tmp_repo_meta_match
 	);
 
 	/*
@@ -1357,19 +1407,11 @@ function vipgoci_run() {
 	 * If configured to do so, post a generic comment
 	 * on the Pull-Request(s) with some helpful information.
 	 * Comment is set via option.
-	 * 
-	 * Make sure not to post comment again if it is already posted.
 	 */
-	if (
-		( true === $options['post-generic-pr-support-comments'] ) &&
-		( ! empty( $options['post-generic-pr-support-comments-string'] ) ) &&
-		( ! empty( $options['post-generic-pr-support-comments-branches'] ) )
-	) {
-		vipgoci_github_pr_generic_support_comment(
-			$options,
-			$prs_implicated
-		);
-	}
+	vipgoci_github_pr_generic_support_comment(
+		$options,
+		$prs_implicated
+	);
 
 	/*
 	 * Add support level label, if:

@@ -82,6 +82,104 @@ function vipgoci_sysexit(
 }
 
 /*
+ * Check if a particular set of fields exist
+ * in a target array and if their values match a set
+ * given. Will return an array describing 
+ * which items of the array contain all the fields
+ * and the matching values.
+ *
+ * Example:
+ *	$fields_arr = array(
+ *		'a'	=> 920,
+ *		'b'	=> 700,
+ *	);
+ *
+ *	$data_arr = array(
+ *		array(
+ *			'a'	=> 920,
+ *			'b'	=> 500,
+ *			'c'	=> 0,
+ *			'd'	=> 1,
+ *			...
+ *		),
+ *		array(
+ *			'a'	=> 920,
+ *			'b'	=> 700,
+ *			'c'	=> 0,
+ *			'd'	=> 2,
+ *			...
+ *		),
+ *	);
+ *
+ *	$res = vipgoci_find_fields_in_array(
+ *		$fields_arr, $data_arr
+ *	);
+ *
+ *	$res will be:
+ *	array(
+ *		0 => false,
+ *		1 => true,
+ *	);
+ */
+function vipgoci_find_fields_in_array( $fields_arr, $data_arr ) {
+	$res_arr = array();
+
+	for(
+		$data_item_cnt = 0;
+		$data_item_cnt < count( $data_arr );
+		$data_item_cnt++
+	) {
+		$res_arr[ $data_item_cnt ] = 0;
+
+		foreach( $fields_arr as $field_name => $field_value ) {
+			if ( ! array_key_exists( $field_name, $data_arr[ $data_item_cnt ] ) ) {
+				continue;
+			}
+
+			if ( $data_arr[ $data_item_cnt ][ $field_name ] === $field_value ) {
+				$res_arr[ $data_item_cnt ]++;
+			}
+		}
+
+		$res_arr[
+			$data_item_cnt
+		] = (
+			$res_arr[ $data_item_cnt ]
+			===
+			count( array_keys( $fields_arr ) )
+		);
+	}
+
+	return $res_arr;
+}
+
+/*
+ * Convert a string that contains "true", "false" or
+ * "null" to a variable of that type.
+ */
+function vipgoci_convert_string_to_type( $str ) {
+	switch( $str ) {
+		case 'true':
+			$ret = true;
+			break;
+
+		case 'false':
+			$ret = false;
+			break;
+
+		case 'null':
+			$ret = null;
+			break;
+
+		default:
+			$ret = $str;
+			break;
+	}
+
+	return $ret;
+}
+
+/*
  * Given a patch-file, the function will return an
  * associative array, mapping the patch-file
  * to the raw committed file.
