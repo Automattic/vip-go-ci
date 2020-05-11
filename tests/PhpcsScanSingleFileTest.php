@@ -32,6 +32,11 @@ final class PhpcsScanSingleFileTest extends TestCase {
 			$this->options_phpcs
 		);
 
+		$this->options_phpcs['phpcs-sniffs-exclude'] = explode(
+			',',
+			$this->options_phpcs['phpcs-sniffs-exclude']
+		);
+
 		$this->options = array_merge(
 			$this->options_git_repo,
 			$this->options_phpcs

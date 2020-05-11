@@ -18,6 +18,11 @@ final class PhpcsScanDoScanTest extends TestCase {
 			'phpcs-scan',
 			$this->phpcs_config
 		);
+
+		$this->options_phpcs['phpcs-sniffs-exclude'] = explode(
+			',',
+			$this->options_phpcs['phpcs-sniffs-exclude']
+		);
 	}
 
 	protected function tearDown() {
