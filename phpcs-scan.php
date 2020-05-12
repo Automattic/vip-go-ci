@@ -723,3 +723,158 @@ function vipgoci_phpcs_scan_commit(
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'phpcs_scan_commit' );
 }
 
+/*
+ * Ask PHPCS for a list of all sniffs that are active
+ * in the specified standard. Returns with an array
+ * of active sniffs.
+ */ 
+function vipgoci_phpcs_get_sniffs_for_standard(
+	$phpcs_path,
+	$phpcs_standard
+) {
+	vipgoci_log(
+		'Getting sniffs active in PHPCS standard',
+		array(
+			'phpcs-path'		=> $phpcs_path,
+			'phpcs-standard'	=> $phpcs_standard,
+		)
+	);
+
+	/*
+	 * Run PHPCS from the shell, making sure we escape everything.
+	 */
+	$cmd = sprintf(
+		'%s %s --standard=%s -e -s',
+		escapeshellcmd( 'php' ),
+		escapeshellcmd( $phpcs_path ),
+		escapeshellarg( $phpcs_standard )
+	);
+
+	vipgoci_log(
+		'Running PHPCS now to get sniffs',
+		array(
+			'cmd' => $cmd,
+		),
+		0
+	);
+
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'phpcs_cli' );
+
+	$result = shell_exec( $cmd );
+
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'phpcs_cli' );
+
+	$sniffs_arr = explode(
+		"\n",
+		$result
+	);
+
+	/*
+	 * Filter output: Remove everything
+	 * that does not look like a sniff name.
+	 */
+	$sniffs_arr = array_filter(
+		$sniffs_arr,
+		function( $line_item ) {
+			if ( false === strpos( $line_item, '.' ) ) {
+				return false;
+			}
+
+			if ( false !== strpos( $line_item, '-' ) ) {
+				return false;
+			}
+
+			/* Sniff names start with spaces, let them through. */
+			if ( 0 === strpos( $line_item, ' ' ) ) {
+				return true;
+			}
+
+			return false;
+		}
+	);
+
+	/*
+	 * Remove any whitespacing, etc.
+	 * from list of sniffs.
+	 */
+	$sniffs_arr = array_map(
+		function( $sniff_item ) {
+			return trim( $sniff_item );
+		},
+		$sniffs_arr
+	);
+
+	/*
+	 * Remove any potential duplicates.
+	 */
+	$sniffs_arr = array_unique(
+		$sniffs_arr
+	);
+
+	/*
+	 * Recreate array with fresh
+	 * keys.
+	 */
+	$sniffs_arr = array_values(
+		$sniffs_arr
+	);
+
+	return $sniffs_arr;
+}
+
+/*
+ * Check if the sniffs specified in options
+ * -- either to remove or set -- are valid.
+ *
+ * Do this by getting a list of valid sniffs
+ * and check if each and every one is in the list.
+ */
+function vipgoci_phpcs_validate_sniffs_in_options(
+	$options
+) {
+	vipgoci_log(
+		'Validating sniffs provided in options',
+		array(
+			'phpcs-path'		=> $options['phpcs-path'],
+			'phpcs-standard'	=> $options['phpcs-standard'],
+			'phpcs-sniffs-exclude'	=> $options['phpcs-sniffs-exclude'],
+		)
+	);
+
+	$sniffs_list_valid = vipgoci_phpcs_get_sniffs_for_standard(
+		$options['phpcs-path'],
+		$options['phpcs-standard']
+	);
+
+
+	$sniffs_list_invalid = array();
+
+	foreach(
+		$options['phpcs-sniffs-exclude'] as
+			$sniff_item_excluded
+	) {
+		if ( false === in_array(
+			$sniff_item_excluded,
+			$sniffs_list_valid
+		) ) {
+			$sniffs_list_invalid[] = $sniff_item_excluded;
+		}
+	}
+
+	vipgoci_log(
+		'Got valid and invalid PHPCS sniffs',
+		array(
+			'phpcs-sniffs-valid' 	=> $sniffs_list_valid,
+			'phpcs-sniffs-invalid'	=> $sniffs_list_invalid,
+		),
+		2
+	);
+
+	/*
+	 * FIXME: Post generic message
+	 * with error.
+	 */
+	if ( ! empty( $sniffs_list_invalid ) ) {
+		
+	}
+}
