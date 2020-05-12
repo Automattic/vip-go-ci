@@ -49,7 +49,7 @@ final class SupportLevelLabelSetTest extends TestCase {
 		$this->options['commit'] =
 			vipgoci_unittests_get_config_value(
 				'repo-meta-api',
-				'commit-support-level-set-test',
+				'commit-support-level-set-test'
 			);
 
 		$this->options['set-support-level-label-prefix'] =

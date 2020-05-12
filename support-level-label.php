@@ -196,7 +196,7 @@ function vipgoci_support_level_label_set(
 		( empty( $options['repo-meta-api-base-url'] ) )
 	) {
 		vipgoci_log(
-			'Missing configuration for repo-meta API, skipping',
+			'Missing configuration for repo-meta API, skipping'
 		);
 
 		return false;

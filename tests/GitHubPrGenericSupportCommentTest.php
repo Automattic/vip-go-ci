@@ -59,7 +59,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 		$this->options = array_merge(
 			$this->options_git,
 			$this->options_git_repo_tests,
-			$this->options,
+			$this->options
 		);
 
 		$this->options['commit'] =
