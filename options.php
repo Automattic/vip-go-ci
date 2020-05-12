@@ -834,6 +834,25 @@ function vipgoci_option_array_handle(
 		$options[ $option_name ] = $default_value;
 	}
 
+	/*
+	 * Detect when option is already
+	 * array, which can happen when
+	 * an option is specified twice.
+	 */
+	else if ( is_array(
+		$options[ $option_name ]
+	) ) {
+		vipgoci_sysexit(
+			'Parameter --' .
+			$option_name . ' ' .
+			'is an array -- ' .
+			'should be a string. ' .
+			'Is it specified twice?',
+			array(),
+			VIPGOCI_EXIT_USAGE_ERROR
+		);
+	}
+
 	else {
 		if ( true === $strlower_option_value ) {
 			$options[ $option_name ] = strtolower(
