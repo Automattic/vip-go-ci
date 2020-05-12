@@ -442,7 +442,8 @@ function vipgoci_run() {
 			'phpcs-sniffs-exclude',
 			array(),
 			array(),
-			','
+			',',
+			false
 		);
 	}
 
@@ -1187,6 +1188,15 @@ function vipgoci_run() {
 	 */
 
 	vipgoci_options_read_repo_skip_files(
+		$options
+	);
+
+	/*
+	 * Verify that sniffs specified on command line
+	 * or via options file are valid.
+	 */
+
+	vipgoci_phpcs_validate_sniffs_in_options(
 		$options
 	);
 
