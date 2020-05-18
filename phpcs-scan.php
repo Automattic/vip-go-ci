@@ -28,6 +28,18 @@ function vipgoci_phpcs_do_scan(
 	);
 
 	/*
+	 * If is array, convert to string.
+	 */
+	if ( is_array(
+		$phpcs_sniffs_exclude
+	) ) {
+		$phpcs_sniffs_exclude = join(
+			',',
+			$phpcs_sniffs_exclude
+		);
+	}
+
+	/*
 	 * If we have sniffs to exclude, add them
 	 * to the command-line string.
 	 */
@@ -128,7 +140,7 @@ function vipgoci_phpcs_scan_single_file(
 		$temp_file_name,
 		$options['phpcs-path'],
 		$options['phpcs-standard'],
-		join( ',', $options['phpcs-sniffs-exclude'] ),
+		$options['phpcs-sniffs-exclude'],
 		$options['phpcs-severity'],
 		$options['phpcs-runtime-set']
 	);
@@ -851,23 +863,14 @@ function vipgoci_phpcs_validate_sniffs_in_options_and_report(
 	);
 
 	/*
-	 * Loop through excluded sniffs,
-	 * and if any are invalid, add to
-	 * array of invalid sniffs.
+	 * Create array of invalid sniffs --
+	 * sniffs that are specified in options
+	 * but are not part of the standards available.
  	 */
-	$phpcs_sniffs_exclude_invalid = array();
-
-	foreach(
-		$options['phpcs-sniffs-exclude'] as
-			$sniff_item_excluded
-	) {
-		if ( false === in_array(
-			$sniff_item_excluded,
-			$phpcs_sniffs_valid
-		) ) {
-			$phpcs_sniffs_exclude_invalid[] = $sniff_item_excluded;
-		}
-	}
+	$phpcs_sniffs_exclude_invalid = array_diff(
+		$options['phpcs-sniffs-exclude'],
+		$phpcs_sniffs_valid
+	);
 
 	/*
 	 * Sort array by value
