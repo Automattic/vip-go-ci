@@ -23,8 +23,8 @@ function vipgoci_repo_meta_api_data_fetch(
 			vipgoci_cached_indication_str( $cached_data ),
 
 		array(
-			'repo_meta_data_base_url'	=> $repo_meta_api_base_url,
-			'repo_meta_user_id'		=> $repo_meta_api_user_id,
+			'repo_meta_api_base_url'	=> $repo_meta_api_base_url,
+			'repo_meta_api_user_id'		=> $repo_meta_api_user_id,
 			'repo_owner'			=> $repo_owner,
 			'repo_name'			=> $repo_name,
 		)
