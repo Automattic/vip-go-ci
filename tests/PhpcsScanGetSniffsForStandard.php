@@ -41,10 +41,14 @@ final class PhpcsScanGetSniffsForStandard extends TestCase {
 			return;
 		}
 
+		vipgoci_unittests_output_suppress();
+
 		$phpcs_sniffs = vipgoci_phpcs_get_sniffs_for_standard(
 			$this->phpcs_config['phpcs-path'],
 			$this->phpcs_config['phpcs-standard']
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertNotEmpty(
 			$this->phpcs_config['phpcs-sniffs-existing']
