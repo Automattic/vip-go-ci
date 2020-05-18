@@ -96,7 +96,7 @@ final class OptionsReadRepoFile extends TestCase {
 
 		vipgoci_options_read_repo_file(
 			$this->options,
-			'.vipgoci_options',
+			VIPGOCI_OPTIONS_FILE_NAME,
 			array(
 				'phpcs-severity' => array(
 					'type'		=> 'integer',
@@ -142,7 +142,7 @@ final class OptionsReadRepoFile extends TestCase {
 
 		vipgoci_options_read_repo_file(
 			$this->options,
-			'.vipgoci_options',
+			VIPGOCI_OPTIONS_FILE_NAME,
 			array(
 				'phpcs-severity' => array(
 					'type'		=> 'integer',
@@ -191,7 +191,7 @@ final class OptionsReadRepoFile extends TestCase {
 
 		vipgoci_options_read_repo_file(
 			$this->options,
-			'.vipgoci_options',
+			VIPGOCI_OPTIONS_FILE_NAME,
 			array(
 				'phpcs-severity' => array(
 					'type'		=> 'integer',
@@ -243,7 +243,7 @@ final class OptionsReadRepoFile extends TestCase {
 
 		vipgoci_options_read_repo_file(
 			$this->options,
-			'.vipgoci_options',
+			VIPGOCI_OPTIONS_FILE_NAME,
 			array(
 				'phpcs-severity' => array(
 					'type'		=> 'integerrr', // invalid type here
@@ -289,7 +289,7 @@ final class OptionsReadRepoFile extends TestCase {
 
 		vipgoci_options_read_repo_file(
 			$this->options,
-			'.vipgoci_options',
+			VIPGOCI_OPTIONS_FILE_NAME,
 			array(
 				'phpcs-severity' => array(
 					'type'		=> 'integer',
@@ -335,7 +335,7 @@ final class OptionsReadRepoFile extends TestCase {
 
 		vipgoci_options_read_repo_file(
 			$this->options,
-			'.vipgoci_options',
+			VIPGOCI_OPTIONS_FILE_NAME,
 			array(
 				'phpcs-severity' => array(
 					'type'		=> 'integer',
@@ -381,7 +381,7 @@ final class OptionsReadRepoFile extends TestCase {
 
 		vipgoci_options_read_repo_file(
 			$this->options,
-			'.vipgoci_options',
+			VIPGOCI_OPTIONS_FILE_NAME,
 			array(
 				'post-generic-pr-support-comments' => array(
 					'type'		=> 'boolean',
@@ -429,7 +429,7 @@ final class OptionsReadRepoFile extends TestCase {
 
 		vipgoci_options_read_repo_file(
 			$this->options,
-			'.vipgoci_options',
+			VIPGOCI_OPTIONS_FILE_NAME,
 			array(
 				'post-generic-pr-support-comments' => array(
 					'type'		=> 'boolean',
@@ -476,7 +476,7 @@ final class OptionsReadRepoFile extends TestCase {
 
 		vipgoci_options_read_repo_file(
 			$this->options,
-			'.vipgoci_options',
+			VIPGOCI_OPTIONS_FILE_NAME,
 			array(
 				'post-generic-pr-support-comments' => array(
 					'type'		=> 'boolean',
@@ -528,7 +528,7 @@ final class OptionsReadRepoFile extends TestCase {
 
 		vipgoci_options_read_repo_file(
 			$this->options,
-			'.vipgoci_options',
+			VIPGOCI_OPTIONS_FILE_NAME,
 			array(
 				'post-generic-pr-support-comments' => array(
 					'type'		=> 'boolean',
