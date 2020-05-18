@@ -380,7 +380,7 @@ function vipgoci_run() {
 			"\t" . '                               are specified via environmental variables. ' . PHP_EOL .
 			"\t" . '--repo-options=BOOL            Whether to allow configuring of --phpcs-severity ' . PHP_EOL .
 			"\t" . '                               and --post-generic-pr-support-comments via options file' . PHP_EOL .
-			"\t" . '                               (".vipgoci_options") placed in root of the repository.' . PHP_EOL .
+			"\t" . '                               ("' . VIPGOCI_OPTIONS_FILE_NAME . '") placed in root of the repository.' . PHP_EOL .
 			"\t" . '--repo-options-allowed=STRING  Limits the options that can be set via repository options ' . PHP_EOL .
 			"\t" . '                               configuration file. Values are separated by commas. ' . PHP_EOL .
 			PHP_EOL .
@@ -1160,7 +1160,7 @@ function vipgoci_run() {
 	 */
 	vipgoci_options_read_repo_file(
 		$options,
-		'.vipgoci_options',
+		VIPGOCI_OPTIONS_FILE_NAME,
 		array(
 			'phpcs-severity' => array(
 				'type'		=> 'integer',
@@ -1188,15 +1188,6 @@ function vipgoci_run() {
 	 */
 
 	vipgoci_options_read_repo_skip_files(
-		$options
-	);
-
-	/*
-	 * Verify that sniffs specified on command line
-	 * or via options file are valid.
-	 */
-
-	vipgoci_phpcs_validate_sniffs_in_options(
 		$options
 	);
 
@@ -1356,6 +1347,7 @@ function vipgoci_run() {
 			VIPGOCI_SYNTAX_ERROR_STR,
 			VIPGOCI_GITHUB_ERROR_STR,
 			VIPGOCI_REVIEW_COMMENTS_TOTAL_MAX,
+			VIPGOCI_PHPCS_INVALID_SNIFFS,
 		),
 		$options['dry-run']
 	);
@@ -1384,6 +1376,17 @@ function vipgoci_run() {
 	 * - data is available in repo-meta API
 	 */
 	vipgoci_support_level_label_set(
+		$options
+	);
+
+	/*
+	 * Verify that sniffs specified on command line
+	 * or via options file are valid. Will remove any
+	 * invalid sniffs from the options on the fly and 
+	 * post a message to users about the invalid sniffs.
+	 */
+
+	vipgoci_phpcs_validate_sniffs_in_options_and_report(
 		$options
 	);
 
