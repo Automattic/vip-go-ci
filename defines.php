@@ -26,6 +26,14 @@ define( 'VIPGOCI_REVIEW_COMMENTS_TOTAL_MAX',
 					'comments might not appear as a result. ' .
 					'Please resolve some issues to see more' );
 
+define( 'VIPGOCI_PHPCS_INVALID_SNIFFS',
+					'Invalid PHPCS sniff(s) specified in ' .
+					'options or options file. Those have ' .
+					'been ignored temporarily. Please ' .
+					'fix so that scanning can continue ' .
+					'as expected. <br /><br /> The ' .
+					'sniffs are: ' );
+
 /*
  * Define exit-codes
  */
@@ -77,3 +85,9 @@ define( 'VIPGOCI_COUNTERS_DO',		'do' );
  */
 
 define( 'VIPGOCI_CACHE_CLEAR',		'--VIPGOCI-CACHE-CLEAR-0x321--' );
+
+/*
+ * Defines for files.
+ */
+
+define( 'VIPGOCI_OPTIONS_FILE_NAME',	'.vipgoci_options' );
