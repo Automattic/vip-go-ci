@@ -5,7 +5,7 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 use PHPUnit\Framework\TestCase;
 
 final class PhpcsScanDoScanTest extends TestCase {
-	var $phpcs_config = array(
+	var $options_phpcs = array(
 		'phpcs-path'		=> null,
 		'phpcs-standard'	=> null,
 		'phpcs-sniffs-exclude'	=> null,
@@ -16,7 +16,7 @@ final class PhpcsScanDoScanTest extends TestCase {
 	protected function setUp() {
 		vipgoci_unittests_get_config_values(
 			'phpcs-scan',
-			$this->phpcs_config
+			$this->options_phpcs
 		);
 
 		$this->options_phpcs['phpcs-sniffs-exclude'] = explode(
@@ -26,7 +26,7 @@ final class PhpcsScanDoScanTest extends TestCase {
 	}
 
 	protected function tearDown() {
-		$this->phpcs_config = null;
+		$this->options_phpcs = null;
 	}
 
 	/**
@@ -34,7 +34,7 @@ final class PhpcsScanDoScanTest extends TestCase {
 	 */
 	public function testDoScanTest1() {
 		$options_test = vipgoci_unittests_options_test(
-			$this->phpcs_config,
+			$this->options_phpcs,
 			array( 'phpcs-runtime-set', 'phpcs-sniffs-exclude' ),
 			$this
 		);
@@ -62,11 +62,11 @@ final class PhpcsScanDoScanTest extends TestCase {
 
 		$phpcs_res = vipgoci_phpcs_do_scan(
 			$temp_file_path,
-			$this->phpcs_config['phpcs-path'],
-			$this->phpcs_config['phpcs-standard'],
-			$this->phpcs_config['phpcs-sniffs-exclude'],
-			$this->phpcs_config['phpcs-severity'],
-			$this->phpcs_config['phpcs-runtime-set']
+			$this->options_phpcs['phpcs-path'],
+			$this->options_phpcs['phpcs-standard'],
+			$this->options_phpcs['phpcs-sniffs-exclude'],
+			$this->options_phpcs['phpcs-severity'],
+			$this->options_phpcs['phpcs-runtime-set']
 		);
 
 		vipgoci_unittests_output_unsuppress();
