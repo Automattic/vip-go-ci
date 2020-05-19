@@ -155,7 +155,7 @@ else
 	rm -fv "$PHP_CODESNIFFER_VER.tar.gz" && \
 	mv "PHP_CodeSniffer-$PHP_CODESNIFFER_VER/" phpcs && \
 	touch $TMP_FOLDER/php-codesniffer-$PHP_CODESNIFFER_VER.txt && \
-	wget "https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards/archive/$WP_CODING_STANDARDS_VER.tar.gz" && \
+	wget "https://github.com/WordPress/WordPress-Coding-Standards/archive/$WP_CODING_STANDARDS_VER.tar.gz" && \
 	sha1sum_check "$WP_CODING_STANDARDS_VER.tar.gz" "$WP_CODING_STANDARDS_SHA1SUM" && \
 	tar -zxvf "$WP_CODING_STANDARDS_VER.tar.gz"  && \
 	rm -fv "$WP_CODING_STANDARDS_VER.tar.gz" && \
