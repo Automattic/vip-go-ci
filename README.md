@@ -440,7 +440,7 @@ At this time, only certain messages are posted to IRC, all indicated by a specia
 
 `tools-init.sh` will install PHPCS and related tools in your home-directory upon execution. It will keep these tools up to date when run; it should be executed on regular basis to keep everything up to date.
 
-However, once a while `tools-init.sh` itself needs to be updated with new versions of these utilities. The file keeps two data entries for each utlity: Version number and SHA1 hash. The version number refers to a release on GitHub, and the hash to the SHA1 hash of the release's `.tar.gz` archive on GitHub. The hash is used to make sure that the relevant utility has not changed since last updated in the file.
+However, once a while `tools-init.sh` itself needs to be updated with new versions of these utilities. The file keeps two data entries for each utlity: Version number and SHA1 hash. The version number refers to a release on GitHub, and the hash to the SHA1 hash of the release's `.tar.gz` archive on GitHub. The hash is used to make sure that the relevant utility has not changed since last updated in `tools-init.sh`.
 
 Versions and hashes can be determined in the following way. Releases of the `WordPress-Coding-Standards` utility, for instance, are hosted [here](https://github.com/WordPress/WordPress-Coding-Standards/releases). Once a version has been chosen, `tools-init.sh` can be updated in the following way:
 
