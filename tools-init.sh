@@ -1,5 +1,11 @@
 #!/bin/bash
 
+#
+# Before updating these version numbers and
+# hashes, please read the documentation here:
+# https://github.com/Automattic/vip-go-ci/#updating-tools-initsh-with-new-versions
+#
+
 export PHP_CODESNIFFER_VER="3.3.2"
 export PHP_CODESNIFFER_SHA1SUM="1091af07e902c2fcc13730dc51d44cbf99b7dcb9"
 
