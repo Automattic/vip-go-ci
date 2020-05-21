@@ -8,7 +8,6 @@ final class PhpcsScanDoScanTest extends TestCase {
 	var $options_phpcs = array(
 		'phpcs-path'		=> null,
 		'phpcs-standard'	=> null,
-		'phpcs-sniffs-exclude'	=> null,
 		'phpcs-severity'	=> null,
 		'phpcs-runtime-set'	=> null,
 	);
@@ -19,9 +18,7 @@ final class PhpcsScanDoScanTest extends TestCase {
 			$this->options_phpcs
 		);
 
-		$this->options_phpcs['phpcs-sniffs-exclude'] = explode(
-			',',
-			$this->options_phpcs['phpcs-sniffs-exclude']
+		$this->options_phpcs['phpcs-sniffs-exclude'] = array(
 		);
 	}
 
@@ -35,7 +32,7 @@ final class PhpcsScanDoScanTest extends TestCase {
 	public function testDoScanTest1() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options_phpcs,
-			array( 'phpcs-runtime-set', 'phpcs-sniffs-exclude' ),
+			array( 'phpcs-runtime-set' ),
 			$this
 		);
 
