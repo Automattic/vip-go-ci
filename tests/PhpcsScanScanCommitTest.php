@@ -14,6 +14,7 @@ final class PhpcsScanScanCommitTest extends TestCase {
 		'commit-test-phpcs-scan-commit-1'	=> null,
 		'commit-test-phpcs-scan-commit-2'	=> null,
 		'commit-test-phpcs-scan-commit-3'	=> null,
+		'commit-test-phpcs-scan-commit-4'	=> null,
 	);
 
 	var $options_git_repo = array(
@@ -502,5 +503,127 @@ final class PhpcsScanScanCommitTest extends TestCase {
 		);
 	}
 
+
+	/**
+	 * @covers ::vipgoci_phpcs_scan_commit
+	 *
+	 * Test if --phpcs-sniffs-exclude is used
+	 * while doing PHPCS scanning.
+	 */
+	public function testDoScanTest4() {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( 'phpcs-runtime-set', 'phpcs-sniffs-exclude', 'github-token', 'token' ),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
+		$this->options['commit'] =
+			$this->options['commit-test-phpcs-scan-commit-4'];
+
+		$this->options['phpcs-skip-scanning-via-labels-allowed'] =
+			false;
+
+		$this->options['lint-skip-folders'] = array();
+
+		$this->options['phpcs-skip-folders'] = array();
+
+		// Sniff to skip.
+		$this->options['phpcs-sniffs-exclude'] = array(
+			'WordPress.Security.EscapeOutput',
+		);
+
+		$issues_submit = array();
+		$issues_stats = array();
+
+		vipgoci_unittests_output_suppress();
+
+		$prs_implicated = vipgoci_github_prs_implicated(
+			$this->options['repo-owner'],
+			$this->options['repo-name'],
+			$this->options['commit'],
+			$this->options['github-token'],
+			$this->options['branches-ignore']
+		);
+
+
+		foreach( $prs_implicated as $pr_item ) {
+			$issues_stats[
+				$pr_item->number
+			][
+				'warning'
+			] = 0;
+
+			$issues_stats[
+				$pr_item->number
+			][
+				'error'
+			] = 0;
+		}
+
+
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped(
+				'Could not set up git repository: ' .
+					vipgoci_unittests_output_get()
+			);
+
+			return;
+		}
+
+		vipgoci_phpcs_scan_commit(
+			$this->options,
+			$issues_submit,
+			$issues_stats
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		$this->assertEquals(
+			array(
+				30 => array(
+					/*
+					 * Note: Escaping issues not listed, as
+					 * they should have been excluded.
+					 */
+					array(
+						'type'		=> 'phpcs',
+						'file_name'	=> 'test.php',
+						'file_line'	=> 10,
+						'issue'	=> array(
+							'message' => "Scripts should be registered/enqueued via `wp_enqueue_script`. This can improve the site's performance due to script concatenation.",
+							'source' => 'WordPress.WP.EnqueuedResources.NonEnqueuedScript',
+							'severity' => 3,
+							'fixable' => false,
+							'type' => 'WARNING',
+							'line' => 10,
+							'column' => 6,
+							'level' => 'WARNING'
+						)
+					)
+				)
+			),
+
+			$issues_submit
+		);
+
+		$this->assertEquals(
+			array(
+				30 => array(
+					'error' => 0,
+					'warning' => 1,
+				)
+			),
+			$issues_stats
+		);
+	}
 
 }

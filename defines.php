@@ -28,11 +28,13 @@ define( 'VIPGOCI_REVIEW_COMMENTS_TOTAL_MAX',
 
 define( 'VIPGOCI_PHPCS_INVALID_SNIFFS',
 					'Invalid PHPCS sniff(s) specified in ' .
-					'options or options file. Those have ' .
+					'options or options file (option ' .
+					'`phpcs-sniffs-exclude`). Those have ' .
 					'been ignored temporarily. Please ' .
-					'fix so that scanning can continue ' .
-					'as expected. <br /><br /> The ' .
-					'sniffs are: ' );
+					'update the options so that scanning ' .
+					' can continue as expected. ' .
+					'<br /><br /> ' .
+					'The sniffs are: ' );
 
 /*
  * Define exit-codes
