@@ -296,7 +296,7 @@ function vipgoci_run() {
 			"\t" . '--phpcs-path=FILE              Full path to PHPCS script' . PHP_EOL .
 			"\t" . '--phpcs-standard=STRING        Specify which PHPCS standard to use' . PHP_EOL .
 			"\t" . '--phpcs-severity=NUMBER        Specify severity for PHPCS' . PHP_EOL .
-			"\t" . '--phpcs-sniffs-exclude=ARRAY   Specify which sniff to exclude from PHPCS scanning, ' . PHP_EOL .
+			"\t" . '--phpcs-sniffs-exclude=ARRAY   Specify which sniffs to exclude from PHPCS scanning, ' . PHP_EOL .
 			"\t" . '                               should be an array with items separated by commas. ' . PHP_EOL .
 			"\t" . '--phpcs-runtime-set=STRING     Specify --runtime-set values passed on to PHPCS' . PHP_EOL .
 			"\t" . '                               -- expected to be a comma-separated value string of ' . PHP_EOL .
