@@ -12,7 +12,6 @@ final class PhpcsScanScanCommitTest extends TestCase {
 		'phpcs-runtime-set'			=> null,
 		'commit-test-phpcs-scan-commit-1'	=> null,
 		'commit-test-phpcs-scan-commit-2'	=> null,
-		'commit-test-phpcs-scan-commit-3'	=> null,
 		'commit-test-phpcs-scan-commit-4'	=> null,
 	);
 
@@ -370,7 +369,7 @@ final class PhpcsScanScanCommitTest extends TestCase {
 		}
 
 		$this->options['commit'] =
-			$this->options['commit-test-phpcs-scan-commit-3'];
+			$this->options['commit-test-phpcs-scan-commit-4'];
 
 		$this->options['phpcs-skip-scanning-via-labels-allowed'] =
 			false;
@@ -403,6 +402,12 @@ final class PhpcsScanScanCommitTest extends TestCase {
 			][
 				'error'
 			] = 0;
+
+			$issues_stats[
+				$pr_item->number
+			][
+				'warning'
+			] = 0;
 		}
 
 
@@ -430,7 +435,7 @@ final class PhpcsScanScanCommitTest extends TestCase {
 
 		$this->assertEquals(
 			array(
-				23 => array(
+				30 => array(
 					array(
 						'type'		=> 'phpcs',
 						'file_name'	=> 'test.php',
@@ -465,6 +470,22 @@ final class PhpcsScanScanCommitTest extends TestCase {
 
 					array(
 						'type'		=> 'phpcs',
+						'file_name'	=> 'test.php',
+						'file_line'	=> 10,
+						'issue'	=> array(
+							'message' => "Scripts should be registered/enqueued via `wp_enqueue_script`. This can improve the site's performance due to script concatenation.",
+							'source' => 'WordPress.WP.EnqueuedResources.NonEnqueuedScript',
+							'severity' => 3,
+							'fixable' => false,
+							'type' => 'WARNING',
+							'line' => 10,
+							'column' => 6,
+							'level' => 'WARNING'
+						)
+					),
+
+					array(
+						'type'		=> 'phpcs',
 						'file_name'	=> 'tests1/some_phpcs_issues.php',
 						'file_line'	=> 3,
 						'issue'	=> array(
@@ -491,9 +512,10 @@ final class PhpcsScanScanCommitTest extends TestCase {
 
 		$this->assertEquals(
 			array(
-				23 => array(
+				30 => array(
 					'error' => 3,
-				)
+					'warning' => 1,
+				),
 			),
 			$issues_stats
 		);
