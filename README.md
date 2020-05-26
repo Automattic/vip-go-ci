@@ -295,6 +295,8 @@ With these settings, PHPCS is turned on, is expected to be found in the path sho
 
 Any number of PHPCS standards can be specified, and any number of runtime settings as well. Also, see section above about configuring options via repository file.
 
+Should any of the PHPCS sniffs excluded be invalid, this is reported in the relevant Pull-Requests.
+
 ### SVG scanning
 
 `vip-go-ci` supports scanning SVG files for dangerous tags. The scanning is accomplished by a [SVG scanner](https://github.com/Automattic/vip-go-svg-sanitizer), while `vip-go-ci` takes care of posting the issues found.
