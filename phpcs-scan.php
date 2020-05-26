@@ -942,6 +942,10 @@ function vipgoci_phpcs_validate_sniffs_in_options_and_report(
 				return true;
 			}
 		);
+
+		$options['phpcs-sniffs-exclude'] = array_values(
+			$options['phpcs-sniffs-exclude']
+		);
 	}
 
 	vipgoci_log(
