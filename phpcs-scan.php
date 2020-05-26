@@ -866,16 +866,19 @@ function vipgoci_phpcs_validate_sniffs_in_options_and_report(
 	 * Create array of invalid sniffs --
 	 * sniffs that are specified in options
 	 * but are not part of the standards available.
+	 *
+	 * Normalise and sort the results.
  	 */
 	$phpcs_sniffs_exclude_invalid = array_diff(
 		$options['phpcs-sniffs-exclude'],
 		$phpcs_sniffs_valid
 	);
 
-	/*
-	 * Sort array by value
-	 */
 	asort(
+		$phpcs_sniffs_exclude_invalid
+	);
+
+	$phpcs_sniffs_exclude_invalid = array_values(
 		$phpcs_sniffs_exclude_invalid
 	);
 
