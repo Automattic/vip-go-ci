@@ -3324,7 +3324,7 @@ function vipgoci_github_labels_get(
 	 */
 	$cache_id = array(
 		__FUNCTION__, $repo_owner, $repo_name,
-		$github_token, $pr_number, $label_to_look_for
+		$github_token, $pr_number
 	);
 
 	$cached_data = vipgoci_cache( $cache_id );
