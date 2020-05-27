@@ -567,6 +567,8 @@ final class PhpcsScanScanCommitTest extends TestCase {
 			$this->options['branches-ignore']
 		);
 
+		vipgoci_unittests_output_unsuppress();
+
 
 		foreach( $prs_implicated as $pr_item ) {
 			$issues_stats[
@@ -582,11 +584,14 @@ final class PhpcsScanScanCommitTest extends TestCase {
 			] = 0;
 		}
 
+		vipgoci_unittests_output_suppress();
 
 		$this->options['local-git-repo'] =
 			vipgoci_unittests_setup_git_repo(
 				$this->options
 			);
+
+		vipgoci_unittests_output_unsuppress();
 
 		if ( false === $this->options['local-git-repo'] ) {
 			$this->markTestSkipped(
@@ -596,6 +601,8 @@ final class PhpcsScanScanCommitTest extends TestCase {
 
 			return;
 		}
+
+		vipgoci_unittests_output_suppress();
 
 		vipgoci_phpcs_scan_commit(
 			$this->options,
