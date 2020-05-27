@@ -87,7 +87,6 @@ function vipgoci_options_read_repo_file(
 			)
 		);
 
-
 		return false;
 	}
 
