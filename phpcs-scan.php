@@ -911,6 +911,10 @@ function vipgoci_phpcs_validate_sniffs_in_options_and_report(
 				$options['repo-name'],
 				$options['token'],
 				$pr_item->number,
+				/*
+				 * Send invalid sniffs message,
+				 * but append the sniffs that are invalid.
+				 */
 				VIPGOCI_PHPCS_INVALID_SNIFFS .
 					'`' . implode(
 						', ',
