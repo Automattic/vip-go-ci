@@ -16,10 +16,20 @@ final class OptionsReadRepoFile extends TestCase {
        );
 
 	var $options_options = array(
-		'commit-test-options-read-repo-file-no-file'	=> null,
-		'commit-test-options-read-repo-file-with-file'	=> null,
-		'commit-test-options-read-repo-file-with-file-2'=> null,
-		'commit-test-options-read-repo-file-with-file-3'=> null,
+		'commit-test-options-read-repo-file-no-file'
+			=> null,
+
+		'commit-test-options-read-repo-file-with-file'
+			=> null,
+
+		'commit-test-options-read-repo-file-with-file-2'
+			=> null,
+
+		'commit-test-options-read-repo-file-with-file-3'
+			=> null,
+
+		'commit-test-options-read-repo-file-with-file-5'
+			=> null,
 	);
 
 	protected function setUp() {
@@ -51,6 +61,7 @@ final class OptionsReadRepoFile extends TestCase {
 		$this->options['repo-options-allowed'] = array(
 			'post-generic-pr-support-comments',
 			'phpcs-severity',
+			'phpcs-sniffs-exclude',
 		);
 	}
 
@@ -62,9 +73,9 @@ final class OptionsReadRepoFile extends TestCase {
 		}
 
 		$this->options = null;
+		$this->options_git = null;
 		$this->options_options = null;
 		$this->options_patch_changed_lines = null;
-		$this->options_git = null;
 	}
 
 	/**
@@ -83,16 +94,19 @@ final class OptionsReadRepoFile extends TestCase {
 				$this->options
 			);
 
+		vipgoci_unittests_output_unsuppress();
+
 
 		if ( false === $this->options['local-git-repo'] ) {
 			$this->markTestSkipped(
-				'Could not set up git repository: ' .
-					vipgoci_unittests_output_get()
+				'Could not set up git repository'
 			);
 		}
 
 
 		$this->options['phpcs-severity'] = -100;
+
+		vipgoci_unittests_output_suppress();
 
 		vipgoci_options_read_repo_file(
 			$this->options,
@@ -129,16 +143,18 @@ final class OptionsReadRepoFile extends TestCase {
 				$this->options
 			);
 
+		vipgoci_unittests_output_unsuppress();
 
 		if ( false === $this->options['local-git-repo'] ) {
 			$this->markTestSkipped(
-				'Could not set up git repository: ' .
-					vipgoci_unittests_output_get()
+				'Could not set up git repository'
 			);
 		}
 
 
 		$this->options['phpcs-severity'] = -100;
+
+		vipgoci_unittests_output_suppress();
 
 		vipgoci_options_read_repo_file(
 			$this->options,
@@ -178,16 +194,18 @@ final class OptionsReadRepoFile extends TestCase {
 				$this->options
 			);
 
+		vipgoci_unittests_output_unsuppress();
 
 		if ( false === $this->options['local-git-repo'] ) {
 			$this->markTestSkipped(
-				'Could not set up git repository: ' .
-					vipgoci_unittests_output_get()
+				'Could not set up git repository'
 			);
 		}
 
 
 		$this->options['phpcs-severity'] = -100;
+
+		vipgoci_unittests_output_suppress();
 
 		vipgoci_options_read_repo_file(
 			$this->options,
@@ -230,16 +248,18 @@ final class OptionsReadRepoFile extends TestCase {
 				$this->options
 			);
 
+		vipgoci_unittests_output_unsuppress();
 
 		if ( false === $this->options['local-git-repo'] ) {
 			$this->markTestSkipped(
-				'Could not set up git repository: ' .
-					vipgoci_unittests_output_get()
+				'Could not set up git repository'
 			);
 		}
 
 
 		$this->options['phpcs-severity'] = -100;
+
+		vipgoci_unittests_output_suppress();
 
 		vipgoci_options_read_repo_file(
 			$this->options,
@@ -276,16 +296,18 @@ final class OptionsReadRepoFile extends TestCase {
 				$this->options
 			);
 
+		vipgoci_unittests_output_unsuppress();
 
 		if ( false === $this->options['local-git-repo'] ) {
 			$this->markTestSkipped(
-				'Could not set up git repository: ' .
-					vipgoci_unittests_output_get()
+				'Could not set up git repository'
 			);
 		}
 
 
 		$this->options['phpcs-severity'] = -100;
+
+		vipgoci_unittests_output_suppress();
 
 		vipgoci_options_read_repo_file(
 			$this->options,
@@ -322,16 +344,19 @@ final class OptionsReadRepoFile extends TestCase {
 				$this->options
 			);
 
+		vipgoci_unittests_output_unsuppress();
+
 
 		if ( false === $this->options['local-git-repo'] ) {
 			$this->markTestSkipped(
-				'Could not set up git repository: ' .
-					vipgoci_unittests_output_get()
+				'Could not set up git repository'
 			);
 		}
 
 
 		$this->options['phpcs-severity'] = -100;
+
+		vipgoci_unittests_output_suppress();
 
 		vipgoci_options_read_repo_file(
 			$this->options,
@@ -368,16 +393,19 @@ final class OptionsReadRepoFile extends TestCase {
 				$this->options
 			);
 
+		vipgoci_unittests_output_unsuppress();
+
 
 		if ( false === $this->options['local-git-repo'] ) {
 			$this->markTestSkipped(
-				'Could not set up git repository: ' .
-					vipgoci_unittests_output_get()
+				'Could not set up git repository'
 			);
 		}
 
 
 		$this->options['post-generic-pr-support-comments'] = false;
+
+		vipgoci_unittests_output_suppress();
 
 		vipgoci_options_read_repo_file(
 			$this->options,
@@ -414,11 +442,12 @@ final class OptionsReadRepoFile extends TestCase {
 				$this->options
 			);
 
+		vipgoci_unittests_output_unsuppress();
+
 
 		if ( false === $this->options['local-git-repo'] ) {
 			$this->markTestSkipped(
-				'Could not set up git repository: ' .
-					vipgoci_unittests_output_get()
+				'Could not set up git repository'
 			);
 		}
 
@@ -426,6 +455,8 @@ final class OptionsReadRepoFile extends TestCase {
 		$this->options['repo-options'] = false;
 
 		$this->options['post-generic-pr-support-comments'] = false;
+
+		vipgoci_unittests_output_suppress();
 
 		vipgoci_options_read_repo_file(
 			$this->options,
@@ -463,16 +494,19 @@ final class OptionsReadRepoFile extends TestCase {
 				$this->options
 			);
 
+		vipgoci_unittests_output_unsuppress();
+
 
 		if ( false === $this->options['local-git-repo'] ) {
 			$this->markTestSkipped(
-				'Could not set up git repository: ' .
-					vipgoci_unittests_output_get()
+				'Could not set up git repository'
 			);
 		}
 
 
 		$this->options['post-generic-pr-support-comments'] = false;
+
+		vipgoci_unittests_output_suppress();
 
 		vipgoci_options_read_repo_file(
 			$this->options,
@@ -493,6 +527,117 @@ final class OptionsReadRepoFile extends TestCase {
 		);
 	}
 
+	/**
+	 * @covers ::vipgoci_options_read_repo_file
+	 *
+	 * Tests for array options in repository config files
+	 */
+	public function testOptionsReadRepoFileArrayTest1() {
+		$this->options['commit'] =
+			$this->options['commit-test-options-read-repo-file-with-file-5'];
+
+
+		vipgoci_unittests_output_suppress();
+
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
+
+		vipgoci_unittests_output_unsuppress();
+
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped(
+				'Could not set up git repository'
+			);
+		}
+
+		$this->options['phpcs-sniffs-exclude'] = array(
+			'MySniff1',
+			'MySniff2',
+		);
+
+		vipgoci_unittests_output_suppress();
+
+		vipgoci_options_read_repo_file(
+			$this->options,
+			VIPGOCI_OPTIONS_FILE_NAME,
+			array(
+				'phpcs-sniffs-exclude' => array(
+					'type'		=> 'array',
+					'append'	=> true, // Append what was read
+				),
+			)
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		$this->assertEquals(
+			array(
+				'MySniff1',
+				'MySniff2',
+				'OtherSniff1',
+				'OtherSniff2',
+			),
+			$this->options['phpcs-sniffs-exclude']
+		);
+	}
+	
+	/**
+	 * @covers ::vipgoci_options_read_repo_file
+	 *
+	 * Tests for array options in repository config files
+	 */
+	public function testOptionsReadRepoFileArrayTest2() {
+		$this->options['commit'] =
+			$this->options['commit-test-options-read-repo-file-with-file-5'];
+
+
+		vipgoci_unittests_output_suppress();
+
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
+
+		vipgoci_unittests_output_unsuppress();
+
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped(
+				'Could not set up git repository'
+			);
+		}
+
+		$this->options['phpcs-sniffs-exclude'] = array(
+			'MySniff1',
+			'MySniff2',
+		);
+
+		vipgoci_unittests_output_suppress();
+
+		vipgoci_options_read_repo_file(
+			$this->options,
+			VIPGOCI_OPTIONS_FILE_NAME,
+			array(
+				'phpcs-sniffs-exclude' => array(
+					'type'		=> 'array',
+					'append'	=> false, // Do not append what was read
+				),
+			)
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		$this->assertEquals(
+			array(
+				'OtherSniff1',
+				'OtherSniff2',
+			),
+			$this->options['phpcs-sniffs-exclude']
+		);
+	}
 	
 	/**
 	 * @covers ::vipgoci_options_read_repo_file
@@ -510,11 +655,12 @@ final class OptionsReadRepoFile extends TestCase {
 				$this->options
 			);
 
+		vipgoci_unittests_output_unsuppress();
+
 
 		if ( false === $this->options['local-git-repo'] ) {
 			$this->markTestSkipped(
-				'Could not set up git repository: ' .
-					vipgoci_unittests_output_get()
+				'Could not set up git repository'
 			);
 		}
 
@@ -525,6 +671,9 @@ final class OptionsReadRepoFile extends TestCase {
 
 		$this->options['post-generic-pr-support-comments'] = false;
 		$this->options['phpcs-severity'] = -100;
+		$this->options['phpcs-sniffs-exclude'] = array();
+
+		vipgoci_unittests_output_suppress();
 
 		vipgoci_options_read_repo_file(
 			$this->options,
@@ -553,6 +702,11 @@ final class OptionsReadRepoFile extends TestCase {
 		$this->assertEquals(
 			-100, // Should not have changed, repo setting is set, but cannot be set
 			$this->options['phpcs-severity']
+		);
+
+		$this->assertEquals(
+			array(),	
+			$this->options['phpcs-sniffs-exclude']
 		);
 	}
 }
