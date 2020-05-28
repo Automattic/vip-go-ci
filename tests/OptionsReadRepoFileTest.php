@@ -671,7 +671,7 @@ final class OptionsReadRepoFile extends TestCase {
 
 		$this->options['post-generic-pr-support-comments'] = false;
 		$this->options['phpcs-severity'] = -100;
-		$this->options['phpcs-sniffs-exclude'] = array();
+		$this->options['phpcs-sniffs-exclude'] = array( 'MySniff.MySniffName' );
 
 		vipgoci_unittests_output_suppress();
 
@@ -705,7 +705,7 @@ final class OptionsReadRepoFile extends TestCase {
 		);
 
 		$this->assertEquals(
-			array(),	
+			array( 'MySniff.MySniffName' ), // Should not have changed, is not configured
 			$this->options['phpcs-sniffs-exclude']
 		);
 	}
