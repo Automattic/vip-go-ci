@@ -1796,6 +1796,33 @@ function vipgoci_issues_filter_duplicate( $file_issues_arr ) {
 	return $file_issues_arr_new;
 }
 
+/*
+ * Sort issues to be submitted to GitHub according to
+ * severity of issues -- if configured to do so.
+ */
+function vipgoci_issues_sort_by_severity(
+	$options,
+	&$results
+) {
+
+	if ( true !== $options['issue-comments-sort'] ) {
+		return;
+	}
+
+	vipgoci_log(
+		'Sorting issues in results according to severity before submission',
+		array(
+		)
+	);
+
+
+	foreach(
+		$results['issues'] as
+			$pr_number => $pr_issues_comments
+	) {
+	}
+}
+
 
 /*
  * Add pagebreak to a Markdown-style comment
