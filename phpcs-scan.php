@@ -883,7 +883,7 @@ function vipgoci_phpcs_validate_sniffs_in_options_and_report(
 	);
 
 	vipgoci_log(
-		'Got valid PHPCS sniffs, caluclated invalid PHPCS sniffs',
+		'Got valid PHPCS sniffs, calculated invalid PHPCS sniffs',
 		array(
 			'phpcs-sniffs-valid' 		=> $phpcs_sniffs_valid,
 			'phpcs-sniffs-exclude-invalid'	=> $phpcs_sniffs_exclude_invalid,
