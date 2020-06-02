@@ -87,7 +87,6 @@ function vipgoci_options_read_repo_file(
 			)
 		);
 
-
 		return false;
 	}
 
@@ -118,12 +117,32 @@ function vipgoci_options_read_repo_file(
 			( ! isset(
 				$option_overwritable_conf['type']
 			) )
-			||
+		) {
+			continue;
+		}
+
+		/*
+		 * We require the 'valid_values' parameter to
+		 * be in place for all options, except ones
+		 * dealing with arrays.
+		 */
+		if (
+			( 'array' !== $option_overwritable_conf['type'] ) &&
 			( ! isset(
 				$option_overwritable_conf['valid_values']
 			) )
 		) {
 			continue;
+		}
+
+		/*
+		 * If not specified, we do not append
+		 * by default.
+		 */
+		if ( ! isset(
+			$option_overwritable_conf['append']
+		) ) {
+			$option_overwritable_conf['append'] = false;
 		}
 
 		/*
@@ -199,6 +218,16 @@ function vipgoci_options_read_repo_file(
 			}
 		}
 
+		else if ( 'array' === $option_overwritable_conf['type'] ) {
+			if ( ! is_array(
+				$repo_options_arr[
+					$option_overwritable_name
+				]
+			) ) {
+				$do_skip = true;
+			}
+		}
+
 		else {
 			$do_skip = true;
 		}
@@ -222,11 +251,32 @@ function vipgoci_options_read_repo_file(
 			continue;
 		}
 
+		if (
+			( 'array' === $option_overwritable_conf['type'] ) && 
+			( true === $option_overwritable_conf['append'] )
+		) {
+			$options[
+				$option_overwritable_name
+			] = array_merge(
+				$options[
+					$option_overwritable_name
+				],
+				$repo_options_arr[
+					$option_overwritable_name
+				]
+			);
+		}
 
-		$options[
-			$option_overwritable_name
-		]
-		=
+		else {
+			$options[
+				$option_overwritable_name
+			]
+			=
+			$repo_options_arr[
+				$option_overwritable_name
+			];
+		}
+
 		$options_read[
 			$option_overwritable_name
 		]
@@ -237,7 +287,7 @@ function vipgoci_options_read_repo_file(
 	}
 
 	vipgoci_log(
-		'Set or overwrote the following options',
+		'Set, overwrote or appended the following options',
 		$options_read
 	);
 
@@ -781,6 +831,25 @@ function vipgoci_option_array_handle(
 ) {
 	if ( ! isset( $options[ $option_name ] ) ) {
 		$options[ $option_name ] = $default_value;
+	}
+
+	/*
+	 * Detect when option is already
+	 * array, which can happen when
+	 * an option is specified twice.
+	 */
+	else if ( is_array(
+		$options[ $option_name ]
+	) ) {
+		vipgoci_sysexit(
+			'Parameter --' .
+			$option_name . ' ' .
+			'is an array -- ' .
+			'should be a string. ' .
+			'Is it specified twice?',
+			array(),
+			VIPGOCI_EXIT_USAGE_ERROR
+		);
 	}
 
 	else {

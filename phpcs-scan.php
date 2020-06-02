@@ -28,6 +28,18 @@ function vipgoci_phpcs_do_scan(
 	);
 
 	/*
+	 * If is array, convert to string.
+	 */
+	if ( is_array(
+		$phpcs_sniffs_exclude
+	) ) {
+		$phpcs_sniffs_exclude = join(
+			',',
+			$phpcs_sniffs_exclude
+		);
+	}
+
+	/*
 	 * If we have sniffs to exclude, add them
 	 * to the command-line string.
 	 */
@@ -723,3 +735,233 @@ function vipgoci_phpcs_scan_commit(
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'phpcs_scan_commit' );
 }
 
+/*
+ * Ask PHPCS for a list of all sniffs that are active
+ * in the specified standard. Returns with an array
+ * of active sniffs.
+ */ 
+function vipgoci_phpcs_get_sniffs_for_standard(
+	$phpcs_path,
+	$phpcs_standard
+) {
+	vipgoci_log(
+		'Getting sniffs active in PHPCS standard',
+		array(
+			'phpcs-path'		=> $phpcs_path,
+			'phpcs-standard'	=> $phpcs_standard,
+		)
+	);
+
+	/*
+	 * Run PHPCS from the shell, making sure we escape everything.
+	 */
+	$cmd = sprintf(
+		'%s %s --standard=%s -e -s',
+		escapeshellcmd( 'php' ),
+		escapeshellcmd( $phpcs_path ),
+		escapeshellarg( $phpcs_standard )
+	);
+
+	vipgoci_log(
+		'Running PHPCS now to get sniffs',
+		array(
+			'cmd' => $cmd,
+		),
+		0
+	);
+
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'phpcs_cli' );
+
+	$result = shell_exec( $cmd );
+
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'phpcs_cli' );
+
+	$sniffs_arr = explode(
+		"\n",
+		$result
+	);
+
+	/*
+	 * Filter output: Remove everything
+	 * that does not look like a sniff name.
+	 */
+	$sniffs_arr = array_filter(
+		$sniffs_arr,
+		function( $line_item ) {
+			if ( false === strpos( $line_item, '.' ) ) {
+				return false;
+			}
+
+			if ( false !== strpos( $line_item, '-' ) ) {
+				return false;
+			}
+
+			/* Sniff names start with spaces, let them through. */
+			if ( 0 === strpos( $line_item, ' ' ) ) {
+				return true;
+			}
+
+			return false;
+		}
+	);
+
+	/*
+	 * Remove any whitespacing, etc.
+	 * from list of sniffs.
+	 */
+	$sniffs_arr = array_map(
+		function( $sniff_item ) {
+			return trim( $sniff_item );
+		},
+		$sniffs_arr
+	);
+
+	/*
+	 * Remove any potential duplicates.
+	 */
+	$sniffs_arr = array_unique(
+		$sniffs_arr
+	);
+
+	/*
+	 * Recreate array with fresh
+	 * keys.
+	 */
+	$sniffs_arr = array_values(
+		$sniffs_arr
+	);
+
+	return $sniffs_arr;
+}
+
+/*
+ * Check if the sniffs specified in options
+ * -- either to remove or set -- are valid.
+ *
+ * Do this by getting a list of valid sniffs
+ * and check if each and every one is in the list.
+ */
+function vipgoci_phpcs_validate_sniffs_in_options_and_report(
+	&$options
+) {
+	vipgoci_log(
+		'Validating sniffs provided in options',
+		array(
+			'phpcs-path'		=> $options['phpcs-path'],
+			'phpcs-standard'	=> $options['phpcs-standard'],
+			'phpcs-sniffs-exclude'	=> $options['phpcs-sniffs-exclude'],
+		)
+	);
+
+	/*
+	 * Get sniffs that are part of
+	 * the PHPCS standard specified.
+	 */
+	$phpcs_sniffs_valid = vipgoci_phpcs_get_sniffs_for_standard(
+		$options['phpcs-path'],
+		$options['phpcs-standard']
+	);
+
+	/*
+	 * Create array of invalid sniffs --
+	 * sniffs that are specified in options
+	 * but are not part of the standards available.
+	 *
+	 * Normalise and sort the results.
+ 	 */
+	$phpcs_sniffs_exclude_invalid = array_diff(
+		$options['phpcs-sniffs-exclude'],
+		$phpcs_sniffs_valid
+	);
+
+	asort(
+		$phpcs_sniffs_exclude_invalid
+	);
+
+	$phpcs_sniffs_exclude_invalid = array_values(
+		$phpcs_sniffs_exclude_invalid
+	);
+
+	vipgoci_log(
+		'Got valid PHPCS sniffs, calculated invalid PHPCS sniffs',
+		array(
+			'phpcs-sniffs-valid' 		=> $phpcs_sniffs_valid,
+			'phpcs-sniffs-exclude-invalid'	=> $phpcs_sniffs_exclude_invalid,
+		),
+		2
+	);
+
+	if ( ! empty( $phpcs_sniffs_exclude_invalid ) ) {
+		$prs_implicated = vipgoci_github_prs_implicated(
+			$options['repo-owner'],
+			$options['repo-name'],
+			$options['commit'],
+			$options['token'],
+			$options['branches-ignore']
+		);
+
+		/*
+		 * Post generic message with error for each Pull-Request
+		 * implicated.
+		 */
+
+		foreach ( $prs_implicated as $pr_item ) {
+			vipgoci_github_pr_comments_generic_submit(
+				$options['repo-owner'],
+				$options['repo-name'],
+				$options['token'],
+				$pr_item->number,
+				/*
+				 * Send invalid sniffs message,
+				 * but append the sniffs that are invalid.
+				 */
+				VIPGOCI_PHPCS_INVALID_SNIFFS .
+					'`' . implode(
+						', ',
+						$phpcs_sniffs_exclude_invalid
+					) . '`',
+				$options['commit']
+			);
+		}
+
+		/*
+	 	 * Dynamically remove invalid sniffs from options
+		 */
+		vipgoci_log(
+			'Dynamically removing invalid PHPCS sniffs from options',
+			array(
+				'phpcs-sniffs-exclude'		=> $options['phpcs-sniffs-exclude'],
+				'phpcs-sniffs-exclude-invalid'	=> $phpcs_sniffs_exclude_invalid,
+			)
+		);
+
+		$options['phpcs-sniffs-exclude'] = array_filter(
+			$options['phpcs-sniffs-exclude'],
+			function( $sniff_item ) use ( $phpcs_sniffs_exclude_invalid ) {
+				if ( in_array(
+					$sniff_item,
+					$phpcs_sniffs_exclude_invalid,
+					true
+				) ) {
+					return false;
+				}
+
+				return true;
+			}
+		);
+
+		$options['phpcs-sniffs-exclude'] = array_values(
+			$options['phpcs-sniffs-exclude']
+		);
+	}
+
+	vipgoci_log(
+		'Validated sniffs provided in options',
+		array(
+			'phpcs-path'			=> $options['phpcs-path'],
+			'phpcs-standard'		=> $options['phpcs-standard'],
+			'phpcs-sniffs-exclude-after'	=> $options['phpcs-sniffs-exclude'],
+			'phpcs-sniffs-exclude-invalid'	=> $phpcs_sniffs_exclude_invalid,
+		)
+	);
+}

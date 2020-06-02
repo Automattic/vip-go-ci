@@ -267,6 +267,8 @@ If you wish to limit the options configurable via repository options file, you c
 
 > ./vip-go-ci.php --repo-options=true --repo-options-allowed="phpcs-severity,post-generic-pr-support-comments"
 
+Also supported is the `phpcs-sniffs-exclude` option. This is an array parameter and if it is specified in the options file, the items specified will be appended to the options specified on the command line.
+
 Should the configuration file not be found, the configuration value not be valid, or altering of the option is not allowed, the option will not be altered on run-time. Note that not all options need to be set in the configuration file, only those desired. The file is expected to be a parsable, valid JSON.
 
 This feature might be extended to other options in the future.
@@ -292,6 +294,8 @@ An example of how PHPCS can be used:
 With these settings, PHPCS is turned on, is expected to be found in the path shown above, should use two PHPCS standards (`WordPress-VIP-Go` and `PHPCompatibilityWP`), while excluding one particular PHPCS sniff. When executing PHPCS, one runtime option should be set (`testVersion 7.3-`) and severity level should be `1`. Also, users can ask to skip scanning particular Pull-Requests by setting a label named `skip-phpcs-scan`.
 
 Any number of PHPCS standards can be specified, and any number of runtime settings as well. Also, see section above about configuring options via repository file.
+
+Should any of the PHPCS sniffs excluded be invalid, this is reported in the relevant Pull-Requests.
 
 ### SVG scanning
 

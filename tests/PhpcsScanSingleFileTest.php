@@ -8,7 +8,6 @@ final class PhpcsScanSingleFileTest extends TestCase {
 	var $options_phpcs = array(
 		'phpcs-path'				=> null,
 		'phpcs-standard'			=> null,
-		'phpcs-sniffs-exclude'			=> null,
 		'phpcs-severity'			=> null,
 		'phpcs-runtime-set'			=> null,
 		'commit-test-phpcs-scan-commit-1'	=> null,
@@ -31,6 +30,8 @@ final class PhpcsScanSingleFileTest extends TestCase {
 			'phpcs-scan',
 			$this->options_phpcs
 		);
+
+		$this->options_phpcs['phpcs-sniffs-exclude'] = array();
 
 		$this->options = array_merge(
 			$this->options_git_repo,
@@ -74,7 +75,7 @@ final class PhpcsScanSingleFileTest extends TestCase {
 	public function testDoScanTest1() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
-			array( 'phpcs-runtime-set', 'phpcs-sniffs-exclude', 'github-token', 'token' ),
+			array( 'phpcs-runtime-set', 'github-token', 'token' ),
 			$this
 		);
 
