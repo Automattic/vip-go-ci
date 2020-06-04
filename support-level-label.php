@@ -155,6 +155,108 @@ function vipgoci_repo_meta_api_data_fetch(
 }
 
 /*
+ * Fetch data from repo-meta API, then try 
+ * to match fields and their values with
+ * the data. The fields and values are those
+ * found in a particular $option parameter
+ * specified as an argument here ($option_name).
+ *
+ * If there is a match, return true. Otherwise, 
+ * return false.
+ */
+function vipgoci_repo_meta_api_data_match(
+	$options,
+	$option_name
+) {
+	if (
+		( empty( $option_name ) ) ||
+		( empty( $options['repo-meta-api-base-url'] ) ) ||
+		( empty( $options[ $option_name ] ) )
+	) {
+		vipgoci_log(
+			'Not attempting to match repo-meta API field-value ' .
+				'to a criteria due to invalid configuration',
+			array(
+				'option_name'
+					=> $option_name,
+
+				'repo_meta_api_base_url'
+					=> isset( $options['repo-meta-api-base-url'] ) ?
+						$options['repo-meta-api-base-url'] : '',
+
+				'repo_meta_match'
+					=> ( ( ! empty( $option_name ) ) && ( isset( $options[ $option_name ] ) ) ) ?
+						$options[ $option_name ] : '',
+			)
+		);
+
+		return false;
+	}
+
+	else {
+		vipgoci_log(
+			'Attempting to match repo-meta API field-value to a criteria',
+			array(
+				'option_name'			=> $option_name,
+				'repo_meta_match'		=> $options[ $option_name ],
+				'repo_meta_api_base_url'	=> $options['repo-meta-api-base-url'],
+			)
+		);
+	}
+
+
+	$repo_meta_data = vipgoci_repo_meta_api_data_fetch(
+		$options['repo-meta-api-base-url'],
+		$options['repo-meta-api-user-id'],
+		$options['repo-meta-api-access-token'],
+		$options['repo-owner'],
+		$options['repo-name']
+	);
+
+	if (
+		( empty(
+			$repo_meta_data['data']
+		) )
+		||
+		( 'error' === $repo_meta_data['status'] )
+	) {
+		return false;
+	}
+
+	$found_fields = vipgoci_find_fields_in_array(
+		$options[ $option_name ],
+		$repo_meta_data['data']
+	);
+
+	/*
+	 * If we find one data-item that had
+	 * all fields matching the criteria given,
+	 * we return true.
+	 */
+	$ret_val = false;
+
+	foreach(
+		$found_fields as
+			$found_field_item_key => $found_field_item_value
+	) {
+		if ( $found_field_item_value === true ) {
+			$ret_val = true;
+		}
+	}
+
+	vipgoci_log(
+		'Repo-meta API matching returning',
+		array(
+			'found_fields_in_repo_meta_data'	=> $found_fields,
+			'repo_meta_data_item_cnt'		=> count( $repo_meta_data['data'] ),
+			'ret_val'				=> $ret_val,
+		)
+	);
+
+	return $ret_val;
+}
+
+/*
  * Attach support level label to
  * Pull-Requests, if configured to 
  * do so. Will fetch information
@@ -417,104 +519,4 @@ function vipgoci_support_level_label_set(
 	return true;
 }
 
-/*
- * Fetch data from repo-meta API, then try 
- * to match fields and their values with
- * the data. The fields and values are those
- * found in a particular $option parameter
- * specified as an argument here ($option_name).
- *
- * If there is a match, return true. Otherwise, 
- * return false.
- */
-function vipgoci_repo_meta_api_data_match(
-	$options,
-	$option_name
-) {
-	if (
-		( empty( $option_name ) ) ||
-		( empty( $options['repo-meta-api-base-url'] ) ) ||
-		( empty( $options[ $option_name ] ) )
-	) {
-		vipgoci_log(
-			'Not attempting to match repo-meta API field-value ' .
-				'to a criteria due to invalid configuration',
-			array(
-				'option_name'
-					=> $option_name,
 
-				'repo_meta_api_base_url'
-					=> isset( $options['repo-meta-api-base-url'] ) ?
-						$options['repo-meta-api-base-url'] : '',
-
-				'repo_meta_match'
-					=> ( ( ! empty( $option_name ) ) && ( isset( $options[ $option_name ] ) ) ) ?
-						$options[ $option_name ] : '',
-			)
-		);
-
-		return false;
-	}
-
-	else {
-		vipgoci_log(
-			'Attempting to match repo-meta API field-value to a criteria',
-			array(
-				'option_name'			=> $option_name,
-				'repo_meta_match'		=> $options[ $option_name ],
-				'repo_meta_api_base_url'	=> $options['repo-meta-api-base-url'],
-			)
-		);
-	}
-
-
-	$repo_meta_data = vipgoci_repo_meta_api_data_fetch(
-		$options['repo-meta-api-base-url'],
-		$options['repo-meta-api-user-id'],
-		$options['repo-meta-api-access-token'],
-		$options['repo-owner'],
-		$options['repo-name']
-	);
-
-	if (
-		( empty(
-			$repo_meta_data['data']
-		) )
-		||
-		( 'error' === $repo_meta_data['status'] )
-	) {
-		return false;
-	}
-
-	$found_fields = vipgoci_find_fields_in_array(
-		$options[ $option_name ],
-		$repo_meta_data['data']
-	);
-
-	/*
-	 * If we find one data-item that had
-	 * all fields matching the criteria given,
-	 * we return true.
-	 */
-	$ret_val = false;
-
-	foreach(
-		$found_fields as
-			$found_field_item_key => $found_field_item_value
-	) {
-		if ( $found_field_item_value === true ) {
-			$ret_val = true;
-		}
-	}
-
-	vipgoci_log(
-		'Repo-meta API matching returning',
-		array(
-			'found_fields_in_repo_meta_data'	=> $found_fields,
-			'repo_meta_data_item_cnt'		=> count( $repo_meta_data['data'] ),
-			'ret_val'				=> $ret_val,
-		)
-	);
-
-	return $ret_val;
-}
