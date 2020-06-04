@@ -2243,7 +2243,7 @@ function vipgoci_github_pr_review_submit(
 				'body'		=>
 
 					// Add nice label
-					vipgoci_github_labels(
+					vipgoci_github_transform_to_emojis(
 						$commit_issue['issue']['level']
 					) . ' ' .
 
@@ -2433,7 +2433,7 @@ function vipgoci_github_pr_review_submit(
 				}
 
 				$github_postfields['body'] .=
-					vipgoci_github_labels(
+					vipgoci_github_transform_to_emojis(
 						$commit_issue_stat_key
 					) . ' ' .
 

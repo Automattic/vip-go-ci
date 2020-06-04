@@ -476,7 +476,7 @@ function vipgoci_file_extension( $file_name ) {
  * intended to be called when preparing messages/comments
  * to be submitted to GitHub.
  */
-function vipgoci_github_labels( $text_string ) {
+function vipgoci_github_transform_to_emojis( $text_string ) {
 	switch( strtolower( $text_string ) ) {
 		case 'warning':
 			return ':warning:';

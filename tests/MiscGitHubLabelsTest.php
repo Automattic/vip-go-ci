@@ -11,14 +11,14 @@ final class MiscGitHubLabelsTest extends TestCase {
 	public function testGitHubLabel1() {
 		$this->assertEquals(
 			'',
-			vipgoci_github_labels(
+			vipgoci_github_transform_to_emojis(
 				'exclamation'
 			)
 		);
 
 		$this->assertEquals(
 			':warning:',
-			vipgoci_github_labels(
+			vipgoci_github_transform_to_emojis(
 				'warning'
 			)
 		);
