@@ -21,7 +21,7 @@ final class LintLintGetIssuesTest extends TestCase {
 	}
 
 	/**
-	 * @covers ::vipgoci_lint_get_issues
+	 * @covers ::vipgoci_lint_parse_results
 	 */
 	public function testLintGetIssues1() {
 		$options_test = vipgoci_unittests_options_test(
@@ -52,7 +52,7 @@ final class LintLintGetIssuesTest extends TestCase {
 			$php_file_path
 		);
 
-		$lint_issues_parsed = vipgoci_lint_get_issues(
+		$lint_issues_parsed = vipgoci_lint_parse_results(
 			$php_file_name,
 			$php_file_name,
 			$lint_issues
@@ -68,7 +68,7 @@ final class LintLintGetIssuesTest extends TestCase {
 	}
 
 	/**
-	 * @covers ::vipgoci_lint_get_issues
+	 * @covers ::vipgoci_lint_parse_results
 	 */
 	public function testLintDoScan2() {
 		$options_test = vipgoci_unittests_options_test(
@@ -99,7 +99,7 @@ final class LintLintGetIssuesTest extends TestCase {
 			$php_file_path
 		);
 
-		$lint_issues_parsed = vipgoci_lint_get_issues(
+		$lint_issues_parsed = vipgoci_lint_parse_results(
 			'php-file-name.php',
 			$php_file_path,
 			$lint_issues

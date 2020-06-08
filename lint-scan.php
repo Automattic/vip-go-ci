@@ -111,7 +111,7 @@ function vipgoci_lint_do_scan_file(
  * and return as a well-structed array.
  */
 
-function vipgoci_lint_get_issues(
+function vipgoci_lint_parse_results(
 	$file_name,
 	$temp_file_name,
 	$file_issues_arr
@@ -316,7 +316,7 @@ function vipgoci_lint_scan_commit(
 		 * Process the results, get them in an array format
 		 */
 
-		$file_issues_arr = vipgoci_lint_get_issues(
+		$file_issues_arr = vipgoci_lint_parse_results(
 			$filename,
 			$temp_file_name,
 			$file_issues_arr_raw
