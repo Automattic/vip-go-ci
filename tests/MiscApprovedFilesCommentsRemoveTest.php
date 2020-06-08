@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
 
 final class MiscApprovedFilesCommentsRemoveTest extends TestCase {
 	/**
-	 * @covers ::vipgoci_approved_files_comments_remove
+	 * @covers ::vipgoci_results_approved_files_comments_remove
 	 */
 	public function testRemoveCommentFromResults() {
 		$results = json_decode(
@@ -26,7 +26,7 @@ final class MiscApprovedFilesCommentsRemoveTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 	
-		vipgoci_approved_files_comments_remove(
+		vipgoci_results_approved_files_comments_remove(
 			array(),
 			$results_altered,
 			$auto_approved_files_arr

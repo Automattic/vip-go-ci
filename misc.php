@@ -891,7 +891,7 @@ function vipgoci_github_comment_match(
  * affected by the current commit, and remove any comment
  * from the results array if it already exists.
  */
-function vipgoci_remove_existing_github_comments_from_results(
+function vipgoci_results_remove_existing_github_comments(
 	$options,
 	$prs_implicated,
 	&$results,
@@ -1230,7 +1230,7 @@ function vipgoci_remove_existing_github_comments_from_results(
  * reflect this.
  */
 
-function vipgoci_approved_files_comments_remove(
+function vipgoci_results_approved_files_comments_remove(
 	$options,
 	&$results,
 	$auto_approved_files_arr
@@ -1359,7 +1359,7 @@ function vipgoci_approved_files_comments_remove(
  * on start-up. Comments are removed as needed, and
  * what comments are removed is reported.
  */
-function vipgoci_github_results_filter_comments_to_max(
+function vipgoci_results_filter_comments_to_max(
 	$options,
 	&$results,
 	&$prs_comments_maxed

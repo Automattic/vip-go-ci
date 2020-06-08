@@ -1551,7 +1551,7 @@ function vipgoci_run() {
 	 * that are approved in hashes-to-hashes API.
 	 */
 
-	vipgoci_approved_files_comments_remove(
+	vipgoci_results_approved_files_comments_remove(
 		$options,
 		$results,
 		$auto_approved_files_arr
@@ -1618,7 +1618,7 @@ function vipgoci_run() {
 	 * already been submitted.
 	 */
 
-	vipgoci_remove_existing_github_comments_from_results(
+	vipgoci_results_remove_existing_github_comments(
 		$options,
 		$prs_implicated,
 		$results,
@@ -1654,7 +1654,7 @@ function vipgoci_run() {
 	if ( $options['review-comments-total-max'] > 0 ) {
 		$prs_comments_maxed = array();
 
-		vipgoci_github_results_filter_comments_to_max(
+		vipgoci_results_filter_comments_to_max(
 			$options,
 			$results,
 			$prs_comments_maxed
