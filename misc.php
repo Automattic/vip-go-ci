@@ -1845,7 +1845,7 @@ function vipgoci_results_sort_by_severity(
 
 		array_multisort(
 		        $severity_column,
-		        SORT_ASC,
+		        SORT_DESC,
 		        $current_pr_results
 		);
 
