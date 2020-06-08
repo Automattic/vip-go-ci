@@ -1331,7 +1331,7 @@ function vipgoci_github_pr_reviews_comments_get_by_pr(
 
 
 /*
- * Remove a particular comment.
+ * Remove a particular PR review comment.
  */
 
 function vipgoci_github_pr_reviews_comments_delete(
@@ -1369,7 +1369,7 @@ function vipgoci_github_pr_reviews_comments_delete(
  * Get all generic comments made to a Pull-Request from Github.
  */
 
-function vipgoci_github_pr_generic_comments_get(
+function vipgoci_github_pr_generic_comments_get_all(
 	$repo_owner,
 	$repo_name,
 	$pr_number,
@@ -1453,7 +1453,7 @@ function vipgoci_github_pr_generic_comments_get(
  * others. Attempts to format the comment to GitHub.
  */
 
-function vipgoci_github_pr_generic_comment_submit(
+function vipgoci_github_pr_generic_comment_submit_results(
 	$repo_owner,
 	$repo_name,
 	$github_token,
@@ -1747,7 +1747,7 @@ function vipgoci_github_pr_comments_cleanup(
 	);
 
 	foreach ( $prs_implicated as $pr_item ) {
-		$pr_comments = vipgoci_github_pr_generic_comments_get(
+		$pr_comments = vipgoci_github_pr_generic_comments_get_all(
 			$repo_owner,
 			$repo_name,
 			$pr_item->number,
@@ -1947,7 +1947,7 @@ function vipgoci_github_pr_generic_support_comment(
 		 * not post anything.
 		 */
 
-		$existing_comments = vipgoci_github_pr_generic_comments_get(
+		$existing_comments = vipgoci_github_pr_generic_comments_get_all(
 			$options['repo-owner'],
 			$options['repo-name'],
 			$pr_item->number,

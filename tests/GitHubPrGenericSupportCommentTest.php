@@ -264,7 +264,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 
 		/*
 		 * vipgoci_github_pr_generic_support_comment() will
-		 * call vipgoci_github_pr_generic_comments_get() that
+		 * call vipgoci_github_pr_generic_comments_get_all() that
 		 * caches results, causing it to give back wrong
 		 * results when called again. Clear the internal cache
 		 * here to circumvent this.

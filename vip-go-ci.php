@@ -1665,7 +1665,7 @@ function vipgoci_run() {
 	 * Submit any remaining issues to GitHub
 	 */
 
-	vipgoci_github_pr_generic_comment_submit(
+	vipgoci_github_pr_generic_comment_submit_results(
 		$options['repo-owner'],
 		$options['repo-name'],
 		$options['token'],
