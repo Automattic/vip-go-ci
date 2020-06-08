@@ -85,7 +85,7 @@ function vipgoci_auto_approval_non_approval(
 		/*
 		 * Remove auto-approve label
 		 */
-		vipgoci_github_label_remove_from_pr(
+		vipgoci_github_pr_label_remove(
 			$options['repo-owner'],
 			$options['repo-name'],
 			$options['token'],

@@ -49,7 +49,7 @@ final class GitRepoRepoGetHeadTest extends TestCase {
 	}
 
 	/**
-	 * @covers ::vipgoci_git_repo_get_head
+	 * @covers ::vipgoci_gitrepo_get_head
 	 */
 	public function testRepoGetHead1() {
 		$options_test = vipgoci_unittests_options_test(
@@ -79,7 +79,7 @@ final class GitRepoRepoGetHeadTest extends TestCase {
 			);
 		}
 
-		$ret = vipgoci_git_repo_get_head(
+		$ret = vipgoci_gitrepo_get_head(
 			$this->options['local-git-repo']
 		);
 

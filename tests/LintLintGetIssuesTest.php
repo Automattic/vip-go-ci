@@ -47,7 +47,7 @@ final class LintLintGetIssuesTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
-		$lint_issues = vipgoci_lint_do_scan(
+		$lint_issues = vipgoci_lint_do_scan_file(
 			$this->options_php['php-path'],
 			$php_file_path
 		);
@@ -94,7 +94,7 @@ final class LintLintGetIssuesTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
-		$lint_issues = vipgoci_lint_do_scan(
+		$lint_issues = vipgoci_lint_do_scan_file(
 			$this->options_php['php-path'],
 			$php_file_path
 		);

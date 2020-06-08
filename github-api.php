@@ -3410,7 +3410,7 @@ function vipgoci_github_pr_labels_get(
  * Remove a particular label from a specific
  * Pull-Request (or issue).
  */
-function vipgoci_github_label_remove_from_pr(
+function vipgoci_github_pr_label_remove(
 	$repo_owner,
 	$repo_name,
 	$github_token,
@@ -3608,7 +3608,7 @@ function vipgoci_github_pr_review_events_get(
 /*
  * Get members for a team.
  */
-function vipgoci_github_team_members(
+function vipgoci_github_team_members_get(
 	$github_token,
 	$team_id,
 	$return_values_only = null
@@ -3695,7 +3695,7 @@ function vipgoci_github_team_members(
  *
  * @codeCoverageIgnore
  */
-function vipgoci_github_team_members_many(
+function vipgoci_github_team_members_many_get(
 	$github_token,
 	$team_ids_arr = array()
 ) {
@@ -3709,7 +3709,7 @@ function vipgoci_github_team_members_many(
 	$team_members_ids_arr = array();
 
 	foreach( $team_ids_arr as $team_id_item ) {
-		$team_id_members = vipgoci_github_team_members(
+		$team_id_members = vipgoci_github_team_members_get(
 			$github_token,
 			$team_id_item,
 			'id'
@@ -3733,7 +3733,7 @@ function vipgoci_github_team_members_many(
  * Get organization teams available to the calling
  * user from the GitHub API.
  */
-function vipgoci_github_org_teams(
+function vipgoci_github_org_teams_get(
 	$github_token,
 	$org_id,
 	$filter = null,

@@ -473,7 +473,7 @@ function vipgoci_support_level_label_set(
 			 * All conditions met; is support level
 			 * label, but incorrect one, so remove label.
 			 */
-			vipgoci_github_label_remove_from_pr(
+			vipgoci_github_pr_label_remove(
 				$options['repo-owner'],
 				$options['repo-name'],
 				$options['token'],

@@ -1564,7 +1564,7 @@ function vipgoci_run() {
 	 * by Pull-Request.
 	 */
 
-	$team_members_ids_arr = vipgoci_github_team_members_many(
+	$team_members_ids_arr = vipgoci_github_team_members_many_get(
 		$options['token'],
 		$options['dismissed-reviews-exclude-reviews-from-team']
 	);

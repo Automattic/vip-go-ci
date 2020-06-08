@@ -27,7 +27,7 @@ final class GitHubOrgTeamsTest extends TestCase {
 	}
 
 	/**
-	 * @covers ::vipgoci_github_org_teams
+	 * @covers ::vipgoci_github_org_teams_get
 	 */
 	public function testGitHubOrgTeamsNoFiltersNoKeys() {
 		$options_test = vipgoci_unittests_options_test(
@@ -50,13 +50,13 @@ final class GitHubOrgTeamsTest extends TestCase {
 
 
 		/*
-		 * Test vipgoci_github_org_teams() without any
+		 * Test vipgoci_github_org_teams_get() without any
 		 * filters and without any output sorting.
 		 */
 
 		vipgoci_unittests_output_suppress();
 
-		$teams_res_actual = vipgoci_github_org_teams(
+		$teams_res_actual = vipgoci_github_org_teams_get(
 			$this->options['github-token'],
 			$this->options['org-name'],
 			null,
@@ -67,7 +67,7 @@ final class GitHubOrgTeamsTest extends TestCase {
 
 		$this->assertNotEmpty(
 			$teams_res_actual,
-			'Got no teams from vipgoci_github_org_teams()'
+			'Got no teams from vipgoci_github_org_teams_get()'
 		);
 
 		$this->assertTrue(
@@ -88,7 +88,7 @@ final class GitHubOrgTeamsTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
-		$teams_res_actual_cached = vipgoci_github_org_teams(
+		$teams_res_actual_cached = vipgoci_github_org_teams_get(
 			$this->options['github-token'],
 			$this->options['org-name'],
 			null,
@@ -107,7 +107,7 @@ final class GitHubOrgTeamsTest extends TestCase {
 	}
 
 	/**
-	 * @covers ::vipgoci_github_org_teams
+	 * @covers ::vipgoci_github_org_teams_get
 	 */
 	public function testGitHubOrgTeamsWithFilters() {
 		$options_test = vipgoci_unittests_options_test(
@@ -129,13 +129,13 @@ final class GitHubOrgTeamsTest extends TestCase {
 		}
 
 		/*
-		 * Test vipgoci_github_org_teams() with filters but
+		 * Test vipgoci_github_org_teams_get() with filters but
 		 * without any output sorting.
 		 */
 
 		vipgoci_unittests_output_suppress();
 
-		$teams_res_actual = vipgoci_github_org_teams(
+		$teams_res_actual = vipgoci_github_org_teams_get(
 			$this->options['github-token'],
 			$this->options['org-name'],
 			array(
@@ -149,7 +149,7 @@ final class GitHubOrgTeamsTest extends TestCase {
 
 		$this->assertNotEmpty(
 			$teams_res_actual,
-			'Got no teams from vipgoci_github_org_teams()'
+			'Got no teams from vipgoci_github_org_teams_get()'
 		);
 
 		$this->assertTrue(
@@ -170,7 +170,7 @@ final class GitHubOrgTeamsTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
-		$teams_res_actual_cached = vipgoci_github_org_teams(
+		$teams_res_actual_cached = vipgoci_github_org_teams_get(
 			$this->options['github-token'],
 			$this->options['org-name'],
 			array(
@@ -191,7 +191,7 @@ final class GitHubOrgTeamsTest extends TestCase {
 	}
 
 	/**
-	 * @covers ::vipgoci_github_org_teams
+	 * @covers ::vipgoci_github_org_teams_get
 	 */
 	public function testGitHubOrgTeamsWithKeyes() {
 		$options_test = vipgoci_unittests_options_test(
@@ -214,12 +214,12 @@ final class GitHubOrgTeamsTest extends TestCase {
 
 
 		/*
-		 * Test vipgoci_github_org_teams() without filters but
+		 * Test vipgoci_github_org_teams_get() without filters but
 		 * with output keyed.
 		 */
 		vipgoci_unittests_output_suppress();
 
-		$teams_res_actual = vipgoci_github_org_teams(
+		$teams_res_actual = vipgoci_github_org_teams_get(
 			$this->options['github-token'],
 			$this->options['org-name'],
 			null,
@@ -231,7 +231,7 @@ final class GitHubOrgTeamsTest extends TestCase {
 
 		$this->assertNotEmpty(
 			$teams_res_actual,
-			'Got no teams from vipgoci_github_org_teams()'
+			'Got no teams from vipgoci_github_org_teams_get()'
 		);
 
 		$teams_res_actual_keys = array_keys(
@@ -268,7 +268,7 @@ final class GitHubOrgTeamsTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
-		$teams_res_actual_cached = vipgoci_github_org_teams(
+		$teams_res_actual_cached = vipgoci_github_org_teams_get(
 			$this->options['github-token'],
 			$this->options['org-name'],
 			null,

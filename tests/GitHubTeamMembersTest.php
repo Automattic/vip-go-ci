@@ -26,7 +26,7 @@ final class GitHubTeamMembersTest extends TestCase {
 	}
 
 	/**
-	 * @covers ::vipgoci_github_team_members
+	 * @covers ::vipgoci_github_team_members_get
 	 */
 	public function testTeamMembers_ids_only_false() {
 		$options_test = vipgoci_unittests_options_test(
@@ -54,7 +54,7 @@ final class GitHubTeamMembersTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
-		$team_members_res1_actual = vipgoci_github_team_members(
+		$team_members_res1_actual = vipgoci_github_team_members_get(
 			$this->options['github-token'],
 			$this->options['team-id'],
 			null
@@ -64,7 +64,7 @@ final class GitHubTeamMembersTest extends TestCase {
 
 		$this->assertNotEmpty(
 			$team_members_res1_actual,
-			'Got no team members from vipgoci_github_team_members()'
+			'Got no team members from vipgoci_github_team_members_get()'
 		);
 
 		$this->assertTrue(
@@ -86,7 +86,7 @@ final class GitHubTeamMembersTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
-		$team_members_res1_actual_cached = vipgoci_github_team_members(
+		$team_members_res1_actual_cached = vipgoci_github_team_members_get(
 			$this->options['github-token'],
 			$this->options['team-id'],
 			null
@@ -104,7 +104,7 @@ final class GitHubTeamMembersTest extends TestCase {
 	}
 
 	/**
-	 * @covers ::vipgoci_github_team_members
+	 * @covers ::vipgoci_github_team_members_get
 	 */
 	public function testTeamMembers_ids_only_true() {	
 		$options_test = vipgoci_unittests_options_test(
@@ -131,7 +131,7 @@ final class GitHubTeamMembersTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
-		$team_members_res2_actual = vipgoci_github_team_members(
+		$team_members_res2_actual = vipgoci_github_team_members_get(
 			$this->options['github-token'],
 			$this->options['team-id'],
 			'id'
@@ -141,7 +141,7 @@ final class GitHubTeamMembersTest extends TestCase {
 
 		$this->assertNotEmpty(
 			$team_members_res2_actual,
-			'Got empty results when calling vipgoci_github_team_members()'
+			'Got empty results when calling vipgoci_github_team_members_get()'
 		);
 
 		$this->assertTrue(
@@ -160,7 +160,7 @@ final class GitHubTeamMembersTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
-		$team_members_res2_actual_cached = vipgoci_github_team_members(
+		$team_members_res2_actual_cached = vipgoci_github_team_members_get(
 			$this->options['github-token'],
 			$this->options['team-id'],
 			'id'

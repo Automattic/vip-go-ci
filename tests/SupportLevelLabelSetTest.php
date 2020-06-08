@@ -223,7 +223,7 @@ final class SupportLevelLabelSetTest extends TestCase {
 					/*
 					 * Clean up label and indicate we found it.
 					 */	
-					vipgoci_github_label_remove_from_pr(
+					vipgoci_github_pr_label_remove(
 						$this->options['repo-owner'],
 						$this->options['repo-name'],
 						$this->options['token'],

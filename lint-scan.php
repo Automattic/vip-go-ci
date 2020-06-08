@@ -6,7 +6,7 @@
  * lines.
  */
 
-function vipgoci_lint_do_scan(
+function vipgoci_lint_do_scan_file(
 	$php_path,
 	$temp_file_name
 ) {
@@ -303,7 +303,7 @@ function vipgoci_lint_scan_commit(
 			)
 		);
 
-		$file_issues_arr_raw = vipgoci_lint_do_scan(
+		$file_issues_arr_raw = vipgoci_lint_do_scan_file(
 			$options['php-path'],
 			$temp_file_name
 		);

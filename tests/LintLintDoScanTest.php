@@ -21,7 +21,7 @@ final class LintLintDoScanTest extends TestCase {
 	}
 
 	/**
-	 * @covers ::vipgoci_lint_do_scan
+	 * @covers ::vipgoci_lint_do_scan_file
 	 */
 	public function testLintDoScan1() {
 		$options_test = vipgoci_unittests_options_test(
@@ -47,7 +47,7 @@ final class LintLintDoScanTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
-		$ret = vipgoci_lint_do_scan(
+		$ret = vipgoci_lint_do_scan_file(
 			$this->options_php['php-path'],
 			$php_file_path
 		);
@@ -63,7 +63,7 @@ final class LintLintDoScanTest extends TestCase {
 	}
 
 	/**
-	 * @covers ::vipgoci_lint_do_scan
+	 * @covers ::vipgoci_lint_do_scan_file
 	 */
 	public function testLintDoScan2() {
 		$options_test = vipgoci_unittests_options_test(
@@ -89,7 +89,7 @@ final class LintLintDoScanTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
-		$ret = vipgoci_lint_do_scan(
+		$ret = vipgoci_lint_do_scan_file(
 			$this->options_php['php-path'],
 			$php_file_path
 		);

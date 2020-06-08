@@ -27,7 +27,7 @@ final class GitHubTeamMembersManyTest extends TestCase {
 	}
 
 	/**
-	 * @covers ::vipgoci_github_team_members_many
+	 * @covers ::vipgoci_github_team_members_many_get
 	 */
 	public function testTeamMembersMany1() {
 		$options_test = vipgoci_unittests_options_test(
@@ -51,7 +51,7 @@ final class GitHubTeamMembersManyTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
-		$team_members_res1_actual = vipgoci_github_team_members_many(
+		$team_members_res1_actual = vipgoci_github_team_members_many_get(
 			$this->options['github-token'],
 			array(
 				$this->options['team-id'],
@@ -63,7 +63,7 @@ final class GitHubTeamMembersManyTest extends TestCase {
 
 		$this->assertNotEmpty(
 			$team_members_res1_actual,
-			'Got no team members from vipgoci_github_team_members_many()'
+			'Got no team members from vipgoci_github_team_members_many_get()'
 		);
 
 		$this->assertTrue(
