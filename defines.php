@@ -1,6 +1,12 @@
 <?php
 
 /*
+ * Version number.
+ */
+
+define( 'VIPGOCI_VERSION',		'0.38' );
+
+/*
  * Client-ID for curl-requests, etc.
  */
 

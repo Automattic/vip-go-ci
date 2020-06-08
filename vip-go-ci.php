@@ -97,6 +97,7 @@ function vipgoci_run() {
 		'Initializing...',
 		array(
 			'debug_info' => array(
+				'vipgoci_version' => VIPGOCI_VERSION,
 				'php_version' => phpversion(),
 				'hostname' => gethostname(),
 				'php_uname' => php_uname(),
