@@ -1699,7 +1699,7 @@ function vipgoci_run() {
 		 */
 
 		foreach ( $prs_implicated as $pr_item ) {
-			vipgoci_github_pr_reviews_dismiss_non_active_comments(
+			vipgoci_github_pr_reviews_dismiss_with_non_active_comments(
 				$options,
 				$pr_item->number
 			);

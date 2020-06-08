@@ -2615,7 +2615,7 @@ function vipgoci_github_pr_review_dismiss(
  * Dismiss all Pull-Request Reviews that have no
  * active comments attached to them.
  */
-function vipgoci_github_pr_reviews_dismiss_non_active_comments(
+function vipgoci_github_pr_reviews_dismiss_with_non_active_comments(
 	$options,
 	$pr_number
 ) {
