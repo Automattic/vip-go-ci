@@ -137,7 +137,7 @@ function vipgoci_run() {
 			'repo-name:',
 			'commit:',
 			'token:',
-			'issue-comments-sort:',
+			'results-comments-sort:',
 			'review-comments-max:',
 			'review-comments-total-max:',
 			'review-comments-ignore:',
@@ -243,7 +243,7 @@ function vipgoci_run() {
 			"\t" . '--repo-name=STRING             Specify name of the repository' . PHP_EOL .
 			"\t" . '--commit=STRING                Specify the exact commit to scan (SHA)' . PHP_EOL .
 			"\t" . '--token=STRING                 The access-token to use to communicate with GitHub' . PHP_EOL .
-			"\t" . '--issue-comments-sort=BOOL     Sort issues found according to severity, from high ' . PHP_EOL .
+			"\t" . '--results-comments-sort=BOOL     Sort issues found according to severity, from high ' . PHP_EOL .
 			"\t" . '                               to low, before submitting to GitHub. Not sorted by default.' . PHP_EOL .
 			"\t" . '--review-comments-max=NUMBER   Maximum number of inline comments to submit' . PHP_EOL .
 			"\t" . '                               to GitHub in one review. If the number of ' . PHP_EOL .
@@ -730,7 +730,7 @@ function vipgoci_run() {
 
 	vipgoci_option_bool_handle( $options, 'dismissed-reviews-repost-comments', 'true' );
 
-	vipgoci_option_bool_handle( $options, 'issue-comments-sort', false );
+	vipgoci_option_bool_handle( $options, 'results-comments-sort', false );
 
 	if (
 		( false === $options['lint'] ) &&
