@@ -3310,7 +3310,7 @@ function vipgoci_github_label_add_to_pr(
  * Fetch labels associated with a
  * particular issue/Pull-Request.
  */
-function vipgoci_github_labels_get(
+function vipgoci_github_pr_labels_get(
 	$repo_owner,
 	$repo_name,
 	$github_token,

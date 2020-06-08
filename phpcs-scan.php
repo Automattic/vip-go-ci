@@ -559,7 +559,7 @@ function vipgoci_phpcs_scan_commit(
 			true ===
 			$options['phpcs-skip-scanning-via-labels-allowed']
 		) {
-			$pr_label_skip_phpcs = vipgoci_github_labels_get(
+			$pr_label_skip_phpcs = vipgoci_github_pr_labels_get(
 				$repo_owner,
 				$repo_name,
 				$github_token,

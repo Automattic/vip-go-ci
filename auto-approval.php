@@ -595,7 +595,7 @@ function vipgoci_auto_approval_scan_commit(
 		 * Get label associated, but
 		 * only our auto-approved one
 		 */
-		$pr_label = vipgoci_github_labels_get(
+		$pr_label = vipgoci_github_pr_labels_get(
 			$options['repo-owner'],
 			$options['repo-name'],
 			$options['token'],

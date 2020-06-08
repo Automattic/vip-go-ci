@@ -423,7 +423,7 @@ function vipgoci_support_level_label_set(
 		 * Get labels for PR.
 		 */
 		$pr_item_labels =
-			vipgoci_github_labels_get(
+			vipgoci_github_pr_labels_get(
 				$options['repo-owner'],
 				$options['repo-name'],
 				$options['token'],

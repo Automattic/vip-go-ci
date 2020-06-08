@@ -47,7 +47,7 @@ final class GitHubLabelsFetchTest extends TestCase {
 	}
 
 	/**
-	 * @covers ::vipgoci_github_labels_get
+	 * @covers ::vipgoci_github_pr_labels_get
 	 */
 	public function testLabelsFetch1() {
 		$options_test = vipgoci_unittests_options_test(
@@ -62,7 +62,7 @@ final class GitHubLabelsFetchTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
-		$labels = vipgoci_github_labels_get(
+		$labels = vipgoci_github_pr_labels_get(
 			$this->options['repo-owner'],
 			$this->options['repo-name'],
 			$this->options['github-token'],

@@ -84,7 +84,7 @@ final class SupportLevelLabelSetTest extends TestCase {
 		$prs_implicated = $this->_findPrsImplicated();
 
 		foreach ( $prs_implicated as $pr_item ) {
-			$pr_item_labels = vipgoci_github_labels_get(
+			$pr_item_labels = vipgoci_github_pr_labels_get(
 				$this->options['repo-owner'],
 				$this->options['repo-name'],
 				$this->options['token'],
@@ -200,7 +200,7 @@ final class SupportLevelLabelSetTest extends TestCase {
 		);
 
 		foreach ( $prs_implicated as $pr_item ) {
-			$pr_item_labels = vipgoci_github_labels_get(
+			$pr_item_labels = vipgoci_github_pr_labels_get(
 				$this->options['repo-owner'],
 				$this->options['repo-name'],
 				$this->options['token'],
