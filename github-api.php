@@ -1837,7 +1837,7 @@ function vipgoci_github_pr_generic_comment_delete(
  * comment has not been posted before. Uses a
  * comment given by one of the options.
  */
-function vipgoci_github_pr_generic_support_comment(
+function vipgoci_github_pr_generic_support_comment_submit(
 	$options,
 	$prs_implicated
 ) {

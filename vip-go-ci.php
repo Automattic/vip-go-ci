@@ -1423,7 +1423,7 @@ function vipgoci_run() {
 	 * on the Pull-Request(s) with some helpful information.
 	 * Comment is set via option.
 	 */
-	vipgoci_github_pr_generic_support_comment(
+	vipgoci_github_pr_generic_support_comment_submit(
 		$options,
 		$prs_implicated
 	);

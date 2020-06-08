@@ -234,7 +234,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 	}
 
 	/**
-	 * @covers ::vipgoci_github_pr_generic_support_comment
+	 * @covers ::vipgoci_github_pr_generic_support_comment_submit
 	 */
 	public function testPostingNotConfigured() {
 		$options_test = vipgoci_unittests_options_test(
@@ -263,7 +263,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 		);
 
 		/*
-		 * vipgoci_github_pr_generic_support_comment() will
+		 * vipgoci_github_pr_generic_support_comment_submit() will
 		 * call vipgoci_github_pr_generic_comments_get_all() that
 		 * caches results, causing it to give back wrong
 		 * results when called again. Clear the internal cache
@@ -275,7 +275,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 		);
 
 		// Try to submit support comment
-		vipgoci_github_pr_generic_support_comment(
+		vipgoci_github_pr_generic_support_comment_submit(
 			$this->options,
 			$prs_implicated
 		);
@@ -304,7 +304,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 	}
 
 	/**
-	 * @covers ::vipgoci_github_pr_generic_support_comment
+	 * @covers ::vipgoci_github_pr_generic_support_comment_submit
 	 */
 	public function testPostingWorksAnyBranch() {
 		$options_test = vipgoci_unittests_options_test(
@@ -330,7 +330,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 		);
 
 		// Try to submit support comment
-		vipgoci_github_pr_generic_support_comment(
+		vipgoci_github_pr_generic_support_comment_submit(
 			$this->options,
 			$prs_implicated
 		);
@@ -362,7 +362,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 		);
 		
 		// Try re-posting
-		vipgoci_github_pr_generic_support_comment(
+		vipgoci_github_pr_generic_support_comment_submit(
 			$this->options,
 			$prs_implicated
 		);
@@ -387,7 +387,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 	}
 
 	/**
-	 * @covers ::vipgoci_github_pr_generic_support_comment
+	 * @covers ::vipgoci_github_pr_generic_support_comment_submit
 	 */
 	public function testPostingWorksSpecificBranch() {
 		$options_test = vipgoci_unittests_options_test(
@@ -413,7 +413,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 		);
 
 		// Try to submit support comment
-		vipgoci_github_pr_generic_support_comment(
+		vipgoci_github_pr_generic_support_comment_submit(
 			$this->options,
 			$prs_implicated
 		);
@@ -445,7 +445,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 		);
 		
 		// Try re-posting
-		vipgoci_github_pr_generic_support_comment(
+		vipgoci_github_pr_generic_support_comment_submit(
 			$this->options,
 			$prs_implicated
 		);
@@ -470,7 +470,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 	}
 
 	/**
-	 * @covers ::vipgoci_github_pr_generic_support_comment
+	 * @covers ::vipgoci_github_pr_generic_support_comment_submit
 	 */
 	public function testPostingSkippedInvalidBranch() {
 		$options_test = vipgoci_unittests_options_test(
@@ -496,7 +496,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 		);
 
 		// Try to submit support comment
-		vipgoci_github_pr_generic_support_comment(
+		vipgoci_github_pr_generic_support_comment_submit(
 			$this->options,
 			$prs_implicated
 		);
@@ -524,7 +524,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 		);
 		
 		// Try re-posting
-		vipgoci_github_pr_generic_support_comment(
+		vipgoci_github_pr_generic_support_comment_submit(
 			$this->options,
 			$prs_implicated
 		);
