@@ -504,7 +504,7 @@ function vipgoci_filter_file_path(
 	$filename,
 	$filter
 ) {
-	$file_info_extension = vipgoci_file_extension(
+	$file_info_extension = vipgoci_file_extension_get(
 		$filename
 	);
 
