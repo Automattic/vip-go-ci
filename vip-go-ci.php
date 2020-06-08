@@ -1485,7 +1485,7 @@ function vipgoci_run() {
 		/*
 		 * FIXME: Move the function-calls below
 		 * to auto-approval.php -- place them
-		 * in a wrapper, and not vipgoci_auto_approval()
+		 * in a wrapper, and not vipgoci_auto_approval_scan_commit()
 		 */
 
 		/*
@@ -1538,7 +1538,7 @@ function vipgoci_run() {
 			);
 		}
 
-		vipgoci_auto_approval(
+		vipgoci_auto_approval_scan_commit(
 			$options,
 			$auto_approved_files_arr,
 			$results // FIXME: dry-run

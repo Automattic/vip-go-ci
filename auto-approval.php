@@ -7,7 +7,7 @@
  * any previously approving PRs.
  *
  * Note that the testing of this function is
- * covered by tests of vipgoci_auto_approval().
+ * covered by tests of vipgoci_auto_approval_scan_commit().
  *
  * @codeCoverageIgnore
  */
@@ -279,7 +279,7 @@ function vipgoci_auto_approval_non_approval(
  * we do.
  *
  * Note that the testing of this function is
- * covered by tests of vipgoci_auto_approval().
+ * covered by tests of vipgoci_auto_approval_scan_commit().
  *
  * @codeCoverageIgnore
  */
@@ -514,7 +514,7 @@ function vipgoci_autoapproval_do_approve(
  * of files, the function will auto-approve them, and else not.
  */
 
-function vipgoci_auto_approval(
+function vipgoci_auto_approval_scan_commit(
 	$options,
 	&$auto_approved_files_arr,
 	&$results
