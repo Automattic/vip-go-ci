@@ -453,7 +453,7 @@ function vipgoci_save_temp_file(
  * and return it in lowercase. If it can not be
  * determined, return null.
  */
-function vipgoci_file_extension( $file_name ) {
+function vipgoci_file_extension_get( $file_name ) {
 	$file_extension = pathinfo(
 		$file_name,
 		PATHINFO_EXTENSION

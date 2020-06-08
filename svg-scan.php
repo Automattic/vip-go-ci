@@ -194,7 +194,7 @@ function vipgoci_svg_scan_single_file(
 	 * before scanning.
 	 */
 
-	$file_extension = vipgoci_file_extension(
+	$file_extension = vipgoci_file_extension_get(
 		$file_name
 	);
 

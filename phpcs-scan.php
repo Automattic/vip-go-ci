@@ -109,7 +109,7 @@ function vipgoci_phpcs_scan_single_file(
 		$options['local-git-repo']
 	);
 
-	$file_extension = vipgoci_file_extension(
+	$file_extension = vipgoci_file_extension_get(
 		$file_name
 	);
 
@@ -369,7 +369,7 @@ function vipgoci_phpcs_scan_commit(
 		 * the commit.
 		 */
 
-		$file_extension = vipgoci_file_extension(
+		$file_extension = vipgoci_file_extension_get(
 			$file_name
 		);
 
