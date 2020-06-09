@@ -267,9 +267,13 @@ If you wish to limit the options configurable via repository options file, you c
 
 > ./vip-go-ci.php --repo-options=true --repo-options-allowed="phpcs-severity,post-generic-pr-support-comments"
 
-Also supported is the `phpcs-sniffs-exclude` option. This is an array parameter and if it is specified in the options file, the items specified will be appended to the options specified on the command line.
+Also supported is the `phpcs-sniffs-exclude` option. This is an array parameter and if it is specified in the options file, the items specified will be appended to the options specified on the command line. To configure this option, one can specify something like this in the repository options file:
 
-Should the configuration file not be found, the configuration value not be valid, or altering of the option is not allowed, the option will not be altered on run-time. Note that not all options need to be set in the configuration file, only those desired. The file is expected to be a parsable, valid JSON.
+> {"phpcs-sniffs-exclude":["WordPressVIPMinimum.JS.InnerHTML", "WordPress.WP.CronInterval"]} 
+
+Please note that should any of the PHPCS sniffs specified be invalid, a warning will be posted on any Pull-Request scanned. The warning will be removed during next scan and not posted again if the issue is fixed.
+
+Should the configuration file not be found, any configuration value not be valid, or altering of the particular option is not allowed, the option will not be altered on run-time. Note that not all options need to be set in the configuration file, only those desired. The file is expected to be a parsable, valid JSON.
 
 This feature might be extended to other options in the future.
 
