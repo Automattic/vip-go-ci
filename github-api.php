@@ -1847,6 +1847,9 @@ function vipgoci_github_pr_generic_support_comment(
 			'post-generic-pr-support-comments' =>
 				$options['post-generic-pr-support-comments'],
 
+			'post-generic-pr-support-comments-on-drafts' =>
+				$options['post-generic-pr-support-comments-on-drafts'],
+
 			'post-generic-pr-support-comments-string' =>
 				$options['post-generic-pr-support-comments-string'],
 
@@ -1937,6 +1940,29 @@ function vipgoci_github_pr_generic_support_comment(
 						$options['post-generic-pr-support-comments-branches'],
 				)
 			);
+
+			continue;
+		}
+
+		/*
+		 * Do not post support comments on drafts when
+		 * not configured to do so.
+		 */
+		if (
+			( false === $options['post-generic-pr-support-comments-on-drafts'] ) &&
+			( true === $pr_item->draft )
+		) {
+			vipgoci_log(
+				'Not posting support-comment to PR, is draft',
+				array(
+					'repo-owner'	=> $options['repo-owner'],
+					'repo-name'	=> $options['repo-name'],
+					'pr_number'	=> $pr_item->number,
+					'pr_base_ref'	=> $pr_item->base->ref,
+					'post-generic-pr-support-comments-on-drafts' =>
+						$options['post-generic-pr-support-comments-on-drafts'],
+				)
+		);
 
 			continue;
 		}
