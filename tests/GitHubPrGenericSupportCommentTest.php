@@ -47,6 +47,8 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 
 		$this->options['post-generic-pr-support-comments'] = true;
 
+		$this->options['post-generic-pr-support-comments-on-drafts'] = false;
+
 		$this->options['post-generic-pr-support-comments-string'] =
 			'This is a generic support message from `vip-go-ci`. We hope this is useful.';
 
@@ -341,16 +343,31 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 				$pr_item->number
 			);
 
-			$this->assertTrue(
-				count( $pr_comments ) > 0
-			);
+			if ( $pr_item->draft === true ) {
+				$this->assertTrue(
+					count( $pr_comments ) === 0
+				);
 
-			$this->assertEquals(
-				1,
-				$this->_countSupportCommentsFromUs(
-					$pr_comments
-				)
-			);
+				$this->assertEquals(
+					0,
+					$this->_countSupportCommentsFromUs(
+						$pr_comments
+					)
+				);
+			}
+
+			else {
+				$this->assertTrue(
+					count( $pr_comments ) > 0
+				);
+
+				$this->assertEquals(
+					1,
+					$this->_countSupportCommentsFromUs(
+						$pr_comments
+					)
+				);
+			}
 		}
 
 		/*
@@ -373,16 +390,31 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 				$pr_item->number
 			);
 
-			$this->assertTrue(
-				count( $pr_comments ) > 0
-			);
+			if ( $pr_item->draft === true ) {
+				$this->assertTrue(
+					count( $pr_comments ) === 0
+				);
 
-			$this->assertEquals(
-				1,
-				$this->_countSupportCommentsFromUs(
-					$pr_comments
-				)
-			);
+				$this->assertEquals(
+					0,
+					$this->_countSupportCommentsFromUs(
+						$pr_comments
+					)
+				);
+			}
+
+			else {
+				$this->assertTrue(
+					count( $pr_comments ) > 0
+				);
+
+				$this->assertEquals(
+					1,
+					$this->_countSupportCommentsFromUs(
+						$pr_comments
+					)
+				);
+			}
 		}
 	}
 
@@ -424,16 +456,31 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 				$pr_item->number
 			);
 
-			$this->assertTrue(
-				count( $pr_comments ) > 0
-			);
+			if ( $pr_item->draft === true ) {
+				$this->assertTrue(
+					count( $pr_comments ) === 0
+				);
 
-			$this->assertEquals(
-				1,
-				$this->_countSupportCommentsFromUs(
-					$pr_comments
-				)
-			);
+				$this->assertEquals(
+					0,
+					$this->_countSupportCommentsFromUs(
+						$pr_comments
+					)
+				);
+			}
+
+			else {
+				$this->assertTrue(
+					count( $pr_comments ) > 0
+				);
+
+				$this->assertEquals(
+					1,
+					$this->_countSupportCommentsFromUs(
+						$pr_comments
+					)
+				);
+			}
 		}
 
 		/*
@@ -456,16 +503,31 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 				$pr_item->number
 			);
 
-			$this->assertTrue(
-				count( $pr_comments ) > 0
-			);
+			if ( $pr_item->draft === true ) {
+				$this->assertTrue(
+					count( $pr_comments ) === 0
+				);
+	
+				$this->assertEquals(
+					0,
+					$this->_countSupportCommentsFromUs(
+						$pr_comments
+					)
+				);
+			}
 
-			$this->assertEquals(
-				1,
-				$this->_countSupportCommentsFromUs(
-					$pr_comments
-				)
-			);
+			else {
+				$this->assertTrue(
+					count( $pr_comments ) > 0
+				);
+
+				$this->assertEquals(
+					1,
+					$this->_countSupportCommentsFromUs(
+						$pr_comments
+					)
+				);
+			}
 		}
 	}
 
@@ -537,6 +599,154 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 
 			$this->assertEquals(
 				0,
+				$this->_countSupportCommentsFromUs(
+					$pr_comments
+				)
+			);
+		}
+	}
+
+	/**
+	 * @covers ::vipgoci_github_pr_generic_support_comment
+	 */
+	public function testPostingWorksWithDraftPRs() {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array(),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
+		// Configure branches we can post against
+		$this->options['post-generic-pr-support-comments-branches'] =
+			array( 'any' );
+
+		// Get Pull-Requests
+        	$prs_implicated = $this->_getPrsImplicated();
+
+		// Check we have at least one PR
+		$this->assertTrue(
+			count( $prs_implicated ) > 0
+		);
+
+		// Try to submit support comment
+		vipgoci_github_pr_generic_support_comment(
+			$this->options,
+			$prs_implicated
+		);
+
+		// Check if commenting succeeded
+		foreach( $prs_implicated as $pr_item ) {
+			$pr_comments = $this->_getPrGenericComments(
+				$pr_item->number
+			);
+
+			if ( $pr_item->draft === true ) {
+				$this->assertTrue(
+					count( $pr_comments ) === 0
+				);
+	
+				$this->assertEquals(
+					0,
+					$this->_countSupportCommentsFromUs(
+						$pr_comments
+					)
+				);
+			}
+
+			else {
+				$this->assertTrue(
+					count( $pr_comments ) > 0
+				);
+
+				$this->assertEquals(
+					1,
+					$this->_countSupportCommentsFromUs(
+						$pr_comments
+					)
+				);
+			}
+		}
+
+		/*
+		 * Clear cache -- see explanation above
+		 */
+
+		vipgoci_cache(
+			VIPGOCI_CACHE_CLEAR
+		);
+		
+		// Try re-posting
+		vipgoci_github_pr_generic_support_comment(
+			$this->options,
+			$prs_implicated
+		);
+
+		// And make sure it did not succeed
+		foreach( $prs_implicated as $pr_item ) {
+			$pr_comments = $this->_getPrGenericComments(
+				$pr_item->number
+			);
+
+			if ( $pr_item->draft === true ) {
+				$this->assertTrue(
+					count( $pr_comments ) === 0
+				);
+	
+				$this->assertEquals(
+					0,
+					$this->_countSupportCommentsFromUs(
+						$pr_comments
+					)
+				);
+			}
+
+			else {
+				$this->assertTrue(
+					count( $pr_comments ) > 0
+				);
+
+				$this->assertEquals(
+					1,
+					$this->_countSupportCommentsFromUs(
+						$pr_comments
+					)
+				);
+			}
+		}
+
+		/*
+		 * Re-configure to post on drafts too and re-run
+		 */
+
+		vipgoci_cache(
+			VIPGOCI_CACHE_CLEAR
+		);
+
+		// Post on draft PRs
+		$this->options['post-generic-pr-support-comments-on-drafts'] = true;
+
+		// Try re-posting
+		vipgoci_github_pr_generic_support_comment(
+			$this->options,
+			$prs_implicated
+		);
+
+		// And make sure it did succeed
+		foreach( $prs_implicated as $pr_item ) {
+			$pr_comments = $this->_getPrGenericComments(
+				$pr_item->number
+			);
+
+			$this->assertTrue(
+				count( $pr_comments ) > 0
+			);
+
+			$this->assertEquals(
+				1,
 				$this->_countSupportCommentsFromUs(
 					$pr_comments
 				)
