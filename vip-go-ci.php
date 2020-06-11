@@ -149,6 +149,7 @@ function vipgoci_run() {
 			'dry-run:',
 			'informational-url:',
 			'post-generic-pr-support-comments:',
+			'post-generic-pr-support-comments-on-drafts:',
 			'post-generic-pr-support-comments-string:',
 			'post-generic-pr-support-comments-branches:',
 			'post-generic-pr-support-comments-repo-meta-match:',
@@ -769,6 +770,8 @@ function vipgoci_run() {
 	 */
 
 	vipgoci_option_bool_handle( $options, 'post-generic-pr-support-comments', 'false' );
+
+	vipgoci_option_bool_handle( $options, 'post-generic-pr-support-comments-on-drafts', 'false' );
 
 	if ( ! empty( $options['post-generic-pr-support-comments-string'] ) ) {
 		$options['post-generic-pr-support-comments-string'] =
