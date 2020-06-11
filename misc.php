@@ -131,13 +131,15 @@ function vipgoci_find_fields_in_array( $fields_arr, $data_arr ) {
 	) {
 		$res_arr[ $data_item_cnt ] = 0;
 
-		foreach( $fields_arr as $field_name => $field_value ) {
+		foreach( $fields_arr as $field_name => $field_values ) {
 			if ( ! array_key_exists( $field_name, $data_arr[ $data_item_cnt ] ) ) {
 				continue;
 			}
 
-			if ( $data_arr[ $data_item_cnt ][ $field_name ] === $field_value ) {
-				$res_arr[ $data_item_cnt ]++;
+			foreach( $field_values as $field_value_item ) {
+				if ( $data_arr[ $data_item_cnt ][ $field_name ] === $field_value_item ) {
+					$res_arr[ $data_item_cnt ]++;
+				}
 			}
 		}
 

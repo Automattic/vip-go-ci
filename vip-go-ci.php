@@ -816,16 +816,26 @@ function vipgoci_run() {
 		 * Convert "true" strings to true boolean variable,
 		 * same for "false" and "null". 
 		 */
+
+		if ( ! isset(
+			$tmp_repo_meta_match[
+				$options['post-generic-pr-support-comments-repo-meta-match'][ $i ][0]
+			]
+		) ) {
+			$tmp_repo_meta_match[
+				$options['post-generic-pr-support-comments-repo-meta-match'][ $i ][0]
+			] = array();
+		}
+
 		$tmp_repo_meta_match[
 			$options['post-generic-pr-support-comments-repo-meta-match'][ $i ][0]
-		] = vipgoci_convert_string_to_type(
+		][] = vipgoci_convert_string_to_type(
 			$options['post-generic-pr-support-comments-repo-meta-match'][ $i ][1]
 		);
 	}
 
-	$options[
-		'post-generic-pr-support-comments-repo-meta-match'
-	] = $tmp_repo_meta_match;
+	$options['post-generic-pr-support-comments-repo-meta-match'] =
+		$tmp_repo_meta_match;
 
 	unset(
 		$tmp_repo_meta_match
