@@ -14,13 +14,19 @@ final class MiscFindFieldsInArrayTest extends TestCase {
 				0 => false,
 				1 => true,
 				2 => true,
-				3 => false,
+				3 => true,
 				4 => false,
+				5 => false,
 			),
 			vipgoci_find_fields_in_array(
 				array(
-					'a' => 920,
-					'b' => 700,
+					'a' => array(
+						920,
+						100000,
+					),
+					'b' => array(
+						700,
+					),
 				),
 				array(
 					array(
@@ -31,6 +37,12 @@ final class MiscFindFieldsInArrayTest extends TestCase {
 					),
 					array(
 						'a' => 920,
+						'b' => 700,
+						'c' => 0,
+						'd' => 2,
+					),
+					array(
+						'a' => 100000,
 						'b' => 700,
 						'c' => 0,
 						'd' => 2,
