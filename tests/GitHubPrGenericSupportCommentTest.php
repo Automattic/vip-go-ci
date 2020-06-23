@@ -607,7 +607,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 	}
 
 	/**
-	 * @covers ::vipgoci_github_pr_generic_support_comment
+	 * @covers ::vipgoci_github_pr_generic_support_comment_submit
 	 */
 	public function testPostingWorksWithDraftPRs() {
 		$options_test = vipgoci_unittests_options_test(
@@ -633,7 +633,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 		);
 
 		// Try to submit support comment
-		vipgoci_github_pr_generic_support_comment(
+		vipgoci_github_pr_generic_support_comment_submit(
 			$this->options,
 			$prs_implicated
 		);
@@ -680,7 +680,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 		);
 		
 		// Try re-posting
-		vipgoci_github_pr_generic_support_comment(
+		vipgoci_github_pr_generic_support_comment_submit(
 			$this->options,
 			$prs_implicated
 		);
@@ -730,7 +730,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 		$this->options['post-generic-pr-support-comments-on-drafts'] = true;
 
 		// Try re-posting
-		vipgoci_github_pr_generic_support_comment(
+		vipgoci_github_pr_generic_support_comment_submit(
 			$this->options,
 			$prs_implicated
 		);
