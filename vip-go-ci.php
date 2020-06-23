@@ -163,6 +163,7 @@ function vipgoci_run() {
 			'phpcs-path:',
 			'phpcs-standard:',
 			'phpcs-severity:',
+			'phpcs-sniffs-include:',
 			'phpcs-sniffs-exclude:',
 			'phpcs-runtime-set:',
 			'phpcs-skip-scanning-via-labels-allowed:',
@@ -309,6 +310,8 @@ function vipgoci_run() {
 			"\t" . '--phpcs-path=FILE              Full path to PHPCS script' . PHP_EOL .
 			"\t" . '--phpcs-standard=STRING        Specify which PHPCS standard to use' . PHP_EOL .
 			"\t" . '--phpcs-severity=NUMBER        Specify severity for PHPCS' . PHP_EOL .
+			"\t" . '--phpcs-sniffs-include=ARRAY   Specify which sniffs to include when PHPCS scanning, ' . PHP_EOL .
+			"\t" . '                               should be an array with items separated by commas. ' . PHP_EOL .
 			"\t" . '--phpcs-sniffs-exclude=ARRAY   Specify which sniffs to exclude from PHPCS scanning, ' . PHP_EOL .
 			"\t" . '                               should be an array with items separated by commas. ' . PHP_EOL .
 			"\t" . '--phpcs-runtime-set=STRING     Specify --runtime-set values passed on to PHPCS' . PHP_EOL .
@@ -442,9 +445,24 @@ function vipgoci_run() {
 	);
 
 	/*
-	 * Process --phpcs-sniffs-exclude -- expected to be
-	 * an array.
+	 * Process --phpcs-sniffs-include and --phpcs-sniffs-exclude
+	 * -- both expected to be an array.
 	 */
+	if ( empty( $options['phpcs-sniffs-include'] ) ) {
+		$options['phpcs-sniffs-include'] = array();
+	}
+
+	else {
+		vipgoci_option_array_handle(
+			$options,
+			'phpcs-sniffs-include',
+			array(),
+			array(),
+			',',
+			false
+		);
+	}
+
 	if ( empty( $options['phpcs-sniffs-exclude'] ) ) {
 		$options['phpcs-sniffs-exclude'] = array();
 	}
@@ -459,7 +477,6 @@ function vipgoci_run() {
 			false
 		);
 	}
-
 	/*
 	 * Process --phpcs-runtime-set -- expected to be an
 	 * array of values.
@@ -995,6 +1012,7 @@ function vipgoci_run() {
 		'repo-options-allowed',
 		array(
 			'phpcs-severity',
+			'phpcs-sniffs-include',
 			'phpcs-sniffs-exclude',
 			'post-generic-pr-support-comments',
 		)
@@ -1254,6 +1272,12 @@ function vipgoci_run() {
 			'post-generic-pr-support-comments' => array(
 				'type'		=> 'boolean',
 				'valid_values'	=> array( true, false ),
+			),
+
+			'phpcs-sniffs-include' => array(
+				'type'		=> 'array',
+				'append'	=> true,
+				'valid_values'	=> null,
 			),
 
 			'phpcs-sniffs-exclude' => array(
