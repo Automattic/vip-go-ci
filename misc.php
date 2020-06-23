@@ -993,6 +993,74 @@ function vipgoci_issues_filter_duplicate( $file_issues_arr ) {
 	return $file_issues_arr_new;
 }
 
+/*
+ * Sort results to be submitted to GitHub according to
+ * severity of issues -- if configured to do so:
+ */
+function vipgoci_results_sort_by_severity(
+	$options,
+	&$results
+) {
+
+	if ( true !== $options['results-comments-sort'] ) {
+		return;
+	}
+
+	vipgoci_log(
+		'Sorting issues in results according to severity before submission',
+		array(
+		)
+	);
+
+
+	foreach(
+		array_keys(
+			$results['issues']
+		) as $pr_number
+	) {
+		$current_pr_results = &$results['issues'][ $pr_number ];
+
+		/*
+		 * Temporarily add severity
+		 * column so we can sort using that.
+		 */
+		foreach(
+			array_keys( $current_pr_results ) as 
+				$current_pr_result_item_key
+		) {
+			$current_pr_results[ $current_pr_result_item_key ][ 'severity'] =
+				$current_pr_results[ $current_pr_result_item_key ]['issue']['severity'];
+		}
+
+		/*
+		 * Do the actual sorting.
+		 */
+		$severity_column  = array_column(
+			$current_pr_results,
+			'severity'
+		);
+
+		array_multisort(
+		        $severity_column,
+		        SORT_DESC,
+		        $current_pr_results
+		);
+
+		/*
+		 * Remove severity column
+		 * afterwards.
+		 */
+		foreach(
+			array_keys( $current_pr_results ) as 
+				$current_pr_result_item_key
+		) {
+			unset(
+				$current_pr_results[ $current_pr_result_item_key ][ 'severity']
+			);
+		}
+	}
+}
+
 
 /*
  * Add pagebreak to a Markdown-style comment
