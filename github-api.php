@@ -2189,6 +2189,22 @@ function vipgoci_github_pr_review_submit(
 		return;
 	}
 
+	/*
+	 * Reverse results before starting processing,
+	 * so that results are shown in correct order
+	 * after posting.
+	 */
+
+	foreach (
+		array_keys(
+			$results['issues']
+		) as $pr_number
+	) {
+		$results['issues'][ $pr_number ] = array_reverse(
+			$results['issues'][ $pr_number ]
+		);
+	}
+
 	foreach (
 		// The $results array is keyed by Pull-Request number
 		array_keys(
