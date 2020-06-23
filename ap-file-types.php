@@ -77,7 +77,7 @@ function vipgoci_ap_file_types(
 				continue;
 			}
 
-			$pr_diff_file_extension = vipgoci_file_extension(
+			$pr_diff_file_extension = vipgoci_file_extension_get(
 				$pr_diff_file_name
 			);
 

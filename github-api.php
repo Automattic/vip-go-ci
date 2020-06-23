@@ -1331,7 +1331,7 @@ function vipgoci_github_pr_reviews_comments_get_by_pr(
 
 
 /*
- * Remove a particular comment.
+ * Remove a particular PR review comment.
  */
 
 function vipgoci_github_pr_reviews_comments_delete(
@@ -1369,7 +1369,7 @@ function vipgoci_github_pr_reviews_comments_delete(
  * Get all generic comments made to a Pull-Request from Github.
  */
 
-function vipgoci_github_pr_generic_comments_get(
+function vipgoci_github_pr_generic_comments_get_all(
 	$repo_owner,
 	$repo_name,
 	$pr_number,
@@ -1453,7 +1453,7 @@ function vipgoci_github_pr_generic_comments_get(
  * others. Attempts to format the comment to GitHub.
  */
 
-function vipgoci_github_pr_generic_comment_submit(
+function vipgoci_github_pr_generic_comment_submit_results(
 	$repo_owner,
 	$repo_name,
 	$github_token,
@@ -1747,7 +1747,7 @@ function vipgoci_github_pr_comments_cleanup(
 	);
 
 	foreach ( $prs_implicated as $pr_item ) {
-		$pr_comments = vipgoci_github_pr_generic_comments_get(
+		$pr_comments = vipgoci_github_pr_generic_comments_get_all(
 			$repo_owner,
 			$repo_name,
 			$pr_item->number,
@@ -1837,7 +1837,7 @@ function vipgoci_github_pr_generic_comment_delete(
  * comment has not been posted before. Uses a
  * comment given by one of the options.
  */
-function vipgoci_github_pr_generic_support_comment(
+function vipgoci_github_pr_generic_support_comment_submit(
 	$options,
 	$prs_implicated
 ) {
@@ -1973,7 +1973,7 @@ function vipgoci_github_pr_generic_support_comment(
 		 * not post anything.
 		 */
 
-		$existing_comments = vipgoci_github_pr_generic_comments_get(
+		$existing_comments = vipgoci_github_pr_generic_comments_get_all(
 			$options['repo-owner'],
 			$options['repo-name'],
 			$pr_item->number,
@@ -2641,7 +2641,7 @@ function vipgoci_github_pr_review_dismiss(
  * Dismiss all Pull-Request Reviews that have no
  * active comments attached to them.
  */
-function vipgoci_github_pr_reviews_dismiss_non_active_comments(
+function vipgoci_github_pr_reviews_dismiss_with_non_active_comments(
 	$options,
 	$pr_number
 ) {
@@ -3336,7 +3336,7 @@ function vipgoci_github_label_add_to_pr(
  * Fetch labels associated with a
  * particular issue/Pull-Request.
  */
-function vipgoci_github_labels_get(
+function vipgoci_github_pr_labels_get(
 	$repo_owner,
 	$repo_name,
 	$github_token,
@@ -3436,7 +3436,7 @@ function vipgoci_github_labels_get(
  * Remove a particular label from a specific
  * Pull-Request (or issue).
  */
-function vipgoci_github_label_remove_from_pr(
+function vipgoci_github_pr_label_remove(
 	$repo_owner,
 	$repo_name,
 	$github_token,
@@ -3634,7 +3634,7 @@ function vipgoci_github_pr_review_events_get(
 /*
  * Get members for a team.
  */
-function vipgoci_github_team_members(
+function vipgoci_github_team_members_get(
 	$github_token,
 	$team_id,
 	$return_values_only = null
@@ -3721,7 +3721,7 @@ function vipgoci_github_team_members(
  *
  * @codeCoverageIgnore
  */
-function vipgoci_github_team_members_many(
+function vipgoci_github_team_members_many_get(
 	$github_token,
 	$team_ids_arr = array()
 ) {
@@ -3735,7 +3735,7 @@ function vipgoci_github_team_members_many(
 	$team_members_ids_arr = array();
 
 	foreach( $team_ids_arr as $team_id_item ) {
-		$team_id_members = vipgoci_github_team_members(
+		$team_id_members = vipgoci_github_team_members_get(
 			$github_token,
 			$team_id_item,
 			'id'
@@ -3759,7 +3759,7 @@ function vipgoci_github_team_members_many(
  * Get organization teams available to the calling
  * user from the GitHub API.
  */
-function vipgoci_github_org_teams(
+function vipgoci_github_org_teams_get(
 	$github_token,
 	$org_id,
 	$filter = null,

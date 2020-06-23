@@ -95,7 +95,7 @@ final class GitHubLabelsTest extends TestCase {
 	}
 
 	/**
-	 * @covers ::vipgoci_github_label_remove_from_pr
+	 * @covers ::vipgoci_github_pr_label_remove
 	 */
 	public function testGitHubRemoveLabel1() {
 		$options_test = vipgoci_unittests_options_test(
@@ -112,7 +112,7 @@ final class GitHubLabelsTest extends TestCase {
 
 		$labels_before = $this->labels_get();
 
-		vipgoci_github_label_remove_from_pr(
+		vipgoci_github_pr_label_remove(
 			$this->options['repo-owner'],
 			$this->options['repo-name'],
 			$this->options['github-token'],

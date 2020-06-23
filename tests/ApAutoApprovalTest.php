@@ -186,7 +186,7 @@ final class ApAutoApprovalTest extends TestCase {
 	/**
 	 * Test which PRs we get; make sure these
 	 * are only the relevant ones. Mimics behaviour
-	 * found in vipgoci_auto_approval().
+	 * found in vipgoci_auto_approval_scan_commit().
 	 *
 	 * @covers ::vipgoci_auto_approval
 	 */
@@ -268,7 +268,7 @@ final class ApAutoApprovalTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
-		vipgoci_auto_approval(
+		vipgoci_auto_approval_scan_commit(
 			$this->options,
 			$auto_approved_files_arr,
 			$results
@@ -376,7 +376,7 @@ final class ApAutoApprovalTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
-		vipgoci_auto_approval(
+		vipgoci_auto_approval_scan_commit(
 			$this->options,
 			$auto_approved_files_arr,
 			$results
@@ -488,7 +488,7 @@ final class ApAutoApprovalTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
-		vipgoci_auto_approval(
+		vipgoci_auto_approval_scan_commit(
 			$this->options,
 			$auto_approved_files_arr,
 			$results
@@ -633,13 +633,13 @@ final class ApAutoApprovalTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
-		vipgoci_auto_approval(
+		vipgoci_auto_approval_scan_commit(
 			$this->options,
 			$auto_approved_files_arr,
 			$results
 		);
 
-		vipgoci_auto_approval(
+		vipgoci_auto_approval_scan_commit(
 			$this->options,
 			$auto_approved_files_arr,
 			$results

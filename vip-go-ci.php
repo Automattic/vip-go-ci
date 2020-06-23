@@ -5,6 +5,7 @@ require_once( __DIR__ . '/defines.php' );
 require_once( __DIR__ . '/github-api.php' );
 require_once( __DIR__ . '/git-repo.php' );
 require_once( __DIR__ . '/misc.php' );
+require_once( __DIR__ . '/results.php' );
 require_once( __DIR__ . '/options.php' ) ;
 require_once( __DIR__ . '/statistics.php' );
 require_once( __DIR__ . '/phpcs-scan.php' );
@@ -1426,7 +1427,7 @@ function vipgoci_run() {
 	 * on the Pull-Request(s) with some helpful information.
 	 * Comment is set via option.
 	 */
-	vipgoci_github_pr_generic_support_comment(
+	vipgoci_github_pr_generic_support_comment_submit(
 		$options,
 		$prs_implicated
 	);
@@ -1488,7 +1489,7 @@ function vipgoci_run() {
 		/*
 		 * FIXME: Move the function-calls below
 		 * to auto-approval.php -- place them
-		 * in a wrapper, and not vipgoci_auto_approval()
+		 * in a wrapper, and not vipgoci_auto_approval_scan_commit()
 		 */
 
 		/*
@@ -1541,7 +1542,7 @@ function vipgoci_run() {
 			);
 		}
 
-		vipgoci_auto_approval(
+		vipgoci_auto_approval_scan_commit(
 			$options,
 			$auto_approved_files_arr,
 			$results // FIXME: dry-run
@@ -1554,7 +1555,7 @@ function vipgoci_run() {
 	 * that are approved in hashes-to-hashes API.
 	 */
 
-	vipgoci_approved_files_comments_remove(
+	vipgoci_results_approved_files_comments_remove(
 		$options,
 		$results,
 		$auto_approved_files_arr
@@ -1567,7 +1568,7 @@ function vipgoci_run() {
 	 * by Pull-Request.
 	 */
 
-	$team_members_ids_arr = vipgoci_github_team_members_many(
+	$team_members_ids_arr = vipgoci_github_team_members_many_get(
 		$options['token'],
 		$options['dismissed-reviews-exclude-reviews-from-team']
 	);
@@ -1621,7 +1622,7 @@ function vipgoci_run() {
 	 * already been submitted.
 	 */
 
-	vipgoci_remove_existing_github_comments_from_results(
+	vipgoci_results_remove_existing_github_comments(
 		$options,
 		$prs_implicated,
 		$results,
@@ -1657,7 +1658,7 @@ function vipgoci_run() {
 	if ( $options['review-comments-total-max'] > 0 ) {
 		$prs_comments_maxed = array();
 
-		vipgoci_github_results_filter_comments_to_max(
+		vipgoci_results_filter_comments_to_max(
 			$options,
 			$results,
 			$prs_comments_maxed
@@ -1668,7 +1669,7 @@ function vipgoci_run() {
 	 * Submit any remaining issues to GitHub
 	 */
 
-	vipgoci_github_pr_generic_comment_submit(
+	vipgoci_github_pr_generic_comment_submit_results(
 		$options['repo-owner'],
 		$options['repo-name'],
 		$options['token'],
@@ -1702,7 +1703,7 @@ function vipgoci_run() {
 		 */
 
 		foreach ( $prs_implicated as $pr_item ) {
-			vipgoci_github_pr_reviews_dismiss_non_active_comments(
+			vipgoci_github_pr_reviews_dismiss_with_non_active_comments(
 				$options,
 				$pr_item->number
 			);

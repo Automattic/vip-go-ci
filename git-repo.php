@@ -21,7 +21,7 @@ function vipgoci_gitrepo_ok(
 	 * as the one we are working with.
 	 */
 
-	$lgit_head = vipgoci_git_repo_get_head(
+	$lgit_head = vipgoci_gitrepo_get_head(
 		$local_git_repo
 	);
 
@@ -74,7 +74,7 @@ function vipgoci_gitrepo_ok(
  * this function will execute git.
  */
 
-function vipgoci_git_repo_get_head( $local_git_repo ) {
+function vipgoci_gitrepo_get_head( $local_git_repo ) {
 
 	/*
 	 * Prepare to execute git; ask git to

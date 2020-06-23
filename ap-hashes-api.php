@@ -26,7 +26,7 @@ function vipgoci_ap_hashes_api_file_approved(
 	);
 
 
-	$file_info_extension = vipgoci_file_extension(
+	$file_info_extension = vipgoci_file_extension_get(
 		$file_path
 	);
 

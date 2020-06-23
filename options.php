@@ -1004,7 +1004,7 @@ function vipgoci_option_teams_handle(
 	);
 
 
-	$teams_info = vipgoci_github_org_teams(
+	$teams_info = vipgoci_github_org_teams_get(
 		$options['token'],
 		$options['repo-owner'],
 		null,
