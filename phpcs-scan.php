@@ -850,6 +850,7 @@ function vipgoci_phpcs_validate_sniffs_in_options_and_report(
 			'phpcs-path'		=> $options['phpcs-path'],
 			'phpcs-standard'	=> $options['phpcs-standard'],
 			'phpcs-sniffs-exclude'	=> $options['phpcs-sniffs-exclude'],
+			'phpcs-sniffs-include'	=> $options['phpcs-sniffs-include'],
 		)
 	);
 
@@ -882,46 +883,65 @@ function vipgoci_phpcs_validate_sniffs_in_options_and_report(
 		$phpcs_sniffs_exclude_invalid
 	);
 
+	$phpcs_sniffs_include_invalid = array_diff(
+		$options['phpcs-sniffs-include'],
+		$phpcs_sniffs_valid
+	);
+
+	asort(
+		$phpcs_sniffs_include_invalid
+	);
+
+	$phpcs_sniffs_include_invalid = array_values(
+		$phpcs_sniffs_include_invalid
+	);
+
+
 	vipgoci_log(
 		'Got valid PHPCS sniffs, calculated invalid PHPCS sniffs',
 		array(
 			'phpcs-sniffs-valid' 		=> $phpcs_sniffs_valid,
 			'phpcs-sniffs-exclude-invalid'	=> $phpcs_sniffs_exclude_invalid,
+			'phpcs-sniffs-include-invalid'	=> $phpcs_sniffs_include_invalid,
 		),
 		2
 	);
 
-	if ( ! empty( $phpcs_sniffs_exclude_invalid ) ) {
-		$prs_implicated = vipgoci_github_prs_implicated(
-			$options['repo-owner'],
-			$options['repo-name'],
-			$options['commit'],
-			$options['token'],
-			$options['branches-ignore']
-		);
+	/*
+	 * Prepare to post a message reporting
+	 * problems with the options defined, if needed.
+	 */
+	$tmp_invalid_options_and_sniffs = '';
 
-		/*
-		 * Post generic message with error for each Pull-Request
-		 * implicated.
-		 */
+	if (
+		( ! empty( $phpcs_sniffs_include_invalid ) ) ||
+		( ! empty( $phpcs_sniffs_exclude_invalid ) )
+	) {
+		$tmp_invalid_options_and_sniffs .=
+			VIPGOCI_PHPCS_INVALID_SNIFFS;
 
-		foreach ( $prs_implicated as $pr_item ) {
-			vipgoci_github_pr_comments_generic_submit(
-				$options['repo-owner'],
-				$options['repo-name'],
-				$options['token'],
-				$pr_item->number,
-				/*
-				 * Send invalid sniffs message,
-				 * but append the sniffs that are invalid.
-				 */
-				VIPGOCI_PHPCS_INVALID_SNIFFS .
-					'`' . implode(
+		if ( ! empty( $phpcs_sniffs_include_invalid ) ) {
+			$tmp_invalid_options_and_sniffs .=
+				sprintf(
+					VIPGOCI_PHPCS_INVALID_SNIFFS_CONT,
+					'--phpcs-sniffs-include',
+					implode(
+						', ',
+						$phpcs_sniffs_include_invalid
+					),
+				);
+		}
+
+		if ( ! empty( $phpcs_sniffs_exclude_invalid ) ) {
+			$tmp_invalid_options_and_sniffs .=
+				sprintf(
+					VIPGOCI_PHPCS_INVALID_SNIFFS_CONT,
+					'--phpcs-sniffs-exclude',
+						implode(
 						', ',
 						$phpcs_sniffs_exclude_invalid
-					) . '`',
-				$options['commit']
-			);
+						),
+				);
 		}
 
 		/*
@@ -932,36 +952,116 @@ function vipgoci_phpcs_validate_sniffs_in_options_and_report(
 			array(
 				'phpcs-sniffs-exclude'		=> $options['phpcs-sniffs-exclude'],
 				'phpcs-sniffs-exclude-invalid'	=> $phpcs_sniffs_exclude_invalid,
+				'phpcs-sniffs-include'		=> $options['phpcs-sniffs-include'],
+				'phpcs-sniffs-include-invalid'	=> $phpcs_sniffs_include_invalid,
 			)
 		);
 
-		$options['phpcs-sniffs-exclude'] = array_filter(
-			$options['phpcs-sniffs-exclude'],
-			function( $sniff_item ) use ( $phpcs_sniffs_exclude_invalid ) {
-				if ( in_array(
-					$sniff_item,
-					$phpcs_sniffs_exclude_invalid,
-					true
-				) ) {
-					return false;
-				}
+		if ( ! empty( $phpcs_sniffs_exclude_invalid ) ) {
+			$options['phpcs-sniffs-exclude'] = array_intersect(
+				$phpcs_sniffs_valid,
+				$options['phpcs-sniffs-exclude']
+			);
 
-				return true;
-			}
-		);
+			$options['phpcs-sniffs-exclude'] = array_values(
+				$options['phpcs-sniffs-exclude']
+			);
+		}
 
-		$options['phpcs-sniffs-exclude'] = array_values(
-			$options['phpcs-sniffs-exclude']
+		if ( ! empty( $phpcs_sniffs_exclude_invalid ) ) {
+			$options['phpcs-sniffs-include'] = array_intersect(
+				$phpcs_sniffs_valid,
+				$options['phpcs-sniffs-include']
+			);
+
+			$options['phpcs-sniffs-include'] = array_values(
+				$options['phpcs-sniffs-include']
+			);
+		}
+	}
+
+	/*
+	 * Check if any of the --phpcs-sniffs-exclude items
+	 * are also defined in --phpcs-sniffs-include. If so, 
+	 * skip those in --phpcs-sniffs-include, and report the problem.
+	 */
+
+	$phpcs_sniffs_excluded_and_included = array_intersect(
+		$options['phpcs-sniffs-exclude'],
+		$options['phpcs-sniffs-include']
+	);
+
+	if ( ! empty( $phpcs_sniffs_excluded_and_included ) ) {
+		if ( ! empty( $tmp_invalid_options_and_sniffs ) ) {
+			$tmp_invalid_options_and_sniffs .=
+				PHP_EOL . '<hr />' . PHP_EOL;
+		}
+
+		$tmp_invalid_options_and_sniffs .=
+			VIPGOCI_PHPCS_DUPLICATE_SNIFFS;
+
+		$tmp_invalid_options_and_sniffs .= sprintf(
+			VIPGOCI_PHPCS_DUPLICATE_SNIFFS_CONT,
+			'--phpcs-sniffs-exclude',
+			'--phpcs-sniffs-include',
+			implode(
+				', ',
+				$phpcs_sniffs_excluded_and_included
+			)
 		);
 	}
+
+	if (
+		( ! empty( $phpcs_sniffs_include_invalid ) ) ||
+		( ! empty( $phpcs_sniffs_exclude_invalid ) ) ||
+		( ! empty( $phpcs_sniffs_excluded_and_included ) )
+	) {
+		/*
+		 * Post generic message with error for each Pull-Request
+		 * implicated.
+		 */
+
+		$prs_implicated = vipgoci_github_prs_implicated(
+			$options['repo-owner'],
+			$options['repo-name'],
+			$options['commit'],
+			$options['token'],
+			$options['branches-ignore']
+		);
+		
+		foreach ( $prs_implicated as $pr_item ) {
+			vipgoci_github_pr_comments_generic_submit(
+				$options['repo-owner'],
+				$options['repo-name'],
+				$options['token'],
+				$pr_item->number,
+				/*
+				 * Send invalid sniffs message,
+				 * but append the sniffs that are invalid.
+				 */
+				$tmp_invalid_options_and_sniffs,
+				$options['commit']
+			);
+		}
+	
+		unset(
+			$tmp_invalid_options_and_sniffs
+		);
+	}
+
 
 	vipgoci_log(
 		'Validated sniffs provided in options',
 		array(
-			'phpcs-path'			=> $options['phpcs-path'],
-			'phpcs-standard'		=> $options['phpcs-standard'],
-			'phpcs-sniffs-exclude-after'	=> $options['phpcs-sniffs-exclude'],
-			'phpcs-sniffs-exclude-invalid'	=> $phpcs_sniffs_exclude_invalid,
+			'phpcs-path'				=> $options['phpcs-path'],
+			'phpcs-standard'			=> $options['phpcs-standard'],
+			'phpcs-sniffs-exclude-after'		=> $options['phpcs-sniffs-exclude'],
+			'phpcs-sniffs-exclude-invalid'		=> $phpcs_sniffs_exclude_invalid,
+			'phpcs-sniffs-include-after'		=> $options['phpcs-sniffs-include'],
+			'phpcs-sniffs-include-invalid'		=> $phpcs_sniffs_include_invalid,
+			'phpcs-sniffs-excluded-and-included'	=> $phpcs_sniffs_excluded_and_included,
 		)
 	);
+
+	sleep(15);
 }
