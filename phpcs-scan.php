@@ -9,6 +9,7 @@ function vipgoci_phpcs_do_scan(
 	$filename_tmp,
 	$phpcs_path,
 	$phpcs_standard,
+	$phpcs_sniffs_include,
 	$phpcs_sniffs_exclude,
 	$phpcs_severity,
 	$phpcs_runtime_set
@@ -26,6 +27,30 @@ function vipgoci_phpcs_do_scan(
 		escapeshellarg( $phpcs_severity ),
 		escapeshellarg( 'json' )
 	);
+
+	/*
+	 * If is array, convert to string.
+	 */
+	if ( is_array(
+		$phpcs_sniffs_include
+	) ) {
+		$phpcs_sniffs_include = join(
+			',',
+			$phpcs_sniffs_include
+		);
+	}
+
+	/*
+	 * If we have sniffs to include, add them
+	 * to the command-line string.
+	 */
+
+	if ( ! empty( $phpcs_sniffs_include ) ) {
+		$cmd .= sprintf(
+			' --sniffs=%s',
+			escapeshellarg( $phpcs_sniffs_include )
+		);
+	}
 
 	/*
 	 * If is array, convert to string.
@@ -50,6 +75,8 @@ function vipgoci_phpcs_do_scan(
 			escapeshellarg( $phpcs_sniffs_exclude )
 		);
 	}
+
+
 
 	/*
 	 * If we have specific runtime-set values,
@@ -140,6 +167,7 @@ function vipgoci_phpcs_scan_single_file(
 		$temp_file_name,
 		$options['phpcs-path'],
 		$options['phpcs-standard'],
+		$options['phpcs-sniffs-include'],
 		$options['phpcs-sniffs-exclude'],
 		$options['phpcs-severity'],
 		$options['phpcs-runtime-set']
@@ -957,25 +985,25 @@ function vipgoci_phpcs_validate_sniffs_in_options_and_report(
 			)
 		);
 
-		if ( ! empty( $phpcs_sniffs_exclude_invalid ) ) {
-			$options['phpcs-sniffs-exclude'] = array_intersect(
-				$phpcs_sniffs_valid,
-				$options['phpcs-sniffs-exclude']
-			);
-
-			$options['phpcs-sniffs-exclude'] = array_values(
-				$options['phpcs-sniffs-exclude']
-			);
-		}
-
-		if ( ! empty( $phpcs_sniffs_exclude_invalid ) ) {
+		if ( ! empty( $phpcs_sniffs_include_invalid ) ) {
 			$options['phpcs-sniffs-include'] = array_intersect(
-				$phpcs_sniffs_valid,
-				$options['phpcs-sniffs-include']
+				$options['phpcs-sniffs-include'],
+				$phpcs_sniffs_valid
 			);
 
 			$options['phpcs-sniffs-include'] = array_values(
 				$options['phpcs-sniffs-include']
+			);
+		}
+
+		if ( ! empty( $phpcs_sniffs_exclude_invalid ) ) {
+			$options['phpcs-sniffs-exclude'] = array_intersect(
+				$options['phpcs-sniffs-exclude'],
+				$phpcs_sniffs_valid
+			);
+
+			$options['phpcs-sniffs-exclude'] = array_values(
+				$options['phpcs-sniffs-exclude']
 			);
 		}
 	}
