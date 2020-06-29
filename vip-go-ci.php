@@ -779,6 +779,9 @@ function vipgoci_run() {
 		);
 	}
 
+	/* This variable is not configurable, is internal only */
+	$options['phpcs-standard-file'] = false;
+
 
 	/*
 	 * Should we auto-approve Pull-Requests when
@@ -1476,20 +1479,20 @@ function vipgoci_run() {
 	 * on the Pull-Request(s) with some helpful information.
 	 * Comment is set via option.
 	 */
-	vipgoci_github_pr_generic_support_comment_submit(
+/*	vipgoci_github_pr_generic_support_comment_submit(
 		$options,
 		$prs_implicated
 	);
-
+*/
 	/*
 	 * Add support level label, if:
 	 * - configured to do so
 	 * - data is available in repo-meta API
 	 */
-	vipgoci_support_level_label_set(
+/*	vipgoci_support_level_label_set(
 		$options
 	);
-
+*/
 	/*
 	 * Verify that sniffs specified on command line
 	 * or via options file are valid. Will remove any
@@ -1498,6 +1501,14 @@ function vipgoci_run() {
 	 */
 
 	vipgoci_phpcs_validate_sniffs_in_options_and_report(
+		$options
+	);
+
+	/*
+	 * Set to use new PHPCS standard if needed.
+	 */
+
+	vipgoci_phpcs_possibly_use_new_standard_file(
 		$options
 	);
 
@@ -1796,7 +1807,6 @@ function vipgoci_run() {
 	 * actions should be performed after this point.
 	 */
 
-
 	/*
 	 * Send out to IRC API any alerts
 	 * that are queued up.
@@ -1881,6 +1891,22 @@ function vipgoci_run() {
 				)
 			),
 			$counter_report
+		);
+	}
+
+	/*
+	 * Remove temporary PHPCS XML standard
+	 * file if used.
+	 */
+
+	if (
+		( true === $options['phpcs-standard-file'] ) &&
+		( file_exists(
+			$options['phpcs-standard'][0]
+		) )
+	) {
+		unlink(
+			$options['phpcs-standard'][0]
 		);
 	}
 

@@ -9,7 +9,6 @@ function vipgoci_phpcs_do_scan(
 	$filename_tmp,
 	$phpcs_path,
 	$phpcs_standard,
-	$phpcs_sniffs_include,
 	$phpcs_sniffs_exclude,
 	$phpcs_severity,
 	$phpcs_runtime_set
@@ -20,41 +19,38 @@ function vipgoci_phpcs_do_scan(
 	 * Feed PHPCS the temporary file specified by our caller.
 	 */
 	$cmd = sprintf(
-		'%s %s --standard=%s --severity=%s --report=%s',
+		'%s %s --severity=%s --report=%s',
 		escapeshellcmd( 'php' ),
 		escapeshellcmd( $phpcs_path ),
-		escapeshellarg( $phpcs_standard ),
 		escapeshellarg( $phpcs_severity ),
 		escapeshellarg( 'json' )
 	);
 
 	/*
-	 * If is array, convert to string.
+	 * Add standard to the command-line string.
 	 */
+
 	if ( is_array(
-		$phpcs_sniffs_include
+		$phpcs_standard
 	) ) {
-		$phpcs_sniffs_include = join(
+		$phpcs_standard = join(
 			',',
-			$phpcs_sniffs_include
+			$phpcs_standard
+		);
+	}
+
+	if ( ! empty( $phpcs_standard ) ) {
+		$cmd .= sprintf(
+			' --standard=%s',
+			escapeshellarg( $phpcs_standard )
 		);
 	}
 
 	/*
-	 * If we have sniffs to include, add them
+	 * If we have sniffs to exclude, add them
 	 * to the command-line string.
 	 */
 
-	if ( ! empty( $phpcs_sniffs_include ) ) {
-		$cmd .= sprintf(
-			' --sniffs=%s',
-			escapeshellarg( $phpcs_sniffs_include )
-		);
-	}
-
-	/*
-	 * If is array, convert to string.
-	 */
 	if ( is_array(
 		$phpcs_sniffs_exclude
 	) ) {
@@ -64,18 +60,12 @@ function vipgoci_phpcs_do_scan(
 		);
 	}
 
-	/*
-	 * If we have sniffs to exclude, add them
-	 * to the command-line string.
-	 */
-
 	if ( ! empty( $phpcs_sniffs_exclude ) ) {
 		$cmd .= sprintf(
 			' --exclude=%s',
 			escapeshellarg( $phpcs_sniffs_exclude )
 		);
 	}
-
 
 
 	/*
@@ -236,7 +226,6 @@ function vipgoci_phpcs_scan_single_file(
 		$temp_file_name,
 		$options['phpcs-path'],
 		$options['phpcs-standard'],
-		$options['phpcs-sniffs-include'],
 		$options['phpcs-sniffs-exclude'],
 		$options['phpcs-severity'],
 		$options['phpcs-runtime-set']
@@ -1235,6 +1224,27 @@ function vipgoci_phpcs_validate_sniffs_in_options_and_report(
 		);
 	}
 
+	vipgoci_log(
+		'Validated sniffs provided in options',
+		array(
+			'phpcs-path'				=> $options['phpcs-path'],
+			'phpcs-standard'			=> $options['phpcs-standard'],
+			'phpcs-sniffs-exclude-after'		=> $options['phpcs-sniffs-exclude'],
+			'phpcs-sniffs-exclude-invalid'		=> $phpcs_sniffs_exclude_invalid,
+			'phpcs-sniffs-include-after'		=> $options['phpcs-sniffs-include'],
+			'phpcs-sniffs-include-invalid'		=> $phpcs_sniffs_include_invalid,
+			'phpcs-sniffs-excluded-and-included'	=> $phpcs_sniffs_excluded_and_included,
+		)
+	);
+}
+
+/*
+ * Possibly switch to a new PHPCS standard on the fly.
+ * This depends on if new PHPCS sniffs are to be included.
+ */
+function vipgoci_phpcs_possibly_use_new_standard_file(
+	&$options
+) {
 	/* 
 	 * Switch to new standard: Write new standard
 	 * to a temporary file, then switch to using that.
@@ -1255,6 +1265,7 @@ function vipgoci_phpcs_validate_sniffs_in_options_and_report(
 
 		$old_phpcs_standard = $options['phpcs-standard'];
 		$options['phpcs-standard'] = array( $new_standard_file );
+		$options['phpcs-standard-file'] = true;
 
 		vipgoci_log(
 			'As PHPCS sniffs are being included that are outside of the PHPCS standard specified, we switched to a new PHPCS standard',
@@ -1264,17 +1275,5 @@ function vipgoci_phpcs_validate_sniffs_in_options_and_report(
 			)
 		);
 	}
-
-	vipgoci_log(
-		'Validated sniffs provided in options',
-		array(
-			'phpcs-path'				=> $options['phpcs-path'],
-			'phpcs-standard'			=> $options['phpcs-standard'],
-			'phpcs-sniffs-exclude-after'		=> $options['phpcs-sniffs-exclude'],
-			'phpcs-sniffs-exclude-invalid'		=> $phpcs_sniffs_exclude_invalid,
-			'phpcs-sniffs-include-after'		=> $options['phpcs-sniffs-include'],
-			'phpcs-sniffs-include-invalid'		=> $phpcs_sniffs_include_invalid,
-			'phpcs-sniffs-excluded-and-included'	=> $phpcs_sniffs_excluded_and_included,
-		)
-	);
 }
+
