@@ -1479,20 +1479,20 @@ function vipgoci_run() {
 	 * on the Pull-Request(s) with some helpful information.
 	 * Comment is set via option.
 	 */
-/*	vipgoci_github_pr_generic_support_comment_submit(
+	vipgoci_github_pr_generic_support_comment_submit(
 		$options,
 		$prs_implicated
 	);
-*/
+
 	/*
 	 * Add support level label, if:
 	 * - configured to do so
 	 * - data is available in repo-meta API
 	 */
-/*	vipgoci_support_level_label_set(
+	vipgoci_support_level_label_set(
 		$options
 	);
-*/
+
 	/*
 	 * Verify that sniffs specified on command line
 	 * or via options file are valid. Will remove any
