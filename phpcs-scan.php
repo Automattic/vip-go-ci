@@ -1254,7 +1254,7 @@ function vipgoci_phpcs_validate_sniffs_in_options_and_report(
 		);
 
 		$old_phpcs_standard = $options['phpcs-standard'];
-		$options['phpcs-standard'] = $new_standard_file;
+		$options['phpcs-standard'] = array( $new_standard_file );
 
 		vipgoci_log(
 			'As PHPCS sniffs are being included that are outside of the PHPCS standard specified, we switched to a new PHPCS standard',
