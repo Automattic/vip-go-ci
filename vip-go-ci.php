@@ -437,12 +437,22 @@ function vipgoci_run() {
 	 */
 
 	if ( empty( $options['phpcs-standard'] ) ) {
-		$options['phpcs-standard'] = 'WordPress-VIP-Go';
+		$options['phpcs-standard'] = array(
+			'WordPress-VIP-Go'
+		);
 	}
 
-	$options['phpcs-standard'] = trim(
-		$options['phpcs-standard']
-	);
+	else {
+		vipgoci_option_array_handle(
+			$options,
+			'phpcs-standard',
+			array(),
+			array(),
+			',',
+			false
+		);
+	}
+
 
 	/*
 	 * Process --phpcs-sniffs-include and --phpcs-sniffs-exclude

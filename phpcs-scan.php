@@ -123,6 +123,75 @@ function vipgoci_phpcs_do_scan(
 	return $result;
 }
 
+/*
+ * Write a custom PHPCS XML coding standard
+ * file to a file specified. Will write out
+ * all the PHPCS standards specified along
+ * with PHPCS sniffs specified.
+ */
+function vipgoci_phpcs_write_xml_standard_file(
+	$file_name,
+	$phpcs_standard,
+	$phpcs_sniffs_include
+) {
+
+	$xml_doc = xmlwriter_open_memory();
+
+	xmlwriter_set_indent( $xml_doc, 1 );
+	xmlwriter_set_indent_string( $xml_doc, "\t" );
+
+	xmlwriter_start_document( $xml_doc, '1.0', 'UTF-8' );
+
+	xmlwriter_start_element( $xml_doc, 'ruleset' );
+   
+		xmlwriter_start_attribute( $xml_doc, 'xmlns:xsi' );
+			xmlwriter_text( $xml_doc, 'http://www.w3.org/2001/XMLSchema-instance' );
+		xmlwriter_end_attribute( $xml_doc );
+
+		xmlwriter_start_attribute( $xml_doc, 'name' );
+			xmlwriter_text( $xml_doc, 'PHP_CodeSniffer' );
+		xmlwriter_end_attribute( $xml_doc );
+
+		xmlwriter_start_attribute( $xml_doc, 'xsi:noNamespaceSchemaLocation' );
+			xmlwriter_text( $xml_doc, 'phpcs.xsd' );
+		xmlwriter_end_attribute( $xml_doc );
+
+       
+		xmlwriter_start_element( $xml_doc, 'description' );
+			xmlwriter_text( $xml_doc, 'Custom coding standard' );
+		xmlwriter_end_element( $xml_doc );
+
+		/*
+		 * Merge an array of rulesets and
+		 * write them into the XML document.
+		 */
+		$rulesets_arr = array_merge(
+			$phpcs_standard,
+			$phpcs_sniffs_include
+		);
+
+		foreach( $rulesets_arr as $ruleset_item ) {
+			xmlwriter_start_element( $xml_doc, 'rule' );
+				xmlwriter_start_attribute( $xml_doc, 'ref' );
+					xmlwriter_text( $xml_doc, $ruleset_item );
+				xmlwriter_end_attribute( $xml_doc );
+			xmlwriter_end_element( $xml_doc );
+		}
+
+	xmlwriter_end_element( $xml_doc );
+
+	xmlwriter_end_document( $xml_doc );
+
+	file_put_contents(
+		$file_name,
+		xmlwriter_output_memory( $xml_doc )
+	);
+
+	unset( $xml_doc );
+
+	return $file_name;
+}
+
 function vipgoci_phpcs_scan_single_file(
 	$options,
 	$file_name
@@ -145,7 +214,7 @@ function vipgoci_phpcs_scan_single_file(
 	}
 
 	$temp_file_name = vipgoci_save_temp_file(
-		'phpcs-scan-',
+		'vipgoci-phpcs-scan-',
 		$file_extension,
 		$file_contents
 	);
@@ -764,6 +833,64 @@ function vipgoci_phpcs_scan_commit(
 }
 
 /*
+ * Ask PHPCS for a list of all standards installed.
+ * Returns with an array of those standards.
+ */
+
+function vipgoci_phpcs_get_all_standards(
+	$phpcs_path
+) {
+	vipgoci_log(
+		'Getting active PHPCS standards',
+		array(
+			'phpcs-path'		=> $phpcs_path,
+		)
+	);
+
+	$phpcs_standards_arr = array();
+
+	/*
+	 * Run PHPCS from the shell, making sure we escape everything.
+	 */
+	$cmd = sprintf(
+		'%s %s -i',
+		escapeshellcmd( 'php' ),
+		escapeshellcmd( $phpcs_path ),
+	);
+
+	vipgoci_log(
+		'Running PHPCS now to get standards',
+		array(
+			'cmd' => $cmd,
+		),
+		0
+	);
+
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'phpcs_cli' );
+
+	$result = shell_exec( $cmd );
+
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'phpcs_cli' );
+	
+	$result = str_replace(
+		array( "The installed coding standards are", " and ", " " ),
+		array( "", ",", "" ),
+		$result
+	);
+
+	$result = trim( $result );
+
+	$phpcs_standards_arr = explode(
+		',',
+		$result
+	);
+
+	unset( $result );
+
+	return $phpcs_standards_arr;
+}
+
+/*
  * Ask PHPCS for a list of all sniffs that are active
  * in the specified standard. Returns with an array
  * of active sniffs.
@@ -779,6 +906,18 @@ function vipgoci_phpcs_get_sniffs_for_standard(
 			'phpcs-standard'	=> $phpcs_standard,
 		)
 	);
+
+	/*
+	 * If array. convert to string.
+	 */
+	if ( is_array(
+		$phpcs_standard
+	) ) {
+		$phpcs_standard = join(
+			',',
+			$phpcs_standard
+		);
+	}
 
 	/*
 	 * Run PHPCS from the shell, making sure we escape everything.
@@ -886,21 +1025,34 @@ function vipgoci_phpcs_validate_sniffs_in_options_and_report(
 	 * Get sniffs that are part of
 	 * the PHPCS standard specified.
 	 */
-	$phpcs_sniffs_valid = vipgoci_phpcs_get_sniffs_for_standard(
+	$phpcs_sniffs_valid_for_selected_standards = vipgoci_phpcs_get_sniffs_for_standard(
 		$options['phpcs-path'],
 		$options['phpcs-standard']
 	);
 
 	/*
+	 * Get all valid sniffs for all standards.
+	 */
+	$all_standards_arr = vipgoci_phpcs_get_all_standards(
+		$options['phpcs-path']
+	);
+
+	$phpcs_sniffs_valid_for_all_standards = vipgoci_phpcs_get_sniffs_for_standard(
+		$options['phpcs-path'],
+		$all_standards_arr
+	);
+
+	/*
 	 * Create array of invalid sniffs --
 	 * sniffs that are specified in options
-	 * but are not part of the standards available.
+	 * but are not part of the currently specified
+	 * standard.
 	 *
 	 * Normalise and sort the results.
  	 */
 	$phpcs_sniffs_exclude_invalid = array_diff(
 		$options['phpcs-sniffs-exclude'],
-		$phpcs_sniffs_valid
+		$phpcs_sniffs_valid_for_selected_standards
 	);
 
 	asort(
@@ -911,9 +1063,14 @@ function vipgoci_phpcs_validate_sniffs_in_options_and_report(
 		$phpcs_sniffs_exclude_invalid
 	);
 
+	/*
+	 * Get an array of invalid sniffs -- sniffs
+	 * that are not part of any of the standards
+	 * available.
+	 */
 	$phpcs_sniffs_include_invalid = array_diff(
 		$options['phpcs-sniffs-include'],
-		$phpcs_sniffs_valid
+		$phpcs_sniffs_valid_for_all_standards
 	);
 
 	asort(
@@ -928,9 +1085,10 @@ function vipgoci_phpcs_validate_sniffs_in_options_and_report(
 	vipgoci_log(
 		'Got valid PHPCS sniffs, calculated invalid PHPCS sniffs',
 		array(
-			'phpcs-sniffs-valid' 		=> $phpcs_sniffs_valid,
-			'phpcs-sniffs-exclude-invalid'	=> $phpcs_sniffs_exclude_invalid,
-			'phpcs-sniffs-include-invalid'	=> $phpcs_sniffs_include_invalid,
+			'phpcs-sniffs-valid-for-selected-standards' 	=> $phpcs_sniffs_valid_for_selected_standards,
+			'phpcs-sniffs-valid-for-all-standards'		=> $phpcs_sniffs_valid_for_all_standards,
+			'phpcs-sniffs-exclude-invalid'			=> $phpcs_sniffs_exclude_invalid,
+			'phpcs-sniffs-include-invalid'			=> $phpcs_sniffs_include_invalid,
 		),
 		2
 	);
@@ -988,7 +1146,7 @@ function vipgoci_phpcs_validate_sniffs_in_options_and_report(
 		if ( ! empty( $phpcs_sniffs_include_invalid ) ) {
 			$options['phpcs-sniffs-include'] = array_intersect(
 				$options['phpcs-sniffs-include'],
-				$phpcs_sniffs_valid
+				$phpcs_sniffs_valid_for_all_standards
 			);
 
 			$options['phpcs-sniffs-include'] = array_values(
@@ -999,7 +1157,7 @@ function vipgoci_phpcs_validate_sniffs_in_options_and_report(
 		if ( ! empty( $phpcs_sniffs_exclude_invalid ) ) {
 			$options['phpcs-sniffs-exclude'] = array_intersect(
 				$options['phpcs-sniffs-exclude'],
-				$phpcs_sniffs_valid
+				$phpcs_sniffs_valid_for_selected_standards
 			);
 
 			$options['phpcs-sniffs-exclude'] = array_values(
@@ -1077,6 +1235,35 @@ function vipgoci_phpcs_validate_sniffs_in_options_and_report(
 		);
 	}
 
+	/* 
+	 * Switch to new standard: Write new standard
+	 * to a temporary file, then switch to using that.
+	 */
+
+	if ( ! empty( $options['phpcs-sniffs-include'] ) ) {
+		$new_standard_file = vipgoci_save_temp_file(
+			'vipgoci-phpcs-standard-',
+			'xml',
+			''
+		);
+			
+		vipgoci_phpcs_write_xml_standard_file(
+			$new_standard_file,
+			$options['phpcs-standard'],
+			$options['phpcs-sniffs-include']
+		);
+
+		$old_phpcs_standard = $options['phpcs-standard'];
+		$options['phpcs-standard'] = $new_standard_file;
+
+		vipgoci_log(
+			'As PHPCS sniffs are being included that are outside of the PHPCS standard specified, we switched to a new PHPCS standard',
+			array(
+				'old-phpcs-standard'	=> $old_phpcs_standard,
+				'phpcs-standard'	=> $new_standard_file,
+			)
+		);
+	}
 
 	vipgoci_log(
 		'Validated sniffs provided in options',
@@ -1090,6 +1277,4 @@ function vipgoci_phpcs_validate_sniffs_in_options_and_report(
 			'phpcs-sniffs-excluded-and-included'	=> $phpcs_sniffs_excluded_and_included,
 		)
 	);
-
-	sleep(15);
 }
