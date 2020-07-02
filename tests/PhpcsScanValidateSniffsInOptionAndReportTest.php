@@ -12,7 +12,16 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 		'phpcs-standard'
 			=> null,
 
-		'phpcs-validate-sniffs-and-report-commit'
+		'phpcs-validate-sniffs-and-report-include-commit'
+			=> null,
+
+		'phpcs-validate-sniffs-and-report-include-invalid'
+			=> null,
+
+		'phpcs-validate-sniffs-and-report-include-valid'
+			=> null,
+
+		'phpcs-validate-sniffs-and-report-exclude-commit'
 			=> null,
 
 		'phpcs-validate-sniffs-and-report-exclude-invalid'
@@ -57,10 +66,15 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 
 		$this->options['branches-ignore'] = array();
 
+		$this->options['phpcs-sniffs-include'] = array();
+		$this->options['phpcs-sniffs-exclude'] = array();
+
 		foreach(
 			array(
+				'phpcs-validate-sniffs-and-report-include-valid',
+				'phpcs-validate-sniffs-and-report-include-invalid',
 				'phpcs-validate-sniffs-and-report-exclude-valid',
-				'phpcs-validate-sniffs-and-report-exclude-invalid'
+				'phpcs-validate-sniffs-and-report-exclude-invalid',
 			) as $array_key
 		) {
 			$this->options[ $array_key ] = explode(
@@ -69,11 +83,16 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 			);
 		}
 
+		$this->options['phpcs-validate-sniffs-and-report-include-valid-and-invalid'] = array_merge(
+			$this->options['phpcs-validate-sniffs-and-report-include-valid'],
+			$this->options['phpcs-validate-sniffs-and-report-include-invalid']
+		);
+	
 		$this->options['phpcs-validate-sniffs-and-report-exclude-valid-and-invalid'] = array_merge(
 			$this->options['phpcs-validate-sniffs-and-report-exclude-valid'],
 			$this->options['phpcs-validate-sniffs-and-report-exclude-invalid']
 		);
-	
+
 		/*
 		 * Get info about token holder.
 		 */
@@ -100,7 +119,7 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_phpcs_validate_sniffs_in_options_and_report
 	 */
-	public function testPhpcsValidateSniffsWithErrors() {
+	public function testPhpcsValidateIncludeSniffsWithErrors() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array(),
@@ -112,7 +131,248 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 		}
 
 		$this->options['commit'] =
-			$this->options['phpcs-validate-sniffs-and-report-commit'];
+			$this->options['phpcs-validate-sniffs-and-report-include-commit'];
+
+		$this->options['phpcs-sniffs-include'] =
+			$this->options['phpcs-validate-sniffs-and-report-include-valid-and-invalid'];
+
+		/*
+		 * Begin with getting PRs implicated,
+		 * check if we have at least one.
+		 */
+		vipgoci_unittests_output_suppress();
+
+		$prs_implicated = vipgoci_github_prs_implicated(
+			$this->options['repo-owner'],
+			$this->options['repo-name'],
+			$this->options['commit'],
+			$this->options['github-token'],
+			$this->options['branches-ignore']
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		$this->assertGreaterThanOrEqual(
+			1,
+			count( $prs_implicated )
+		);
+
+		/*
+		 * For each Pull-Request, check
+		 * that it has no comments.
+		 */
+		foreach( $prs_implicated as $pr_item ) {
+			$pr_comments = $this->_getPrGenericComments(
+				$pr_item->number
+			);
+
+			$this->assertEquals(
+				0,
+				count( array_keys( $pr_comments ) )
+			);
+		}
+
+		/*
+		 * Run sniff validation and report --
+		 * it should post a generic comment.
+		 */
+
+		vipgoci_unittests_output_suppress();
+
+		vipgoci_phpcs_validate_sniffs_in_options_and_report(
+			$this->options
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		/*
+		 * For each Pull-Request implicated,
+		 * there should be at least one generic
+		 * comment about invalid sniffs. Check
+		 * those are in place and remove.
+		 */
+
+		$this->assertGreaterThanOrEqual(
+			1,
+			count( $prs_implicated )
+		);
+
+		foreach( $prs_implicated as $pr_item ) {
+			$pr_comments = $this->_getPrGenericComments(
+				$pr_item->number
+			);
+
+			$this->assertGreaterThanOrEqual(
+				1,
+				count( array_keys( $pr_comments ) )
+			);
+
+			$removed_comments = 0;
+
+			foreach ( $pr_comments as $pr_comment ) {
+				// Make sure it is from the current token holder
+				if ( $pr_comment->user->login !== $this->current_user_info->login ) {
+					continue;
+				}
+
+				// Check if the comment is about invalid sniffs
+				if ( strpos(
+					$pr_comment->body,
+					VIPGOCI_PHPCS_INVALID_SNIFFS
+				) !== 0 ) {
+					continue;
+				}
+
+				// Check if at least one invalid sniff-name is found in the comment
+				if ( strpos(
+					$pr_comment->body,
+					$this->options['phpcs-validate-sniffs-and-report-include-invalid'][0]
+				) === false ) {
+					continue;
+				}
+
+
+				vipgoci_unittests_output_suppress();
+
+				// Remove comment, submitted by us, is comment about invalid sniffs.
+				vipgoci_github_pr_generic_comment_delete(
+					$this->options['repo-owner'],
+					$this->options['repo-name'],
+					$this->options['github-token'],
+					$pr_comment->id
+				);
+
+				vipgoci_unittests_output_unsuppress();
+
+				$removed_comments++;
+			}
+
+			// Make sure we removed one comment
+			$this->assertEquals(
+				1,
+				$removed_comments
+			);
+		}
+
+		$this->assertEquals(
+			$this->options['phpcs-validate-sniffs-and-report-include-valid'],
+			$this->options['phpcs-sniffs-include']
+		);
+	}
+
+	/**
+	 * @covers ::vipgoci_phpcs_validate_sniffs_in_options_and_report
+	 */
+	public function testPhpcsValidateIncludeSniffsNoErrors() {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array(),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
+		$this->options['commit'] =
+			$this->options['phpcs-validate-sniffs-and-report-include-commit'];
+
+		$this->options['phpcs-sniffs-include'] =
+			$this->options['phpcs-validate-sniffs-and-report-include-valid'];
+
+		/*
+		 * Begin with getting PRs implicated,
+		 * check if we have at least one.
+		 */
+		vipgoci_unittests_output_suppress();
+
+		$prs_implicated = vipgoci_github_prs_implicated(
+			$this->options['repo-owner'],
+			$this->options['repo-name'],
+			$this->options['commit'],
+			$this->options['github-token'],
+			$this->options['branches-ignore']
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		$this->assertGreaterThanOrEqual(
+			1,
+			count( $prs_implicated )
+		);
+
+		/*
+		 * For each Pull-Request, check
+		 * that it has no comments.
+		 */
+		foreach( $prs_implicated as $pr_item ) {
+			$pr_comments = $this->_getPrGenericComments(
+				$pr_item->number
+			);
+
+			$this->assertEquals(
+				0,
+				count( array_keys( $pr_comments ) )
+			);
+		}
+
+		/*
+		 * Run sniff validation and report --
+		 * it should post a generic comment.
+		 */
+
+		vipgoci_unittests_output_suppress();
+
+		vipgoci_phpcs_validate_sniffs_in_options_and_report(
+			$this->options
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		/*
+		 * For each Pull-Request implicated,
+		 * there should be no generic comments
+		 * comment about invalid sniffs.
+		 */
+
+		$this->assertGreaterThanOrEqual(
+			1,
+			count( $prs_implicated )
+		);
+
+		foreach( $prs_implicated as $pr_item ) {
+			$pr_comments = $this->_getPrGenericComments(
+				$pr_item->number
+			);
+
+			$this->assertEquals(
+				0,
+				count( array_keys( $pr_comments ) )
+			);
+		}
+
+		$this->assertEquals(
+			$this->options['phpcs-validate-sniffs-and-report-include-valid'],
+			$this->options['phpcs-sniffs-include']
+		);
+	}
+
+	/**
+	 * @covers ::vipgoci_phpcs_validate_sniffs_in_options_and_report
+	 */
+	public function testPhpcsValidateExcludeSniffsWithErrors() {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array(),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
+		$this->options['commit'] =
+			$this->options['phpcs-validate-sniffs-and-report-exclude-commit'];
 
 		$this->options['phpcs-sniffs-exclude'] =
 			$this->options['phpcs-validate-sniffs-and-report-exclude-valid-and-invalid'];
@@ -244,7 +504,7 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_phpcs_validate_sniffs_in_options_and_report
 	 */
-	public function testPhpcsValidateSniffsNoErrors() {
+	public function testPhpcsValidateExcludeSniffsNoErrors() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array(),
@@ -256,7 +516,7 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 		}
 
 		$this->options['commit'] =
-			$this->options['phpcs-validate-sniffs-and-report-commit'];
+			$this->options['phpcs-validate-sniffs-and-report-exclude-commit'];
 
 		$this->options['phpcs-sniffs-exclude'] =
 			$this->options['phpcs-validate-sniffs-and-report-exclude-valid'];
