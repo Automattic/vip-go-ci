@@ -1125,10 +1125,10 @@ function vipgoci_phpcs_validate_sniffs_in_options_and_report(
 		vipgoci_log(
 			'Dynamically removing invalid PHPCS sniffs from options',
 			array(
-				'phpcs-sniffs-exclude'		=> $options['phpcs-sniffs-exclude'],
-				'phpcs-sniffs-exclude-invalid'	=> $phpcs_sniffs_exclude_invalid,
 				'phpcs-sniffs-include'		=> $options['phpcs-sniffs-include'],
 				'phpcs-sniffs-include-invalid'	=> $phpcs_sniffs_include_invalid,
+				'phpcs-sniffs-exclude'		=> $options['phpcs-sniffs-exclude'],
+				'phpcs-sniffs-exclude-invalid'	=> $phpcs_sniffs_exclude_invalid,
 			)
 		);
 
@@ -1229,10 +1229,10 @@ function vipgoci_phpcs_validate_sniffs_in_options_and_report(
 		array(
 			'phpcs-path'				=> $options['phpcs-path'],
 			'phpcs-standard'			=> $options['phpcs-standard'],
-			'phpcs-sniffs-exclude-after'		=> $options['phpcs-sniffs-exclude'],
-			'phpcs-sniffs-exclude-invalid'		=> $phpcs_sniffs_exclude_invalid,
 			'phpcs-sniffs-include-after'		=> $options['phpcs-sniffs-include'],
 			'phpcs-sniffs-include-invalid'		=> $phpcs_sniffs_include_invalid,
+			'phpcs-sniffs-exclude-after'		=> $options['phpcs-sniffs-exclude'],
+			'phpcs-sniffs-exclude-invalid'		=> $phpcs_sniffs_exclude_invalid,
 			'phpcs-sniffs-excluded-and-included'	=> $phpcs_sniffs_excluded_and_included,
 		)
 	);
