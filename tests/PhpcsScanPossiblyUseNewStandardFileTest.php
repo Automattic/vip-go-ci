@@ -33,7 +33,7 @@ final class PhpcsPossiblyUseNewStandardFileTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_phpcs_possibly_use_new_standard_file
 	 */
-	public function testDoNotUseNewstandardFileTest () {
+	public function testDoNotUseNewstandardFileTest() {
 		$this->assertEmpty(
 			$this->options['phpcs-sniffs-include']
 		);
@@ -55,7 +55,7 @@ final class PhpcsPossiblyUseNewStandardFileTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_phpcs_possibly_use_new_standard_file
 	 */
-	public function testDoUseNewstandardFileTest () {
+	public function testDoUseNewstandardFileTest() {
 		$this->options['phpcs-sniffs-include'] = array(
 			'WordPress.DB.RestrictedFunctions'
 		);
