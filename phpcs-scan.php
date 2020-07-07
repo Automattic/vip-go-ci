@@ -93,6 +93,9 @@ function vipgoci_phpcs_do_scan(
 
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'phpcs_cli' );
 
+	/* Remove linebreak PHPCS possibly adds */
+	$result = rtrim( $result, "\n" );
+
 	return $result;
 }
 

@@ -6,23 +6,29 @@
 # https://github.com/Automattic/vip-go-ci/#updating-tools-initsh-with-new-versions
 #
 
-export PHP_CODESNIFFER_VER="3.3.2"
-export PHP_CODESNIFFER_SHA1SUM="1091af07e902c2fcc13730dc51d44cbf99b7dcb9"
+# https://github.com/squizlabs/PHP_CodeSniffer/releases
+export PHP_CODESNIFFER_VER="3.5.5"
+export PHP_CODESNIFFER_SHA1SUM="0f51879e5caa7147ef47f61f7b3ecdc2d088422a"
 
-export WP_CODING_STANDARDS_VER="2.1.1"
-export WP_CODING_STANDARDS_SHA1SUM="d35ec268531453cbf2078c57356e38c5f8936e87";
+# https://github.com/WordPress/WordPress-Coding-Standards/releases
+export WP_CODING_STANDARDS_VER="2.3.0"
+export WP_CODING_STANDARDS_SHA1SUM="c8161d77fcf63bdeaa3e8e6aa36bc1936b469070";
 
-export VIP_CODING_STANDARDS_VER="2.0.0"
-export VIP_CODING_STANDARDS_SHA1SUM="3dc5a0e27625b0a1b0782bc790186ab7c13283ae";
+# https://github.com/automattic/vip-coding-standards/releases
+export VIP_CODING_STANDARDS_VER="2.1.0"
+export VIP_CODING_STANDARDS_SHA1SUM="2978080028a7cacfee37a9ea914913d3c2c6705a";
 
-export PHP_COMPATIBILITY_VER="9.3.1"
-export PHP_COMPATIBILITY_SHA1SUM="81ab7d465b90658863b6dbc0c9ef3dc293b7cbbe";
+# https://github.com/phpcompatibility/phpcompatibility/releases
+export PHP_COMPATIBILITY_VER="9.3.5"
+export PHP_COMPATIBILITY_SHA1SUM="880d017ff6c3b64fda2c569bc79e589cc405e9b8";
 
-export PHP_COMPATIBILITY_WP_VER="2.0.0"
-export PHP_COMPATIBILITY_WP_SHA1SUM="e898c99749bf2a61ef21995329a222b279fab471"
+# https://github.com/phpcompatibility/phpcompatibilitywp/releases
+export PHP_COMPATIBILITY_WP_VER="2.1.0"
+export PHP_COMPATIBILITY_WP_SHA1SUM="ec00f76bd61dba1b388a11bc68e17f7183c6382d"
 
-export PHP_COMPATIBILITY_PARAGONIE_VER="1.0.1"
-export PHP_COMPATIBILITY_PARAGONIE_SHA1SUM="28db0909de7bd505755964537b36a1515c739251"
+# https://github.com/phpcompatibility/phpcompatibilityparagonie/releases
+export PHP_COMPATIBILITY_PARAGONIE_VER="1.3.0"
+export PHP_COMPATIBILITY_PARAGONIE_SHA1SUM="0cd2e1a4e90dde004db05e6cdb396c227c62d109"
 
 export VIP_GO_SVG_SANITIZER_VER="0.9.4"
 export VIP_GO_SVG_SANITIZER_SHA1SUM="34fdca27c90828c8866a45c7b548ebc24018ffe2"
