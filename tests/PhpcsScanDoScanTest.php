@@ -132,6 +132,21 @@ final class PhpcsScanDoScanTest extends TestCase {
 			$temp_file_contents
 		);
 
+		/*
+		 * Check if the sniff to include
+		 * is not already part of the current
+		 * standard.
+		 */
+
+		$this->assertFalse(
+			array_search(
+				$this->options_phpcs['phpcs-sniffs-include'],
+				vipgoci_phpcs_get_sniffs_for_standard(
+					$this->options_phpcs['phpcs-path'],
+					$this->options_phpcs['phpcs-standard']
+				)
+			)
+		);
 
 		/*
 		 * Write new XML standard file and
