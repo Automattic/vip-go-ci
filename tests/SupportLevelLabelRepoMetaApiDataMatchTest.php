@@ -29,11 +29,11 @@ final class SupportLevelLabelRepoMetaApiDataMatchTest extends TestCase {
 		);
 
 		$this->options['data_match1'] = array(
-			'__invalid_field'	=> '__somethinginvalid',
+			'__invalid_field'	=> array( '__somethinginvalid' ),
 		);
 
 		$this->options['data_match2'] = array(
-			'support_tier'		=> $this->options['support-tier-name'],
+			'support_tier'		=> array( $this->options['support-tier-name'] ),
 		);
 
 		$this->options['branches-ignore'] = array();

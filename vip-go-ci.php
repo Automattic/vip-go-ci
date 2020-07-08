@@ -163,6 +163,7 @@ function vipgoci_run() {
 			'phpcs-path:',
 			'phpcs-standard:',
 			'phpcs-severity:',
+			'phpcs-sniffs-include:',
 			'phpcs-sniffs-exclude:',
 			'phpcs-runtime-set:',
 			'phpcs-skip-scanning-via-labels-allowed:',
@@ -309,6 +310,8 @@ function vipgoci_run() {
 			"\t" . '--phpcs-path=FILE              Full path to PHPCS script' . PHP_EOL .
 			"\t" . '--phpcs-standard=STRING        Specify which PHPCS standard to use' . PHP_EOL .
 			"\t" . '--phpcs-severity=NUMBER        Specify severity for PHPCS' . PHP_EOL .
+			"\t" . '--phpcs-sniffs-include=ARRAY   Specify which sniffs to include when PHPCS scanning, ' . PHP_EOL .
+			"\t" . '                               should be an array with items separated by commas. ' . PHP_EOL .
 			"\t" . '--phpcs-sniffs-exclude=ARRAY   Specify which sniffs to exclude from PHPCS scanning, ' . PHP_EOL .
 			"\t" . '                               should be an array with items separated by commas. ' . PHP_EOL .
 			"\t" . '--phpcs-runtime-set=STRING     Specify --runtime-set values passed on to PHPCS' . PHP_EOL .
@@ -434,17 +437,42 @@ function vipgoci_run() {
 	 */
 
 	if ( empty( $options['phpcs-standard'] ) ) {
-		$options['phpcs-standard'] = 'WordPress-VIP-Go';
+		$options['phpcs-standard'] = array(
+			'WordPress-VIP-Go'
+		);
 	}
 
-	$options['phpcs-standard'] = trim(
-		$options['phpcs-standard']
-	);
+	else {
+		vipgoci_option_array_handle(
+			$options,
+			'phpcs-standard',
+			array(),
+			array(),
+			',',
+			false
+		);
+	}
+
 
 	/*
-	 * Process --phpcs-sniffs-exclude -- expected to be
-	 * an array.
+	 * Process --phpcs-sniffs-include and --phpcs-sniffs-exclude
+	 * -- both expected to be an array.
 	 */
+	if ( empty( $options['phpcs-sniffs-include'] ) ) {
+		$options['phpcs-sniffs-include'] = array();
+	}
+
+	else {
+		vipgoci_option_array_handle(
+			$options,
+			'phpcs-sniffs-include',
+			array(),
+			array(),
+			',',
+			false
+		);
+	}
+
 	if ( empty( $options['phpcs-sniffs-exclude'] ) ) {
 		$options['phpcs-sniffs-exclude'] = array();
 	}
@@ -459,7 +487,6 @@ function vipgoci_run() {
 			false
 		);
 	}
-
 	/*
 	 * Process --phpcs-runtime-set -- expected to be an
 	 * array of values.
@@ -752,6 +779,9 @@ function vipgoci_run() {
 		);
 	}
 
+	/* This variable is not configurable, is internal only */
+	$options['phpcs-standard-file'] = false;
+
 
 	/*
 	 * Should we auto-approve Pull-Requests when
@@ -995,6 +1025,7 @@ function vipgoci_run() {
 		'repo-options-allowed',
 		array(
 			'phpcs-severity',
+			'phpcs-sniffs-include',
 			'phpcs-sniffs-exclude',
 			'post-generic-pr-support-comments',
 		)
@@ -1256,6 +1287,12 @@ function vipgoci_run() {
 				'valid_values'	=> array( true, false ),
 			),
 
+			'phpcs-sniffs-include' => array(
+				'type'		=> 'array',
+				'append'	=> true,
+				'valid_values'	=> null,
+			),
+
 			'phpcs-sniffs-exclude' => array(
 				'type'		=> 'array',
 				'append'	=> true,
@@ -1432,6 +1469,7 @@ function vipgoci_run() {
 			VIPGOCI_GITHUB_ERROR_STR,
 			VIPGOCI_REVIEW_COMMENTS_TOTAL_MAX,
 			VIPGOCI_PHPCS_INVALID_SNIFFS,
+			VIPGOCI_PHPCS_DUPLICATE_SNIFFS,
 		),
 		$options['dry-run']
 	);
@@ -1463,6 +1501,14 @@ function vipgoci_run() {
 	 */
 
 	vipgoci_phpcs_validate_sniffs_in_options_and_report(
+		$options
+	);
+
+	/*
+	 * Set to use new PHPCS standard if needed.
+	 */
+
+	vipgoci_phpcs_possibly_use_new_standard_file(
 		$options
 	);
 
@@ -1761,7 +1807,6 @@ function vipgoci_run() {
 	 * actions should be performed after this point.
 	 */
 
-
 	/*
 	 * Send out to IRC API any alerts
 	 * that are queued up.
@@ -1846,6 +1891,22 @@ function vipgoci_run() {
 				)
 			),
 			$counter_report
+		);
+	}
+
+	/*
+	 * Remove temporary PHPCS XML standard
+	 * file if used.
+	 */
+
+	if (
+		( true === $options['phpcs-standard-file'] ) &&
+		( file_exists(
+			$options['phpcs-standard'][0]
+		) )
+	) {
+		unlink(
+			$options['phpcs-standard'][0]
 		);
 	}
 

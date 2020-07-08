@@ -34,13 +34,32 @@ define( 'VIPGOCI_REVIEW_COMMENTS_TOTAL_MAX',
 
 define( 'VIPGOCI_PHPCS_INVALID_SNIFFS',
 					'Invalid PHPCS sniff(s) specified in ' .
-					'options or options file (option ' .
-					'`phpcs-sniffs-exclude`). Those have ' .
+					'options or options file. Those have ' .
 					'been ignored temporarily. Please ' .
 					'update the options so that scanning ' .
-					' can continue as expected. ' .
-					'<br /><br /> ' .
-					'The sniffs are: ' );
+					'can continue as expected. ' );
+
+define( 'VIPGOCI_PHPCS_INVALID_SNIFFS_CONT',
+					'<br />' .
+					PHP_EOL . PHP_EOL .
+					'* Option name: `%s`' . PHP_EOL .
+					'* Invalid sniff(s): `%s`' . PHP_EOL
+					);
+
+define( 'VIPGOCI_PHPCS_DUPLICATE_SNIFFS',
+					'Sniff(s) has been found in duplicate in ' .
+					'options or options file. Those have ' .
+					'been ignored temporarily. Please ' .
+					'update the options so that scanning ' .
+					'can continue as expected. ' .
+					'<br /> ');
+
+define( 'VIPGOCI_PHPCS_DUPLICATE_SNIFFS_CONT',
+					'<br />' .
+					PHP_EOL . PHP_EOL .
+					'* Options: `%s` and `%s`' . PHP_EOL .
+					'* Sniff(s) in duplicate: `%s`' . PHP_EOL .
+					'<br />' );
 
 /*
  * Define exit-codes
