@@ -166,7 +166,8 @@ function vipgoci_repo_meta_api_data_fetch(
  */
 function vipgoci_repo_meta_api_data_match(
 	$options,
-	$option_name
+	$option_name,
+	&$option_no_match
 ) {
 	if (
 		( empty( $option_name ) ) ||
@@ -223,24 +224,39 @@ function vipgoci_repo_meta_api_data_match(
 		return false;
 	}
 
-	$found_fields = vipgoci_find_fields_in_array(
-		$options[ $option_name ],
-		$repo_meta_data['data']
-	);
-
 	/*
-	 * If we find one data-item that had
-	 * all fields matching the criteria given,
-	 * we return true.
+	 * Loop through possible match in the
+	 * option array -- bail out once we
+	 * find a match.
 	 */
-	$ret_val = false;
-
 	foreach(
-		$found_fields as
-			$found_field_item_key => $found_field_item_value
+		array_keys( $options[ $option_name ] ) as
+			$option_name_key_no
 	) {
-		if ( $found_field_item_value === true ) {
-			$ret_val = true;
+		$found_fields = vipgoci_find_fields_in_array(
+			$options[ $option_name ][ $option_name_key_no ],
+			$repo_meta_data['data']
+		);
+	
+		/*
+		 * If we find one data-item that had
+		 * all fields matching the criteria given,
+		 * we return true.
+		 */
+		$ret_val = false;
+
+		foreach(
+			$found_fields as
+				$found_field_item_key => $found_field_item_value
+		) {
+			if ( $found_field_item_value === true ) {
+				$ret_val = true;
+			}
+		}
+
+		if ( true === $ret_val ) {
+			$option_no_match = $option_name_key_no;
+			break;
 		}
 	}
 
@@ -250,6 +266,7 @@ function vipgoci_repo_meta_api_data_match(
 			'found_fields_in_repo_meta_data'	=> $found_fields,
 			'repo_meta_data_item_cnt'		=> count( $repo_meta_data['data'] ),
 			'ret_val'				=> $ret_val,
+			'option_no_match'			=> $option_no_match,
 		)
 	);
 
