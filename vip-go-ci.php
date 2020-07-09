@@ -806,27 +806,28 @@ function vipgoci_run() {
 
 	vipgoci_option_bool_handle( $options, 'post-generic-pr-support-comments', 'false' );
 
-	vipgoci_option_bool_handle( $options, 'post-generic-pr-support-comments-on-drafts', 'false' );
-
-	if ( ! empty( $options['post-generic-pr-support-comments-string'] ) ) {
-		$options['post-generic-pr-support-comments-string'] =
-			trim(
-				$options['post-generic-pr-support-comments-string']
-			);
-	}
-
-	vipgoci_option_array_handle(
+	/*
+	 * Submitting comments on draft PRs
+	 */
+	vipgoci_option_generic_support_comments_process(
 		$options,
-		'post-generic-pr-support-comments-branches',
-		array()
+		'post-generic-pr-support-comments-on-drafts',
+		'boolean',
+		'false',
+	);		
+
+	vipgoci_option_generic_support_comments_process(
+		$options,
+		'post-generic-pr-support-comments-string',
+		'string',
+		''
 	);
 
-	vipgoci_option_array_handle(
+	vipgoci_option_generic_support_comments_process(
 		$options,
-		'post-generic-pr-support-comments-repo-meta-match',
-		array(),
-		null,
-		'|||'
+		'post-generic-pr-support-comments-branches',
+		'string',
+		''
 	);
 
 	vipgoci_option_generic_support_comments_match(
@@ -996,6 +997,61 @@ function vipgoci_run() {
 	 * Note: Parameters should not be set after
 	 * this point.
 	 */
+
+	/*
+	 * Check if options relating to Generic Support Messages
+	 * (--post-generic-pr-support-comments*) are consistent.
+	 */
+
+	if (
+		(
+			( empty( $options['post-generic-pr-support-comments-repo-meta-match'] ) ) &&
+			(
+				( count( $options['post-generic-pr-support-comments-on-drafts'] ) > 1 ) ||
+				( count( $options['post-generic-pr-support-comments-string'] ) > 1 ) ||
+				( count( $options['post-generic-pr-support-comments-branches'] ) > 1 )
+			)
+		)
+		||
+		(
+			(
+				count( $options['post-generic-pr-support-comments-repo-meta-match'] ) !==
+				count( $options['post-generic-pr-support-comments-on-drafts'] )
+			)
+			||
+			(
+				count( $options['post-generic-pr-support-comments-on-drafts'] ) !==
+				count( $options['post-generic-pr-support-comments-string'] )
+			)
+			||
+			(
+				count( $options['post-generic-pr-support-comments-string'] ) !==
+				count( $options['post-generic-pr-support-comments-branches'] )
+			)
+		)
+	) {
+		vipgoci_sysexit(
+			'Unable to process post-generic-pr-support-comments related options, ' .
+				'as one or more than one string, branch or draft is specified, but ' .
+				'not enough repo-meta-match options are specified to determine which ' .
+				'string to post, or option values are not consistently equal in number',
+			array(
+				'post-generic-pr-support-comments-on-drafts' =>
+					$options['post-generic-pr-support-comments-on-drafts'],
+
+				'post-generic-pr-support-comments-string' =>
+					$options['post-generic-pr-support-comments-string'],
+
+				'post-generic-pr-support-comments-branches' =>
+					$options['post-generic-pr-support-comments-branches'],
+
+				'post-generic-pr-support-comments-repo-meta-match' =>
+					$options['post-generic-pr-support-comments-repo-meta-match'],				
+			)
+		);
+	}
+
+	// FIXME: Check for inconsistent keys
 
 	/*
 	 * Check if the --output parameter looks
