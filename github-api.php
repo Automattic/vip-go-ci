@@ -1891,21 +1891,36 @@ function vipgoci_github_pr_generic_support_comment_submit(
 	 * matches the field value given here.
 	 */
 	if ( ! empty( $options['post-generic-pr-support-comments-repo-meta-match'] ) ) {
+		$option_key_no_match = null;
+
 		$repo_meta_api_data_match = vipgoci_repo_meta_api_data_match(
 			$options,
 			'post-generic-pr-support-comments-repo-meta-match',
-			false
+			$option_key_no_match
 		);
 
 		if ( true !== $repo_meta_api_data_match ) {
 			vipgoci_log(
-				'Not posting generic support comment, as repo-meta API field-value did not match a given criteria',
+				'Not posting generic support comment, as repo-meta API field-value did not match given criteria',
 				array(
 				)
 			);
 
 			return;
 		}
+	}
+
+	else {
+		/*
+		 * If matching is not configured, we post
+		 * first message we can find.
+		 */
+
+		$tmp_generic_support_msgs_keys = array_keys(
+			$options['post-generic-pr-support-comments-string']
+		);
+
+		$option_key_no_match = $tmp_generic_support_msgs_keys[0];
 	}
 
 
@@ -1919,13 +1934,13 @@ function vipgoci_github_pr_generic_support_comment_submit(
 		if (
 			( in_array(
 				'any',
-				$options['post-generic-pr-support-comments-branches'],
+				$options['post-generic-pr-support-comments-branches'][ $option_key_no_match ],
 				true
 			) === false )
 			&&
 			( ( in_array(
 				$pr_item->base->ref,
-				$options['post-generic-pr-support-comments-branches'],
+				$options['post-generic-pr-support-comments-branches'][ $option_key_no_match ],
 				true
 			) === false ) )
 		) {
@@ -1937,7 +1952,7 @@ function vipgoci_github_pr_generic_support_comment_submit(
 					'pr_number'	=> $pr_item->number,
 					'pr_base_ref'	=> $pr_item->base->ref,
 					'post-generic-pr-support-comments-branches' =>
-						$options['post-generic-pr-support-comments-branches'],
+						$options['post-generic-pr-support-comments-branches'][ $option_key_no_match ],
 				)
 			);
 
@@ -1949,7 +1964,7 @@ function vipgoci_github_pr_generic_support_comment_submit(
 		 * not configured to do so.
 		 */
 		if (
-			( false === $options['post-generic-pr-support-comments-on-drafts'] ) &&
+			( false === $options['post-generic-pr-support-comments-on-drafts'][ $option_key_no_match ] ) &&
 			( true === $pr_item->draft )
 		) {
 			vipgoci_log(
@@ -1960,7 +1975,7 @@ function vipgoci_github_pr_generic_support_comment_submit(
 					'pr_number'	=> $pr_item->number,
 					'pr_base_ref'	=> $pr_item->base->ref,
 					'post-generic-pr-support-comments-on-drafts' =>
-						$options['post-generic-pr-support-comments-on-drafts'],
+						$options['post-generic-pr-support-comments-on-drafts'][ $option_key_no_match ],
 				)
 		);
 
@@ -1989,7 +2004,7 @@ function vipgoci_github_pr_generic_support_comment_submit(
 
 			if ( strpos(
 				$existing_comment_item->body,
-				$options['post-generic-pr-support-comments-string']
+				$options['post-generic-pr-support-comments-string'][ $option_key_no_match ]
 			) !== false ) {
 				$comment_exists_already = true;
 			}	
@@ -2014,7 +2029,7 @@ function vipgoci_github_pr_generic_support_comment_submit(
 			$options['repo-name'],
 			$options['token'],
 			$pr_item->number,
-			$options['post-generic-pr-support-comments-string']
+			$options['post-generic-pr-support-comments-string'][ $option_key_no_match ]
 		);
 	}
 }
