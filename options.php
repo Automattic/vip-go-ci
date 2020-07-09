@@ -1120,6 +1120,87 @@ function vipgoci_option_skip_folder_handle(
 }
 
 /*
+ * Process options for generic support options parameters.
+ */
+function vipgoci_option_generic_support_comments_process(
+	&$options,
+	$option_name,
+	$type = 'string',
+	$default = ''
+) {
+	if ( is_array(
+		$options[
+			$option_name
+		]
+	) ) {
+		vipgoci_sysexit(
+			'Option --' . $option_name . ' is an array, but should not be. Maybe specified twice?',
+			array(
+				'option_name'	=> $option_name,
+				'option_value'	=> $options[ $option_name ],
+			)
+		);
+	}
+
+	$options[ $option_name ] =
+		trim(
+			$options[ $option_name ]
+		);
+               
+	vipgoci_option_array_handle(
+		$options,
+		$option_name,
+		array(),
+		null,
+		'|||'
+	);
+
+	$original_option_value = $options[ $option_name ];
+	$options[ $option_name ] = array();
+
+	foreach(
+		array_values(
+			$original_option_value
+		) as $tmp_string_option
+	) {
+
+		$tmp_string_option_arr =
+			explode(
+				':',
+				$tmp_string_option,
+				2 // Max two items in array, ID and value
+			);
+
+		$tmp_key = $tmp_string_option_arr[0];
+		$tmp_value = $tmp_string_option_arr[1];
+
+		if ( 'boolean' === $type ) {
+			if ( 'true' === $tmp_value ) {
+				$tmp_value = true;
+			}
+
+			else if ( 'false' === $tmp_value ) {
+				$tmp_value = false;
+			}
+
+			else {
+				vipgoci_sysexit(
+					'Unsupported option value provided to options parameter',
+					array(
+						'option_name'		=> $option_name,
+						'option_value'		=> $original_option_value,
+						'option_value_problem'	=> $tmp_value,
+					)
+				);
+			}
+		}
+
+		$options[ $option_name ][ $tmp_key ] =
+			$tmp_value;
+	}
+}
+
+/*
  * Process options for generic support comments matching.
  *
  * Syntax of this option is:
@@ -1129,6 +1210,14 @@ function vipgoci_option_generic_support_comments_match(
 	&$options,
 	$option_name
 ) {
+	vipgoci_option_array_handle(
+		$options,
+		$option_name,
+		array(),
+		null,
+		'|||'
+	);
+
 	$raw_option_value = $options[ $option_name ];
 
 	$processed_option_value = array();
