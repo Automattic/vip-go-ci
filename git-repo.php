@@ -60,7 +60,7 @@ function vipgoci_gitrepo_ok(
 			)
 		);
 
-		exit ( 253 );
+		exit ( VIPGOCI_EXIT_USAGE_ERROR );
 
 	}
 
