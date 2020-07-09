@@ -1151,10 +1151,10 @@ function vipgoci_option_generic_support_comments_match(
 		 */
 
 		$match_with_id_arr = explode(
-				':',
-				$raw_option_value[ $i ],
-				2 // Max one ':'; any extra will be preserve
-			);
+			':',
+			$raw_option_value[ $i ],
+			2 // Max one ':'; any extra will be preserve
+		);
 
 		/* Should be only two items in the array */
 		if ( count( $match_with_id_arr ) != 2 ) {
