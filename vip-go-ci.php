@@ -58,7 +58,7 @@ function vipgoci_exit_status( $results ) {
 					['error']
 			) {
 				// Some errors were found, return non-zero
-				return 250;
+				return VIPGOCI_EXIT_CODE_ISSUES;
 			}
 		}
 
