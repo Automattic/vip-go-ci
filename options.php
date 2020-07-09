@@ -1118,3 +1118,78 @@ function vipgoci_option_skip_folder_handle(
 		]
 	);
 }
+
+/*
+ * Process options for generic support comments matching.
+ *
+ * Syntax of this option is:
+ * --post-generic-pr-support-comments-repo-meta-match="0:mykey=myvalue,foo=bar|||1:mykey2=myvalue3,aaa=bbb"
+ */
+function vipgoci_option_generic_support_comments_match(
+	&$options,
+	$option_name
+) {
+	$raw_option_value = $options[ $option_name ];
+
+	$processed_option_value = array();
+
+	/*
+	 * Loop through possible matches, separated
+	 * by "|||"
+	 */
+	for(
+		$i = 0;
+		$i < count(
+			$raw_option_value
+		);
+		$i++
+	) {
+		/*
+		 * Split each possible match by ":" --
+		 * should originally a string be something like: "0:key=value",
+		 * where the number is ID of the match.
+		 */
+
+		$match_with_id_arr = explode(
+				':',
+				$raw_option_value[ $i ],
+				2 // Max one ':'; any extra will be preserve
+			);
+
+		/* Should be only two items in the array */
+		if ( count( $match_with_id_arr ) != 2 ) {
+			continue;
+		}
+
+		$processed_option_value[
+			$match_with_id_arr[0]
+		] = array();
+
+		/*
+		 * Within each match, split by
+		 * "," -- which is an AND.
+		 */
+		$match_key_values_arr = explode(
+			',',
+			$match_with_id_arr[1]
+		);
+
+		foreach( $match_key_values_arr as $match_key_value_item ) {
+			$match_key_value_item_arr = explode(
+				'=',
+				$match_key_value_item,
+				2
+			);
+
+			$processed_option_value[
+				$match_with_id_arr[0]
+			][
+				$match_key_value_item_arr[0]
+			] = $match_key_value_item_arr[1];
+		}
+	}
+
+	$options[
+		$option_name
+	] = $processed_option_value;
+}
