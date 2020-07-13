@@ -133,6 +133,18 @@ function vipgoci_find_fields_in_array( $fields_arr, $data_arr ) {
 
 		foreach( $fields_arr as $field_name => $field_values ) {
 			if ( ! array_key_exists( $field_name, $data_arr[ $data_item_cnt ] ) ) {
+				if ( true === in_array(
+					'undefined',
+					$field_values,
+					true
+				) ) {
+					/*
+					 * If asked to match undefined fields,
+					 * count count it here.
+					 */
+					$res_arr[ $data_item_cnt ]++;
+				}
+
 				continue;
 			}
 
