@@ -766,7 +766,7 @@ function vipgoci_run() {
 
 	vipgoci_option_bool_handle( $options, 'dismissed-reviews-repost-comments', 'true' );
 
-	vipgoci_option_bool_handle( $options, 'results-comments-sort', false );
+	vipgoci_option_bool_handle( $options, 'results-comments-sort', 'false' );
 
 	if (
 		( false === $options['lint'] ) &&
