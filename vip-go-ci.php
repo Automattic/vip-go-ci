@@ -134,6 +134,7 @@ function vipgoci_run() {
 
 	$options_recognized = 
 		array(
+			'skip-execution:',
 			'env-options:',
 			'repo-owner:',
 			'repo-name:',
@@ -747,6 +748,7 @@ function vipgoci_run() {
 	/*
 	 * Handle boolean parameters
 	 */
+	vipgoci_option_bool_handle( $options, 'skip-execution', 'false' );
 
 	vipgoci_option_bool_handle( $options, 'dry-run', 'false' );
 
@@ -1277,6 +1279,11 @@ function vipgoci_run() {
 		$options,
 		VIPGOCI_OPTIONS_FILE_NAME,
 		array(
+			'skip-execution'	=> array(
+				'type'		=> 'boolean',
+				'valid_values'	=> array( true, false ),
+			),
+
 			'phpcs-severity' => array(
 				'type'		=> 'integer',
 				'valid_values'	=> array( 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ),
@@ -1338,6 +1345,18 @@ function vipgoci_run() {
 		),
 	);
 
+	/*
+	 * If asked not to scan, don't scan then.
+	 */
+	if ( true === $options['skip-execution'] ) {
+		vipgoci_sysexit(
+			'Skipping scanning entirely, as determined ' .
+				'by configuration',
+			array(
+			),
+			VIPGOCI_EXIT_NORMAL
+		);
+	}
 
 	/*
 	 * If no Pull-Requests are implicated by this commit,
