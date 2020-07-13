@@ -1125,8 +1125,7 @@ function vipgoci_option_skip_folder_handle(
 function vipgoci_option_generic_support_comments_process(
 	&$options,
 	$option_name,
-	$type = 'string',
-	$default = ''
+	$type = 'string'
 ) {
 	if ( is_array(
 		$options[
@@ -1175,12 +1174,10 @@ function vipgoci_option_generic_support_comments_process(
 		$tmp_value = $tmp_string_option_arr[1];
 
 		if ( 'boolean' === $type ) {
-			if ( 'true' === $tmp_value ) {
-				$tmp_value = true;
-			}
-
-			else if ( 'false' === $tmp_value ) {
-				$tmp_value = false;
+			if ( ( 'true' === $tmp_value ) || ( 'false' === $tmp_value ) ) {
+				$tmp_value = vipgoci_convert_string_to_type(
+					$tmp_value
+				);
 			}
 
 			else {
@@ -1193,10 +1190,23 @@ function vipgoci_option_generic_support_comments_process(
 					)
 				);
 			}
+
+			$options[ $option_name ][ $tmp_key ] =
+				$tmp_value;
 		}
 
-		$options[ $option_name ][ $tmp_key ] =
-			$tmp_value;
+		else if ('string' === $type ) {
+			$options[ $option_name ][ $tmp_key ] =
+				$tmp_value;
+		}
+
+		else if ( 'array' === $type ) {
+			if ( ! isset( $options[ $option_name ][ $tmp_key ] ) ) {
+				$options[ $option_name ][ $tmp_key ] = array();
+			}
+
+			$options[ $option_name ][ $tmp_key ][] = $tmp_value;
+		}
 	}
 }
 
@@ -1270,11 +1280,27 @@ function vipgoci_option_generic_support_comments_match(
 				2
 			);
 
+			if ( ! isset(
+				$processed_option_value[
+					$match_with_id_arr[0]
+				][
+					$match_key_value_item_arr[0]
+				]			
+			) ) {
+				$processed_option_value[
+					$match_with_id_arr[0]
+				][
+					$match_key_value_item_arr[0]
+				] = array();
+			}
+
 			$processed_option_value[
 				$match_with_id_arr[0]
 			][
 				$match_key_value_item_arr[0]
-			] = $match_key_value_item_arr[1];
+			][] = vipgoci_convert_string_to_type(
+				$match_key_value_item_arr[1]
+			);
 		}
 	}
 
