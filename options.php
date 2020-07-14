@@ -1201,11 +1201,16 @@ function vipgoci_option_generic_support_comments_process(
 		}
 
 		else if ( 'array' === $type ) {
-			if ( ! isset( $options[ $option_name ][ $tmp_key ] ) ) {
+			if ( empty( $tmp_value ) ) {
 				$options[ $option_name ][ $tmp_key ] = array();
 			}
 
-			$options[ $option_name ][ $tmp_key ][] = $tmp_value;
+			else {
+				$options[ $option_name ][ $tmp_key ] = explode(
+					',',
+					$tmp_value
+				);
+			}
 		}
 	}
 }
