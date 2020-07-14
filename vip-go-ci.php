@@ -134,7 +134,6 @@ function vipgoci_run() {
 
 	$options_recognized = 
 		array(
-			'skip-execution:',
 			'env-options:',
 			'repo-owner:',
 			'repo-name:',
@@ -748,7 +747,6 @@ function vipgoci_run() {
 	/*
 	 * Handle boolean parameters
 	 */
-	vipgoci_option_bool_handle( $options, 'skip-execution', 'false' );
 
 	vipgoci_option_bool_handle( $options, 'dry-run', 'false' );
 
@@ -784,6 +782,11 @@ function vipgoci_run() {
 	/* This variable is not configurable, is internal only */
 	$options['phpcs-standard-file'] = false;
 
+	/*
+	 * This variable is not to be configurable on the command-line,
+	 * only via options-file.
+	 */
+	$options['skip-execution'] = false;
 
 	/*
 	 * Should we auto-approve Pull-Requests when
