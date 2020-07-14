@@ -782,6 +782,11 @@ function vipgoci_run() {
 	/* This variable is not configurable, is internal only */
 	$options['phpcs-standard-file'] = false;
 
+	/*
+	 * This variable is not to be configurable on the command-line,
+	 * only via options-file.
+	 */
+	$options['skip-execution'] = false;
 
 	/*
 	 * Should we auto-approve Pull-Requests when
@@ -1277,6 +1282,11 @@ function vipgoci_run() {
 		$options,
 		VIPGOCI_OPTIONS_FILE_NAME,
 		array(
+			'skip-execution'	=> array(
+				'type'		=> 'boolean',
+				'valid_values'	=> array( true, false ),
+			),
+
 			'phpcs-severity' => array(
 				'type'		=> 'integer',
 				'valid_values'	=> array( 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ),
@@ -1338,6 +1348,18 @@ function vipgoci_run() {
 		),
 	);
 
+	/*
+	 * If asked not to scan, don't scan then.
+	 */
+	if ( true === $options['skip-execution'] ) {
+		vipgoci_sysexit(
+			'Skipping scanning entirely, as determined ' .
+				'by configuration',
+			array(
+			),
+			VIPGOCI_EXIT_NORMAL
+		);
+	}
 
 	/*
 	 * If no Pull-Requests are implicated by this commit,
