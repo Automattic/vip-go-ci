@@ -813,7 +813,7 @@ function vipgoci_run() {
 		$options,
 		'post-generic-pr-support-comments-on-drafts',
 		'boolean'
-	);		
+	);
 
 	vipgoci_option_generic_support_comments_process(
 		$options,
@@ -837,7 +837,7 @@ function vipgoci_run() {
 	 * Handle option for setting support
 	 * labels. Handle prefix too.
 	 */
-	
+
 	vipgoci_option_bool_handle( $options, 'set-support-level-label', 'false' );
 
 	if (
@@ -938,7 +938,7 @@ function vipgoci_run() {
 	/*
 	 * Make sure the IRC API token
 	 * will be removed from output
-	 * of options.	
+	 * of options.
 	 */
 	vipgoci_options_sensitive_clean(
 		null,
@@ -1043,12 +1043,82 @@ function vipgoci_run() {
 					$options['post-generic-pr-support-comments-branches'],
 
 				'post-generic-pr-support-comments-repo-meta-match' =>
-					$options['post-generic-pr-support-comments-repo-meta-match'],				
+					$options['post-generic-pr-support-comments-repo-meta-match'],
 			)
 		);
 	}
 
-	// FIXME: Check for inconsistent keys
+	/*
+	 * Check if all keys are consistent in
+	 * the --post-generic-pr-support-comments-* parameters.
+	 */
+	$tmp_option_keys = null;
+
+	foreach(
+		array(
+			'post-generic-pr-support-comments-string',
+			'post-generic-pr-support-comments-on-drafts',
+			'post-generic-pr-support-comments-branches',
+			'post-generic-pr-support-comments-repo-meta-match',
+		)
+		as $tmp_option_name
+	) {
+		/*
+		 * Parameter --post-generic-pr-support-comments-repo-meta-match is optional,
+		 * but if it is specified, its keys should match keys of the other options.
+		 */
+		if (
+			( 'post-generic-pr-support-comments-repo-meta-match'
+				=== $tmp_option_name
+			)
+			&&
+			( empty(
+				$options[ $tmp_option_name ]
+			) )
+		) {
+			continue;
+		}
+
+		if ( null === $tmp_option_keys ) {
+			$tmp_option_keys = array_keys(
+				$options[ $tmp_option_name ]
+			);
+
+			continue;
+		}
+
+		foreach(
+			$tmp_option_keys as
+				$tmp_option_key
+		) {
+			if ( ! isset(
+				$options[
+					$tmp_option_name
+				][
+					$tmp_option_key
+				]
+			) ) {
+				vipgoci_sysexit(
+					'Inconsistent keys in or more ' .
+						'options parameters relating ' .
+						'to --post-generic-pr-support-comments*',
+					array(
+						'post-generic-pr-support-comments-on-drafts' =>
+							array_keys( $options['post-generic-pr-support-comments-on-drafts'] ),
+
+						'post-generic-pr-support-comments-string' =>
+							array_keys( $options['post-generic-pr-support-comments-string'] ),
+
+						'post-generic-pr-support-comments-branches' =>
+							array_keys( $options['post-generic-pr-support-comments-branches'] ),
+
+						'post-generic-pr-support-comments-repo-meta-match' =>
+							array_keys( $options['post-generic-pr-support-comments-repo-meta-match'] ),
+					)
+				);
+			}
+		}
+	}
 
 	/*
 	 * Check if the --output parameter looks
@@ -1508,7 +1578,7 @@ function vipgoci_run() {
 	/*
 	 * Verify that sniffs specified on command line
 	 * or via options file are valid. Will remove any
-	 * invalid sniffs from the options on the fly and 
+	 * invalid sniffs from the options on the fly and
 	 * post a message to users about the invalid sniffs.
 	 */
 
