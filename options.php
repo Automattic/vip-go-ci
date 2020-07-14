@@ -1299,6 +1299,25 @@ function vipgoci_option_generic_support_comments_match(
 				] = array();
 			}
 
+			if ( ! isset(
+				$match_key_value_item_arr[1]
+			) ) {
+				vipgoci_sysexit(
+					'Parameter ' .
+						'--' . $option_name . ' ' .
+						'is illegally constructed, ' .
+						'it is missing a value',
+					array(
+						'match_with_id_arr'
+							=> $match_with_id_arr[0],
+
+						'match_key_value_item_arr'
+							=> $match_key_value_item_arr[0],
+					)
+				);	
+			}
+
+
 			$processed_option_value[
 				$match_with_id_arr[0]
 			][
