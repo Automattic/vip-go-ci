@@ -176,7 +176,7 @@ function vipgoci_options_read_repo_file(
 
 			continue;
 		}
-	
+
 		$do_skip = false;
 
 		if ( 'integer' === $option_overwritable_conf['type'] ) {
@@ -323,7 +323,7 @@ function vipgoci_options_read_repo_skip_files(
 
 			continue;
 		}
-	
+
 		vipgoci_log(
 			'Reading from repository files which folders can ' .
 				'be skipped from ' . $scan_type . ' scanning',
@@ -704,7 +704,7 @@ function vipgoci_options_sensitive_clean(
 		}
 
 		$options_clean[ $option_key ] = '***';
-	}	
+	}
 
 	return $options_clean;
 }
@@ -1088,7 +1088,7 @@ function vipgoci_option_teams_handle(
 */
 function vipgoci_option_skip_folder_handle(
 	&$options,
-	$option_name	
+	$option_name
 ) {
 	vipgoci_option_array_handle(
 		$options,
@@ -1133,7 +1133,7 @@ function vipgoci_option_generic_support_comments_process(
 			$option_name
 		]
 	) ) {
-		
+
 		if ( 'string' === $type ) {
 			$default_value = null;
 		}
@@ -1326,7 +1326,7 @@ function vipgoci_option_generic_support_comments_match(
 					$match_with_id_arr[0]
 				][
 					$match_key_value_item_arr[0]
-				]			
+				]
 			) ) {
 				$processed_option_value[
 					$match_with_id_arr[0]
@@ -1350,7 +1350,7 @@ function vipgoci_option_generic_support_comments_match(
 						'match_key_value_item_arr'
 							=> $match_key_value_item_arr[0],
 					)
-				);	
+				);
 			}
 
 

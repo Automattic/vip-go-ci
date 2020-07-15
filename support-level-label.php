@@ -237,7 +237,7 @@ function vipgoci_repo_meta_api_data_match(
 			$options[ $option_name ][ $option_name_key_no ],
 			$repo_meta_data['data']
 		);
-	
+
 		/*
 		 * If we find one data-item that had
 		 * all fields matching the criteria given,
