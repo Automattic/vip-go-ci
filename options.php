@@ -1146,7 +1146,14 @@ function vipgoci_option_generic_support_comments_process(
 		trim(
 			$options[ $option_name ]
 		);
-               
+
+	/*
+	 * Boolean is always converted to lower case
+	 */
+	if ( 'boolean' === $type ) {
+		$strlower_option_value = true;
+	}
+
 	vipgoci_option_array_handle(
 		$options,
 		$option_name,

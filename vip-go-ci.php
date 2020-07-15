@@ -812,8 +812,7 @@ function vipgoci_run() {
 	vipgoci_option_generic_support_comments_process(
 		$options,
 		'post-generic-pr-support-comments-on-drafts',
-		'boolean',
-		true
+		'boolean'
 	);
 
 	vipgoci_option_generic_support_comments_process(
