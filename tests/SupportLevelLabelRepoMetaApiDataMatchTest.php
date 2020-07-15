@@ -29,11 +29,31 @@ final class SupportLevelLabelRepoMetaApiDataMatchTest extends TestCase {
 		);
 
 		$this->options['data_match1'] = array(
-			'__invalid_field'	=> array( '__somethinginvalid' ),
+			2 => array(
+				'__invalid_field' => array(
+					'__somethinginvalid'
+				),
+			),
+
+			3 => array(
+				'invalid_field_761a' => array(
+					'invalid_value',
+				)
+			)
 		);
 
 		$this->options['data_match2'] = array(
-			'support_tier'		=> array( $this->options['support-tier-name'] ),
+			2 => array(
+				'support_tier'	=> array(
+					$this->options['support-tier-name']
+				),
+			),
+
+			3 => array(
+				'invalid_field_761a' => array(
+					'invalid_value',
+				)
+			)
 		);
 
 		$this->options['branches-ignore'] = array();
@@ -58,13 +78,21 @@ final class SupportLevelLabelRepoMetaApiDataMatchTest extends TestCase {
 			return;
 		}
 
+		$option_key_no = null;
+
 		$this->assertEquals(
 			false,
 
 			vipgoci_repo_meta_api_data_match(
 				$this->options,
-				''
+				'',
+				$option_key_no
 			)
+		);
+
+		$this->assertEquals(
+			null,
+			$option_key_no
 		);
 	}
 
@@ -82,13 +110,21 @@ final class SupportLevelLabelRepoMetaApiDataMatchTest extends TestCase {
 			return;
 		}
 
+		$option_key_no = null;
+
 		$this->assertEquals(
 			false,
 
 			vipgoci_repo_meta_api_data_match(
 				$this->options,
-				'data_match0'
+				'data_match0',
+				$option_key_no
 			)
+		);
+
+		$this->assertEquals(
+			null,
+			$option_key_no
 		);
 	}
 
@@ -106,13 +142,21 @@ final class SupportLevelLabelRepoMetaApiDataMatchTest extends TestCase {
 			return;
 		}
 
+		$option_key_no = null;
+
 		$this->assertEquals(
 			false,
 
 			vipgoci_repo_meta_api_data_match(
 				$this->options,
-				'data_match1'
+				'data_match1',
+				$option_key_no
 			)
+		);
+	
+		$this->assertEquals(
+			null,
+			$option_key_no
 		);
 	}
 
@@ -130,13 +174,21 @@ final class SupportLevelLabelRepoMetaApiDataMatchTest extends TestCase {
 			return;
 		}
 
+		$option_key_no = null;
+
 		$this->assertEquals(
 			true,
 
 			vipgoci_repo_meta_api_data_match(
 				$this->options,
-				'data_match2'
+				'data_match2',
+				$option_key_no
 			)
+		);
+
+		$this->assertEquals(
+			2,
+			$option_key_no
 		);
 	}
 }

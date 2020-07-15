@@ -863,7 +863,7 @@ function vipgoci_phpcs_get_all_standards(
 	$result = shell_exec( $cmd );
 
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'phpcs_cli' );
-	
+
 	$result = str_replace(
 		array( "The installed coding standards are", " and ", " " ),
 		array( "", ",", "" ),
@@ -1206,7 +1206,7 @@ function vipgoci_phpcs_validate_sniffs_in_options_and_report(
 			$options['token'],
 			$options['branches-ignore']
 		);
-		
+
 		foreach ( $prs_implicated as $pr_item ) {
 			vipgoci_github_pr_comments_generic_submit(
 				$options['repo-owner'],
@@ -1221,7 +1221,7 @@ function vipgoci_phpcs_validate_sniffs_in_options_and_report(
 				$options['commit']
 			);
 		}
-	
+
 		unset(
 			$tmp_invalid_options_and_sniffs
 		);
@@ -1259,7 +1259,7 @@ function vipgoci_phpcs_possibly_use_new_standard_file(
 			'xml',
 			''
 		);
-			
+
 		vipgoci_phpcs_write_xml_standard_file(
 			$new_standard_file,
 			$options['phpcs-standard'],

@@ -176,7 +176,7 @@ function vipgoci_options_read_repo_file(
 
 			continue;
 		}
-	
+
 		$do_skip = false;
 
 		if ( 'integer' === $option_overwritable_conf['type'] ) {
@@ -323,7 +323,7 @@ function vipgoci_options_read_repo_skip_files(
 
 			continue;
 		}
-	
+
 		vipgoci_log(
 			'Reading from repository files which folders can ' .
 				'be skipped from ' . $scan_type . ' scanning',
@@ -704,7 +704,7 @@ function vipgoci_options_sensitive_clean(
 		}
 
 		$options_clean[ $option_key ] = '***';
-	}	
+	}
 
 	return $options_clean;
 }
@@ -1088,7 +1088,7 @@ function vipgoci_option_teams_handle(
 */
 function vipgoci_option_skip_folder_handle(
 	&$options,
-	$option_name	
+	$option_name
 ) {
 	vipgoci_option_array_handle(
 		$options,
@@ -1117,4 +1117,254 @@ function vipgoci_option_skip_folder_handle(
 			$option_name
 		]
 	);
+}
+
+/*
+ * Process options for generic support options parameters.
+ */
+function vipgoci_option_generic_support_comments_process(
+	&$options,
+	$option_name,
+	$type = 'string',
+	$strlower_option_value = true
+) {
+	if ( ! isset(
+		$options[
+			$option_name
+		]
+	) ) {
+
+		if ( 'string' === $type ) {
+			$default_value = null;
+		}
+
+		else if ( 'array' === $type ) {
+			$default_value = array();
+		}
+
+		else if ( 'boolean' === $type ) {
+			$default_value = false;
+		}
+
+		$options[
+			$option_name
+		] = $default_value;
+
+		return;
+	}
+
+
+	if ( is_array(
+			$options[
+				$option_name
+			]
+	) ) {
+		vipgoci_sysexit(
+			'Option --' . $option_name . ' is an array, but should not be. Maybe specified twice?',
+			array(
+				'option_name'	=> $option_name,
+				'option_value'	=> $options[ $option_name ],
+			)
+		);
+	}
+
+
+	$options[ $option_name ] =
+		trim(
+			$options[ $option_name ]
+		);
+
+	/*
+	 * Boolean is always converted to lower case
+	 */
+	if ( 'boolean' === $type ) {
+		$strlower_option_value = true;
+	}
+
+	vipgoci_option_array_handle(
+		$options,
+		$option_name,
+		array(),
+		null,
+		'|||',
+		$strlower_option_value
+	);
+
+	$original_option_value = $options[ $option_name ];
+	$options[ $option_name ] = array();
+
+	foreach(
+		array_values(
+			$original_option_value
+		) as $tmp_string_option
+	) {
+
+		$tmp_string_option_arr =
+			explode(
+				':',
+				$tmp_string_option,
+				2 // Max two items in array, ID and value
+			);
+
+		$tmp_key = $tmp_string_option_arr[0];
+		$tmp_value = $tmp_string_option_arr[1];
+
+		if ( 'boolean' === $type ) {
+			if ( ( 'true' === $tmp_value ) || ( 'false' === $tmp_value ) ) {
+				$tmp_value = vipgoci_convert_string_to_type(
+					$tmp_value
+				);
+			}
+
+			else {
+				vipgoci_sysexit(
+					'Unsupported option value provided to options parameter',
+					array(
+						'option_name'		=> $option_name,
+						'option_value'		=> $original_option_value,
+						'option_value_problem'	=> $tmp_value,
+					)
+				);
+			}
+
+			$options[ $option_name ][ $tmp_key ] =
+				$tmp_value;
+		}
+
+		else if ('string' === $type ) {
+			$options[ $option_name ][ $tmp_key ] =
+				$tmp_value;
+		}
+
+		else if ( 'array' === $type ) {
+			if ( empty( $tmp_value ) ) {
+				$options[ $option_name ][ $tmp_key ] = array();
+			}
+
+			else {
+				$options[ $option_name ][ $tmp_key ] = explode(
+					',',
+					$tmp_value
+				);
+			}
+		}
+	}
+}
+
+/*
+ * Process options for generic support comments matching.
+ *
+ * Syntax of this option is:
+ * --post-generic-pr-support-comments-repo-meta-match="0:mykey=myvalue,foo=bar|||1:mykey2=myvalue3,aaa=bbb"
+ */
+function vipgoci_option_generic_support_comments_match(
+	&$options,
+	$option_name
+) {
+	vipgoci_option_array_handle(
+		$options,
+		$option_name,
+		array(),
+		null,
+		'|||'
+	);
+
+	$raw_option_value = $options[ $option_name ];
+
+	$processed_option_value = array();
+
+	/*
+	 * Loop through possible matches, separated
+	 * by "|||"
+	 */
+	for(
+		$i = 0;
+		$i < count(
+			$raw_option_value
+		);
+		$i++
+	) {
+		/*
+		 * Split each possible match by ":" --
+		 * should originally a string be something like: "0:key=value",
+		 * where the number is ID of the match.
+		 */
+
+		$match_with_id_arr = explode(
+			':',
+			$raw_option_value[ $i ],
+			2 // Max one ':'; any extra will be preserve
+		);
+
+		/* Should be only two items in the array */
+		if ( count( $match_with_id_arr ) != 2 ) {
+			continue;
+		}
+
+		$processed_option_value[
+			$match_with_id_arr[0]
+		] = array();
+
+		/*
+		 * Within each match, split by
+		 * "," -- which is an AND.
+		 */
+		$match_key_values_arr = explode(
+			',',
+			$match_with_id_arr[1]
+		);
+
+		foreach( $match_key_values_arr as $match_key_value_item ) {
+			$match_key_value_item_arr = explode(
+				'=',
+				$match_key_value_item,
+				2
+			);
+
+			if ( ! isset(
+				$processed_option_value[
+					$match_with_id_arr[0]
+				][
+					$match_key_value_item_arr[0]
+				]
+			) ) {
+				$processed_option_value[
+					$match_with_id_arr[0]
+				][
+					$match_key_value_item_arr[0]
+				] = array();
+			}
+
+			if ( ! isset(
+				$match_key_value_item_arr[1]
+			) ) {
+				vipgoci_sysexit(
+					'Parameter ' .
+						'--' . $option_name . ' ' .
+						'is illegally constructed, ' .
+						'it is missing a value',
+					array(
+						'match_with_id_arr'
+							=> $match_with_id_arr[0],
+
+						'match_key_value_item_arr'
+							=> $match_key_value_item_arr[0],
+					)
+				);
+			}
+
+
+			$processed_option_value[
+				$match_with_id_arr[0]
+			][
+				$match_key_value_item_arr[0]
+			][] = vipgoci_convert_string_to_type(
+				$match_key_value_item_arr[1]
+			);
+		}
+	}
+
+	$options[
+		$option_name
+	] = $processed_option_value;
 }

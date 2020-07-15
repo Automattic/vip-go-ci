@@ -47,16 +47,25 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 
 		$this->options['post-generic-pr-support-comments'] = true;
 
-		$this->options['post-generic-pr-support-comments-on-drafts'] = false;
+		$this->options['post-generic-pr-support-comments-on-drafts'] =
+			array(
+				2 => false,
+			);
 
 		$this->options['post-generic-pr-support-comments-string'] =
-			'This is a generic support message from `vip-go-ci`. We hope this is useful.';
+			array(
+				2 => 'This is a generic support message from `vip-go-ci`. We hope this is useful.',
+			);
+				
 
 		$this->options['post-generic-pr-support-comments-branches'] =
-			array();
+			array(
+				2 => array( 'any' ),
+			);
 
 		$this->options['post-generic-pr-support-comments-repo-meta-match'] =
-			array();
+			array(
+			);
 
 		$this->options = array_merge(
 			$this->options_git,
@@ -187,21 +196,29 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 					continue;
 				}
 
-				// Check if the comment contains the support-comment
-				if ( strpos(
-					$pr_comment->body,
-					$this->options['post-generic-pr-support-comments-string']
-				) !== 0 ) {
-					continue;
-				}
+				// Look for a support-comment
+				foreach(
+					array_values(
+						$this->options['post-generic-pr-support-comments-string']
+					)
+					as $tmp_support_comment_string
+				) {
+					// Check if the comment contains the support-comment
+					if ( strpos(
+						$pr_comment->body,
+						$tmp_support_comment_string
+					) === 0 ) {
+						// Remove comment, submitted by us, is support comment.
+						vipgoci_github_pr_generic_comment_delete(
+							$this->options['repo-owner'],
+							$this->options['repo-name'],
+							$this->options['github-token'],
+							$pr_comment->id
+						);
 
-				// Remove comment, submitted by us, is support comment.
-				vipgoci_github_pr_generic_comment_delete(
-					$this->options['repo-owner'],
-					$this->options['repo-name'],
-					$this->options['github-token'],
-					$pr_comment->id
-				);
+						break;
+					}
+				}
 			}
 		}
 	}
@@ -221,15 +238,22 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 			}
 
 			// Check if the comment contains the support-comment
-			if ( strpos(
-				$pr_comment->body,
-				$this->options['post-generic-pr-support-comments-string']
-			) !== 0 ) {
-				continue;
+			foreach(
+				array_values(
+					$this->options['post-generic-pr-support-comments-string']
+				)
+				as $tmp_support_comment_string
+			) {
+				// Check if the comment contains the support-comment
+				if ( strpos(
+					$pr_comment->body,
+					$tmp_support_comment_string
+				) === 0 ) {
+					// We have found support comment posted by us
+					$valid_comments_found++;
+					break;
+				}
 			}
-
-			// We have found support comment posted by us
-			$valid_comments_found++;
 		}
 
 		return $valid_comments_found;
@@ -251,7 +275,9 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 	
 		// Configure branches we can post against
 		$this->options['post-generic-pr-support-comments-branches'] =
-			array( 'any' );
+			array(
+				2 => array( 'any' ),
+			);
 
 		// Should not post generic support comments
 		$this->options['post-generic-pr-support-comments'] = false;
@@ -321,7 +347,9 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 
 		// Configure branches we can post against
 		$this->options['post-generic-pr-support-comments-branches'] =
-			array( 'any' );
+			array(
+				2 => array( 'any' ),
+			);
 
 		// Get Pull-Requests
         	$prs_implicated = $this->_getPrsImplicated();
@@ -434,7 +462,9 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 
 		// Configure branches we allow posting against
 		$this->options['post-generic-pr-support-comments-branches'] =
-			array( 'master' );
+			array(
+				2 => array( 'master' ),
+			);
 
 		// Get Pull-Requests
         	$prs_implicated = $this->_getPrsImplicated();
@@ -547,7 +577,9 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 
 		// Configure branches to post against
 		$this->options['post-generic-pr-support-comments-branches'] =
-			array( 'myinvalidbranch0xfff' );
+			array(
+				2 => array( 'myinvalidbranch0xfff' ),
+			);
 
 		// Get Pull-Requests
         	$prs_implicated = $this->_getPrsImplicated();
@@ -622,7 +654,9 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 
 		// Configure branches we can post against
 		$this->options['post-generic-pr-support-comments-branches'] =
-			array( 'any' );
+			array(
+				2 => array( 'any' ),
+			);
 
 		// Get Pull-Requests
         	$prs_implicated = $this->_getPrsImplicated();
@@ -727,7 +761,9 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 		);
 
 		// Post on draft PRs
-		$this->options['post-generic-pr-support-comments-on-drafts'] = true;
+		$this->options['post-generic-pr-support-comments-on-drafts'] = array(
+			2 => true,
+		);
 
 		// Try re-posting
 		vipgoci_github_pr_generic_support_comment_submit(
