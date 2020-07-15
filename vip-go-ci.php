@@ -1072,13 +1072,13 @@ function vipgoci_run() {
 				array(
 					'post-generic-pr-support-comments-on-drafts' =>
 						$options['post-generic-pr-support-comments-on-drafts'],
-	
+
 					'post-generic-pr-support-comments-string' =>
 						$options['post-generic-pr-support-comments-string'],
-	
+
 					'post-generic-pr-support-comments-branches' =>
 						$options['post-generic-pr-support-comments-branches'],
-	
+
 					'post-generic-pr-support-comments-repo-meta-match' =>
 						$options['post-generic-pr-support-comments-repo-meta-match'],
 				)
@@ -1115,15 +1115,15 @@ function vipgoci_run() {
 				) {
 				continue;
 			}
-	
+
 			if ( null === $tmp_option_keys ) {
 				$tmp_option_keys = array_keys(
 					$options[ $tmp_option_name ]
 				);
-	
+
 				continue;
 			}
-	
+
 			foreach(
 				$tmp_option_keys as
 					$tmp_option_key
@@ -1142,10 +1142,10 @@ function vipgoci_run() {
 						array(
 							'post-generic-pr-support-comments-on-drafts' =>
 								array_keys( $options['post-generic-pr-support-comments-on-drafts'] ),
-	
+
 							'post-generic-pr-support-comments-string' =>
 								array_keys( $options['post-generic-pr-support-comments-string'] ),
-	
+
 							'post-generic-pr-support-comments-branches' =>
 								array_keys( $options['post-generic-pr-support-comments-branches'] ),
 
