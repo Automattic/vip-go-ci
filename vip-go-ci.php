@@ -812,19 +812,22 @@ function vipgoci_run() {
 	vipgoci_option_generic_support_comments_process(
 		$options,
 		'post-generic-pr-support-comments-on-drafts',
-		'boolean'
+		'boolean',
+		true
 	);
 
 	vipgoci_option_generic_support_comments_process(
 		$options,
 		'post-generic-pr-support-comments-string',
-		'string'
+		'string',
+		false
 	);
 
 	vipgoci_option_generic_support_comments_process(
 		$options,
 		'post-generic-pr-support-comments-branches',
-		'array'
+		'array',
+		true
 	);
 
 	vipgoci_option_generic_support_comments_match(

@@ -1125,7 +1125,8 @@ function vipgoci_option_skip_folder_handle(
 function vipgoci_option_generic_support_comments_process(
 	&$options,
 	$option_name,
-	$type = 'string'
+	$type = 'string',
+	$strlower_option_value = true
 ) {
 	if ( is_array(
 		$options[
@@ -1151,7 +1152,8 @@ function vipgoci_option_generic_support_comments_process(
 		$option_name,
 		array(),
 		null,
-		'|||'
+		'|||',
+		$strlower_option_value
 	);
 
 	$original_option_value = $options[ $option_name ];
