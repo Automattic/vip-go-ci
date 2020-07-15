@@ -2007,7 +2007,7 @@ function vipgoci_github_pr_generic_support_comment_submit(
 				$options['post-generic-pr-support-comments-string'][ $option_key_no_match ]
 			) !== false ) {
 				$comment_exists_already = true;
-			}	
+			}
 		}
 
 		if ( true === $comment_exists_already ) {
