@@ -281,9 +281,17 @@ Also supported is the `phpcs-sniffs-exclude` option. This is an array parameter 
 
 > {"phpcs-sniffs-exclude":["WordPressVIPMinimum.JS.InnerHTML", "WordPress.WP.CronInterval"]} 
 
-The `phpcs-sniffs-include` option is also available, and it is configured in the same way as the `phpcs-sniffs-exclude` option. Note that it works differently behind the scenes, as it will write out a new PHPCS standard on run-time, containing the sniffs to be included as well as the original PHPCS standard, and will then use this standard from then on.
+The `phpcs-sniffs-include` option is also available, and it is configured in the same way as the `phpcs-sniffs-exclude` option. Note that it works differently behind the scenes, as it will write out a new PHPCS standard on run-time, containing the sniffs to be included as well as the original PHPCS standard, and will then use this standard from then on. The `phpcs-sniffs-include` option is used in this way:
+
+> {"phpcs-sniffs-include":["WordPress.DB.DirectDatabaseQuery"]} 
 
 Please note that should any of the PHPCS sniffs specified be invalid, a warning will be posted on any Pull-Request scanned. The warning will be removed during next scan and not posted again if the issue is fixed.
+
+Also available is the `skip-execution` option:
+
+> {"skip-execution":true}
+
+This will make execution of `vip-go-ci` stop after initial startup, avoiding all further processing and scanning.
 
 Should the configuration file not be found, any configuration value not be valid, or altering of the particular option is not allowed, the option will not be altered on run-time. Note that not all options need to be set in the configuration file, only those desired. The file is expected to be a parsable, valid JSON.
 
