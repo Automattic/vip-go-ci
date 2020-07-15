@@ -1128,10 +1128,36 @@ function vipgoci_option_generic_support_comments_process(
 	$type = 'string',
 	$strlower_option_value = true
 ) {
-	if ( is_array(
+	if ( ! isset(
 		$options[
 			$option_name
 		]
+	) ) {
+		
+		if ( 'string' === $type ) {
+			$default_value = null;
+		}
+
+		else if ( 'array' === $type ) {
+			$default_value = array();
+		}
+
+		else if ( 'boolean' === $type ) {
+			$default_value = false;
+		}
+
+		$options[
+			$option_name
+		] = $default_value;
+
+		return;
+	}
+
+
+	if ( is_array(
+			$options[
+				$option_name
+			]
 	) ) {
 		vipgoci_sysexit(
 			'Option --' . $option_name . ' is an array, but should not be. Maybe specified twice?',
@@ -1141,6 +1167,7 @@ function vipgoci_option_generic_support_comments_process(
 			)
 		);
 	}
+
 
 	$options[ $option_name ] =
 		trim(
