@@ -2088,8 +2088,15 @@ function vipgoci_run() {
  * unit-test.
  */
 if (
-	( ! defined( 'VIPGOCI_UNIT_TESTING' ) ) ||
-	( false === VIPGOCI_UNIT_TESTING )
+	(
+		( ! defined( 'VIPGOCI_UNIT_TESTING' ) ) ||
+		( false === VIPGOCI_UNIT_TESTING )
+	)
+	&&
+	(
+		( ! defined( 'VIPGOCI_INCLUDED' ) ) ||
+		( false === VIPGOCI_INCLUDED )
+	)
 ) {
 	/*
 	 * 'main()' called
