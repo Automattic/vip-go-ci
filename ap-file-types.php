@@ -37,7 +37,8 @@ function vipgoci_ap_file_types(
 		$options['repo-name'],
 		$options['commit'],
 		$options['token'],
-		$options['branches-ignore']
+		$options['branches-ignore'],
+		$options['skip-draft-prs']
 	);
 
 

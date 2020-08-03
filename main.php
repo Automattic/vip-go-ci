@@ -138,6 +138,7 @@ function vipgoci_run() {
 			'repo-name:',
 			'commit:',
 			'token:',
+			'skip-draft-prs:',
 			'results-comments-sort:',
 			'review-comments-max:',
 			'review-comments-total-max:',
@@ -743,6 +744,8 @@ function vipgoci_run() {
 	/*
 	 * Handle boolean parameters
 	 */
+
+	vipgoci_option_bool_handle( $options, 'skip-draft-prs', 'false' );
 
 	vipgoci_option_bool_handle( $options, 'phpcs', 'true' );
 
@@ -1401,6 +1404,11 @@ function vipgoci_run() {
 				'valid_values'	=> array( true, false ),
 			),
 
+			'skip-draft-prs'	=> array(
+				'type'		=> 'boolean',
+				'valid_values'	=> array( true, false ),
+			),
+
 			'phpcs-severity' => array(
 				'type'		=> 'integer',
 				'valid_values'	=> array( 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ),
@@ -1485,7 +1493,8 @@ function vipgoci_run() {
 		$options['repo-name'],
 		$options['commit'],
 		$options['token'],
-		$options['branches-ignore']
+		$options['branches-ignore'],
+		$options['skip-draft-prs']
 	);
 
 	if ( empty( $prs_implicated ) ) {
@@ -1600,6 +1609,7 @@ function vipgoci_run() {
 		$options['commit'],
 		$options['token'],
 		$options['branches-ignore'],
+		$options['skip-draft-prs'],
 		array(
 			VIPGOCI_SYNTAX_ERROR_STR,
 			VIPGOCI_GITHUB_ERROR_STR,
