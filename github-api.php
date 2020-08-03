@@ -1459,8 +1459,7 @@ function vipgoci_github_pr_generic_comment_submit_results(
 	$github_token,
 	$commit_id,
 	$results,
-	$informational_url,
-	$dry_run
+	$informational_url
 ) {
 	$stats_types_to_process = array(
 		VIPGOCI_STATS_LINT,
@@ -1468,22 +1467,15 @@ function vipgoci_github_pr_generic_comment_submit_results(
 
 
 	vipgoci_log(
-		( $dry_run == true ? 'Would ' : 'About to ' ) .
+		'About to ' . 
 		'submit generic PR comment to GitHub about issues',
 		array(
 			'repo_owner' => $repo_owner,
 			'repo_name' => $repo_name,
 			'commit_id' => $commit_id,
 			'results' => $results,
-			'dry_run' => $dry_run,
 		)
 	);
-
-
-	/* If dry-run is enabled, do nothing further. */
-	if ( $dry_run == true ) {
-		return;
-	}
 
 
 	foreach (
@@ -1711,19 +1703,16 @@ function vipgoci_github_pr_comments_cleanup(
 	$commit_id,
 	$github_token,
 	$branches_ignore,
-	$comments_remove,
-	$dry_run
+	$comments_remove
 ) {
 	vipgoci_log(
-		( $dry_run == true ? 'Would ' : 'About to ' ) .
-		'clean up generic PR comments on Github',
+		'About to clean up generic PR comments on Github',
 		array(
 			'repo_owner' => $repo_owner,
 			'repo_name' => $repo_name,
 			'commit_id' => $commit_id,
 			'branches_ignore' => $branches_ignore,
 			'comments_remove' => $comments_remove,
-			'dry_run' => $dry_run,
 		)
 	);
 
@@ -1732,11 +1721,6 @@ function vipgoci_github_pr_comments_cleanup(
 		$github_token
 	);
 
-
-	/* If dry-run is enabled, do nothing further. */
-	if ( $dry_run == true ) {
-		return;
-	}
 
 	$prs_implicated = vipgoci_github_prs_implicated(
 		$repo_owner,
@@ -2203,7 +2187,6 @@ function vipgoci_github_pr_review_submit(
 	$commit_id,
 	$results,
 	$informational_url,
-	$dry_run,
 	$github_review_comments_max
 ) {
 
@@ -2213,22 +2196,15 @@ function vipgoci_github_pr_review_submit(
 	);
 
 	vipgoci_log(
-		( $dry_run == true ? 'Would ' : 'About to ' ) .
-		'submit comment(s) to GitHub about issue(s)',
+		'About to submit comment(s) to GitHub about issue(s)',
 		array(
 			'repo_owner' => $repo_owner,
 			'repo_name' => $repo_name,
 			'commit_id' => $commit_id,
 			'results' => $results,
-			'dry_run' => $dry_run,
 		)
 	);
 
-
-	/* If dry-run is enabled, do nothing further. */
-	if ( $dry_run == true ) {
-		return;
-	}
 
 	/*
 	 * Reverse results before starting processing,
@@ -2838,8 +2814,7 @@ function vipgoci_github_approve_pr(
 	$github_token,
 	$pr_number,
 	$latest_commit_id,
-	$message,
-	$dry_run
+	$message
 ) {
 	$github_url =
 		VIPGOCI_GITHUB_BASE_URL . '/' .
@@ -2858,10 +2833,6 @@ function vipgoci_github_approve_pr(
 	);
 
 	$github_postfields['body'] = $message;
-
-	if ( true === $dry_run ) {
-		return;
-	}
 
 	vipgoci_log(
 		'Sending request to GitHub to approve Pull-Request',
@@ -3325,12 +3296,10 @@ function vipgoci_github_label_add_to_pr(
 	$repo_name,
 	$github_token,
 	$pr_number,
-	$label_name,
-	$dry_run
+	$label_name
 ) {
 	vipgoci_log(
-		( $dry_run === true ? 'Would add ' : 'Adding ' ) .
-		'label to GitHub issue',
+		'Adding label to GitHub issue',
 		array(
 			'repo_owner' => $repo_owner,
 			'repo_name' => $repo_name,
@@ -3338,10 +3307,6 @@ function vipgoci_github_label_add_to_pr(
 			'label_name' => $label_name,
 		)
 	);
-
-	if ( true === $dry_run ) {
-		return;
-	}
 
 	$github_url =
 		VIPGOCI_GITHUB_BASE_URL . '/' .
@@ -3472,12 +3437,10 @@ function vipgoci_github_pr_label_remove(
 	$repo_name,
 	$github_token,
 	$pr_number,
-	$label_name,
-	$dry_run
+	$label_name
 ) {
 	vipgoci_log(
-		( $dry_run === true ? 'Would remove ' : 'Removing ' ) .
-		'label from GitHub issue',
+		'Removing label from GitHub issue',
 		array(
 			'repo_owner' => $repo_owner,
 			'repo_name' => $repo_name,
@@ -3485,10 +3448,6 @@ function vipgoci_github_pr_label_remove(
 			'label_name' => $label_name,
 		)
 	);
-
-	if ( true === $dry_run ) {
-		return;
-	}
 
 	$github_url =
 		VIPGOCI_GITHUB_BASE_URL . '/' .

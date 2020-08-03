@@ -527,8 +527,7 @@ function vipgoci_support_level_label_set(
 				$options['repo-name'],
 				$options['token'],
 				$pr_item->number,
-				$support_label_from_api,
-				false
+				$support_label_from_api
 			);
 		}
 	}
