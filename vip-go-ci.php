@@ -148,7 +148,6 @@ function vipgoci_run() {
 			'dismissed-reviews-exclude-reviews-from-team:',
 			'branches-ignore:',
 			'output:',
-			'dry-run:',
 			'informational-url:',
 			'post-generic-pr-support-comments:',
 			'post-generic-pr-support-comments-on-drafts:',
@@ -373,8 +372,6 @@ function vipgoci_run() {
 			"\t" . '                               some branches never get scanned. Separate branches' . PHP_EOL .
 			"\t" . '                               with commas' . PHP_EOL .
 			"\t" . '--local-git-repo=FILE          The local git repository to use for direct access to code' . PHP_EOL .
-			"\t" . '--dry-run=BOOL                 If set to true, will not make any changes to any data' . PHP_EOL .
-			"\t" . '                               on GitHub -- no comments will be submitted, etc.' . PHP_EOL .
 			"\t" . '--output=FILE                  Where to save output made from running PHPCS' . PHP_EOL .
 			PHP_EOL .
 			"\t" . '--lint=BOOL                    Whether to do PHP linting (true/false)' . PHP_EOL .
@@ -747,8 +744,6 @@ function vipgoci_run() {
 	/*
 	 * Handle boolean parameters
 	 */
-
-	vipgoci_option_bool_handle( $options, 'dry-run', 'false' );
 
 	vipgoci_option_bool_handle( $options, 'phpcs', 'true' );
 
@@ -1612,8 +1607,7 @@ function vipgoci_run() {
 			VIPGOCI_REVIEW_COMMENTS_TOTAL_MAX,
 			VIPGOCI_PHPCS_INVALID_SNIFFS,
 			VIPGOCI_PHPCS_DUPLICATE_SNIFFS,
-		),
-		$options['dry-run']
+		)
 	);
 
 	/*
@@ -1747,7 +1741,7 @@ function vipgoci_run() {
 		vipgoci_auto_approval_scan_commit(
 			$options,
 			$auto_approved_files_arr,
-			$results // FIXME: dry-run
+			$results
 		);
 	}
 
@@ -1887,8 +1881,7 @@ function vipgoci_run() {
 		$options['token'],
 		$options['commit'],
 		$results,
-		$options['informational-url'],
-		$options['dry-run']
+		$options['informational-url']
 	);
 
 
@@ -1899,7 +1892,6 @@ function vipgoci_run() {
 		$options['commit'],
 		$results,
 		$options['informational-url'],
-		$options['dry-run'],
 		$options['review-comments-max']
 	);
 

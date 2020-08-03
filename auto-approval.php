@@ -90,8 +90,7 @@ function vipgoci_auto_approval_non_approval(
 			$options['repo-name'],
 			$options['token'],
 			(int) $pr_item->number,
-			$pr_label->name,
-			$options['dry-run']
+			$pr_label->name
 		);
 	}
 
@@ -313,9 +312,7 @@ function vipgoci_autoapproval_do_approve(
 		);
 
 		vipgoci_log(
-			( $options['dry-run'] === true
-				? 'Would ' : 'Will ' ) .
-				'auto-approve Pull-Request #' .
+			'Will auto-approve Pull-Request #' .
 				(int) $pr_item->number . ' ' .
 				'as it alters or creates ' .
 				'only files that can be ' .
@@ -339,9 +336,6 @@ function vipgoci_autoapproval_do_approve(
 
 				'commit_id'
 					=> $options['commit'],
-
-				'dry_run'
-					=> $options['dry-run'],
 
 				'autoapprove-filetypes' =>
 					$options['autoapprove-filetypes'],
@@ -386,8 +380,7 @@ function vipgoci_autoapproval_do_approve(
 						$options['autoapprove-filetypes']
 					)
 				) .
-				').',
-			$options['dry-run']
+				').'
 		);
 	}
 
@@ -408,9 +401,6 @@ function vipgoci_autoapproval_do_approve(
 
 				'commit_id'
 					=> $options['commit'],
-
-				'dry_run'
-					=> $options['dry-run'],
 
 				'autoapprove-filetypes' =>
 					$options['autoapprove-filetypes'],
@@ -439,8 +429,7 @@ function vipgoci_autoapproval_do_approve(
 			$options['repo-name'],
 			$options['token'],
 			$pr_item->number,
-			$options['autoapprove-label'],
-			$options['dry-run']
+			$options['autoapprove-label']
 		);
 	}
 

@@ -228,8 +228,7 @@ final class SupportLevelLabelSetTest extends TestCase {
 						$this->options['repo-name'],
 						$this->options['token'],
 						$pr_item->number,
-						$label_item->name,
-						false
+						$label_item->name
 					);
 
 					$found_support_level_label = true;

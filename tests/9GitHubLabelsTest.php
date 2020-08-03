@@ -75,8 +75,7 @@ final class GitHubLabelsTest extends TestCase {
 			$this->options['repo-name'],
 			$this->options['github-token'],
 			$this->options['labels-pr-to-modify'],
-			$this::label_name,
-			false
+			$this::label_name
 		);
 
 		vipgoci_unittests_output_unsuppress();
@@ -117,8 +116,7 @@ final class GitHubLabelsTest extends TestCase {
 			$this->options['repo-name'],
 			$this->options['github-token'],
 			$this->options['labels-pr-to-modify'],
-			$this::label_name,
-			false
+			$this::label_name
 		);
 
 		vipgoci_unittests_output_unsuppress();
