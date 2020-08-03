@@ -246,6 +246,9 @@ function vipgoci_run() {
 			"\t" . '--repo-name=STRING             Specify name of the repository' . PHP_EOL .
 			"\t" . '--commit=STRING                Specify the exact commit to scan (SHA)' . PHP_EOL .
 			"\t" . '--token=STRING                 The access-token to use to communicate with GitHub' . PHP_EOL .
+			PHP_EOL .
+			"\t" . '--skip-draft-prs=BOOL          Skip scanning of all Pull-Requests that are in draft mode.' .
+			PHP_EOL .
 			"\t" . '--results-comments-sort=BOOL     Sort issues found according to severity, from high ' . PHP_EOL .
 			"\t" . '                               to low, before submitting to GitHub. Not sorted by default.' . PHP_EOL .
 			"\t" . '--review-comments-max=NUMBER   Maximum number of inline comments to submit' . PHP_EOL .
@@ -278,6 +281,7 @@ function vipgoci_run() {
 			"\t" . '                                                      avoiding double-posting; they would be ' . PHP_EOL .
 			"\t" . '                                                      excluded. Note that this parameter ' . PHP_EOL .
 			"\t" . '                                                      only works in conjunction with ' . PHP_EOL .
+			PHP_EOL .
 			"\t" . '                                                      --dismissed-reviews-repost-comments' . PHP_EOL .
 			"\t" . '--informational-url=STRING     URL to documentation on what this bot does. Should ' . PHP_EOL .
 			"\t" . '                               start with https:// or https:// ' . PHP_EOL .
