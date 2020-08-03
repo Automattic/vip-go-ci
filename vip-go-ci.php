@@ -175,6 +175,8 @@ function vipgoci_run() {
 			'hashes-oauth-token-secret:',
 			'hashes-oauth-consumer-key:',
 			'hashes-oauth-consumer-secret:',
+			'hashes-submit-approved-file-comment-string:',
+			'hashes-submission-teams-allowed:',
 			'irc-api-url:',
 			'irc-api-token:',
 			'irc-api-bot:',
@@ -360,6 +362,21 @@ function vipgoci_run() {
 			"\t" . '                               OAuth 1.0 token, token secret, consumer key and ' . PHP_EOL .
 			"\t" . '                               consumer secret needed for hashes-to-hashes HTTP requests' . PHP_EOL .
 			"\t" . '                               All required for hashes-to-hashes requests.' . PHP_EOL .
+			PHP_EOL .
+			"\t" . '--hashes-submission-teams-allowed=ARRAY              List of GitHub usernames used to ' . PHP_EOL . 
+			"\t" . '                                                     indicate which users can approve ' . PHP_EOL . 
+			"\t" . '                                                     files for the hashes-to-hashes API. ' . PHP_EOL .
+			"\t" . '                                                     This indication is done by submitting ' . PHP_EOL .
+			"\t" . '                                                     inline comments to GitHub, ' . PHP_EOL .
+			"\t" . '                                                     Pull-Requests containing a specific string' . PHP_EOL .
+			"\t" . '                                                     ( see --hashes-submit-approved-file-comment-string )' . PHP_EOL .
+			"\t" . '                                                     If the string is found in a comment, the ' . PHP_EOL .
+			"\t" . '                                                     submitting user is a member of the team, ' . PHP_EOL .
+			"\t" . '                                                     and some other conditions are fulfilled, ' . PHP_EOL .
+			"\t" . '                                                     the file is submitted.' . PHP_EOL . 
+			"\t" . '--hashes-submit-approved-file-comment-string=STRING  String used to indicate that a file is' . PHP_EOL .
+			"\t" . '                                                     approved and to be submitted to the ' . PHP_EOL .
+			"\t" . '                                                     hashes-to-hashes API. ' . PHP_EOL .
 			PHP_EOL .
 			"\t" . '--irc-api-url=STRING           URL to IRC API to send alerts' . PHP_EOL .
 			"\t" . '--irc-api-token=STRING         Access-token to use to communicate with the IRC ' . PHP_EOL .
@@ -664,6 +681,53 @@ function vipgoci_run() {
 	}
 
 	/*
+	 * Process --hashes-submit-approved-file-comment-string argument
+	 * -- this is used to indicate files approved and should
+	 * be submitted to the hashes-to-hashes API by us.
+	 */
+
+	if ( isset(
+		$options['hashes-submit-approved-file-comment-string']
+	) ) {
+		$options['hashes-submit-approved-file-comment-string'] =
+			ltrim( rtrim(
+				$options['hashes-submit-approved-file-comment-string']
+			) );
+
+		if (
+			strlen(
+				$options['hashes-submit-approved-file-comment-string']
+			) === 0
+		) {
+			unset( $options['hashes-submit-approved-file-comment-string'] );
+		}
+	}
+
+	/*
+	 * Process --hashes-submission-teams-allowed
+	 * parameter.
+	 */
+	
+	vipgoci_option_array_handle(
+		$options,
+		'hashes-submission-teams-allowed',
+		array(),
+		array(),
+		','
+	);
+
+	vipgoci_option_teams_handle(
+		$options,
+		'hashes-submission-teams-allowed'
+	);
+
+	$options['hashes-submission-team-members-allowed'] =
+		vipgoci_github_team_members_many(
+			$options['token'],
+			$options['hashes-submission-teams-allowed']
+		);
+
+  /*
 	 * Ask for the hashes-oauth-* arguments
 	 * to be considered as sensitive options
 	 * when cleaning options for printing.
@@ -673,7 +737,7 @@ function vipgoci_run() {
 		$hashes_oauth_arguments
 	);
 
-
+  
 	/*
 	 * Handle --local-git-repo parameter
 	 */
@@ -1934,6 +1998,44 @@ function vipgoci_run() {
 			);
 		}
 	}
+
+	/*
+	 * Submit approved files to the hashes-to-hashes API
+	 * if configured to do so and everything is set up correctly.
+	 *
+	 * Do this by looking through all comments posted to
+	 * all Pull-Requests implicated, search for specific
+	 * comments (e.g., "VIP: Approved file.") submitted by
+	 * member of a particular GitHub team, and if they are
+	 * existing submit to Hashes-to-hashes API.
+	 */
+
+     	// FIXME: Temporary, remove. Use team options.
+	$options['hashes-submission-teams-allowed'] = array( 'vip' );
+	$options['hashes-submission-team-members-allowed'] = array( 'gudmdharalds' );
+
+
+	if (
+		( true === $options['hashes-api'] )
+		&&
+		( ! empty(
+			$options['hashes-submission-team-members-allowed']
+		) )
+		&&
+		( ! empty(
+			$options['hashes-submission-teams-allowed']
+		) )
+		&&
+		( ! empty(
+			$options['hashes-submit-approved-file-comment-string']
+		) )
+	) {
+		vipgoci_ap_hashes_api_submit_approved_files(
+			$options,
+			$prs_implicated
+		);
+	}
+
 
 	/*
 	 * At this point, we have started to prepare

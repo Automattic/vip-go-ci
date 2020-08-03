@@ -84,7 +84,7 @@ final class ApHashesApiFileApprovedTest extends TestCase {
 	}
 
 	/**
-	 * @covers ::vipgoci_ap_hashes_api_file_approved
+	 * @covers ::vipgoci_ap_hashes_api_check_file_approved
 	 */
 	public function testApHashesApiFileApproved1() {
 		$options_test = vipgoci_unittests_options_test(
@@ -108,7 +108,7 @@ final class ApHashesApiFileApprovedTest extends TestCase {
 			return;
 		}
 
-		$file_status = vipgoci_ap_hashes_api_file_approved(
+		$file_status = vipgoci_ap_hashes_api_check_file_approved(
 			$this->options,
 			'approved-1.php'
 		);
@@ -121,7 +121,7 @@ final class ApHashesApiFileApprovedTest extends TestCase {
 	}
 
 	/**
-	 * @covers ::vipgoci_ap_hashes_api_file_approved
+	 * @covers ::vipgoci_ap_hashes_api_check_file_approved
 	 */
 	public function testApHashesApiFileApproved2() {
 		$options_test = vipgoci_unittests_options_test(
@@ -145,7 +145,7 @@ final class ApHashesApiFileApprovedTest extends TestCase {
 			return;
 		}
 
-		$file_status = vipgoci_ap_hashes_api_file_approved(
+		$file_status = vipgoci_ap_hashes_api_check_file_approved(
 			$this->options,
 			'not-approved-1.php'
 		);
@@ -158,7 +158,7 @@ final class ApHashesApiFileApprovedTest extends TestCase {
 	}
 
 	/**
-	 * @covers ::vipgoci_ap_hashes_api_file_approved
+	 * @covers ::vipgoci_ap_hashes_api_check_file_approved
 	 */
 	public function testApHashesApiFileApproved3() {
 		$options_test = vipgoci_unittests_options_test(
@@ -185,7 +185,7 @@ final class ApHashesApiFileApprovedTest extends TestCase {
 		// Invalid config
 		$this->options['hashes-api-url'] .= "////";
 
-		$file_status = vipgoci_ap_hashes_api_file_approved(
+		$file_status = vipgoci_ap_hashes_api_check_file_approved(
 			$this->options,
 			'not-approved-1.php'
 		);

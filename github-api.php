@@ -370,7 +370,8 @@ function vipgoci_github_post_url(
 	$github_url,
 	$github_postfields,
 	$github_token,
-	$http_delete = false
+	$http_delete = false,
+	$preview_feature = false
 ) {
 	/*
 	 * Actually send a request to GitHub -- make sure
@@ -436,11 +437,56 @@ function vipgoci_github_post_url(
 			'vipgoci_curl_headers'
 		);
 
+
+		$ch_http_headers = array();
+
+		if ( false === $http_delete ) {
+			$ch_http_headers[] = 'Content-Type: application/json';
+		}
+
+		if ( is_string( $github_token ) ) {
+			$ch_http_headers[] =
+			'Authorization: token ' . $github_token;
+		}
+
+		else if ( is_array( $github_token ) ) {
+			if (
+				( isset( $github_token[ 'oauth_consumer_key' ] ) ) &&
+				( isset( $github_token[ 'oauth_consumer_secret' ] ) ) &&
+				( isset( $github_token[ 'oauth_token' ] ) ) &&
+				( isset( $github_token[ 'oauth_token_secret' ] ) )
+			) {
+
+				$github_auth_header = vipgoci_oauth1_headers_get(
+					'POST',
+					$github_url,
+					$github_token
+				);
+
+				$ch_http_headers[] =
+					'Authorization: ' .
+					$github_auth_header;
+			}
+		}
+
+
+		if ( true === $preview_feature ) {
+			/*
+			 * We are using a preview feature, add
+			 * a header indicating that.
+			 */
+
+			$ch_http_headers[] =
+				'Accept: application/vnd.github.squirrel-girl-preview+json';
+		}
+
+	
 		curl_setopt(
 			$ch,
 			CURLOPT_HTTPHEADER,
-			array( 'Authorization: token ' . $github_token )
+			$ch_http_headers
 		);
+
 
 		// Make sure to pause between GitHub-requests
 		vipgoci_github_wait();
@@ -476,6 +522,7 @@ function vipgoci_github_post_url(
 		if (
 			(
 				( false === $http_delete ) &&
+				( isset( $resp_headers['status'][0] ) ) &&
 				( intval( $resp_headers['status'][0] ) !== 200 ) &&
 				( intval( $resp_headers['status'][0] ) !== 201 )
 			)
@@ -484,6 +531,7 @@ function vipgoci_github_post_url(
 
 			(
 				( true === $http_delete ) &&
+				( isset( $resp_headers['status'][0] ) ) &&
 				( intval( $resp_headers['status'][0] ) !== 204 ) &&
 				( intval( $resp_headers['status'][0] ) !== 200 )
 			)
@@ -520,9 +568,11 @@ function vipgoci_github_post_url(
 			}
 
 			else if (
+				( isset( $resp_data->message ) ) &&
 				( $resp_data->message ==
 					'Validation Failed' ) &&
 
+				( isset( $resp_data->errors[0] ) ) &&
 				( $resp_data->errors[0] ==
 					'was submitted too quickly ' .
 					'after a previous comment' )
@@ -538,6 +588,7 @@ function vipgoci_github_post_url(
 			}
 
 			else if (
+				( isset( $resp_data->message ) ) &&
 				( $resp_data->message ==
 					'Validation Failed' )
 			) {
@@ -545,6 +596,7 @@ function vipgoci_github_post_url(
 			}
 
 			else if (
+				( isset( $resp_data->message ) ) &&
 				( $resp_data->message ==
 					'Server Error' )
 			) {
@@ -594,7 +646,8 @@ function vipgoci_github_post_url(
  */
 function vipgoci_github_fetch_url(
 	$github_url,
-	$github_token
+	$github_token,
+	$preview_feature = false
 ) {
 
 	$curl_retries = 0;
@@ -622,12 +675,13 @@ function vipgoci_github_fetch_url(
 			'vipgoci_curl_headers'
 		);
 
+
+		$ch_http_headers = array(
+		);
+
 		if ( is_string( $github_token ) ) {
-			curl_setopt(
-				$ch,
-				CURLOPT_HTTPHEADER,
-				array( 'Authorization: token ' . $github_token )
-			);
+			$ch_http_headers[] =
+				'Authorization: token ' . $github_token;
 		}
 
 		else if ( is_array( $github_token ) ) {
@@ -643,17 +697,30 @@ function vipgoci_github_fetch_url(
 					$github_token
 				);
 
-				curl_setopt(
-					$ch,
-					CURLOPT_HTTPHEADER,
-					array(
-						'Authorization: ' .
-						$github_auth_header
-					)
-				);
+				$ch_http_headers[] =
+					'Authorization: ' .
+					$github_auth_header;
 			}
 		}
 
+		if ( true === $preview_feature ) {
+			/*
+			 * We are using a preview feature, add
+			 * a header indicating that.
+			 */
+
+			$ch_http_headers[] =
+				'Accept: application/vnd.github.squirrel-girl-preview+json';
+		}
+
+
+		if ( ! empty( $ch_http_headers ) ) {
+			curl_setopt(
+				$ch,
+				CURLOPT_HTTPHEADER,
+				$ch_http_headers
+			);
+		}
 
 		// Make sure to pause between GitHub-requests
 		vipgoci_github_wait();
@@ -3089,7 +3156,8 @@ function vipgoci_github_diffs_fetch(
 	$renamed_files_also = false,
 	$removed_files_also = true,
 	$permission_changes_also = false,
-	$filter = null
+	$filter = null,
+	$include_file_details = false
 ) {
 
 	/*
@@ -3191,6 +3259,8 @@ function vipgoci_github_diffs_fetch(
 			continue;
 		}
 
+		
+
 
 		/*
 		 * Allow filtering of files returned.
@@ -3214,8 +3284,13 @@ function vipgoci_github_diffs_fetch(
 			$file_item->patch = null;
 		}
 
+		if ( true !== $include_file_details ) {
+			$diffs[ $file_item->filename ] = $file_item->patch;
+		}
 
-		$diffs[ $file_item->filename ] = $file_item->patch;
+		else {
+			$diffs[ $file_item->filename ] = $file_item;
+		}
 	}
 
 	return $diffs;
@@ -3868,4 +3943,212 @@ function vipgoci_github_org_teams_get(
 	return $org_teams;
 }
 
+/*
+ * Add a reaction to a Pull-Request review comment.
+ */
+
+function vipgoci_github_pr_review_reaction_add(
+	$repo_owner,
+	$repo_name,
+	$comment_id,
+	$emoji_str,
+	$github_token
+) {
+	vipgoci_log(
+		'Posting emoji to comment that is part of a Pull-Request ' .
+			'review',
+		array(
+			'repo_owner'	=> $repo_owner,
+			'repo_name'	=> $repo_name,
+			'comment_id'	=> $comment_id,
+			'emoji_str'	=> $emoji_str,
+		)
+	);
+
+	$github_url =
+		VIPGOCI_GITHUB_BASE_URL . '/' .
+		'repos/' .
+		rawurlencode( $repo_owner ) . '/' .
+		rawurlencode( $repo_name ) . '/' .
+		'pulls/' .
+		'comments/' .
+		rawurlencode( $comment_id ) . '/' .
+		'reactions';
+
+	$github_postfields = array(
+		'content'	=> $emoji_str,
+	);
+
+	vipgoci_github_post_url(
+		$github_url,
+		$github_postfields,
+		$github_token,
+		false,
+		true // preview feature
+	);
+}
+
+
+/*
+ * Get reactions to a particular comment posted
+ * to a Pull-Request review.
+ */
+function vipgoci_github_pr_review_reactions_get(
+	$repo_owner,
+	$repo_name,
+	$comment_id,
+	$github_token,
+	$filter = array()
+) {
+	
+	/*
+	 * Try to get cached data
+	 */
+
+	$cache_id = array(
+		__FUNCTION__, $repo_owner, $repo_name, $comment_id,
+		$github_token
+	);
+
+	$cached_data = vipgoci_cache( $cache_id );
+
+	vipgoci_log(
+		'Getting emjois posted to a Pull-Request comment review' .
+			( $cached_data ? ' (cached)' : '' ),
+		array(
+			'repo_owner'	=> $repo_owner,
+			'repo_name'	=> $repo_name,
+			'comment_id'	=> $comment_id,
+			'filter'	=> $filter,
+		)
+	);
+
+
+	if ( false !== $cached_data ) {
+		$all_reactions = $cached_data;
+	}
+
+	else {
+		$page = 1;
+		$per_page = 100;
+		$all_reactions = array();
+
+		do {
+			$github_url =
+				VIPGOCI_GITHUB_BASE_URL . '/' .
+				'repos/' .
+				rawurlencode( $repo_owner ) . '/' .
+				rawurlencode( $repo_name ) . '/' .
+				'pulls/' .
+				'comments/' .
+				rawurlencode( $comment_id ) . '/' .
+				'reactions?' .
+				'page=' . rawurlencode( $page ) . '&' .
+				'per_page=' . rawurlencode( $per_page );
+	
+	
+			$reactions =
+				json_decode(
+					vipgoci_github_fetch_url(
+					$github_url,
+					$github_token,
+					true // Preview feature
+				)
+			);
+
+			foreach( $reactions as $reaction ) {
+				$all_reactions[] = $reaction;
+			}
+
+			$page++;
+		} while ( count( $reactions ) >= $per_page );
+	
+	
+		/*
+		 * Cache the results and return
+		 */
+		vipgoci_cache( $cache_id, $all_reactions );
+	}
+
+
+	/*
+	 * Apply filter, if needed.
+	 */
+	if (
+		( isset( $filter['login'] ) ) &&
+		( 'myself' === $filter['login'] )
+	) {
+		/*
+		 * Get info about token-holder
+		 */
+		$current_user_info = vipgoci_github_authenticated_user_get(
+			$github_token
+		);
+
+		$filter['login'] = $current_user_info->login;
+	}
+
+	if ( ! empty( $filter ) ) { 
+		$all_reactions_new = array();
+
+		foreach( $all_reactions as $reaction ) {
+			$reaction_passed = true;
+
+			if (
+				( isset( $filter['login'] ) ) &&
+				( $reaction->user->login !==
+					$filter['login'] )
+			) {
+				$reaction_passed = false;
+			}
+
+
+			if (
+				( isset( $filter['content'] ) ) &&
+				( $reaction->content !==
+				$filter['content'] )
+			) {
+				$reaction_passed = false;
+			}
+
+			if ( true === $reaction_passed ) {
+				$all_reactions_new[] = $reaction;
+			}
+		}
+
+		$all_reactions = $all_reactions_new;
+	}
+
+	return $all_reactions;
+}
+
+
+/*
+ * Instruct GitHub to delete a particular 
+ * reaction by ID.
+ */
+function vipgoci_github_reaction_delete(
+	$reaction_id,
+	$github_token
+) {
+	vipgoci_log(
+		'Deleting a reaction',
+		array(
+			'reaction_id'	=> $reaction_id,
+		)
+	);
+
+	$github_url =
+		VIPGOCI_GITHUB_BASE_URL . '/' .
+		'reactions/' .
+		rawurlencode( $reaction_id );
+
+	vipgoci_github_post_url(
+		$github_url,
+		null,
+		$github_token,
+		true, // Indicates a DELETE
+		true // Using a preview feature
+	);	
+}
 

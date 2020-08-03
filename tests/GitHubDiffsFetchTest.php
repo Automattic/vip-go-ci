@@ -485,6 +485,91 @@ final class GitHubDiffsFetchTest extends TestCase {
 		);
 	}
 
+	/**
+ 	 * Test diff between commits; do ask for
+	 * all files to be included. No filter, but
+	 * ask for all file-details to be included.
+	 *
+	 * @covers ::vipgoci_github_diffs_fetch
+	 */
+	public function testGitHubDiffsFetch11() {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( 'github-token', 'token' ),
+			$this
+		);
 
+		if ( -1 === $options_test ) {
+			return;
+		}
 
+		vipgoci_unittests_output_suppress();
+
+		$diff = vipgoci_github_diffs_fetch(
+			$this->options['repo-owner'],
+			$this->options['repo-name'],
+			$this->options['github-token'],
+			$this->options['commit-test-repo-pr-diffs-1-a'],
+			$this->options['commit-test-repo-pr-diffs-1-d'],
+			true,
+			true,
+			true,
+			null,
+			true // file-details included
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		$this->assertTrue(
+			isset(
+				$diff['content-changed-file.txt']
+			)
+		);
+
+		$this->assertEquals(
+			'content-changed-file.txt',
+			$diff['content-changed-file.txt']->filename
+		);
+
+		$this->assertEquals(
+			'@@ -0,0 +1 @@' . PHP_EOL . '+Test file',
+			$diff['content-changed-file.txt']->patch
+		);
+
+		$this->assertEquals(
+			1,
+			$diff['content-changed-file.txt']->additions
+		);
+
+		$this->assertEquals(
+			0,
+			$diff['content-changed-file.txt']->deletions
+		);
+
+		$this->assertTrue(
+			isset(
+				$diff['renamed-file2.txt']
+			)
+		);
+
+		$this->assertEquals(
+			'renamed-file2.txt',
+			$diff['renamed-file2.txt']->filename
+		);
+
+		$this->assertEquals(
+			null,
+			$diff['renamed-file2.txt']->patch
+		);
+
+		$this->assertEquals(
+			0,
+			$diff['renamed-file2.txt']->additions
+		);
+
+		$this->assertEquals(
+			0,
+			$diff['renamed-file2.txt']->deletions
+		);
+	}
 }
