@@ -506,8 +506,8 @@ function vipgoci_github_transform_to_emojis( $text_string ) {
  * provided.
  */
 function vipgoci_github_pr_remove_drafts( $prs_array ) {
-	$prs_implicated = array_filter(
-		$prs_implicated,
+	$prs_array = array_filter(
+		$prs_array,
 		function( $pr_item ) {
 			if ( (bool) $pr_item->draft === true ) {
 				return false;
@@ -517,7 +517,7 @@ function vipgoci_github_pr_remove_drafts( $prs_array ) {
 		}
 	);
 
-	return $prs_implicated;
+	return $prs_array;
 }
 
 /*

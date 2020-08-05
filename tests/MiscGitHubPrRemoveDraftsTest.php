@@ -27,7 +27,7 @@ final class MiscGitHubPrRemoveDraftsTest extends TestCase {
 			)
 		);
 
-		vipgoci_github_pr_remove_drafts(
+		$prs_array = vipgoci_github_pr_remove_drafts(
 			$prs_array
 		);
 
