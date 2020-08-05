@@ -1967,7 +1967,7 @@ function vipgoci_github_pr_generic_support_comment_submit(
 		}
 
 		/*
-		 * Do not post support comments when a special label
+		 * When configured to do so, do not post support comments when a special label
 		 * has been added to the Pull-Request.
 		 */
 
