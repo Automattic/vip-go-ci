@@ -2902,7 +2902,15 @@ function vipgoci_github_prs_implicated(
 	);
 
 	if ( false !== $cached_data ) {
-		// FIXME: Implement skipping
+		/*
+		 * Filter away draft Pull-Requests if requested.
+		 */
+		if ( true === $skip_draft_prs ) {
+			$cached_data = vipgoci_github_pr_remove_drafts(
+				$cached_data
+			);
+		}
+
 		return $cached_data;
 	}
 
@@ -2995,7 +3003,14 @@ function vipgoci_github_prs_implicated(
 
 	vipgoci_cache( $cached_id, $prs_implicated );
 
-	// FIXME: Skip draft PRs
+	/*
+	 * Filter away draft Pull-Requests if requested.
+	 */
+	if ( true === $skip_draft_prs ) {
+		$prs_implicated = vipgoci_github_pr_remove_drafts(
+			$prs_implicated
+		);
+	}
 
 	return $prs_implicated;
 }
