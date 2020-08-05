@@ -501,6 +501,24 @@ function vipgoci_github_transform_to_emojis( $text_string ) {
 	return '';
 }
 
+/*
+ * Remove any draft Pull-Requests from the array
+ * provided.
+ */
+function vipgoci_github_pr_remove_drafts( $prs_array ) {
+	$prs_implicated = array_filter(
+		$prs_implicated,
+		function( $pr_item ) {
+			if ( (bool) $pr_item->draft === true ) {
+				return false;
+			}
+
+			return true;
+		}
+	);
+
+	return $prs_implicated;
+}
 
 /*
  * Determine if the presented file has an
