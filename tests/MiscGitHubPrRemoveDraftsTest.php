@@ -33,7 +33,7 @@ final class MiscGitHubPrRemoveDraftsTest extends TestCase {
 
 		$this->assertEquals(
 			array(
-				(object) array(
+				1 => (object) array(
 	 				'url'		=> 'https://myapi2.mydomain.is',
 					'id'		=> 999,
 					'node_id'	=> 'testing2',
