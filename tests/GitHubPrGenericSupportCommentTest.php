@@ -789,4 +789,160 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 			);
 		}
 	}
+
+	/**
+	 * @covers ::vipgoci_github_pr_generic_support_comment_submit
+	 */
+	public function testPostingWorksWithLabels() {
+		$test_label = 'my-random-label-1596640824';
+
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array(),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
+		// Configure branches we can post against
+		$this->options['post-generic-pr-support-comments-branches'] =
+			array(
+				2 => array( 'any' ),
+			);
+
+		$this->options['post-generic-pr-support-comments-skip-if-label-exists'] = array(
+			2 => $test_label,
+		);
+
+		// Get Pull-Requests
+        	$prs_implicated = $this->_getPrsImplicated();
+
+		// Check we have at least one PR
+		$this->assertTrue(
+			count( $prs_implicated ) > 0
+		);
+
+		foreach( $prs_implicated as $pr_item ) {
+			// Make sure there are no comments
+			$pr_comments = $this->_getPrGenericComments(
+				$pr_item->number
+			);
+
+			$this->assertTrue(
+				count( $pr_comments ) === 0
+			);
+	
+			// Add label to make sure no comment is posted
+			vipgoci_github_label_add_to_pr(
+				$this->options['repo-owner'],
+				$this->options['repo-name'],
+				$this->options['token'],
+				$pr_item->number,
+				$test_label
+			);
+		}
+
+		// Try to submit support comment
+		vipgoci_github_pr_generic_support_comment_submit(
+			$this->options,
+			$prs_implicated
+		);
+
+		// Make sure commenting did not succeed
+		foreach( $prs_implicated as $pr_item ) {
+			$pr_comments = $this->_getPrGenericComments(
+				$pr_item->number
+			);
+
+			$this->assertTrue(
+				count( $pr_comments ) === 0
+			);
+	
+			$this->assertEquals(
+				0,
+				$this->_countSupportCommentsFromUs(
+					$pr_comments
+				)
+			);
+		}
+
+		/*
+		 * Clear cache -- see explanation above
+		 */
+
+		vipgoci_cache(
+			VIPGOCI_CACHE_CLEAR
+		);
+		
+		// Try re-posting
+		vipgoci_github_pr_generic_support_comment_submit(
+			$this->options,
+			$prs_implicated
+		);
+
+		// And make sure it did not succeed
+		foreach( $prs_implicated as $pr_item ) {
+			$pr_comments = $this->_getPrGenericComments(
+				$pr_item->number
+			);
+
+			$this->assertTrue(
+				count( $pr_comments ) === 0
+			);
+
+			$this->assertEquals(
+				0,
+				$this->_countSupportCommentsFromUs(
+					$pr_comments
+				)
+			);
+		}
+
+		/*
+		 * Re-configure to post on drafts too and re-run
+		 */
+
+		vipgoci_cache(
+			VIPGOCI_CACHE_CLEAR
+		);
+
+		// Post on draft PRs
+		$this->options['post-generic-pr-support-comments-on-drafts'] = array(
+			2 => true,
+		);
+
+		// Try re-posting
+		vipgoci_github_pr_generic_support_comment_submit(
+			$this->options,
+			$prs_implicated
+		);
+
+		// And make sure it did not succeed
+		foreach( $prs_implicated as $pr_item ) {
+			$pr_comments = $this->_getPrGenericComments(
+				$pr_item->number
+			);
+
+			$this->assertTrue(
+				count( $pr_comments ) === 0
+			);
+
+			$this->assertEquals(
+				0,
+				$this->_countSupportCommentsFromUs(
+					$pr_comments
+				)
+			);
+
+			vipgoci_github_pr_label_remove(
+				$this->options['repo-owner'],
+				$this->options['repo-name'],
+				$this->options['token'],
+				$pr_item->number,
+				$test_label
+			);
+		}
+	}
 }

@@ -151,6 +151,7 @@ function vipgoci_run() {
 			'post-generic-pr-support-comments:',
 			'post-generic-pr-support-comments-on-drafts:',
 			'post-generic-pr-support-comments-string:',
+			'post-generic-pr-support-comments-skip-if-label-exists:',
 			'post-generic-pr-support-comments-branches:',
 			'post-generic-pr-support-comments-repo-meta-match:',
 			'set-support-level-label:',
@@ -285,6 +286,9 @@ function vipgoci_run() {
 			"\t" . '                                                   with support-related information for users. Will ' . PHP_EOL .
 			"\t" . '                                                   be posted only once per Pull-Request. ' . PHP_EOL .
 			"\t" . '--post-generic-pr-support-comments-string=STRING   String to use when posting support-comment. ' . PHP_EOL .
+			"\t" . '--post-generic-pr-support-comments-skip-if-label-exists=STRING  If the specified label exists on ' . PHP_EOL .
+			"\t" . '                                                                the Pull-Request, do not post support ' . PHP_EOL .
+			"\t" . '                                                                comment' . PHP_EOL .
 			"\t" . '--post-generic-pr-support-comments-branches=ARRAY  Only post support-comments to Pull-Requests ' . PHP_EOL .
 			"\t" . '                                                   with the target branches specified. The ' . PHP_EOL .
 			"\t" . '                                                   parameter can be a string with one value, or ' . PHP_EOL .
@@ -823,6 +827,13 @@ function vipgoci_run() {
 
 	vipgoci_option_generic_support_comments_process(
 		$options,
+		'post-generic-pr-support-comments-skip-if-label-exists',
+		'string',
+		false
+	);
+
+	vipgoci_option_generic_support_comments_process(
+		$options,
 		'post-generic-pr-support-comments-branches',
 		'array',
 		true
@@ -1039,6 +1050,7 @@ function vipgoci_run() {
 				(
 					( count( $options['post-generic-pr-support-comments-on-drafts'] ) > 1 ) ||
 					( count( $options['post-generic-pr-support-comments-string'] ) > 1 ) ||
+					( count( $options['post-generic-pr-support-comments-skip-if-label-exists'] ) > 1 ) ||
 					( count( $options['post-generic-pr-support-comments-branches'] ) > 1 )
 				)
 			)
@@ -1048,6 +1060,14 @@ function vipgoci_run() {
 					( ! empty( $options['post-generic-pr-support-comments-repo-meta-match'] ) ) &&
 					(
 						count( $options['post-generic-pr-support-comments-repo-meta-match'] ) !==
+						count( $options['post-generic-pr-support-comments-on-drafts'] )
+					)
+				)
+				||
+				(
+					( ! empty( $options['post-generic-pr-support-comments-skip-if-label-exists'] ) ) &&
+					(
+						count( $options['post-generic-pr-support-comments-skip-if-label-exists'] ) !==
 						count( $options['post-generic-pr-support-comments-on-drafts'] )
 					)
 				)
@@ -1075,6 +1095,9 @@ function vipgoci_run() {
 					'post-generic-pr-support-comments-string' =>
 						$options['post-generic-pr-support-comments-string'],
 
+					'post-generic-pr-support-comments-skip-if-label-exists' =>
+						$options['post-generic-pr-support-comments-skip-if-label-exists'],
+
 					'post-generic-pr-support-comments-branches' =>
 						$options['post-generic-pr-support-comments-branches'],
 
@@ -1093,6 +1116,7 @@ function vipgoci_run() {
 		foreach(
 			array(
 				'post-generic-pr-support-comments-string',
+				'post-generic-pr-support-comments-skip-if-label-exists',
 				'post-generic-pr-support-comments-on-drafts',
 				'post-generic-pr-support-comments-branches',
 				'post-generic-pr-support-comments-repo-meta-match',
@@ -1114,6 +1138,23 @@ function vipgoci_run() {
 				) {
 				continue;
 			}
+
+			/*
+			 * Parameter --post-generic-pr-support-comments-skip-if-label-exists is
+			 * optional as well.
+			 */
+			if (
+				( 'post-generic-pr-support-comments-skip-if-label-exists'
+					=== $tmp_option_name
+				)
+				&&
+					( empty(
+						$options[ $tmp_option_name ]
+					) )
+				) {
+				continue;
+			}
+
 
 			if ( null === $tmp_option_keys ) {
 				$tmp_option_keys = array_keys(
@@ -1144,6 +1185,9 @@ function vipgoci_run() {
 
 							'post-generic-pr-support-comments-string' =>
 								array_keys( $options['post-generic-pr-support-comments-string'] ),
+	
+							'post-generic-pr-support-comments-skip-if-label-exists' =>
+								array_keys( $options['post-generic-pr-support-comments-skip-if-label-exists'] ),
 
 							'post-generic-pr-support-comments-branches' =>
 								array_keys( $options['post-generic-pr-support-comments-branches'] ),

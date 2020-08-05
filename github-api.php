@@ -1967,6 +1967,37 @@ function vipgoci_github_pr_generic_support_comment_submit(
 		}
 
 		/*
+		 * When configured to do so, do not post support comments when a special label
+		 * has been added to the Pull-Request.
+		 */
+
+		if ( ! empty( $options[ 'post-generic-pr-support-comments-skip-if-label-exists' ][ $option_key_no_match ] ) ) {			
+			$pr_label_support_comment_skip = vipgoci_github_pr_labels_get(
+				$options['repo-owner'],
+				$options['repo-name'],
+				$options['token'],
+				$pr_item->number,
+				$options[ 'post-generic-pr-support-comments-skip-if-label-exists' ][ $option_key_no_match ]
+			);
+
+			if ( false !== $pr_label_support_comment_skip ) {
+				vipgoci_log(
+					'Not posting support comment to PR, label exists',
+					array(
+						'repo-owner'	=> $options['repo-owner'],
+						'repo-name'	=> $options['repo-name'],
+						'pr_number'	=> $pr_item->number,
+						'pr_base_ref'	=> $pr_item->base->ref,
+						'post-generic-pr-support-comments-skip-if-label-exists' =>
+							$options[ 'post-generic-pr-support-comments-skip-if-label-exists' ][ $option_key_no_match ]
+					)
+				);
+
+				continue;
+			}
+		}
+
+		/*
 		 * Check if the comment we are set to
 		 * post already exists, and if so, do
 		 * not post anything.
@@ -3369,6 +3400,7 @@ function vipgoci_github_pr_labels_get(
 			'repo_owner' => $repo_owner,
 			'repo_name' => $repo_name,
 			'pr_number' => $pr_number,
+			'label_to_look_for' => $label_to_look_for,
 			'skip_cache' => $skip_cache,
 		)
 	);
