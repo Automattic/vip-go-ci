@@ -462,9 +462,9 @@ There are further parameters for more advanced usage:
 
 The feature can be used in the following fashion:
 
-> ./vip-go-ci.php --post-generic-pr-support-comments=true --post-generic-pr-support-comments-string="This is a generic support message from `vip-go-ci`. We hope this is useful." --post-generic-pr-support-comments-branches="master"
+> ./vip-go-ci.php --post-generic-pr-support-comments=true --post-generic-pr-support-comments-string="This is a generic support message from `vip-go-ci`. We hope this is useful." --post-generic-pr-support-comments-branches="master" --post-generic-pr-support-comments-skip-if-label-exists="requesting-review"
 
-The last parameter can be specified as 'any' to allow posting to any branch.
+The ``--post-generic-pr-support-comments-branches parameter can be specified as 'any' to allow posting to any branch. With the `--post-generic-pr-support-comments-skip-if-label-exists` parameter posting of the generic support message is not performed if the label specified in the parameter is already attached to the Pull-Request.
 
 You can limit what Pull-Requests the generic support message are posted to, given data from the repo-meta API and a criteria specified on the command line. This feature depends on the repo-meta API being configured.
 
