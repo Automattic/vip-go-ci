@@ -33,7 +33,8 @@ function vipgoci_ap_svg_files(
 		$options['repo-name'],
 		$options['commit'],
 		$options['token'],
-		$options['branches-ignore']
+		$options['branches-ignore'],
+		$options['skip-draft-prs']
 	);
 
 

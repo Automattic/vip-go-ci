@@ -7,6 +7,7 @@ use PHPUnit\Framework\TestCase;
 final class GitHubPrsImplicatedTest extends TestCase {
 	var $options_git_repo_tests = array(
 		'commit-test-repo-pr-files-changed-1'	=> null,
+		'commit-test-repo-pr-files-changed-2'	=> null,
 	);
 
 	var $options_git = array(
@@ -55,7 +56,7 @@ final class GitHubPrsImplicatedTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_github_prs_implicated
 	 */
-	public function testGitHubPrsImplicated1() {
+	public function testGitHubPrsImplicatedIncludeDraftPrs() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
@@ -94,6 +95,204 @@ final class GitHubPrsImplicatedTest extends TestCase {
 		$this->assertEquals(
 			'open',
 			$prs_implicated[9]->state
+		);
+
+		unset( $this->options['commit'] );
+	}
+
+	/**
+	 * @covers ::vipgoci_github_prs_implicated
+	 */
+	public function testGitHubPrsImplicatedSkipDraftPrsFalse() {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( 'github-token', 'token' ),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
+		$this->options['commit'] =
+			$this->options['commit-test-repo-pr-files-changed-2'];
+
+		/*
+		 * Get all PRs, draft and non-draft.
+		 */
+
+		vipgoci_unittests_output_suppress();
+
+		$prs_implicated = vipgoci_github_prs_implicated(
+			$this->options['repo-owner'],
+			$this->options['repo-name'],
+			$this->options['commit'],
+			$this->options['github-token'],
+			$this->options['branches-ignore'],
+			false
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		$this->assertCount(
+			2,
+			$prs_implicated
+		);
+
+		/*
+		 * Verify non-draft PR.
+		 */
+		$this->assertEquals(
+			'open',
+			$prs_implicated[33]->state
+		);
+
+		$this->assertEquals(
+			463586588,
+			$prs_implicated[33]->id
+		);
+
+		$this->assertEquals(
+			'ac10d1f29e64504d7741cd8ca22981c426c26e9a',
+			$prs_implicated[33]->base->sha
+		);
+
+		$this->assertEquals(
+			false,
+			$prs_implicated[33]->draft
+		);
+
+		/*
+		 * Verify draft PR.
+		 */
+		$this->assertEquals(
+			'open',
+			$prs_implicated[34]->state
+		);
+
+		$this->assertEquals(
+			463587649,
+			$prs_implicated[34]->id
+		);
+
+		$this->assertEquals(
+			'027de6d804e1d40dbe1b13a3ede7cfa758787b85',
+			$prs_implicated[34]->base->sha
+		);
+
+		$this->assertEquals(
+			true,
+			$prs_implicated[34]->draft
+		);
+
+		/*
+		 * Repeat fetching of PRs, and check
+		 * if we get the same result as earlier.
+		 */
+
+		vipgoci_unittests_output_suppress();
+
+		$prs_implicated_2 = vipgoci_github_prs_implicated(
+			$this->options['repo-owner'],
+			$this->options['repo-name'],
+			$this->options['commit'],
+			$this->options['github-token'],
+			$this->options['branches-ignore'],
+			false
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		$this->assertEquals(
+			$prs_implicated,
+			$prs_implicated_2
+		);
+	}
+
+	/**
+	 * @covers ::vipgoci_github_prs_implicated
+	 */
+	public function testGitHubPrsImplicatedSkipDraftPrsTrue() {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( 'github-token', 'token' ),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
+		$this->options['commit'] =
+			$this->options['commit-test-repo-pr-files-changed-2'];
+
+
+		/*
+		 * Now fetch all PRs, draft and non-draft.
+		 */
+	
+		vipgoci_unittests_output_suppress();
+
+		$prs_implicated = vipgoci_github_prs_implicated(
+			$this->options['repo-owner'],
+			$this->options['repo-name'],
+			$this->options['commit'],
+			$this->options['github-token'],
+			$this->options['branches-ignore'],
+			true
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		$this->assertCount(
+			1,
+			$prs_implicated
+		);
+
+		/*
+		 * Verify non-draft PR.
+		 */
+		$this->assertEquals(
+			'open',
+			$prs_implicated[33]->state
+		);
+
+		$this->assertEquals(
+			463586588,
+			$prs_implicated[33]->id
+		);
+
+		$this->assertEquals(
+			'ac10d1f29e64504d7741cd8ca22981c426c26e9a',
+			$prs_implicated[33]->base->sha
+		);
+
+		$this->assertEquals(
+			false,
+			$prs_implicated[33]->draft
+		);
+
+		/*
+		 * Repeat and check if we get the same
+		 * results again. This is to check if
+		 * the caching-functionality works correctly.
+		 */
+		vipgoci_unittests_output_suppress();
+
+		$prs_implicated_2 = vipgoci_github_prs_implicated(
+			$this->options['repo-owner'],
+			$this->options['repo-name'],
+			$this->options['commit'],
+			$this->options['github-token'],
+			$this->options['branches-ignore'],
+			true
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		$this->assertEquals(
+			$prs_implicated,
+			$prs_implicated_2
 		);
 
 		unset( $this->options['commit'] );

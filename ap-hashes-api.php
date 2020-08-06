@@ -285,7 +285,8 @@ function vipgoci_ap_hashes_api_scan_commit(
 		$options['repo-name'],
 		$options['commit'],
 		$options['token'],
-		$options['branches-ignore']
+		$options['branches-ignore'],
+		$options['skip-draft-prs']
 	);
 
 

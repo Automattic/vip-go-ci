@@ -1703,6 +1703,7 @@ function vipgoci_github_pr_comments_cleanup(
 	$commit_id,
 	$github_token,
 	$branches_ignore,
+	$skip_draft_prs,
 	$comments_remove
 ) {
 	vipgoci_log(
@@ -1713,6 +1714,7 @@ function vipgoci_github_pr_comments_cleanup(
 			'commit_id' => $commit_id,
 			'branches_ignore' => $branches_ignore,
 			'comments_remove' => $comments_remove,
+			'skip_draft_prs' => $skip_draft_prs,
 		)
 	);
 
@@ -1727,7 +1729,8 @@ function vipgoci_github_pr_comments_cleanup(
 		$repo_name,
 		$commit_id,
 		$github_token,
-		$branches_ignore
+		$branches_ignore,
+		$skip_draft_prs
 	);
 
 	foreach ( $prs_implicated as $pr_item ) {
@@ -2902,7 +2905,8 @@ function vipgoci_github_prs_implicated(
 	$repo_name,
 	$commit_id,
 	$github_token,
-	$branches_ignore
+	$branches_ignore,
+	$skip_draft_prs = false
 ) {
 
 	/*
@@ -2924,10 +2928,20 @@ function vipgoci_github_prs_implicated(
 			'repo_name' => $repo_name,
 			'commit_id' => $commit_id,
 			'branches_ignore' => $branches_ignore,
+			'skip_draft_prs' => $skip_draft_prs,
 		)
 	);
 
 	if ( false !== $cached_data ) {
+		/*
+		 * Filter away draft Pull-Requests if requested.
+		 */
+		if ( true === $skip_draft_prs ) {
+			$cached_data = vipgoci_github_pr_remove_drafts(
+				$cached_data
+			);
+		}
+
 		return $cached_data;
 	}
 
@@ -3019,6 +3033,15 @@ function vipgoci_github_prs_implicated(
 	}
 
 	vipgoci_cache( $cached_id, $prs_implicated );
+
+	/*
+	 * Filter away draft Pull-Requests if requested.
+	 */
+	if ( true === $skip_draft_prs ) {
+		$prs_implicated = vipgoci_github_pr_remove_drafts(
+			$prs_implicated
+		);
+	}
 
 	return $prs_implicated;
 }

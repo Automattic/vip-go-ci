@@ -33,7 +33,8 @@ function vipgoci_ap_nonfunctional_changes(
 		$options['repo-name'],
 		$options['commit'],
 		$options['token'],
-		$options['branches-ignore']
+		$options['branches-ignore'],
+		$options['skip-draft-prs']
 	);
 
 

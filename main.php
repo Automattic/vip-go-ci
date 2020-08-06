@@ -138,6 +138,7 @@ function vipgoci_run() {
 			'repo-name:',
 			'commit:',
 			'token:',
+			'skip-draft-prs:',
 			'results-comments-sort:',
 			'review-comments-max:',
 			'review-comments-total-max:',
@@ -246,6 +247,10 @@ function vipgoci_run() {
 			"\t" . '--repo-name=STRING             Specify name of the repository' . PHP_EOL .
 			"\t" . '--commit=STRING                Specify the exact commit to scan (SHA)' . PHP_EOL .
 			"\t" . '--token=STRING                 The access-token to use to communicate with GitHub' . PHP_EOL .
+			PHP_EOL .
+			"\t" . '--skip-draft-prs=BOOL          If true, skip scanning of all Pull-Requests that are in draft mode.' . PHP_EOL .
+			"\t" . '                               Default is false.' . PHP_EOL .
+			PHP_EOL .
 			"\t" . '--results-comments-sort=BOOL     Sort issues found according to severity, from high ' . PHP_EOL .
 			"\t" . '                               to low, before submitting to GitHub. Not sorted by default.' . PHP_EOL .
 			"\t" . '--review-comments-max=NUMBER   Maximum number of inline comments to submit' . PHP_EOL .
@@ -278,6 +283,7 @@ function vipgoci_run() {
 			"\t" . '                                                      avoiding double-posting; they would be ' . PHP_EOL .
 			"\t" . '                                                      excluded. Note that this parameter ' . PHP_EOL .
 			"\t" . '                                                      only works in conjunction with ' . PHP_EOL .
+			PHP_EOL .
 			"\t" . '                                                      --dismissed-reviews-repost-comments' . PHP_EOL .
 			"\t" . '--informational-url=STRING     URL to documentation on what this bot does. Should ' . PHP_EOL .
 			"\t" . '                               start with https:// or https:// ' . PHP_EOL .
@@ -748,6 +754,8 @@ function vipgoci_run() {
 	 * Handle boolean parameters
 	 */
 
+	vipgoci_option_bool_handle( $options, 'skip-draft-prs', 'false' );
+
 	vipgoci_option_bool_handle( $options, 'phpcs', 'true' );
 
 	vipgoci_option_bool_handle( $options, 'phpcs-skip-folders-in-repo-options-file', 'false' );
@@ -993,10 +1001,12 @@ function vipgoci_run() {
 		$options,
 		'repo-options-allowed',
 		array(
+			'skip-execution',
+			'skip-draft-prs',
 			'phpcs-severity',
+			'post-generic-pr-support-comments',
 			'phpcs-sniffs-include',
 			'phpcs-sniffs-exclude',
-			'post-generic-pr-support-comments',
 		)
 	);
 
@@ -1445,6 +1455,11 @@ function vipgoci_run() {
 				'valid_values'	=> array( true, false ),
 			),
 
+			'skip-draft-prs'	=> array(
+				'type'		=> 'boolean',
+				'valid_values'	=> array( true, false ),
+			),
+
 			'phpcs-severity' => array(
 				'type'		=> 'integer',
 				'valid_values'	=> array( 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ),
@@ -1529,7 +1544,8 @@ function vipgoci_run() {
 		$options['repo-name'],
 		$options['commit'],
 		$options['token'],
-		$options['branches-ignore']
+		$options['branches-ignore'],
+		$options['skip-draft-prs']
 	);
 
 	if ( empty( $prs_implicated ) ) {
@@ -1541,6 +1557,12 @@ function vipgoci_run() {
 		);
 	}
 
+	vipgoci_log(
+		'Found implicated Pull-Requests',
+		array(
+			'prs_implicated' => array_keys( $prs_implicated ),
+		)
+	);
 
 	/*
 	 * Make sure we are working with the latest
@@ -1644,6 +1666,7 @@ function vipgoci_run() {
 		$options['commit'],
 		$options['token'],
 		$options['branches-ignore'],
+		$options['skip-draft-prs'],
 		array(
 			VIPGOCI_SYNTAX_ERROR_STR,
 			VIPGOCI_GITHUB_ERROR_STR,

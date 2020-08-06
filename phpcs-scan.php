@@ -342,7 +342,8 @@ function vipgoci_phpcs_scan_commit(
 		$repo_name,
 		$commit_id,
 		$github_token,
-		$options['branches-ignore']
+		$options['branches-ignore'],
+		$options['skip-draft-prs']
 	);
 
 
@@ -1204,7 +1205,8 @@ function vipgoci_phpcs_validate_sniffs_in_options_and_report(
 			$options['repo-name'],
 			$options['commit'],
 			$options['token'],
-			$options['branches-ignore']
+			$options['branches-ignore'],
+			$options['skip-draft-prs']
 		);
 
 		foreach ( $prs_implicated as $pr_item ) {

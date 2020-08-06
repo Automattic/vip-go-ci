@@ -250,7 +250,8 @@ function vipgoci_lint_scan_commit(
 		$repo_name,
 		$commit_id,
 		$github_token,
-		$options['branches-ignore']
+		$options['branches-ignore'],
+		$options['skip-draft-prs']
 	);
 
 
