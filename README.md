@@ -261,23 +261,49 @@ Any parameter can be read from the environment, not just those shown. Parameters
 
 ### Configuration via repository config-file
 
-Two options can currently be configured via a repository config-file. This way, users with commit-access to a git repository can influence the behaviour of `vip-go-ci`. The idea is to allow users flexibility in how scanning is performed. Various sanity checks are made to the configuration options read. Currently, the options that can be specified via repository options are `--phpcs-severity` and `--post-generic-pr-support-comments`. Any default configuration is overwritten during run-time by the new value, should it be valid. 
+A few options can currently be configured via a repository config-file. This way, users with commit-access to a git repository can influence the behaviour of `vip-go-ci`. The idea is to allow users flexibility in how scanning is performed. Various sanity checks are made to the configuration options read. The options that can be specified via repository options are outlined below. Any default configuration is overwritten during run-time by the new value, should it be valid. 
 
-The feature can be enabled or disabled via `--repo-options`; by default it is disabled. To use the feature, make sure a `.vipgoci_options` file can be found at the root of the relevant git-repository, containing something like this:
+The feature can be enabled or disabled via `--repo-options`; by default it is disabled. To use the feature, make sure a `.vipgoci_options` file can be found at the root of the relevant git-repository, containing something similar to this:
 
 ```
-{"phpcs-severity":5,"post-generic-pr-support-comments":false}
+{"phpcs-severity":5,"skip-draft-prs":true}
 ```
 
 Then run `vip-go-ci` like this:
 
 > ./vip-go-ci.php --repo-options=true 
 
-If you wish to limit the options configurable via repository options file, you can specify which options can be configured by using --repo-options-allowed, like this:
+If you wish to limit the options configurable via repository config-file, you can specify which options can be configured by using `--repo-options-allowed`, like this:
 
-> ./vip-go-ci.php --repo-options=true --repo-options-allowed="phpcs-severity,post-generic-pr-support-comments"
+> ./vip-go-ci.php --repo-options=true --repo-options-allowed="phpcs-severity"
 
-Also supported is the `phpcs-sniffs-exclude` option. This is an array parameter and if it is specified in the options file, the items specified will be appended to the options specified on the command line. To configure this option, one can specify something like this in the repository options file:
+Should the configuration file not be found, any configuration value not be valid, or altering of the particular option is not allowed, the relevant option will not be altered on run-time. Note that not all options need to be set in the configuration file, only those desired. The file is expected to be a parsable, valid JSON.
+
+You can use any combination of options you wish. Individual options are documented below.
+
+* Option `--phpcs-severity`
+
+Specifies the severity level to pass to PHPCS when executed.
+
+For example:
+
+```
+{"phpcs-severity":5}
+```
+
+* Option `--post-generic-pr-support-comments`
+
+Specifies if to post generic support comments, should be a boolean.
+
+For example:
+
+```
+{"post-generic-pr-support-comments":false}
+```
+
+* Options `phpcs-sniffs-exclude` and `phpcs-sniffs-include`
+
+These are array parameters and if it is specified in the options file, the items specified will be appended to the options specified on the command line. To configure this option, one can specify something like this in the repository options file:
 
 > {"phpcs-sniffs-exclude":["WordPressVIPMinimum.JS.InnerHTML", "WordPress.WP.CronInterval"]} 
 
@@ -287,15 +313,13 @@ The `phpcs-sniffs-include` option is also available, and it is configured in the
 
 Please note that should any of the PHPCS sniffs specified be invalid, a warning will be posted on any Pull-Request scanned. The warning will be removed during next scan and not posted again if the issue is fixed.
 
-Also available is the `skip-execution` option:
-
-> {"skip-execution":true}
+* Option `skip-execution`
 
 This will make execution of `vip-go-ci` stop after initial startup, avoiding all further processing and scanning.
 
-Should the configuration file not be found, any configuration value not be valid, or altering of the particular option is not allowed, the option will not be altered on run-time. Note that not all options need to be set in the configuration file, only those desired. The file is expected to be a parsable, valid JSON.
+For example:
 
-This feature might be extended to other options in the future.
+> {"skip-execution":true}
 
 ### Informational URL
 
