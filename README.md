@@ -301,11 +301,11 @@ For example:
 
 #### Options `phpcs-sniffs-exclude` and `phpcs-sniffs-include`
 
-These are array parameters and if it is specified in the options file, the items specified will be appended to the options specified on the command line. To configure this option, one can specify something like this in the repository options file:
+These are array parameters and if specified in the options file, the items specified will be appended to the options specified on the command line. To configure the `phpcs-sniffs-exclude` option, one can specify something like this in the repository options file:
 
 > {"phpcs-sniffs-exclude":["WordPressVIPMinimum.JS.InnerHTML", "WordPress.WP.CronInterval"]} 
 
-The `phpcs-sniffs-include` option is also available, and it is configured in the same way as the `phpcs-sniffs-exclude` option. Note that it works differently behind the scenes, as it will write out a new PHPCS standard on run-time, containing the sniffs to be included as well as the original PHPCS standard, and will then use this standard from then on. The `phpcs-sniffs-include` option is used in this way:
+The `phpcs-sniffs-include` is configured in the same way as the `phpcs-sniffs-exclude` option. Note that it works differently behind the scenes, as it will write out a new PHPCS standard on run-time, containing the sniffs to be included as well as the original PHPCS standard, and will then use this standard from then on. The `phpcs-sniffs-include` option is used in this way:
 
 > {"phpcs-sniffs-include":["WordPress.DB.DirectDatabaseQuery"]} 
 
@@ -318,6 +318,15 @@ This will make execution of `vip-go-ci` stop after initial startup, avoiding all
 For example:
 
 > {"skip-execution":true}
+
+#### Option `skip-draft-prs`
+
+This will let `vip-go-ci` skip scanning of any Pull-Requests that are marked as `draft` on GitHub. This applies to all types of scanning, PHPCS, linting, etc.
+
+For example:
+
+> {"skip-draft-prs":true}
+
 
 ### Informational URL
 
