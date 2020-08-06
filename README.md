@@ -261,7 +261,7 @@ Any parameter can be read from the environment, not just those shown. Parameters
 
 ### Configuration via repository config-file
 
-A few options can currently be configured via a repository config-file. This way, users with commit-access to a git repository can influence the behaviour of `vip-go-ci`. The idea is to allow users flexibility in how scanning is performed. Various sanity checks are made to the configuration options read. The options that can be specified via repository options are outlined below. Any default configuration is overwritten during run-time by the new value, should it be valid. 
+A few options can currently be configured via a repository config-file. This way, users with commit-access to a git repository can influence the behaviour of `vip-go-ci` when it scans the repository. The idea is to allow users flexibility in how scanning is performed. Various sanity checks are made to the configuration options read. The options that can be specified via repository options are outlined below. A default configuration option is overwritten during run-time by the new value, should it be valid. 
 
 The feature can be enabled or disabled via `--repo-options`; by default it is disabled. To use the feature, make sure a `.vipgoci_options` file can be found at the root of the relevant git-repository, containing something similar to this:
 
@@ -271,11 +271,9 @@ The feature can be enabled or disabled via `--repo-options`; by default it is di
 
 Then run `vip-go-ci` like this:
 
-> ./vip-go-ci.php --repo-options=true 
-
-If you wish to limit the options configurable via repository config-file, you can specify which options can be configured by using `--repo-options-allowed`, like this:
-
 > ./vip-go-ci.php --repo-options=true --repo-options-allowed="phpcs-severity"
+
+`--repo-options-allowed` specifies which options can be specified via `.vipgoci_options`, and that can be used to limit which options are allowed.
 
 Should the configuration file not be found, any configuration value not be valid, or altering of the particular option is not allowed, the relevant option will not be altered on run-time. Note that not all options need to be set in the configuration file, only those desired. The file is expected to be a parsable, valid JSON.
 
