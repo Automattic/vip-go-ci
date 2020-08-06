@@ -1829,7 +1829,7 @@ function vipgoci_github_pr_generic_support_comment_submit(
 	$prs_implicated
 ) {
 
-	$log_debugmsg = 
+	$log_debugmsg =
 		array(
 			'post-generic-pr-support-comments' =>
 				$options['post-generic-pr-support-comments'],
@@ -1848,7 +1848,7 @@ function vipgoci_github_pr_generic_support_comment_submit(
 		);
 
 	/*
-	 * Detect if to run, or invalid configuration. 
+	 * Detect if to run, or invalid configuration.
 	 */
 	if (
 		( true !== $options['post-generic-pr-support-comments'] ) ||
@@ -2056,8 +2056,8 @@ function vipgoci_github_pr_generic_support_comment_submit(
  * Get all reviews for a particular Pull-Request,
  * and allow filtering by:
  * - User submitted (parameter: login)
- * - State of review (parameter: state, 
- *	values are an array of: CHANGES_REQUESTED, 
+ * - State of review (parameter: state,
+ *	values are an array of: CHANGES_REQUESTED,
  *	COMMENTED, APPROVED)
  *
  * Note that parameter login can be assigned a magic
@@ -3409,7 +3409,7 @@ function vipgoci_github_pr_labels_get(
 	 * If asked to skip cache, imitate no cached
 	 * data available.
 	 */
-	if ( 
+	if (
 		( false !== $cached_data ) &&
 		( true === $skip_cache )
 	) {
