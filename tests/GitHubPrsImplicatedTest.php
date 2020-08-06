@@ -182,7 +182,7 @@ final class GitHubPrsImplicatedTest extends TestCase {
 
 		$this->assertEquals(
 			true,
-			$prs_implicated[33]->draft
+			$prs_implicated[34]->draft
 		);
 
 		/*
@@ -252,7 +252,7 @@ final class GitHubPrsImplicatedTest extends TestCase {
 		);
 
 		$this->assertEquals(
-			true,
+			false,
 			$prs_implicated[33]->draft
 		);
 
