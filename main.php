@@ -247,7 +247,8 @@ function vipgoci_run() {
 			"\t" . '--commit=STRING                Specify the exact commit to scan (SHA)' . PHP_EOL .
 			"\t" . '--token=STRING                 The access-token to use to communicate with GitHub' . PHP_EOL .
 			PHP_EOL .
-			"\t" . '--skip-draft-prs=BOOL          Skip scanning of all Pull-Requests that are in draft mode.' .
+			"\t" . '--skip-draft-prs=BOOL          If true, skip scanning of all Pull-Requests that are in draft mode.' . PHP_EOL .
+			"\t" . '                               Default is false.' . PHP_EOL .
 			PHP_EOL .
 			"\t" . '--results-comments-sort=BOOL     Sort issues found according to severity, from high ' . PHP_EOL .
 			"\t" . '                               to low, before submitting to GitHub. Not sorted by default.' . PHP_EOL .
