@@ -103,7 +103,7 @@ final class GitHubPrsImplicatedTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_github_prs_implicated
 	 */
-	public function testGitHubPrsImplicatedSkipDraftPrs() {
+	public function testGitHubPrsImplicatedSkipDraftPrsFalse() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
@@ -207,9 +207,25 @@ final class GitHubPrsImplicatedTest extends TestCase {
 			$prs_implicated,
 			$prs_implicated_2
 		);
+	}
 
-		unset( $prs_implicated );
-		unset( $prs_implicated_2 );
+	/**
+	 * @covers ::vipgoci_github_prs_implicated
+	 */
+	public function testGitHubPrsImplicatedSkipDraftPrsTrue() {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( 'github-token', 'token' ),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
+		$this->options['commit'] =
+			$this->options['commit-test-repo-pr-files-changed-2'];
+
 
 		/*
 		 * Now fetch all PRs, draft and non-draft.
@@ -278,10 +294,6 @@ final class GitHubPrsImplicatedTest extends TestCase {
 			$prs_implicated,
 			$prs_implicated_2
 		);
-
-
-		unset( $prs_implicated );
-		unset( $prs_implicated_2 );
 
 		unset( $this->options['commit'] );
 	}
