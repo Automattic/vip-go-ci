@@ -1510,6 +1510,12 @@ function vipgoci_run() {
 		);
 	}
 
+	vipgoci_log(
+		'Found implicated Pull-Requests',
+		array(
+			'prs_implicated' => array_keys( $prs_implicated ),
+		)
+	);
 
 	/*
 	 * Make sure we are working with the latest
