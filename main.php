@@ -989,10 +989,12 @@ function vipgoci_run() {
 		$options,
 		'repo-options-allowed',
 		array(
+			'skip-execution',
+			'skip-draft-prs',
 			'phpcs-severity',
+			'post-generic-pr-support-comments',
 			'phpcs-sniffs-include',
 			'phpcs-sniffs-exclude',
-			'post-generic-pr-support-comments',
 		)
 	);
 
