@@ -1467,7 +1467,7 @@ function vipgoci_github_pr_generic_comment_submit_results(
 
 
 	vipgoci_log(
-		'About to ' . 
+		'About to ' .
 		'submit generic PR comment to GitHub about issues',
 		array(
 			'repo_owner' => $repo_owner,
