@@ -82,7 +82,7 @@ function vipgoci_lint_do_scan_file(
 	/*
 	 * For some reason some PHP versions
 	 * output the same errors two times, remove
-	 * any duplicates. 
+	 * any duplicates.
 	 */
 
 	$file_issues_arr =
