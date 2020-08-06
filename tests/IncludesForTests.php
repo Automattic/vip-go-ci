@@ -326,5 +326,5 @@ function vipgoci_unittests_php_syntax_error_compat( $str ) {
 	);
 }
 
-require_once( __DIR__ . '/../vip-go-ci.php' );
+require_once( __DIR__ . '/../main.php' );
 
