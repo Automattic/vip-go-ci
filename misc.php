@@ -84,7 +84,7 @@ function vipgoci_sysexit(
 /*
  * Check if a particular set of fields exist
  * in a target array and if their values match a set
- * given. Will return an array describing 
+ * given. Will return an array describing
  * which items of the array contain all the fields
  * and the matching values.
  *
@@ -140,7 +140,7 @@ function vipgoci_find_fields_in_array( $fields_arr, $data_arr ) {
 				if ( $data_arr[ $data_item_cnt ][ $field_name ] === $field_value_item ) {
 					$res_arr[ $data_item_cnt ]++;
 
-					/* 
+					/*
 					 * Once we find a match, stop searching.
 					 * This is to safeguard against any kind of
 					 * multiple matches (which though are nearly
@@ -1053,7 +1053,7 @@ function vipgoci_results_sort_by_severity(
 		 * column so we can sort using that.
 		 */
 		foreach(
-			array_keys( $current_pr_results ) as 
+			array_keys( $current_pr_results ) as
 				$current_pr_result_item_key
 		) {
 			$current_pr_results[ $current_pr_result_item_key ][ 'severity'] =
@@ -1079,7 +1079,7 @@ function vipgoci_results_sort_by_severity(
 		 * afterwards.
 		 */
 		foreach(
-			array_keys( $current_pr_results ) as 
+			array_keys( $current_pr_results ) as
 				$current_pr_result_item_key
 		) {
 			unset(

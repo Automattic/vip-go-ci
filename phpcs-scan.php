@@ -136,7 +136,7 @@ function vipgoci_phpcs_write_xml_standard_file(
 	xmlwriter_start_document( $xml_doc, '1.0', 'UTF-8' );
 
 	xmlwriter_start_element( $xml_doc, 'ruleset' );
-   
+
 		xmlwriter_start_attribute( $xml_doc, 'xmlns:xsi' );
 			xmlwriter_text( $xml_doc, 'http://www.w3.org/2001/XMLSchema-instance' );
 		xmlwriter_end_attribute( $xml_doc );
@@ -149,7 +149,7 @@ function vipgoci_phpcs_write_xml_standard_file(
 			xmlwriter_text( $xml_doc, 'phpcs.xsd' );
 		xmlwriter_end_attribute( $xml_doc );
 
-       
+
 		xmlwriter_start_element( $xml_doc, 'description' );
 			xmlwriter_text( $xml_doc, 'Custom coding standard' );
 		xmlwriter_end_element( $xml_doc );
@@ -887,7 +887,7 @@ function vipgoci_phpcs_get_all_standards(
  * Ask PHPCS for a list of all sniffs that are active
  * in the specified standard. Returns with an array
  * of active sniffs.
- */ 
+ */
 function vipgoci_phpcs_get_sniffs_for_standard(
 	$phpcs_path,
 	$phpcs_standard
@@ -1161,7 +1161,7 @@ function vipgoci_phpcs_validate_sniffs_in_options_and_report(
 
 	/*
 	 * Check if any of the --phpcs-sniffs-exclude items
-	 * are also defined in --phpcs-sniffs-include. If so, 
+	 * are also defined in --phpcs-sniffs-include. If so,
 	 * skip those in --phpcs-sniffs-include, and report the problem.
 	 */
 
@@ -1250,7 +1250,7 @@ function vipgoci_phpcs_validate_sniffs_in_options_and_report(
 function vipgoci_phpcs_possibly_use_new_standard_file(
 	&$options
 ) {
-	/* 
+	/*
 	 * Switch to new standard: Write new standard
 	 * to a temporary file, then switch to using that.
 	 */

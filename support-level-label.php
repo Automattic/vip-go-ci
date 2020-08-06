@@ -155,13 +155,13 @@ function vipgoci_repo_meta_api_data_fetch(
 }
 
 /*
- * Fetch data from repo-meta API, then try 
+ * Fetch data from repo-meta API, then try
  * to match fields and their values with
  * the data. The fields and values are those
  * found in a particular $option parameter
  * specified as an argument here ($option_name).
  *
- * If there is a match, return true. Otherwise, 
+ * If there is a match, return true. Otherwise,
  * return false.
  */
 function vipgoci_repo_meta_api_data_match(
@@ -275,7 +275,7 @@ function vipgoci_repo_meta_api_data_match(
 
 /*
  * Attach support level label to
- * Pull-Requests, if configured to 
+ * Pull-Requests, if configured to
  * do so. Will fetch information
  * about support-level from an API.
  */

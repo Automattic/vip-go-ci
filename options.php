@@ -147,7 +147,7 @@ function vipgoci_options_read_repo_file(
 
 		/*
 		 * Limit which options are configurable via repository
-		 * options file. Skip the current option if not found 
+		 * options file. Skip the current option if not found
 		 * the list of allowed options.
 		 */
 		if ( ! in_array(
@@ -252,7 +252,7 @@ function vipgoci_options_read_repo_file(
 		}
 
 		if (
-			( 'array' === $option_overwritable_conf['type'] ) && 
+			( 'array' === $option_overwritable_conf['type'] ) &&
 			( true === $option_overwritable_conf['append'] )
 		) {
 			$options[
@@ -546,7 +546,7 @@ function vipgoci_options_read_env(
 			vipgoci_log(
 				'Skipping option from environment as it is not recognized',
 				array(
-					'option_name' => 
+					'option_name' =>
 						$option_name,
 
 					'option_env_var' =>
