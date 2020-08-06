@@ -157,6 +157,11 @@ final class GitHubPrsImplicatedTest extends TestCase {
 			$prs_implicated[33]->base->sha
 		);
 
+		$this->assertEquals(
+			false,
+			$prs_implicated[33]->draft
+		);
+
 		/*
 		 * Verify draft PR.
 		 */
@@ -173,6 +178,11 @@ final class GitHubPrsImplicatedTest extends TestCase {
 		$this->assertEquals(
 			'027de6d804e1d40dbe1b13a3ede7cfa758787b85',
 			$prs_implicated[34]->base->sha
+		);
+
+		$this->assertEquals(
+			true,
+			$prs_implicated[33]->draft
 		);
 
 		/*
@@ -239,6 +249,11 @@ final class GitHubPrsImplicatedTest extends TestCase {
 		$this->assertEquals(
 			'ac10d1f29e64504d7741cd8ca22981c426c26e9a',
 			$prs_implicated[33]->base->sha
+		);
+
+		$this->assertEquals(
+			true,
+			$prs_implicated[33]->draft
 		);
 
 		/*
