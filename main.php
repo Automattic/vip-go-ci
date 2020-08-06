@@ -131,7 +131,7 @@ function vipgoci_run() {
 
 	$startup_time = time();
 
-	$options_recognized = 
+	$options_recognized =
 		array(
 			'env-options:',
 			'repo-owner:',
@@ -312,7 +312,7 @@ function vipgoci_run() {
 			"\t" . '--repo-meta-api-base-url=STRING      Base URL to repo-meta API, containing support level and other ' . PHP_EOL .
 			"\t" . '                                     information. ' . PHP_EOL .
 			"\t" . '--repo-meta-api-user-id=STRING       Authentication detail for the repo-meta API. ' . PHP_EOL .
-			"\t" . '--repo-meta-api-access-token=STRING  Access token for the repo-meta API. ' . PHP_EOL .                                
+			"\t" . '--repo-meta-api-access-token=STRING  Access token for the repo-meta API. ' . PHP_EOL .
 			PHP_EOL .
 			"\t" . '--phpcs=BOOL                   Whether to run PHPCS (true/false)' . PHP_EOL .
 			"\t" . '--phpcs-path=FILE              Full path to PHPCS script' . PHP_EOL .
@@ -393,7 +393,7 @@ function vipgoci_run() {
 			PHP_EOL .
 			"\t" . '--help                         Displays this message' . PHP_EOL .
 			"\t" . '--env-options=STRING           Specifies configuration options to be read from environmental ' . PHP_EOL .
-			"\t" . '                               variables -- any variable can be specified. For instance, with ' . PHP_EOL . 
+			"\t" . '                               variables -- any variable can be specified. For instance, with ' . PHP_EOL .
 			"\t" . '                               --env-options="repo-owner=U_ROWNER,output=U_FOUTPUT" specified ' . PHP_EOL .
 			"\t" . '                               vip-go-ci will attempt to read the --repo-owner and --output ' . PHP_EOL .
 			"\t" . '                               from the $U_ROWNER and $U_FOUTPUT environmental variables, ' . PHP_EOL .
@@ -861,7 +861,7 @@ function vipgoci_run() {
 	vipgoci_option_bool_handle( $options, 'set-support-level-label', 'false' );
 
 	if (
-		( isset( $options['set-support-level-label-prefix'] ) ) && 
+		( isset( $options['set-support-level-label-prefix'] ) ) &&
 		( strlen( $options['set-support-level-label-prefix'] ) > 5 )
 	) {
 		$options['set-support-level-label-prefix'] = trim(
