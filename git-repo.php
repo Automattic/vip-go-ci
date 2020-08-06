@@ -417,4 +417,4 @@ function vipgoci_gitrepo_get_file_at_commit(
 	}
 
 	return $result;
-} 
+}
