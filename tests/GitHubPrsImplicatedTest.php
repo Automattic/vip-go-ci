@@ -117,11 +117,12 @@ final class GitHubPrsImplicatedTest extends TestCase {
 		$this->options['commit'] =
 			$this->options['commit-test-repo-pr-files-changed-2'];
 
-		vipgoci_unittests_output_suppress();
-
 		/*
 		 * Get all PRs, draft and non-draft.
 		 */
+
+		vipgoci_unittests_output_suppress();
+
 		$prs_implicated = vipgoci_github_prs_implicated(
 			$this->options['repo-owner'],
 			$this->options['repo-name'],
@@ -174,10 +175,38 @@ final class GitHubPrsImplicatedTest extends TestCase {
 			$prs_implicated[34]->base->sha
 		);
 
+		/*
+		 * Repeat fetching of PRs, and check
+		 * if we get the same result as earlier.
+		 */
+
+		vipgoci_unittests_output_suppress();
+
+		$prs_implicated_2 = vipgoci_github_prs_implicated(
+			$this->options['repo-owner'],
+			$this->options['repo-name'],
+			$this->options['commit'],
+			$this->options['github-token'],
+			$this->options['branches-ignore'],
+			false
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		$this->assertEquals(
+			$prs_implicated,
+			$prs_implicated_2
+		);
+
+		unset( $prs_implicated );
+		unset( $prs_implicated_2 );
 
 		/*
 		 * Now fetch all PRs, draft and non-draft.
 		 */
+	
+		vipgoci_unittests_output_suppress();
+
 		$prs_implicated = vipgoci_github_prs_implicated(
 			$this->options['repo-owner'],
 			$this->options['repo-name'],
@@ -211,6 +240,33 @@ final class GitHubPrsImplicatedTest extends TestCase {
 			'ac10d1f29e64504d7741cd8ca22981c426c26e9a',
 			$prs_implicated[33]->base->sha
 		);
+
+		/*
+		 * Repeat and check if we get the same
+		 * results again. This is to check if
+		 * the caching-functionality works correctly.
+		 */
+		vipgoci_unittests_output_suppress();
+
+		$prs_implicated_2 = vipgoci_github_prs_implicated(
+			$this->options['repo-owner'],
+			$this->options['repo-name'],
+			$this->options['commit'],
+			$this->options['github-token'],
+			$this->options['branches-ignore'],
+			true
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		$this->assertEquals(
+			$prs_implicated,
+			$prs_implicated_2
+		);
+
+
+		unset( $prs_implicated );
+		unset( $prs_implicated_2 );
 
 		unset( $this->options['commit'] );
 	}
