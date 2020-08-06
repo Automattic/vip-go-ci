@@ -279,7 +279,7 @@ Should the configuration file not be found, any configuration value not be valid
 
 You can use any combination of options you wish. Individual options are documented below.
 
-* Option `--phpcs-severity`
+#### Option `--phpcs-severity`
 
 Specifies the severity level to pass to PHPCS when executed.
 
@@ -289,7 +289,7 @@ For example:
 {"phpcs-severity":5}
 ```
 
-* Option `--post-generic-pr-support-comments`
+#### Option `--post-generic-pr-support-comments`
 
 Specifies if to post generic support comments, should be a boolean.
 
@@ -299,7 +299,7 @@ For example:
 {"post-generic-pr-support-comments":false}
 ```
 
-* Options `phpcs-sniffs-exclude` and `phpcs-sniffs-include`
+#### Options `phpcs-sniffs-exclude` and `phpcs-sniffs-include`
 
 These are array parameters and if it is specified in the options file, the items specified will be appended to the options specified on the command line. To configure this option, one can specify something like this in the repository options file:
 
@@ -311,7 +311,7 @@ The `phpcs-sniffs-include` option is also available, and it is configured in the
 
 Please note that should any of the PHPCS sniffs specified be invalid, a warning will be posted on any Pull-Request scanned. The warning will be removed during next scan and not posted again if the issue is fixed.
 
-* Option `skip-execution`
+#### Option `skip-execution`
 
 This will make execution of `vip-go-ci` stop after initial startup, avoiding all further processing and scanning.
 
