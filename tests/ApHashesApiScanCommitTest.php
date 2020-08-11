@@ -71,6 +71,8 @@ final class ApHashesApiScanCommitTest extends TestCase {
 			vipgoci_unittests_setup_git_repo(
 				$this->options
 			);
+
+		$this->options['skip-draft-prs'] = false;
 	}
 
 	protected function tearDown() {

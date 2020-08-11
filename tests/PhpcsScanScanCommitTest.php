@@ -57,6 +57,8 @@ final class PhpcsScanScanCommitTest extends TestCase {
 		$this->options['lint-skip-folders'] = array();
 
 		$this->options['phpcs-skip-folders'] = array();
+
+		$this->options['skip-draft-prs'] = false;
 	}
 
 	protected function tearDown() {

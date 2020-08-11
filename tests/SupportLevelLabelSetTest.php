@@ -54,6 +54,8 @@ final class SupportLevelLabelSetTest extends TestCase {
 
 		$this->options['set-support-level-label-prefix'] =
 			'[MySupport Level]';
+
+		$this->options['skip-draft-prs'] = false;
 	}
 
 	protected function tearDown() {

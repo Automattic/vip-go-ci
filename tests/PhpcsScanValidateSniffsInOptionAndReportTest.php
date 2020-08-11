@@ -108,6 +108,8 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 
 			vipgoci_unittests_output_unsuppress();
 		}
+
+		$this->options['skip-draft-prs'] = false;
 	}
 
 	protected function tearDown() {

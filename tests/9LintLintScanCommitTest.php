@@ -50,6 +50,8 @@ final class LintLintScanCommitTest extends TestCase {
 
 		$this->options['branches-ignore'] = array();
 
+		$this->options['skip-draft-prs'] = false;
+
 		global $vipgoci_debug_level;
 		$vipgoci_debug_level = 2;
 	}

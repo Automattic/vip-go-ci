@@ -67,6 +67,8 @@ final class ApAutoApprovalTest extends TestCase {
 		// Same, not used, but needs to be defined
 		$this->options['autoapprove-php-nonfunctional-changes'] = false;
 
+		$this->options['skip-draft-prs'] = false;
+
 		$this->cleanup_prs();
 	}
 

@@ -64,6 +64,8 @@ final class ApSvgFilesTest extends TestCase {
 			);
 
 		$this->options['branches-ignore'] = array();
+
+		$this->options['skip-draft-prs'] = false;
 	}
 
 	protected function tearDown() {
