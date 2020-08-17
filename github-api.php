@@ -3923,4 +3923,118 @@ function vipgoci_github_org_teams_get(
 	return $org_teams;
 }
 
+/*
+ * Get repository collaborators.
+ *
+ * $affiliation can be:
+ *  * outside, direct and all
+ *
+ * $filter works for permissions property, and removes
+ * any items that do not match.
+ */
+function vipgoci_github_repo_collaborators_get(
+	$repo_owner,
+	$repo_name,
+	$github_token,
+	$affiliation = 'all',
+	$filter = array()
+) {
+	$cached_id = array(
+		__FUNCTION__, $repo_owner, $repo_name, $affiliation
+	);
+
+	$cached_data = vipgoci_cache( $cached_id );
+
+	vipgoci_log(
+		'Getting collaborators for repository from GitHub API' .
+		vipgoci_cached_indication_str( $cached_data ),
+		array(
+			'repo_owner'	=> $repo_owner,
+			'repo_name'	=> $repo_name,
+			'affiliation'	=> $affiliation,
+			'filter'	=> $filter,
+		)
+	);
+
+	if ( false === $cached_data ) {
+		$page = 1;
+		$per_page = 100;
+
+		$repo_users_all = array();
+
+		do {
+			$github_url =
+				VIPGOCI_GITHUB_BASE_URL . '/' .
+				'repos/' .
+				rawurlencode( $repo_owner ) . '/' .
+				rawurlencode( $repo_name ) . '/' .
+				'collaborators?' .
+				'page=' . rawurlencode( $page ) . '&' .
+				'per_page=' . rawurlencode( $per_page );
+
+			if ( null !== $affiliation ) {
+				$github_url .= '&affiliation=' . rawurlencode( $affiliation );
+			}
+
+			$repo_users = vipgoci_github_fetch_url(
+				$github_url,
+				$github_token
+			);
+
+			$repo_users = json_decode(
+				$repo_users
+			);
+
+			foreach( $repo_users as $repo_user_item ) {
+				$repo_users_all[] = $repo_user_item;
+			}
+
+			$page++;
+		} while ( count( (array) $repo_users ) >= $per_page );
+
+		unset( $repo_users );
+
+		vipgoci_cache(
+			$cached_id,
+			$repo_users_all
+		);
+	}
+
+	else {
+		$repo_users_all = $cached_data;
+	}
+
+	/*
+	 * Filter results.
+	 */
+
+	$repo_users_all_new = array();
+
+	foreach (
+		$repo_users_all as $repo_user_item
+	) {
+		foreach( array( 'admin', 'push', 'pull' ) as $_prop ) {
+			$repo_user_item_tmp = (array) $repo_user_item;
+
+			if ( isset( $repo_user_item_tmp['permissions'] ) ) {
+				$repo_user_item_tmp['permissions'] = (array) $repo_user_item_tmp['permissions'];
+			}
+
+			if (
+				( isset( $filter[ $_prop ] ) ) &&
+				( isset( $repo_user_item_tmp['permissions'][ $_prop ] ) ) &&
+				( (bool) $filter[ $_prop ] !== $repo_user_item_tmp['permissions'][ $_prop ] )
+			) {
+				continue 2;
+			}
+		}
+
+		$repo_users_all_new[] = $repo_user_item;
+	}
+
+	$repo_users_all = $repo_users_all_new;
+	unset( $repo_users_all_new );
+
+	return $repo_users_all;
+}
 
