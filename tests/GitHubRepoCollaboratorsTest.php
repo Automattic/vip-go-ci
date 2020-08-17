@@ -37,7 +37,7 @@ final class GitHubRepoCollaboratorsTest extends TestCase {
 	public function testRepocollaboratorsAll() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
-			array( 'github-token' ),
+			array( ),
 			$this
 		);
 
@@ -82,7 +82,7 @@ final class GitHubRepoCollaboratorsTest extends TestCase {
 	public function testRepocollaboratorsDirect() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
-			array( 'github-token' ),
+			array( ),
 			$this
 		);
 
