@@ -498,66 +498,10 @@ function vipgoci_run() {
 	 * array of values.
 	 */
 
-	if ( empty( $options['phpcs-runtime-set'] ) ) {
-		$options['phpcs-runtime-set'] = array();
-	}
-
-	else {
-		vipgoci_option_array_handle(
-			$options,
-			'phpcs-runtime-set',
-			array(),
-			array(),
-			','
-		);
-
-		foreach(
-			$options['phpcs-runtime-set'] as
-				$tmp_runtime_key =>
-					$tmp_runtime_set
-		) {
-			$options
-				['phpcs-runtime-set']
-				[ $tmp_runtime_key ] =
-				explode( ' ', $tmp_runtime_set, 2 );
-
-			/*
-			 * Catch any abnormalities with
-		 	 * the --phpcs-runtime-set parameter, such
-			 * as key/value being missing, or set to empty.
-			 */
-
-			if (
-				( count(
-					$options
-					['phpcs-runtime-set']
-					[ $tmp_runtime_key ]
-				) < 2 )
-				||
-				( empty( $options
-					['phpcs-runtime-set']
-					[ $tmp_runtime_key ]
-					[0]
-				) )
-				||
-				( empty( $options
-					['phpcs-runtime-set']
-					[ $tmp_runtime_key ]
-					[1]
-				) )
-			) {
-				vipgoci_sysexit(
-					'--phpcs-runtime-set is incorrectly formed; it should ' . PHP_EOL .
-					'be a comma separated string of keys and values.' . PHP_EOL .
-					'For instance: --phpcs-runtime-set="foo1 bar1,foo2 bar2"',
-					array(
-						$options['phpcs-runtime-set']
-					),
-					VIPGOCI_EXIT_USAGE_ERROR
-				);
-			}
-		}
-	}
+	vipgoci_option_phpcs_runtime_set(
+		$options,
+		'phpcs-runtime-set'
+	);
 
 	vipgoci_option_skip_folder_handle(
 		$options,
