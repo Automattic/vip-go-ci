@@ -45,7 +45,7 @@ final class GitBranchGetTest extends TestCase {
 	}
 
 	/**
-	 * @covers ::vipgoci_gitrepo_blame_for_file
+	 * @covers ::vipgoci_gitrepo_branch_current_get
 	 */
 	public function testBranchGet1() {
 		$options_test = vipgoci_unittests_options_test(
