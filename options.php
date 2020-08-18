@@ -1404,7 +1404,7 @@ function vipgoci_option_phpcs_runtime_set(
 
 		/*
 		 * Catch any abnormalities with
-	 	 * the --phpcs-runtime-set parameter, such
+	 	 * the --phpcs-runtime-set like parameter, such
 		 * as key/value being missing, or set to empty.
 		 */
 
@@ -1430,7 +1430,7 @@ function vipgoci_option_phpcs_runtime_set(
 			vipgoci_sysexit(
 				'--' . $option_name . ' is incorrectly formed; it should ' . PHP_EOL .
 				'be a comma separated string of keys and values.' . PHP_EOL .
-				'For instance: --phpcs-runtime-set="foo1 bar1,foo2 bar2"',
+				'For instance: --' . $option_name . '="foo1 bar1,foo2 bar2"',
 				array(
 					$options[ $option_name ]
 				),
