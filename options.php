@@ -1368,3 +1368,75 @@ function vipgoci_option_generic_support_comments_match(
 		$option_name
 	] = $processed_option_value;
 }
+
+/*
+ * Process --phpcs-runtime-set like parameters -- 
+ * expected to be an array of values.
+ */
+
+function vipgoci_option_phpcs_runtime_set(
+	&$options,
+	$option_name
+) {
+	if ( empty( $options[ $option_name ] ) ) {
+		$options[ $option_name ] = array();
+
+		return;
+	}
+
+	vipgoci_option_array_handle(
+		$options,
+		$option_name,
+		array(),
+		array(),
+		','
+	);
+
+	foreach(
+		$options[ $option_name ] as
+			$tmp_runtime_key =>
+				$tmp_runtime_set
+	) {
+		$options
+			[ $option_name ]
+			[ $tmp_runtime_key ] =
+			explode( ' ', $tmp_runtime_set, 2 );
+
+		/*
+		 * Catch any abnormalities with
+	 	 * the --phpcs-runtime-set like parameter, such
+		 * as key/value being missing, or set to empty.
+		 */
+
+		if (
+			( count(
+				$options
+				[ $option_name ]
+				[ $tmp_runtime_key ]
+			) < 2 )
+			||
+			( empty( $options
+				[ $option_name ]
+				[ $tmp_runtime_key ]
+				[0]
+			) )
+			||
+			( empty( $options
+				[ $option_name ]
+				[ $tmp_runtime_key ]
+				[1]
+			) )
+		) {
+			vipgoci_sysexit(
+				'--' . $option_name . ' is incorrectly formed; it should ' . PHP_EOL .
+				'be a comma separated string of keys and values.' . PHP_EOL .
+				'For instance: --' . $option_name . '="foo1 bar1,foo2 bar2"',
+				array(
+					$options[ $option_name ]
+				),
+				VIPGOCI_EXIT_USAGE_ERROR
+			);
+		}
+	}
+}
+
