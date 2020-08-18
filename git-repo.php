@@ -101,6 +101,81 @@ function vipgoci_gitrepo_get_head( $local_git_repo ) {
 	return $result;
 }
 
+/*
+ * Get the current branch of the git-repository.
+ */
+
+function vipgoci_gitrepo_branch_current_get( $local_git_repo ) {
+	$cmd = sprintf(
+		'%s -C %s branch 2>&1',
+		escapeshellcmd( 'git' ),
+		escapeshellarg( $local_git_repo ),
+	);
+
+	/* Actually execute */
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'git_cli' );
+
+	$results = shell_exec( $cmd );
+
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'git_cli' );
+
+	/*
+	 * Split results into array
+	 */
+	$results = explode(
+		"\n",
+		$results
+	);
+
+	/*
+	 * Filter away any branch-names that are not active.
+	 */
+	$results = array_filter(
+		$results,
+		function( $line ) {
+			if ( false === strpos(
+				$line,
+				'*'
+			) ) {
+				return false;
+			}
+
+			return true;
+		}
+	);
+
+	/*
+	 * Remove spaces and "*" from
+	 * the last branch-name, which is the
+	 * active one if there at all.
+	 */
+	$results = array_map(
+		function( $line ) {
+			return str_replace(
+				array(
+					" ",
+					"*",
+				),
+				array(
+					"",
+					"",
+				),
+				$line
+			);
+		},
+		$results
+	);
+
+	if ( ! empty(
+		$results
+	) ) {
+		return $results[0];
+	}
+
+	else {
+		return null;
+	}
+}
 
 /*
  * Fetch "tree" of the repository; a tree
