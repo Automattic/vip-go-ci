@@ -166,6 +166,14 @@ function vipgoci_gitrepo_branch_current_get( $local_git_repo ) {
 		$results
 	);
 
+	/*
+	 * Recreate array with
+	 * new index keys.
+	 */
+	$results = array_values(
+		$results
+	);
+
 	if ( ! empty(
 		$results
 	) ) {
