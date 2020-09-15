@@ -117,6 +117,20 @@ function vipgoci_run() {
 	}
 
 	/*
+	 * Require PHP version 7.3 or later.
+	 */
+	if ( version_compare(
+		phpversion(),
+		'7.3.0'
+	) < 0 ) {
+		vipgoci_sysexit(
+			'Error: PHP 7.3 is required as a minimum.',
+			array(),
+			VIPGOCI_EXIT_SYSTEM_PROBLEM
+		);
+	}
+
+	/*
 	 * Set how to deal with errors:
 	 * Report all errors, and display them.
 	 */
