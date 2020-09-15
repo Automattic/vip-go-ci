@@ -6,7 +6,7 @@ version: 2.1
 
 commands:
   build-cmd:
-   steps: 
+   steps:
       # Get the code
       - checkout
       # Print PHP version
@@ -26,7 +26,7 @@ commands:
       # No secrets available for unit-tests
       - run: touch ~/project/unittests-secrets.ini
       # Run unit-tests
-      - run: ./vendor/bin/phpunit -vv ~/project/tests   
+      - run: ./vendor/bin/phpunit -vv ~/project/tests
 
 # List of images at: https://circleci.com/docs/2.0/circleci-images/
 jobs:
