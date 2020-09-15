@@ -123,9 +123,11 @@ function vipgoci_run() {
 		phpversion(),
 		'7.3.0'
 	) < 0 ) {
-		echo 'Error: PHP 7.3 is required as a minimum.';
-
-		exit( VIPGOCI_EXIT_SYSTEM_PROBLEM );
+		vipgoci_sysexit(
+			'Error: PHP 7.3 is required as a minimum.',
+			array(),
+			VIPGOCI_EXIT_SYSTEM_PROBLEM
+		);
 	}
 
 	/*
