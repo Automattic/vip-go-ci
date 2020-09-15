@@ -2,19 +2,15 @@
 #
 # Check https://circleci.com/docs/2.0/language-php/ for more details
 #
-version: 2
-jobs:
-  build:
-    docker:
-      - image: circleci/php:7.3.22-cli
+version: 2.1
 
-      - image: circleci/php:7.4.10-cli
-
-      # List of images at: https://circleci.com/docs/2.0/circleci-images/
-
-    steps:
+commands:
+  build-cmd:
+   steps: 
       # Get the code
       - checkout
+      # Print PHP version
+      - run: php -v
       # Update software and install a few things
       - run: sudo apt update
       - run: sudo docker-php-ext-install zip
@@ -30,4 +26,21 @@ jobs:
       # No secrets available for unit-tests
       - run: touch ~/project/unittests-secrets.ini
       # Run unit-tests
-      - run: ./vendor/bin/phpunit -vv ~/project/tests
+      - run: ./vendor/bin/phpunit -vv ~/project/tests   
+
+# List of images at: https://circleci.com/docs/2.0/circleci-images/
+jobs:
+  build-php73:
+    docker:
+      - image: circleci/php:7.3.22-cli
+    steps:
+      - build-cmd:
+
+
+  build-php74:
+    docker:
+       - image: circleci/php:7.4.10-cli
+    steps:
+       - build-cmd:
+
+
