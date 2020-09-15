@@ -44,7 +44,7 @@ jobs:
        - build-cmd
 
 workflows:
-  my-workflow:
+  vipgocitests:
     jobs:
      - buildphp73
      - buildphp74
