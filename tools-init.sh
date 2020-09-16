@@ -15,8 +15,12 @@ export WP_CODING_STANDARDS_VER="2.3.0"
 export WP_CODING_STANDARDS_SHA1SUM="c8161d77fcf63bdeaa3e8e6aa36bc1936b469070";
 
 # https://github.com/automattic/vip-coding-standards/releases
-export VIP_CODING_STANDARDS_VER="2.1.0"
-export VIP_CODING_STANDARDS_SHA1SUM="2978080028a7cacfee37a9ea914913d3c2c6705a";
+export VIP_CODING_STANDARDS_VER="2.2.0"
+export VIP_CODING_STANDARDS_SHA1SUM="65e14a1e95288cb4cf29b216c89a338e6523ec52";
+
+# https://github.com/sirbrillig/phpcs-variable-analysis/releases
+export PHPCS_VARIABLE_ANALYSIS_VER="2.8.3"
+export PHPCS_VARIABLE_ANALYSIS_SHA1SUM="79f4124a60adb95b9caa514dad77512feb2d775c"
 
 # https://github.com/phpcompatibility/phpcompatibility/releases
 export PHP_COMPATIBILITY_VER="9.3.5"
@@ -132,7 +136,7 @@ if [ -d ~/vip-go-ci-tools ] ; then
 	export TMP_DO_DELETE="0"
 
 
-	for TMP_FILE in	"vip-coding-standards-$VIP_CODING_STANDARDS_VER.txt" "wp-coding-standards-$WP_CODING_STANDARDS_VER.txt" "php-codesniffer-$PHP_CODESNIFFER_VER.txt" "vip-go-ci-$VIP_GO_CI_VER.txt" "php-compatibility-$PHP_COMPATIBILITY_VER.txt" "php-compatibility-wp-$PHP_COMPATIBILITY_WP_VER.txt" "php-compatibility-paragonie-$PHP_COMPATIBILITY_PARAGONIE_VER.txt" "vip-go-svg-sanitizer-$VIP_GO_SVG_SANITIZER_VER.txt" ; do
+	for TMP_FILE in	"vip-coding-standards-$VIP_CODING_STANDARDS_VER.txt" "wp-coding-standards-$WP_CODING_STANDARDS_VER.txt" "php-codesniffer-$PHP_CODESNIFFER_VER.txt" "vip-go-ci-$VIP_GO_CI_VER.txt" "phpcs-variable-analysis-$PHPCS_VARIABLE_ANALYSIS_VER" "php-compatibility-$PHP_COMPATIBILITY_VER.txt" "php-compatibility-wp-$PHP_COMPATIBILITY_WP_VER.txt" "php-compatibility-paragonie-$PHP_COMPATIBILITY_PARAGONIE_VER.txt" "vip-go-svg-sanitizer-$VIP_GO_SVG_SANITIZER_VER.txt" ; do
 		if [ ! -f ~/vip-go-ci-tools/$TMP_FILE ] ; then
 			export TMP_DO_DELETE="1"
 		fi
@@ -181,6 +185,13 @@ else
 	mv "VIP-Coding-Standards-$VIP_CODING_STANDARDS_VER/WordPress-VIP-Go/" phpcs/src/Standards/  && \
 	rm -f "$VIP_CODING_STANDARDS_VER".tar.gz && \
 	touch $TMP_FOLDER/vip-coding-standards-$VIP_CODING_STANDARDS_VER.txt && \
+	wget "https://github.com/sirbrillig/phpcs-variable-analysis/archive/v$PHPCS_VARIABLE_ANALYSIS_VER.tar.gz" && \
+	mv "v$PHPCS_VARIABLE_ANALYSIS_VER.tar.gz" "$PHPCS_VARIABLE_ANALYSIS_VER.tar.gz" && \
+	sha1sum_check "$PHPCS_VARIABLE_ANALYSIS_VER.tar.gz" "$PHPCS_VARIABLE_ANALYSIS_SHA1SUM" && \
+	tar -zxvf "$PHPCS_VARIABLE_ANALYSIS_VER.tar.gz" && \
+	mv "phpcs-variable-analysis-$PHPCS_VARIABLE_ANALYSIS_VER/VariableAnalysis/" phpcs/src/Standards/  && \
+	rm -f "$PHPCS_VARIABLE_ANALYSIS_VER".tar.gz && \
+	touch $TMP_FOLDER/phpcs-variable-analysis-$PHPCS_VARIABLE_ANALYSIS_VER.txt && \
 	wget "https://github.com/PHPCompatibility/PHPCompatibility/archive/$PHP_COMPATIBILITY_VER.tar.gz" && \
 	sha1sum_check "$PHP_COMPATIBILITY_VER.tar.gz" "$PHP_COMPATIBILITY_SHA1SUM" && \
 	tar -zxvf "$PHP_COMPATIBILITY_VER.tar.gz" && \
