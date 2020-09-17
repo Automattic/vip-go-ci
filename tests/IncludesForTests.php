@@ -6,6 +6,10 @@ if ( ! defined( 'VIPGOCI_UNIT_TESTING' ) ) {
 	define( 'VIPGOCI_UNIT_TESTING', true );
 }
 
+if ( ! defined( 'VIPGOCI_UNIT_TESTS_INI_DIR_PATH' ) ) {
+	define( 'VIPGOCI_UNIT_TESTS_INI_DIR_PATH', dirname( __DIR__ ) );
+}
+
 function vipgoci_unittests_get_config_value(
 	$section,
 	$key,
@@ -13,14 +17,14 @@ function vipgoci_unittests_get_config_value(
 ) {
 	if ( false === $secret_file ) {
 		$ini_array = parse_ini_file(
-			dirname( __FILE__ ) . '/../unittests.ini',
+			VIPGOCI_UNIT_TESTS_INI_DIR_PATH . '/unittests.ini',
 			true
 		);
 	}
 
 	else {
 		$ini_array = parse_ini_file(
-			dirname( __FILE__ ) . '/../unittests-secrets.ini',
+			VIPGOCI_UNIT_TESTS_INI_DIR_PATH . '/unittests-secrets.ini',
 			true
 		);
 	}
