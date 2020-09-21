@@ -15,7 +15,10 @@ define( 'VIPGOCI_SYNTAX_ERROR_STR',	'PHP Syntax Errors Found' );
 define( 'VIPGOCI_GITHUB_ERROR_STR',	'GitHub API communication error. ' .
 						'Please contact a human.' );
 
-define( 'VIPGOCI_GITHUB_BASE_URL',	'https://api.github.com' );
+/* Define if not defined. Unit-tests can define this for testing. */
+if ( ! defined( 'VIPGOCI_GITHUB_BASE_URL' ) ) {
+	define( 'VIPGOCI_GITHUB_BASE_URL',	'https://api.github.com' );
+}
 
 define( 'VIPGOCI_INFORMATIONAL_MESSAGE',
 					'This bot provides automated ' .
