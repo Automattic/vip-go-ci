@@ -17,7 +17,7 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 		'commit-test-options-read-repo-skip-files-2'	=> null,
 	);
 
-	protected function setUp() {
+	protected function setUp(): void {
 		vipgoci_unittests_get_config_values(
 			'git',
 			$this->options_git
@@ -48,7 +48,7 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 		$this->options['token'] = null;
 	}
 
-	protected function tearDown() {
+	protected function tearDown(): void {
 		$this->tearDownLocalGitrepo();
 
 		$this->options = null;

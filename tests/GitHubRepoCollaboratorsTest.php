@@ -10,7 +10,7 @@ final class GitHubRepoCollaboratorsTest extends TestCase {
 		'repo-name'	=> null,
 	);
 
-	protected function setUp() {
+	protected function setUp(): void {
 		vipgoci_unittests_get_config_values(
 			'git',
 			$this->options_git
@@ -26,7 +26,7 @@ final class GitHubRepoCollaboratorsTest extends TestCase {
 			);
 	}
 
-	protected function tearDown() {
+	protected function tearDown(): void {
 		$this->options = null;
 		$this->options_git = null;
 	}

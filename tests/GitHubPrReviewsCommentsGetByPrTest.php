@@ -14,7 +14,7 @@ final class GitHubPrReviewsCommentsGetByPrTest extends TestCase {
 		'repo-name'				=> null,
 	);
 
-	protected function setUp() {
+	protected function setUp(): void {
 		vipgoci_unittests_get_config_values(
 			'git',
 			$this->options_git
@@ -41,7 +41,7 @@ final class GitHubPrReviewsCommentsGetByPrTest extends TestCase {
 			$this->options['github-token'];
 	}
 
-	protected function tearDown() {
+	protected function tearDown(): void {
 		$this->options_git_repo_tests = null;
 		$this->options_git = null;
 		$this->options = null;

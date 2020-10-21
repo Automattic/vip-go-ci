@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 final class ApAutoApprovalTest extends TestCase {
 	var $safe_to_run = null;
 
-	protected function setUp() {
+	protected function setUp(): void {
 		$this->options_git = array(
 			'repo-owner'				=> null,
 			'repo-name'				=> null,
@@ -72,7 +72,7 @@ final class ApAutoApprovalTest extends TestCase {
 		$this->cleanup_prs();
 	}
 
-	protected function tearDown() {
+	protected function tearDown(): void {
 		$this->cleanup_prs();
 
 		$this->options_git = null;

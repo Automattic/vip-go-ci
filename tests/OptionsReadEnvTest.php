@@ -5,7 +5,7 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 use PHPUnit\Framework\TestCase;
 
 final class VipgociOptionsReadEnvTest extends TestCase {
-	protected function setUp() {
+	protected function setUp(): void {
 		// Add environmental variable
 		putenv(
 			'PHP_ROWNER=repo-test-owner'
@@ -16,7 +16,7 @@ final class VipgociOptionsReadEnvTest extends TestCase {
 		);
 	}
 
-	protected function tearDown() {
+	protected function tearDown(): void {
 		// Remove environmental variable
 		putenv(
 			'PHP_ROWNER'

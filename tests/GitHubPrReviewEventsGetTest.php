@@ -15,7 +15,7 @@ final class GitHubPrReviewEventsGetTest extends TestCase {
 		'test-github-pr-reviews-event-get-username'	=> null,
 	);
 
-	protected function setUp() {
+	protected function setUp(): void {
 		vipgoci_unittests_get_config_values(
 			'git',
 			$this->options_git
@@ -34,7 +34,7 @@ final class GitHubPrReviewEventsGetTest extends TestCase {
 		$this->options['token'] = null;
 	}
 
-	protected function tearDown() {
+	protected function tearDown(): void {
 		$this->options_git = null;
 		$this->options_git_repo_tests = null;
 		$this->options = null;

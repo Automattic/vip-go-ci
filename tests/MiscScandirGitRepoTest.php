@@ -17,7 +17,7 @@ final class MiscScandirGitRepoTest extends TestCase {
 		'commit-test-scandir-repo-test-2'	=> null,
 	);
 
-	protected function setUp() {
+	protected function setUp(): void {
 		vipgoci_unittests_get_config_values(
 			'git',
 			$this->options_git
@@ -44,7 +44,7 @@ final class MiscScandirGitRepoTest extends TestCase {
 			$this->options['github-token'];
 	}
 
-	protected function tearDown() {
+	protected function tearDown(): void {
 		if ( false !== $this->options['local-git-repo'] ) {
 			vipgoci_unittests_remove_git_repo(
 				$this->options['local-git-repo']

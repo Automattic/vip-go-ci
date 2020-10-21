@@ -10,14 +10,14 @@ final class PhpcsGetAllStandardsTest extends TestCase {
 		'phpcs-standard'	=> null,
 	);
 
-	protected function setUp() {
+	protected function setUp(): void {
 		vipgoci_unittests_get_config_values(
 			'phpcs-scan',
 			$this->options_phpcs
 		);
 	}
 
-	protected function tearDown() {
+	protected function tearDown(): void {
 		$this->options_phpcs = null;
 	}
 

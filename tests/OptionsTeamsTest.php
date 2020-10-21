@@ -12,7 +12,7 @@ final class VipgociOptionsTeamsTest extends TestCase {
 		'org-name'	=> null,
 	);
 
-	public function setUp() {
+	public function setUp(): void {
 		foreach( $this->options as $option_key => $option_value ) {
 			$this->options[ $option_key ] =
 				vipgoci_unittests_get_config_value(
@@ -29,7 +29,7 @@ final class VipgociOptionsTeamsTest extends TestCase {
 			$this->options['github-token'];
 	}
 
-	public function tearDown() {
+	public function tearDown(): void {
 		$this->options = null;
 	}
 

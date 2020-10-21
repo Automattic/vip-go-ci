@@ -12,7 +12,7 @@ final class MiscPatchChangedLinesTest extends TestCase {
 		'commit-id'	=> null,
 	);
 
-	protected function setUp() {
+	protected function setUp(): void {
 		vipgoci_unittests_get_config_values(
 			'patch-changed-lines',
 			$this->github_config

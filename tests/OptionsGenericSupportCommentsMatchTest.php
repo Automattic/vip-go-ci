@@ -5,11 +5,11 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 use PHPUnit\Framework\TestCase;
 
 final class OptionsGenericSupportCommentsMatch extends TestCase {
-	public function setUp() {
+	public function setUp(): void {
 		$this->options = array();
 	}
 	
-	public function tearDown() {
+	public function tearDown(): void {
 		$this->options = null;
 	}
 

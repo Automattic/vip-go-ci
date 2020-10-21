@@ -14,7 +14,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 		'test-github-pr-generic-support-comment-1'	=> null,
 	);
 
-	protected function setUp() {
+	protected function setUp(): void {
 		/*
 		 * Many of the functions called
 		 * make use of caching, clear the cache
@@ -97,7 +97,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 		}
 	}
 
-	protected function tearDown() {
+	protected function tearDown(): void {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array(),

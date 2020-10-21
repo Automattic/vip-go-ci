@@ -15,7 +15,7 @@ final class ApFileTypesTest extends TestCase {
 		'autoapprove-filetypes'		=> null,
 	);
 
-	protected function setUp() {
+	protected function setUp(): void {
 		vipgoci_unittests_get_config_values(
 			'git',
 			$this->options_git
@@ -58,7 +58,7 @@ final class ApFileTypesTest extends TestCase {
 		$this->options['skip-draft-prs'] = false;
 	}
 
-	protected function tearDown() {
+	protected function tearDown(): void {
 		$this->options = null;
 		$this->options_git = null;
 		$this->options_auto_approval = null;

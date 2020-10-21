@@ -16,7 +16,7 @@ final class GitHubLabelsFetchTest extends TestCase {
 		'pr-test-labels-fetch-test-1'	=> null,
 	);
 
-	protected function setUp() {
+	protected function setUp(): void {
 		vipgoci_unittests_get_config_values(
 			'git',
 			$this->options_git
@@ -40,7 +40,7 @@ final class GitHubLabelsFetchTest extends TestCase {
 			);
 	}
 
-	protected function tearDown() {
+	protected function tearDown(): void {
 		$this->options = null;
 		$this->options_git = null;
 		$this->options_git_repo_tests = null;

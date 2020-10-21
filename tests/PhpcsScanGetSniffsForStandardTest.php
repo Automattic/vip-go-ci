@@ -11,7 +11,7 @@ final class PhpcsScanGetSniffsForStandard extends TestCase {
 		'phpcs-sniffs-existing'	=> null,
 	);
 
-	protected function setUp() {
+	protected function setUp(): void {
 		vipgoci_unittests_get_config_values(
 			'phpcs-scan',
 			$this->options_phpcs
@@ -23,7 +23,7 @@ final class PhpcsScanGetSniffsForStandard extends TestCase {
 		);
 	}
 
-	protected function tearDown() {
+	protected function tearDown(): void {
 		$this->options_phpcs = null;
 	}
 
