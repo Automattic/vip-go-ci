@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 final class SvgScanWithScannerTest extends TestCase {
 	var $svg_scanner_path = null;
 
-	protected function setUp() {
+	protected function setUp(): void {
 		$this->svg_scanner_path = vipgoci_unittests_get_config_value(
 			'svg-scan',
 			'svg-scanner-path'
@@ -18,7 +18,7 @@ final class SvgScanWithScannerTest extends TestCase {
 		}
 	}
 
-	protected function tearDown() {
+	protected function tearDown(): void {
 		$this->svg_scanner_path = null;
 	}
 

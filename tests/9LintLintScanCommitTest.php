@@ -18,7 +18,7 @@ final class LintLintScanCommitTest extends TestCase {
 		'repo-owner'		=> null,
 	);
 
-	protected function setUp() {
+	protected function setUp(): void {
 		vipgoci_unittests_get_config_values(
 			'lint-scan',
 			$this->options_lint_scan
@@ -56,7 +56,7 @@ final class LintLintScanCommitTest extends TestCase {
 		$vipgoci_debug_level = 2;
 	}
 
-	protected function tearDown() {
+	protected function tearDown(): void {
 		if ( false !== $this->options['local-git-repo'] ) {
 			vipgoci_unittests_remove_git_repo(
 				$this->options['local-git-repo']

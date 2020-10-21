@@ -17,7 +17,7 @@ final class GitRepoRepoFetchTreeTest extends TestCase {
 		'commit-test-repo-fetch-tree-2'	=> null,
 	);
 
-	protected function setUp() {
+	protected function setUp(): void {
 		vipgoci_unittests_get_config_values(
 			'git',
 			$this->options_git
@@ -41,7 +41,7 @@ final class GitRepoRepoFetchTreeTest extends TestCase {
 			);
 	}
 
-	protected function tearDown() {
+	protected function tearDown(): void {
 		if ( false !== $this->options['local-git-repo'] ) {
 			vipgoci_unittests_remove_git_repo(
 				$this->options['local-git-repo']

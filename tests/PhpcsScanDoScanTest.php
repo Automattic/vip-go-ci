@@ -14,7 +14,7 @@ final class PhpcsScanDoScanTest extends TestCase {
 		'phpcs-sniffs-exclude'	=> null,
 	);
 
-	protected function setUp() {
+	protected function setUp(): void {
 		vipgoci_unittests_get_config_values(
 			'phpcs-scan',
 			$this->options_phpcs
@@ -39,7 +39,7 @@ final class PhpcsScanDoScanTest extends TestCase {
 		);
 	}
 
-	protected function tearDown() {
+	protected function tearDown(): void {
 		$this->options_phpcs = null;
 	}
 

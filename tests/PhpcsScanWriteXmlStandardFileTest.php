@@ -5,14 +5,14 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 use PHPUnit\Framework\TestCase;
 
 final class PhpcsWriteXmlStandardFileTest extends TestCase {
-	protected function setUp() {
+	protected function setUp(): void {
 		$this->xml_file_path = tempnam(
 			sys_get_temp_dir(),
 			'testWriteXmlStandardFile1'
 		);
 	}
 
-	protected function tearDown() {
+	protected function tearDown(): void {
 		unlink(
 			$this->xml_file_path
 		);

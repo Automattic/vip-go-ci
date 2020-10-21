@@ -9,14 +9,14 @@ final class LintLintDoScanTest extends TestCase {
 		'php-path'	=> null,
 	);
 
-	protected function setUp() {
+	protected function setUp(): void {
 		vipgoci_unittests_get_config_values(
 			'lint-scan',
 			$this->options_php
 		);
 	}
 
-	protected function tearDown() {
+	protected function tearDown(): void {
 		$this->options_php = null;
 	}
 

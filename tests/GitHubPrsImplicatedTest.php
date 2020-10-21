@@ -17,7 +17,7 @@ final class GitHubPrsImplicatedTest extends TestCase {
 		'repo-owner'		=> null,
 	);
 
-	protected function setUp() {
+	protected function setUp(): void {
 		vipgoci_unittests_get_config_values(
 			'git-repo-tests',
 			$this->options_git_repo_tests
@@ -47,7 +47,7 @@ final class GitHubPrsImplicatedTest extends TestCase {
 		$this->options['branches-ignore'] = array();
 	}
 
-	protected function tearDown() {
+	protected function tearDown(): void {
 		$this->options_git_repo_tests = null;
 		$this->options_git = null;
 		$this->options = null;

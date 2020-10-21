@@ -5,7 +5,7 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 use PHPUnit\Framework\TestCase;
 
 final class ResultsSortBySeverityTest extends TestCase {
-	protected function setUp() {
+	protected function setUp(): void {
 		$this->results = array(
 			'issues' => array(
 				24 => array(
@@ -137,7 +137,7 @@ final class ResultsSortBySeverityTest extends TestCase {
 		);
 	}
 
-	protected function tearDown() {
+	protected function tearDown(): void {
 		$this->options = null;
 		$this->results = null;
 	}

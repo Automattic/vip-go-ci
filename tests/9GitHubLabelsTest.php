@@ -20,7 +20,7 @@ final class GitHubLabelsTest extends TestCase {
 	var $options_secrets = array(
 	);
 
-	protected function setUp() {
+	protected function setUp(): void {
 		vipgoci_unittests_get_config_values(
 			'git',
 			$this->options_git
@@ -45,7 +45,7 @@ final class GitHubLabelsTest extends TestCase {
 		);
 	}
 
-	protected function tearDown() {
+	protected function tearDown(): void {
 		$this->options_git = null;
 		$this->options_secrets = null;
 		$this->options_labels = null;

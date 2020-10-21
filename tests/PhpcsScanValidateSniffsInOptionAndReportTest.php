@@ -38,7 +38,7 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 
 	var $current_user_info = null;
 
-	protected function setUp() {
+	protected function setUp(): void {
 		vipgoci_unittests_get_config_values(
 			'phpcs-scan',
 			$this->options_phpcs
@@ -112,7 +112,7 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 		$this->options['skip-draft-prs'] = false;
 	}
 
-	protected function tearDown() {
+	protected function tearDown(): void {
 		$this->options_phpcs = null;
 		$this->options_git = null;
 		$this->options = null;

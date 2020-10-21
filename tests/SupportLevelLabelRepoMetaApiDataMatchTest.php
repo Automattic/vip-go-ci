@@ -16,7 +16,7 @@ final class SupportLevelLabelRepoMetaApiDataMatchTest extends TestCase {
 		'support-tier-name'		=> null,
 	);
 
-	protected function setUp() {
+	protected function setUp(): void {
 		vipgoci_unittests_get_config_values(
 			'repo-meta-api-secrets',
 			$this->options_meta_api_secrets,
@@ -59,7 +59,7 @@ final class SupportLevelLabelRepoMetaApiDataMatchTest extends TestCase {
 		$this->options['branches-ignore'] = array();
 	}
 
-	protected function tearDown() {
+	protected function tearDown(): void {
 		$this->options = null;
 		$this->options_meta_api_secrets = null;
 	}

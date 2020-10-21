@@ -20,7 +20,7 @@ final class SupportLevelLabelSetTest extends TestCase {
 		'repo-owner'		=> null,
 	);
 
-	protected function setUp() {
+	protected function setUp(): void {
 		vipgoci_unittests_get_config_values(
 			'repo-meta-api-secrets',
 			$this->options_meta_api_secrets,
@@ -58,7 +58,7 @@ final class SupportLevelLabelSetTest extends TestCase {
 		$this->options['skip-draft-prs'] = false;
 	}
 
-	protected function tearDown() {
+	protected function tearDown(): void {
 		$this->options_meta_api_secrets = null;
 		$this->options_git = null;
 		$this->options = null;

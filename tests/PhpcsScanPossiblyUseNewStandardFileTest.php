@@ -5,7 +5,7 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 use PHPUnit\Framework\TestCase;
 
 final class PhpcsPossiblyUseNewStandardFileTest extends TestCase {
-	protected function setUp() {
+	protected function setUp(): void {
 		$this->original_standard = array( 'WordPress-VIP-Go' );
 
 		$this->options = array();
@@ -14,7 +14,7 @@ final class PhpcsPossiblyUseNewStandardFileTest extends TestCase {
 		$this->options['phpcs-sniffs-include'] = array();
 	}
 
-	protected function tearDown() {
+	protected function tearDown(): void {
 		if (
 			( true === $this->options['phpcs-standard-file'] )
 			&&

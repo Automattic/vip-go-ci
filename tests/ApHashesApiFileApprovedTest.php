@@ -16,7 +16,7 @@ final class ApHashesApiFileApprovedTest extends TestCase {
 		'commit-test-ap-hashes-file-approved-1'	=> null,
 	);
 	
-	protected function setUp() {
+	protected function setUp(): void {
 		vipgoci_unittests_get_config_values(
 			'git',
 			$this->options_git
@@ -71,7 +71,7 @@ final class ApHashesApiFileApprovedTest extends TestCase {
 			);
 	}
 
-	protected function tearDown() {
+	protected function tearDown(): void {
 		if ( false !== $this->options['local-git-repo'] ) {
 			vipgoci_unittests_remove_git_repo(
 				$this->options['local-git-repo']

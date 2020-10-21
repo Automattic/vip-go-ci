@@ -10,7 +10,7 @@ final class GitHubTeamMembersTest extends TestCase {
 		'team-id' => null,
 	);
 
-	public function setUp() {
+	public function setUp(): void {
 		foreach( $this->options as $option_key => $option_value ) {
 			$this->options[ $option_key ] =
 				vipgoci_unittests_get_config_value(
@@ -21,7 +21,7 @@ final class GitHubTeamMembersTest extends TestCase {
 		}
 	}
 
-	public function tearDown() {
+	public function tearDown(): void {
 		$this->options = null;
 	}
 
