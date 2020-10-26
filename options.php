@@ -1389,7 +1389,8 @@ function vipgoci_option_phpcs_runtime_set(
 		$option_name,
 		array(),
 		array(),
-		','
+		',',
+		false
 	);
 
 	foreach(
