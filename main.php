@@ -339,7 +339,7 @@ function vipgoci_run() {
 			"\t" . '--phpcs-runtime-set=STRING     Specify --runtime-set values passed on to PHPCS' . PHP_EOL .
 			"\t" . '                               -- expected to be a comma-separated value string of ' . PHP_EOL .
 			"\t" . '                               key-value pairs.' . PHP_EOL .
-			"\t" . '                               For example: --phpcs-runtime-set="foo1 bar1, foo2,bar2"' . PHP_EOL .
+			"\t" . '                               For example: --phpcs-runtime-set="key1 value1,key2 value2"' . PHP_EOL .
 			"\t" . '--phpcs-skip-scanning-via-labels-allowed=BOOL    Whether to allow users to skip ' . PHP_EOL .
 			"\t" . '                                                 PHPCS scanning of Pull-Requests ' . PHP_EOL .
 			"\t" . '                                                 via labels attached to them. ' . PHP_EOL .
