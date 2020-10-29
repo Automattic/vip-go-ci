@@ -27,21 +27,6 @@ function vipgoci_gitrepo_ok(
 
 
 	/*
-	 * Trim any whitespace characters away
-	 */
-	if ( false !== $lgit_head ) {
-		$lgit_head = trim(
-			$lgit_head
-		);
-
-		$lgit_head = trim(
-			$lgit_head,
-			"'\""
-		);
-	}
-
-
-	/*
 	 * Check if commit-ID and head are the same, and
 	 * return with a status accordingly.
 	 */
@@ -97,6 +82,16 @@ function vipgoci_gitrepo_get_head( $local_git_repo ) {
 	$result = shell_exec( $cmd );
 
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'git_cli' );
+
+	$result = str_replace(
+		array( "'", "\"" ),
+		array( "", "" ),
+		$result
+	);
+
+	$result = trim(
+		$result
+	);
 
 	return $result;
 }
