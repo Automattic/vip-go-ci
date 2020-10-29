@@ -83,15 +83,19 @@ function vipgoci_gitrepo_get_head( $local_git_repo ) {
 
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'git_cli' );
 
-	$result = str_replace(
-		array( "'", "\"" ),
-		array( "", "" ),
-		$result
-	);
+	/*
+	 * Trim any whitespace characters away
+	 */
+	if ( false !== $result ) {
+		$result = trim(
+			$result
+		);
 
-	$result = trim(
-		$result
-	);
+		$result = trim(
+			$result,
+			"'\""
+		);
+	}
 
 	return $result;
 }
