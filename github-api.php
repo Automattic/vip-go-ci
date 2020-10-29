@@ -4038,3 +4038,82 @@ function vipgoci_github_repo_collaborators_get(
 	return $repo_users_all;
 }
 
+
+/*
+ * Get URL for submodule from GitHub.
+ */
+function vipgoci_github_submodule_get_url( $options, $submodule_path ) {
+	/* Check for cached version */
+	$cached_id = array(
+		__FUNCTION__, $options['repo-owner'],
+		$options['repo-name'], $submodule_path
+	);
+
+	$cached_data = vipgoci_cache( $cached_id );
+
+	vipgoci_log(
+		'Fetching GitHub commit-URL for submodule' .
+			vipgoci_cached_indication_str( $cached_data ),
+		array(
+			'repo-owner'		=> $options['repo-owner'],
+			'repo-name'		=> $options['repo-name'],
+			'submodule_path'	=> $submodule_path,
+		)
+	);
+
+	if ( false !== $cached_data ) {
+		/* Found cached version, return it. */
+		return $cached_data;
+	}
+
+	$github_url =
+		VIPGOCI_GITHUB_BASE_URL . '/' .
+		'repos/' .
+		rawurlencode( $options['repo-owner'] ) . '/' .
+		rawurlencode( $options['repo-name'] ) . '/' .
+		'contents/' .
+		rawurlencode( $submodule_path );
+
+	$data = json_decode(
+		vipgoci_github_fetch_url(
+			$github_url,
+			$options['token']
+		),
+		true
+	);
+
+	$ret_val = null;
+
+	if ( ! empty( $data['submodule_git_url'] ) ) {
+		$ret_val = $data['submodule_git_url'];
+
+		$dot_git_pos = strrpos(
+			$ret_val,
+			'.git'
+		);
+
+		if ( false !== $dot_git_pos ) {
+			$ret_val = substr(
+				$ret_val,
+				0,
+				$dot_git_pos
+			);
+		}
+	}
+
+	vipgoci_cache(
+		$cached_id,
+		$ret_val
+	);
+
+	vipgoci_log(
+		'Fetched Github commit-URL',
+		array(
+			'submodule_path'	=> $submodule_path,
+			'submodule_git_url'	=> $ret_val,
+		)
+	);
+
+	return $ret_val;
+}
+

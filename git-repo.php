@@ -501,3 +501,128 @@ function vipgoci_gitrepo_get_file_at_commit(
 
 	return $result;
 }
+
+/*
+ * Get submodules for the given local git repository.
+ */
+function vipgoci_gitrepo_get_submodules_list( $local_git_repo ) {
+	/* Check for cached version */
+	$cached_id = array(
+		__FUNCTION__, $local_git_repo
+	);
+
+	$cached_data = vipgoci_cache( $cached_id );
+
+	if ( false !== $cached_data ) {
+		/* Found cached version, return it. */
+		return $cached_data;
+	}
+
+	/*
+	 * No cached version found, get submodule list,
+	 * process and return.
+	 */
+
+	$cmd = sprintf(
+		'%s -C %s submodule 2>&1',
+		escapeshellcmd( 'git' ),
+		escapeshellarg( $local_git_repo ),
+	);
+
+	/* Actually execute */
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'git_cli' );
+
+	$result = shell_exec( $cmd );
+
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'git_cli' );
+
+	$result = explode(
+		"\n",
+		$result
+	);
+
+	/*
+	 * Clean up results, remove whitespace etc.
+	 */
+	$result = array_map(
+		function( $str ) {
+			$str = trim(
+				$str
+			);
+
+			$arr = explode(
+				' ',
+				$str
+			);
+
+			if ( count( $arr ) !== 3 ) {
+				return array();
+			}
+
+			$arr[2] = trim(
+				$arr[2],
+				'()'
+			);
+
+			return array(
+				'commit_id'		=> $arr[0],
+				'submodule_path'	=> $arr[1],
+				'submodule_tag'		=> $arr[2],
+			);
+		},
+		$result
+	);
+
+	/*
+	 * Remove any array items that are not
+	 * of correct size.
+	 */
+	$result = array_filter(
+		$result,
+		function( $arr_item ) {
+			if ( count( $arr_item ) === 3 ) {
+				return true;
+			}
+
+			return false;
+		}
+	);
+
+	/*
+	 * Cache result.
+	 */
+	vipgoci_cache(
+		$cached_id,
+		$result
+	);
+	
+	return $result;
+}
+
+/*
+ * Get submodule path for the given file,
+ * if is a submodule.
+ */
+function vipgoci_gitrepo_submodule_file_path_get(
+	$local_git_repo,
+	$file_path
+) {
+	$submodules_list = vipgoci_gitrepo_get_submodules_list(
+		$local_git_repo
+	);
+
+	foreach(
+		$submodules_list as $submodule_item
+	) {
+		if ( strpos(
+			$file_path,
+			$submodule_item['submodule_path'] . '/'
+		) === 0 ) {
+			return $submodule_item;
+		}
+	}
+
+	return null;	
+}
+
+
