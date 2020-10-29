@@ -4052,7 +4052,7 @@ function vipgoci_github_submodule_get_url( $options, $submodule_path ) {
 	$cached_data = vipgoci_cache( $cached_id );
 
 	vipgoci_log(
-		'Fetching GitHub commit-URL for submodule' .
+		'Fetching GitHub repository URL for submodule' .
 			vipgoci_cached_indication_str( $cached_data ),
 		array(
 			'repo-owner'		=> $options['repo-owner'],
@@ -4107,7 +4107,7 @@ function vipgoci_github_submodule_get_url( $options, $submodule_path ) {
 	);
 
 	vipgoci_log(
-		'Fetched Github commit-URL',
+		'Fetched Github repository URL',
 		array(
 			'submodule_path'	=> $submodule_path,
 			'submodule_git_url'	=> $ret_val,
