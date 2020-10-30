@@ -503,9 +503,31 @@ function vipgoci_gitrepo_get_file_at_commit(
 }
 
 /*
+ * Initialise submodules for the given local git repository.
+ */
+function vipgoci_gitrepo_submodules_setup( $local_git_repo ) {
+	$cmd = sprintf(
+		'%s -C %s submodule init && %s -C %s submodule update 2>&1',
+		escapeshellcmd( 'git' ),
+		escapeshellarg( $local_git_repo ),
+		escapeshellcmd( 'git' ),
+		escapeshellarg( $local_git_repo )
+	);
+
+	/* Actually execute */
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'git_cli' );
+
+	$result = shell_exec( $cmd );
+
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'git_cli' );
+
+	return $result;
+}
+
+/*
  * Get submodules for the given local git repository.
  */
-function vipgoci_gitrepo_get_submodules_list( $local_git_repo ) {
+function vipgoci_gitrepo_submodules_list( $local_git_repo ) {
 	/* Check for cached version */
 	$cached_id = array(
 		__FUNCTION__, $local_git_repo
@@ -607,7 +629,7 @@ function vipgoci_gitrepo_submodule_file_path_get(
 	$local_git_repo,
 	$file_path
 ) {
-	$submodules_list = vipgoci_gitrepo_get_submodules_list(
+	$submodules_list = vipgoci_gitrepo_submodules_list(
 		$local_git_repo
 	);
 
