@@ -92,6 +92,10 @@ function vipgoci_irc_api_alerts_send(
 			array( 'Authorization: Bearer ' . $irc_api_token )
 		);
 
+		vipgoci_curl_set_security_options(
+			$ch
+		);
+
 		/*
 		 * Execute query, keep record of how long time it
 		 * took, and keep count of how many requests we do.
