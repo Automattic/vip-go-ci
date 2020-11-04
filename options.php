@@ -972,6 +972,19 @@ function vipgoci_option_url_handle(
 			);
 		}
 	}
+
+	if (
+		( true === $options['enforce-https-urls'] ) &&
+		( 0 !== strpos( $options[ $option_name ], 'https://' ) )
+	) {
+		vipgoci_sysexit(
+			'Option --' . $option_name . ' should ' .
+				'be an URL starting with https://',
+			array(
+			),
+			VIPGOCI_EXIT_USAGE_ERROR
+		);
+	}
 }
 
 /*
