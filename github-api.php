@@ -73,6 +73,28 @@ function vipgoci_curl_headers( $ch, $header ) {
 	return $header_len;
 }
 
+/*
+ * Set a few options for cURL that enhance security.
+ */
+function vipgoci_curl_set_security_options( $ch ) {
+	/*
+	 * Maximum number of redirects to zero.
+	 */
+	curl_setopt(
+		$ch,
+		CURLOPT_MAXREDIRS,
+		0
+	);	
+
+	/*
+	 * Do not follow any "Location:" headers.
+	 */
+	curl_setopt(
+		$ch,
+		CURLOPT_FOLLOWLOCATION,
+		false
+	);
+}
 
 /**
  * Detect if we exceeded the GitHub rate-limits,
@@ -442,6 +464,10 @@ function vipgoci_github_post_url(
 			array( 'Authorization: token ' . $github_token )
 		);
 
+		vipgoci_curl_set_security_options(
+			$ch
+		);
+
 		// Make sure to pause between GitHub-requests
 		vipgoci_github_wait();
 
@@ -654,6 +680,10 @@ function vipgoci_github_fetch_url(
 			}
 		}
 
+		vipgoci_curl_set_security_options(
+			$ch
+		);
+
 
 		// Make sure to pause between GitHub-requests
 		vipgoci_github_wait();
@@ -806,6 +836,10 @@ function vipgoci_github_put_url(
 			$ch,
 			CURLOPT_HTTPHEADER,
 			array( 'Authorization: token ' . $github_token )
+		);
+
+		vipgoci_curl_set_security_options(
+			$ch
 		);
 
 		// Make sure to pause between GitHub-requests
