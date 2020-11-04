@@ -86,6 +86,10 @@ function vipgoci_repo_meta_api_data_fetch(
 			'vipgoci_curl_headers'
 		);
 
+		vipgoci_curl_set_security_options(
+			$ch
+		);
+
 		vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'repo_meta_data_endpoint_api_request' );
 
 		vipgoci_counter_report(
