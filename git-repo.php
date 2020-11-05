@@ -501,3 +501,231 @@ function vipgoci_gitrepo_get_file_at_commit(
 
 	return $result;
 }
+
+/*
+ * Initialise submodules for the given local git repository.
+ */
+function vipgoci_gitrepo_submodules_setup( $local_git_repo ) {
+	$cmd = sprintf(
+		'%s -C %s submodule init && %s -C %s submodule update 2>&1',
+		escapeshellcmd( 'git' ),
+		escapeshellarg( $local_git_repo ),
+		escapeshellcmd( 'git' ),
+		escapeshellarg( $local_git_repo )
+	);
+
+	/* Actually execute */
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'git_cli' );
+
+	$result = shell_exec( $cmd );
+
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'git_cli' );
+
+	return $result;
+}
+
+/*
+ * Get submodules for the given local git repository.
+ */
+function vipgoci_gitrepo_submodules_list( $local_git_repo ) {
+	/* Check for cached version */
+	$cached_id = array(
+		__FUNCTION__, $local_git_repo
+	);
+
+	$cached_data = vipgoci_cache( $cached_id );
+
+	if ( false !== $cached_data ) {
+		/* Found cached version, return it. */
+		return $cached_data;
+	}
+
+	/*
+	 * No cached version found, get submodule list,
+	 * process and return.
+	 */
+
+	$cmd = sprintf(
+		'%s -C %s submodule 2>&1',
+		escapeshellcmd( 'git' ),
+		escapeshellarg( $local_git_repo ),
+	);
+
+	/* Actually execute */
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'git_cli' );
+
+	$result = shell_exec( $cmd );
+
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'git_cli' );
+
+	$result = explode(
+		"\n",
+		$result
+	);
+
+	/*
+	 * Clean up results, remove whitespace etc.
+	 */
+	$result = array_map(
+		function( $str ) {
+			$str = trim(
+				$str
+			);
+
+			$arr = explode(
+				' ',
+				$str
+			);
+
+			if ( count( $arr ) !== 3 ) {
+				return array();
+			}
+
+			$arr[2] = trim(
+				$arr[2],
+				'()'
+			);
+
+			return array(
+				'commit_id'		=> $arr[0],
+				'submodule_path'	=> $arr[1],
+				'submodule_tag'		=> $arr[2],
+			);
+		},
+		$result
+	);
+
+	/*
+	 * Remove any array items that are not
+	 * of correct size.
+	 */
+	$result = array_filter(
+		$result,
+		function( $arr_item ) {
+			if ( count( $arr_item ) === 3 ) {
+				return true;
+			}
+
+			return false;
+		}
+	);
+
+	/*
+	 * Cache result.
+	 */
+	vipgoci_cache(
+		$cached_id,
+		$result
+	);
+	
+	return $result;
+}
+
+/*
+ * Get submodule path for the given file,
+ * if is a submodule.
+ */
+function vipgoci_gitrepo_submodule_file_path_get(
+	$local_git_repo,
+	$file_path
+) {
+	$submodules_list = vipgoci_gitrepo_submodules_list(
+		$local_git_repo
+	);
+
+	foreach(
+		$submodules_list as $submodule_item
+	) {
+		if ( strpos(
+			$file_path,
+			$submodule_item['submodule_path'] . '/'
+		) === 0 ) {
+			return $submodule_item;
+		}
+	}
+
+	return null;	
+}
+
+
+
+/*
+ * Get URL for submodule from repository config.
+ */
+function vipgoci_gitrepo_submodule_get_url(
+	$local_git_repo,
+	$submodule_path
+) {
+	/* Check for cached version */
+	$cached_id = array(
+		__FUNCTION__, $local_git_repo,
+		$submodule_path
+	);
+
+	$cached_data = vipgoci_cache( $cached_id );
+
+	vipgoci_log(
+		'Fetching GitHub repository URL for submodule' .
+			vipgoci_cached_indication_str( $cached_data ),
+		array(
+			'local-git-repo'	=> $local_git_repo,
+			'submodule_path'	=> $submodule_path,
+		)
+	);
+
+	if ( false !== $cached_data ) {
+		/* Found cached version, return it. */
+		return $cached_data;
+	}
+
+	$git_modules_parsed = parse_ini_file(
+		$local_git_repo . '/.gitmodules',
+		true
+	);
+
+	if ( false === $git_modules_parsed ) {
+		return null;
+	}
+
+	$ret_val = null;
+
+	foreach(
+		$git_modules_parsed as
+			$git_module_folder => $git_module_info
+	) {
+		if ( $git_module_info['path'] === $submodule_path ) {
+			$dot_git_pos = strrpos(
+				$git_module_info['url'],
+				'.git'
+			);
+
+			$ret_val = $git_module_info['url'];
+
+			if ( false !== $dot_git_pos ) {
+				$ret_val = substr(
+					$ret_val,
+					0,
+					$dot_git_pos
+				);
+			}
+
+			break;
+		}
+	}
+
+	vipgoci_cache(
+		$cached_id,
+		$ret_val
+	);
+
+	vipgoci_log(
+		'Fetched Github repository URL',
+		array(
+			'submodule_path'	=> $submodule_path,
+			'submodule_git_url'	=> $ret_val,
+		)
+	);
+
+	return $ret_val;
+}
+
