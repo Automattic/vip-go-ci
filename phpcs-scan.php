@@ -242,6 +242,18 @@ function vipgoci_phpcs_scan_single_file(
 		true
 	);
 
+	/*
+	 * Detect errors and report
+	 */
+	if ( null === $file_issues_arr_master ) {
+		vipgoci_log(
+			'Error when running PHPCS',
+			array(
+				'file_issues_str' => $file_issues_str,
+			)
+		);
+	}
+
 	return array(
 		'file_issues_arr_master'	=> $file_issues_arr_master,
 		'file_issues_str'		=> $file_issues_str,
