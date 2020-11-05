@@ -152,6 +152,7 @@ function vipgoci_run() {
 			'repo-name:',
 			'commit:',
 			'token:',
+			'enforce-https-urls:',
 			'skip-draft-prs:',
 			'results-comments-sort:',
 			'review-comments-max:',
@@ -223,6 +224,14 @@ function vipgoci_run() {
 	);
 
 	/*
+	 * Handle --enforce-https-urls absolutely first,
+	 * as that is used in processing parameters expecting
+	 * URLs.
+	 */
+	vipgoci_option_bool_handle( $options, 'enforce-https-urls', 'true' );
+
+
+	/*
 	 * Try to read configuration from
 	 * environmental variables.
 	 */
@@ -261,6 +270,9 @@ function vipgoci_run() {
 			"\t" . '--repo-name=STRING             Specify name of the repository' . PHP_EOL .
 			"\t" . '--commit=STRING                Specify the exact commit to scan (SHA)' . PHP_EOL .
 			"\t" . '--token=STRING                 The access-token to use to communicate with GitHub' . PHP_EOL .
+			PHP_EOL .
+			"\t" . '--enforce-https-urls=BOOL      Check and enforce that all URLs provided to parameters ' .PHP_EOL .
+			"\t" . '                               that expect a URL are HTTPS and not HTTP. Default is true.' . PHP_EOL .
 			PHP_EOL .
 			"\t" . '--skip-draft-prs=BOOL          If true, skip scanning of all Pull-Requests that are in draft mode.' . PHP_EOL .
 			"\t" . '                               Default is false.' . PHP_EOL .

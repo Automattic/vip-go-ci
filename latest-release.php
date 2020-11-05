@@ -16,6 +16,8 @@ curl_setopt( $ch, CURLOPT_URL,			$github_url );
 curl_setopt( $ch, CURLOPT_RETURNTRANSFER,	1 );
 curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT,	20 );
 curl_setopt( $ch, CURLOPT_USERAGENT,	$client_id );
+curl_setopt( $ch, CURLOPT_MAXREDIRS,	0 );
+curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, false );
 
 
 $resp_data_raw = curl_exec( $ch );
