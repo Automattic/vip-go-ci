@@ -83,12 +83,6 @@ final class GitRepoRepoGetHeadTest extends TestCase {
 			$this->options['local-git-repo']
 		);
 
-		$ret = str_replace(
-			"'",
-			"",
-			$ret
-		);
-
 		vipgoci_unittests_output_unsuppress();
 
 		$this->assertEquals(
