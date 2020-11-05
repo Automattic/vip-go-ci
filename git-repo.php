@@ -648,3 +648,84 @@ function vipgoci_gitrepo_submodule_file_path_get(
 }
 
 
+
+/*
+ * Get URL for submodule from repository config.
+ */
+function vipgoci_gitrepo_submodule_get_url(
+	$local_git_repo,
+	$submodule_path
+) {
+	/* Check for cached version */
+	$cached_id = array(
+		__FUNCTION__, $local_git_repo,
+		$submodule_path
+	);
+
+	$cached_data = vipgoci_cache( $cached_id );
+
+	vipgoci_log(
+		'Fetching GitHub repository URL for submodule' .
+			vipgoci_cached_indication_str( $cached_data ),
+		array(
+			'local-git-repo'	=> $local_git_repo,
+			'submodule_path'	=> $submodule_path,
+		)
+	);
+
+	if ( false !== $cached_data ) {
+		/* Found cached version, return it. */
+		return $cached_data;
+	}
+
+	$git_modules_parsed = parse_ini_file(
+		$local_git_repo . '/.gitmodules',
+		true
+	);
+
+	if ( false === $git_modules_parsed ) {
+		return null;
+	}
+
+	$ret_val = null;
+
+	foreach(
+		$git_modules_parsed as
+			$git_module_folder => $git_module_info
+	) {
+		if ( $git_module_info['path'] === $submodule_path ) {
+			$dot_git_pos = strrpos(
+				$git_module_info['url'],
+				'.git'
+			);
+
+			$ret_val = $git_module_info['url'];
+
+			if ( false !== $dot_git_pos ) {
+				$ret_val = substr(
+					$ret_val,
+					0,
+					$dot_git_pos
+				);
+			}
+
+			break;
+		}
+	}
+
+	vipgoci_cache(
+		$cached_id,
+		$ret_val
+	);
+
+	vipgoci_log(
+		'Fetched Github repository URL',
+		array(
+			'submodule_path'	=> $submodule_path,
+			'submodule_git_url'	=> $ret_val,
+		)
+	);
+
+	return $ret_val;
+}
+
