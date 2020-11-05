@@ -1454,6 +1454,25 @@ function vipgoci_run() {
 	);
 
 	/*
+	 * In case of exiting before we
+	 * empty the IRC queue, do it on shutdown.
+	 */
+	if (
+		( ! empty( $options['irc-api-url'] ) ) &&
+		( ! empty( $options['irc-api-token'] ) ) &&
+		( ! empty( $options['irc-api-bot'] ) ) &&
+		( ! empty( $options['irc-api-room'] ) )
+	) {
+		register_shutdown_function(
+			'vipgoci_irc_api_alerts_send',
+			$options['irc-api-url'],
+			$options['irc-api-token'],
+			$options['irc-api-bot'],
+			$options['irc-api-room']
+		);
+	}
+
+	/*
 	 * Log that we started working,
 	 * and the arguments provided as well.
 	 *
