@@ -90,6 +90,16 @@ final class GitRepoSubmoduleGetUrlTest extends TestCase {
 
 		$ret = vipgoci_gitrepo_submodule_get_url(
 			$this->options['local-git-repo'],
+			'folder1/vip-go-ci-INVALID'
+		);
+
+		$this->assertEquals(
+			null,
+			$ret
+		);
+
+		$ret = vipgoci_gitrepo_submodule_get_url(
+			$this->options['local-git-repo'],
 			'folder2/vip-go-ci-INVALID'
 		);
 
