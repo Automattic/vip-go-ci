@@ -563,7 +563,7 @@ function vipgoci_phpcs_scan_commit(
 			},
 			$file_issues_arr_master
 				['files']
-				[ $temp_file_name ]
+				[ ltrim( $temp_file_name, '/' ) ]
 				['messages']
 		);
 
