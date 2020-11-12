@@ -551,6 +551,13 @@ function vipgoci_phpcs_scan_commit(
 
 		unset( $file_issues_str );
 
+		if ( isset( $file_issues_arr_master['files'][ $temp_file_name ] ) ) {
+			$file_issues_arr_index = $file_issues_arr_master['files'][ $temp_file_name ];
+		} else {
+			$file_issues_arr_index = $file_issues_arr_master['files'][ ltrim( $temp_file_name, '/' ) ];
+		}
+
+
 		/*
 		 * Make sure items in $file_issues_arr_master have
 		 * 'level' key and value.
@@ -563,7 +570,7 @@ function vipgoci_phpcs_scan_commit(
 			},
 			$file_issues_arr_master
 				['files']
-				[ ltrim( $temp_file_name, '/' ) ]
+				[ $file_issues_arr_index ]
 				['messages']
 		);
 
