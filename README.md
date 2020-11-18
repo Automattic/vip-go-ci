@@ -252,7 +252,7 @@ Alternatively, if you do not wish to run TeamCity in a Docker-instance, you can 
 
 `vip-go-ci` has support for various features not documented above, such as dismissing stale reviews, setting specific options via the repository being scanned and more. These features are configurable via the command-line or the environment, and are documented below.
 
-Note: To make it easier to read the documention below, some required parameters are not shown (such as `--repo-owner`, `--repo-name`, etc).
+Note: To make it easier to read the documentation below, some required parameters are not shown (such as `--repo-owner`, `--repo-name`, etc).
 
 ### Configuring via environmental variables
 
@@ -393,11 +393,11 @@ The feature can be activated using the `--hashes-api` parameter and by specifyin
 
 > ./vip-go-ci.php --autoapprove=true --hashes-api=true --hashes-api-url=https://myservice.mycompany.is/wp-json/viphash/
 
-Configured this way, `vip-go-ci` will make HTTP API requests for any PHP or JavaScript file it sees being altereed in Pull-Requests it scans. The HTTP API requests would look like this:
+Configured this way, `vip-go-ci` will make HTTP API requests for any PHP or JavaScript file it sees being altered in Pull-Requests it scans. The HTTP API requests would look like this:
 
 > https://myservice.mycompany.is/wp-json/viphash/v1/hashes/id/[HASH]
 
-where `[HASH]` is a SHA1 hash of a particular PHP or JavaScript file, after it all comments and whitespaces have been removed from them. `vip-go-ci` expectes a JSON result like this from the HTTP API:
+where `[HASH]` is a SHA1 hash of a particular PHP or JavaScript file, after it all comments and whitespaces have been removed from them. `vip-go-ci` expects a JSON result like this from the HTTP API:
 
 ```
 [{"status":"true"},{"status":"true"}]
@@ -504,7 +504,7 @@ At this time, only certain messages are posted to IRC, all indicated by a specia
 
 `tools-init.sh` will install PHPCS and related tools in your home-directory upon execution. It will keep these tools up to date when run; it should be executed on regular basis to keep everything up to date.
 
-However, once a while `tools-init.sh` itself needs to be updated with new versions of these utilities. The file keeps two data entries for each utlity: Version number and SHA1 hash. The version number refers to a release on GitHub, and the hash to the SHA1 hash of the release's `.tar.gz` archive on GitHub. The hash is used to make sure that the relevant utility has not changed since last updated in `tools-init.sh`.
+However, once a while `tools-init.sh` itself needs to be updated with new versions of these utilities. The file keeps two data entries for each utility: Version number and SHA1 hash. The version number refers to a release on GitHub, and the hash to the SHA1 hash of the release's `.tar.gz` archive on GitHub. The hash is used to make sure that the relevant utility has not changed since last updated in `tools-init.sh`.
 
 Versions and hashes can be determined in the following way. Releases of the `WordPress-Coding-Standards` utility, for instance, are hosted [here](https://github.com/WordPress/WordPress-Coding-Standards/releases). Once a version has been chosen, `tools-init.sh` can be updated in the following way:
 
@@ -512,7 +512,7 @@ Versions and hashes can be determined in the following way. Releases of the `Wor
 export WP_CODING_STANDARDS_VER="2.1.1"
 ```
 
-Then the hash has to be calculated. First, obtain a `.tar.gz` archive for the release from GitHub. The download URL for `WordPress-Coding-Standards` is: `https://github.com/WordPress/WordPress-Coding-Standards/archive/VERSION.tar.gz` -- simply replace `VERSION` with the version to be used. Then run the `sha1sum` UNIX utility against the downloaded file. Any other compatibile tool can be used. 
+Then the hash has to be calculated. First, obtain a `.tar.gz` archive for the release from GitHub. The download URL for `WordPress-Coding-Standards` is: `https://github.com/WordPress/WordPress-Coding-Standards/archive/VERSION.tar.gz` -- simply replace `VERSION` with the version to be used. Then run the `sha1sum` UNIX utility against the downloaded file. Any other compatible tool can be used. 
 
 For version 2.1.1 of `WordPress-Coding-Standards` the hash is added as follows:
 
@@ -528,7 +528,7 @@ To run the unitests for `vip-go-ci`, you will need to install `phpunit` and any 
 
 > phpunit tests/ -vv
 
-By using this command, you will run the whole test-suite and get feeback on any errors or warnings. 
+By using this command, you will run the whole test-suite and get feedback on any errors or warnings. 
 
 Note that by default, some tests will be skipped, as these will require a GitHub token to write to GitHub in order to complete, need access to the hashes-to-hashes database, or to a repo-meta API. To enable the testing of these, you need to set up a `unittests-secrets.ini` file in the root of the repository. It should include the following fields:
 
