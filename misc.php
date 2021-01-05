@@ -393,7 +393,7 @@ function vipgoci_cached_indication_str( $cache_used ) {
 function vipgoci_save_temp_file(
 	$file_name_prefix,
 	$file_name_extension = null,
-	$file_contents
+	$file_contents = ''
 ) {
 	// Determine name for temporary-file
 	$temp_file_name = $temp_file_save_status = tempnam(
