@@ -2255,7 +2255,8 @@ function vipgoci_github_pr_review_submit(
 	$commit_id,
 	$results,
 	$informational_url,
-	$github_review_comments_max
+	$github_review_comments_max,
+	$github_review_comments_include_severity
 ) {
 
 	$stats_types_to_process = array(
@@ -2355,6 +2356,18 @@ function vipgoci_github_pr_review_submit(
 					ucfirst( strtolower(
 						$commit_issue['issue']['level']
 						)) .
+
+					(
+						true === $github_review_comments_include_severity ?
+							(
+								'( severity ' .
+								$commit_issue['issue']['severity'] .
+								' )'
+							)
+							:
+							( '' )
+					) .
+
 					'**: ' .
 
 					// Then the message it self

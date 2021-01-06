@@ -840,6 +840,16 @@ function vipgoci_github_comment_match(
 		);
 
 		/*
+		 * The comment might include severity level
+		 * -- remove that.
+		 */
+		$comment_made_body = preg_replace(
+			'/\( severity \d{1,2} \)/',
+			'',
+			$comment_made_body
+		);
+
+		/*
 		 * The comment might be prefixed with ': ',
 		 * remove that as well.
 		 */
