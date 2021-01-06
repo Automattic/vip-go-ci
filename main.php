@@ -293,7 +293,7 @@ function vipgoci_run() {
 			"\t" . '                                    rather than a whole PHPCS sniff. Should be a ' . PHP_EOL .
 			"\t" . '                                    whole string with items separated by \"|||\".' . PHP_EOL .
 			"\t" . '--review-comments-include-severity=BOOL  Whether to include severity level with' . PHP_EOL .
-			"\t" . '                                         each review comment. Default is false' . PHP_EOL .
+			"\t" . '                                         each review comment. Default is false.' . PHP_EOL .
 			PHP_EOL .
 			"\t" . '--dismiss-stale-reviews=BOOL   Dismiss any reviews associated with Pull-Requests ' . PHP_EOL .
 			"\t" . '                               that we process which have no active comments. ' . PHP_EOL .
