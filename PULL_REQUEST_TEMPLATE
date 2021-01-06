@@ -5,6 +5,8 @@ Pull-Requests should have a TODO included. Here is a draft:
 TODO:
 - [ ] Specify a parameter to make [feature] configurable
 - [ ] Implement [new feature / logic]
-- [ ] Update unit-tests
+- [ ] Add/update unit-tests
 - [ ] Update README
+- [ ] Run full-unit tests 
+- [ ] Check automated unit-tests
 -->
