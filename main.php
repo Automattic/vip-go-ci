@@ -158,6 +158,7 @@ function vipgoci_run() {
 			'review-comments-max:',
 			'review-comments-total-max:',
 			'review-comments-ignore:',
+			'review-comments-include-severity:',
 			'dismiss-stale-reviews:',
 			'dismissed-reviews-repost-comments:',
 			'dismissed-reviews-exclude-reviews-from-team:',
@@ -291,6 +292,9 @@ function vipgoci_run() {
 			"\t" . '                                    -- e.g. useful if one type of message is to be ignored' . PHP_EOL .
 			"\t" . '                                    rather than a whole PHPCS sniff. Should be a ' . PHP_EOL .
 			"\t" . '                                    whole string with items separated by \"|||\".' . PHP_EOL .
+			"\t" . '--review-comments-include-severity=BOOL  Whether to include severity level with' . PHP_EOL .
+			"\t" . '                                         each review comment. Default is false' . PHP_EOL .
+			PHP_EOL .
 			"\t" . '--dismiss-stale-reviews=BOOL   Dismiss any reviews associated with Pull-Requests ' . PHP_EOL .
 			"\t" . '                               that we process which have no active comments. ' . PHP_EOL .
 			"\t" . '                               The Pull-Requests we process are those associated ' . PHP_EOL .
@@ -743,6 +747,8 @@ function vipgoci_run() {
 	vipgoci_option_bool_handle( $options, 'dismissed-reviews-repost-comments', 'true' );
 
 	vipgoci_option_bool_handle( $options, 'results-comments-sort', 'false' );
+
+	vipgoci_option_bool_handle( $options, 'review-comments-include-severity', 'false' );
 
 	if (
 		( false === $options['lint'] ) &&
@@ -1947,7 +1953,8 @@ function vipgoci_run() {
 		$options['commit'],
 		$results,
 		$options['informational-url'],
-		$options['review-comments-max']
+		$options['review-comments-max'],
+		$options['review-comments-include-severity']
 	);
 
 	if ( true === $options['dismiss-stale-reviews'] ) {
