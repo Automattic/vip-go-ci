@@ -176,6 +176,7 @@ function vipgoci_run() {
 			'repo-meta-api-base-url:',
 			'repo-meta-api-user-id:',
 			'repo-meta-api-access-token:',
+			'phpcs:',
 			'phpcs-path:',
 			'phpcs-standard:',
 			'phpcs-severity:',
@@ -187,6 +188,7 @@ function vipgoci_run() {
 			'phpcs-skip-folders-in-repo-options-file:',
 			'repo-options:',
 			'repo-options-allowed:',
+			'hashes-api:',
 			'hashes-api-url:',
 			'hashes-oauth-token:',
 			'hashes-oauth-token-secret:',
@@ -203,7 +205,6 @@ function vipgoci_run() {
 			'lint:',
 			'lint-skip-folders:',
 			'lint-skip-folders-in-repo-options-file:',
-			'phpcs:',
 			'svg-checks:',
 			'svg-scanner-path:',
 			'autoapprove:',
@@ -212,7 +213,6 @@ function vipgoci_run() {
 			'autoapprove-php-nonfunctional-changes:',
 			'help',
 			'debug-level:',
-			'hashes-api:',
 		);
 
 	/*
@@ -1436,6 +1436,21 @@ function vipgoci_run() {
 				'valid_values'	=> array( true, false ),
 			),
 
+			'results-comments-sort' => array(
+				'type'		=> 'boolean',
+				'valid_values'	=> array( true, false ),
+			),
+
+			'review-comments-include-severity' => array(
+				'type'		=> 'boolean',
+				'valid_values'	=> array( true, false ),
+			),
+
+			'phpcs' => array(
+				'type'		=> 'boolean',
+				'valid_values'	=> array( true, false ),
+			),
+
 			'phpcs-severity' => array(
 				'type'		=> 'integer',
 				'valid_values'	=> array( 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ),
@@ -1456,6 +1471,26 @@ function vipgoci_run() {
 				'type'		=> 'array',
 				'append'	=> true,
 				'valid_values'	=> null,
+			),
+
+			'hashes-api' => array(
+				'type'		=> 'boolean',
+				'valid_values'	=> array( true, false ),
+			),
+
+			'svg-checks' => array(
+				'type'		=> 'boolean',
+				'valid_values'	=> array( true, false ),	
+			),
+
+			'autoapprove' => array(
+				'type'		=> 'boolean',
+				'valid_values'	=> array( true, false ),
+			),
+
+			'autoapprove-php-nonfunctional-changes' => array(
+				'type'		=> 'boolean',
+				'valid_values'	=> array( true, false ),
 			),
 		)
 	);
