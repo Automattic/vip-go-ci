@@ -979,10 +979,17 @@ function vipgoci_run() {
 		array(
 			'skip-execution',
 			'skip-draft-prs',
+			'results-comments-sort',
+			'review-comments-include-severity',
+			'phpcs',
 			'phpcs-severity',
 			'post-generic-pr-support-comments',
 			'phpcs-sniffs-include',
 			'phpcs-sniffs-exclude',
+			'hashes-api',
+			'svg-checks',
+			'autoapprove',
+			'autoapprove-php-nonfunctional-changes',
 		)
 	);
 
