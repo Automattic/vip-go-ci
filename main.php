@@ -1428,6 +1428,10 @@ function vipgoci_run() {
 	 * Certain options are configurable via
 	 * options-file in the repository. Set
 	 * these options here.
+	 *
+	 * Note that any new option added here should
+	 * be added to the --repo-options-allowed option
+	 * found above.
 	 */
 	vipgoci_options_read_repo_file(
 		$options,
