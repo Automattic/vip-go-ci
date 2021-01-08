@@ -14,7 +14,7 @@ commands:
       # Update software and install a few things
       - run: sudo apt update
       - run: sudo docker-php-ext-install zip
-      - run: composer require --dev phpunit/phpunit ^7
+      - run: composer require --dev phpunit/phpunit ^9
       # By default, php is not available in /usr/bin, fix that
       - run: sudo ln -s /usr/local/bin/php /usr/bin/php
       # Install all the tools vip-go-ci needs, remove vip-go-ci itself though
@@ -32,20 +32,20 @@ commands:
 jobs:
   testphp73:
     docker:
-      - image: circleci/php:7.3.22-cli
+      - image: circleci/php:7.3.26-cli
     steps:
       - build-cmd
 
 
   testphp74:
     docker:
-       - image: circleci/php:7.4.10-cli
+       - image: circleci/php:7.4.14-cli
     steps:
        - build-cmd
 
   testphp80:
     docker:
-       - image: circleci/php:8.0-cli
+       - image: circleci/php:8.0.1-cli
     steps:
        - build-cmd
 
