@@ -336,7 +336,7 @@ function vipgoci_unittests_php_syntax_error_compat( $str ) {
 		'syntax error, unexpected end of file, expecting "," or ";"',
 		"syntax error, unexpected end of file, expecting ',' or ';'",
 		$str
-	)
+	);
 
 	return $str;
 }
