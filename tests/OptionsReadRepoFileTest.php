@@ -4,7 +4,7 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 
 use PHPUnit\Framework\TestCase;
 
-final class OptionsReadRepoFile extends TestCase {
+final class OptionsReadRepoFileTest extends TestCase {
 	var $options_git = array(
 		'git-path'		=> null,
 		'github-repo-url'	=> null,

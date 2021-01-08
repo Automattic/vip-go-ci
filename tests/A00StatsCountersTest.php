@@ -4,7 +4,7 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 
 use PHPUnit\Framework\TestCase;
 
-final class StatsCountersTest extends TestCase {
+final class A00StatsCountersTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_counter_report
 	 */

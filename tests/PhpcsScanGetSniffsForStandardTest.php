@@ -4,7 +4,7 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 
 use PHPUnit\Framework\TestCase;
 
-final class PhpcsScanGetSniffsForStandard extends TestCase {
+final class PhpcsScanGetSniffsForStandardTest extends TestCase {
 	var $options_phpcs = array(
 		'phpcs-path'		=> null,
 		'phpcs-standard'	=> null,

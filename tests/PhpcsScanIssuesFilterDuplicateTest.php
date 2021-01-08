@@ -4,7 +4,7 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 
 use PHPUnit\Framework\TestCase;
 
-final class PhpcsScanIssuesFilterDuplicate extends TestCase {
+final class PhpcsScanIssuesFilterDuplicateTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_issues_filter_duplicate
 	 */

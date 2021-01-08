@@ -4,7 +4,7 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 
 use PHPUnit\Framework\TestCase;
 
-final class OptionsGenericSupportCommentsProcess extends TestCase {
+final class OptionsGenericSupportCommentsProcessTest extends TestCase {
 	public function setUp(): void {
 		$this->options = array();
 	}
