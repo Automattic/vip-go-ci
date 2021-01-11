@@ -266,7 +266,7 @@ Any parameter can be read from the environment, not just those shown. Parameters
 
 ### Configuration via repository config-file
 
-A few options can currently be configured via a repository config-file. This way, users with commit-access to a git repository can influence the behaviour of `vip-go-ci` when it scans the repository. The idea is to allow users flexibility in how scanning is performed. Various sanity checks are made to the configuration options read. The options that can be specified via repository options are outlined below. A default configuration option is overwritten during run-time by the new value, should it be valid. 
+A number of options can currently be configured via a repository config-file. This way, users with commit-access to a git repository can influence the behaviour of `vip-go-ci` when it scans the repository. The idea is to allow users flexibility in how scanning is performed. Various sanity checks are made to the configuration options read. Some options that can be specified via repository options are outlined below, while others are documented along with the feature itself below (see for example section on PHPCS). A default configuration option is overwritten during run-time by the new value, should it be valid. `vip-go-ci` can be configured to allow only certain options to be configured via config-file. 
 
 The feature can be enabled or disabled via `--repo-options`; by default it is disabled. To use the feature, make sure a `.vipgoci_options` file can be found at the root of the relevant git-repository, containing something similar to this:
 
@@ -282,39 +282,8 @@ Then run `vip-go-ci` like this:
 
 Should the configuration file not be found, any configuration value not be valid, or altering of the particular option is not allowed, the relevant option will not be altered on run-time. Note that not all options need to be set in the configuration file, only those desired. The file is expected to be a parsable, valid JSON.
 
-You can use any combination of options you wish. Individual options are documented below.
+You can use any combination of options you wish.
 
-#### Option `--phpcs-severity`
-
-Specifies the severity level to pass to PHPCS when executed.
-
-For example:
-
-```
-{"phpcs-severity":5}
-```
-
-#### Option `--post-generic-pr-support-comments`
-
-Specifies if to post generic support comments, should be a boolean.
-
-For example:
-
-```
-{"post-generic-pr-support-comments":false}
-```
-
-#### Options `phpcs-sniffs-exclude` and `phpcs-sniffs-include`
-
-These are array parameters and if specified in the options file, the items specified will be appended to the options specified on the command line. To configure the `phpcs-sniffs-exclude` option, one can specify something like this in the repository options file:
-
-> {"phpcs-sniffs-exclude":["WordPressVIPMinimum.JS.InnerHTML", "WordPress.WP.CronInterval"]} 
-
-The `phpcs-sniffs-include` is configured in the same way as the `phpcs-sniffs-exclude` option. Note that it works differently behind the scenes, as it will write out a new PHPCS standard on run-time, containing the sniffs to be included as well as the original PHPCS standard, and will then use this standard from then on. The `phpcs-sniffs-include` option is used in this way:
-
-> {"phpcs-sniffs-include":["WordPress.DB.DirectDatabaseQuery"]} 
-
-Please note that should any of the PHPCS sniffs specified be invalid, a warning will be posted on any Pull-Request scanned. The warning will be removed during next scan and not posted again if the issue is fixed.
 
 #### Option `skip-execution`
 
@@ -356,6 +325,31 @@ With these settings, PHPCS is turned on, is expected to be found in the path sho
 Any number of PHPCS standards can be specified, and any number of runtime settings as well. Also, see section above about configuring options via repository file.
 
 Should any of the PHPCS sniffs included or excluded be invalid, this is reported in the relevant Pull-Requests.
+
+The following PHPCS-related options can be configured via repository config-file:
+
+#### Option `--phpcs-severity`
+
+Specifies the severity level to pass to PHPCS when executed.
+
+For example:
+
+```
+{"phpcs-severity":5}
+```
+
+#### Options `phpcs-sniffs-exclude` and `phpcs-sniffs-include`
+
+These are array parameters and if specified in the options file, the items specified will be appended to the options specified on the command line. To configure the `phpcs-sniffs-exclude` option, one can specify something like this in the repository options file:
+
+> {"phpcs-sniffs-exclude":["WordPressVIPMinimum.JS.InnerHTML", "WordPress.WP.CronInterval"]} 
+
+The `phpcs-sniffs-include` is configured in the same way as the `phpcs-sniffs-exclude` option. Note that it works differently behind the scenes, as it will write out a new PHPCS standard on run-time, containing the sniffs to be included as well as the original PHPCS standard, and will then use this standard from then on. The `phpcs-sniffs-include` option is used in this way:
+
+> {"phpcs-sniffs-include":["WordPress.DB.DirectDatabaseQuery"]} 
+
+Please note that should any of the PHPCS sniffs specified be invalid, a warning will be posted on any Pull-Request scanned. The warning will be removed during next scan and not posted again if the issue is fixed.
+
 
 ### SVG scanning
 
@@ -478,6 +472,18 @@ For example:
 > ./vip-go-ci.php --post-generic-pr-support-comments=true --post-generic-pr-support-comments-string="This ..." --post-generic-pr-support-comments-branches="master" --post-generic-pr-support-comments-repo-meta-match="support_message=true,support_plan=true" 
 
 With the `--post-generic-pr-support-comments-repo-meta-match` parameter added, `vip-go-ci` will look at the data returned by the repo-meta API, and check if these fields and their values are found in there for at least one entry. If so, the generic support message will be posted, and not otherwise.
+
+The following Generic Support Message related options can be configured via repository-config file:
+
+#### Option `--post-generic-pr-support-comments`
+
+Specifies if to post generic support comments, should be a boolean.
+
+For example:
+
+```
+{"post-generic-pr-support-comments":false}
+```
 
 ### Support labels
 
