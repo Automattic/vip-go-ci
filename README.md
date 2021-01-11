@@ -276,7 +276,7 @@ The feature can be enabled or disabled via `--repo-options`; by default it is di
 
 Then run `vip-go-ci` like this:
 
-> ./vip-go-ci.php --repo-options=true --repo-options-allowed="phpcs-severity"
+> ./vip-go-ci.php --repo-options=true --repo-options-allowed="phpcs-severity,skip-draft-prs"
 
 `--repo-options-allowed` specifies which options can be specified via `.vipgoci_options`, and that can be used to limit which options are allowed.
 
