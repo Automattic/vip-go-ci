@@ -361,6 +361,16 @@ To make use of this feature, the `--svg-checks` and `--svg-scanner-path` options
 
 With these options, SVG scanning is turned on and a scanner at a particular path location is to be used. 
 
+The following SVG-related options can be configured via repository config-file:
+
+#### Option `--svg-checks`
+
+Specifies if to do SVG scanning. For instance:
+
+```
+{"svg-checks": false}
+```
+
 ### Autoapprovals
 
 `vip-go-ci` can auto-approve Pull-Requests that only alter particular types of files. The 'type' is based on file-ending, such as `.txt`. The idea is to allow faster approvals of Pull-Requests that do not need to be reviewed or do not need any automated feedback.
@@ -378,6 +388,18 @@ Auto-approvals can be configured so to auto-approve Pull-Requests that only chan
 With this setting, any PHP files having only whitespacing changes or updating to comments, will be automatically approved.
 
 Note that `vip-go-ci` will collect which files of the relevant Pull-Request are approved, whether `.css`, `.gif`, `.php` or other, and if _all_ the files altered by it have been found to be auto-approvable, the whole Pull-Request will be approved automatically. This applies also to the Hashes API (see below).
+
+The following Autoapprovals-related options can be configured via repository config-file:
+
+#### Options `--autoapprove` and `--autoapprove-php-nonfunctional-changes`
+
+Using these options, users can disable autoapproval entirely as well as the autoapprovals of non-functional changes.
+
+For instance:
+
+```
+{"autoapprove": false, "autoapprove-php-nonfunctional-changes": false}
+```
 
 ### Hashes API
 
