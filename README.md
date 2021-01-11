@@ -423,6 +423,16 @@ The JSON result can contain other fields, but they are not used. Note that a sin
 
 An open-source tool to label files as approved or non-approved is available [here](https://github.com/Automattic/vip-hash/). It requires a HTTP API service that `vip-go-ci` communicates with as well.
 
+The following Hashes-API related option can be configured via repository config-file:
+
+#### Option `--hashes-api`
+
+Specifies if to check for approved files in Hashes-API. For instance:
+
+```
+{"hashes-api":true}
+```
+
 ### Ignore certain branches
 
 Sometimes users do not want specific branches scanned for any issues -- they want them effectively to be ignored. To do this, you can use the `--branches-ignore` option. 
