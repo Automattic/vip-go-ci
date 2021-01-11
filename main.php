@@ -1788,6 +1788,9 @@ function vipgoci_run() {
 	 * can be auto-approved, and then actually do the
 	 * auto-approval if possible.
 	 */
+
+	$auto_approved_files_arr = array();
+
 	if ( true === $options['autoapprove'] ) {
 		/*
 		 * FIXME: Move the function-calls below
@@ -1800,7 +1803,6 @@ function vipgoci_run() {
 		 * scan through the files in the PR, and
 		 * register which can be auto-approved.
 		 */
-		$auto_approved_files_arr = array();
 
 		if ( ! empty( $options[ 'autoapprove-filetypes' ] ) ) {
 			vipgoci_ap_file_types(
