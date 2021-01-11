@@ -4,7 +4,7 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 
 use PHPUnit\Framework\TestCase;
 
-final class PhpcsWriteXmlStandardFileTest extends TestCase {
+final class PhpcsScanWriteXmlStandardFileTest extends TestCase {
 	protected function setUp(): void {
 		$this->xml_file_path = tempnam(
 			sys_get_temp_dir(),

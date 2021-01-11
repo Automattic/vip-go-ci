@@ -4,7 +4,7 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 
 use PHPUnit\Framework\TestCase;
 
-final class GitHubPrReviewsCommentsGet extends TestCase {
+final class GitHubPrReviewsCommentsGetTest extends TestCase {
 	var $options_git_repo_tests = array(
 		'commit-test-github-pr-reviews-get-1'	=> null
 	);

@@ -4,7 +4,7 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 
 use PHPUnit\Framework\TestCase;
 
-final class GitHubLabelsTest extends TestCase {
+final class A09GitHubLabelsTest extends TestCase {
 	const label_name = 'Label for testing';
 
 	var $options_git = array(

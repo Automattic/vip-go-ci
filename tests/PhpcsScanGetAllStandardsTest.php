@@ -4,7 +4,7 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 
 use PHPUnit\Framework\TestCase;
 
-final class PhpcsGetAllStandardsTest extends TestCase {
+final class PhpcsScanGetAllStandardsTest extends TestCase {
 	var $options_phpcs = array(
 		'phpcs-path'		=> null,
 		'phpcs-standard'	=> null,

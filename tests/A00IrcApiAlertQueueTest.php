@@ -4,7 +4,7 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 
 use PHPUnit\Framework\TestCase;
 
-final class IrcApiAlertQueueTest extends TestCase {
+final class A00IrcApiAlertQueueTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_irc_api_alert_queue
 	 */

@@ -4,7 +4,7 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 
 use PHPUnit\Framework\TestCase;
 
-final class PhpcsPossiblyUseNewStandardFileTest extends TestCase {
+final class PhpcsScanPossiblyUseNewStandardFileTest extends TestCase {
 	protected function setUp(): void {
 		$this->original_standard = array( 'WordPress-VIP-Go' );
 

@@ -4,7 +4,7 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 
 use PHPUnit\Framework\TestCase;
 
-final class LintLintScanCommitTest extends TestCase {
+final class A09LintLintScanCommitTest extends TestCase {
 	var $options_lint_scan = array(
 		'php-path'				=> null,
 		'commit-test-lint-scan-commit-1'	=> null,
