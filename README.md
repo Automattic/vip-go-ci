@@ -328,14 +328,14 @@ Should any of the PHPCS sniffs included or excluded be invalid, this is reported
 
 The following PHPCS-related options can be configured via repository config-file:
 
-#### Option `--phpcs-severity`
+#### Options `--phpcs` and `--phpcs-severity`
 
-Specifies the severity level to pass to PHPCS when executed.
+Specifies if to do PHPCS scanning and specifies the severity level to pass to PHPCS when executed.
 
 For example:
 
 ```
-{"phpcs-severity":5}
+{"phpcs":true,"phpcs-severity":5}
 ```
 
 #### Options `phpcs-sniffs-exclude` and `phpcs-sniffs-include`
