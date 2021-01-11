@@ -460,8 +460,39 @@ Folders can also be specified in files placed at the root of the repository, `.v
 
 Any folders found in the files at the root of the repository will be merged with options specified on the command-line.
 
-### Limiting review comments 
+### Configuring review comments 
 
+Review comments posted can be configured and number of them limited.
+
+#### Sorting review comments
+
+One can sort the review comments posted according to severity of the issue found. This applies to any issue, PHPCS, SVG, etc. This is disabled by default.
+
+The option can be used in this way:
+
+> ./vip-go-ci.php --results-comments-sort=true
+
+This option can be configured via repository-config file as well:
+
+```
+{"results-comments-sort":true}
+```
+
+#### Including severity in review comments
+
+One can let `vip-go-ci` include the severity of the issue found in the review comments posted to GitHub. This is disabled by default.
+
+The option can be used in this way:
+
+> ./vip-go-ci.php --review-comments-include-severity=true
+
+This option can be configured via repository-config file as well:
+
+```
+{"review-comments-include-severity":true}
+```
+
+#### Limiting review comments
 One can limit the number of review comments posted to GitHub Pull-Requests. Also, one can ignore certain comments so that they will not be posted to Pull-Request reviews. This is useful when Pull-Requests are created or updated, and contain many issues. 
 
 The options can be used in this way:
