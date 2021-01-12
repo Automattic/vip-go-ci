@@ -285,7 +285,7 @@ Should the configuration file not be found, any configuration value not be valid
 You can use any combination of options you wish.
 
 
-#### Option `skip-execution`
+#### Option `--skip-execution`
 
 This will make execution of `vip-go-ci` stop after initial startup, avoiding all further processing and scanning.
 
@@ -293,7 +293,7 @@ For example:
 
 > {"skip-execution":true}
 
-#### Option `skip-draft-prs`
+#### Option `--skip-draft-prs`
 
 This will let `vip-go-ci` skip scanning of any Pull-Requests that are marked as `draft` on GitHub. This applies to all types of scanning, PHPCS, linting, etc.
 
@@ -338,7 +338,7 @@ For example:
 {"phpcs":true,"phpcs-severity":5}
 ```
 
-#### Options `phpcs-sniffs-exclude` and `phpcs-sniffs-include`
+#### Options `--phpcs-sniffs-exclude` and `--phpcs-sniffs-include`
 
 These are array parameters and if specified in the options file, the items specified will be appended to the options specified on the command line. To configure the `phpcs-sniffs-exclude` option, one can specify something like this in the repository options file:
 
