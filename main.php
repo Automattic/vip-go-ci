@@ -176,6 +176,7 @@ function vipgoci_run() {
 			'repo-meta-api-base-url:',
 			'repo-meta-api-user-id:',
 			'repo-meta-api-access-token:',
+			'phpcs:',
 			'phpcs-path:',
 			'phpcs-standard:',
 			'phpcs-severity:',
@@ -187,6 +188,7 @@ function vipgoci_run() {
 			'phpcs-skip-folders-in-repo-options-file:',
 			'repo-options:',
 			'repo-options-allowed:',
+			'hashes-api:',
 			'hashes-api-url:',
 			'hashes-oauth-token:',
 			'hashes-oauth-token-secret:',
@@ -203,7 +205,6 @@ function vipgoci_run() {
 			'lint:',
 			'lint-skip-folders:',
 			'lint-skip-folders-in-repo-options-file:',
-			'phpcs:',
 			'svg-checks:',
 			'svg-scanner-path:',
 			'autoapprove:',
@@ -212,7 +213,6 @@ function vipgoci_run() {
 			'autoapprove-php-nonfunctional-changes:',
 			'help',
 			'debug-level:',
-			'hashes-api:',
 		);
 
 	/*
@@ -979,10 +979,17 @@ function vipgoci_run() {
 		array(
 			'skip-execution',
 			'skip-draft-prs',
+			'results-comments-sort',
+			'review-comments-include-severity',
+			'phpcs',
 			'phpcs-severity',
 			'post-generic-pr-support-comments',
 			'phpcs-sniffs-include',
 			'phpcs-sniffs-exclude',
+			'hashes-api',
+			'svg-checks',
+			'autoapprove',
+			'autoapprove-php-nonfunctional-changes',
 		)
 	);
 
@@ -1421,6 +1428,10 @@ function vipgoci_run() {
 	 * Certain options are configurable via
 	 * options-file in the repository. Set
 	 * these options here.
+	 *
+	 * Note that any new option added here should
+	 * be added to the --repo-options-allowed option
+	 * found above.
 	 */
 	vipgoci_options_read_repo_file(
 		$options,
@@ -1432,6 +1443,21 @@ function vipgoci_run() {
 			),
 
 			'skip-draft-prs'	=> array(
+				'type'		=> 'boolean',
+				'valid_values'	=> array( true, false ),
+			),
+
+			'results-comments-sort' => array(
+				'type'		=> 'boolean',
+				'valid_values'	=> array( true, false ),
+			),
+
+			'review-comments-include-severity' => array(
+				'type'		=> 'boolean',
+				'valid_values'	=> array( true, false ),
+			),
+
+			'phpcs' => array(
 				'type'		=> 'boolean',
 				'valid_values'	=> array( true, false ),
 			),
@@ -1456,6 +1482,26 @@ function vipgoci_run() {
 				'type'		=> 'array',
 				'append'	=> true,
 				'valid_values'	=> null,
+			),
+
+			'hashes-api' => array(
+				'type'		=> 'boolean',
+				'valid_values'	=> array( true, false ),
+			),
+
+			'svg-checks' => array(
+				'type'		=> 'boolean',
+				'valid_values'	=> array( true, false ),	
+			),
+
+			'autoapprove' => array(
+				'type'		=> 'boolean',
+				'valid_values'	=> array( true, false ),
+			),
+
+			'autoapprove-php-nonfunctional-changes' => array(
+				'type'		=> 'boolean',
+				'valid_values'	=> array( true, false ),
 			),
 		)
 	);
@@ -1742,6 +1788,9 @@ function vipgoci_run() {
 	 * can be auto-approved, and then actually do the
 	 * auto-approval if possible.
 	 */
+
+	$auto_approved_files_arr = array();
+
 	if ( true === $options['autoapprove'] ) {
 		/*
 		 * FIXME: Move the function-calls below
@@ -1754,7 +1803,6 @@ function vipgoci_run() {
 		 * scan through the files in the PR, and
 		 * register which can be auto-approved.
 		 */
-		$auto_approved_files_arr = array();
 
 		if ( ! empty( $options[ 'autoapprove-filetypes' ] ) ) {
 			vipgoci_ap_file_types(

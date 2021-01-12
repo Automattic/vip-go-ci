@@ -167,6 +167,13 @@ function vipgoci_counter_update_with_issues_found(
 	);
 
 	foreach( $stats_types as $stat_type ) {
+		/*
+		 * Skip statistics for stat-types skipped
+		 */
+		if ( null === $results['stats'][ $stat_type ] ) {
+			continue;
+		}
+
 		$pr_keys = array_keys(
 			$results['stats'][ $stat_type ]
 		);

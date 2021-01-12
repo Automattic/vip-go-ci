@@ -266,7 +266,7 @@ Any parameter can be read from the environment, not just those shown. Parameters
 
 ### Configuration via repository config-file
 
-A few options can currently be configured via a repository config-file. This way, users with commit-access to a git repository can influence the behaviour of `vip-go-ci` when it scans the repository. The idea is to allow users flexibility in how scanning is performed. Various sanity checks are made to the configuration options read. The options that can be specified via repository options are outlined below. A default configuration option is overwritten during run-time by the new value, should it be valid. 
+A number of options can currently be configured via a repository config-file. This way, users with commit-access to a git repository can influence the behaviour of `vip-go-ci` when it scans the repository. The idea is to allow users flexibility in how scanning is performed. Various sanity checks are made to the configuration options read. Some options that can be specified via repository options are outlined below, while others are documented along with the feature itself below (see for example section on PHPCS). A default configuration option is overwritten during run-time by the new value, should it be valid. `vip-go-ci` can be configured to allow only certain options to be configured via config-file. 
 
 The feature can be enabled or disabled via `--repo-options`; by default it is disabled. To use the feature, make sure a `.vipgoci_options` file can be found at the root of the relevant git-repository, containing something similar to this:
 
@@ -276,45 +276,14 @@ The feature can be enabled or disabled via `--repo-options`; by default it is di
 
 Then run `vip-go-ci` like this:
 
-> ./vip-go-ci.php --repo-options=true --repo-options-allowed="phpcs-severity"
+> ./vip-go-ci.php --repo-options=true --repo-options-allowed="phpcs-severity,skip-draft-prs"
 
 `--repo-options-allowed` specifies which options can be specified via `.vipgoci_options`, and that can be used to limit which options are allowed.
 
 Should the configuration file not be found, any configuration value not be valid, or altering of the particular option is not allowed, the relevant option will not be altered on run-time. Note that not all options need to be set in the configuration file, only those desired. The file is expected to be a parsable, valid JSON.
 
-You can use any combination of options you wish. Individual options are documented below.
+You can use any combination of options you wish.
 
-#### Option `--phpcs-severity`
-
-Specifies the severity level to pass to PHPCS when executed.
-
-For example:
-
-```
-{"phpcs-severity":5}
-```
-
-#### Option `--post-generic-pr-support-comments`
-
-Specifies if to post generic support comments, should be a boolean.
-
-For example:
-
-```
-{"post-generic-pr-support-comments":false}
-```
-
-#### Options `phpcs-sniffs-exclude` and `phpcs-sniffs-include`
-
-These are array parameters and if specified in the options file, the items specified will be appended to the options specified on the command line. To configure the `phpcs-sniffs-exclude` option, one can specify something like this in the repository options file:
-
-> {"phpcs-sniffs-exclude":["WordPressVIPMinimum.JS.InnerHTML", "WordPress.WP.CronInterval"]} 
-
-The `phpcs-sniffs-include` is configured in the same way as the `phpcs-sniffs-exclude` option. Note that it works differently behind the scenes, as it will write out a new PHPCS standard on run-time, containing the sniffs to be included as well as the original PHPCS standard, and will then use this standard from then on. The `phpcs-sniffs-include` option is used in this way:
-
-> {"phpcs-sniffs-include":["WordPress.DB.DirectDatabaseQuery"]} 
-
-Please note that should any of the PHPCS sniffs specified be invalid, a warning will be posted on any Pull-Request scanned. The warning will be removed during next scan and not posted again if the issue is fixed.
 
 #### Option `skip-execution`
 
@@ -357,6 +326,31 @@ Any number of PHPCS standards can be specified, and any number of runtime settin
 
 Should any of the PHPCS sniffs included or excluded be invalid, this is reported in the relevant Pull-Requests.
 
+The following PHPCS-related options can be configured via repository config-file:
+
+#### Options `--phpcs` and `--phpcs-severity`
+
+Specifies if to do PHPCS scanning and specifies the severity level to pass to PHPCS when executed.
+
+For example:
+
+```
+{"phpcs":true,"phpcs-severity":5}
+```
+
+#### Options `phpcs-sniffs-exclude` and `phpcs-sniffs-include`
+
+These are array parameters and if specified in the options file, the items specified will be appended to the options specified on the command line. To configure the `phpcs-sniffs-exclude` option, one can specify something like this in the repository options file:
+
+> {"phpcs-sniffs-exclude":["WordPressVIPMinimum.JS.InnerHTML", "WordPress.WP.CronInterval"]} 
+
+The `phpcs-sniffs-include` is configured in the same way as the `phpcs-sniffs-exclude` option. Note that it works differently behind the scenes, as it will write out a new PHPCS standard on run-time, containing the sniffs to be included as well as the original PHPCS standard, and will then use this standard from then on. The `phpcs-sniffs-include` option is used in this way:
+
+> {"phpcs-sniffs-include":["WordPress.DB.DirectDatabaseQuery"]} 
+
+Please note that should any of the PHPCS sniffs specified be invalid, a warning will be posted on any Pull-Request scanned. The warning will be removed during next scan and not posted again if the issue is fixed.
+
+
 ### SVG scanning
 
 `vip-go-ci` supports scanning SVG files for dangerous tags. The scanning is accomplished by a [SVG scanner](https://github.com/Automattic/vip-go-svg-sanitizer), while `vip-go-ci` takes care of posting the issues found.
@@ -366,6 +360,16 @@ To make use of this feature, the `--svg-checks` and `--svg-scanner-path` options
 > ./vip-go-ci.php --svg-checks=true --svg-scanner-path="$HOME/vip-go-ci-tools/vip-go-svg-sanitizer/svg-scanner.php"
 
 With these options, SVG scanning is turned on and a scanner at a particular path location is to be used. 
+
+The following SVG-related options can be configured via repository config-file:
+
+#### Option `--svg-checks`
+
+Specifies if to do SVG scanning. For instance:
+
+```
+{"svg-checks": false}
+```
 
 ### Autoapprovals
 
@@ -384,6 +388,18 @@ Auto-approvals can be configured so to auto-approve Pull-Requests that only chan
 With this setting, any PHP files having only whitespacing changes or updating to comments, will be automatically approved.
 
 Note that `vip-go-ci` will collect which files of the relevant Pull-Request are approved, whether `.css`, `.gif`, `.php` or other, and if _all_ the files altered by it have been found to be auto-approvable, the whole Pull-Request will be approved automatically. This applies also to the Hashes API (see below).
+
+The following Autoapprovals-related options can be configured via repository config-file:
+
+#### Options `--autoapprove` and `--autoapprove-php-nonfunctional-changes`
+
+Using these options, users can disable autoapproval entirely as well as the autoapprovals of non-functional changes.
+
+For instance:
+
+```
+{"autoapprove": false, "autoapprove-php-nonfunctional-changes": false}
+```
 
 ### Hashes API
 
@@ -406,6 +422,16 @@ where `[HASH]` is a SHA1 hash of a particular PHP or JavaScript file, after it a
 The JSON result can contain other fields, but they are not used. Note that a single "false" status is enough to make sure a file is considered _not_ approved.
 
 An open-source tool to label files as approved or non-approved is available [here](https://github.com/Automattic/vip-hash/). It requires a HTTP API service that `vip-go-ci` communicates with as well.
+
+The following Hashes-API related option can be configured via repository config-file:
+
+#### Option `--hashes-api`
+
+Specifies if to check for approved files in Hashes-API. For instance:
+
+```
+{"hashes-api":true}
+```
 
 ### Ignore certain branches
 
@@ -434,8 +460,39 @@ Folders can also be specified in files placed at the root of the repository, `.v
 
 Any folders found in the files at the root of the repository will be merged with options specified on the command-line.
 
-### Limiting review comments 
+### Configuring review comments 
 
+Review comments posted can be configured and number of them limited.
+
+#### Sorting review comments
+
+One can sort the review comments posted according to severity of the issue found. This applies to any issue, PHPCS, SVG, etc. This is disabled by default.
+
+The option can be used in this way:
+
+> ./vip-go-ci.php --results-comments-sort=true
+
+This option can be configured via repository-config file as well:
+
+```
+{"results-comments-sort":true}
+```
+
+#### Including severity in review comments
+
+One can let `vip-go-ci` include the severity of the issue found in the review comments posted to GitHub. This is disabled by default.
+
+The option can be used in this way:
+
+> ./vip-go-ci.php --review-comments-include-severity=true
+
+This option can be configured via repository-config file as well:
+
+```
+{"review-comments-include-severity":true}
+```
+
+#### Limiting review comments
 One can limit the number of review comments posted to GitHub Pull-Requests. Also, one can ignore certain comments so that they will not be posted to Pull-Request reviews. This is useful when Pull-Requests are created or updated, and contain many issues. 
 
 The options can be used in this way:
@@ -478,6 +535,18 @@ For example:
 > ./vip-go-ci.php --post-generic-pr-support-comments=true --post-generic-pr-support-comments-string="This ..." --post-generic-pr-support-comments-branches="master" --post-generic-pr-support-comments-repo-meta-match="support_message=true,support_plan=true" 
 
 With the `--post-generic-pr-support-comments-repo-meta-match` parameter added, `vip-go-ci` will look at the data returned by the repo-meta API, and check if these fields and their values are found in there for at least one entry. If so, the generic support message will be posted, and not otherwise.
+
+The following Generic Support Message related options can be configured via repository-config file:
+
+#### Option `--post-generic-pr-support-comments`
+
+Specifies if to post generic support comments, should be a boolean.
+
+For example:
+
+```
+{"post-generic-pr-support-comments":false}
+```
 
 ### Support labels
 
