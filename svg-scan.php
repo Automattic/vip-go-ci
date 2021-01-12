@@ -288,6 +288,12 @@ function vipgoci_svg_scan_single_file(
 			$issue_item['fixable'] = false;
 			$issue_item['column'] = 0;
 
+			/*
+			 * FIXME: In some cases $issue_item['line'] (line number),
+			 * can be null indicating a problem with scanning the file
+			 * generally. This should be reported to the end-user.
+			 */
+
 			return $issue_item;
 		},
 		$results['files'][ $temp_file_name ]['messages']
