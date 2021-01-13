@@ -130,6 +130,14 @@ final class A09GitHubLabelsTest extends TestCase {
 	}
 
 	private function labels_get() {
+		/*
+		 * Sometimes it can take GitHub
+		 * a while to update its cache.
+		 * Avoid stale cache by waiting
+		 * a short while.
+		 */
+		sleep( 10 );
+
 		$github_url =
 			VIPGOCI_GITHUB_BASE_URL . '/' .
 			'repos/' .
