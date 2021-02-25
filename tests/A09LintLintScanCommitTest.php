@@ -162,6 +162,7 @@ final class A09LintLintScanCommitTest extends TestCase {
 						'issue' => array(
 							'message'	=> "syntax error, unexpected end of file, expecting ',' or ';'",
 							'level'		=> 'ERROR',
+							'severity'	=> 5,
 						)
 					)
 				)
@@ -288,6 +289,7 @@ final class A09LintLintScanCommitTest extends TestCase {
 						'issue' => array(
 							'message'	=> "syntax error, unexpected end of file, expecting ',' or ';'",
 							'level'		=> 'ERROR',
+							'severity'	=> 5,
 						)
 					),
 					array(
@@ -297,6 +299,7 @@ final class A09LintLintScanCommitTest extends TestCase {
 						'issue' => array(
 							'message'	=> "syntax error, unexpected end of file, expecting ',' or ';'",
 							'level'		=> 'ERROR',
+							'severity'	=> 5,
 						)
 					),
 					/*
