@@ -182,7 +182,8 @@ function vipgoci_lint_parse_results(
 
 			$file_issues_arr_new[ $file_line ][] = array(
 				'message' => $message,
-				'level' => 'ERROR'
+				'level' => 'ERROR',
+				'severity' => 5,
 			);
 		}
 	}
