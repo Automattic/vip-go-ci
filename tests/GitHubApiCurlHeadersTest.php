@@ -56,4 +56,53 @@ final class GitHubApiCurlHeadersTest extends TestCase {
 			$actual_results
 		);
 	}
+
+	/**
+	 * Test Status compatibility header.
+	 *
+	 * @covers ::vipgoci_curl_headers
+	 */
+	public function testCurlHeaders2() {
+		/*
+		 * Make sure it is empty before starting.
+		 */
+		vipgoci_curl_headers(
+			null,
+			null
+		);
+
+		/*
+		 * Populate headers
+		 */
+
+		vipgoci_curl_headers(
+			'',
+			'HTTP/2 205'
+		);
+
+		vipgoci_curl_headers(
+			'',
+			'Date: Mon, 04 Mar 2020 16:43:35 GMT'
+		);
+
+		vipgoci_curl_headers(
+			'',
+			'Location: https://www.kernel.org/'
+		);
+
+
+		$actual_results = vipgoci_curl_headers(
+			null,
+			null
+		);
+
+		$this->assertEquals(
+			array(
+				'date'		=> array( 'Mon, 04 Mar 2020 16:43:35 GMT' ),
+				'location'	=> array( 'https://www.kernel.org/' ),
+				'status'	=> array( 205 ),
+			),
+			$actual_results
+		);
+	}
 }

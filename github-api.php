@@ -41,9 +41,28 @@ function vipgoci_curl_headers( $ch, $header ) {
 
 
 	/*
-	 * Turn the header into an array
+	 * Get header length
 	 */
 	$header_len = strlen( $header );
+
+	/*
+	 * Construct 'status' HTTP header based on the
+	 * HTTP status code. This used to be provided
+	 * by GitHub, but is not anymore.
+	 */
+
+	if ( strpos( $header, 'HTTP/' ) === 0 ) {
+		$header = explode(
+			' ',
+			$header
+		);
+
+		$header = 'Status: ' . $header[1] . "\n\r";
+	}
+
+	/*
+	 * Turn the header into an array
+	 */
 	$header = explode( ':', $header, 2 );
 
 	if ( count( $header ) < 2 ) {
