@@ -319,12 +319,21 @@ function vipgoci_support_level_label_set(
 		( empty( $options['repo-meta-api-base-url'] ) )
 	) {
 		vipgoci_log(
-			'Missing configuration for repo-meta API, skipping'
+			'Missing URL for repo-meta API, skipping'
 		);
 
 		return false;
 	}
 
+	if (
+		( empty( $options['set-support-level-field'] ) )
+	) {
+		vipgoci_log(
+			'Missing field for support level in repo-meta API, skipping'
+		);
+
+		return false;
+	}
 
 	/*
 	 * Get information from API about the
@@ -361,7 +370,9 @@ function vipgoci_support_level_label_set(
 		) )
 		&&
 		( ! empty(
-			$repo_meta_data['data'][0]['support_tier']
+			$repo_meta_data['data'][0][
+				$options['set-support-level-field']
+			]
 		) )
 	) {
 		/*
@@ -373,9 +384,17 @@ function vipgoci_support_level_label_set(
 			$support_label_prefix .
 			' ' .
 			ucfirst( strtolower(
-				$repo_meta_data['data'][0]['support_tier']
+				$repo_meta_data['data'][0][
+					$options['set-support-level-field']
+				]
 			) );
 	}
+
+	$support_level_response = (
+		isset( $repo_meta_data['data'][0][ $options['set-support-level-field'] ] ) ?
+		$repo_meta_data['data'][0][ $options['set-support-level-field'] ] :
+		''
+	);
 
 	/*
 	 * No support label found in API, so
@@ -389,11 +408,7 @@ function vipgoci_support_level_label_set(
 				'repo_owner'			=> $options['repo-owner'],
 				'repo_name'			=> $options['repo-name'],
 				'repo_meta_api_base_url'	=> $options['repo-meta-api-base-url'],
-				'support_tier'			=> (
-					isset( $repo_meta_data['data'][0]['support_tier'] ) ?
-					$repo_meta_data['data'][0]['support_tier'] :
-					''
-				),
+				'support_level_response'	=> $support_level_response,
 			)
 		);
 
@@ -407,11 +422,7 @@ function vipgoci_support_level_label_set(
 				'repo_owner'			=> $options['repo-owner'],
 				'repo_name'			=> $options['repo-name'],
 				'repo_meta_api_base_url'	=> $options['repo-meta-api-base-url'],
-				'support_tier'			=> (
-					isset( $repo_meta_data['data'][0]['support_tier'] ) ?
-					$repo_meta_data['data'][0]['support_tier'] :
-					''
-				),
+				'support_level_response'	=> $support_level_response,
 				'support_label_from_api'	=> $support_label_from_api,
 			)
 		);
