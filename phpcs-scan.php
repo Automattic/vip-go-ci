@@ -587,7 +587,6 @@ function vipgoci_phpcs_scan_commit(
 				'Unable to read results of PHPCS scanning, missing index',
 				array(
 					'temp_file_name'	=> $temp_file_name,
-					'file_issues_arr_index'	=> $file_issues_arr_index,
 				)
 			);
 
