@@ -653,4 +653,243 @@ final class PhpcsScanScanCommitTest extends TestCase {
 		);
 	}
 
+
+	/**
+	 * Tests when PHPCS uses basepath "." in its configuration.
+	 *
+	 * @covers ::vipgoci_phpcs_scan_commit
+	 */
+	public function testDoScanTest5() {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( 'phpcs-runtime-set', 'github-token', 'token' ),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
+		$this->options['commit'] =
+			$this->options['commit-test-phpcs-scan-commit-4'];
+
+		$this->options['phpcs-skip-scanning-via-labels-allowed'] =
+			false;
+
+		$this->options['lint-skip-folders'] = array();
+
+		$this->options['phpcs-skip-folders'] = array();
+
+		$issues_submit = array();
+		$issues_stats = array();
+
+
+		/*
+		 * Write out a new PHPCS standard with
+		 * basepath "."
+		 */
+		$tmp_standard = vipgoci_save_temp_file(
+			'ruleset',
+			'xml',
+			sprintf(
+				'<?xml version="1.0"?><ruleset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="Test-Standard-300" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/squizlabs/PHP_CodeSniffer/master/phpcs.xsd"><description>Test Coding Standards</description><arg name="basepath" value="."/><rule ref="%s"/></ruleset>',
+				$this->options['phpcs-standard']
+			)
+		);
+
+		/*
+		 * Move new standard into a folder
+		 * of its own, as otherwise PHPCS
+		 * will remove the whole folder from
+		 * the path returned.
+		 */
+
+		$rand_str = rand(100000, 999999);
+ 
+		$tmp_standard_new = str_replace(
+			'/ruleset',
+			'/ruleset-dir' . $rand_str . '/ruleset',
+			$tmp_standard
+		);
+
+		$tmp_standard_dir = pathinfo(
+			$tmp_standard_new,
+			 PATHINFO_DIRNAME
+		);
+
+		mkdir(
+			$tmp_standard_dir
+		);
+
+		rename(
+			$tmp_standard,
+			$tmp_standard_new
+		);
+
+		$tmp_standard = $tmp_standard_new;
+		unset($tmp_standard_new);
+
+		/*
+		 * Actually use the new standard.
+		 */
+		$this->options['phpcs-standard'] = $tmp_standard;
+
+
+		vipgoci_unittests_output_suppress();
+
+		$prs_implicated = vipgoci_github_prs_implicated(
+			$this->options['repo-owner'],
+			$this->options['repo-name'],
+			$this->options['commit'],
+			$this->options['github-token'],
+			$this->options['branches-ignore']
+		);
+
+
+		foreach( $prs_implicated as $pr_item ) {
+			$issues_stats[
+				$pr_item->number
+			][
+				'error'
+			] = 0;
+
+			$issues_stats[
+				$pr_item->number
+			][
+				'warning'
+			] = 0;
+		}
+
+
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped(
+				'Could not set up git repository: ' .
+					vipgoci_unittests_output_get()
+			);
+				
+			return;
+		}
+
+		vipgoci_phpcs_scan_commit(
+			$this->options,
+			$issues_submit,
+			$issues_stats
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		/*
+		 * Remove temporary files.
+		 */
+		unlink(
+			$tmp_standard
+		);
+
+		rmdir(
+			$tmp_standard_dir
+		);
+
+		$this->assertEquals(
+			array(
+				30 => array(
+					array(
+						'type'		=> 'phpcs',
+						'file_name'	=> 'test.php',
+						'file_line'	=> 3,
+						'issue'	=> array(
+							'message' => "All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found 'time'.",
+							'source' => 'WordPress.Security.EscapeOutput.OutputNotEscaped',
+							'severity' => 5,
+							'fixable' => false,
+							'type' => 'ERROR',
+							'line' => 3,
+							'column' => 20,
+							'level' => 'ERROR',
+						)
+					),
+
+					array(
+						'type'		=> 'phpcs',
+						'file_name'	=> 'test.php',
+						'file_line'	=> 7,
+						'issue'		=> array(
+							'message' => "All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found 'time'.",
+							'source' => 'WordPress.Security.EscapeOutput.OutputNotEscaped',
+							'severity' => 5,
+							'fixable' => false,
+							'type' => 'ERROR',
+							'line' => 7,
+							'column' => 20,
+							'level' => 'ERROR',
+						)
+					),
+
+					array(
+						'type'		=> 'phpcs',
+						'file_name'	=> 'test.php',
+						'file_line'	=> 10,
+						'issue'	=> array(
+							'message' => "Scripts should be registered/enqueued via `wp_enqueue_script`. This can improve the site's performance due to script concatenation.",
+							'source' => 'WordPress.WP.EnqueuedResources.NonEnqueuedScript',
+							'severity' => 3,
+							'fixable' => false,
+							'type' => 'WARNING',
+							'line' => 10,
+							'column' => 6,
+							'level' => 'WARNING'
+						)
+					),
+
+					array(
+						'type'		=> 'phpcs',
+						'file_name'	=> 'tests1/some_phpcs_issues.php',
+						'file_line'	=> 3,
+						'issue'	=> array(
+							'message' => "All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found 'time'.",
+							'source' => 'WordPress.Security.EscapeOutput.OutputNotEscaped',
+							'severity' => 5,
+							'fixable' => false,
+							'type' => 'ERROR',
+							'line' => 3,
+							'column' => 20,
+							'level' => 'ERROR'
+						)
+					),
+
+					array(
+						'type'		=> 'phpcs',
+						'file_name'	=> 'tests2/some_phpcs_issues.php',
+						'file_line'	=> 3,
+						'issue'	=> array(
+							'message' => "All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found 'time'.",
+							'source' => 'WordPress.Security.EscapeOutput.OutputNotEscaped',
+							'severity' => 5,
+							'fixable' => false,
+							'type' => 'ERROR',
+							'line' => 3,
+							'column' => 20,
+							'level' => 'ERROR',
+						)
+					),
+				)
+			),
+
+			$issues_submit
+		);
+
+		$this->assertEquals(
+			array(
+				30 => array(
+					'error' => 4,
+					'warning' => 1,
+				),
+			),
+			$issues_stats
+		);
+	}
 }
