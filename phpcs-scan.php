@@ -552,6 +552,49 @@ function vipgoci_phpcs_scan_commit(
 		unset( $file_issues_str );
 
 		/*
+		 * In some cases filename in PHPCS output
+		 * is without leading "/", but usually it is
+		 * with leading "/". Make sure we cover both
+		 * cases here.
+		 */
+	
+		/* First attempt the default, with leading "/" */
+		if ( isset(
+			$file_issues_arr_master
+				['files']
+				[ $temp_file_name ]
+		) ) {
+			$file_issues_arr_index = 
+				$temp_file_name;
+		}
+
+		/* If this fails, try without leading "/" */
+		else if ( isset(
+			$file_issues_arr_master
+				['files']
+				[ ltrim( $temp_file_name, '/' ) ]
+		) ) {
+			$file_issues_arr_index = 
+				ltrim( $temp_file_name, '/' );
+		}
+
+		/* Everything failed, print error and continue */
+		else {
+			/* Empty placeholder, to avoid warnings. */
+			$files_issues_arr[ $file_name ] = array();
+
+			vipgoci_log(
+				'Unable to read results of PHPCS scanning, missing index',
+				array(
+					'temp_file_name'	=> $temp_file_name,
+					'file_issues_arr_index'	=> $file_issues_arr_index,
+				)
+			);
+
+			continue;
+		}
+
+		/*
 		 * Make sure items in $file_issues_arr_master have
 		 * 'level' key and value.
 		 */
@@ -563,7 +606,7 @@ function vipgoci_phpcs_scan_commit(
 			},
 			$file_issues_arr_master
 				['files']
-				[ $temp_file_name ]
+				[ $file_issues_arr_index ]
 				['messages']
 		);
 
