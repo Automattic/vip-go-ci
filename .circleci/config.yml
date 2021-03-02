@@ -27,6 +27,8 @@ commands:
       - run: touch ~/project/unittests-secrets.ini
       # Run unit-tests
       - run: ./vendor/bin/phpunit -vv ~/project/tests
+      # Run PHPCS, check for PHP compatibility issues
+      - run: ./vip-go-ci-tools/phpcs/bin/phpcs --runtime-set 'testVersion' '7.3-'  --standard=PHPCompatibility,PHPCompatibilityParagonieRandomCompat,PHPCompatibilityParagonieSodiumCompat --ignore="vendor/*"  ~/project
 
 # List of images at: https://circleci.com/docs/2.0/circleci-images/
 jobs:
