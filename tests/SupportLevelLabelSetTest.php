@@ -10,7 +10,8 @@ final class SupportLevelLabelSetTest extends TestCase {
 		'repo-meta-api-user-id'		=> null,
 		'repo-meta-api-access-token'	=> null,
 
-		'support-tier-name'		=> null,
+		'support-level'			=> null,
+		'support-level-field-name'	=> null,
 	);
 
 	var $options_git = array(
@@ -105,7 +106,7 @@ final class SupportLevelLabelSetTest extends TestCase {
 
 			foreach( $pr_item_labels as $label_item ) {
 				if ( 
-					$this->options['set-support-level-label-prefix'] . ' ' . ucfirst( strtolower( $this->options['support-tier-name'] ) )
+					$this->options['set-support-level-label-prefix'] . ' ' . ucfirst( strtolower( $this->options['support-level'] ) )
 					===
 					$label_item->name
 				) {
@@ -128,7 +129,10 @@ final class SupportLevelLabelSetTest extends TestCase {
 		);
 
 		$this->options['set-support-level-label'] = false;
-	
+
+		$this->options['set-support-level-field'] =
+			$this->options['support-level-field-name'];
+
 		$level_label = vipgoci_support_level_label_set(
 			$this->options
 		);
@@ -160,6 +164,9 @@ final class SupportLevelLabelSetTest extends TestCase {
 		}
 
 		$this->options['set-support-level-label'] = true;
+
+		$this->options['set-support-level-field'] =
+			$this->options['support-level-field-name'];
 
 		/*
 		 * Get any PRs attached, verify we got at least one.
@@ -219,7 +226,7 @@ final class SupportLevelLabelSetTest extends TestCase {
 
 			foreach( $pr_item_labels as $label_item ) {
 				if (
-					$this->options['set-support-level-label-prefix'] . ' ' . ucfirst( strtolower( $this->options['support-tier-name'] ) ) ===
+					$this->options['set-support-level-label-prefix'] . ' ' . ucfirst( strtolower( $this->options['support-level'] ) ) ===
 					$label_item->name
 				) {
 					/*

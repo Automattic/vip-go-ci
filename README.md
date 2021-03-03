@@ -554,7 +554,7 @@ For example:
 
 This feature can be used in the following way:
 
-> ./vip-go-ci.php --set-support-level-label=true --repo-meta-api-base-url="http://myrepometa-api.mycompany.is" --repo-meta-api-user-id=7334005 --repo-meta-api-access-token="MY-TOKEN"
+> ./vip-go-ci.php --set-support-level-label=true --set-support-level-field="support-level" --repo-meta-api-base-url="http://myrepometa-api.mycompany.is" --repo-meta-api-user-id=7334005 --repo-meta-api-access-token="MY-TOKEN"
 
 Note that by default, all support level labels have a prefix: `[Support Level]`. This can be changed by using the `--set-support-level-label-prefix` option.
 
@@ -621,7 +621,8 @@ repo-meta-api-user-id=          ; User ID for the meta API
 repo-meta-api-access-token=     ; Access token for the meta API
 repo-owner=                     ; Repository owner for the test, should be found in meta API
 repo-name=                      ; Repository name for the test
-support-tier-name=              ; Name of support tier given by meta API
+support-level=                  ; Name of support level given by meta API
+support-level-field-name=       ; Support level field name in meta API
 ```
 
 This file is not included, and needs to be configured manually. When that is complete, the tests can be re-run.

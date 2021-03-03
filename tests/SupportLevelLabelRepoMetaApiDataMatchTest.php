@@ -13,7 +13,8 @@ final class SupportLevelLabelRepoMetaApiDataMatchTest extends TestCase {
 		'repo-name'			=> null,
 		'repo-owner'			=> null,
 
-		'support-tier-name'		=> null,
+		'support-level'			=> null,
+		'support-level-field-name'	=> null,
 	);
 
 	protected function setUp(): void {
@@ -44,8 +45,8 @@ final class SupportLevelLabelRepoMetaApiDataMatchTest extends TestCase {
 
 		$this->options['data_match2'] = array(
 			2 => array(
-				'support_tier'	=> array(
-					$this->options['support-tier-name']
+				$this->options['support-level-field-name'] => array(
+					$this->options['support-level']
 				),
 			),
 

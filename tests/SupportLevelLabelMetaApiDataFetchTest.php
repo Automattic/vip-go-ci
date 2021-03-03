@@ -13,7 +13,8 @@ final class SupportLevelLabelMetaApiDataFetchTest extends TestCase {
 		'repo-owner'			=> null,
 		'repo-name'			=> null,
 
-		'support-tier-name'		=> null,
+		'support-level'			=> null,
+		'support-level-field-name'	=> null,
 	);
 
 	protected function setUp(): void {
@@ -61,13 +62,17 @@ final class SupportLevelLabelMetaApiDataFetchTest extends TestCase {
 
 		$this->assertTrue(
 			( ! empty(
-				$repo_meta_data['data'][0]['support_tier']
+				$repo_meta_data['data'][0][
+					$this->options['support-level-field-name']
+				]
 			) )
 		);
 
 		$this->assertEquals(
-			$this->options['support-tier-name'],
-			$repo_meta_data['data'][0]['support_tier']
+			$this->options['support-level'],
+			$repo_meta_data['data'][0][
+				$this->options['support-level-field-name']
+			]
 		);
 
 		/*
