@@ -621,7 +621,7 @@ repo-meta-api-user-id=          ; User ID for the meta API
 repo-meta-api-access-token=     ; Access token for the meta API
 repo-owner=                     ; Repository owner for the test, should be found in meta API
 repo-name=                      ; Repository name for the test
-support-tier-name=              ; Name of support tier given by meta API
+support-level=                  ; Name of support tier given by meta API
 ```
 
 This file is not included, and needs to be configured manually. When that is complete, the tests can be re-run.
