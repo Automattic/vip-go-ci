@@ -16,8 +16,6 @@ final class GitHubDiffsFetchTest extends TestCase {
 	var $options_git = array(
 		'git-path'		=> null,
 		'github-repo-url'	=> null,
-		'repo-name'		=> null,
-		'repo-owner'		=> null,
 	);
 
 	protected function setUp(): void {
@@ -48,9 +46,20 @@ final class GitHubDiffsFetchTest extends TestCase {
 		$this->options['phpcs-skip-folders'] = array();
 
 		$this->options['branches-ignore'] = array();
+
+		/* By default checkout 'master' branch */
+		$this->options['commit'] = 'master';
+
+		$this->options['local-git-repo'] = false;
 	}
 
 	protected function tearDown(): void {
+		if ( false !== $this->options['local-git-repo'] ) {
+			vipgoci_unittests_remove_git_repo(
+				$this->options['local-git-repo']
+			);
+		}
+
 		$this->options_git_repo_tests = null;
 		$this->options_git = null;
 		$this->options = null;
@@ -76,10 +85,22 @@ final class GitHubDiffsFetchTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped(
+				'Could not set up git repository: ' .
+					vipgoci_unittests_output_get()
+			);
+                        
+			return;
+		}
+                
 		$diff = vipgoci_github_diffs_fetch(
-			$this->options['repo-owner'],
-			$this->options['repo-name'],
-			$this->options['github-token'],
+			$this->options['local-git-repo'],
 			$this->options['commit-test-repo-pr-diffs-1-a'],
 			$this->options['commit-test-repo-pr-diffs-1-b'],
 			false,
@@ -117,10 +138,22 @@ final class GitHubDiffsFetchTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped(
+				'Could not set up git repository: ' .
+					vipgoci_unittests_output_get()
+			);
+                        
+			return;
+		}
+                
 		$diff = vipgoci_github_diffs_fetch(
-			$this->options['repo-owner'],
-			$this->options['repo-name'],
-			$this->options['github-token'],
+			$this->options['local-git-repo'],
 			$this->options['commit-test-repo-pr-diffs-1-a'],
 			$this->options['commit-test-repo-pr-diffs-1-b'],
 			false,
@@ -159,10 +192,22 @@ final class GitHubDiffsFetchTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped(
+				'Could not set up git repository: ' .
+					vipgoci_unittests_output_get()
+			);
+                        
+			return;
+		}
+                
 		$diff = vipgoci_github_diffs_fetch(
-			$this->options['repo-owner'],
-			$this->options['repo-name'],
-			$this->options['github-token'],
+			$this->options['local-git-repo'],
 			$this->options['commit-test-repo-pr-diffs-1-c'],
 			$this->options['commit-test-repo-pr-diffs-1-d'],
 			true,
@@ -200,10 +245,22 @@ final class GitHubDiffsFetchTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped(
+				'Could not set up git repository: ' .
+					vipgoci_unittests_output_get()
+			);
+                        
+			return;
+		}
+                
 		$diff = vipgoci_github_diffs_fetch(
-			$this->options['repo-owner'],
-			$this->options['repo-name'],
-			$this->options['github-token'],
+			$this->options['local-git-repo'],
 			$this->options['commit-test-repo-pr-diffs-1-c'],
 			$this->options['commit-test-repo-pr-diffs-1-d'],
 			false,
@@ -240,10 +297,22 @@ final class GitHubDiffsFetchTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped(
+				'Could not set up git repository: ' .
+					vipgoci_unittests_output_get()
+			);
+                        
+			return;
+		}
+                
 		$diff = vipgoci_github_diffs_fetch(
-			$this->options['repo-owner'],
-			$this->options['repo-name'],
-			$this->options['github-token'],
+			$this->options['local-git-repo'],
 			$this->options['commit-test-repo-pr-diffs-1-d'],
 			$this->options['commit-test-repo-pr-diffs-1-e'],
 			false,
@@ -284,10 +353,22 @@ final class GitHubDiffsFetchTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped(
+				'Could not set up git repository: ' .
+					vipgoci_unittests_output_get()
+			);
+                        
+			return;
+		}
+                
 		$diff = vipgoci_github_diffs_fetch(
-			$this->options['repo-owner'],
-			$this->options['repo-name'],
-			$this->options['github-token'],
+			$this->options['local-git-repo'],
 			$this->options['commit-test-repo-pr-diffs-1-d'],
 			$this->options['commit-test-repo-pr-diffs-1-e'],
 			false,
@@ -324,10 +405,22 @@ final class GitHubDiffsFetchTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped(
+				'Could not set up git repository: ' .
+					vipgoci_unittests_output_get()
+			);
+                        
+			return;
+		}
+                
 		$diff = vipgoci_github_diffs_fetch(
-			$this->options['repo-owner'],
-			$this->options['repo-name'],
-			$this->options['github-token'],
+			$this->options['local-git-repo'],
 			$this->options['commit-test-repo-pr-diffs-1-a'],
 			$this->options['commit-test-repo-pr-diffs-1-d'],
 			true,
@@ -366,10 +459,22 @@ final class GitHubDiffsFetchTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped(
+				'Could not set up git repository: ' .
+					vipgoci_unittests_output_get()
+			);
+                        
+			return;
+		}
+                
 		$diff = vipgoci_github_diffs_fetch(
-			$this->options['repo-owner'],
-			$this->options['repo-name'],
-			$this->options['github-token'],
+			$this->options['local-git-repo'],
 			$this->options['commit-test-repo-pr-diffs-1-a'],
 			$this->options['commit-test-repo-pr-diffs-1-d'],
 			true,
@@ -411,10 +516,22 @@ final class GitHubDiffsFetchTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped(
+				'Could not set up git repository: ' .
+					vipgoci_unittests_output_get()
+			);
+                        
+			return;
+		}
+                
 		$diff = vipgoci_github_diffs_fetch(
-			$this->options['repo-owner'],
-			$this->options['repo-name'],
-			$this->options['github-token'],
+			$this->options['local-git-repo'],
 			$this->options['commit-test-repo-pr-diffs-1-a'],
 			$this->options['commit-test-repo-pr-diffs-1-d'],
 			true,
@@ -459,10 +576,22 @@ final class GitHubDiffsFetchTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped(
+				'Could not set up git repository: ' .
+					vipgoci_unittests_output_get()
+			);
+                        
+			return;
+		}
+                
 		$diff = vipgoci_github_diffs_fetch(
-			$this->options['repo-owner'],
-			$this->options['repo-name'],
-			$this->options['github-token'],
+			$this->options['local-git-repo'],
 			$this->options['commit-test-repo-pr-diffs-1-a'],
 			$this->options['commit-test-repo-pr-diffs-1-d'],
 			false,
@@ -484,7 +613,4 @@ final class GitHubDiffsFetchTest extends TestCase {
 			$diff
 		);
 	}
-
-
-
 }
