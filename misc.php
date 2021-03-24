@@ -203,9 +203,7 @@ function vipgoci_convert_string_to_type( $str ) {
  */
 
 function vipgoci_patch_changed_lines(
-	$repo_owner,
-	$repo_name,
-	$github_token,
+	$local_git_repo,
 	$pr_base_sha,
 	$commit_id,
 	$file_name
@@ -215,9 +213,7 @@ function vipgoci_patch_changed_lines(
 	 * Fetch patch for all files of the Pull-Request
 	 */
 	$patch_arr = vipgoci_github_diffs_fetch(
-		$repo_owner,
-		$repo_name,
-		$github_token,
+		$local_git_repo,
 		$pr_base_sha,
 		$commit_id,
 		false,
