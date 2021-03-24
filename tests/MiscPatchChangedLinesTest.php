@@ -5,7 +5,12 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 use PHPUnit\Framework\TestCase;
 
 final class MiscPatchChangedLinesTest extends TestCase {
-	var $github_config = array(
+	var $options_git = array(
+		'git-path'		=> null,
+		'github-repo-url'	=> null,
+	);
+
+	var $options_github = array(
 		'repo-owner'	=> null,
 		'repo-name'	=> null,
 		'pr-base-sha'	=> null,
@@ -14,16 +19,28 @@ final class MiscPatchChangedLinesTest extends TestCase {
 
 	protected function setUp(): void {
 		vipgoci_unittests_get_config_values(
-			'patch-changed-lines',
-			$this->github_config
+			'git',
+			$this->options_git
 		);
 
-		$this->github_config[ 'github-token' ] =
+		vipgoci_unittests_get_config_values(
+			'patch-changed-lines',
+			$this->options_github
+		);
+
+		$this->options = array_merge(
+			$this->options_git,
+			$this->options_github
+		);
+
+		$this->options[ 'github-token' ] =
 			vipgoci_unittests_get_config_value(
 				'git-secrets',
 				'github-token',
 				true // Fetch from secrets file
 			);
+
+		$this->options['commit'] = 'master';
 	}
 
 	/**
@@ -31,7 +48,7 @@ final class MiscPatchChangedLinesTest extends TestCase {
 	 */
 	public function testPatchChangedLines1() {
 		$options_test = vipgoci_unittests_options_test(
-			$this->github_config,
+			$this->options,
 			array( 'github-token' ),
 			$this
 		);
@@ -40,7 +57,7 @@ final class MiscPatchChangedLinesTest extends TestCase {
 			return;
 		}
 
-		if ( empty( $this->github_config ) ) {
+		if ( empty( $this->options ) ) {
 			$this->markTestSkipped(
 				'Must set up vipgoci_patch_changed_lines() test'
 			);
@@ -50,12 +67,24 @@ final class MiscPatchChangedLinesTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped(
+				'Could not set up git repository: ' .
+				vipgoci_unittests_output_get()
+			);
+
+			return;
+		}
+
 		$patch_arr = vipgoci_patch_changed_lines(
-			$this->github_config['repo-owner'],
-			$this->github_config['repo-name'],
-			$this->github_config['github-token'],
-			$this->github_config['pr-base-sha'],
-			$this->github_config['commit-id'],
+			$this->options['local-git-repo'],
+			$this->options['pr-base-sha'],
+			$this->options['commit-id'],
 			'ap-hashes-api.php'
 		);
 
