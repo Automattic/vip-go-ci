@@ -7,7 +7,6 @@ use PHPUnit\Framework\TestCase;
 final class MiscPatchChangedLinesTest extends TestCase {
 	var $options_git = array(
 		'git-path'		=> null,
-		'github-repo-url'	=> null,
 	);
 
 	var $options_github = array(
@@ -15,6 +14,7 @@ final class MiscPatchChangedLinesTest extends TestCase {
 		'repo-name'	=> null,
 		'pr-base-sha'	=> null,
 		'commit-id'	=> null,
+		'github-repo-url'	=> null, // FIXME: Should use vip-go-ci-tests repo
 	);
 
 	protected function setUp(): void {
