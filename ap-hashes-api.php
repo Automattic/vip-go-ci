@@ -300,9 +300,7 @@ function vipgoci_ap_hashes_api_scan_commit(
 		 * files, and permission changes might be dangerous.
 		 */
 		$pr_diff = vipgoci_github_diffs_fetch(
-			$options['repo-owner'],
-			$options['repo-name'],
-			$options['token'],
+			$options['local-git-repo'],
 			$pr_item->base->sha,
 			$options['commit'],
 			false, // exclude renamed files

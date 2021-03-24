@@ -536,9 +536,7 @@ function vipgoci_auto_approval_scan_commit(
 
 	foreach ( $prs_implicated as $pr_item ) {
 		$pr_diff = vipgoci_github_diffs_fetch(
-			$options['repo-owner'],
-			$options['repo-name'],
-			$options['token'],
+			$options['local-git-repo'],
 			$pr_item->base->sha,
 			$options['commit'],
 			true, // include renamed files
