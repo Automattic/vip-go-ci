@@ -1155,3 +1155,18 @@ function vipgoci_sanitize_string( $str ) {
 		$str
 	) ) );
 }
+
+/*
+ * Sanitize path, remove specified prefix if
+ * it exists.
+ */
+function vipgoci_sanitize_path_prefix( string $path, string $prefix ) {
+	if ( 0 === strpos( $path, $prefix ) ) {
+		$path = substr(
+			$path,
+			strlen( $prefix )
+		);
+	}
+
+	return $path;
+}
