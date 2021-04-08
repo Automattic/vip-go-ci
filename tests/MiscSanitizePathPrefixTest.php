@@ -4,7 +4,7 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 
 use PHPUnit\Framework\TestCase;
 
-final class MiscSanitizePathPrefix extends TestCase {
+final class MiscSanitizePathPrefixTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_sanitize_path_prefix
 	 */
