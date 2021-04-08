@@ -3402,27 +3402,29 @@ function vipgoci_github_diffs_fetch(
 			 * Remove possible git stuff in paths
 			 */
 			if ( $cur_file_paths_cleaned === false ) {
-				if ( 
-					( 0 === strpos( $cur_file, 'a/' ) ) ||
-					( 0 === strpos( $cur_file, 'b/' ) )
-				) {
-					$cur_file = substr(
+				if ( null !== $cur_file ) {
+					$cur_file = vipgoci_sanitize_path_prefix(
 						$cur_file,
-						2
+						'a/'
+					);
+
+					$cur_file = vipgoci_sanitize_path_prefix(
+						$cur_file,
+						'b/'
 					);
 				}
 
-				if ( 0 === strpos( $cur_file_minus, 'a/' ) ) {
-					$cur_file_minus = substr(
+				if ( null !== $cur_file_minus ) {
+					$cur_file_minus = vipgoci_sanitize_path_prefix(
 						$cur_file_minus,
-						2
+						'a/'
 					);
 				}
 
-				if ( 0 === strpos( $cur_file_plus, 'b/' ) ) {
-					$cur_file_plus = substr(
+				if ( null !== $cur_file_plus ) {
+					$cur_file_plus = vipgoci_sanitize_path_prefix(
 						$cur_file_plus,
-						2
+						'b/'
 					);
 				}
 
