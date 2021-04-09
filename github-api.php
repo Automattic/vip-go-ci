@@ -3252,11 +3252,7 @@ function vipgoci_github_diffs_fetch(
 		);
 
 		/* Actually execute */
-		vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'git_cli' );
-
-		$git_diff_results = shell_exec( $git_diff_cmd );
-
-		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'git_cli' );
+		$git_diff_results = vipgoci_runtime_measure_shell_exec( $git_diff_cmd, 'git_cli' );
 
 		/*
 		 * Prepare intermediate results array.
