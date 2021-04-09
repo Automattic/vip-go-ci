@@ -20,6 +20,10 @@ if ( ! defined( 'VIPGOCI_GITHUB_BASE_URL' ) ) {
 	define( 'VIPGOCI_GITHUB_BASE_URL',	'https://api.github.com' );
 }
 
+/*
+ * Various messages.
+ */
+
 define( 'VIPGOCI_INFORMATIONAL_MESSAGE',
 					'This bot provides automated ' .
 					'PHP Linting and PHPCS scanning, ' .
@@ -121,3 +125,9 @@ define( 'VIPGOCI_CACHE_CLEAR',		'--VIPGOCI-CACHE-CLEAR-0x321--' );
  */
 
 define( 'VIPGOCI_OPTIONS_FILE_NAME',	'.vipgoci_options' );
+
+/*
+ * Define for vipgoci_github_diffs_fetch()
+ */
+
+define( 'VIPGOCI_GIT_DIFF_CHANGES', array ('+' => 'additions', '-' => 'deletions') ); 
