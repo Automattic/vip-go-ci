@@ -3355,19 +3355,15 @@ function vipgoci_github_diffs_fetch(
 					$cur_file_plus_plus_plus_seen = true;
 				}
 
-				else if (
-					( '---' === $git_result_item_arr[0] ) ||
-					( '+++' === $git_result_item_arr[0] )
-				) {
+				else if ( '---' === $git_result_item_arr[0] ) {
+					$cur_file_minus = $git_result_item_arr[1];
 
-					if ( '---' === $git_result_item_arr[0] ) {
-						$cur_file_minus = $git_result_item_arr[1];
-					}
+					$cur_file_paths_cleaned = false;
+				}
 
-					else if ( '+++' === $git_result_item_arr[0] ) {
-						$cur_file_plus = $git_result_item_arr[1];
-						$cur_file_plus_plus_plus_seen = true;
-					}
+				else if ( '+++' === $git_result_item_arr[0] ) {
+					$cur_file_plus = $git_result_item_arr[1];
+					$cur_file_plus_plus_plus_seen = true;
 
 					$cur_file_paths_cleaned = false;
 				}
