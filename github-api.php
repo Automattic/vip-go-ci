@@ -3525,13 +3525,19 @@ function vipgoci_github_diffs_fetch(
 			 * Keep statistics on lines changed (if any).
 			 */
 			if ( strlen( $git_result_item ) > 0 ) {
-				if ( '+' === $git_result_item[0] ) {
-					$diff_results['files'][ $cur_file ]['additions']++;
-					$diff_results['files'][ $cur_file ]['changes']++;
-				}
+				if ( isset(
+					VIPGOCI_GIT_DIFF_CHANGES[
+						$git_result_item[0]
+					]
+				) ) {
+					$diff_results['files'][
+						$cur_file
+					][
+						VIPGOCI_GIT_DIFF_CHANGES[
+							$git_result_item[0]
+						]
+					]++;
 
-				else if ( '-' === $git_result_item[0] ) {
-					$diff_results['files'][ $cur_file ]['deletions']++;
 					$diff_results['files'][ $cur_file ]['changes']++;
 				}
 			}
