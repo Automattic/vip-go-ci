@@ -70,7 +70,7 @@ final class GitHubDiffsFetchUncachedTest extends TestCase {
 	/**
 	 * Check diff between commits.
 	 *
-	 * @covers ::vipgoci_github_diffs_fetch_uncached
+	 * @covers ::vipgoci_gitrepo_diffs_fetch_uncached
 	 */
 	public function testGitHubDiffsFetch1() {
 		$options_test = vipgoci_unittests_options_test(
@@ -99,7 +99,7 @@ final class GitHubDiffsFetchUncachedTest extends TestCase {
 			return;
 		}
 
-		$diff = vipgoci_github_diffs_fetch_uncached(
+		$diff = vipgoci_gitrepo_diffs_fetch_uncached(
 			$this->options['local-git-repo'],
 			$this->options['commit-test-repo-pr-diffs-1-a'],
 			$this->options['commit-test-repo-pr-diffs-1-b']
@@ -138,7 +138,7 @@ final class GitHubDiffsFetchUncachedTest extends TestCase {
 	/**
 	 * Check diff between commits.
 	 *
-	 * @covers ::vipgoci_github_diffs_fetch_uncached
+	 * @covers ::vipgoci_gitrepo_diffs_fetch_uncached
 	 */
 	public function testGitHubDiffsFetch2() {
 		$options_test = vipgoci_unittests_options_test(
@@ -167,7 +167,7 @@ final class GitHubDiffsFetchUncachedTest extends TestCase {
 			return;
 		}
 
-		$diff = vipgoci_github_diffs_fetch_uncached(
+		$diff = vipgoci_gitrepo_diffs_fetch_uncached(
 			$this->options['local-git-repo'],
 			$this->options['commit-test-repo-pr-diffs-1-a'],
 			$this->options['commit-test-repo-pr-diffs-1-c']
@@ -205,7 +205,7 @@ final class GitHubDiffsFetchUncachedTest extends TestCase {
 	/**
 	 * Check diff between commits.
 	 *
-	 * @covers ::vipgoci_github_diffs_fetch_uncached
+	 * @covers ::vipgoci_gitrepo_diffs_fetch_uncached
 	 */
 	public function testGitHubDiffsFetch3() {
 		$options_test = vipgoci_unittests_options_test(
@@ -234,7 +234,7 @@ final class GitHubDiffsFetchUncachedTest extends TestCase {
 			return;
 		}
 
-		$diff = vipgoci_github_diffs_fetch_uncached(
+		$diff = vipgoci_gitrepo_diffs_fetch_uncached(
 			$this->options['local-git-repo'],
 			$this->options['commit-test-repo-pr-diffs-1-a'],
 			$this->options['commit-test-repo-pr-diffs-1-e']
@@ -272,7 +272,7 @@ final class GitHubDiffsFetchUncachedTest extends TestCase {
 	/**
 	 * Check diff between commits.
 	 *
-	 * @covers ::vipgoci_github_diffs_fetch_uncached
+	 * @covers ::vipgoci_gitrepo_diffs_fetch_uncached
 	 */
 	public function testGitHubDiffsFetch4() {
 		$options_test = vipgoci_unittests_options_test(
@@ -301,7 +301,7 @@ final class GitHubDiffsFetchUncachedTest extends TestCase {
 			return;
 		}
 
-		$diff = vipgoci_github_diffs_fetch_uncached(
+		$diff = vipgoci_gitrepo_diffs_fetch_uncached(
 			$this->options['local-git-repo'],
 			$this->options['commit-test-repo-pr-diffs-1-e'],
 			$this->options['commit-test-repo-pr-diffs-1-f']
@@ -330,7 +330,7 @@ final class GitHubDiffsFetchUncachedTest extends TestCase {
 	/**
 	 * Check diff between commits.
 	 *
-	 * @covers ::vipgoci_github_diffs_fetch_uncached
+	 * @covers ::vipgoci_gitrepo_diffs_fetch_uncached
 	 */
 	public function testGitHubDiffsFetch5() {
 		$options_test = vipgoci_unittests_options_test(
@@ -359,7 +359,7 @@ final class GitHubDiffsFetchUncachedTest extends TestCase {
 			return;
 		}
 
-		$diff = vipgoci_github_diffs_fetch_uncached(
+		$diff = vipgoci_gitrepo_diffs_fetch_uncached(
 			$this->options['local-git-repo'],
 			$this->options['commit-test-repo-pr-diffs-1-f'],
 			$this->options['commit-test-repo-pr-diffs-1-g']

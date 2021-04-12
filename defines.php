@@ -127,7 +127,7 @@ define( 'VIPGOCI_CACHE_CLEAR',		'--VIPGOCI-CACHE-CLEAR-0x321--' );
 define( 'VIPGOCI_OPTIONS_FILE_NAME',	'.vipgoci_options' );
 
 /*
- * Define for vipgoci_github_diffs_fetch()
+ * Define for vipgoci_gitrepo_diffs_fetch()
  */
 
 define( 'VIPGOCI_GIT_DIFF_CHANGES', array ('+' => 'additions', '-' => 'deletions') ); 

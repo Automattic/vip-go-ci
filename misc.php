@@ -212,7 +212,7 @@ function vipgoci_patch_changed_lines(
 	/*
 	 * Fetch patch for all files of the Pull-Request
 	 */
-	$patch_arr = vipgoci_github_diffs_fetch(
+	$patch_arr = vipgoci_gitrepo_diffs_fetch(
 		$local_git_repo,
 		$pr_base_sha,
 		$commit_id,

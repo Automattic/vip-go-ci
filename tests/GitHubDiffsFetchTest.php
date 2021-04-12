@@ -70,7 +70,7 @@ final class GitHubDiffsFetchTest extends TestCase {
 	 * for renamed files, removed files or files
 	 * that had permissions changed to be included.
 	 *
-	 * @covers ::vipgoci_github_diffs_fetch
+	 * @covers ::vipgoci_gitrepo_diffs_fetch
 	 */
 	public function testGitHubDiffsFetch1() {
 		$options_test = vipgoci_unittests_options_test(
@@ -99,7 +99,7 @@ final class GitHubDiffsFetchTest extends TestCase {
 			return;
 		}
 
-		$diff = vipgoci_github_diffs_fetch(
+		$diff = vipgoci_gitrepo_diffs_fetch(
 			$this->options['local-git-repo'],
 			$this->options['commit-test-repo-pr-diffs-1-a'],
 			$this->options['commit-test-repo-pr-diffs-1-b'],
@@ -123,7 +123,7 @@ final class GitHubDiffsFetchTest extends TestCase {
 	 * files with changed permissions to be included
 	 * in the results.
 	 *
-	 * @covers ::vipgoci_github_diffs_fetch
+	 * @covers ::vipgoci_gitrepo_diffs_fetch
 	 */
 	public function testGitHubDiffsFetch2() {
 		$options_test = vipgoci_unittests_options_test(
@@ -152,7 +152,7 @@ final class GitHubDiffsFetchTest extends TestCase {
 			return;
 		}
 
-		$diff = vipgoci_github_diffs_fetch(
+		$diff = vipgoci_gitrepo_diffs_fetch(
 			$this->options['local-git-repo'],
 			$this->options['commit-test-repo-pr-diffs-1-a'],
 			$this->options['commit-test-repo-pr-diffs-1-b'],
@@ -177,7 +177,7 @@ final class GitHubDiffsFetchTest extends TestCase {
 	 * renamed files to be included
 	 * in the results.
 	 *
-	 * @covers ::vipgoci_github_diffs_fetch
+	 * @covers ::vipgoci_gitrepo_diffs_fetch
 	 */
 	public function testGitHubDiffsFetch3() {
 		$options_test = vipgoci_unittests_options_test(
@@ -206,7 +206,7 @@ final class GitHubDiffsFetchTest extends TestCase {
 			return;
 		}
 
-		$diff = vipgoci_github_diffs_fetch(
+		$diff = vipgoci_gitrepo_diffs_fetch(
 			$this->options['local-git-repo'],
 			$this->options['commit-test-repo-pr-diffs-1-c'],
 			$this->options['commit-test-repo-pr-diffs-1-d'],
@@ -230,7 +230,7 @@ final class GitHubDiffsFetchTest extends TestCase {
 	 * for renamed files to be included
 	 * in the results.
 	 *
-	 * @covers ::vipgoci_github_diffs_fetch
+	 * @covers ::vipgoci_gitrepo_diffs_fetch
 	 */
 	public function testGitHubDiffsFetch4() {
 		$options_test = vipgoci_unittests_options_test(
@@ -259,7 +259,7 @@ final class GitHubDiffsFetchTest extends TestCase {
 			return;
 		}
 
-		$diff = vipgoci_github_diffs_fetch(
+		$diff = vipgoci_gitrepo_diffs_fetch(
 			$this->options['local-git-repo'],
 			$this->options['commit-test-repo-pr-diffs-1-c'],
 			$this->options['commit-test-repo-pr-diffs-1-d'],
@@ -282,7 +282,7 @@ final class GitHubDiffsFetchTest extends TestCase {
 	 * removed files to be included
 	 * in the results.
 	 *
-	 * @covers ::vipgoci_github_diffs_fetch
+	 * @covers ::vipgoci_gitrepo_diffs_fetch
 	 */
 	public function testGitHubDiffsFetch5() {
 		$options_test = vipgoci_unittests_options_test(
@@ -311,7 +311,7 @@ final class GitHubDiffsFetchTest extends TestCase {
 			return;
 		}
 
-		$diff = vipgoci_github_diffs_fetch(
+		$diff = vipgoci_gitrepo_diffs_fetch(
 			$this->options['local-git-repo'],
 			$this->options['commit-test-repo-pr-diffs-1-d'],
 			$this->options['commit-test-repo-pr-diffs-1-e'],
@@ -338,7 +338,7 @@ final class GitHubDiffsFetchTest extends TestCase {
 	 * removed files to be included
 	 * in the results.
 	 *
-	 * @covers ::vipgoci_github_diffs_fetch
+	 * @covers ::vipgoci_gitrepo_diffs_fetch
 	 */
 	public function testGitHubDiffsFetch6() {
 		$options_test = vipgoci_unittests_options_test(
@@ -367,7 +367,7 @@ final class GitHubDiffsFetchTest extends TestCase {
 			return;
 		}
 
-		$diff = vipgoci_github_diffs_fetch(
+		$diff = vipgoci_gitrepo_diffs_fetch(
 			$this->options['local-git-repo'],
 			$this->options['commit-test-repo-pr-diffs-1-d'],
 			$this->options['commit-test-repo-pr-diffs-1-e'],
@@ -390,7 +390,7 @@ final class GitHubDiffsFetchTest extends TestCase {
  	 * Test diff between commits; do ask for
 	 * all files to be included.
 	 *
-	 * @covers ::vipgoci_github_diffs_fetch
+	 * @covers ::vipgoci_gitrepo_diffs_fetch
 	 */
 	public function testGitHubDiffsFetch7() {
 		$options_test = vipgoci_unittests_options_test(
@@ -419,7 +419,7 @@ final class GitHubDiffsFetchTest extends TestCase {
 			return;
 		}
 
-		$diff = vipgoci_github_diffs_fetch(
+		$diff = vipgoci_gitrepo_diffs_fetch(
 			$this->options['local-git-repo'],
 			$this->options['commit-test-repo-pr-diffs-1-a'],
 			$this->options['commit-test-repo-pr-diffs-1-d'],
@@ -444,7 +444,7 @@ final class GitHubDiffsFetchTest extends TestCase {
 	 * all files to be included. Test filtering
 	 * of files.
 	 *
-	 * @covers ::vipgoci_github_diffs_fetch
+	 * @covers ::vipgoci_gitrepo_diffs_fetch
 	 */
 	public function testGitHubDiffsFetch8() {
 		$options_test = vipgoci_unittests_options_test(
@@ -473,7 +473,7 @@ final class GitHubDiffsFetchTest extends TestCase {
 			return;
 		}
 
-		$diff = vipgoci_github_diffs_fetch(
+		$diff = vipgoci_gitrepo_diffs_fetch(
 			$this->options['local-git-repo'],
 			$this->options['commit-test-repo-pr-diffs-1-a'],
 			$this->options['commit-test-repo-pr-diffs-1-d'],
@@ -501,7 +501,7 @@ final class GitHubDiffsFetchTest extends TestCase {
 	 * all files to be included. Test filtering
 	 * of files.
 	 *
-	 * @covers ::vipgoci_github_diffs_fetch
+	 * @covers ::vipgoci_gitrepo_diffs_fetch
 	 */
 	public function testGitHubDiffsFetch9() {
 		$options_test = vipgoci_unittests_options_test(
@@ -530,7 +530,7 @@ final class GitHubDiffsFetchTest extends TestCase {
 			return;
 		}
 
-		$diff = vipgoci_github_diffs_fetch(
+		$diff = vipgoci_gitrepo_diffs_fetch(
 			$this->options['local-git-repo'],
 			$this->options['commit-test-repo-pr-diffs-1-a'],
 			$this->options['commit-test-repo-pr-diffs-1-d'],
@@ -561,7 +561,7 @@ final class GitHubDiffsFetchTest extends TestCase {
 	 * of files. Also, test interaction between
 	 * filtering and files to be included.
 	 *
-	 * @covers ::vipgoci_github_diffs_fetch
+	 * @covers ::vipgoci_gitrepo_diffs_fetch
 	 */
 	public function testGitHubDiffsFetch10() {
 		$options_test = vipgoci_unittests_options_test(
@@ -590,7 +590,7 @@ final class GitHubDiffsFetchTest extends TestCase {
 			return;
 		}
 
-		$diff = vipgoci_github_diffs_fetch(
+		$diff = vipgoci_gitrepo_diffs_fetch(
 			$this->options['local-git-repo'],
 			$this->options['commit-test-repo-pr-diffs-1-a'],
 			$this->options['commit-test-repo-pr-diffs-1-d'],

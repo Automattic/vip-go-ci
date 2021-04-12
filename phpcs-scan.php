@@ -391,7 +391,7 @@ function vipgoci_phpcs_scan_commit(
 		 * in this Pull-Request.
 		 */
 
-		$pr_item_files_tmp = vipgoci_github_diffs_fetch(
+		$pr_item_files_tmp = vipgoci_gitrepo_diffs_fetch(
 			$options['local-git-repo'],
 			$pr_item->base->sha,
 			$commit_id,
