@@ -11,7 +11,7 @@ final class MiscSanitizePathPrefixTest extends TestCase {
 	public function testSanitizePathPrefix1() {
 		$path = vipgoci_sanitize_path_prefix(
 			'a/folder1',
-			'a/'
+			array( 'a/' )
 		);
 
 		$this->assertSame(
@@ -20,10 +20,28 @@ final class MiscSanitizePathPrefixTest extends TestCase {
 		);
 	}
 
+	/**
+	 * @covers ::vipgoci_sanitize_path_prefix
+	 */
 	public function testSanitizePathPrefix2() {
 		$path = vipgoci_sanitize_path_prefix(
+			'a/b/folder1',
+			array( 'a/', 'b/' )
+		);
+
+		$this->assertSame(
+			'b/folder1',
+			$path
+		);
+	}
+
+	/**
+	 * @covers ::vipgoci_sanitize_path_prefix
+	 */
+	public function testSanitizePathPrefix3() {
+		$path = vipgoci_sanitize_path_prefix(
 			'a/folder1',
-			'b/'
+			array( 'b/' )
 		);
 
 		$this->assertSame(
