@@ -95,10 +95,10 @@ final class GitHubDiffsFetchTest extends TestCase {
 				'Could not set up git repository: ' .
 					vipgoci_unittests_output_get()
 			);
-                        
+
 			return;
 		}
-                
+
 		$diff = vipgoci_github_diffs_fetch(
 			$this->options['local-git-repo'],
 			$this->options['commit-test-repo-pr-diffs-1-a'],
@@ -148,10 +148,10 @@ final class GitHubDiffsFetchTest extends TestCase {
 				'Could not set up git repository: ' .
 					vipgoci_unittests_output_get()
 			);
-                        
+
 			return;
 		}
-                
+
 		$diff = vipgoci_github_diffs_fetch(
 			$this->options['local-git-repo'],
 			$this->options['commit-test-repo-pr-diffs-1-a'],
@@ -202,10 +202,10 @@ final class GitHubDiffsFetchTest extends TestCase {
 				'Could not set up git repository: ' .
 					vipgoci_unittests_output_get()
 			);
-                        
+
 			return;
 		}
-                
+
 		$diff = vipgoci_github_diffs_fetch(
 			$this->options['local-git-repo'],
 			$this->options['commit-test-repo-pr-diffs-1-c'],
@@ -255,10 +255,10 @@ final class GitHubDiffsFetchTest extends TestCase {
 				'Could not set up git repository: ' .
 					vipgoci_unittests_output_get()
 			);
-                        
+
 			return;
 		}
-                
+
 		$diff = vipgoci_github_diffs_fetch(
 			$this->options['local-git-repo'],
 			$this->options['commit-test-repo-pr-diffs-1-c'],
@@ -307,10 +307,10 @@ final class GitHubDiffsFetchTest extends TestCase {
 				'Could not set up git repository: ' .
 					vipgoci_unittests_output_get()
 			);
-                        
+
 			return;
 		}
-                
+
 		$diff = vipgoci_github_diffs_fetch(
 			$this->options['local-git-repo'],
 			$this->options['commit-test-repo-pr-diffs-1-d'],
@@ -363,10 +363,10 @@ final class GitHubDiffsFetchTest extends TestCase {
 				'Could not set up git repository: ' .
 					vipgoci_unittests_output_get()
 			);
-                        
+
 			return;
 		}
-                
+
 		$diff = vipgoci_github_diffs_fetch(
 			$this->options['local-git-repo'],
 			$this->options['commit-test-repo-pr-diffs-1-d'],
@@ -415,10 +415,10 @@ final class GitHubDiffsFetchTest extends TestCase {
 				'Could not set up git repository: ' .
 					vipgoci_unittests_output_get()
 			);
-                        
+
 			return;
 		}
-                
+
 		$diff = vipgoci_github_diffs_fetch(
 			$this->options['local-git-repo'],
 			$this->options['commit-test-repo-pr-diffs-1-a'],
@@ -469,10 +469,10 @@ final class GitHubDiffsFetchTest extends TestCase {
 				'Could not set up git repository: ' .
 					vipgoci_unittests_output_get()
 			);
-                        
+
 			return;
 		}
-                
+
 		$diff = vipgoci_github_diffs_fetch(
 			$this->options['local-git-repo'],
 			$this->options['commit-test-repo-pr-diffs-1-a'],
@@ -526,10 +526,10 @@ final class GitHubDiffsFetchTest extends TestCase {
 				'Could not set up git repository: ' .
 					vipgoci_unittests_output_get()
 			);
-                        
+
 			return;
 		}
-                
+
 		$diff = vipgoci_github_diffs_fetch(
 			$this->options['local-git-repo'],
 			$this->options['commit-test-repo-pr-diffs-1-a'],
@@ -586,10 +586,10 @@ final class GitHubDiffsFetchTest extends TestCase {
 				'Could not set up git repository: ' .
 					vipgoci_unittests_output_get()
 			);
-                        
+
 			return;
 		}
-                
+
 		$diff = vipgoci_github_diffs_fetch(
 			$this->options['local-git-repo'],
 			$this->options['commit-test-repo-pr-diffs-1-a'],
