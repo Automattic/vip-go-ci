@@ -3275,13 +3275,18 @@ function vipgoci_github_diffs_fetch(
 		 */
 
 		$cur_file = null;
+		$cur_file_path_cleaned = false;
+
 		$cur_mode = 'info'; // Other mode is 'patch'
 		$cur_file_first_patch_line = true;
 		$cur_file_status = null;
+
 		$cur_file_minus = null;
+		$cur_file_minus_path_cleaned = false;
+
 		$cur_file_plus = null;
-		$cur_file_paths_cleaned = false;
-		$cur_file_plus_plus_plus_seen = false;
+		$cur_file_plus_path_cleaned = false;
+
 		$cur_file_patch_buffer = '';
 
 		/*
@@ -3326,13 +3331,15 @@ function vipgoci_github_diffs_fetch(
 				$cur_mode = 'info';
 	
 				$cur_file = null;
+				$cur_file_path_cleaned = false;
+
 				$cur_file_status = null;
 
 				$cur_file_minus = $git_result_item_arr[2];
-				$cur_file_plus = $git_result_item_arr[3];
+				$cur_file_minus_path_cleaned = false;
 
-				$cur_file_paths_cleaned = false;
-				$cur_file_plus_plus_plus_seen = false;
+				$cur_file_plus = $git_result_item_arr[3];
+				$cur_file_plus_path_cleaned = false;
 
 				$cur_file_patch_buffer = '';
 			}
@@ -3352,20 +3359,18 @@ function vipgoci_github_diffs_fetch(
 					( 'rename' === $git_result_item_arr[0] ) &&
 					( 'to' === $git_result_item_arr[1] )
 				) {
-					$cur_file_plus_plus_plus_seen = true;
 				}
 
 				else if ( '---' === $git_result_item_arr[0] ) {
 					$cur_file_minus = $git_result_item_arr[1];
 
-					$cur_file_paths_cleaned = false;
+					$cur_file_minus_path_cleaned = false;
 				}
 
 				else if ( '+++' === $git_result_item_arr[0] ) {
 					$cur_file_plus = $git_result_item_arr[1];
-					$cur_file_plus_plus_plus_seen = true;
 
-					$cur_file_paths_cleaned = false;
+					$cur_file_plus_path_cleaned = false;
 				}
 
 				else if (
@@ -3378,49 +3383,43 @@ function vipgoci_github_diffs_fetch(
 			}
 
 			/*
-			 * Do not register the file in the results
-			 * array until file-names are fully clear, that
-			 * happens when "+++" has been seen.
-			 *
-			 * If we do not do this, we risk removing "a/"
-			 * from geninue paths.
+			 * Remove possible git stuff in paths.
+			 * Avoid cleaning the same path twice.
 			 */
-			if ( false === $cur_file_plus_plus_plus_seen ) {
-// 				FIXME: Disable due to a bug
-//				continue;
+			if (
+				( $cur_file_path_cleaned === false ) &&
+				( null !== $cur_file )
+			) {
+				$cur_file = vipgoci_sanitize_path_prefix(
+					$cur_file,
+					array( 'a/', 'b/' )
+				);
+
+				$cur_file_path_cleaned = true;
 			}
 
-			/*
-			 * Remove possible git stuff in paths
-			 */
-			if ( $cur_file_paths_cleaned === false ) {
-				if ( null !== $cur_file ) {
-					$cur_file = vipgoci_sanitize_path_prefix(
-						$cur_file,
-						'a/'
-					);
+			if (
+				( $cur_file_minus_path_cleaned === false ) &&
+				( null !== $cur_file_minus )
+			) {
+				$cur_file_minus = vipgoci_sanitize_path_prefix(
+					$cur_file_minus,
+					array( 'a/' )
+				);
 
-					$cur_file = vipgoci_sanitize_path_prefix(
-						$cur_file,
-						'b/'
-					);
-				}
+				$cur_file_minus_path_cleaned = true;
+			}
 
-				if ( null !== $cur_file_minus ) {
-					$cur_file_minus = vipgoci_sanitize_path_prefix(
-						$cur_file_minus,
-						'a/'
-					);
-				}
+			if (
+				( $cur_file_plus_path_cleaned === false ) &&
+				( null !== $cur_file_plus )
+			) {
+				$cur_file_plus = vipgoci_sanitize_path_prefix(
+					$cur_file_plus,
+					array( 'b/' )
+				);
 
-				if ( null !== $cur_file_plus ) {
-					$cur_file_plus = vipgoci_sanitize_path_prefix(
-						$cur_file_plus,
-						'b/'
-					);
-				}
-
-				$cur_file_paths_cleaned = true;
+				$cur_file_plus_path_cleaned = true;
 			}
 
 
