@@ -3207,7 +3207,7 @@ function vipgoci_github_diffs_fetch(
 	bool $renamed_files_also = false,
 	bool $removed_files_also = true,
 	bool $permission_changes_also = false,
-	$filter = null
+	?array $filter = null
 ): array {
 
 	/*
