@@ -1085,6 +1085,10 @@ function vipgoci_gitrepo_diffs_fetch_uncached(
 		$diff_results['files'][ $cur_file ]['patch'] .= $git_result_item;
 	}
 
+	vipgoci_log(
+		'Fetched git diff from local git repository'
+	);
+
 	return $diff_results;
 }
 
