@@ -4,7 +4,7 @@
  * Get version of git we are using
  */
 
-function vipgoci_git_version() {
+function vipgoci_git_version(): ?string {
 	static $git_version_cached = null;
 
 	if ( null !== $git_version_cached ) {
