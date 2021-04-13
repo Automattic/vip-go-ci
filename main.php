@@ -132,14 +132,14 @@ function vipgoci_run() {
 	}
 
 	/*
-	 * Require git version 2.10 or later
+	 * Require minimum git version
 	 */
 	if ( version_compare(
 		vipgoci_git_version(),
-		'2.10'
+		VIPGOCI_GIT_VERSION_MINIMUM
 	) < 0 ) {
 		vipgoci_sysexit(
-			'Error: git version 2.10 is required as a minimum.',
+			'Error: git version ' . VIPGOCI_GIT_VERSION_MINIMUM . ' is required as a minimum.',
 			array(),
 			VIPGOCI_EXIT_SYSTEM_PROBLEM
 		);

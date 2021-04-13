@@ -7,6 +7,11 @@
 define( 'VIPGOCI_VERSION',		'0.50' );
 
 /*
+ * Define minimum version requirements.
+ */
+define( 'VIPGOCI_GIT_VERSION_MINIMUM',	'2.10' );
+
+/*
  * Client-ID for curl-requests, etc.
  */
 
@@ -130,4 +135,4 @@ define( 'VIPGOCI_OPTIONS_FILE_NAME',	'.vipgoci_options' );
  * Define for vipgoci_gitrepo_diffs_fetch()
  */
 
-define( 'VIPGOCI_GIT_DIFF_CHANGES', array ('+' => 'additions', '-' => 'deletions') ); 
+define( 'VIPGOCI_GIT_DIFF_CALC_CHANGES', array ('+' => 'additions', '-' => 'deletions') ); 
