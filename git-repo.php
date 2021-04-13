@@ -1073,14 +1073,14 @@ function vipgoci_gitrepo_diffs_fetch_uncached(
 		 */
 		if ( strlen( $git_result_item ) > 0 ) {
 			if ( isset(
-				VIPGOCI_GIT_DIFF_CHANGES[
+				VIPGOCI_GIT_DIFF_CALC_CHANGES[
 					$git_result_item[0]
 				]
 			) ) {
 				$diff_results['files'][
 					$cur_file
 				][
-					VIPGOCI_GIT_DIFF_CHANGES[
+					VIPGOCI_GIT_DIFF_CALC_CHANGES[
 						$git_result_item[0]
 					]
 				]++;
