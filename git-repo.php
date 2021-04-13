@@ -1,5 +1,45 @@
 <?php
 
+/*
+ * Get version of git we are using
+ */
+
+function vipgoci_git_version() {
+	static $git_version_cached = null;
+
+	if ( null !== $git_version_cached ) {
+		return $git_version_cached;
+	}
+
+	$git_version_cmd = sprintf(
+		'%s %s 2>&1',
+		escapeshellcmd( 'git' ),
+		escapeshellarg( '--version' )
+	);
+
+	vipgoci_log(
+		'Getting git version...',
+		array(
+			'cmd'	=> $git_version_cmd
+		)
+	);
+
+	/* Actually execute */
+	$git_version_results = vipgoci_runtime_measure_shell_exec(
+		$git_version_cmd,
+		'git_cli'
+	);
+
+	$git_version_results = str_replace(
+		array( 'git', 'version', ' ', PHP_EOL ),
+		array( '', '', '', '' ),
+		$git_version_results
+	);
+
+	$git_version_cached = $git_version_results;
+
+	return $git_version_results;
+}
 
 /*
  * Determine if repository specified is in

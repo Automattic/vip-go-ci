@@ -97,10 +97,11 @@ function vipgoci_run() {
 		'Initializing...',
 		array(
 			'debug_info' => array(
-				'vipgoci_version' => VIPGOCI_VERSION,
-				'php_version' => phpversion(),
-				'hostname' => gethostname(),
-				'php_uname' => php_uname(),
+				'vipgoci_version'	=> VIPGOCI_VERSION,
+				'php_version'		=> phpversion(),
+				'hostname'		=> gethostname(),
+				'php_uname'		=> php_uname(),
+				'git_version'		=> vipgoci_git_version(),
 			)
 		)
 	);
@@ -125,6 +126,20 @@ function vipgoci_run() {
 	) < 0 ) {
 		vipgoci_sysexit(
 			'Error: PHP 7.3 is required as a minimum.',
+			array(),
+			VIPGOCI_EXIT_SYSTEM_PROBLEM
+		);
+	}
+
+	/*
+	 * Require git version 2.10 or later
+	 */
+	if ( version_compare(
+		vipgoci_git_version(),
+		'2.10'
+	) < 0 ) {
+		vipgoci_sysexit(
+			'Error: git version 2.10 is required as a minimum.',
 			array(),
 			VIPGOCI_EXIT_SYSTEM_PROBLEM
 		);
