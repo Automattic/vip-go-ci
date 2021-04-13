@@ -203,11 +203,11 @@ function vipgoci_convert_string_to_type( $str ) {
  */
 
 function vipgoci_patch_changed_lines(
-	$local_git_repo,
-	$pr_base_sha,
-	$commit_id,
-	$file_name
-) {
+	string $local_git_repo,
+	string $pr_base_sha,
+	string $commit_id,
+	string $file_name
+): array {
 
 	/*
 	 * Fetch patch for all files of the Pull-Request
@@ -1160,7 +1160,7 @@ function vipgoci_sanitize_string( $str ) {
  * Sanitize path, remove any of the specified prefixes
  * if exist.
  */
-function vipgoci_sanitize_path_prefix( string $path, array $prefixes ) {
+function vipgoci_sanitize_path_prefix( string $path, array $prefixes ): string {
 	foreach( $prefixes as $prefix ) {
 		if ( 0 === strpos( $path, $prefix ) ) {
 			$path = substr(
