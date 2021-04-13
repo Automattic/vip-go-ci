@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
 
 final class GitVersionTest extends TestCase {
 	/**
-	 * Run git version, ensure the returned value
+	 * Get git version, ensure the returned value
 	 * is as expected.
 	 *
 	 * @covers ::vipgoci_git_version
