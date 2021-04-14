@@ -769,7 +769,8 @@ function vipgoci_gitrepo_submodule_get_url(
 }
 
 /*
- * Fetch diff from git repository, uncached.
+ * Fetch diff from git repository, unprocessed.
+ * Results are not cached.
  */
 function vipgoci_gitrepo_diffs_fetch_uncached(
 	string $local_git_repo,
@@ -807,10 +808,15 @@ function vipgoci_gitrepo_diffs_fetch_uncached(
 	$git_diff_results = vipgoci_runtime_measure_shell_exec( $git_diff_cmd, 'git_cli' );
 
 	/*
-	 * Prepare intermediate results array.
+	 * Prepare results array.
 	 */
 	$diff_results = array(
-		'files' => array()
+		'files'		=> array(),
+		'statistics'	=> array(
+			VIPGOCI_GIT_DIFF_CALC_CHANGES['+']	=> 0,
+			VIPGOCI_GIT_DIFF_CALC_CHANGES['-'] 	=> 0,
+			'changes'				=> 0,
+		),
 	);
 
 	/*
@@ -838,6 +844,8 @@ function vipgoci_gitrepo_diffs_fetch_uncached(
 
 	$cur_file_plus = null;
 	$cur_file_plus_path_cleaned = false;
+
+	$cur_file_previous_filename = null;
 
 	$cur_file_patch_buffer = '';
 
@@ -893,6 +901,8 @@ function vipgoci_gitrepo_diffs_fetch_uncached(
 			$cur_file_plus = $git_result_item_arr[3];
 			$cur_file_plus_path_cleaned = false;
 
+			$cur_file_previous_filename = null;
+
 			$cur_file_patch_buffer = '';
 		}
 
@@ -909,8 +919,9 @@ function vipgoci_gitrepo_diffs_fetch_uncached(
 
 			else if (
 				( 'rename' === $git_result_item_arr[0] ) &&
-				( 'to' === $git_result_item_arr[1] )
+				( 'from' === $git_result_item_arr[1] )
 			) {
+				$cur_file_previous_filename = $git_result_item_arr[2];
 			}
 
 			else if ( '---' === $git_result_item_arr[0] ) {
@@ -1043,6 +1054,11 @@ function vipgoci_gitrepo_diffs_fetch_uncached(
 				$cur_file_status;
 		}
 
+		if ( null !== $cur_file_previous_filename ) {
+			$diff_results['files'][ $cur_file ]['previous_filename'] =
+				$cur_file_previous_filename;
+		}
+
 		if ( 'patch' !== $cur_mode ) {
 			/* Not in patch mode, so do not collect patch */
 			continue;
@@ -1071,22 +1087,37 @@ function vipgoci_gitrepo_diffs_fetch_uncached(
 		/*
 		 * Keep statistics on lines changed (if any).
 		 */
-		if ( strlen( $git_result_item ) > 0 ) {
-			if ( isset(
+		if (
+			( strlen( $git_result_item ) > 0 ) &&
+			( isset(
 				VIPGOCI_GIT_DIFF_CALC_CHANGES[
 					$git_result_item[0]
 				]
-			) ) {
-				$diff_results['files'][
-					$cur_file
-				][
-					VIPGOCI_GIT_DIFF_CALC_CHANGES[
-						$git_result_item[0]
-					]
-				]++;
+			) )
+		) {
+			/*
+			 * Statistics specific for a file
+			 */
+			$diff_results['files'][
+				$cur_file
+			][
+				VIPGOCI_GIT_DIFF_CALC_CHANGES[
+					$git_result_item[0]
+				]
+			]++;
 
-				$diff_results['files'][ $cur_file ]['changes']++;
-			}
+			$diff_results['files'][ $cur_file ]['changes']++;
+
+			/*
+			 * Overall statistics
+			 */
+			$diff_results['statistics'][
+				VIPGOCI_GIT_DIFF_CALC_CHANGES[
+					$git_result_item[0]
+				]
+			]++;
+
+			$diff_results[ 'statistics' ]['changes']++;
 		}
 
 		/*
@@ -1181,20 +1212,27 @@ function vipgoci_gitrepo_diffs_fetch(
 		 * Save a copy in cache.
 		 */
 		vipgoci_cache( $cached_id, $diff_results );
+	}
 
-		$cached_data = $diff_results;
-
-		/* Remove original array */
-		unset( $diff_results );
+	else {
+		$diff_results = $cached_data;
 	}
 
 	/*
 	 * Loop through all files, save patch in an array
 	 */
 
-	$diffs = array();
+	$results = array(
+		'statistics'	=> array(
+			VIPGOCI_GIT_DIFF_CALC_CHANGES['+']	=> 0,
+			VIPGOCI_GIT_DIFF_CALC_CHANGES['-']	=> 0,
+			'changes'				=> 0,
+		),
 
-	foreach( $cached_data['files'] as $file_item ) {
+		'files'		=> array(),
+	);
+
+	foreach( $diff_results['files'] as $file_item ) {
 		/*
 		 * Skip removed files if desired.
 		 */
@@ -1251,14 +1289,26 @@ function vipgoci_gitrepo_diffs_fetch(
 		 * GitHub, we add it.
 		 */
 		if ( ! isset( $file_item['patch'] ) ) {
-			$file_item->patch = null;
+			$file_item['patch'] = null;
 		}
 
+		$results[ 'files' ][ $file_item['filename'] ] =
+			$file_item['patch'];
 
-		$diffs[ $file_item['filename'] ] = $file_item['patch'];
+		/*
+		 * Add this file to statistics
+		 */
+		$results['statistics'][ VIPGOCI_GIT_DIFF_CALC_CHANGES['+'] ] +=
+			$file_item[ VIPGOCI_GIT_DIFF_CALC_CHANGES['+'] ];
+
+		$results['statistics'][ VIPGOCI_GIT_DIFF_CALC_CHANGES['-'] ] +=
+			$file_item[ VIPGOCI_GIT_DIFF_CALC_CHANGES['-'] ];
+
+		$results['statistics'][ 'changes' ] +=
+			$file_item[ 'changes' ];
 	}
 
-	return $diffs;
+	return $results;
 }
 
 
