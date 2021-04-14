@@ -74,7 +74,7 @@ final class GitRepoDiffsFetchUncachedTest extends TestCase {
 	 *
 	 * @covers ::vipgoci_gitrepo_diffs_fetch_uncached
 	 */
-	public function testGitHubDiffsFetch1() {
+	public function testGitRepoDiffsFetch1() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
@@ -134,9 +134,9 @@ final class GitRepoDiffsFetchUncachedTest extends TestCase {
 				),
 
 				'statistics' => array(
-					VIPGOCI_GIT_DIFF_CALC_CHANGES['+']	=> 1,
-					VIPGOCI_GIT_DIFF_CALC_CHANGES['-']	=> 0,
-					'changes'				=> 1,
+					'additions'	=> 1,
+					'deletions'	=> 0,
+					'changes'	=> 1,
 				)
 			),
 			$diff
@@ -148,7 +148,7 @@ final class GitRepoDiffsFetchUncachedTest extends TestCase {
 	 *
 	 * @covers ::vipgoci_gitrepo_diffs_fetch_uncached
 	 */
-	public function testGitHubDiffsFetch2() {
+	public function testGitRepoDiffsFetch2() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
@@ -208,9 +208,9 @@ final class GitRepoDiffsFetchUncachedTest extends TestCase {
 				),
 
 				'statistics' => array(
-					VIPGOCI_GIT_DIFF_CALC_CHANGES['+']	=> 1,
-					VIPGOCI_GIT_DIFF_CALC_CHANGES['-']	=> 0,
-					'changes'				=> 1,
+					'additions'	=> 1,
+					'deletions'	=> 0,
+					'changes'	=> 1,
 				)
 			),
 			$diff
@@ -222,7 +222,7 @@ final class GitRepoDiffsFetchUncachedTest extends TestCase {
 	 *
 	 * @covers ::vipgoci_gitrepo_diffs_fetch_uncached
 	 */
-	public function testGitHubDiffsFetch3() {
+	public function testGitRepoDiffsFetch3() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
@@ -281,9 +281,9 @@ final class GitRepoDiffsFetchUncachedTest extends TestCase {
 				),
 	
 				'statistics' => array(
-					VIPGOCI_GIT_DIFF_CALC_CHANGES['+']	=> 1,
-					VIPGOCI_GIT_DIFF_CALC_CHANGES['-']	=> 2,
-					'changes'				=> 3,
+					'additions'	=> 1,
+					'deletions'	=> 2,
+					'changes'	=> 3,
 				)
 			),
 			$diff
@@ -295,7 +295,7 @@ final class GitRepoDiffsFetchUncachedTest extends TestCase {
 	 *
 	 * @covers ::vipgoci_gitrepo_diffs_fetch_uncached
 	 */
-	public function testGitHubDiffsFetch4() {
+	public function testGitRepoDiffsFetch4() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
@@ -345,9 +345,9 @@ final class GitRepoDiffsFetchUncachedTest extends TestCase {
 				),
 
 				'statistics' => array(
-					VIPGOCI_GIT_DIFF_CALC_CHANGES['+']	=> 1,
-					VIPGOCI_GIT_DIFF_CALC_CHANGES['-']	=> 0,
-					'changes'				=> 1,
+					'additions'	=> 1,
+					'deletions'	=> 0,
+					'changes'	=> 1,
 				)
 			),
 			$diff
@@ -359,7 +359,7 @@ final class GitRepoDiffsFetchUncachedTest extends TestCase {
 	 *
 	 * @covers ::vipgoci_gitrepo_diffs_fetch_uncached
 	 */
-	public function testGitHubDiffsFetch5() {
+	public function testGitRepoDiffsFetch5() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
@@ -409,9 +409,9 @@ final class GitRepoDiffsFetchUncachedTest extends TestCase {
 				),
 	
 				'statistics' => array(
-					VIPGOCI_GIT_DIFF_CALC_CHANGES['+']	=> 0,
-					VIPGOCI_GIT_DIFF_CALC_CHANGES['-']	=> 1,
-					'changes'				=> 1,
+					'additions'	=> 0,
+					'deletions'	=> 1,
+					'changes'	=> 1,
 				)
 			),
 			$diff
@@ -423,7 +423,7 @@ final class GitRepoDiffsFetchUncachedTest extends TestCase {
 	 *
 	 * @covers ::vipgoci_gitrepo_diffs_fetch_uncached
 	 */
-	public function testGitHubDiffsFetch6() {
+	public function testGitRepoDiffsFetch6() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
@@ -554,9 +554,9 @@ final class GitRepoDiffsFetchUncachedTest extends TestCase {
 				),
 		
 				'statistics' => array(
-					VIPGOCI_GIT_DIFF_CALC_CHANGES['+']	=> 15,
-					VIPGOCI_GIT_DIFF_CALC_CHANGES['-']	=> 6,
-					'changes'				=> 21,
+					'additions'	=> 15,
+					'deletions'	=> 6,
+					'changes'	=> 21,
 				)
 		),
 			$diff

@@ -72,7 +72,7 @@ final class GitRepoDiffsFetchTest extends TestCase {
 	 *
 	 * @covers ::vipgoci_gitrepo_diffs_fetch
 	 */
-	public function testGitHubDiffsFetch1() {
+	public function testGitRepoDiffsFetch1() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
@@ -117,9 +117,9 @@ final class GitRepoDiffsFetchTest extends TestCase {
 				),
 
 				'statistics' => array(
-					VIPGOCI_GIT_DIFF_CALC_CHANGES['+']	=> 1,
-					VIPGOCI_GIT_DIFF_CALC_CHANGES['-']	=> 0,
-					'changes'				=> 1,
+					'additions'	=> 1,
+					'deletions'	=> 0,
+					'changes'	=> 1,
 				),
 			),
 			$diff
@@ -133,7 +133,7 @@ final class GitRepoDiffsFetchTest extends TestCase {
 	 *
 	 * @covers ::vipgoci_gitrepo_diffs_fetch
 	 */
-	public function testGitHubDiffsFetch2() {
+	public function testGitRepoDiffsFetch2() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
@@ -179,9 +179,9 @@ final class GitRepoDiffsFetchTest extends TestCase {
 				),
 
 				'statistics'	=> array(
-					VIPGOCI_GIT_DIFF_CALC_CHANGES['+']	=> 1,
-					VIPGOCI_GIT_DIFF_CALC_CHANGES['-']	=> 0,
-					'changes'				=> 1,
+					'additions'	=> 1,
+					'deletions'	=> 0,
+					'changes'	=> 1,
 				),
 			),
 			$diff
@@ -195,7 +195,7 @@ final class GitRepoDiffsFetchTest extends TestCase {
 	 *
 	 * @covers ::vipgoci_gitrepo_diffs_fetch
 	 */
-	public function testGitHubDiffsFetch3() {
+	public function testGitRepoDiffsFetch3() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
@@ -240,9 +240,9 @@ final class GitRepoDiffsFetchTest extends TestCase {
 				),
 
 				'statistics'	=> array(
-					VIPGOCI_GIT_DIFF_CALC_CHANGES['+']	=> 0,
-					VIPGOCI_GIT_DIFF_CALC_CHANGES['-']	=> 0,
-					'changes'				=> 0,
+					'additions'	=> 0,
+					'deletions'	=> 0,
+					'changes'	=> 0,
 				),
 			),
 			$diff
@@ -256,7 +256,7 @@ final class GitRepoDiffsFetchTest extends TestCase {
 	 *
 	 * @covers ::vipgoci_gitrepo_diffs_fetch
 	 */
-	public function testGitHubDiffsFetch4() {
+	public function testGitRepoDiffsFetch4() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
@@ -300,9 +300,9 @@ final class GitRepoDiffsFetchTest extends TestCase {
 				),
 
 				'statistics'	=> array(
-					VIPGOCI_GIT_DIFF_CALC_CHANGES['+']	=> 0,
-					VIPGOCI_GIT_DIFF_CALC_CHANGES['-']	=> 0,
-					'changes'				=> 0,
+					'additions'	=> 0,
+					'deletions'	=> 0,
+					'changes'	=> 0,
 				),
 			),
 			$diff
@@ -316,7 +316,7 @@ final class GitRepoDiffsFetchTest extends TestCase {
 	 *
 	 * @covers ::vipgoci_gitrepo_diffs_fetch
 	 */
-	public function testGitHubDiffsFetch5() {
+	public function testGitRepoDiffsFetch5() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
@@ -364,9 +364,9 @@ final class GitRepoDiffsFetchTest extends TestCase {
 				),
 
 				'statistics'	=> array(
-					VIPGOCI_GIT_DIFF_CALC_CHANGES['+']	=> 0,
-					VIPGOCI_GIT_DIFF_CALC_CHANGES['-']	=> 2,
-					'changes'				=> 2,
+					'additions'	=> 0,
+					'deletions'	=> 2,
+					'changes'	=> 2,
 				),
 			),
 			$diff
@@ -380,7 +380,7 @@ final class GitRepoDiffsFetchTest extends TestCase {
 	 *
 	 * @covers ::vipgoci_gitrepo_diffs_fetch
 	 */
-	public function testGitHubDiffsFetch6() {
+	public function testGitRepoDiffsFetch6() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
@@ -423,9 +423,9 @@ final class GitRepoDiffsFetchTest extends TestCase {
 				'files'		=> array(
 				),
 				'statistics'	=> array(
-					VIPGOCI_GIT_DIFF_CALC_CHANGES['+']	=> 0,
-					VIPGOCI_GIT_DIFF_CALC_CHANGES['-']	=> 0,
-					'changes'				=> 0,
+					'additions'	=> 0,
+					'deletions'	=> 0,
+					'changes'	=> 0,
 				),
 			),
 			$diff
@@ -439,7 +439,7 @@ final class GitRepoDiffsFetchTest extends TestCase {
 	 *
 	 * @covers ::vipgoci_gitrepo_diffs_fetch
 	 */
-	public function testGitHubDiffsFetch7() {
+	public function testGitRepoDiffsFetch7() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
@@ -485,9 +485,9 @@ final class GitRepoDiffsFetchTest extends TestCase {
 				),
 
 				'statistics'	=> array(
-					VIPGOCI_GIT_DIFF_CALC_CHANGES['+']	=> 1,
-					VIPGOCI_GIT_DIFF_CALC_CHANGES['-']	=> 0,
-					'changes'				=> 1,
+					'additions'	=> 1,
+					'deletions'	=> 0,
+					'changes'	=> 1,
 				),
 			),
 			$diff
@@ -501,7 +501,7 @@ final class GitRepoDiffsFetchTest extends TestCase {
 	 *
 	 * @covers ::vipgoci_gitrepo_diffs_fetch
 	 */
-	public function testGitHubDiffsFetch8() {
+	public function testGitRepoDiffsFetch8() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
@@ -549,9 +549,9 @@ final class GitRepoDiffsFetchTest extends TestCase {
 				'files'		=> array(
 				),
 				'statistics'	=> array(
-					VIPGOCI_GIT_DIFF_CALC_CHANGES['+']	=> 0,
-					VIPGOCI_GIT_DIFF_CALC_CHANGES['-']	=> 0,
-					'changes'				=> 0,
+					'additions'	=> 0,
+					'deletions'	=> 0,
+					'changes'	=> 0,
 				),
 			),
 			$diff
@@ -565,7 +565,7 @@ final class GitRepoDiffsFetchTest extends TestCase {
 	 *
 	 * @covers ::vipgoci_gitrepo_diffs_fetch
 	 */
-	public function testGitHubDiffsFetch9() {
+	public function testGitRepoDiffsFetch9() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
@@ -616,9 +616,9 @@ final class GitRepoDiffsFetchTest extends TestCase {
 				),
 
 				'statistics'	=> array(
-					VIPGOCI_GIT_DIFF_CALC_CHANGES['+']	=> 1,
-					VIPGOCI_GIT_DIFF_CALC_CHANGES['-']	=> 0,
-					'changes'				=> 1,
+					'additions'	=> 1,
+					'deletions'	=> 0,
+					'changes'	=> 1,
 				),
 			),
 			$diff
@@ -633,7 +633,7 @@ final class GitRepoDiffsFetchTest extends TestCase {
 	 *
 	 * @covers ::vipgoci_gitrepo_diffs_fetch
 	 */
-	public function testGitHubDiffsFetch10() {
+	public function testGitRepoDiffsFetch10() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
@@ -683,9 +683,9 @@ final class GitRepoDiffsFetchTest extends TestCase {
 				),
 
 				'statistics'	=> array(
-					VIPGOCI_GIT_DIFF_CALC_CHANGES['+']	=> 1,
-					VIPGOCI_GIT_DIFF_CALC_CHANGES['-']	=> 0,
-					'changes'				=> 1,
+					'additions'	=> 1,
+					'deletions'	=> 0,
+					'changes'	=> 1,
 				),
 			),
 			$diff
