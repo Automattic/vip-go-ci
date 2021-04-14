@@ -4,7 +4,7 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 
 use PHPUnit\Framework\TestCase;
 
-final class GitHubDiffsFetchUncachedTest extends TestCase {
+final class GitRepoDiffsFetchUncachedTest extends TestCase {
 	var $options_git_repo_tests = array(
 		'commit-test-repo-pr-diffs-1-a'	=> null,
 		'commit-test-repo-pr-diffs-1-b'	=> null,
