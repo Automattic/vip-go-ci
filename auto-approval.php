@@ -555,7 +555,7 @@ function vipgoci_auto_approval_scan_commit(
 		 * altered by the Pull-Request, look for
 		 * files that can be auto-approved.
 		 */
-		foreach( $pr_diff as
+		foreach( $pr_diff['files'] as
 			$pr_diff_file_name => $pr_diff_contents
 		) {
 

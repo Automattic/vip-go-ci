@@ -49,7 +49,7 @@ function vipgoci_ap_svg_files(
 		);
 
 
-		foreach ( $pr_diff as
+		foreach ( $pr_diff['files'] as
 			$pr_diff_file_name => $pr_diff_contents
 		) {
 			$pr_diff_file_extension = vipgoci_file_extension_get(

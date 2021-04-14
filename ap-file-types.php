@@ -61,7 +61,7 @@ function vipgoci_ap_file_types(
 		 * them (if their file-type is auto-approvable).
 		 */
 
-		foreach ( $pr_diff as
+		foreach ( $pr_diff['files'] as
 			$pr_diff_file_name => $pr_diff_contents
 		) {
 			/*

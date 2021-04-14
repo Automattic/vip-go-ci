@@ -228,7 +228,7 @@ function vipgoci_patch_changed_lines(
 
 	$lines_arr = explode(
 		"\n",
-		$patch_arr[ $file_name ]
+		$patch_arr['files'][ $file_name ]
 	);
 
 	$lines_changed = array();
