@@ -777,7 +777,6 @@ function vipgoci_gitrepo_diffs_fetch_uncached(
 	string $commit_id_a,
 	string $commit_id_b
 ): array {
-	
 	vipgoci_log(
 		'Fetching diffs between two commits ' .
 			'directly from git repository (uncached)',
