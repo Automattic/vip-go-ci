@@ -132,6 +132,12 @@ final class GitHubDiffsFetchUncachedTest extends TestCase {
 						'changes'	=> 1,
 					)
 				),
+
+				'statistics' => array(
+					VIPGOCI_GIT_DIFF_CALC_CHANGES['+']	=> 1,
+					VIPGOCI_GIT_DIFF_CALC_CHANGES['-']	=> 0,
+					'changes'				=> 1,
+				)
 			),
 			$diff
 		);
@@ -191,14 +197,21 @@ final class GitHubDiffsFetchUncachedTest extends TestCase {
 					),
 					'renamed-file.txt'		=> array(
 						/* Renamed file, no content change */
-						'filename'	=> 'renamed-file.txt',
-						'patch'		=> '',
-						'status'	=> 'renamed',
-						'additions'	=> 0,
-						'deletions'	=> 0,
-						'changes'	=> 0,
+						'filename'		=> 'renamed-file.txt',
+						'patch'			=> '',
+						'status'		=> 'renamed',
+						'additions'		=> 0,
+						'deletions'		=> 0,
+						'changes'		=> 0,
+						'previous_filename'	=> 'README.md',
 					),
 				),
+
+				'statistics' => array(
+					VIPGOCI_GIT_DIFF_CALC_CHANGES['+']	=> 1,
+					VIPGOCI_GIT_DIFF_CALC_CHANGES['-']	=> 0,
+					'changes'				=> 1,
+				)
 			),
 			$diff
 		);
@@ -266,6 +279,12 @@ final class GitHubDiffsFetchUncachedTest extends TestCase {
 						'changes'	=> 1,
 					),
 				),
+	
+				'statistics' => array(
+					VIPGOCI_GIT_DIFF_CALC_CHANGES['+']	=> 1,
+					VIPGOCI_GIT_DIFF_CALC_CHANGES['-']	=> 2,
+					'changes'				=> 3,
+				)
 			),
 			$diff
 		);
@@ -324,6 +343,12 @@ final class GitHubDiffsFetchUncachedTest extends TestCase {
 						'changes'	=> 1,
 					),
 				),
+
+				'statistics' => array(
+					VIPGOCI_GIT_DIFF_CALC_CHANGES['+']	=> 1,
+					VIPGOCI_GIT_DIFF_CALC_CHANGES['-']	=> 0,
+					'changes'				=> 1,
+				)
 			),
 			$diff
 		);
@@ -382,6 +407,12 @@ final class GitHubDiffsFetchUncachedTest extends TestCase {
 						'changes'	=> 1,
 					),
 				),
+	
+				'statistics' => array(
+					VIPGOCI_GIT_DIFF_CALC_CHANGES['+']	=> 0,
+					VIPGOCI_GIT_DIFF_CALC_CHANGES['-']	=> 1,
+					'changes'				=> 1,
+				)
 			),
 			$diff
 		);
@@ -512,15 +543,22 @@ final class GitHubDiffsFetchUncachedTest extends TestCase {
 
 					'to-be-renamed2.txt'		=> array(
 						/* File was renamed */
-						'filename'	=> 'to-be-renamed2.txt',
-						'patch'		=> '',
-						'status'	=> 'renamed',
-						'additions'	=> 0,
-						'deletions'	=> 0,
-						'changes'	=> 0,
+						'filename'		=> 'to-be-renamed2.txt',
+						'patch'			=> '',
+						'status'		=> 'renamed',
+						'additions'		=> 0,
+						'deletions'		=> 0,
+						'changes'		=> 0,
+						'previous_filename'	=> 'to-be-removed.txt',
 					),
 				),
-			),
+		
+				'statistics' => array(
+					VIPGOCI_GIT_DIFF_CALC_CHANGES['+']	=> 15,
+					VIPGOCI_GIT_DIFF_CALC_CHANGES['-']	=> 6,
+					'changes'				=> 21,
+				)
+		),
 			$diff
 		);
 	}
