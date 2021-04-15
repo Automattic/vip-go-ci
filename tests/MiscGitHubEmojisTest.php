@@ -4,11 +4,11 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 
 use PHPUnit\Framework\TestCase;
 
-final class MiscGitHubLabelsTest extends TestCase {
+final class MiscGitHubEmojisTest extends TestCase {
 	/**
-	 * @covers ::vipgoci_github_labels
+	 * @covers ::vipgoci_github_transform_to_emojis
 	 */
-	public function testGitHubLabel1() {
+	public function testGitHubEmojis1() {
 		$this->assertEquals(
 			'',
 			vipgoci_github_transform_to_emojis(
