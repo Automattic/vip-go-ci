@@ -1233,7 +1233,7 @@ function vipgoci_gitrepo_diffs_fetch(
 
 	foreach( $diff_results['files'] as $file_item ) {
 		/*
-		 * Skip removed files if desired.
+		 * Skip removed files if so requested.
 		 */
 
 		if (
