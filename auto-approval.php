@@ -628,7 +628,7 @@ function vipgoci_auto_approval_scan_commit(
 				$pr_label,
 				$auto_approved_files_arr,
 				$files_seen,
-				array_keys( $pr_diff )
+				array_keys( $pr_diff['files'] )
 			);
 		}
 
