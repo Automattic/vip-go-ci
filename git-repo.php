@@ -385,8 +385,8 @@ function vipgoci_gitrepo_blame_for_file(
 			( ctype_xdigit( $result_line_arr[0] ) === true )
 		) {
 			$current_commit = array(
-				'commit_id'	=> $result_line_arr[0],
-				'number'	=> $result_line_arr[1],
+				'commit_id'	=> $result_line_arr[0], // Get commit-ID
+				'number'	=> $result_line_arr[2], // Line number in final file
 			);
 		}
 
