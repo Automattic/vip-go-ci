@@ -778,6 +778,9 @@ function vipgoci_phpcs_scan_commit(
 				$options['local-git-repo']
 			);
 
+			/*
+			 * Get patch for the file
+			 */
 			$file_changed_lines = vipgoci_patch_changed_lines(
 				$repo_owner,
 				$repo_name,
