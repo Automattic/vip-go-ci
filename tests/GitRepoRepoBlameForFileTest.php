@@ -13,7 +13,6 @@ final class GitRepoRepoBlameForFileTest extends TestCase {
 	);
 
 	var $options_git_repo_tests = array(
-		'commit-test-repo-blame-for-file-1'	=> null,
 		'commit-test-repo-blame-for-file-2'	=> null,
 	);
 
