@@ -68,7 +68,7 @@ final class GitRepoRepoBlameForFileTest extends TestCase {
 		}
 
 		$this->options['commit'] =
-			$this->options['commit-test-repo-blame-for-file-1'];
+			$this->options['commit-test-repo-blame-for-file-2'];
 
 		vipgoci_unittests_output_suppress();
 
@@ -97,7 +97,7 @@ final class GitRepoRepoBlameForFileTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				array(
 					'commit_id'	=> '4869335189752462325aaef4838c9761d56195ce',
@@ -114,43 +114,8 @@ final class GitRepoRepoBlameForFileTest extends TestCase {
 			),
 			$ret
 		);
-	}
-
-	/**
-	 * @covers ::vipgoci_gitrepo_blame_for_file
-	 */
-	public function testGitRepoBlameForFile2() {
-		$options_test = vipgoci_unittests_options_test(
-			$this->options,
-			array( 'github-token', 'token' ),
-			$this
-		);
-
-		if ( -1 === $options_test ) {
-			return;
-		}
-
-		$this->options['commit'] =
-			$this->options['commit-test-repo-blame-for-file-2'];
 
 		vipgoci_unittests_output_suppress();
-
-		$this->options['local-git-repo'] =
-			vipgoci_unittests_setup_git_repo(
-				$this->options
-			);
-
-	
-		if ( false === $this->options['local-git-repo'] ) {
-			$this->markTestSkipped(
-				'Could not set up git repository: ' .
-					vipgoci_unittests_output_get()
-			);
-		}
-
-		$this->options['token'] =
-			$this->options['github-token'];
-
 
 		$ret = vipgoci_gitrepo_blame_for_file(
 			$this->options['commit'],
