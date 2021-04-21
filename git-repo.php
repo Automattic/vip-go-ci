@@ -305,10 +305,10 @@ function vipgoci_gitrepo_fetch_committed_file(
  */
 
 function vipgoci_gitrepo_blame_for_file(
-	$commit_id,
-	$file_name,
-	$local_git_repo
-) {
+	string $commit_id,
+	string $file_name,
+	string $local_git_repo
+): array {
 	vipgoci_gitrepo_ok(
 		$commit_id, $local_git_repo
 	);
