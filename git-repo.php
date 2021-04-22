@@ -854,7 +854,7 @@ function vipgoci_gitrepo_diffs_fetch_uncached(
 	 * so we can keep track of what is happening.
 	 *
 	 * The output looks like this:
-	 * 
+	 *
 	 *  diff --git a/renamed-file2.txt b/renamed-file2.txt
 	 *  deleted file mode 100644
 	 *  index 55ab87b..0000000
@@ -878,7 +878,7 @@ function vipgoci_gitrepo_diffs_fetch_uncached(
 		);
 
 		/*
-		 * Check if we are seeing 'diff --git ... 
+		 * Check if we are seeing 'diff --git ...
 		 * and if so switch to info mode, get file names
 		 * and set other state variables.
 		 */
