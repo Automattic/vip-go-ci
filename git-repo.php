@@ -787,7 +787,7 @@ function vipgoci_gitrepo_diffs_fetch_uncached(
 			'commit_id_b'		=> $commit_id_b,
 		)
 	);
-
+$test = '';
 	$git_diff_cmd = sprintf(
 		'%s -C %s diff %s %s 2>&1',
 		escapeshellcmd( 'git' ),
