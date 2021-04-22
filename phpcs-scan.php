@@ -564,7 +564,7 @@ function vipgoci_phpcs_scan_commit(
 				['files']
 				[ $temp_file_name ]
 		) ) {
-			$file_issues_arr_index = 
+			$file_issues_arr_index =
 				$temp_file_name;
 		}
 
@@ -574,7 +574,7 @@ function vipgoci_phpcs_scan_commit(
 				['files']
 				[ ltrim( $temp_file_name, '/' ) ]
 		) ) {
-			$file_issues_arr_index = 
+			$file_issues_arr_index =
 				ltrim( $temp_file_name, '/' );
 		}
 
