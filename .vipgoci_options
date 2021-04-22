@@ -1,1 +1,1 @@
-{"phpcs-severity":1,"skip-draft-prs":false,"phpcs-sniffs-include":["Squiz.PHP.CommentedOutCode", "Squiz.PHP.Eval.Discouraged"]}
+{"phpcs-severity":1,"skip-draft-prs":false,"phpcs-sniffs-include":["Squiz"]}
