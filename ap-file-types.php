@@ -43,10 +43,8 @@ function vipgoci_ap_file_types(
 
 
 	foreach ( $prs_implicated as $pr_item ) {
-		$pr_diff = vipgoci_github_diffs_fetch(
-			$options['repo-owner'],
-			$options['repo-name'],
-			$options['token'],
+		$pr_diff = vipgoci_gitrepo_diffs_fetch(
+			$options['local-git-repo'],
 			$pr_item->base->sha,
 			$options['commit'],
 			true, // renamed files included
@@ -63,7 +61,7 @@ function vipgoci_ap_file_types(
 		 * them (if their file-type is auto-approvable).
 		 */
 
-		foreach ( $pr_diff as
+		foreach ( $pr_diff['files'] as
 			$pr_diff_file_name => $pr_diff_contents
 		) {
 			/*

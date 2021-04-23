@@ -299,10 +299,8 @@ function vipgoci_ap_hashes_api_scan_commit(
 		 * stability, there could be removal of vital
 		 * files, and permission changes might be dangerous.
 		 */
-		$pr_diff = vipgoci_github_diffs_fetch(
-			$options['repo-owner'],
-			$options['repo-name'],
-			$options['token'],
+		$pr_diff = vipgoci_gitrepo_diffs_fetch(
+			$options['local-git-repo'],
 			$pr_item->base->sha,
 			$options['commit'],
 			false, // exclude renamed files
@@ -311,7 +309,7 @@ function vipgoci_ap_hashes_api_scan_commit(
 		);
 
 
-		foreach( $pr_diff as
+		foreach( $pr_diff['files'] as
 			$pr_diff_file_name => $pr_diff_contents
 		) {
 			/*

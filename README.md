@@ -16,6 +16,7 @@ This program comes with a small utility, `tools-init.sh`, that will install PHPC
 
 * `vip-go-ci` requires PHP 7.3 or later. PHP 7.4 is preferred.
 * Linux is recommended as a platform for `vip-go-ci`.
+* git version 2.10 or later.
 
 ### On the console, standalone
 

@@ -4,7 +4,7 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 
 use PHPUnit\Framework\TestCase;
 
-final class GitHubDiffsFetchTest extends TestCase {
+final class GitRepoDiffsFetchTest extends TestCase {
 	var $options_git_repo_tests = array(
 		'commit-test-repo-pr-diffs-1-a'	=> null,
 		'commit-test-repo-pr-diffs-1-b'	=> null,
@@ -16,8 +16,6 @@ final class GitHubDiffsFetchTest extends TestCase {
 	var $options_git = array(
 		'git-path'		=> null,
 		'github-repo-url'	=> null,
-		'repo-name'		=> null,
-		'repo-owner'		=> null,
 	);
 
 	protected function setUp(): void {
@@ -48,9 +46,20 @@ final class GitHubDiffsFetchTest extends TestCase {
 		$this->options['phpcs-skip-folders'] = array();
 
 		$this->options['branches-ignore'] = array();
+
+		/* By default checkout 'master' branch */
+		$this->options['commit'] = 'master';
+
+		$this->options['local-git-repo'] = false;
 	}
 
 	protected function tearDown(): void {
+		if ( false !== $this->options['local-git-repo'] ) {
+			vipgoci_unittests_remove_git_repo(
+				$this->options['local-git-repo']
+			);
+		}
+
 		$this->options_git_repo_tests = null;
 		$this->options_git = null;
 		$this->options = null;
@@ -61,9 +70,9 @@ final class GitHubDiffsFetchTest extends TestCase {
 	 * for renamed files, removed files or files
 	 * that had permissions changed to be included.
 	 *
-	 * @covers ::vipgoci_github_diffs_fetch
+	 * @covers ::vipgoci_gitrepo_diffs_fetch
 	 */
-	public function testGitHubDiffsFetch1() {
+	public function testGitRepoDiffsFetch1() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
@@ -76,10 +85,22 @@ final class GitHubDiffsFetchTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
-		$diff = vipgoci_github_diffs_fetch(
-			$this->options['repo-owner'],
-			$this->options['repo-name'],
-			$this->options['github-token'],
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped(
+				'Could not set up git repository: ' .
+					vipgoci_unittests_output_get()
+			);
+
+			return;
+		}
+
+		$diff = vipgoci_gitrepo_diffs_fetch(
+			$this->options['local-git-repo'],
 			$this->options['commit-test-repo-pr-diffs-1-a'],
 			$this->options['commit-test-repo-pr-diffs-1-b'],
 			false,
@@ -91,7 +112,15 @@ final class GitHubDiffsFetchTest extends TestCase {
 
 		$this->assertEquals(
 			array(
-				'content-changed-file.txt'	=> '@@ -0,0 +1 @@' . PHP_EOL . '+Test file',
+				'files' => array(
+					'content-changed-file.txt'	=> '@@ -0,0 +1 @@' . PHP_EOL . '+Test file',
+				),
+
+				'statistics' => array(
+					'additions'	=> 1,
+					'deletions'	=> 0,
+					'changes'	=> 1,
+				),
 			),
 			$diff
 		);
@@ -102,9 +131,9 @@ final class GitHubDiffsFetchTest extends TestCase {
 	 * files with changed permissions to be included
 	 * in the results.
 	 *
-	 * @covers ::vipgoci_github_diffs_fetch
+	 * @covers ::vipgoci_gitrepo_diffs_fetch
 	 */
-	public function testGitHubDiffsFetch2() {
+	public function testGitRepoDiffsFetch2() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
@@ -117,10 +146,22 @@ final class GitHubDiffsFetchTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
-		$diff = vipgoci_github_diffs_fetch(
-			$this->options['repo-owner'],
-			$this->options['repo-name'],
-			$this->options['github-token'],
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped(
+				'Could not set up git repository: ' .
+					vipgoci_unittests_output_get()
+			);
+
+			return;
+		}
+
+		$diff = vipgoci_gitrepo_diffs_fetch(
+			$this->options['local-git-repo'],
 			$this->options['commit-test-repo-pr-diffs-1-a'],
 			$this->options['commit-test-repo-pr-diffs-1-b'],
 			false,
@@ -132,8 +173,16 @@ final class GitHubDiffsFetchTest extends TestCase {
 
 		$this->assertEquals(
 			array(
-				'content-changed-file.txt'	=> '@@ -0,0 +1 @@' . PHP_EOL . '+Test file',
-				'README.md'			=> null,
+				'files'	=> array(
+					'content-changed-file.txt'	=> '@@ -0,0 +1 @@' . PHP_EOL . '+Test file',
+					'README.md'			=> null,
+				),
+
+				'statistics'	=> array(
+					'additions'	=> 1,
+					'deletions'	=> 0,
+					'changes'	=> 1,
+				),
 			),
 			$diff
 		);
@@ -144,9 +193,9 @@ final class GitHubDiffsFetchTest extends TestCase {
 	 * renamed files to be included
 	 * in the results.
 	 *
-	 * @covers ::vipgoci_github_diffs_fetch
+	 * @covers ::vipgoci_gitrepo_diffs_fetch
 	 */
-	public function testGitHubDiffsFetch3() {
+	public function testGitRepoDiffsFetch3() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
@@ -159,10 +208,22 @@ final class GitHubDiffsFetchTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
-		$diff = vipgoci_github_diffs_fetch(
-			$this->options['repo-owner'],
-			$this->options['repo-name'],
-			$this->options['github-token'],
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped(
+				'Could not set up git repository: ' .
+					vipgoci_unittests_output_get()
+			);
+
+			return;
+		}
+
+		$diff = vipgoci_gitrepo_diffs_fetch(
+			$this->options['local-git-repo'],
 			$this->options['commit-test-repo-pr-diffs-1-c'],
 			$this->options['commit-test-repo-pr-diffs-1-d'],
 			true,
@@ -174,7 +235,15 @@ final class GitHubDiffsFetchTest extends TestCase {
 
 		$this->assertEquals(
 			array(
-				'renamed-file2.txt'		=> null,
+				'files'		=> array(
+					'renamed-file2.txt'			=> null,
+				),
+
+				'statistics'	=> array(
+					'additions'	=> 0,
+					'deletions'	=> 0,
+					'changes'	=> 0,
+				),
 			),
 			$diff
 		);
@@ -185,9 +254,9 @@ final class GitHubDiffsFetchTest extends TestCase {
 	 * for renamed files to be included
 	 * in the results.
 	 *
-	 * @covers ::vipgoci_github_diffs_fetch
+	 * @covers ::vipgoci_gitrepo_diffs_fetch
 	 */
-	public function testGitHubDiffsFetch4() {
+	public function testGitRepoDiffsFetch4() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
@@ -200,10 +269,22 @@ final class GitHubDiffsFetchTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
-		$diff = vipgoci_github_diffs_fetch(
-			$this->options['repo-owner'],
-			$this->options['repo-name'],
-			$this->options['github-token'],
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped(
+				'Could not set up git repository: ' .
+					vipgoci_unittests_output_get()
+			);
+
+			return;
+		}
+
+		$diff = vipgoci_gitrepo_diffs_fetch(
+			$this->options['local-git-repo'],
 			$this->options['commit-test-repo-pr-diffs-1-c'],
 			$this->options['commit-test-repo-pr-diffs-1-d'],
 			false,
@@ -215,6 +296,14 @@ final class GitHubDiffsFetchTest extends TestCase {
 
 		$this->assertEquals(
 			array(
+				'files'		=> array(
+				),
+
+				'statistics'	=> array(
+					'additions'	=> 0,
+					'deletions'	=> 0,
+					'changes'	=> 0,
+				),
 			),
 			$diff
 		);
@@ -225,9 +314,9 @@ final class GitHubDiffsFetchTest extends TestCase {
 	 * removed files to be included
 	 * in the results.
 	 *
-	 * @covers ::vipgoci_github_diffs_fetch
+	 * @covers ::vipgoci_gitrepo_diffs_fetch
 	 */
-	public function testGitHubDiffsFetch5() {
+	public function testGitRepoDiffsFetch5() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
@@ -240,10 +329,22 @@ final class GitHubDiffsFetchTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
-		$diff = vipgoci_github_diffs_fetch(
-			$this->options['repo-owner'],
-			$this->options['repo-name'],
-			$this->options['github-token'],
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped(
+				'Could not set up git repository: ' .
+					vipgoci_unittests_output_get()
+			);
+
+			return;
+		}
+
+		$diff = vipgoci_gitrepo_diffs_fetch(
+			$this->options['local-git-repo'],
 			$this->options['commit-test-repo-pr-diffs-1-d'],
 			$this->options['commit-test-repo-pr-diffs-1-e'],
 			false,
@@ -255,10 +356,18 @@ final class GitHubDiffsFetchTest extends TestCase {
 
 		$this->assertEquals(
 			array(
-				'renamed-file2.txt'	=>
-					'@@ -1,2 +0,0 @@' . PHP_EOL .
-					'-# vip-go-ci-testing' . PHP_EOL .
-					'-Pull-Requests, commits and data to test <a href="https://github.com/automattic/vip-go-ci/">vip-go-ci</a>\'s functionality. Please do not remove or alter unless you\'ve contacted the VIP Team first. '
+				'files'		=> array(
+					'renamed-file2.txt'	=>
+						'@@ -1,2 +0,0 @@' . PHP_EOL .
+						'-# vip-go-ci-testing' . PHP_EOL .
+						'-Pull-Requests, commits and data to test <a href="https://github.com/automattic/vip-go-ci/">vip-go-ci</a>\'s functionality. Please do not remove or alter unless you\'ve contacted the VIP Team first. ',
+				),
+
+				'statistics'	=> array(
+					'additions'	=> 0,
+					'deletions'	=> 2,
+					'changes'	=> 2,
+				),
 			),
 			$diff
 		);
@@ -269,9 +378,9 @@ final class GitHubDiffsFetchTest extends TestCase {
 	 * removed files to be included
 	 * in the results.
 	 *
-	 * @covers ::vipgoci_github_diffs_fetch
+	 * @covers ::vipgoci_gitrepo_diffs_fetch
 	 */
-	public function testGitHubDiffsFetch6() {
+	public function testGitRepoDiffsFetch6() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
@@ -284,10 +393,22 @@ final class GitHubDiffsFetchTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
-		$diff = vipgoci_github_diffs_fetch(
-			$this->options['repo-owner'],
-			$this->options['repo-name'],
-			$this->options['github-token'],
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped(
+				'Could not set up git repository: ' .
+					vipgoci_unittests_output_get()
+			);
+
+			return;
+		}
+
+		$diff = vipgoci_gitrepo_diffs_fetch(
+			$this->options['local-git-repo'],
 			$this->options['commit-test-repo-pr-diffs-1-d'],
 			$this->options['commit-test-repo-pr-diffs-1-e'],
 			false,
@@ -299,6 +420,13 @@ final class GitHubDiffsFetchTest extends TestCase {
 
 		$this->assertEquals(
 			array(
+				'files'		=> array(
+				),
+				'statistics'	=> array(
+					'additions'	=> 0,
+					'deletions'	=> 0,
+					'changes'	=> 0,
+				),
 			),
 			$diff
 		);
@@ -309,9 +437,9 @@ final class GitHubDiffsFetchTest extends TestCase {
  	 * Test diff between commits; do ask for
 	 * all files to be included.
 	 *
-	 * @covers ::vipgoci_github_diffs_fetch
+	 * @covers ::vipgoci_gitrepo_diffs_fetch
 	 */
-	public function testGitHubDiffsFetch7() {
+	public function testGitRepoDiffsFetch7() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
@@ -324,10 +452,22 @@ final class GitHubDiffsFetchTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
-		$diff = vipgoci_github_diffs_fetch(
-			$this->options['repo-owner'],
-			$this->options['repo-name'],
-			$this->options['github-token'],
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped(
+				'Could not set up git repository: ' .
+					vipgoci_unittests_output_get()
+			);
+
+			return;
+		}
+
+		$diff = vipgoci_gitrepo_diffs_fetch(
+			$this->options['local-git-repo'],
 			$this->options['commit-test-repo-pr-diffs-1-a'],
 			$this->options['commit-test-repo-pr-diffs-1-d'],
 			true,
@@ -339,8 +479,16 @@ final class GitHubDiffsFetchTest extends TestCase {
 
 		$this->assertEquals(
 			array(
-				'content-changed-file.txt' => '@@ -0,0 +1 @@' . PHP_EOL . '+Test file',
-				'renamed-file2.txt' => null,
+				'files'		=> array(
+					'content-changed-file.txt' => '@@ -0,0 +1 @@' . PHP_EOL . '+Test file',
+					'renamed-file2.txt' => null,
+				),
+
+				'statistics'	=> array(
+					'additions'	=> 1,
+					'deletions'	=> 0,
+					'changes'	=> 1,
+				),
 			),
 			$diff
 		);
@@ -351,9 +499,9 @@ final class GitHubDiffsFetchTest extends TestCase {
 	 * all files to be included. Test filtering
 	 * of files.
 	 *
-	 * @covers ::vipgoci_github_diffs_fetch
+	 * @covers ::vipgoci_gitrepo_diffs_fetch
 	 */
-	public function testGitHubDiffsFetch8() {
+	public function testGitRepoDiffsFetch8() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
@@ -366,10 +514,22 @@ final class GitHubDiffsFetchTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
-		$diff = vipgoci_github_diffs_fetch(
-			$this->options['repo-owner'],
-			$this->options['repo-name'],
-			$this->options['github-token'],
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped(
+				'Could not set up git repository: ' .
+					vipgoci_unittests_output_get()
+			);
+
+			return;
+		}
+
+		$diff = vipgoci_gitrepo_diffs_fetch(
+			$this->options['local-git-repo'],
 			$this->options['commit-test-repo-pr-diffs-1-a'],
 			$this->options['commit-test-repo-pr-diffs-1-d'],
 			true,
@@ -386,6 +546,13 @@ final class GitHubDiffsFetchTest extends TestCase {
 
 		$this->assertEquals(
 			array(
+				'files'		=> array(
+				),
+				'statistics'	=> array(
+					'additions'	=> 0,
+					'deletions'	=> 0,
+					'changes'	=> 0,
+				),
 			),
 			$diff
 		);
@@ -396,9 +563,9 @@ final class GitHubDiffsFetchTest extends TestCase {
 	 * all files to be included. Test filtering
 	 * of files.
 	 *
-	 * @covers ::vipgoci_github_diffs_fetch
+	 * @covers ::vipgoci_gitrepo_diffs_fetch
 	 */
-	public function testGitHubDiffsFetch9() {
+	public function testGitRepoDiffsFetch9() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
@@ -411,10 +578,22 @@ final class GitHubDiffsFetchTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
-		$diff = vipgoci_github_diffs_fetch(
-			$this->options['repo-owner'],
-			$this->options['repo-name'],
-			$this->options['github-token'],
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped(
+				'Could not set up git repository: ' .
+					vipgoci_unittests_output_get()
+			);
+
+			return;
+		}
+
+		$diff = vipgoci_gitrepo_diffs_fetch(
+			$this->options['local-git-repo'],
 			$this->options['commit-test-repo-pr-diffs-1-a'],
 			$this->options['commit-test-repo-pr-diffs-1-d'],
 			true,
@@ -431,8 +610,16 @@ final class GitHubDiffsFetchTest extends TestCase {
 
 		$this->assertEquals(
 			array(
-				'content-changed-file.txt' => '@@ -0,0 +1 @@' . PHP_EOL . '+Test file',
-				'renamed-file2.txt' => null,
+				'files'		=> array(
+					'content-changed-file.txt'	=> '@@ -0,0 +1 @@' . PHP_EOL . '+Test file',
+					'renamed-file2.txt'		=> null,
+				),
+
+				'statistics'	=> array(
+					'additions'	=> 1,
+					'deletions'	=> 0,
+					'changes'	=> 1,
+				),
 			),
 			$diff
 		);
@@ -444,9 +631,9 @@ final class GitHubDiffsFetchTest extends TestCase {
 	 * of files. Also, test interaction between
 	 * filtering and files to be included.
 	 *
-	 * @covers ::vipgoci_github_diffs_fetch
+	 * @covers ::vipgoci_gitrepo_diffs_fetch
 	 */
-	public function testGitHubDiffsFetch10() {
+	public function testGitRepoDiffsFetch10() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
@@ -459,10 +646,22 @@ final class GitHubDiffsFetchTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
-		$diff = vipgoci_github_diffs_fetch(
-			$this->options['repo-owner'],
-			$this->options['repo-name'],
-			$this->options['github-token'],
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped(
+				'Could not set up git repository: ' .
+					vipgoci_unittests_output_get()
+			);
+
+			return;
+		}
+
+		$diff = vipgoci_gitrepo_diffs_fetch(
+			$this->options['local-git-repo'],
 			$this->options['commit-test-repo-pr-diffs-1-a'],
 			$this->options['commit-test-repo-pr-diffs-1-d'],
 			false,
@@ -479,12 +678,17 @@ final class GitHubDiffsFetchTest extends TestCase {
 
 		$this->assertEquals(
 			array(
-				'content-changed-file.txt' => '@@ -0,0 +1 @@' . PHP_EOL . '+Test file',
+				'files'		=> array(
+					'content-changed-file.txt' => '@@ -0,0 +1 @@' . PHP_EOL . '+Test file',
+				),
+
+				'statistics'	=> array(
+					'additions'	=> 1,
+					'deletions'	=> 0,
+					'changes'	=> 1,
+				),
 			),
 			$diff
 		);
 	}
-
-
-
 }

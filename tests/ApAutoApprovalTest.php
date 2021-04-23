@@ -9,6 +9,8 @@ final class ApAutoApprovalTest extends TestCase {
 
 	protected function setUp(): void {
 		$this->options_git = array(
+			'git-path'				=> null,
+			'github-repo-url'			=> null,
 			'repo-owner'				=> null,
 			'repo-name'				=> null,
 		);
@@ -69,10 +71,18 @@ final class ApAutoApprovalTest extends TestCase {
 
 		$this->options['skip-draft-prs'] = false;
 
+		$this->options['local-git-repo'] = false;
+
 		$this->cleanup_prs();
 	}
 
 	protected function tearDown(): void {
+		if ( false !== $this->options['local-git-repo'] ) {
+			vipgoci_unittests_remove_git_repo(
+				$this->options['local-git-repo']
+			);
+		}
+
 		$this->cleanup_prs();
 
 		$this->options_git = null;
@@ -258,6 +268,20 @@ final class ApAutoApprovalTest extends TestCase {
 			);
 		}
 
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped(
+				'Could not set up git repository: ' .
+					vipgoci_unittests_output_get()
+			);
+
+			return;
+		}
+
 		$auto_approved_files_arr = array(
 			'file-1.php' => 'autoapprove-hashes-to-hashes',
 			'file-2.css' => 'autoapprove-filetypes',
@@ -366,6 +390,20 @@ final class ApAutoApprovalTest extends TestCase {
 			);
 		}
 
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped(
+				'Could not set up git repository: ' .
+					vipgoci_unittests_output_get()
+			);
+
+			return;
+		}
+
 		$auto_approved_files_arr = array(
 			// note: file-1.php is NOT approved
 			'file-2.css' => 'autoapprove-filetypes',
@@ -466,6 +504,20 @@ final class ApAutoApprovalTest extends TestCase {
 			$this->markTestSkipped(
 				'Test not safe to run due to earlier warnings'
 			);
+		}
+
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped(
+				'Could not set up git repository: ' .
+					vipgoci_unittests_output_get()
+			);
+
+			return;
 		}
 
 		$auto_approved_files_arr = array(
@@ -585,6 +637,20 @@ final class ApAutoApprovalTest extends TestCase {
 			$this->markTestSkipped(
 				'Test not safe to run due to earlier warnings'
 			);
+		}
+
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped(
+				'Could not set up git repository: ' .
+					vipgoci_unittests_output_get()
+			);
+
+			return;
 		}
 
 		/*

@@ -391,10 +391,8 @@ function vipgoci_phpcs_scan_commit(
 		 * in this Pull-Request.
 		 */
 
-		$pr_item_files_tmp = vipgoci_github_diffs_fetch(
-			$repo_owner,
-			$repo_name,
-			$github_token,
+		$pr_item_files_tmp = vipgoci_gitrepo_diffs_fetch(
+			$options['local-git-repo'],
 			$pr_item->base->sha,
 			$commit_id,
 			false, // exclude renamed files
@@ -419,7 +417,7 @@ function vipgoci_phpcs_scan_commit(
 		);
 
 
-		foreach ( $pr_item_files_tmp as $pr_item_file_name => $_tmp ) {
+		foreach ( $pr_item_files_tmp['files'] as $pr_item_file_name => $_tmp ) {
 			if ( in_array(
 				$pr_item_file_name,
 				$pr_item_files_changed['all'],
@@ -779,9 +777,7 @@ function vipgoci_phpcs_scan_commit(
 			);
 
 			$file_changed_lines = vipgoci_patch_changed_lines(
-				$repo_owner,
-				$repo_name,
-				$github_token,
+				$options['local-git-repo'],
 				$pr_item->base->sha,
 				$commit_id,
 				$file_name

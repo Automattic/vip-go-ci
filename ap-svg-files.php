@@ -39,10 +39,8 @@ function vipgoci_ap_svg_files(
 
 
 	foreach ( $prs_implicated as $pr_item ) {
-		$pr_diff = vipgoci_github_diffs_fetch(
-			$options['repo-owner'],
-			$options['repo-name'],
-			$options['token'],
+		$pr_diff = vipgoci_gitrepo_diffs_fetch(
+			$options['local-git-repo'],
 			$pr_item->base->sha,
 			$options['commit'],
 			true, // include renamed files
@@ -51,7 +49,7 @@ function vipgoci_ap_svg_files(
 		);
 
 
-		foreach ( $pr_diff as
+		foreach ( $pr_diff['files'] as
 			$pr_diff_file_name => $pr_diff_contents
 		) {
 			$pr_diff_file_extension = vipgoci_file_extension_get(

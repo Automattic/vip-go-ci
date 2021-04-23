@@ -113,6 +113,23 @@ function vipgoci_runtime_measure( $action = null, $type = null ) {
 	}
 }
 
+/*
+ * A simple function to keep record of how
+ * much time executing a particular command takes.
+ */
+
+function vipgoci_runtime_measure_shell_exec(
+	string $cmd,
+	string $runtime_measure_type = null
+): ?string {
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, $runtime_measure_type );
+
+	$shell_exec_output = shell_exec( $cmd );
+
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, $runtime_measure_type );
+
+	return $shell_exec_output;
+}
 
 /*
  * Keep a counter for stuff we do. For instance,

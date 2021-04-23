@@ -7,6 +7,11 @@
 define( 'VIPGOCI_VERSION',		'0.50' );
 
 /*
+ * Define minimum version requirements.
+ */
+define( 'VIPGOCI_GIT_VERSION_MINIMUM',	'2.10' );
+
+/*
  * Client-ID for curl-requests, etc.
  */
 
@@ -19,6 +24,10 @@ define( 'VIPGOCI_GITHUB_ERROR_STR',	'GitHub API communication error. ' .
 if ( ! defined( 'VIPGOCI_GITHUB_BASE_URL' ) ) {
 	define( 'VIPGOCI_GITHUB_BASE_URL',	'https://api.github.com' );
 }
+
+/*
+ * Various messages.
+ */
 
 define( 'VIPGOCI_INFORMATIONAL_MESSAGE',
 					'This bot provides automated ' .
@@ -121,3 +130,9 @@ define( 'VIPGOCI_CACHE_CLEAR',		'--VIPGOCI-CACHE-CLEAR-0x321--' );
  */
 
 define( 'VIPGOCI_OPTIONS_FILE_NAME',	'.vipgoci_options' );
+
+/*
+ * Define for vipgoci_gitrepo_diffs_fetch()
+ */
+
+define( 'VIPGOCI_GIT_DIFF_CALC_CHANGES', array ('+' => 'additions', '-' => 'deletions') ); 

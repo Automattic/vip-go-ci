@@ -203,21 +203,17 @@ function vipgoci_convert_string_to_type( $str ) {
  */
 
 function vipgoci_patch_changed_lines(
-	$repo_owner,
-	$repo_name,
-	$github_token,
-	$pr_base_sha,
-	$commit_id,
-	$file_name
-) {
+	string $local_git_repo,
+	string $pr_base_sha,
+	string $commit_id,
+	string $file_name
+): array {
 
 	/*
 	 * Fetch patch for all files of the Pull-Request
 	 */
-	$patch_arr = vipgoci_github_diffs_fetch(
-		$repo_owner,
-		$repo_name,
-		$github_token,
+	$patch_arr = vipgoci_gitrepo_diffs_fetch(
+		$local_git_repo,
 		$pr_base_sha,
 		$commit_id,
 		false,
@@ -232,7 +228,7 @@ function vipgoci_patch_changed_lines(
 
 	$lines_arr = explode(
 		"\n",
-		$patch_arr[ $file_name ]
+		$patch_arr['files'][ $file_name ]
 	);
 
 	$lines_changed = array();
@@ -1158,4 +1154,23 @@ function vipgoci_sanitize_string( $str ) {
 	return strtolower( ltrim( rtrim(
 		$str
 	) ) );
+}
+
+/*
+ * Sanitize path, remove any of the specified prefixes
+ * if exist.
+ */
+function vipgoci_sanitize_path_prefix( string $path, array $prefixes ): string {
+	foreach( $prefixes as $prefix ) {
+		if ( 0 === strpos( $path, $prefix ) ) {
+			$path = substr(
+				$path,
+				strlen( $prefix )
+			);
+
+			break;
+		}
+	}
+
+	return $path;
 }

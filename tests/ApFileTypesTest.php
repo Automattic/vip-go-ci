@@ -6,6 +6,8 @@ use PHPUnit\Framework\TestCase;
 
 final class ApFileTypesTest extends TestCase {
 	var $options_git = array(
+		'git-path'			=> null,
+		'github-repo-url'		=> null,
 		'repo-owner'			=> null,
 		'repo-name'			=> null,
 	);
@@ -81,6 +83,20 @@ final class ApFileTypesTest extends TestCase {
 		$auto_approved_files_arr = array();
 
 		vipgoci_unittests_output_suppress();
+
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped(
+				'Could not set up git repository: ' .
+					vipgoci_unittests_output_get()
+			);
+
+			return;
+		}
 
 		vipgoci_ap_file_types(
 			$this->options,
