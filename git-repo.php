@@ -345,10 +345,10 @@ function vipgoci_gitrepo_fetch_committed_file(
  */
 
 function vipgoci_gitrepo_blame_for_file(
-	$commit_id,
-	$file_name,
-	$local_git_repo
-) {
+	string $commit_id,
+	string $file_name,
+	string $local_git_repo
+): array {
 	vipgoci_gitrepo_ok(
 		$commit_id, $local_git_repo
 	);
@@ -425,8 +425,8 @@ function vipgoci_gitrepo_blame_for_file(
 			( ctype_xdigit( $result_line_arr[0] ) === true )
 		) {
 			$current_commit = array(
-				'commit_id'	=> $result_line_arr[0],
-				'number'	=> $result_line_arr[1],
+				'commit_id'	=> $result_line_arr[0], // Get commit-ID
+				'number'	=> $result_line_arr[2], // Line number in final file
 			);
 		}
 
@@ -449,21 +449,57 @@ function vipgoci_gitrepo_blame_for_file(
 			unset( $tmp_file_arr );
 		}
 
+		/*
+		 * If we see any of these keywords,
+		 * ignore them.
+		 */
+		else if (
+			( count( $result_line_arr ) >= 1 ) &&
+			( in_array(
+				$result_line_arr[0],
+				array(
+					'author', 'author-mail', 'author-time',
+					'author-tz', 'boundary', 'committer',
+					'committer-mail', 'committer-time',
+					'committer-tz', 'summary', 'previous',
+				)
+			) )
+		) {
+			continue;
+		}
 
 		/*
-		 * If we have got commit-ID, line-number
+		 * If line starts with a tab,
+		 * this is our code -- save that.
+		 */
+		else if (
+			( isset( $result_line[0] ) ) &&
+			( ord( $result_line[0] ) === 9 )
+		) {
+			$tmp_content = substr(
+				$result_line,
+				1
+			);
+
+			$current_commit['content'] = $tmp_content;
+		}
+
+		/*
+		 * If we have got commit-ID, line-number, content
 		 * and filename, we can construct a return array
 		 */
 
 		if (
-			( ! empty( $current_commit['commit_id'] ) ) &&
-			( ! empty( $current_commit['number'] ) ) &&
-			( ! empty( $current_commit['filename'] ) )
+			( isset( $current_commit['commit_id'] ) ) &&
+			( isset( $current_commit['number'] ) ) &&
+			( isset( $current_commit['filename'] ) ) &&
+			( isset( $current_commit['content'] ) )
 		) {
 			$blame_log[] = array(
-				'commit_id' => $current_commit['commit_id'],
-				'file_name' => $current_commit['filename'],
-				'line_no' => (int) $current_commit['number'],
+				'commit_id'	=> $current_commit['commit_id'],
+				'file_name'	=> $current_commit['filename'],
+				'line_no'	=> (int) $current_commit['number'],
+				'content'	=> $current_commit['content'],
 			);
 
 			$current_commit = array();

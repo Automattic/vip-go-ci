@@ -562,7 +562,7 @@ function vipgoci_phpcs_scan_commit(
 				['files']
 				[ $temp_file_name ]
 		) ) {
-			$file_issues_arr_index = 
+			$file_issues_arr_index =
 				$temp_file_name;
 		}
 
@@ -572,7 +572,7 @@ function vipgoci_phpcs_scan_commit(
 				['files']
 				[ ltrim( $temp_file_name, '/' ) ]
 		) ) {
-			$file_issues_arr_index = 
+			$file_issues_arr_index =
 				ltrim( $temp_file_name, '/' );
 		}
 
@@ -776,6 +776,9 @@ function vipgoci_phpcs_scan_commit(
 				$options['local-git-repo']
 			);
 
+			/*
+			 * Get patch for the file
+			 */
 			$file_changed_lines = vipgoci_patch_changed_lines(
 				$options['local-git-repo'],
 				$pr_item->base->sha,
