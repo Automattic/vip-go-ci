@@ -11,12 +11,12 @@ export PHP_CODESNIFFER_VER="3.5.5"
 export PHP_CODESNIFFER_SHA1SUM="0f51879e5caa7147ef47f61f7b3ecdc2d088422a"
 
 # https://github.com/WordPress/WordPress-Coding-Standards/releases
-export WP_CODING_STANDARDS_VER="2.3.1"
-export WP_CODING_STANDARDS_SHA1SUM="e453ebe79917af242de572edccffb2933fc83364";
+export WP_CODING_STANDARDS_VER="2.3.0"
+export WP_CODING_STANDARDS_SHA1SUM="c8161d77fcf63bdeaa3e8e6aa36bc1936b469070";
 
 # https://github.com/automattic/vip-coding-standards/releases
-export VIP_CODING_STANDARDS_VER="2.3.0"
-export VIP_CODING_STANDARDS_SHA1SUM="2b4259564f3fcc0b432ef30378d24907e856cde3";
+export VIP_CODING_STANDARDS_VER="2.3.1"
+export VIP_CODING_STANDARDS_SHA1SUM="e453ebe79917af242de572edccffb2933fc83364";
 
 # https://github.com/sirbrillig/phpcs-variable-analysis/releases
 export PHPCS_VARIABLE_ANALYSIS_VER="2.9.0"
