@@ -319,9 +319,9 @@ Support for checking for issues in PHP files by using [PHPCS](https://github.com
 
 An example of how PHPCS can be used:
 
-> ./vip-go-ci.php --phpcs=true --phpcs-path="$HOME/vip-go-ci-tools/phpcs/bin/phpcs" --phpcs-standard="WordPress-VIP-Go,PHPCompatibilityWP" --phpcs-sniffs-exclude="WordPress.WP.PostsPerPage.posts_per_page_posts_per_page" --phpcs-sniffs-include="WordPress.DB.DirectDatabaseQuery" --phpcs-severity=1 --phpcs-runtime-set="testVersion 7.3-" --phpcs-skip-scanning-via-labels-allowed=true 
+> ./vip-go-ci.php --phpcs=true --phpcs-path="$HOME/vip-go-ci-tools/phpcs/bin/phpcs" --phpcs-standard="WordPress-VIP-Go,PHPCompatibilityWP" --phpcs-sniffs-exclude="WordPress.WP.PostsPerPage.posts_per_page_posts_per_page" --phpcs-sniffs-include="WordPress.DB.DirectDatabaseQuery" --phpcs-severity=1 --phpcs-runtime-set="testVersion 7.4-" --phpcs-skip-scanning-via-labels-allowed=true
 
-With these settings, PHPCS is turned on, is expected to be found in the path shown above, should use two PHPCS standards (`WordPress-VIP-Go` and `PHPCompatibilityWP`), while excluding one particular PHPCS sniff and specifically include another one. When executing PHPCS, one runtime option should be set (`testVersion 7.3-`) and severity level should be `1`. Also, users can ask to skip scanning particular Pull-Requests by setting a label named `skip-phpcs-scan`.
+With these settings, PHPCS is turned on, is expected to be found in the path shown above, should use two PHPCS standards (`WordPress-VIP-Go` and `PHPCompatibilityWP`), while excluding one particular PHPCS sniff and specifically include another one. When executing PHPCS, one runtime option should be set (`testVersion 7.4-`) and severity level should be `1`. Also, users can ask to skip scanning particular Pull-Requests by setting a label named `skip-phpcs-scan`.
 
 Any number of PHPCS standards can be specified, and any number of runtime settings as well. Also, see section above about configuring options via repository file.
 
