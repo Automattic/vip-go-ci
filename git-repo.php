@@ -824,8 +824,12 @@ function vipgoci_gitrepo_diffs_fetch_uncached(
 		)
 	);
 
+	/*
+	 * Make sure we use a git diff branch1...branch2
+	 * as that is what GitHub uses: https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/about-comparing-branches-in-pull-requests#three-dot-and-two-dot-git-diff-comparisons
+	 */
 	$git_diff_cmd = sprintf(
-		'%s -C %s diff %s %s 2>&1',
+		'%s -C %s diff %s...%s 2>&1',
 		escapeshellcmd( 'git' ),
 		escapeshellarg( $local_git_repo ),
 		escapeshellarg( $commit_id_a ),
