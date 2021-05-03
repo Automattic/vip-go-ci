@@ -54,7 +54,7 @@ if ( null === $resp_data ) {
 
 if (
 	( ! isset( $resp_data[0]->tag_name ) ) ||
-	( ! is_numeric( $resp_data[0]->tag_name ) )
+	( ! preg_match('/^(\d+\.)?(\d+\.)?(\*|\d+)$/', $resp_data[0]->tag_name ) )
 ) {
 	exit( 255 );
 }
