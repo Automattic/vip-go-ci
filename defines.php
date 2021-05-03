@@ -4,7 +4,7 @@
  * Version number.
  */
 
-define( 'VIPGOCI_VERSION',		'0.50' );
+define( 'VIPGOCI_VERSION',		'1.0.3' );
 
 /*
  * Client-ID for curl-requests, etc.
