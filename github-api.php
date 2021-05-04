@@ -991,6 +991,76 @@ function vipgoci_github_put_url(
 }
 
 /*
+ * Fetch diffs between two commits from GitHub API,
+ * cache results.
+ */
+function vipgoci_github_diffs_fetch_unfiltered(
+	string $repo_owner,
+	string $repo_name,
+	string $github_token,
+	string $commit_id_a,
+	string $commit_id_b
+): ?array {
+
+	/*
+	 * Check for a cached copy of the diffs
+	 */
+	$cached_id = array(
+		__FUNCTION__, $repo_owner, $repo_name,
+		$github_token, $commit_id_a, $commit_id_b
+	);
+
+	$cached_data = vipgoci_cache( $cached_id );
+
+	vipgoci_log(
+		'Fetching diffs between two commits ' .
+			'from GitHub' .
+			vipgoci_cached_indication_str( $cached_data ),
+
+		array(
+			'repo_owner'	=> $repo_owner,
+			'repo_name'	=> $repo_name,
+			'commit_id_a'	=> $commit_id_a,
+			'commit_id_b'	=> $commit_id_b,
+		)
+	);
+
+	if ( false !== $cached_data ) {
+		return $cached_data;
+	}
+
+	/*
+	 * Nothing cached; ask GitHub.
+	 */
+
+	$github_url =
+		VIPGOCI_GITHUB_BASE_URL . '/' .
+		'repos/' .
+		rawurlencode( $repo_owner ) . '/' .
+		rawurlencode( $repo_name ) . '/' .
+		'compare/' .
+		rawurlencode( $commit_id_a ) .
+		'...' .
+		rawurlencode( $commit_id_b );
+
+	// FIXME: Error-handling
+	$resp_raw = json_decode(
+		vipgoci_github_fetch_url(
+			$github_url,
+			$github_token
+		),
+		true
+	);
+
+	/*
+	 * Save a copy in cache.
+	 */
+	vipgoci_cache( $cached_id, $resp_raw );
+
+	return $resp_raw;
+}
+
+/*
  * Fetch information from GitHub on a particular
  * commit within a particular repository, using
  * the access-token given.
