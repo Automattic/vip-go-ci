@@ -667,7 +667,10 @@ function vipgoci_github_fetch_url(
 			'vipgoci_curl_headers'
 		);
 
-		if ( is_string( $github_token ) ) {
+		if (
+			( is_string( $github_token ) ) &&
+			( strlen( $github_token ) > 0 )
+		) {
 			curl_setopt(
 				$ch,
 				CURLOPT_HTTPHEADER,
