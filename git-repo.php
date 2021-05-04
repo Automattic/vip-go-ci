@@ -829,11 +829,10 @@ function vipgoci_gitrepo_diffs_fetch_uncached(
 	 * as that is what GitHub uses: https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/about-comparing-branches-in-pull-requests#three-dot-and-two-dot-git-diff-comparisons
 	 */
 	$git_diff_cmd = sprintf(
-		'%s -C %s diff %s...%s 2>&1',
+		'%s -C %s diff %s 2>&1',
 		escapeshellcmd( 'git' ),
 		escapeshellarg( $local_git_repo ),
-		escapeshellarg( $commit_id_a ),
-		escapeshellarg( $commit_id_b )
+		escapeshellarg( $commit_id_a . '...'. $commit_id_b )
 	);
 
 	vipgoci_log(
@@ -1196,7 +1195,17 @@ function vipgoci_gitrepo_diffs_fetch_uncached(
 	}
 
 	vipgoci_log(
-		'Fetched git diff from local git repository'
+		'Fetched git diff from local git repository',
+		array(
+			'statistics'		=> $diff_results['statistics'],
+			'files_partial_20_max'	=> array_slice(
+				array_keys(
+					$diff_results['files']
+				),
+				0,
+				20
+			)
+		)
 	);
 
 	return $diff_results;
