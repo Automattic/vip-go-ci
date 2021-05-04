@@ -393,6 +393,9 @@ function vipgoci_phpcs_scan_commit(
 
 		$pr_item_files_tmp = vipgoci_gitrepo_diffs_fetch(
 			$options['local-git-repo'],
+			$options['repo-owner'],
+			$options['repo-name'],
+			$options['token'],
 			$pr_item->base->sha,
 			$commit_id,
 			false, // exclude renamed files
@@ -781,6 +784,9 @@ function vipgoci_phpcs_scan_commit(
 			 */
 			$file_changed_lines = vipgoci_patch_changed_lines(
 				$options['local-git-repo'],
+				$options['repo-owner'],
+				$options['repo-name'],
+				$options['token'],
 				$pr_item->base->sha,
 				$commit_id,
 				$file_name
