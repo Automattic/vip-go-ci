@@ -843,7 +843,10 @@ function vipgoci_gitrepo_diffs_fetch_uncached(
 	);
 
 	/* Actually execute */
-	$git_diff_results = vipgoci_runtime_measure_shell_exec( $git_diff_cmd, 'git_cli' );
+	$git_diff_results = vipgoci_runtime_measure_shell_exec(
+		$git_diff_cmd,
+		'git_cli'
+	);
 
 	/*
 	 * Prepare results array.
