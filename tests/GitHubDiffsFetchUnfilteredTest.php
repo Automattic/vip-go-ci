@@ -7,6 +7,8 @@ require_once( __DIR__ . '/GitDiffsFetchUnfilteredTrait.php' );
 
 use PHPUnit\Framework\TestCase;
 
+// phpcs:disable PSR1.Files.SideEffects
+
 /*
  * This test should be identical with GitRepoDiffsFetchUnfilteredTest.php
  *
