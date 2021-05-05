@@ -94,6 +94,8 @@ function vipgoci_curl_headers( $ch, $header ) {
 
 /*
  * Set a few options for cURL that enhance security.
+ *
+ * @codeCoverageIgnore
  */
 function vipgoci_curl_set_security_options( $ch ) {
 	/*
