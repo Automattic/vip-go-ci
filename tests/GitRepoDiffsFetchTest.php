@@ -79,7 +79,7 @@ final class GitRepoDiffsFetchTest extends TestCase {
 	 * for renamed files, removed files or files
 	 * that had permissions changed to be included.
 	 *
-	 * @covers ::vipgoci_gitrepo_diffs_fetch
+	 * @covers ::vipgoci_git_diffs_fetch
 	 */
 	public function testGitRepoDiffsFetch1() {
 		$options_test = vipgoci_unittests_options_test(
@@ -108,7 +108,7 @@ final class GitRepoDiffsFetchTest extends TestCase {
 			return;
 		}
 
-		$diff = vipgoci_gitrepo_diffs_fetch(
+		$diff = vipgoci_git_diffs_fetch(
 			$this->options['local-git-repo'],
 			$this->options['repo-owner'],
 			$this->options['repo-name'],
@@ -143,7 +143,7 @@ final class GitRepoDiffsFetchTest extends TestCase {
 	 * files with changed permissions to be included
 	 * in the results.
 	 *
-	 * @covers ::vipgoci_gitrepo_diffs_fetch
+	 * @covers ::vipgoci_git_diffs_fetch
 	 */
 	public function testGitRepoDiffsFetch2() {
 		$options_test = vipgoci_unittests_options_test(
@@ -172,7 +172,7 @@ final class GitRepoDiffsFetchTest extends TestCase {
 			return;
 		}
 
-		$diff = vipgoci_gitrepo_diffs_fetch(
+		$diff = vipgoci_git_diffs_fetch(
 			$this->options['local-git-repo'],
 			$this->options['repo-owner'],
 			$this->options['repo-name'],
@@ -208,7 +208,7 @@ final class GitRepoDiffsFetchTest extends TestCase {
 	 * renamed files to be included
 	 * in the results.
 	 *
-	 * @covers ::vipgoci_gitrepo_diffs_fetch
+	 * @covers ::vipgoci_git_diffs_fetch
 	 */
 	public function testGitRepoDiffsFetch3() {
 		$options_test = vipgoci_unittests_options_test(
@@ -237,7 +237,7 @@ final class GitRepoDiffsFetchTest extends TestCase {
 			return;
 		}
 
-		$diff = vipgoci_gitrepo_diffs_fetch(
+		$diff = vipgoci_git_diffs_fetch(
 			$this->options['local-git-repo'],
 			$this->options['repo-owner'],
 			$this->options['repo-name'],
@@ -272,7 +272,7 @@ final class GitRepoDiffsFetchTest extends TestCase {
 	 * for renamed files to be included
 	 * in the results.
 	 *
-	 * @covers ::vipgoci_gitrepo_diffs_fetch
+	 * @covers ::vipgoci_git_diffs_fetch
 	 */
 	public function testGitRepoDiffsFetch4() {
 		$options_test = vipgoci_unittests_options_test(
@@ -301,7 +301,7 @@ final class GitRepoDiffsFetchTest extends TestCase {
 			return;
 		}
 
-		$diff = vipgoci_gitrepo_diffs_fetch(
+		$diff = vipgoci_git_diffs_fetch(
 			$this->options['local-git-repo'],
 			$this->options['repo-owner'],
 			$this->options['repo-name'],
@@ -335,7 +335,7 @@ final class GitRepoDiffsFetchTest extends TestCase {
 	 * removed files to be included
 	 * in the results.
 	 *
-	 * @covers ::vipgoci_gitrepo_diffs_fetch
+	 * @covers ::vipgoci_git_diffs_fetch
 	 */
 	public function testGitRepoDiffsFetch5() {
 		$options_test = vipgoci_unittests_options_test(
@@ -364,7 +364,7 @@ final class GitRepoDiffsFetchTest extends TestCase {
 			return;
 		}
 
-		$diff = vipgoci_gitrepo_diffs_fetch(
+		$diff = vipgoci_git_diffs_fetch(
 			$this->options['local-git-repo'],
 			$this->options['repo-owner'],
 			$this->options['repo-name'],
@@ -402,7 +402,7 @@ final class GitRepoDiffsFetchTest extends TestCase {
 	 * removed files to be included
 	 * in the results.
 	 *
-	 * @covers ::vipgoci_gitrepo_diffs_fetch
+	 * @covers ::vipgoci_git_diffs_fetch
 	 */
 	public function testGitRepoDiffsFetch6() {
 		$options_test = vipgoci_unittests_options_test(
@@ -431,7 +431,7 @@ final class GitRepoDiffsFetchTest extends TestCase {
 			return;
 		}
 
-		$diff = vipgoci_gitrepo_diffs_fetch(
+		$diff = vipgoci_git_diffs_fetch(
 			$this->options['local-git-repo'],
 			$this->options['repo-owner'],
 			$this->options['repo-name'],
@@ -464,7 +464,7 @@ final class GitRepoDiffsFetchTest extends TestCase {
  	 * Test diff between commits; do ask for
 	 * all files to be included.
 	 *
-	 * @covers ::vipgoci_gitrepo_diffs_fetch
+	 * @covers ::vipgoci_git_diffs_fetch
 	 */
 	public function testGitRepoDiffsFetch7() {
 		$options_test = vipgoci_unittests_options_test(
@@ -493,7 +493,7 @@ final class GitRepoDiffsFetchTest extends TestCase {
 			return;
 		}
 
-		$diff = vipgoci_gitrepo_diffs_fetch(
+		$diff = vipgoci_git_diffs_fetch(
 			$this->options['local-git-repo'],
 			$this->options['repo-owner'],
 			$this->options['repo-name'],
@@ -529,7 +529,7 @@ final class GitRepoDiffsFetchTest extends TestCase {
 	 * all files to be included. Test filtering
 	 * of files.
 	 *
-	 * @covers ::vipgoci_gitrepo_diffs_fetch
+	 * @covers ::vipgoci_git_diffs_fetch
 	 */
 	public function testGitRepoDiffsFetch8() {
 		$options_test = vipgoci_unittests_options_test(
@@ -558,7 +558,7 @@ final class GitRepoDiffsFetchTest extends TestCase {
 			return;
 		}
 
-		$diff = vipgoci_gitrepo_diffs_fetch(
+		$diff = vipgoci_git_diffs_fetch(
 			$this->options['local-git-repo'],
 			$this->options['repo-owner'],
 			$this->options['repo-name'],
@@ -596,7 +596,7 @@ final class GitRepoDiffsFetchTest extends TestCase {
 	 * all files to be included. Test filtering
 	 * of files.
 	 *
-	 * @covers ::vipgoci_gitrepo_diffs_fetch
+	 * @covers ::vipgoci_git_diffs_fetch
 	 */
 	public function testGitRepoDiffsFetch9() {
 		$options_test = vipgoci_unittests_options_test(
@@ -625,7 +625,7 @@ final class GitRepoDiffsFetchTest extends TestCase {
 			return;
 		}
 
-		$diff = vipgoci_gitrepo_diffs_fetch(
+		$diff = vipgoci_git_diffs_fetch(
 			$this->options['local-git-repo'],
 			$this->options['repo-owner'],
 			$this->options['repo-name'],
@@ -667,7 +667,7 @@ final class GitRepoDiffsFetchTest extends TestCase {
 	 * of files. Also, test interaction between
 	 * filtering and files to be included.
 	 *
-	 * @covers ::vipgoci_gitrepo_diffs_fetch
+	 * @covers ::vipgoci_git_diffs_fetch
 	 */
 	public function testGitRepoDiffsFetch10() {
 		$options_test = vipgoci_unittests_options_test(
@@ -696,7 +696,7 @@ final class GitRepoDiffsFetchTest extends TestCase {
 			return;
 		}
 
-		$diff = vipgoci_gitrepo_diffs_fetch(
+		$diff = vipgoci_git_diffs_fetch(
 			$this->options['local-git-repo'],
 			$this->options['repo-owner'],
 			$this->options['repo-name'],
