@@ -13,21 +13,21 @@ final class MiscCachedIndicationStrTest extends TestCase {
 	 * @covers ::vipgoci_cached_indication_str
 	 */
 	public function testCachedIndicationStr1() {
-		$this->assertsame(
+		$this->assertSame(
 			' (cached)',
 			vipgoci_cached_indication_str(
 				true
 			)
 		);
 
-		$this->assertsame(
+		$this->assertSame(
 			' (cached)',
 			vipgoci_cached_indication_str(
 				array( 1, 2, 3 ),
 			)
 		);
 
-		$this->assertsame(
+		$this->assertSame(
 			'',
 			vipgoci_cached_indication_str(
 				false,
