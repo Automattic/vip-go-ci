@@ -1074,7 +1074,7 @@ function vipgoci_github_diffs_fetch_unfiltered(
 		),
 	);
 
-	foreach( $resp_raw['files'] as $_tmp_key => $file_item ) {
+	foreach( array_values( $resp_raw['files'] ) as $file_item ) {
 		$diff_results['files'][
 			$file_item['filename']
 		] = array(
