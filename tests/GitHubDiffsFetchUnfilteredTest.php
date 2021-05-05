@@ -1,5 +1,7 @@
 <?php
 
+namespace Vipgoci\tests;
+
 require_once( __DIR__ . '/IncludesForTests.php' );
 require_once( __DIR__ . '/GitDiffsFetchUnfilteredTrait.php' );
 
