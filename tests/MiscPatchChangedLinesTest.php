@@ -8,6 +8,8 @@ final class MiscPatchChangedLinesTest extends TestCase {
 	var $options_git = array(
 		'git-path'		=> null,
 		'github-repo-url'	=> null,
+		'repo-owner'		=> null,
+		'repo-name'		=> null,
 	);
 
 	var $options_patch_changed_lines = array(
@@ -38,6 +40,13 @@ final class MiscPatchChangedLinesTest extends TestCase {
 				true // Fetch from secrets file
 			);
 
+		if ( empty( $this->options['github-token'] ) ) {
+			$this->options['github-token'] = '';
+		}
+
+		$this->options['token'] =
+			$this->options[ 'github-token' ];
+
 		$this->options['commit'] = 'master';
 	}
 
@@ -47,7 +56,7 @@ final class MiscPatchChangedLinesTest extends TestCase {
 	public function testPatchChangedLines1() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
-			array( 'github-token' ),
+			array( 'github-token', 'token' ),
 			$this
 		);
 
@@ -81,6 +90,9 @@ final class MiscPatchChangedLinesTest extends TestCase {
 
 		$patch_arr = vipgoci_patch_changed_lines(
 			$this->options['local-git-repo'],
+			$this->options['repo-owner'],
+			$this->options['repo-name'],
+			$this->options['token'],
 			$this->options['pr-base-sha'],
 			$this->options['commit-id'],
 			'README.md'
