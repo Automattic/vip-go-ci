@@ -25,6 +25,7 @@ final class AllUnitTestsInplaceTest extends TestCase {
 					case '..':
 					case 'Skeleton.php':
 					case 'IncludesForTests.php':
+					case 'GitDiffsFetchUnfilteredTrait.php':
 						/*
 						 * Remove those away from
 						 * the resulting array, are
