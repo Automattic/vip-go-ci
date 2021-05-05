@@ -155,8 +155,6 @@ function vipgoci_github_rate_limits_check(
  *
  * The results are not cached, as we want fresh data
  * every time.
- *
- * @codeCoverageIgnore
  */
 
 function vipgoci_github_rate_limit_usage(
