@@ -808,7 +808,7 @@ function vipgoci_gitrepo_submodule_get_url(
  * Fetch diff from git repository, unprocessed.
  * Results are not cached.
  */
-function vipgoci_gitrepo_diffs_fetch_unfiltered(
+function vipgoci_git_diffs_fetch_unfiltered(
 	string $local_git_repo,
 	string $commit_id_a,
 	string $commit_id_b
@@ -1256,7 +1256,7 @@ function vipgoci_gitrepo_diffs_fetch_unfiltered(
  * Needs arguments both for local git 
  * repo and GitHub API as fallback.
  */
-function vipgoci_gitrepo_diffs_fetch(
+function vipgoci_git_diffs_fetch(
 	string $local_git_repo,
 	string $repo_owner,
 	string $repo_name,
@@ -1300,7 +1300,7 @@ function vipgoci_gitrepo_diffs_fetch(
 	 * to fetch diff.
 	 */
 	if ( false === $github_api_preferred ) {
-		$diff_results = vipgoci_gitrepo_diffs_fetch_unfiltered(
+		$diff_results = vipgoci_git_diffs_fetch_unfiltered(
 			$local_git_repo,
 			$commit_id_a,
 			$commit_id_b
@@ -1324,9 +1324,16 @@ function vipgoci_gitrepo_diffs_fetch(
 
 		if ( false === $github_api_preferred ) {
 			vipgoci_log(
-				'Asking for diff from GitHub API due to ' .
-					'problems with local git repository',
-				array()
+				'Requesting diff from GitHub API, ' .
+					'issues with local git repo',
+				array(
+					'repo-owner'	=> $repo_owner,
+					'repo-name'	=> $repo_name,
+					'commit_id_a'	=> $commit_id_a,
+					'commit_id_b'	=> $commit_id_b,
+				),
+				0,
+				true
 			);
 		}
 
