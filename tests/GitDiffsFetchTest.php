@@ -4,7 +4,7 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 
 use PHPUnit\Framework\TestCase;
 
-final class GitRepoDiffsFetchTest extends TestCase {
+final class GitDiffsFetchTest extends TestCase {
 	var $options_git_repo_tests = array(
 		'commit-test-repo-pr-diffs-1-a'	=> null,
 		'commit-test-repo-pr-diffs-1-b'	=> null,
@@ -81,7 +81,7 @@ final class GitRepoDiffsFetchTest extends TestCase {
 	 *
 	 * @covers ::vipgoci_git_diffs_fetch
 	 */
-	public function testGitRepoDiffsFetch1() {
+	public function testGitDiffsFetch1() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
@@ -145,7 +145,7 @@ final class GitRepoDiffsFetchTest extends TestCase {
 	 *
 	 * @covers ::vipgoci_git_diffs_fetch
 	 */
-	public function testGitRepoDiffsFetch2() {
+	public function testGitDiffsFetch2() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
@@ -210,7 +210,7 @@ final class GitRepoDiffsFetchTest extends TestCase {
 	 *
 	 * @covers ::vipgoci_git_diffs_fetch
 	 */
-	public function testGitRepoDiffsFetch3() {
+	public function testGitDiffsFetch3() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
@@ -274,7 +274,7 @@ final class GitRepoDiffsFetchTest extends TestCase {
 	 *
 	 * @covers ::vipgoci_git_diffs_fetch
 	 */
-	public function testGitRepoDiffsFetch4() {
+	public function testGitDiffsFetch4() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
@@ -337,7 +337,7 @@ final class GitRepoDiffsFetchTest extends TestCase {
 	 *
 	 * @covers ::vipgoci_git_diffs_fetch
 	 */
-	public function testGitRepoDiffsFetch5() {
+	public function testGitDiffsFetch5() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
@@ -404,7 +404,7 @@ final class GitRepoDiffsFetchTest extends TestCase {
 	 *
 	 * @covers ::vipgoci_git_diffs_fetch
 	 */
-	public function testGitRepoDiffsFetch6() {
+	public function testGitDiffsFetch6() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
@@ -466,7 +466,7 @@ final class GitRepoDiffsFetchTest extends TestCase {
 	 *
 	 * @covers ::vipgoci_git_diffs_fetch
 	 */
-	public function testGitRepoDiffsFetch7() {
+	public function testGitDiffsFetch7() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
@@ -531,7 +531,7 @@ final class GitRepoDiffsFetchTest extends TestCase {
 	 *
 	 * @covers ::vipgoci_git_diffs_fetch
 	 */
-	public function testGitRepoDiffsFetch8() {
+	public function testGitDiffsFetch8() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
@@ -598,7 +598,7 @@ final class GitRepoDiffsFetchTest extends TestCase {
 	 *
 	 * @covers ::vipgoci_git_diffs_fetch
 	 */
-	public function testGitRepoDiffsFetch9() {
+	public function testGitDiffsFetch9() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
@@ -669,7 +669,7 @@ final class GitRepoDiffsFetchTest extends TestCase {
 	 *
 	 * @covers ::vipgoci_git_diffs_fetch
 	 */
-	public function testGitRepoDiffsFetch10() {
+	public function testGitDiffsFetch10() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
