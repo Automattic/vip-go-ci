@@ -1010,7 +1010,7 @@ function vipgoci_github_diffs_fetch_unfiltered(
 	 */
 	$cached_id = array(
 		__FUNCTION__, $repo_owner, $repo_name,
-		$github_token, $commit_id_a, $commit_id_b
+		$commit_id_a, $commit_id_b
 	);
 
 	$cached_data = vipgoci_cache( $cached_id );
@@ -1056,11 +1056,79 @@ function vipgoci_github_diffs_fetch_unfiltered(
 	);
 
 	/*
+	 * If no "files" in array, return with error.
+	 */
+	if ( ! isset( $resp_raw['files'] ) ) {
+		return null;
+	}
+
+	/*
+	 * Prepare results array.
+	 */
+	$diff_results = array(
+		'files'         => array(),
+		'statistics'    => array(
+			VIPGOCI_GIT_DIFF_CALC_CHANGES['+']      => 0,
+			VIPGOCI_GIT_DIFF_CALC_CHANGES['-']      => 0,
+			'changes'                               => 0,
+		),
+	);
+
+	foreach( $resp_raw['files'] as $_tmp_key => $file_item ) {
+		$diff_results['files'][
+			$file_item['filename']
+		] = array(
+			'filename'	=> $file_item['filename'],
+			'patch'		=> (
+				isset( $file_item['patch'] ) ?
+				$file_item['patch'] :
+				''
+			),
+			'status'	=> $file_item['status'],
+			'additions'	=> $file_item['additions'],
+			'deletions'	=> $file_item['deletions'],
+			'changes'	=> $file_item['changes'],
+		);
+
+		if ( isset( $file_item['previous_filename'] ) ) {
+			$diff_results['files'][
+				$file_item['filename']
+			]['previous_filename'] =
+				$file_item['previous_filename'];
+		}
+
+		$diff_results['statistics']
+			[ VIPGOCI_GIT_DIFF_CALC_CHANGES['+'] ] +=
+				$file_item[ VIPGOCI_GIT_DIFF_CALC_CHANGES['+'] ];
+
+		$diff_results['statistics']
+			[ VIPGOCI_GIT_DIFF_CALC_CHANGES['-'] ] +=
+				$file_item[ VIPGOCI_GIT_DIFF_CALC_CHANGES['-'] ];
+
+		$diff_results['statistics']['changes'] +=
+			$file_item['changes'];
+	}
+
+	/*
 	 * Save a copy in cache.
 	 */
-	vipgoci_cache( $cached_id, $resp_raw );
+	vipgoci_cache( $cached_id, $diff_results );
 
-	return $resp_raw;
+	vipgoci_log(
+		'Fetched git diff from GitHub API',
+		array(
+			'statistics'            => $diff_results['statistics'],
+			'files_partial_20_max'  => array_slice(
+				array_keys(
+					$diff_results['files']
+				),
+				0,
+				20
+			)
+		)
+	);
+
+	return $diff_results;
 }
 
 /*
