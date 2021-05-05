@@ -16,6 +16,8 @@ final class GitRepoDiffsFetchTest extends TestCase {
 	var $options_git = array(
 		'git-path'		=> null,
 		'github-repo-url'	=> null,
+		'repo-owner'		=> null,
+		'repo-name'		=> null,
 	);
 
 	protected function setUp(): void {
@@ -40,6 +42,13 @@ final class GitRepoDiffsFetchTest extends TestCase {
 				'github-token',
 				true // Fetch from secrets file
 			);
+
+		if ( empty( $this->options['github-token'] ) ) {
+			$this->options['github-token'] = '';
+		}
+
+		$this->options['token'] =
+			$this->options[ 'github-token' ];
 
 		$this->options['lint-skip-folders'] = array();
 
@@ -101,6 +110,9 @@ final class GitRepoDiffsFetchTest extends TestCase {
 
 		$diff = vipgoci_gitrepo_diffs_fetch(
 			$this->options['local-git-repo'],
+			$this->options['repo-owner'],
+			$this->options['repo-name'],
+			$this->options['token'],
 			$this->options['commit-test-repo-pr-diffs-1-a'],
 			$this->options['commit-test-repo-pr-diffs-1-b'],
 			false,
@@ -162,6 +174,9 @@ final class GitRepoDiffsFetchTest extends TestCase {
 
 		$diff = vipgoci_gitrepo_diffs_fetch(
 			$this->options['local-git-repo'],
+			$this->options['repo-owner'],
+			$this->options['repo-name'],
+			$this->options['token'],
 			$this->options['commit-test-repo-pr-diffs-1-a'],
 			$this->options['commit-test-repo-pr-diffs-1-b'],
 			false,
@@ -224,6 +239,9 @@ final class GitRepoDiffsFetchTest extends TestCase {
 
 		$diff = vipgoci_gitrepo_diffs_fetch(
 			$this->options['local-git-repo'],
+			$this->options['repo-owner'],
+			$this->options['repo-name'],
+			$this->options['token'],
 			$this->options['commit-test-repo-pr-diffs-1-c'],
 			$this->options['commit-test-repo-pr-diffs-1-d'],
 			true,
@@ -285,6 +303,9 @@ final class GitRepoDiffsFetchTest extends TestCase {
 
 		$diff = vipgoci_gitrepo_diffs_fetch(
 			$this->options['local-git-repo'],
+			$this->options['repo-owner'],
+			$this->options['repo-name'],
+			$this->options['token'],
 			$this->options['commit-test-repo-pr-diffs-1-c'],
 			$this->options['commit-test-repo-pr-diffs-1-d'],
 			false,
@@ -345,6 +366,9 @@ final class GitRepoDiffsFetchTest extends TestCase {
 
 		$diff = vipgoci_gitrepo_diffs_fetch(
 			$this->options['local-git-repo'],
+			$this->options['repo-owner'],
+			$this->options['repo-name'],
+			$this->options['token'],
 			$this->options['commit-test-repo-pr-diffs-1-d'],
 			$this->options['commit-test-repo-pr-diffs-1-e'],
 			false,
@@ -409,6 +433,9 @@ final class GitRepoDiffsFetchTest extends TestCase {
 
 		$diff = vipgoci_gitrepo_diffs_fetch(
 			$this->options['local-git-repo'],
+			$this->options['repo-owner'],
+			$this->options['repo-name'],
+			$this->options['token'],
 			$this->options['commit-test-repo-pr-diffs-1-d'],
 			$this->options['commit-test-repo-pr-diffs-1-e'],
 			false,
@@ -468,6 +495,9 @@ final class GitRepoDiffsFetchTest extends TestCase {
 
 		$diff = vipgoci_gitrepo_diffs_fetch(
 			$this->options['local-git-repo'],
+			$this->options['repo-owner'],
+			$this->options['repo-name'],
+			$this->options['token'],
 			$this->options['commit-test-repo-pr-diffs-1-a'],
 			$this->options['commit-test-repo-pr-diffs-1-d'],
 			true,
@@ -530,6 +560,9 @@ final class GitRepoDiffsFetchTest extends TestCase {
 
 		$diff = vipgoci_gitrepo_diffs_fetch(
 			$this->options['local-git-repo'],
+			$this->options['repo-owner'],
+			$this->options['repo-name'],
+			$this->options['token'],
 			$this->options['commit-test-repo-pr-diffs-1-a'],
 			$this->options['commit-test-repo-pr-diffs-1-d'],
 			true,
@@ -594,6 +627,9 @@ final class GitRepoDiffsFetchTest extends TestCase {
 
 		$diff = vipgoci_gitrepo_diffs_fetch(
 			$this->options['local-git-repo'],
+			$this->options['repo-owner'],
+			$this->options['repo-name'],
+			$this->options['token'],
 			$this->options['commit-test-repo-pr-diffs-1-a'],
 			$this->options['commit-test-repo-pr-diffs-1-d'],
 			true,
@@ -662,6 +698,9 @@ final class GitRepoDiffsFetchTest extends TestCase {
 
 		$diff = vipgoci_gitrepo_diffs_fetch(
 			$this->options['local-git-repo'],
+			$this->options['repo-owner'],
+			$this->options['repo-name'],
+			$this->options['token'],
 			$this->options['commit-test-repo-pr-diffs-1-a'],
 			$this->options['commit-test-repo-pr-diffs-1-d'],
 			false,
