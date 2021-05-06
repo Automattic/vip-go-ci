@@ -135,4 +135,7 @@ define( 'VIPGOCI_OPTIONS_FILE_NAME',	'.vipgoci_options' );
  * Define for vipgoci_git_diffs_fetch()
  */
 
-define( 'VIPGOCI_GIT_DIFF_CALC_CHANGES', array ('+' => 'additions', '-' => 'deletions') ); 
+define( 'VIPGOCI_GIT_DIFF_CALC_CHANGES',		array ('+' => 'additions', '-' => 'deletions') ); 
+define( 'VIPGOCI_GIT_DIFF_DATA_SOURCE_GIT_REPO',	'local-git-repo' );
+define( 'VIPGOCI_GIT_DIFF_DATA_SOURCE_GITHUB_API',	'github-api' );
+
