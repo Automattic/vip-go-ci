@@ -1351,7 +1351,7 @@ function vipgoci_git_diffs_fetch(
 		$diff_results_data_source =
 			VIPGOCI_GIT_DIFF_DATA_SOURCE_GITHUB_API;
 
-		$github_api_preferred = vipgoci_cache(
+		vipgoci_cache(
 			$cached_id,
 			true
 		);
