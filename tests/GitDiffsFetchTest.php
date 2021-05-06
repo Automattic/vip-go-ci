@@ -124,7 +124,7 @@ final class GitDiffsFetchTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				'files' => array(
 					'content-changed-file.txt'	=> '@@ -0,0 +1 @@' . PHP_EOL . '+Test file',
@@ -188,7 +188,7 @@ final class GitDiffsFetchTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				'files'	=> array(
 					'content-changed-file.txt'	=> '@@ -0,0 +1 @@' . PHP_EOL . '+Test file',
@@ -253,7 +253,7 @@ final class GitDiffsFetchTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				'files'		=> array(
 					'renamed-file2.txt'			=> null,
@@ -317,7 +317,7 @@ final class GitDiffsFetchTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				'files'		=> array(
 				),
@@ -380,7 +380,7 @@ final class GitDiffsFetchTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				'files'		=> array(
 					'renamed-file2.txt'	=>
@@ -447,7 +447,7 @@ final class GitDiffsFetchTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				'files'		=> array(
 				),
@@ -510,7 +510,7 @@ final class GitDiffsFetchTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				'files'		=> array(
 					'content-changed-file.txt' => '@@ -0,0 +1 @@' . PHP_EOL . '+Test file',
@@ -580,7 +580,7 @@ final class GitDiffsFetchTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				'files'		=> array(
 				),
@@ -648,7 +648,7 @@ final class GitDiffsFetchTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				'files'		=> array(
 					'content-changed-file.txt'	=> '@@ -0,0 +1 @@' . PHP_EOL . '+Test file',
@@ -719,7 +719,7 @@ final class GitDiffsFetchTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				'files'		=> array(
 					'content-changed-file.txt' => '@@ -0,0 +1 @@' . PHP_EOL . '+Test file',
@@ -788,7 +788,7 @@ final class GitDiffsFetchTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				'files'		=> array(
 					'test1.php' => '@@ -0,0 +1,4 @@' . PHP_EOL . '+<?php' . PHP_EOL . '+' . PHP_EOL . '+echo \'time: \' . time() . PHP_EOL;' . PHP_EOL . '+',
