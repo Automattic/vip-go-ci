@@ -792,6 +792,27 @@ function vipgoci_phpcs_scan_commit(
 				$file_name
 			);
 
+			/*
+			 * If no changed lines were available, log
+			 * and continue.
+			 */
+			if ( null === $file_changed_lines ) {
+				vipgoci_log(
+					'Unable to fetch changed lines for file, ' .
+						'skipping scanning',
+					array(
+						'local-git-repo'	=> $options['local-git-repo'],
+						'repo-owner'		=> $options['repo-owner'],
+						'repo-name'		=> $options['repo-name'],
+						'base_sha'		=> $pr_item->base->sha,
+						'commit_id'		=> $commit_id,
+						'file_name'		=> $file_name,
+					)
+				);
+
+				continue;
+			}
+
 			$file_relative_lines = @array_flip(
 				$file_changed_lines
 			);
