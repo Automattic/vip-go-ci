@@ -126,13 +126,13 @@ final class GitDiffsFetchTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				'files' => array(
-					'content-changed-file.txt'	=> '@@ -0,0 +1 @@' . PHP_EOL . '+Test file',
-				),
 				'statistics' => array(
 					'additions'	=> 1,
 					'deletions'	=> 0,
 					'changes'	=> 1,
+				),
+				'files' => array(
+					'content-changed-file.txt'	=> '@@ -0,0 +1 @@' . PHP_EOL . '+Test file',
 				),
 				'data_source'	=> VIPGOCI_GIT_DIFF_DATA_SOURCE_GIT_REPO,
 			),
@@ -190,14 +190,14 @@ final class GitDiffsFetchTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				'files'	=> array(
-					'content-changed-file.txt'	=> '@@ -0,0 +1 @@' . PHP_EOL . '+Test file',
-					'README.md'			=> null,
-				),
 				'statistics'	=> array(
 					'additions'	=> 1,
 					'deletions'	=> 0,
 					'changes'	=> 1,
+				),
+				'files'	=> array(
+					'content-changed-file.txt'	=> '@@ -0,0 +1 @@' . PHP_EOL . '+Test file',
+					'README.md'			=> null,
 				),
 				'data_source'	=> VIPGOCI_GIT_DIFF_DATA_SOURCE_GIT_REPO,
 			),
@@ -255,13 +255,13 @@ final class GitDiffsFetchTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				'files'		=> array(
-					'renamed-file2.txt'			=> null,
-				),
 				'statistics'	=> array(
 					'additions'	=> 0,
 					'deletions'	=> 0,
 					'changes'	=> 0,
+				),
+				'files'		=> array(
+					'renamed-file2.txt'			=> null,
 				),
 				'data_source'	=> VIPGOCI_GIT_DIFF_DATA_SOURCE_GIT_REPO,
 			),
@@ -319,12 +319,12 @@ final class GitDiffsFetchTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				'files'		=> array(
-				),
 				'statistics'	=> array(
 					'additions'	=> 0,
 					'deletions'	=> 0,
 					'changes'	=> 0,
+				),
+				'files'		=> array(
 				),
 				'data_source'	=> VIPGOCI_GIT_DIFF_DATA_SOURCE_GIT_REPO,
 			),
@@ -382,16 +382,16 @@ final class GitDiffsFetchTest extends TestCase {
 
 		$this->assertSame(
 			array(
+				'statistics'	=> array(
+					'additions'	=> 0,
+					'deletions'	=> 2,
+					'changes'	=> 2,
+				),
 				'files'		=> array(
 					'renamed-file2.txt'	=>
 						'@@ -1,2 +0,0 @@' . PHP_EOL .
 						'-# vip-go-ci-testing' . PHP_EOL .
 						'-Pull-Requests, commits and data to test <a href="https://github.com/automattic/vip-go-ci/">vip-go-ci</a>\'s functionality. Please do not remove or alter unless you\'ve contacted the VIP Team first. ',
-				),
-				'statistics'	=> array(
-					'additions'	=> 0,
-					'deletions'	=> 2,
-					'changes'	=> 2,
 				),
 				'data_source'	=> VIPGOCI_GIT_DIFF_DATA_SOURCE_GIT_REPO,
 			),
@@ -449,12 +449,12 @@ final class GitDiffsFetchTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				'files'		=> array(
-				),
 				'statistics'	=> array(
 					'additions'	=> 0,
 					'deletions'	=> 0,
 					'changes'	=> 0,
+				),
+				'files'		=> array(
 				),
 				'data_source'	=> VIPGOCI_GIT_DIFF_DATA_SOURCE_GIT_REPO,
 			),
@@ -512,14 +512,14 @@ final class GitDiffsFetchTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				'files'		=> array(
-					'content-changed-file.txt' => '@@ -0,0 +1 @@' . PHP_EOL . '+Test file',
-					'renamed-file2.txt' => null,
-				),
 				'statistics'	=> array(
 					'additions'	=> 1,
 					'deletions'	=> 0,
 					'changes'	=> 1,
+				),
+				'files'		=> array(
+					'content-changed-file.txt' => '@@ -0,0 +1 @@' . PHP_EOL . '+Test file',
+					'renamed-file2.txt' => null,
 				),
 				'data_source'	=> VIPGOCI_GIT_DIFF_DATA_SOURCE_GIT_REPO,
 			),
@@ -582,12 +582,12 @@ final class GitDiffsFetchTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				'files'		=> array(
-				),
 				'statistics'	=> array(
 					'additions'	=> 0,
 					'deletions'	=> 0,
 					'changes'	=> 0,
+				),
+				'files'		=> array(
 				),
 				'data_source'	=> VIPGOCI_GIT_DIFF_DATA_SOURCE_GIT_REPO,
 			),
@@ -650,14 +650,14 @@ final class GitDiffsFetchTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				'files'		=> array(
-					'content-changed-file.txt'	=> '@@ -0,0 +1 @@' . PHP_EOL . '+Test file',
-					'renamed-file2.txt'		=> null,
-				),
 				'statistics'	=> array(
 					'additions'	=> 1,
 					'deletions'	=> 0,
 					'changes'	=> 1,
+				),
+				'files'		=> array(
+					'content-changed-file.txt'	=> '@@ -0,0 +1 @@' . PHP_EOL . '+Test file',
+					'renamed-file2.txt'		=> null,
 				),
 				'data_source'	=> VIPGOCI_GIT_DIFF_DATA_SOURCE_GIT_REPO,
 			),
@@ -721,13 +721,13 @@ final class GitDiffsFetchTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				'files'		=> array(
-					'content-changed-file.txt' => '@@ -0,0 +1 @@' . PHP_EOL . '+Test file',
-				),
 				'statistics'	=> array(
 					'additions'	=> 1,
 					'deletions'	=> 0,
 					'changes'	=> 1,
+				),
+				'files'		=> array(
+					'content-changed-file.txt' => '@@ -0,0 +1 @@' . PHP_EOL . '+Test file',
 				),
 				'data_source'	=> VIPGOCI_GIT_DIFF_DATA_SOURCE_GIT_REPO,
 			),
@@ -790,15 +790,15 @@ final class GitDiffsFetchTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				'files'		=> array(
-					'test1.php' => '@@ -0,0 +1,4 @@' . PHP_EOL . '+<?php' . PHP_EOL . '+' . PHP_EOL . '+echo \'time: \' . time() . PHP_EOL;' . PHP_EOL . '+',
-					'test2.txt' => '@@ -0,0 +1 @@' . PHP_EOL . '+Testing!'
-
-				),
 				'statistics'	=> array(
 					'additions'	=> 5,
 					'deletions'	=> 0,
 					'changes'	=> 5,
+				),
+				'files'		=> array(
+					'test1.php' => '@@ -0,0 +1,4 @@' . PHP_EOL . '+<?php' . PHP_EOL . '+' . PHP_EOL . '+echo \'time: \' . time() . PHP_EOL;' . PHP_EOL . '+',
+					'test2.txt' => '@@ -0,0 +1 @@' . PHP_EOL . '+Testing!'
+
 				),
 				'data_source'	=> VIPGOCI_GIT_DIFF_DATA_SOURCE_GITHUB_API,
 			),
