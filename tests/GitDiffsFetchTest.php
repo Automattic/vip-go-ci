@@ -11,6 +11,8 @@ final class GitDiffsFetchTest extends TestCase {
 		'commit-test-repo-pr-diffs-1-c'	=> null,
 		'commit-test-repo-pr-diffs-1-d'	=> null,
 		'commit-test-repo-pr-diffs-1-e'	=> null,
+		'commit-test-repo-pr-diffs-3-a'	=> null,
+		'commit-test-repo-pr-diffs-3-b'	=> null,
 	);
 
 	var $options_git = array(
@@ -127,12 +129,12 @@ final class GitDiffsFetchTest extends TestCase {
 				'files' => array(
 					'content-changed-file.txt'	=> '@@ -0,0 +1 @@' . PHP_EOL . '+Test file',
 				),
-
 				'statistics' => array(
 					'additions'	=> 1,
 					'deletions'	=> 0,
 					'changes'	=> 1,
 				),
+				'data_source'	=> VIPGOCI_GIT_DIFF_DATA_SOURCE_GIT_REPO,
 			),
 			$diff
 		);
@@ -192,12 +194,12 @@ final class GitDiffsFetchTest extends TestCase {
 					'content-changed-file.txt'	=> '@@ -0,0 +1 @@' . PHP_EOL . '+Test file',
 					'README.md'			=> null,
 				),
-
 				'statistics'	=> array(
 					'additions'	=> 1,
 					'deletions'	=> 0,
 					'changes'	=> 1,
 				),
+				'data_source'	=> VIPGOCI_GIT_DIFF_DATA_SOURCE_GIT_REPO,
 			),
 			$diff
 		);
@@ -256,12 +258,12 @@ final class GitDiffsFetchTest extends TestCase {
 				'files'		=> array(
 					'renamed-file2.txt'			=> null,
 				),
-
 				'statistics'	=> array(
 					'additions'	=> 0,
 					'deletions'	=> 0,
 					'changes'	=> 0,
 				),
+				'data_source'	=> VIPGOCI_GIT_DIFF_DATA_SOURCE_GIT_REPO,
 			),
 			$diff
 		);
@@ -319,12 +321,12 @@ final class GitDiffsFetchTest extends TestCase {
 			array(
 				'files'		=> array(
 				),
-
 				'statistics'	=> array(
 					'additions'	=> 0,
 					'deletions'	=> 0,
 					'changes'	=> 0,
 				),
+				'data_source'	=> VIPGOCI_GIT_DIFF_DATA_SOURCE_GIT_REPO,
 			),
 			$diff
 		);
@@ -386,12 +388,12 @@ final class GitDiffsFetchTest extends TestCase {
 						'-# vip-go-ci-testing' . PHP_EOL .
 						'-Pull-Requests, commits and data to test <a href="https://github.com/automattic/vip-go-ci/">vip-go-ci</a>\'s functionality. Please do not remove or alter unless you\'ve contacted the VIP Team first. ',
 				),
-
 				'statistics'	=> array(
 					'additions'	=> 0,
 					'deletions'	=> 2,
 					'changes'	=> 2,
 				),
+				'data_source'	=> VIPGOCI_GIT_DIFF_DATA_SOURCE_GIT_REPO,
 			),
 			$diff
 		);
@@ -454,6 +456,7 @@ final class GitDiffsFetchTest extends TestCase {
 					'deletions'	=> 0,
 					'changes'	=> 0,
 				),
+				'data_source'	=> VIPGOCI_GIT_DIFF_DATA_SOURCE_GIT_REPO,
 			),
 			$diff
 		);
@@ -513,12 +516,12 @@ final class GitDiffsFetchTest extends TestCase {
 					'content-changed-file.txt' => '@@ -0,0 +1 @@' . PHP_EOL . '+Test file',
 					'renamed-file2.txt' => null,
 				),
-
 				'statistics'	=> array(
 					'additions'	=> 1,
 					'deletions'	=> 0,
 					'changes'	=> 1,
 				),
+				'data_source'	=> VIPGOCI_GIT_DIFF_DATA_SOURCE_GIT_REPO,
 			),
 			$diff
 		);
@@ -586,6 +589,7 @@ final class GitDiffsFetchTest extends TestCase {
 					'deletions'	=> 0,
 					'changes'	=> 0,
 				),
+				'data_source'	=> VIPGOCI_GIT_DIFF_DATA_SOURCE_GIT_REPO,
 			),
 			$diff
 		);
@@ -650,12 +654,12 @@ final class GitDiffsFetchTest extends TestCase {
 					'content-changed-file.txt'	=> '@@ -0,0 +1 @@' . PHP_EOL . '+Test file',
 					'renamed-file2.txt'		=> null,
 				),
-
 				'statistics'	=> array(
 					'additions'	=> 1,
 					'deletions'	=> 0,
 					'changes'	=> 1,
 				),
+				'data_source'	=> VIPGOCI_GIT_DIFF_DATA_SOURCE_GIT_REPO,
 			),
 			$diff
 		);
@@ -720,12 +724,83 @@ final class GitDiffsFetchTest extends TestCase {
 				'files'		=> array(
 					'content-changed-file.txt' => '@@ -0,0 +1 @@' . PHP_EOL . '+Test file',
 				),
-
 				'statistics'	=> array(
 					'additions'	=> 1,
 					'deletions'	=> 0,
 					'changes'	=> 1,
 				),
+				'data_source'	=> VIPGOCI_GIT_DIFF_DATA_SOURCE_GIT_REPO,
+			),
+			$diff
+		);
+	}
+
+	/**
+ 	 * Test diff between commits, no filter.
+	 *
+	 * This diff is across repositories, to
+	 * test when Pull-Requests are based
+	 * against a repository but the commits
+	 * live elsewhere. This test should end up
+	 * using the GitHub API, as the commit
+	 * does not exist in the local repository.
+	 *
+	 * @covers ::vipgoci_git_diffs_fetch
+	 */
+	public function testGitDiffsFetch11() {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( 'github-token', 'token' ),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
+		vipgoci_unittests_output_suppress();
+
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped(
+				'Could not set up git repository: ' .
+					vipgoci_unittests_output_get()
+			);
+
+			return;
+		}
+
+		$diff = vipgoci_git_diffs_fetch(
+			$this->options['local-git-repo'],
+			$this->options['repo-owner'],
+			$this->options['repo-name'],
+			$this->options['token'],
+			$this->options['commit-test-repo-pr-diffs-3-a'],
+			$this->options['commit-test-repo-pr-diffs-3-b'],
+			true,
+			true,
+			true,
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		$this->assertEquals(
+			array(
+				'files'		=> array(
+					'test1.php' => '@@ -0,0 +1,4 @@' . PHP_EOL . '+<?php' . PHP_EOL . '+' . PHP_EOL . '+echo \'time: \' . time() . PHP_EOL;' . PHP_EOL . '+',
+					'test2.txt' => '@@ -0,0 +1 @@' . PHP_EOL . '+Testing!'
+
+				),
+				'statistics'	=> array(
+					'additions'	=> 5,
+					'deletions'	=> 0,
+					'changes'	=> 5,
+				),
+				'data_source'	=> VIPGOCI_GIT_DIFF_DATA_SOURCE_GITHUB_API,
 			),
 			$diff
 		);
