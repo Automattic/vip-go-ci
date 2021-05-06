@@ -196,8 +196,8 @@ final class GitDiffsFetchTest extends TestCase {
 					'changes'	=> 1,
 				),
 				'files'	=> array(
+					'README.md'			=> '',
 					'content-changed-file.txt'	=> '@@ -0,0 +1 @@' . PHP_EOL . '+Test file',
-					'README.md'			=> null,
 				),
 				'data_source'	=> VIPGOCI_GIT_DIFF_DATA_SOURCE_GIT_REPO,
 			),
@@ -261,7 +261,7 @@ final class GitDiffsFetchTest extends TestCase {
 					'changes'	=> 0,
 				),
 				'files'		=> array(
-					'renamed-file2.txt'			=> null,
+					'renamed-file2.txt'			=> '',
 				),
 				'data_source'	=> VIPGOCI_GIT_DIFF_DATA_SOURCE_GIT_REPO,
 			),
@@ -519,7 +519,7 @@ final class GitDiffsFetchTest extends TestCase {
 				),
 				'files'		=> array(
 					'content-changed-file.txt' => '@@ -0,0 +1 @@' . PHP_EOL . '+Test file',
-					'renamed-file2.txt' => null,
+					'renamed-file2.txt' => '',
 				),
 				'data_source'	=> VIPGOCI_GIT_DIFF_DATA_SOURCE_GIT_REPO,
 			),
@@ -657,7 +657,7 @@ final class GitDiffsFetchTest extends TestCase {
 				),
 				'files'		=> array(
 					'content-changed-file.txt'	=> '@@ -0,0 +1 @@' . PHP_EOL . '+Test file',
-					'renamed-file2.txt'		=> null,
+					'renamed-file2.txt'		=> '',
 				),
 				'data_source'	=> VIPGOCI_GIT_DIFF_DATA_SOURCE_GIT_REPO,
 			),
