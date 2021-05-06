@@ -210,7 +210,7 @@ function vipgoci_patch_changed_lines(
 	string $pr_base_sha,
 	string $commit_id,
 	string $file_name
-): array {
+): ?array {
 	/*
 	 * Fetch patch for all files of the Pull-Request
 	 */
@@ -225,6 +225,15 @@ function vipgoci_patch_changed_lines(
 		false,
 		false
 	);
+
+	/*
+	 * No such file found, return with error
+	 */
+	if ( ! isset(
+		$patch_arr['files'][ $file_name ]
+	) ) {
+		return null;
+	}
 
 	/*
 	 * Get patch for the relevant file
