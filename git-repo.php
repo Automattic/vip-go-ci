@@ -808,7 +808,7 @@ function vipgoci_gitrepo_submodule_get_url(
  * Fetch diff from git repository, unprocessed.
  * Results are not cached.
  */
-function vipgoci_git_diffs_fetch_unfiltered(
+function vipgoci_gitrepo_diffs_fetch_unfiltered(
 	string $local_git_repo,
 	string $commit_id_a,
 	string $commit_id_b
@@ -1300,11 +1300,14 @@ function vipgoci_git_diffs_fetch(
 	 * to fetch diff.
 	 */
 	if ( false === $github_api_preferred ) {
-		$diff_results = vipgoci_git_diffs_fetch_unfiltered(
+		$diff_results = vipgoci_gitrepo_diffs_fetch_unfiltered(
 			$local_git_repo,
 			$commit_id_a,
 			$commit_id_b
 		);
+	
+		$diff_results_data_source =
+			VIPGOCI_GIT_DIFF_DATA_SOURCE_GIT_REPO;
 	}
 
 	if ( null === $diff_results ) {
@@ -1345,6 +1348,9 @@ function vipgoci_git_diffs_fetch(
 			$commit_id_b
 		);
 
+		$diff_results_data_source =
+			VIPGOCI_GIT_DIFF_DATA_SOURCE_GITHUB_API;
+
 		$github_api_preferred = vipgoci_cache(
 			$cached_id,
 			true
@@ -1352,7 +1358,8 @@ function vipgoci_git_diffs_fetch(
 	}
 
 	/*
-	 * Loop through all files, save patch in an array
+	 * Loop through all files, save patch in an array,
+	 * along with statistics, note where the data came from.
 	 */
 
 	$results = array(
@@ -1363,6 +1370,7 @@ function vipgoci_git_diffs_fetch(
 		),
 
 		'files'		=> array(),
+		'data_source'	=> $diff_results_data_source,
 	);
 
 	foreach( $diff_results['files'] as $file_item ) {
