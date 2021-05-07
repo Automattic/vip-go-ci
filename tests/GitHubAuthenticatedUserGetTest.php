@@ -49,6 +49,10 @@ final class GitHubAuthenticatedUserGetTest extends TestCase {
 			isset(
 				$gh_result->login
 			)
+			&&
+			( strlen(
+				$gh_result->login
+			) > 0 )
 		);
 	}
 }
