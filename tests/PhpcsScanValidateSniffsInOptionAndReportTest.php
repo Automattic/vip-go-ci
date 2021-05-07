@@ -168,7 +168,7 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 				$pr_item->number
 			);
 
-			$this->assertEquals(
+			$this->assertSame(
 				0,
 				count( array_keys( $pr_comments ) )
 			);
@@ -250,13 +250,13 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 			}
 
 			// Make sure we removed one comment
-			$this->assertEquals(
+			$this->assertSame(
 				1,
 				$removed_comments
 			);
 		}
 
-		$this->assertEquals(
+		$this->assertSame(
 			$this->options['phpcs-validate-sniffs-and-report-include-valid'],
 			$this->options['phpcs-sniffs-include']
 		);
@@ -312,7 +312,7 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 				$pr_item->number
 			);
 
-			$this->assertEquals(
+			$this->assertSame(
 				0,
 				count( array_keys( $pr_comments ) )
 			);
@@ -347,13 +347,13 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 				$pr_item->number
 			);
 
-			$this->assertEquals(
+			$this->assertSame(
 				0,
 				count( array_keys( $pr_comments ) )
 			);
 		}
 
-		$this->assertEquals(
+		$this->assertSame(
 			$this->options['phpcs-validate-sniffs-and-report-include-valid'],
 			$this->options['phpcs-sniffs-include']
 		);
@@ -409,7 +409,7 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 				$pr_item->number
 			);
 
-			$this->assertEquals(
+			$this->assertSame(
 				0,
 				count( array_keys( $pr_comments ) )
 			);
@@ -491,13 +491,13 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 			}
 
 			// Make sure we removed one comment
-			$this->assertEquals(
+			$this->assertSame(
 				1,
 				$removed_comments
 			);
 		}
 
-		$this->assertEquals(
+		$this->assertSame(
 			$this->options['phpcs-validate-sniffs-and-report-exclude-valid'],
 			$this->options['phpcs-sniffs-exclude']
 		);
@@ -553,7 +553,7 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 				$pr_item->number
 			);
 
-			$this->assertEquals(
+			$this->assertSame(
 				0,
 				count( array_keys( $pr_comments ) )
 			);
@@ -588,13 +588,13 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 				$pr_item->number
 			);
 
-			$this->assertEquals(
+			$this->assertSame(
 				0,
 				count( array_keys( $pr_comments ) )
 			);
 		}
 
-		$this->assertEquals(
+		$this->assertSame(
 			$this->options['phpcs-validate-sniffs-and-report-exclude-valid'],
 			$this->options['phpcs-sniffs-exclude']
 		);
