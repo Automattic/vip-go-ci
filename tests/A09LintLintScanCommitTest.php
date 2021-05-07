@@ -152,7 +152,7 @@ final class A09LintLintScanCommitTest extends TestCase {
 				$issues_submit[ $pr_item->number][0]['issue']['message']
 			);
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				$pr_item->number => array(
 					array(
@@ -170,7 +170,7 @@ final class A09LintLintScanCommitTest extends TestCase {
 			$issues_submit
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				$pr_item->number => array(
 					'error' => 1,
@@ -279,7 +279,7 @@ final class A09LintLintScanCommitTest extends TestCase {
 			);
 
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				$pr_item->number => array(
 					array(
@@ -312,7 +312,7 @@ final class A09LintLintScanCommitTest extends TestCase {
 			$issues_submit
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				$pr_item->number => array(
 					'error' => 2,

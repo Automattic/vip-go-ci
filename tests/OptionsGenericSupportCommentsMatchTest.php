@@ -25,7 +25,7 @@ final class OptionsGenericSupportCommentsMatchTest extends TestCase {
 			'myoption1'
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				'1' => array(
 					'key1' => array( 'value1' ),

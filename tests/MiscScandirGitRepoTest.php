@@ -96,7 +96,7 @@ final class MiscScandirGitRepoTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				'README.md',
  				'myfile1.txt',	
@@ -150,7 +150,7 @@ final class MiscScandirGitRepoTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				'README.md'
 			),

@@ -166,7 +166,7 @@ final class PhpcsScanSingleFileTest extends TestCase {
 			$expected_results['file_issues_arr_master']
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			$expected_results,
 			$scan_results
 		);

@@ -9,14 +9,14 @@ final class MiscGitHubEmojisTest extends TestCase {
 	 * @covers ::vipgoci_github_transform_to_emojis
 	 */
 	public function testGitHubEmojis1() {
-		$this->assertEquals(
+		$this->assertSame(
 			'',
 			vipgoci_github_transform_to_emojis(
 				'exclamation'
 			)
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			':warning:',
 			vipgoci_github_transform_to_emojis(
 				'warning'

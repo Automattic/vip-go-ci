@@ -89,7 +89,7 @@ final class GitRepoSubmodulesListTest extends TestCase {
 			$this->options['local-git-repo']
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				array(
 					'commit_id'		=> 'a0dba40108fe19f028dbd5970022281cc2cabf81',

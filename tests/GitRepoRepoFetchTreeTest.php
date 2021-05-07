@@ -94,7 +94,7 @@ final class GitRepoRepoFetchTreeTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				'README.md',
 				'file-1.txt',
@@ -148,7 +148,7 @@ final class GitRepoRepoFetchTreeTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				'file-1.txt',
 			),

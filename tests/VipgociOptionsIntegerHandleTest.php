@@ -18,7 +18,7 @@ final class VipgociOptionsIntegerHandleTest extends TestCase {
 			5
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				'mytestoption'	=> 5
 			),

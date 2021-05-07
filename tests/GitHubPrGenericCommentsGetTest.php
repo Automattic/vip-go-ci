@@ -74,17 +74,17 @@ final class GitHubPrGenericCommentsGetTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			1,
 			count( array_keys( $pr_comments ) )
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			471306810,
 			$pr_comments[0]->id
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			'Testing of generic comments.',
 			$pr_comments[0]->body
 		);

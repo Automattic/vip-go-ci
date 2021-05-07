@@ -70,23 +70,23 @@ final class GitHubPrReviewsGetTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			1,
 			count( $reviews_actual )
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			212601504,
 			$reviews_actual[0]->id
 		);
 
 
-		$this->assertEquals(
+		$this->assertSame(
 			'Test review',
 			$reviews_actual[0]->body
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			'COMMENTED',
 			$reviews_actual[0]->state
 		);

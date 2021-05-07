@@ -24,7 +24,7 @@ final class VipgociOptionsFileHandleTest extends TestCase {
 			$temp_file_name
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			$options['mytestoption'],
 			$temp_file_name
 		);

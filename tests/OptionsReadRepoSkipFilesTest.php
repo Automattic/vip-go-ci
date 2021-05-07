@@ -87,14 +87,14 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 			$this->options
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				'qqq-75x-n/plugins',
 			),
 			$this->options['phpcs-skip-folders']
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				'mmm-300/800',
 			),
@@ -120,14 +120,14 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 			$this->options
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				'qqq-75x-n/plugins',
 			),
 			$this->options['phpcs-skip-folders']
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				'mmm-300/800',
 			),
@@ -153,7 +153,7 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 			$this->options
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				'qqq-75x-n/plugins',
 				'bar-34/751-508x',
@@ -164,7 +164,7 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 			$this->options['phpcs-skip-folders']
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				'mmm-300/800',
 			),
@@ -188,14 +188,14 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 			$this->options
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				'qqq-75x-n/plugins',
 			),
 			$this->options['phpcs-skip-folders']
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				'mmm-300/800',
 			),
@@ -221,14 +221,14 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 			$this->options
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				'qqq-75x-n/plugins',
 			),
 			$this->options['phpcs-skip-folders']
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				'mmm-300/800',
 			),
@@ -254,14 +254,14 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 			$this->options
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				'qqq-75x-n/plugins',
 			),
 			$this->options['phpcs-skip-folders']
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				'mmm-300/800',
 				'foo-bar-1/750-500x',

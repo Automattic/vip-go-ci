@@ -94,6 +94,8 @@ function vipgoci_curl_headers( $ch, $header ) {
 
 /*
  * Set a few options for cURL that enhance security.
+ *
+ * @codeCoverageIgnore
  */
 function vipgoci_curl_set_security_options( $ch ) {
 	/*
@@ -155,8 +157,6 @@ function vipgoci_github_rate_limits_check(
  *
  * The results are not cached, as we want fresh data
  * every time.
- *
- * @codeCoverageIgnore
  */
 
 function vipgoci_github_rate_limit_usage(

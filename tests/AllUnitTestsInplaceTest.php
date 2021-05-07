@@ -58,7 +58,7 @@ final class AllUnitTestsInplaceTest extends TestCase {
 		/*
 		 * We should end with an empty array.
 		 */
-		$this->assertEquals(
+		$this->assertSame(
 			0,
 			count( $files_arr )
 		);

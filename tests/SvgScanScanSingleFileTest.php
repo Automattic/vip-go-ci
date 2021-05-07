@@ -136,7 +136,8 @@ final class SvgScanScanSingleFileTest extends TestCase {
 					)
 				),
 			),
-			
+
+			'file_issues_str'	=> '',
 			'temp_file_name'	=> $temp_file_name,
 		);
 
@@ -144,7 +145,7 @@ final class SvgScanScanSingleFileTest extends TestCase {
 			$expected_result['file_issues_arr_master']
 		);
 	
-		$this->assertEquals(
+		$this->assertSame(
 			$expected_result,
 			$ret
 		);

@@ -83,7 +83,7 @@ final class GitRepoSubmoduleGetUrlTest extends TestCase {
 			'folder1/vip-go-ci-repo'
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			'https://github.com/automattic/vip-go-ci',
 			$ret
 		);
@@ -93,7 +93,7 @@ final class GitRepoSubmoduleGetUrlTest extends TestCase {
 			'folder1/vip-go-ci-INVALID'
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			null,
 			$ret
 		);
@@ -103,7 +103,7 @@ final class GitRepoSubmoduleGetUrlTest extends TestCase {
 			'folder2/vip-go-ci-INVALID'
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			null,
 			$ret
 		);

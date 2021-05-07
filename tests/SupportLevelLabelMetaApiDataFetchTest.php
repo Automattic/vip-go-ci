@@ -68,7 +68,7 @@ final class SupportLevelLabelMetaApiDataFetchTest extends TestCase {
 			) )
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			$this->options['support-level'],
 			$repo_meta_data['data'][0][
 				$this->options['support-level-field-name']
@@ -86,7 +86,7 @@ final class SupportLevelLabelMetaApiDataFetchTest extends TestCase {
 			$this->options['repo-name']
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			$repo_meta_data,
 			$repo_meta_data_2
 		);

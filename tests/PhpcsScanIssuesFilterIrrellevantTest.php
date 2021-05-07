@@ -38,7 +38,7 @@ final class PhpcsScanIssuesFilterIrrellevantTest extends TestCase {
 			$file_relative_lines
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				array(
 					'message' => 'json_encode() is discouraged. Use wp_json_encode() instead.',

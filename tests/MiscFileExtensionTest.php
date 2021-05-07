@@ -15,7 +15,7 @@ final class MiscFileExtensionTest extends TestCase {
 			$file_name
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			'exe',
 			$file_extension
 		);
@@ -31,7 +31,7 @@ final class MiscFileExtensionTest extends TestCase {
 			$file_name
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			'exe',
 			$file_extension
 		);
@@ -47,7 +47,7 @@ final class MiscFileExtensionTest extends TestCase {
 			$file_name
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			null,
 			$file_extension
 		);

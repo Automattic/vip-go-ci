@@ -20,7 +20,7 @@ final class VipgociOptionsArrayHandleTest extends TestCase {
 			','
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				'myvalue',
 			),
@@ -44,7 +44,7 @@ final class VipgociOptionsArrayHandleTest extends TestCase {
 			','
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				'myvalue1',
 				'myvalue2',
@@ -70,7 +70,7 @@ final class VipgociOptionsArrayHandleTest extends TestCase {
 			','
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				'myvalue1',
 				'myvalue2',
@@ -97,7 +97,7 @@ final class VipgociOptionsArrayHandleTest extends TestCase {
 			false // do not strtolower()
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				'myvalue1',
 				'myvalue2',

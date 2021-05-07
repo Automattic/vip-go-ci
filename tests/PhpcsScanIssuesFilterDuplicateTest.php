@@ -46,7 +46,7 @@ final class PhpcsScanIssuesFilterDuplicateTest extends TestCase {
 			)
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				array(
 					'message' => 'json_encode() is discouraged. Use wp_json_encode() instead.',
@@ -117,7 +117,7 @@ final class PhpcsScanIssuesFilterDuplicateTest extends TestCase {
 			)
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				array(
 					'message' => 'json_encode() is discouraged. Use wp_json_encode() instead.',

@@ -25,7 +25,7 @@ final class GitHubOauthSignatureGetHmacSha1Test extends TestCase {
 			$oauth_keys
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			'wzbKZTPTrm5evZ/0ccfJ03pLTLg=',
 			$hmac_sha1
 		);

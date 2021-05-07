@@ -81,7 +81,7 @@ final class SupportLevelLabelRepoMetaApiDataMatchTest extends TestCase {
 
 		$option_key_no = null;
 
-		$this->assertEquals(
+		$this->assertSame(
 			false,
 
 			vipgoci_repo_meta_api_data_match(
@@ -91,7 +91,7 @@ final class SupportLevelLabelRepoMetaApiDataMatchTest extends TestCase {
 			)
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			null,
 			$option_key_no
 		);
@@ -113,7 +113,7 @@ final class SupportLevelLabelRepoMetaApiDataMatchTest extends TestCase {
 
 		$option_key_no = null;
 
-		$this->assertEquals(
+		$this->assertSame(
 			false,
 
 			vipgoci_repo_meta_api_data_match(
@@ -123,7 +123,7 @@ final class SupportLevelLabelRepoMetaApiDataMatchTest extends TestCase {
 			)
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			null,
 			$option_key_no
 		);
@@ -145,7 +145,7 @@ final class SupportLevelLabelRepoMetaApiDataMatchTest extends TestCase {
 
 		$option_key_no = null;
 
-		$this->assertEquals(
+		$this->assertSame(
 			false,
 
 			vipgoci_repo_meta_api_data_match(
@@ -155,7 +155,7 @@ final class SupportLevelLabelRepoMetaApiDataMatchTest extends TestCase {
 			)
 		);
 	
-		$this->assertEquals(
+		$this->assertSame(
 			null,
 			$option_key_no
 		);
@@ -177,7 +177,7 @@ final class SupportLevelLabelRepoMetaApiDataMatchTest extends TestCase {
 
 		$option_key_no = null;
 
-		$this->assertEquals(
+		$this->assertSame(
 			true,
 
 			vipgoci_repo_meta_api_data_match(
@@ -187,7 +187,7 @@ final class SupportLevelLabelRepoMetaApiDataMatchTest extends TestCase {
 			)
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			2,
 			$option_key_no
 		);

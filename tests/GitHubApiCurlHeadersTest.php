@@ -46,12 +46,12 @@ final class GitHubApiCurlHeadersTest extends TestCase {
 			null
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				'content-type'	=> array( 'text/plain' ),
 				'date'		=> array( 'Mon, 04 Mar 2019 16:43:35 GMT' ),
 				'location'	=> array( 'https://www.ruv.is/' ),
-				'status'	=> array( 200, 'OK' ),
+				'status'	=> array( '200', 'OK' ),
 			),
 			$actual_results
 		);
@@ -96,11 +96,11 @@ final class GitHubApiCurlHeadersTest extends TestCase {
 			null
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
+				'status'	=> array( '205' ),
 				'date'		=> array( 'Mon, 04 Mar 2020 16:43:35 GMT' ),
 				'location'	=> array( 'https://www.kernel.org/' ),
-				'status'	=> array( 205 ),
 			),
 			$actual_results
 		);

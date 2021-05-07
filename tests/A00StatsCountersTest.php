@@ -9,7 +9,7 @@ final class A00StatsCountersTest extends TestCase {
 	 * @covers ::vipgoci_counter_report
 	 */
 	function testCounterReport1() {
-		$this->assertEquals(
+		$this->assertSame(
 			vipgoci_counter_report(
 				'illegalaction',
 				'mycounter1',
@@ -18,7 +18,7 @@ final class A00StatsCountersTest extends TestCase {
 			false
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(),
 			vipgoci_counter_report(
 				VIPGOCI_COUNTERS_DUMP
@@ -30,7 +30,7 @@ final class A00StatsCountersTest extends TestCase {
 	 * @covers ::vipgoci_counter_report
 	 */
 	function testCounterReport2() {
-		$this->assertEquals(
+		$this->assertSame(
 			true,
 			vipgoci_counter_report(
 				VIPGOCI_COUNTERS_DO,
@@ -39,7 +39,7 @@ final class A00StatsCountersTest extends TestCase {
 			)
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			true,
 			vipgoci_counter_report(
 				VIPGOCI_COUNTERS_DO,
@@ -48,7 +48,7 @@ final class A00StatsCountersTest extends TestCase {
 			)
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				'mycounter2' => 101,
 			),
@@ -92,7 +92,7 @@ final class A00StatsCountersTest extends TestCase {
 		unset( $report['mycounter2'] );
 
 	
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				'github_pr_unique_issue_issues' => 3,
 			),

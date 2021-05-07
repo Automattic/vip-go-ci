@@ -23,7 +23,7 @@ final class VipgociOptionsPhpcsRuntimeSetTest extends TestCase {
 			'myphpcsruntimeoption',
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				'myphpcsruntimeoption' => array(
 					array(

@@ -16,7 +16,7 @@ final class MiscMarkdownCommentAddPagebreakTest extends TestCase {
 			'***'
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			'Here is my text. ' . "\n\r" . '***' . "\n\r",
 			$mycomment 
 		);

@@ -27,7 +27,7 @@ final class OptionsSensitiveCleanTest extends TestCase {
 		 * cleaning, should remain unchanged.
 		 */		
 
-		$this->assertEquals(
+		$this->assertSame(
 			$options,
 			$options_clean
 		);
@@ -49,7 +49,7 @@ final class OptionsSensitiveCleanTest extends TestCase {
 			$options
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				'a1'	=> '***',
 				'b1'	=> 'notsecret',
@@ -77,7 +77,7 @@ final class OptionsSensitiveCleanTest extends TestCase {
 			$options
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				'a1'	=> '***',
 				'b1'	=> 'notsecret',

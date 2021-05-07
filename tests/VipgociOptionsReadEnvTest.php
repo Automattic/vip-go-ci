@@ -63,13 +63,13 @@ final class VipgociOptionsReadEnvTest extends TestCase {
 		/*
 		 * Should successfully read from environment.
 		 */
-		$this->assertEquals(
+		$this->assertSame(
 			array(
-				'repo-owner' => 'repo-test-owner',
 				'repo-name' => 'repo-test-name',
 				'env-options' => array(
 					0 => 'repo-owner=PHP_ROWNER',
 				),
+				'repo-owner' => 'repo-test-owner',
 			),
 			$options
 		);
@@ -111,7 +111,7 @@ final class VipgociOptionsReadEnvTest extends TestCase {
 		/*
 		 * Should not have read from environment.
 		 */
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				'repo-name' => 'repo-test-name',
 				'env-options' => array(
@@ -159,7 +159,7 @@ final class VipgociOptionsReadEnvTest extends TestCase {
 		/*
 		 * Should not have read from environment.
 		 */
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				'repo-name' => 'repo-test-name',
 				'env-options' => array(
@@ -205,7 +205,7 @@ final class VipgociOptionsReadEnvTest extends TestCase {
 		/*
 		 * Should not have read from environment.
 		 */
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				'repo-name' => 'repo-test-name',
 				'env-options' => array(
@@ -252,7 +252,7 @@ final class VipgociOptionsReadEnvTest extends TestCase {
 		/*
 		 * Should not have read from environment.
 		 */
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				'repo-name' => 'repo-test-name',
 				'env-options' => array(
@@ -299,7 +299,7 @@ final class VipgociOptionsReadEnvTest extends TestCase {
 		/*
 		 * Should not have read from environment.
 		 */
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				'repo-name' => 'repo-test-name',
 				'env-options' => array(
@@ -346,14 +346,14 @@ final class VipgociOptionsReadEnvTest extends TestCase {
 		/*
 		 * Should not have read from environment.
 		 */
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				'repo-name' => 'repo-test-name',
-				'repo-owner' => 'repo-test-owner2',
 				'env-options' => array(
 					0 => 'repo-owner=PHP_ROWNER',
 					1 => 'repo-owner=PHP_ROWNER2',
 				),
+				'repo-owner' => 'repo-test-owner2',
 			),
 			$options
 		);

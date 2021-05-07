@@ -46,7 +46,7 @@ final class PhpcsScanPossiblyUseNewStandardFileTest extends TestCase {
 			$this->options['phpcs-standard-file']
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			$this->original_standard,
 			$this->options['phpcs-standard']
 		);

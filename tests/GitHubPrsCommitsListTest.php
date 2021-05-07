@@ -78,7 +78,7 @@ final class GitHubPrsCommitsListTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				$this->options['commit-test-repo-prs-commits-list-1']
 			),

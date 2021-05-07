@@ -72,12 +72,12 @@ final class GitHubLabelsFetchTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			'enhancement',
 			$labels[0]->name
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			'a2eeef',
 			$labels[0]->color
 		);

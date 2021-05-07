@@ -60,7 +60,7 @@ final class LintLintGetIssuesTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 			),
 			$lint_issues_parsed
@@ -113,7 +113,7 @@ final class LintLintGetIssuesTest extends TestCase {
 				$lint_issues_parsed[3][0]['message']
 			);
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				3 => array(
 					array(

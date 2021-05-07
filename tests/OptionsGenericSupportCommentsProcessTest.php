@@ -26,7 +26,7 @@ final class OptionsGenericSupportCommentsProcessTest extends TestCase {
 			'boolean'
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				1	=> false,
 				5	=> true,
@@ -51,7 +51,7 @@ final class OptionsGenericSupportCommentsProcessTest extends TestCase {
 			false
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				3	=> 'bar',
 				6	=> 'foo',
@@ -78,7 +78,7 @@ final class OptionsGenericSupportCommentsProcessTest extends TestCase {
 			true
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				3	=> 'bar',
 				6	=> 'foo',
@@ -105,7 +105,7 @@ final class OptionsGenericSupportCommentsProcessTest extends TestCase {
 			false
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				3	=> array(
 					'foo', 'bar', 'test'
@@ -143,7 +143,7 @@ final class OptionsGenericSupportCommentsProcessTest extends TestCase {
 			true
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				3	=> array(
 					'foo', 'bar', 'test'

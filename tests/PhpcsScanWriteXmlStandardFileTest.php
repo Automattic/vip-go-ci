@@ -48,7 +48,7 @@ final class PhpcsScanWriteXmlStandardFileTest extends TestCase {
 			$xml_content
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			'<?xml version="1.0" encoding="UTF-8"?>' .
 				'<ruleset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="PHP_CodeSniffer" xsi:noNamespaceSchemaLocation="phpcs.xsd">' .
 				'<description>Custom coding standard</description>' .

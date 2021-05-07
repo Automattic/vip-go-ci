@@ -18,7 +18,7 @@ final class VipgociOptionsBoolHandleTest extends TestCase {
 			'false'
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			false,
 			$options['mytestoption']
 		);
@@ -37,7 +37,7 @@ final class VipgociOptionsBoolHandleTest extends TestCase {
 			false
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			false,
 			$options['mytestoption']
 		);
@@ -57,7 +57,7 @@ final class VipgociOptionsBoolHandleTest extends TestCase {
 			true
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			true,
 			$options['mytestoption']
 		);
