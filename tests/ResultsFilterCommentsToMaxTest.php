@@ -104,6 +104,16 @@ final class ResultsFilterCommentsToMaxTest extends TestCase {
 	 * @covers ::vipgoci_results_filter_comments_to_max
 	 */
 	public function testResultsFilterCommentsToMax1() {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( ),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
 		/*
 		 * Test with max 1 comments allowed.
 		 */
@@ -149,6 +159,16 @@ final class ResultsFilterCommentsToMaxTest extends TestCase {
 	 * @covers ::vipgoci_results_filter_comments_to_max
 	 */
 	public function testResultsFilterCommentsToMax2() {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( ),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
 		/*
 		 * Exactly one more comment allowed.
 		 */
@@ -157,8 +177,8 @@ final class ResultsFilterCommentsToMaxTest extends TestCase {
 				$this->options,
 				$this->options['pr-test-github-pr-results-max'],
 				array(
-					'login'                 => 'myself',
-					'comments_active'       => true,
+					'login'			=> 'myself',
+					'comments_active'	=> true,
 				)
 			)
 		);
@@ -220,6 +240,16 @@ final class ResultsFilterCommentsToMaxTest extends TestCase {
 	 * @covers ::vipgoci_results_filter_comments_to_max
 	 */
 	public function testResultsFilterCommentsToMax3() {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( ),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
 		/*
 		 * Max 100 allowed
 		 */
