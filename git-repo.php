@@ -808,14 +808,25 @@ function vipgoci_gitrepo_submodule_get_url(
  * Fetch diff from git repository, unprocessed.
  * Results are not cached.
  */
-function vipgoci_gitrepo_diffs_fetch_uncached(
+function vipgoci_gitrepo_diffs_fetch_unfiltered(
 	string $local_git_repo,
 	string $commit_id_a,
 	string $commit_id_b
-): array {
+): ?array {
+
+	/*
+	 * Check for a cached copy of the diffs
+	 */
+	$cached_id = array(
+		__FUNCTION__, $local_git_repo, $commit_id_a, $commit_id_b
+	);
+
+	$cached_data = vipgoci_cache( $cached_id );
+
 	vipgoci_log(
 		'Fetching diffs between two commits ' .
-			'directly from git repository (uncached)',
+			'from git repository' .
+			vipgoci_cached_indication_str( $cached_data ),
 
 		array(
 			'local_git_repo'	=> $local_git_repo,
@@ -824,12 +835,25 @@ function vipgoci_gitrepo_diffs_fetch_uncached(
 		)
 	);
 
+	/*
+	 * If cached, return the data.
+	 */
+
+	if ( false !== $cached_data ) {
+		return $cached_data;
+	}
+
+	/*
+	 * No cached data. Run git to get the data.
+	 *
+	 * Make sure we use a git diff branch1...branch2
+	 * as that is what GitHub uses: https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/about-comparing-branches-in-pull-requests#three-dot-and-two-dot-git-diff-comparisons
+	 */
 	$git_diff_cmd = sprintf(
-		'%s -C %s diff %s %s 2>&1',
+		'%s -C %s diff %s 2>&1',
 		escapeshellcmd( 'git' ),
 		escapeshellarg( $local_git_repo ),
-		escapeshellarg( $commit_id_a ),
-		escapeshellarg( $commit_id_b )
+		escapeshellarg( $commit_id_a . '...'. $commit_id_b )
 	);
 
 	vipgoci_log(
@@ -840,7 +864,22 @@ function vipgoci_gitrepo_diffs_fetch_uncached(
 	);
 
 	/* Actually execute */
-	$git_diff_results = vipgoci_runtime_measure_shell_exec( $git_diff_cmd, 'git_cli' );
+	$git_diff_results = vipgoci_runtime_measure_shell_exec(
+		$git_diff_cmd,
+		'git_cli'
+	);
+
+	/*
+	 * Check if there are any problems,
+	 * return with error if there are any.
+	 */
+
+	if ( strpos(
+		$git_diff_results,
+		'fatal: '
+	) === 0 ) {
+		return null;
+	}
 
 	/*
 	 * Prepare results array.
@@ -1192,18 +1231,36 @@ function vipgoci_gitrepo_diffs_fetch_uncached(
 	}
 
 	vipgoci_log(
-		'Fetched git diff from local git repository'
+		'Fetched git diff from local git repository',
+		array(
+			'statistics'		=> $diff_results['statistics'],
+			'files_partial_20_max'	=> array_slice(
+				array_keys(
+					$diff_results['files']
+				),
+				0,
+				20
+			)
+		)
 	);
+
+	vipgoci_cache( $cached_id, $diff_results );
 
 	return $diff_results;
 }
 
 /*
  * Fetch diffs between two commits,
- * cache results.
+ * filter the results if requested.
+ *
+ * Needs arguments both for local git 
+ * repo and GitHub API as fallback.
  */
-function vipgoci_gitrepo_diffs_fetch(
+function vipgoci_git_diffs_fetch(
 	string $local_git_repo,
+	string $repo_owner,
+	string $repo_name,
+	string $github_token,
 	string $commit_id_a,
 	string $commit_id_b,
 	bool $renamed_files_also = false,
@@ -1213,48 +1270,96 @@ function vipgoci_gitrepo_diffs_fetch(
 ): array {
 
 	/*
-	 * Check for a cached copy of the diffs
+	 * Check if we have a preference whether to
+	 * use local git repository or GitHub API.
 	 */
 	$cached_id = array(
-		__FUNCTION__, $local_git_repo, $commit_id_a, $commit_id_b
+		__FUNCTION__, $local_git_repo, $repo_owner, $repo_name,
+		$commit_id_a, $commit_id_b
 	);
-
-	$cached_data = vipgoci_cache( $cached_id );
+	
+	$github_api_preferred = vipgoci_cache( $cached_id );
 
 	vipgoci_log(
-		'Fetching diffs between two commits ' .
-			'from git repository' .
-			vipgoci_cached_indication_str( $cached_data ),
+		'Fetching diffs between two commits',
 
 		array(
 			'local_git_repo'	=> $local_git_repo,
+			'repo_owner'		=> $repo_owner,
+			'repo_name'		=> $repo_name,
 			'commit_id_a'		=> $commit_id_a,
 			'commit_id_b'		=> $commit_id_b,
+			'github_api_preferred'	=> $github_api_preferred,
 		)
 	);
 
-	if ( false === $cached_data ) {
-		/*
-		 * Nothing cached; look in git repository.
-		 */
-		$diff_results = vipgoci_gitrepo_diffs_fetch_uncached(
+	$diff_results = null;
+
+	/*
+	 * If there is no preference, use local git repository
+	 * to fetch diff.
+	 */
+	if ( false === $github_api_preferred ) {
+		$diff_results = vipgoci_gitrepo_diffs_fetch_unfiltered(
 			$local_git_repo,
 			$commit_id_a,
 			$commit_id_b
 		);
-
-		/*
-		 * Save a copy in cache.
-		 */
-		vipgoci_cache( $cached_id, $diff_results );
+	
+		$diff_results_data_source =
+			VIPGOCI_GIT_DIFF_DATA_SOURCE_GIT_REPO;
 	}
 
-	else {
-		$diff_results = $cached_data;
+	if ( null === $diff_results ) {
+		/*
+		 * Problems with getting diff from local git repo -- or preference
+		 * for GitHub API, so use that.
+		 *
+		 * This can happen for example:
+		 * - When only part of the repository was fetched
+		 * - When the commit-ID refers to a repository 
+		 *   outside of this one, for example when a Pull-Request
+		 *   refers to a forked repository.
+		 * - When there is an I/O error with the local filesystem.
+		 * - Previously, we had a problem with local git repo and
+		 *   and saved info in cache that GitHub API should be used.
+		 */
+
+		if ( false === $github_api_preferred ) {
+			vipgoci_log(
+				'Requesting diff from GitHub API, ' .
+					'issues with local git repo',
+				array(
+					'repo-owner'	=> $repo_owner,
+					'repo-name'	=> $repo_name,
+					'commit_id_a'	=> $commit_id_a,
+					'commit_id_b'	=> $commit_id_b,
+				),
+				0,
+				true
+			);
+		}
+
+		$diff_results = vipgoci_github_diffs_fetch_unfiltered(
+			$repo_owner,
+			$repo_name,
+			$github_token,
+			$commit_id_a,
+			$commit_id_b
+		);
+
+		$diff_results_data_source =
+			VIPGOCI_GIT_DIFF_DATA_SOURCE_GITHUB_API;
+
+		vipgoci_cache(
+			$cached_id,
+			true
+		);
 	}
 
 	/*
-	 * Loop through all files, save patch in an array
+	 * Loop through all files, save patch in an array,
+	 * along with statistics, note where the data came from.
 	 */
 
 	$results = array(
@@ -1265,6 +1370,7 @@ function vipgoci_gitrepo_diffs_fetch(
 		),
 
 		'files'		=> array(),
+		'data_source'	=> $diff_results_data_source,
 	);
 
 	foreach( $diff_results['files'] as $file_item ) {

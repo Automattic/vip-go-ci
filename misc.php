@@ -204,22 +204,36 @@ function vipgoci_convert_string_to_type( $str ) {
 
 function vipgoci_patch_changed_lines(
 	string $local_git_repo,
+	string $repo_owner,
+	string $repo_name,
+	string $github_token,
 	string $pr_base_sha,
 	string $commit_id,
 	string $file_name
-): array {
-
+): ?array {
 	/*
 	 * Fetch patch for all files of the Pull-Request
 	 */
-	$patch_arr = vipgoci_gitrepo_diffs_fetch(
+	$patch_arr = vipgoci_git_diffs_fetch(
 		$local_git_repo,
+		$repo_owner,
+		$repo_name,
+		$github_token,
 		$pr_base_sha,
 		$commit_id,
 		false,
 		false,
 		false
 	);
+
+	/*
+	 * No such file found, return with error
+	 */
+	if ( ! isset(
+		$patch_arr['files'][ $file_name ]
+	) ) {
+		return null;
+	}
 
 	/*
 	 * Get patch for the relevant file

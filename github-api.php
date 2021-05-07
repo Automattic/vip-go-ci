@@ -667,7 +667,10 @@ function vipgoci_github_fetch_url(
 			'vipgoci_curl_headers'
 		);
 
-		if ( is_string( $github_token ) ) {
+		if (
+			( is_string( $github_token ) ) &&
+			( strlen( $github_token ) > 0 )
+		) {
 			curl_setopt(
 				$ch,
 				CURLOPT_HTTPHEADER,
@@ -988,6 +991,144 @@ function vipgoci_github_put_url(
 	} while ( $retry_req == true );
 
 	return $ret_val;
+}
+
+/*
+ * Fetch diffs between two commits from GitHub API,
+ * cache results.
+ */
+function vipgoci_github_diffs_fetch_unfiltered(
+	string $repo_owner,
+	string $repo_name,
+	string $github_token,
+	string $commit_id_a,
+	string $commit_id_b
+): ?array {
+
+	/*
+	 * Check for a cached copy of the diffs
+	 */
+	$cached_id = array(
+		__FUNCTION__, $repo_owner, $repo_name,
+		$commit_id_a, $commit_id_b
+	);
+
+	$cached_data = vipgoci_cache( $cached_id );
+
+	vipgoci_log(
+		'Fetching diffs between two commits ' .
+			'from GitHub' .
+			vipgoci_cached_indication_str( $cached_data ),
+
+		array(
+			'repo_owner'	=> $repo_owner,
+			'repo_name'	=> $repo_name,
+			'commit_id_a'	=> $commit_id_a,
+			'commit_id_b'	=> $commit_id_b,
+		)
+	);
+
+	if ( false !== $cached_data ) {
+		return $cached_data;
+	}
+
+	/*
+	 * Nothing cached; ask GitHub.
+	 */
+
+	$github_url =
+		VIPGOCI_GITHUB_BASE_URL . '/' .
+		'repos/' .
+		rawurlencode( $repo_owner ) . '/' .
+		rawurlencode( $repo_name ) . '/' .
+		'compare/' .
+		rawurlencode( $commit_id_a ) .
+		'...' .
+		rawurlencode( $commit_id_b );
+
+	// FIXME: Error-handling
+	$resp_raw = json_decode(
+		vipgoci_github_fetch_url(
+			$github_url,
+			$github_token
+		),
+		true
+	);
+
+	/*
+	 * If no "files" in array, return with error.
+	 */
+	if ( ! isset( $resp_raw['files'] ) ) {
+		return null;
+	}
+
+	/*
+	 * Prepare results array.
+	 */
+	$diff_results = array(
+		'files'         => array(),
+		'statistics'    => array(
+			VIPGOCI_GIT_DIFF_CALC_CHANGES['+']      => 0,
+			VIPGOCI_GIT_DIFF_CALC_CHANGES['-']      => 0,
+			'changes'                               => 0,
+		),
+	);
+
+	foreach( array_values( $resp_raw['files'] ) as $file_item ) {
+		$diff_results['files'][
+			$file_item['filename']
+		] = array(
+			'filename'	=> $file_item['filename'],
+			'patch'		=> (
+				isset( $file_item['patch'] ) ?
+				$file_item['patch'] :
+				''
+			),
+			'status'	=> $file_item['status'],
+			'additions'	=> $file_item['additions'],
+			'deletions'	=> $file_item['deletions'],
+			'changes'	=> $file_item['changes'],
+		);
+
+		if ( isset( $file_item['previous_filename'] ) ) {
+			$diff_results['files'][
+				$file_item['filename']
+			]['previous_filename'] =
+				$file_item['previous_filename'];
+		}
+
+		$diff_results['statistics']
+			[ VIPGOCI_GIT_DIFF_CALC_CHANGES['+'] ] +=
+				$file_item[ VIPGOCI_GIT_DIFF_CALC_CHANGES['+'] ];
+
+		$diff_results['statistics']
+			[ VIPGOCI_GIT_DIFF_CALC_CHANGES['-'] ] +=
+				$file_item[ VIPGOCI_GIT_DIFF_CALC_CHANGES['-'] ];
+
+		$diff_results['statistics']['changes'] +=
+			$file_item['changes'];
+	}
+
+	/*
+	 * Save a copy in cache.
+	 */
+	vipgoci_cache( $cached_id, $diff_results );
+
+	vipgoci_log(
+		'Fetched git diff from GitHub API',
+		array(
+			'statistics'            => $diff_results['statistics'],
+			'files_partial_20_max'  => array_slice(
+				array_keys(
+					$diff_results['files']
+				),
+				0,
+				20
+			)
+		)
+	);
+
+	return $diff_results;
 }
 
 /*

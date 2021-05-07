@@ -43,8 +43,11 @@ function vipgoci_ap_file_types(
 
 
 	foreach ( $prs_implicated as $pr_item ) {
-		$pr_diff = vipgoci_gitrepo_diffs_fetch(
+		$pr_diff = vipgoci_git_diffs_fetch(
 			$options['local-git-repo'],
+			$options['repo-owner'],
+			$options['repo-name'],
+			$options['token'],
 			$pr_item->base->sha,
 			$options['commit'],
 			true, // renamed files included

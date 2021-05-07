@@ -391,8 +391,11 @@ function vipgoci_phpcs_scan_commit(
 		 * in this Pull-Request.
 		 */
 
-		$pr_item_files_tmp = vipgoci_gitrepo_diffs_fetch(
+		$pr_item_files_tmp = vipgoci_git_diffs_fetch(
 			$options['local-git-repo'],
+			$options['repo-owner'],
+			$options['repo-name'],
+			$options['token'],
 			$pr_item->base->sha,
 			$commit_id,
 			false, // exclude renamed files
@@ -781,10 +784,34 @@ function vipgoci_phpcs_scan_commit(
 			 */
 			$file_changed_lines = vipgoci_patch_changed_lines(
 				$options['local-git-repo'],
+				$options['repo-owner'],
+				$options['repo-name'],
+				$options['token'],
 				$pr_item->base->sha,
 				$commit_id,
 				$file_name
 			);
+
+			/*
+			 * If no changed lines were available, log
+			 * and continue.
+			 */
+			if ( null === $file_changed_lines ) {
+				vipgoci_log(
+					'Unable to fetch changed lines for file, ' .
+						'skipping scanning',
+					array(
+						'local-git-repo'	=> $options['local-git-repo'],
+						'repo-owner'		=> $options['repo-owner'],
+						'repo-name'		=> $options['repo-name'],
+						'base_sha'		=> $pr_item->base->sha,
+						'commit_id'		=> $commit_id,
+						'file_name'		=> $file_name,
+					)
+				);
+
+				continue;
+			}
 
 			$file_relative_lines = @array_flip(
 				$file_changed_lines
