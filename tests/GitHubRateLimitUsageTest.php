@@ -49,17 +49,29 @@ final class GitHubRateLimitUsageTest extends TestCase {
 			isset(
 				$gh_result->resources->core->used
 			)
+			&&
+			(
+				is_numeric( $gh_result->resources->core->used )
+			)
 		);
 	
 		$this->assertTrue(
 			isset(
 				$gh_result->resources->core->limit
 			)
+			&&
+			(
+				is_numeric( $gh_result->resources->core->limit )
+			)
 		);
 
 		$this->assertTrue(
 			isset(
 				$gh_result->resources->core->remaining
+			)
+			&&
+			(
+				is_numeric( $gh_result->resources->core->remaining )
 			)
 		);
 	}
