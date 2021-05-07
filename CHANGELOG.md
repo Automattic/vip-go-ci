@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.4]https://github.com/Automattic/vip-go-ci/releases/tag/1.0.4) - 2021-05-10
+
+### Fixed
+
+- [#166](https://github.com/Automattic/vip-go-ci/pull/166): Resolve issues with new `git diff` mechanism
+- [#167](https://github.com/Automattic/vip-go-ci/pull/167): Add more unit-tests, switch to assertSame() usage
+
+## [1.0.3]https://github.com/Automattic/vip-go-ci/releases/tag/1.0.3) - 2021-05-03
+
+### Temporary release, due to problems
+
 ## [1.0.2](https://github.com/Automattic/vip-go-ci/releases/tag/1.0.2) - 2021-05-03
 
 ### Re-release to fix issues with latest-release.php, see b057081
