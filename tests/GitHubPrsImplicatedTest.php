@@ -82,17 +82,17 @@ final class GitHubPrsImplicatedTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			259078544,
 			$prs_implicated[9]->id
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			'80ebd6d65db88e87665b6ff1aa045f68d17ddeb7',
 			$prs_implicated[9]->merge_commit_sha
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			'open',
 			$prs_implicated[9]->state
 		);
@@ -142,22 +142,22 @@ final class GitHubPrsImplicatedTest extends TestCase {
 		/*
 		 * Verify non-draft PR.
 		 */
-		$this->assertEquals(
+		$this->assertSame(
 			'open',
 			$prs_implicated[33]->state
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			463586588,
 			$prs_implicated[33]->id
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			'ac10d1f29e64504d7741cd8ca22981c426c26e9a',
 			$prs_implicated[33]->base->sha
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			false,
 			$prs_implicated[33]->draft
 		);
@@ -165,22 +165,22 @@ final class GitHubPrsImplicatedTest extends TestCase {
 		/*
 		 * Verify draft PR.
 		 */
-		$this->assertEquals(
+		$this->assertSame(
 			'open',
 			$prs_implicated[34]->state
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			463587649,
 			$prs_implicated[34]->id
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			'027de6d804e1d40dbe1b13a3ede7cfa758787b85',
 			$prs_implicated[34]->base->sha
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			true,
 			$prs_implicated[34]->draft
 		);
@@ -203,7 +203,7 @@ final class GitHubPrsImplicatedTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			$prs_implicated,
 			$prs_implicated_2
 		);
@@ -252,22 +252,22 @@ final class GitHubPrsImplicatedTest extends TestCase {
 		/*
 		 * Verify non-draft PR.
 		 */
-		$this->assertEquals(
+		$this->assertSame(
 			'open',
 			$prs_implicated[33]->state
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			463586588,
 			$prs_implicated[33]->id
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			'ac10d1f29e64504d7741cd8ca22981c426c26e9a',
 			$prs_implicated[33]->base->sha
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			false,
 			$prs_implicated[33]->draft
 		);
@@ -290,7 +290,7 @@ final class GitHubPrsImplicatedTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			$prs_implicated,
 			$prs_implicated_2
 		);

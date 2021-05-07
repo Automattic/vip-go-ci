@@ -82,7 +82,7 @@ final class GitRepoBranchGetTest extends TestCase {
 			$this->options['local-git-repo']
 		);
 		
-		$this->assertEquals(
+		$this->assertSame(
 			$this->options['commit-test-repo-branch'],
 			$ret
 		);

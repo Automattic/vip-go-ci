@@ -90,7 +90,7 @@ final class GitRepoSubmoduleFilePathGetTest extends TestCase {
 			'folder1/vip-go-ci-repo/vip-go-ci.php'
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				'commit_id'		=> 'a0dba40108fe19f028dbd5970022281cc2cabf81',
 				'submodule_path'	=> 'folder1/vip-go-ci-repo',
@@ -105,7 +105,7 @@ final class GitRepoSubmoduleFilePathGetTest extends TestCase {
 			'vip-go-ci/notexistingfile.php'
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			null,
 			$submodule_file_info
 		);
@@ -116,7 +116,7 @@ final class GitRepoSubmoduleFilePathGetTest extends TestCase {
 			'vip-go-INVALID/vip-go-ci.php'
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			null,
 			$submodule_file_info
 		);
@@ -127,7 +127,7 @@ final class GitRepoSubmoduleFilePathGetTest extends TestCase {
 			'README.md'
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			null,
 			$submodule_file_info
 		);

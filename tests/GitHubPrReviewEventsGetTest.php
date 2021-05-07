@@ -100,7 +100,7 @@ final class GitHubPrReviewEventsGetTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			$issue_events,
 			$issue_events_cached
 		);
@@ -156,12 +156,12 @@ final class GitHubPrReviewEventsGetTest extends TestCase {
 		);
 
 		foreach ( $issue_events as $issue_event ) {
-			$this->assertEquals(
+			$this->assertSame(
 				$this->options['test-github-pr-reviews-event-get-username'],
 				$issue_event->actor->login
 			);
 
-			$this->assertEquals(
+			$this->assertSame(
 				'labeled',
 				$issue_event->event
 			);
@@ -188,7 +188,7 @@ final class GitHubPrReviewEventsGetTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			$issue_events,
 			$issue_events_cached
 		);
@@ -238,7 +238,7 @@ final class GitHubPrReviewEventsGetTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 	
-		$this->assertEquals(
+		$this->assertSame(
 			$issue_events,
 			$issue_events_cached
 		);

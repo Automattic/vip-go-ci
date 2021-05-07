@@ -9,7 +9,7 @@ final class StatsRunTimeMeasureTest extends TestCase {
 	 * @covers ::vipgoci_runtime_measure
 	 */
 	function testRuntimeMeasure1() {
-		return $this->assertEquals(
+		return $this->assertSame(
 			false,
 			vipgoci_runtime_measure( 'illegalaction', 'mytimer1' )
 		);
@@ -19,7 +19,7 @@ final class StatsRunTimeMeasureTest extends TestCase {
 	 * @covers ::vipgoci_runtime_measure
 	 */
 	function testRuntimeMeasure2() {
-		return $this->assertEquals(
+		return $this->assertSame(
 			false,
 			vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'mytimer2' )
 		);
@@ -29,7 +29,7 @@ final class StatsRunTimeMeasureTest extends TestCase {
 	 * @covers ::vipgoci_runtime_measure
 	 */
 	function testRuntimeMeasure3() {
-		$this->assertEquals(
+		$this->assertSame(
 			true,
 			vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'mytimer3' )
 		);
@@ -55,7 +55,7 @@ final class StatsRunTimeMeasureTest extends TestCase {
 	 * @covers ::vipgoci_runtime_measure
 	 */
 	function testRuntimeMeasure4() {
-		$this->assertEquals(
+		$this->assertSame(
 			true,
 			vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'mytimer4' )
 		);

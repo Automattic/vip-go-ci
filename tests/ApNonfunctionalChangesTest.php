@@ -87,7 +87,7 @@ final class ApNonfunctionalChangesTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				'file1.php'	=> 'autoapprove-nonfunctional-changes',
 				'file2.php'	=> 'autoapprove-nonfunctional-changes',

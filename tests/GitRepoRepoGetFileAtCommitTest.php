@@ -88,7 +88,7 @@ final class GitRepoRepoGetFileAtCommitTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			'04f338f924cabbe47994043660304e58a5a3f78f',
 			sha1( $file_content )
 		);
@@ -104,7 +104,7 @@ final class GitRepoRepoGetFileAtCommitTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			'c4587f2e42de3ab1ecdf51c993a3135bb1314b68',
 			sha1( $file_content )
 		);
@@ -125,7 +125,7 @@ final class GitRepoRepoGetFileAtCommitTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			'04f338f924cabbe47994043660304e58a5a3f78f',
 			sha1( $file_content )
 		);
@@ -141,7 +141,7 @@ final class GitRepoRepoGetFileAtCommitTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			'f8c824b9bc01a5655e77a10a3f2e5fa704a58f9c',
 			sha1( $file_content )
 		);

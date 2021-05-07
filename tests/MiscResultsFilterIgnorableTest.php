@@ -39,7 +39,7 @@ final class MiscResultsFilterIgnorableTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			$results_desired,
 			json_encode(
 				$results_altered

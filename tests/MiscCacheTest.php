@@ -45,12 +45,12 @@ final class MiscCacheTest extends TestCase {
 			$cache_id2
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			$r1,
 			$r1_retrieved
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			$r2,
 			$r2_retrieved
 		);
@@ -98,7 +98,7 @@ final class MiscCacheTest extends TestCase {
 			$cache_id
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			'mytext',
 			$cached_data
 		);
@@ -115,7 +115,7 @@ final class MiscCacheTest extends TestCase {
 			$cache_id
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			false,
 			$cached_data
 		);

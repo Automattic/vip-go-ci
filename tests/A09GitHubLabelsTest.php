@@ -82,12 +82,12 @@ final class A09GitHubLabelsTest extends TestCase {
 
 		$labels_after = $this->labels_get();
 
-		$this->assertEquals(
+		$this->assertSame(
 			-1,
 			count( $labels_before ) - count( $labels_after )
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			'Label for testing',
 			$labels_after[0]->name
 		);
@@ -123,7 +123,7 @@ final class A09GitHubLabelsTest extends TestCase {
 
 		$labels_after = $this->labels_get();
 
-		$this->assertEquals(
+		$this->assertSame(
 			1,
 			count( $labels_before ) - count( $labels_after )
 		);

@@ -143,7 +143,7 @@ final class SupportLevelLabelSetTest extends TestCase {
 
 		$support_labels_cnt = $this->_findSupportLabelstoPrs();
 
-		$this->assertEquals(
+		$this->assertSame(
 			0,
 			$support_labels_cnt
 		);
@@ -182,7 +182,7 @@ final class SupportLevelLabelSetTest extends TestCase {
 		 */
 		$support_labels_cnt = $this->_findSupportLabelstoPrs();
 
-		$this->assertEquals(
+		$this->assertSame(
 			0,
 			$support_labels_cnt
 		);

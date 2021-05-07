@@ -74,32 +74,32 @@ final class GitHubPrReviewsCommentsGetTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			1,
 			count( array_keys( $prs_comments ) )
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			212601504,
 			$prs_comments['file1.php:3'][0]->pull_request_review_id
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			264037556,
 			$prs_comments['file1.php:3'][0]->id
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			'file1.php',
 			$prs_comments['file1.php:3'][0]->path
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			3,
 			$prs_comments['file1.php:3'][0]->position
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			'All output should be escaped.',
 			$prs_comments['file1.php:3'][0]->body
 		);

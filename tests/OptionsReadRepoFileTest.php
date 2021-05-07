@@ -121,7 +121,7 @@ final class OptionsReadRepoFileTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			-100, // Should remain unchanged, no option file exists.
 			$this->options['phpcs-severity']
 		);
@@ -169,7 +169,7 @@ final class OptionsReadRepoFileTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			1, // Options file should change this to 1
 			$this->options['phpcs-severity']
 		);
@@ -220,7 +220,7 @@ final class OptionsReadRepoFileTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			-100, // Should remain unchanged, feature is turned off.
 			$this->options['phpcs-severity']
 		);
@@ -274,7 +274,7 @@ final class OptionsReadRepoFileTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			-100, // Should remain unchanged, as checks failed
 			$this->options['phpcs-severity']
 		);
@@ -322,7 +322,7 @@ final class OptionsReadRepoFileTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			-100, // Should remain unchanged
 			$this->options['phpcs-severity']
 		);
@@ -371,7 +371,7 @@ final class OptionsReadRepoFileTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			-100, // Should remain unchanged
 			$this->options['phpcs-severity']
 		);
@@ -420,7 +420,7 @@ final class OptionsReadRepoFileTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			false, // Should remain unchanged
 			$this->options['post-generic-pr-support-comments']
 		);
@@ -471,7 +471,7 @@ final class OptionsReadRepoFileTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			false, // Should not have changed
 			$this->options['post-generic-pr-support-comments']
 		);
@@ -521,7 +521,7 @@ final class OptionsReadRepoFileTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			true, // Should have changed, repo setting is true
 			$this->options['post-generic-pr-support-comments']
 		);
@@ -573,7 +573,7 @@ final class OptionsReadRepoFileTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				'MySniff1',
 				'MySniff2',
@@ -630,7 +630,7 @@ final class OptionsReadRepoFileTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				'OtherSniff1',
 				'OtherSniff2',
@@ -694,17 +694,17 @@ final class OptionsReadRepoFileTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			true, // Should have changed, repo setting is true
 			$this->options['post-generic-pr-support-comments']
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			-100, // Should not have changed, repo setting is set, but cannot be set
 			$this->options['phpcs-severity']
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			array( 'MySniff.MySniffName' ), // Should not have changed, is not configured
 			$this->options['phpcs-sniffs-exclude']
 		);

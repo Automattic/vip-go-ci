@@ -138,7 +138,7 @@ final class PhpcsScanScanCommitTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				8 => array(
 					array(
@@ -194,7 +194,7 @@ final class PhpcsScanScanCommitTest extends TestCase {
 			$issues_submit
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				8 => array(
 					'error' => 3,
@@ -258,13 +258,13 @@ final class PhpcsScanScanCommitTest extends TestCase {
 		 * we should have initialised statistics
 		 * for both. Make sure it is so.
 		 */
-		$this->assertEquals(
+		$this->assertSame(
 			array(
-				21 => array(
+				22 => array(
 					'error' => 0,
 				),
 
-				22 => array(
+				21 => array(
 					'error' => 0,
 				),
 			),
@@ -295,7 +295,7 @@ final class PhpcsScanScanCommitTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				21 => array(
 					array(
@@ -340,7 +340,7 @@ final class PhpcsScanScanCommitTest extends TestCase {
 			$issues_submit
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				21 => array(
 					'error' => 2,
@@ -435,7 +435,7 @@ final class PhpcsScanScanCommitTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				30 => array(
 					array(
@@ -512,7 +512,7 @@ final class PhpcsScanScanCommitTest extends TestCase {
 			$issues_submit
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				30 => array(
 					'error' => 3,
@@ -614,7 +614,7 @@ final class PhpcsScanScanCommitTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				30 => array(
 					/*
@@ -642,11 +642,11 @@ final class PhpcsScanScanCommitTest extends TestCase {
 			$issues_submit
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				30 => array(
-					'error' => 0,
 					'warning' => 1,
+					'error' => 0,
 				)
 			),
 			$issues_stats
@@ -794,7 +794,7 @@ final class PhpcsScanScanCommitTest extends TestCase {
 			$tmp_standard_dir
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				30 => array(
 					array(
@@ -882,7 +882,7 @@ final class PhpcsScanScanCommitTest extends TestCase {
 			$issues_submit
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				30 => array(
 					'error' => 4,

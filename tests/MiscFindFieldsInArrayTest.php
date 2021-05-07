@@ -9,7 +9,7 @@ final class MiscFindFieldsInArrayTest extends TestCase {
 	 * @covers ::vipgoci_find_fields_in_array
 	 */
 	public function testFindFields1() {
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				0 => false,
 				1 => true,

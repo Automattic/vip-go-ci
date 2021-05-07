@@ -94,7 +94,7 @@ final class GitHubTeamMembersTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			$team_members_res1_actual,
 			$team_members_res1_actual_cached
 		);
@@ -168,7 +168,7 @@ final class GitHubTeamMembersTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			$team_members_res2_actual,
 			$team_members_res2_actual_cached
 		);

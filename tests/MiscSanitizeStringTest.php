@@ -9,14 +9,14 @@ final class MiscSanitizeStringTest extends TestCase {
 	 * @covers ::vipgoci_sanitize_string
 	 */
 	public function testSanitizeString1() {
-		$this->assertEquals(
+		$this->assertSame(
 			'foobar',
 			vipgoci_sanitize_string(
 				'FooBar'
 			)
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			'foobar',
 			vipgoci_sanitize_string(
 				'   FooBar   '

@@ -30,7 +30,7 @@ final class StatsStatsInitTest extends TestCase {
 			$stats_arr
 		);
 
-		return $this->assertEquals(
+		return $this->assertSame(
 			array(
 				'issues' => array(
 					100 =>

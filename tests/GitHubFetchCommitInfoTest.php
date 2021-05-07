@@ -101,7 +101,7 @@ final class GitHubFetchCommitInfoTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			'2533219d08192025f3209a17ddcf9ff21845a08c',
 			$commit_info->sha
 		);
@@ -112,7 +112,7 @@ final class GitHubFetchCommitInfoTest extends TestCase {
 			$commit_info->files[0]->contents_url
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				'sha'		=> '524acfffa760fd0b8c1de7cf001f8dd348b399d8',
 				'filename'	=> 'test1.txt',

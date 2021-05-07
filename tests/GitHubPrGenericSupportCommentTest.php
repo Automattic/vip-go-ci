@@ -318,7 +318,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 				count( $pr_comments ) === 0
 			);
 
-			$this->assertEquals(
+			$this->assertSame(
 				0,
 				$this->_countSupportCommentsFromUs(
 					$pr_comments
@@ -376,7 +376,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 					count( $pr_comments ) === 0
 				);
 
-				$this->assertEquals(
+				$this->assertSame(
 					0,
 					$this->_countSupportCommentsFromUs(
 						$pr_comments
@@ -389,7 +389,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 					count( $pr_comments ) > 0
 				);
 
-				$this->assertEquals(
+				$this->assertSame(
 					1,
 					$this->_countSupportCommentsFromUs(
 						$pr_comments
@@ -423,7 +423,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 					count( $pr_comments ) === 0
 				);
 
-				$this->assertEquals(
+				$this->assertSame(
 					0,
 					$this->_countSupportCommentsFromUs(
 						$pr_comments
@@ -436,7 +436,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 					count( $pr_comments ) > 0
 				);
 
-				$this->assertEquals(
+				$this->assertSame(
 					1,
 					$this->_countSupportCommentsFromUs(
 						$pr_comments
@@ -491,7 +491,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 					count( $pr_comments ) === 0
 				);
 
-				$this->assertEquals(
+				$this->assertSame(
 					0,
 					$this->_countSupportCommentsFromUs(
 						$pr_comments
@@ -504,7 +504,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 					count( $pr_comments ) > 0
 				);
 
-				$this->assertEquals(
+				$this->assertSame(
 					1,
 					$this->_countSupportCommentsFromUs(
 						$pr_comments
@@ -538,7 +538,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 					count( $pr_comments ) === 0
 				);
 	
-				$this->assertEquals(
+				$this->assertSame(
 					0,
 					$this->_countSupportCommentsFromUs(
 						$pr_comments
@@ -551,7 +551,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 					count( $pr_comments ) > 0
 				);
 
-				$this->assertEquals(
+				$this->assertSame(
 					1,
 					$this->_countSupportCommentsFromUs(
 						$pr_comments
@@ -601,7 +601,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 				$pr_item->number
 			);
 
-			$this->assertEquals(
+			$this->assertSame(
 				0,
 				$this->_countSupportCommentsFromUs(
 					$pr_comments
@@ -629,7 +629,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 				$pr_item->number
 			);
 
-			$this->assertEquals(
+			$this->assertSame(
 				0,
 				$this->_countSupportCommentsFromUs(
 					$pr_comments
@@ -683,7 +683,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 					count( $pr_comments ) === 0
 				);
 	
-				$this->assertEquals(
+				$this->assertSame(
 					0,
 					$this->_countSupportCommentsFromUs(
 						$pr_comments
@@ -696,7 +696,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 					count( $pr_comments ) > 0
 				);
 
-				$this->assertEquals(
+				$this->assertSame(
 					1,
 					$this->_countSupportCommentsFromUs(
 						$pr_comments
@@ -730,7 +730,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 					count( $pr_comments ) === 0
 				);
 	
-				$this->assertEquals(
+				$this->assertSame(
 					0,
 					$this->_countSupportCommentsFromUs(
 						$pr_comments
@@ -743,7 +743,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 					count( $pr_comments ) > 0
 				);
 
-				$this->assertEquals(
+				$this->assertSame(
 					1,
 					$this->_countSupportCommentsFromUs(
 						$pr_comments
@@ -781,7 +781,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 				count( $pr_comments ) > 0
 			);
 
-			$this->assertEquals(
+			$this->assertSame(
 				1,
 				$this->_countSupportCommentsFromUs(
 					$pr_comments
@@ -860,7 +860,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 				count( $pr_comments ) === 0
 			);
 	
-			$this->assertEquals(
+			$this->assertSame(
 				0,
 				$this->_countSupportCommentsFromUs(
 					$pr_comments
@@ -892,7 +892,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 				count( $pr_comments ) === 0
 			);
 
-			$this->assertEquals(
+			$this->assertSame(
 				0,
 				$this->_countSupportCommentsFromUs(
 					$pr_comments
@@ -929,7 +929,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 				count( $pr_comments ) === 0
 			);
 
-			$this->assertEquals(
+			$this->assertSame(
 				0,
 				$this->_countSupportCommentsFromUs(
 					$pr_comments

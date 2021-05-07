@@ -97,7 +97,7 @@ final class GitHubOrgTeamsTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			$teams_res_actual,
 			$teams_res_actual_cached
 		);
@@ -181,7 +181,7 @@ final class GitHubOrgTeamsTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			$teams_res_actual,
 			$teams_res_actual_cached
 		);
@@ -254,7 +254,7 @@ final class GitHubOrgTeamsTest extends TestCase {
 			) > 0
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			$teams_res_actual_keys[0],
 			$teams_res_actual[
 				$teams_res_actual_keys[0]
@@ -277,7 +277,7 @@ final class GitHubOrgTeamsTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			$teams_res_actual,
 			$teams_res_actual_cached
 		);

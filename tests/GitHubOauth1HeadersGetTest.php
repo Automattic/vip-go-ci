@@ -52,17 +52,17 @@ final class GitHubOauth1HeadersGetTest extends TestCase {
 			$actual_result_arr_new[ $item[0] ] = $item[1];
 		}
 
-		$this->assertEquals(
+		$this->assertSame(
 			'12',
 			$actual_result_arr_new[ 'OAuth oauth_consumer_key' ]
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			'56',
 			$actual_result_arr_new[ 'oauth_token' ]
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			$actual_result_arr_new[ 'oauth_signature_method' ],
 			'HMAC-SHA1'
 		);
@@ -106,7 +106,7 @@ final class GitHubOauth1HeadersGetTest extends TestCase {
 			)
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			$signature_expected,
 			$actual_result_arr_new['oauth_signature']
 		);

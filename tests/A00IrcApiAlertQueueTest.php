@@ -22,7 +22,7 @@ final class A00IrcApiAlertQueueTest extends TestCase {
 			true
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				'mymessage1',
 				'mymessage2',

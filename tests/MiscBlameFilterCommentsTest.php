@@ -24,7 +24,7 @@ final class MiscBlameFilterCommentsTest extends TestCase {
 			$relevant_commit_ids
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			json_decode(
 				'[{"commit_id":"0131c2739c1a5d2d03bb2645e1be491a6a182091","file_name":"bla-10.php","line_no":1},{"commit_id":"0131c2739c1a5d2d03bb2645e1be491a6a182091","file_name":"bla-10.php","line_no":2},{"commit_id":"0131c2739c1a5d2d03bb2645e1be491a6a182091","file_name":"bla-10.php","line_no":3},{"commit_id":"0131c2739c1a5d2d03bb2645e1be491a6a182091","file_name":"bla-10.php","line_no":4},{"commit_id":"b591cee061d15b1e0187baf9f13a6ab32661bc1b","file_name":"bla-10.php","line_no":5},{"commit_id":"aec27de5f13a5495577ca7ba27fc8b10a04ac89f","file_name":"bla-10.php","line_no":6},{"commit_id":"aec27de5f13a5495577ca7ba27fc8b10a04ac89f","file_name":"bla-10.php","line_no":7}]',
 				true

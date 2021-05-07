@@ -75,7 +75,7 @@ final class SvgScanWithScannerTest extends TestCase {
 			$temp_file_name
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			$scanner_results_expected,
 			$scanner_results
 		);
@@ -136,7 +136,7 @@ final class SvgScanWithScannerTest extends TestCase {
 			$temp_file_name
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			$scanner_results_expected,
 			$scanner_results
 		);
