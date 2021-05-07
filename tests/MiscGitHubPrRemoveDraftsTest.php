@@ -31,9 +31,13 @@ final class MiscGitHubPrRemoveDraftsTest extends TestCase {
 			$prs_array
 		);
 
-		$this->assertEquals(
+		if ( isset( $prs_array[ 1 ] ) ) {
+			$prs_array[ 1 ] = (array) $prs_array[ 1 ];
+		}
+
+		$this->assertSame(
 			array(
-				1 => (object) array(
+				1 => array(
 	 				'url'		=> 'https://myapi2.mydomain.is',
 					'id'		=> 999,
 					'node_id'	=> 'testing2',
