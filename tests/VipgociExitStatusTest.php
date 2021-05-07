@@ -48,4 +48,23 @@ final class VipgociExitStatusTest extends TestCase {
 			$exit_status
 		);
 	}
+
+	/**
+	 * @covers ::vipgoci_exit_status
+	 */
+	public function testExitStatusWillReturn250WhenSkippedFilesIsFound() {
+		$exit_status = vipgoci_exit_status(
+			array(
+				'stats' => array(),
+				'skipped-files' => array(
+					25 => array( 'total' => 1 )
+				)
+			)
+		);
+
+		$this->assertSame(
+			250,
+			$exit_status
+		);
+	}
 }

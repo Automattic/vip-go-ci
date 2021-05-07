@@ -2593,7 +2593,6 @@ function vipgoci_github_pr_review_submit(
 			}
 		}
 
-
 		/*
 		 * If there are no issues to report to GitHub,
 		 * do not continue processing the Pull-Request.
@@ -2602,7 +2601,8 @@ function vipgoci_github_pr_review_submit(
 		if (
 			( false === $github_errors ) &&
 			( false === $github_warnings ) &&
-			( false === $github_info )
+			( false === $github_info ) &&
+			empty( $results[ VIPGOCI_SKIPPED_FILES ][ $pr_number ] )
 		) {
 			continue;
 		}
@@ -2716,6 +2716,16 @@ function vipgoci_github_pr_review_submit(
 					' ' .
 					"\n\r";
 			}
+		}
+
+		/**
+		 * Format skipped files message if it validation has issues
+		 */
+		if ( ! empty( $results[ VIPGOCI_SKIPPED_FILES ][ $pr_number ] ) ) {
+			$github_postfields[ 'body' ] .= vipgoci_get_skipped_files_message(
+				$results[ VIPGOCI_SKIPPED_FILES ][ $pr_number ],
+				$pr_number
+			);
 		}
 
 		/*

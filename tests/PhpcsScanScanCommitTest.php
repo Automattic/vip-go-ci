@@ -13,6 +13,7 @@ final class PhpcsScanScanCommitTest extends TestCase {
 		'commit-test-phpcs-scan-commit-1'	=> null,
 		'commit-test-phpcs-scan-commit-2'	=> null,
 		'commit-test-phpcs-scan-commit-4'	=> null,
+		'commit-test-phpcs-scan-commit-5'	=> null,
 	);
 
 	var $options_git_repo = array(
@@ -48,7 +49,7 @@ final class PhpcsScanScanCommitTest extends TestCase {
 			);
 
 		if ( empty( $this->options['github-token'] ) ) {
-			$this->options['github-token'] = ''; 
+			$this->options['github-token'] = '';
 		}
 
 		$this->options['token'] =
@@ -99,6 +100,7 @@ final class PhpcsScanScanCommitTest extends TestCase {
 
 		$issues_submit = array();
 		$issues_stats = array();
+		$issues_skipped = array();
 
 		vipgoci_unittests_output_suppress();
 
@@ -113,10 +115,13 @@ final class PhpcsScanScanCommitTest extends TestCase {
 
 		foreach( $prs_implicated as $pr_item ) {
 			$issues_stats[
-				$pr_item->number
+			$pr_item->number
 			][
-				'error'
+			'error'
 			] = 0;
+
+			$issues_skipped[ $pr_item->number ][ 'issues' ][ 'max-lines' ] = array();
+			$issues_skipped[ $pr_item->number ][ 'issues' ][ 'total' ] = 0;
 		}
 
 
@@ -128,16 +133,17 @@ final class PhpcsScanScanCommitTest extends TestCase {
 		if ( false === $this->options['local-git-repo'] ) {
 			$this->markTestSkipped(
 				'Could not set up git repository: ' .
-					vipgoci_unittests_output_get()
+				vipgoci_unittests_output_get()
 			);
-				
+
 			return;
 		}
 
 		vipgoci_phpcs_scan_commit(
 			$this->options,
 			$issues_submit,
-			$issues_stats
+			$issues_stats,
+			$issues_skipped
 		);
 
 		vipgoci_unittests_output_unsuppress();
@@ -235,6 +241,7 @@ final class PhpcsScanScanCommitTest extends TestCase {
 
 		$issues_submit = array();
 		$issues_stats = array();
+		$issues_skipped = array();
 
 		vipgoci_unittests_output_suppress();
 
@@ -249,10 +256,13 @@ final class PhpcsScanScanCommitTest extends TestCase {
 
 		foreach( $prs_implicated as $pr_item ) {
 			$issues_stats[
-				$pr_item->number
+			$pr_item->number
 			][
-				'error'
+			'error'
 			] = 0;
+
+			$issues_skipped[ $pr_item->number ][ 'issues' ][ 'max-lines' ] = array();
+			$issues_skipped[ $pr_item->number ][ 'issues' ][ 'total' ] = 0;
 		}
 
 		vipgoci_unittests_output_unsuppress();
@@ -285,16 +295,17 @@ final class PhpcsScanScanCommitTest extends TestCase {
 		if ( false === $this->options['local-git-repo'] ) {
 			$this->markTestSkipped(
 				'Could not set up git repository: ' .
-					vipgoci_unittests_output_get()
+				vipgoci_unittests_output_get()
 			);
-				
+
 			return;
 		}
-		
+
 		vipgoci_phpcs_scan_commit(
 			$this->options,
 			$issues_submit,
-			$issues_stats
+			$issues_stats,
+			$issues_skipped
 		);
 
 		vipgoci_unittests_output_unsuppress();
@@ -390,6 +401,7 @@ final class PhpcsScanScanCommitTest extends TestCase {
 
 		$issues_submit = array();
 		$issues_stats = array();
+		$issues_skipped = array();
 
 		vipgoci_unittests_output_suppress();
 
@@ -404,16 +416,19 @@ final class PhpcsScanScanCommitTest extends TestCase {
 
 		foreach( $prs_implicated as $pr_item ) {
 			$issues_stats[
-				$pr_item->number
+			$pr_item->number
 			][
-				'error'
+			'error'
 			] = 0;
 
 			$issues_stats[
-				$pr_item->number
+			$pr_item->number
 			][
-				'warning'
+			'warning'
 			] = 0;
+
+			$issues_skipped[ $pr_item->number ][ 'issues' ][ 'max-lines' ] = array();
+			$issues_skipped[ $pr_item->number ][ 'issues' ][ 'total' ] = 0;
 		}
 
 
@@ -425,16 +440,17 @@ final class PhpcsScanScanCommitTest extends TestCase {
 		if ( false === $this->options['local-git-repo'] ) {
 			$this->markTestSkipped(
 				'Could not set up git repository: ' .
-					vipgoci_unittests_output_get()
+				vipgoci_unittests_output_get()
 			);
-				
+
 			return;
 		}
 
 		vipgoci_phpcs_scan_commit(
 			$this->options,
 			$issues_submit,
-			$issues_stats
+			$issues_stats,
+			$issues_skipped
 		);
 
 		vipgoci_unittests_output_unsuppress();
@@ -562,6 +578,7 @@ final class PhpcsScanScanCommitTest extends TestCase {
 
 		$issues_submit = array();
 		$issues_stats = array();
+		$issues_skipped = array();
 
 		vipgoci_unittests_output_suppress();
 
@@ -578,16 +595,19 @@ final class PhpcsScanScanCommitTest extends TestCase {
 
 		foreach( $prs_implicated as $pr_item ) {
 			$issues_stats[
-				$pr_item->number
+			$pr_item->number
 			][
-				'warning'
+			'warning'
 			] = 0;
 
 			$issues_stats[
-				$pr_item->number
+			$pr_item->number
 			][
-				'error'
+			'error'
 			] = 0;
+
+			$issues_skipped[ $pr_item->number ][ 'issues' ][ 'max-lines' ] = array();
+			$issues_skipped[ $pr_item->number ][ 'issues' ][ 'total' ] = 0;
 		}
 
 		vipgoci_unittests_output_suppress();
@@ -602,7 +622,7 @@ final class PhpcsScanScanCommitTest extends TestCase {
 		if ( false === $this->options['local-git-repo'] ) {
 			$this->markTestSkipped(
 				'Could not set up git repository: ' .
-					vipgoci_unittests_output_get()
+				vipgoci_unittests_output_get()
 			);
 
 			return;
@@ -613,7 +633,8 @@ final class PhpcsScanScanCommitTest extends TestCase {
 		vipgoci_phpcs_scan_commit(
 			$this->options,
 			$issues_submit,
-			$issues_stats
+			$issues_stats,
+			$issues_skipped
 		);
 
 		vipgoci_unittests_output_unsuppress();
@@ -686,6 +707,7 @@ final class PhpcsScanScanCommitTest extends TestCase {
 
 		$issues_submit = array();
 		$issues_stats = array();
+		$issues_skipped = array();
 
 
 		/*
@@ -709,7 +731,7 @@ final class PhpcsScanScanCommitTest extends TestCase {
 		 */
 
 		$rand_str = rand(100000, 999999);
- 
+
 		$tmp_standard_new = str_replace(
 			'/ruleset',
 			'/ruleset-dir' . $rand_str . '/ruleset',
@@ -718,7 +740,7 @@ final class PhpcsScanScanCommitTest extends TestCase {
 
 		$tmp_standard_dir = pathinfo(
 			$tmp_standard_new,
-			 PATHINFO_DIRNAME
+			PATHINFO_DIRNAME
 		);
 
 		mkdir(
@@ -752,16 +774,19 @@ final class PhpcsScanScanCommitTest extends TestCase {
 
 		foreach( $prs_implicated as $pr_item ) {
 			$issues_stats[
-				$pr_item->number
+			$pr_item->number
 			][
-				'error'
+			'error'
 			] = 0;
 
 			$issues_stats[
-				$pr_item->number
+			$pr_item->number
 			][
-				'warning'
+			'warning'
 			] = 0;
+
+			$issues_skipped[ $pr_item->number ][ 'issues' ][ 'max-lines' ] = array();
+			$issues_skipped[ $pr_item->number ][ 'issues' ][ 'total' ] = 0;
 		}
 
 
@@ -773,16 +798,17 @@ final class PhpcsScanScanCommitTest extends TestCase {
 		if ( false === $this->options['local-git-repo'] ) {
 			$this->markTestSkipped(
 				'Could not set up git repository: ' .
-					vipgoci_unittests_output_get()
+				vipgoci_unittests_output_get()
 			);
-				
+
 			return;
 		}
 
 		vipgoci_phpcs_scan_commit(
 			$this->options,
 			$issues_submit,
-			$issues_stats
+			$issues_stats,
+			$issues_skipped
 		);
 
 		vipgoci_unittests_output_unsuppress();
@@ -894,6 +920,100 @@ final class PhpcsScanScanCommitTest extends TestCase {
 				),
 			),
 			$issues_stats
+		);
+	}
+
+	public function testLintWontScanNumberOfLinesInvalid() {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( 'phpcs-runtime-set', 'github-token', 'token' ),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
+		$this->options['commit'] =
+			$this->options['commit-test-phpcs-scan-commit-5'];
+
+		$this->options['phpcs-skip-scanning-via-labels-allowed'] =
+			false;
+
+		$issues_submit = array();
+		$issues_stats = array();
+		$issues_skipped = array();
+
+		vipgoci_unittests_output_suppress();
+
+		$prs_implicated = vipgoci_github_prs_implicated(
+			$this->options['repo-owner'],
+			$this->options['repo-name'],
+			$this->options['commit'],
+			$this->options['github-token'],
+			$this->options['branches-ignore']
+		);
+
+
+		foreach( $prs_implicated as $pr_item ) {
+			$issues_stats[
+			$pr_item->number
+			][
+			'error'
+			] = 0;
+
+			$issues_skipped[ $pr_item->number ] = $this->getDefaultSkippedFilesDueIssuesMock();
+		}
+
+		$issues_skipped[39] = array(
+			'issues' => array(
+				'max-lines' => array ( 'test1/myfile-1.php' )
+			),
+			'total' => 1
+		);
+
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped(
+				'Could not set up git repository: ' .
+				vipgoci_unittests_output_get()
+			);
+
+			return;
+		}
+
+		vipgoci_phpcs_scan_commit(
+			$this->options,
+			$issues_submit,
+			$issues_stats,
+			$issues_skipped
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		$expected_issues_skipped = array(
+			39 => array(
+				'issues' => array(
+					'max-lines' => array ( 'test1/myfile-1.php' )
+				),
+				'total' => 1
+			)
+		);
+
+		$this->assertSame(
+			$expected_issues_skipped[39],
+			$issues_skipped[39]
+		);
+	}
+
+	private function getDefaultSkippedFilesDueIssuesMock() {
+		return array(
+			'issues' => array(),
+			'total' => 0
 		);
 	}
 }

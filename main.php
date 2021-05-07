@@ -380,7 +380,15 @@ function vipgoci_exit_status( $results ) {
 				return VIPGOCI_EXIT_CODE_ISSUES;
 			}
 		}
+	}
 
+	if ( ! empty( $results['skipped-files'] ) ) {
+		foreach ( $results['skipped-files'] as $pr_number ) {
+			if( 0 < $pr_number[ 'total' ] ) {
+				// Results contains skipped files due issues, return non-zero
+				return VIPGOCI_EXIT_CODE_ISSUES;
+			}
+		}
 	}
 
 	return 0;
@@ -1654,7 +1662,7 @@ function vipgoci_run() {
 			VIPGOCI_GITHUB_WEB_BASE_URL . '/' .
 				rawurlencode( $options['repo-owner'] ) . '/' .
 				rawurlencode( $options['repo-name'] ) . '/' .
-				'commit/' . 
+				'commit/' .
 				rawurlencode( $options['commit'] )
 		);
 
@@ -1671,7 +1679,7 @@ function vipgoci_run() {
 	vipgoci_log(
 		'Starting up...',
 		array(
-			'options'	=> vipgoci_options_sensitive_clean(
+			'options' => vipgoci_options_sensitive_clean(
 				$options
 			)
 		)
@@ -1889,7 +1897,8 @@ function vipgoci_run() {
 		vipgoci_lint_scan_commit(
 			$options,
 			$results['issues'],
-			$results['stats'][ VIPGOCI_STATS_LINT ]
+			$results['stats'][ VIPGOCI_STATS_LINT ],
+			$results[ VIPGOCI_SKIPPED_FILES ]
 		);
 	}
 
@@ -1902,7 +1911,8 @@ function vipgoci_run() {
 		vipgoci_phpcs_scan_commit(
 			$options,
 			$results['issues'],
-			$results['stats'][ VIPGOCI_STATS_PHPCS ]
+			$results['stats'][ VIPGOCI_STATS_PHPCS ],
+			$results[ VIPGOCI_SKIPPED_FILES ]
 		);
 	}
 
