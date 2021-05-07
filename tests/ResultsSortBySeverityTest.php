@@ -163,7 +163,7 @@ final class ResultsSortBySeverityTest extends TestCase {
 		);
 
 		// Not configured to sort, should remain unchanged
-		$this->assertEquals(
+		$this->assertSame(
 			$this->results_before,
 			$this->results
 		);
@@ -185,7 +185,7 @@ final class ResultsSortBySeverityTest extends TestCase {
 		vipgoci_unittests_output_unsuppress();
 
 		// Configured to sort, should be changed
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				'issues' => array(
 					24 => array(
