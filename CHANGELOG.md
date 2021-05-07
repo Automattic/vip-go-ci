@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.0.4]https://github.com/Automattic/vip-go-ci/releases/tag/1.0.4) - 2021-05-10
+## [1.0.4](https://github.com/Automattic/vip-go-ci/releases/tag/1.0.4) - 2021-05-10
 
 ### Fixed
 
