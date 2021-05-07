@@ -73,6 +73,9 @@ final class ApAutoApprovalTest extends TestCase {
 
 		$this->options['local-git-repo'] = false;
 
+		$this->options['pr-test-ap-auto-approval-1'] =
+			(int) $this->options['pr-test-ap-auto-approval-1'];
+
 		$this->cleanup_prs();
 	}
 
@@ -232,13 +235,13 @@ final class ApAutoApprovalTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			1,
 			count( $prs_implicated )
 		);
 
 		foreach ( $prs_implicated as $pr_item ) {
-			$this->assertEquals(
+			$this->assertSame(
 				$this->options['pr-test-ap-auto-approval-1'],
 				$pr_item->number
 			);
@@ -302,7 +305,7 @@ final class ApAutoApprovalTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(),
 			$results
 		);
@@ -319,13 +322,13 @@ final class ApAutoApprovalTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			1,
 			count( $prs_implicated )
 		);
 
 		foreach ( $prs_implicated as $pr_item ) {
-			$this->assertEquals(
+			$this->assertSame(
 				$this->options['pr-test-ap-auto-approval-1'],
 				$pr_item->number
 			);
@@ -346,13 +349,13 @@ final class ApAutoApprovalTest extends TestCase {
 
 			vipgoci_unittests_output_unsuppress();
 
-			$this->assertEquals(
+			$this->assertSame(
 				1,
 				count( $pr_item_reviews )
 			);
 
 			foreach( $pr_item_reviews as $pr_item_review ) {
-				$this->assertEquals(
+				$this->assertSame(
 					'APPROVED',
 					$pr_item_review->state
 				);
@@ -361,7 +364,7 @@ final class ApAutoApprovalTest extends TestCase {
 
 		$labels = $this->pr_get_labels();
 
-		$this->assertEquals(
+		$this->assertSame(
 			$this->options['autoapprove-label'],
 			$labels->name
 		);
@@ -424,7 +427,7 @@ final class ApAutoApprovalTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(),
 			$results
 		);
@@ -441,13 +444,13 @@ final class ApAutoApprovalTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			1,
 			count( $prs_implicated )
 		);
 
 		foreach ( $prs_implicated as $pr_item ) {
-			$this->assertEquals(
+			$this->assertSame(
 				$this->options['pr-test-ap-auto-approval-1'],
 				$pr_item->number
 			);
@@ -468,7 +471,7 @@ final class ApAutoApprovalTest extends TestCase {
 
 			vipgoci_unittests_output_unsuppress();
 
-			$this->assertEquals(
+			$this->assertSame(
 				0,
 				count( $pr_item_reviews )
 			);
@@ -476,7 +479,7 @@ final class ApAutoApprovalTest extends TestCase {
 
 		$label = $this->pr_get_labels();
 
-		$this->assertEquals(
+		$this->assertSame(
 			false,
 			$label
 		);
@@ -558,13 +561,13 @@ final class ApAutoApprovalTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			1,
 			count( $prs_implicated )
 		);
 
 		foreach ( $prs_implicated as $pr_item ) {
-			$this->assertEquals(
+			$this->assertSame(
 				$this->options['pr-test-ap-auto-approval-1'],
 				$pr_item->number
 			);
@@ -585,7 +588,7 @@ final class ApAutoApprovalTest extends TestCase {
 
 			vipgoci_unittests_output_unsuppress();
 
-			$this->assertEquals(
+			$this->assertSame(
 				0,
 				count( $pr_item_reviews )
 			);
@@ -593,12 +596,12 @@ final class ApAutoApprovalTest extends TestCase {
 
 		$label = $this->pr_get_labels();
 
-		$this->assertEquals(
+		$this->assertSame(
 			false,
 			$label
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			1,
 			$results['stats']
 				[ VIPGOCI_STATS_HASHES_API ]
@@ -606,7 +609,7 @@ final class ApAutoApprovalTest extends TestCase {
 				[ 'info' ]
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			'file-1.php',
 			$results['issues']
 				[ $this->options['pr-test-ap-auto-approval-1'] ]
@@ -672,7 +675,7 @@ final class ApAutoApprovalTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			0,
 			count( $pr_item_reviews )
 		);
@@ -727,7 +730,7 @@ final class ApAutoApprovalTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertEquals(
+		$this->assertSame(
 			1,
 			count( $pr_item_reviews )
 		);
