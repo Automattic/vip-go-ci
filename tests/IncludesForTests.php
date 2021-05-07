@@ -341,5 +341,5 @@ function vipgoci_unittests_php_syntax_error_compat( $str ) {
 	return $str;
 }
 
-require_once( __DIR__ . '/../main.php' );
+require_once( __DIR__ . '/../requires.php' );
 
