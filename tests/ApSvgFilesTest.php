@@ -127,7 +127,7 @@ final class ApSvgFilesTest extends TestCase {
 		vipgoci_unittests_output_unsuppress();
 
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				'auto-approvable-1.svg' => 'ap-svg-files',
 				'auto-approvable-2.svg' => 'ap-svg-files',
@@ -188,13 +188,13 @@ final class ApSvgFilesTest extends TestCase {
 		vipgoci_unittests_output_unsuppress();
 
 
-		$this->assertEquals(
+		$this->assertSame(
 			array(
 				'auto-approvable-1.svg' => 'ap-svg-files',
 				'auto-approvable-2-renamed.svg' => 'ap-svg-files',
+				'auto-approvable-7.svg' => 'ap-svg-files',
 				'auto-approvable3.svg' => 'ap-svg-files',
 				'auto-approvable4.svg' => 'ap-svg-files',
-				'auto-approvable-7.svg' => 'ap-svg-files',
 			),
 			$auto_approved_files_arr
 		);
