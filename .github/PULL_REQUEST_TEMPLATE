@@ -11,4 +11,10 @@ TODO:
 - [ ] Public documentation changes
 - [ ] Run full-unit tests 
 - [ ] Check automated unit-tests
+- [ ] Manual testing
+  - [ ] Pull-Request with PHP linting issues
+  - [ ] Pull-Request with PHPCS issues
+  - [ ] Pull-Request without PHPCS issues, not auto-approved
+  - [ ] Pull-Request without PHPCS issues, is auto-approved
+  - [ ] Pull-Request with SVG issues
 -->
