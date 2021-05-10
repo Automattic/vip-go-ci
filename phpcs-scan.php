@@ -254,6 +254,17 @@ function vipgoci_phpcs_scan_single_file(
 		);
 	}
 
+	else {
+		vipgoci_log(
+			'PHPCS returned results',
+			array(
+				'filename'	=> $file_name,
+				'issues_stats'	=>
+					$file_issues_arr_master['totals'],
+			)
+		);
+	}
+
 	return array(
 		'file_issues_arr_master'	=> $file_issues_arr_master,
 		'file_issues_str'		=> $file_issues_str,
