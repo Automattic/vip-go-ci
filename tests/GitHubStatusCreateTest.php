@@ -56,7 +56,7 @@ final class GitHubStatusCreateTest extends TestCase {
 		$this->options_git_repo_tests = null;
 	}
 
-	private function _set_build_status(): void {
+	private function _setBuildStatus(): void {
 		sleep(2); // GitHub API requirement
 
 		$github_url =
@@ -81,7 +81,7 @@ final class GitHubStatusCreateTest extends TestCase {
 		);
 	}
 
-	private function _get_current_build_status(): ?array {
+	private function _getCurrentBuildStatus(): ?array {
 		sleep(2);
 
 		$github_url =
@@ -144,7 +144,7 @@ final class GitHubStatusCreateTest extends TestCase {
 		$this->options['build-description'] = $new_build_description;
 		$this->options['build-target-url'] = null;
 
-		$this->_set_build_status();
+		$this->_setBuildStatus();
 
 		$this->assertSame(
 			array(
@@ -153,7 +153,7 @@ final class GitHubStatusCreateTest extends TestCase {
 				'context'	=> $this->options['build-context'],
 				'target_url'	=> null,
 			),
-			$this->_get_current_build_status()
+			$this->_getCurrentBuildStatus()
 		);
 
 		/*
@@ -184,7 +184,7 @@ final class GitHubStatusCreateTest extends TestCase {
 				'context'	=> $this->options['build-context'],
 				'target_url'	=> 'https://automattic.com/test1',
 			),
-			$this->_get_current_build_status()
+			$this->_getCurrentBuildStatus()
 		);
 	}
 }
