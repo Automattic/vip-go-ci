@@ -134,9 +134,6 @@ function vipgoci_run() {
 	// Set with a temp value for now, user value set later
 	$vipgoci_debug_level = 0;
 
-	// Child pid, set to -1 for now, pid set later
-	$vipgoci_exec_time_child_pid = -1;
-
 	$startup_time = time();
 
 	$options_recognized =
@@ -1570,8 +1567,7 @@ function vipgoci_run() {
 		$tmp_runtime = time() - $startup_time;
 
 		vipgoci_set_maximum_exec_time(
-			$options['max-exec-time'] - $tmp_runtime,
-			$vipgoci_exec_time_child_pid
+			$options['max-exec-time'] - $tmp_runtime
 		);
 
 		unset( $tmp_runtime );
@@ -1589,8 +1585,7 @@ function vipgoci_run() {
 		array(
 			'options'	=> vipgoci_options_sensitive_clean(
 				$options
-			),
-			'child_pid'	=> $vipgoci_exec_time_child_pid,
+			)
 		)
 	);
 
@@ -2217,24 +2212,6 @@ function vipgoci_run() {
 			'results'		=> $results,
 		)
 	);
-
-	/*
-	 * Stop child process if started, we are done.
-	 */
-	if ( $vipgoci_exec_time_child_pid > 0 ) {
-		vipgoci_log(
-			'Telling max-exec-time child process to exit.',
-			array(
-				'child_pid' =>
-					$vipgoci_exec_time_child_pid,
-			)
-		);
-
-		posix_kill(
-			$vipgoci_exec_time_child_pid,
-			SIGKILL
-		);
-	}
 
 	/*
 	 * Determine exit code.
