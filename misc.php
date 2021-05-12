@@ -1,6 +1,19 @@
 <?php
 
 /*
+ * Set how to deal with errors:
+ * Report all errors, and display them.
+*/
+
+function vipgoci_set_php_error_reporting() {
+	ini_set( 'error_log', '' );
+
+	error_reporting( E_ALL );
+
+	ini_set( 'display_errors', 'on' );
+}
+
+/*
  * Log information to the console.
  * Include timestamp, and any debug-data
  * our caller might pass us.
@@ -79,6 +92,170 @@ function vipgoci_sysexit(
 	);
 
 	exit( $exit_status );
+}
+
+/*
+ * Set maximum execution time of
+ * vip-go-ci. Forks a child-process
+ * that will send the parent process
+ * a signal when the maximum execution
+ * time is reached. The parent will
+ * call exit() when the signal is caught.
+ * The child will send it self the SIGKILl
+ * signal to avoid running any shutdown
+ * handlers.
+ */
+function vipgoci_set_maximum_exec_time(
+	int $max_exec_time = 600,
+	int &$child_pid
+) :void {
+	static $has_been_invoked = false;
+
+	/*
+	 * Ensure the function is only called
+	 * once per run.
+	 */
+	if ( true === $has_been_invoked ) {
+		vipgoci_log(
+			'Cannot set maximum execution time twice, ignoring'
+		);
+
+		return;
+	}
+
+	$has_been_invoked = true;
+
+	/*
+	 * Enable async signal handlers
+	 */
+	pcntl_async_signals( true );
+
+	/*
+	 * Ensure we have the functions
+	 * needed.
+	 */
+	if ( ! function_exists( 'pcntl_fork' ) ) {
+		vipgoci_log(
+			'Unable to set maximum execution time, ' .
+			'function pcntl_fork() missing'
+		);
+
+		return;
+	}
+
+	vipgoci_log(
+		'Setting maximum execution time',
+		array(
+			'max_exec_time'	=> $max_exec_time,
+		)
+	);
+
+	/*
+	 * Fork()
+	 */
+	$tmp_pid = pcntl_fork();
+
+	if ( $tmp_pid > 0 ) {
+		/*
+		 * Parent: Set up signal handler.
+		 */
+		$child_pid = $tmp_pid;
+
+		vipgoci_log(
+			'Parent process: Setting up signal handler',
+			array(
+				'pid'		=> posix_getpid(),
+				'child_pid'	=> $tmp_pid,
+			)
+		);
+
+		/*
+		 * Handle signals for SIGUSR2 only;
+		 * log and call exit()
+		 */
+		pcntl_signal(
+			SIGUSR2,
+			function ( $signo ) {
+				if ( SIGUSR2 === $signo ) {
+					vipgoci_log(
+						'Received SIGUSR2 signal ' .
+							'from child ' .
+							'exiting'
+					);
+
+					exit( VIPGOCI_EXIT_EXEC_TIME );
+				}
+			}
+		);
+	}
+
+	else if ( $tmp_pid === 0 ) {
+		/*
+		 * Child: Wait until time is reached,
+		 * then send the signal and exit without
+		 * running any exit handlers.
+		 */
+		$my_ppid = posix_getppid();
+
+		vipgoci_log(
+			'Child process: On-line, monitoring max-exec-time',
+			array(
+				'pid'	=> posix_getpid(),
+				'ppid'	=> $my_ppid,
+			)
+		);
+
+		$enter_time = time();
+
+		do {
+			sleep( 1 );
+		} while ( ( time() - $enter_time ) < $max_exec_time );
+
+		/*
+		 * Tell parent it is time to finish,
+		 * give a few seconds to run shutdown
+		 * handlers.
+		 */
+		vipgoci_log(
+			'Child process: Maximum execution time reached, ' .
+				'sending parent SIGUSR2 signal, then ' .
+				'forcing itself to exit via SIGKILL'
+		);
+
+		posix_kill(
+			$my_ppid,
+			SIGUSR2
+		);
+
+		sleep( 15 );
+
+		/*
+		 * Now force parent to stop execution.
+		 */
+		vipgoci_log(
+			'Child process: Tried to ask parent to gracefully ' .
+				'shut down, now sending SIGKILL',
+		);
+	
+		posix_kill(
+			$my_ppid,
+			SIGKILL
+		);
+
+		vipgoci_log(
+			'Child process: Exiting via SIGKILL, off-line'
+		);
+
+		/*
+		 * And finally, exit child process.
+		 */
+		posix_kill(
+			posix_getpid(),
+			SIGKILL
+		);
+
+		exit(0);
+	}
 }
 
 /*
