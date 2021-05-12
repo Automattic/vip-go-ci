@@ -12,13 +12,9 @@ vipgoci_log(
 );
 
 /*
- * Set how to deal with errors:
- * Report all errors, and display them.
+ * Configure PHP error reporting.
  */
-ini_set( 'error_log', '' );
-	
-error_reporting( E_ALL );
-ini_set( 'display_errors', 'on' );
+vipgoci_set_php_error_reporting();
 
 /*
  * Recognized options, get options
