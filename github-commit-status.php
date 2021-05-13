@@ -148,4 +148,3 @@ vipgoci_log(
 	'Finished, exiting',
 );
 
-
