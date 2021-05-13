@@ -13,11 +13,8 @@ function vipgoci_stats_init( $options, $prs_implicated, &$results ) {
 		 * Initialize array for stats and
 		 * results of scanning, if needed.
 		 */
-
-		if ( empty( $results['issues'][ $pr_item->number ] ) ) {
-			$results['issues'][ $pr_item->number ] = array(
-			);
-		}
+		set_result_type( $results, $pr_item->number, 'issues');
+		set_result_type( $results, $pr_item->number, VIPGOCI_SKIPPED_FILES);
 
 		foreach (
 			array(
@@ -45,6 +42,20 @@ function vipgoci_stats_init( $options, $prs_implicated, &$results ) {
 					'info'		=> 0,
 				);
 		}
+	}
+}
+
+/**
+ * @param array $results
+ * @param int $pr_number
+ * @param string $result_type
+ *
+ * @return mixed
+ */
+function set_result_type( array&$results, int $pr_number, string $result_type ): void
+{
+	if ( empty( $results[ $result_type ][ $pr_number ] ) ) {
+		$results[ $result_type ][ $pr_number ] = array();
 	}
 }
 
@@ -282,4 +293,3 @@ function vipgoci_stats_per_file(
 		$file_lines_cnt
 	);
 }
-

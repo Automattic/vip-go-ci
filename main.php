@@ -127,9 +127,14 @@ function vipgoci_run() {
 	}
 
 	/*
-	 * Configure PHP error reporting.
+	 * Set how to deal with errors:
+	 * Report all errors, and display them.
 	 */
-	vipgoci_set_php_error_reporting();
+	ini_set( 'error_log', '' );
+
+	error_reporting( E_ALL );
+	ini_set( 'display_errors', 'on' );
+
 
 	// Set with a temp value for now, user value set later
 	$vipgoci_debug_level = 0;
@@ -139,13 +144,11 @@ function vipgoci_run() {
 	$options_recognized =
 		array(
 			'env-options:',
-			'debug-level:',
-			'max-exec-time:',
-			'enforce-https-urls:',
 			'repo-owner:',
 			'repo-name:',
 			'commit:',
 			'token:',
+			'enforce-https-urls:',
 			'skip-draft-prs:',
 			'results-comments-sort:',
 			'review-comments-max:',
@@ -206,6 +209,7 @@ function vipgoci_run() {
 			'autoapprove-label:',
 			'autoapprove-php-nonfunctional-changes:',
 			'help',
+			'debug-level:',
 		);
 
 	/*
@@ -1580,7 +1584,7 @@ function vipgoci_run() {
 			VIPGOCI_GITHUB_WEB_BASE_URL . '/' .
 				rawurlencode( $options['repo-owner'] ) . '/' .
 				rawurlencode( $options['repo-name'] ) . '/' .
-				'commit/' . 
+				'commit/' .
 				rawurlencode( $options['commit'] )
 		);
 
@@ -1597,7 +1601,7 @@ function vipgoci_run() {
 	vipgoci_log(
 		'Starting up...',
 		array(
-			'options'	=> vipgoci_options_sensitive_clean(
+			'options' => vipgoci_options_sensitive_clean(
 				$options
 			)
 		)
@@ -1828,7 +1832,8 @@ function vipgoci_run() {
 		vipgoci_phpcs_scan_commit(
 			$options,
 			$results['issues'],
-			$results['stats'][ VIPGOCI_STATS_PHPCS ]
+			$results['stats'][ VIPGOCI_STATS_PHPCS ],
+			$results[VIPGOCI_SKIPPED_FILES]
 		);
 	}
 
