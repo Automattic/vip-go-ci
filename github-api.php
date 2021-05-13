@@ -1753,7 +1753,7 @@ function vipgoci_github_pr_generic_comment_submit_results(
 				"\n\r\n\r" .
 
 				// And finally a URL to the issue is
-				'https://github.com/' .
+				VIPGOCI_GITHUB_WEB_BASE_URL . '/' .
 					$repo_owner . '/' .
 					$repo_name . '/' .
 					'blob/' .
@@ -1786,7 +1786,8 @@ function vipgoci_github_pr_generic_comment_submit_results(
 			"\n\r\n\r" .
 
 			"Scan performed on the code at commit " . $commit_id .
-				" ([view code](https://github.com/" .
+				" ([view code](" .
+				VIPGOCI_GITHUB_WEB_BASE_URL . '/' .
 				rawurlencode( $repo_owner ) . "/" .
 				rawurlencode( $repo_name ) . "/" .
 				"tree/" .
