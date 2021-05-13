@@ -1567,7 +1567,12 @@ function vipgoci_run() {
 		$tmp_runtime = time() - $startup_time;
 
 		vipgoci_set_maximum_exec_time(
-			$options['max-exec-time'] - $tmp_runtime
+			$options['max-exec-time'] - $tmp_runtime,
+			VIPGOCI_GITHUB_WEB_BASE_URL . '/' .
+				rawurlencode( $options['repo-owner'] ) . '/' .
+				rawurlencode( $options['repo-name'] ) . '/' .
+				'commit/' . 
+				rawurlencode( $options['commit'] )
 		);
 
 		unset( $tmp_runtime );

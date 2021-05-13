@@ -98,9 +98,12 @@ function vipgoci_sysexit(
  * Set up to alarm when maximum execution time of
  * vip-go-ci is reached. Will call exit() when
  * alarm goes off.
+ *
+ * @codeCoverageIgnore
  */
 function vipgoci_set_maximum_exec_time(
-	int $max_exec_time = 600
+	int $max_exec_time = 600,
+	string $commit_identifier = ''
 ) :void {
 	static $has_been_invoked = false;
 
@@ -143,10 +146,16 @@ function vipgoci_set_maximum_exec_time(
 	 */
 	pcntl_signal(
 		SIGALRM,
-		function ( $signo ) {
+		function ( $signo ) use ( $commit_identifier ) {
 			if ( SIGALRM === $signo ) {
 				vipgoci_log(
-					'Maximum execution time reached, exiting'
+					'Maximum execution time reached ' .
+						( empty( $commit_identifier ) ?
+						'' :
+						'(' . $commit_identifier . ').' ),
+					array(),
+					0,
+					true // log to IRC
 				);
 			}
 
