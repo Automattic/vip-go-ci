@@ -35,7 +35,8 @@ function vipgoci_auto_approval_non_approval(
 			'as it contains ' .
 			'files which are not ' .
 			'automatically approvable' .
-			' -- PR URL: https://github.com/' .
+			' -- PR URL: ' .
+			VIPGOCI_GITHUB_WEB_BASE_URL . '/' .
 			rawurlencode( $options['repo-owner'] ) .
 			'/' .
 			rawurlencode( $options['repo-name'] ) .
@@ -317,7 +318,8 @@ function vipgoci_autoapproval_do_approve(
 				'as it alters or creates ' .
 				'only files that can be ' .
 				'automatically approved' .
-				' -- PR URL: https://github.com/' .
+				' -- PR URL: ' .
+				VIPGOCI_GITHUB_WEB_BASE_URL . '/' .
 				rawurlencode( $options['repo-owner'] ) .
 				'/' .
 				rawurlencode( $options['repo-name'] ) .
@@ -600,7 +602,8 @@ function vipgoci_auto_approval_scan_commit(
 				'No action taken with Pull-Request #' .
 					(int) $pr_item->number . ' ' .
 					'since no files were found' .
-					' -- PR URL: https://github.com/' .
+					' -- PR URL: ' .
+					VIPGOCI_GITHUB_WEB_BASE_URL . '/' .
 					rawurlencode( $options['repo-owner'] ) .
 					'/' .
 					rawurlencode( $options['repo-name'] ) .
