@@ -2720,6 +2720,33 @@ function vipgoci_github_pr_review_submit(
 			}
 		}
 
+		/**
+		 * Format skipped files message if it exists
+		 */
+		if ( !empty( $results[VIPGOCI_SKIPPED_FILES] ) ) {
+			$body_skipped_files = '';
+			foreach ( $results[VIPGOCI_SKIPPED_FILES][$pr_number] as $key => $file ) {
+				$body_skipped_files .= PHP_EOL . '- ' . $key;
+			}
+
+			/**
+			 * This add message header
+			 * Markdown example result:
+			 * ****\n**skipped-files**- Files exceeded the limit of number of lines (15000)\n-fileName.php
+			 * Text result:
+				skipped-files- Files exceeded the limit of number of lines! (15000)
+				src/MyFailedClass.php
+			 */
+			$github_postfields['body'] .= sprintf(
+				'****%s**%s**- Files exceeded the limit of number of lines (%s)%s%s',
+				PHP_EOL,
+				VIPGOCI_SKIPPED_FILES,
+				VIPGOCI_VALIDATION_LIMIT_LINES,
+				PHP_EOL,
+				$body_skipped_files
+			);
+		}
+
 		/*
 		 * If we have a informational-URL about
 		 * the bot, append it along with a generic
