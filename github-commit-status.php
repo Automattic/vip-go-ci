@@ -147,3 +147,4 @@ vipgoci_github_status_create(
 vipgoci_log(
 	'Finished, exiting',
 );
+
