@@ -19,6 +19,10 @@ define( 'VIPGOCI_CLIENT_ID',		'automattic-vip-go-ci' );
 define( 'VIPGOCI_SYNTAX_ERROR_STR',	'PHP Syntax Errors Found' );
 define( 'VIPGOCI_GITHUB_ERROR_STR',	'GitHub API communication error. ' .
 						'Please contact a human.' );
+/*
+ * Base URLs for GitHub
+ */
+define( 'VIPGOCI_GITHUB_WEB_BASE_URL',	'https://github.com' );
 
 /* Define if not defined. Unit-tests can define this for testing. */
 if ( ! defined( 'VIPGOCI_GITHUB_BASE_URL' ) ) {
@@ -78,6 +82,7 @@ define( 'VIPGOCI_PHPCS_DUPLICATE_SNIFFS_CONT',
  */
 
 define( 'VIPGOCI_EXIT_NORMAL',		0 );
+define( 'VIPGOCI_EXIT_EXEC_TIME', 	249 );
 define( 'VIPGOCI_EXIT_CODE_ISSUES',	250 );
 define( 'VIPGOCI_EXIT_SYSTEM_PROBLEM',	251 );
 define( 'VIPGOCI_EXIT_GITHUB_PROBLEM',	252 );

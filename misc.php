@@ -1,6 +1,19 @@
 <?php
 
 /*
+ * Set how to deal with errors:
+ * Report all errors, and display them.
+*/
+
+function vipgoci_set_php_error_reporting() {
+	ini_set( 'error_log', '' );
+
+	error_reporting( E_ALL );
+
+	ini_set( 'display_errors', 'on' );
+}
+
+/*
  * Log information to the console.
  * Include timestamp, and any debug-data
  * our caller might pass us.
@@ -79,6 +92,81 @@ function vipgoci_sysexit(
 	);
 
 	exit( $exit_status );
+}
+
+/*
+ * Set up to alarm when maximum execution time of
+ * vip-go-ci is reached. Will call exit() when
+ * alarm goes off.
+ *
+ * @codeCoverageIgnore
+ */
+function vipgoci_set_maximum_exec_time(
+	int $max_exec_time = 600,
+	string $commit_identifier = ''
+) :void {
+	static $has_been_invoked = false;
+
+	/*
+	 * Ensure the function is only called
+	 * once per run.
+	 */
+	if ( true === $has_been_invoked ) {
+		vipgoci_log(
+			'Cannot set maximum execution time twice, ignoring'
+		);
+
+		return;
+	}
+
+	$has_been_invoked = true;
+
+	/*
+	 * Enable async signal handlers
+	 */
+	pcntl_async_signals( true );
+
+	vipgoci_log(
+		'Setting maximum execution time',
+		array(
+			'max_exec_time'	=> $max_exec_time,
+		)
+	);
+
+	/*
+	 * Set up signal handler.
+	 */
+	vipgoci_log(
+		'Setting up alarm signal handler and setting up alarm',
+	);
+
+	/*
+	 * Handle signals for SIGALRM only;
+	 * log and call exit()
+	 */
+	pcntl_signal(
+		SIGALRM,
+		function ( $signo ) use ( $commit_identifier ) {
+			if ( SIGALRM === $signo ) {
+				vipgoci_log(
+					'Maximum execution time reached ' .
+						( empty( $commit_identifier ) ?
+						'' :
+						'(' . $commit_identifier . ').' ),
+					array(),
+					0,
+					true // log to IRC
+				);
+			}
+
+			exit( VIPGOCI_EXIT_EXEC_TIME );
+		}
+	);
+
+	/*
+	 * Send alarm after max-exec-time
+	 */
+	pcntl_alarm( $max_exec_time );
 }
 
 /*

@@ -1753,7 +1753,7 @@ function vipgoci_github_pr_generic_comment_submit_results(
 				"\n\r\n\r" .
 
 				// And finally a URL to the issue is
-				'https://github.com/' .
+				VIPGOCI_GITHUB_WEB_BASE_URL . '/' .
 					$repo_owner . '/' .
 					$repo_name . '/' .
 					'blob/' .
@@ -1786,7 +1786,8 @@ function vipgoci_github_pr_generic_comment_submit_results(
 			"\n\r\n\r" .
 
 			"Scan performed on the code at commit " . $commit_id .
-				" ([view code](https://github.com/" .
+				" ([view code](" .
+				VIPGOCI_GITHUB_WEB_BASE_URL . '/' .
 				rawurlencode( $repo_owner ) . "/" .
 				rawurlencode( $repo_name ) . "/" .
 				"tree/" .
@@ -4096,4 +4097,54 @@ function vipgoci_github_repo_collaborators_get(
 	unset( $repo_users_all_new );
 
 	return $repo_users_all;
+}
+
+/*
+ * Create commit status using the
+ * Status API.
+ */
+function vipgoci_github_status_create(
+	string $repo_owner,
+	string $repo_name,
+	string $github_token,
+	string $commit_id,
+	string $state,
+	string $target_url,
+	string $description,
+	string $context
+) {
+	$github_url =
+		VIPGOCI_GITHUB_BASE_URL . '/' .
+		'repos/' .
+		rawurlencode( $repo_owner ) . '/' .
+		rawurlencode( $repo_name ) . '/' .
+		'statuses/' .
+		rawurlencode( $commit_id );
+
+	$github_postfields = array(
+		'state'		=> $state,
+		'description'	=> $description,
+		'context'	=> $context,
+	);
+
+	if ( ! empty( $target_url ) ) {
+		$github_postfields[ 'target_url' ] =
+			$target_url;
+	}
+
+	vipgoci_log(
+		'Setting GitHub commit status for a particular commit-ID',
+		array(
+			'repo_owner'	=> $repo_owner,
+			'repo_name'	=> $repo_name,
+			'commit_id'	=> $commit_id,
+			'status'	=> $github_postfields,
+		)
+	);
+
+	vipgoci_github_post_url(
+		$github_url,
+		$github_postfields,
+		$github_token
+	);
 }

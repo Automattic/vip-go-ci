@@ -244,6 +244,7 @@ Alternatively, if you do not wish to run TeamCity in a Docker-instance, you can 
 `vip-go-ci.php` exits with different UNIX exit codes depending on what problems were found and if any system issues were encountered:
 
 * Code `0`: Normal, no errors were found in the code scanned and no fatal system errors were encountered. There could have been warnings found in the code, though.
+* Code `249`: Scanning exceeded maximum time allowed.
 * Code `250`: Scanning was completed, but some errors were found in the code.
 * Code `251`: Exiting due to a system problem.
 * Code `252`: A fatal problem with GitHub was encountered leading to an exit.
@@ -302,6 +303,13 @@ For example:
 
 > {"skip-draft-prs":true}
 
+### Maximum execution time
+
+`vip-go-ci` supports setting maximum execution time. Once the maximum time is exceeded, it will exit with an error code (see [above](#exit-codes)).
+
+Use the `--max-exec-time` option to set maximum execution time (in seconds):
+
+> ./vip-go-ci.php ... --max-exec-time=600
 
 ### Informational URL
 
@@ -627,4 +635,28 @@ support-level-field-name=       ; Support level field name in meta API
 ```
 
 This file is not included, and needs to be configured manually. When that is complete, the tests can be re-run.
+
+## Setting GitHub Build Status
+
+`vip-go-ci` ships with an independent utility, `github-commit-status.php` to set [GitHub build status indication](https://docs.github.com/en/rest/reference/repos#statuses) for a particular commit. Use the utility to indicate that `vip-go-ci` is currently scanning or what the results of the scanning was (success, failure). The utility will communicate directly with the GitHub API to set the status.
+
+Example usage:
+
+```
+php ~/vip-go-ci-tools/vip-go-ci/github-commit-status.php --repo-owner=`repo-owner` --repo-name=`repo-name` --github-token=`token` --github-commit=`commit-ID` --build-context=`vip-go-ci` --build-description="Analysis is in progress" --build-state="pending"
+
+php ~/vip-go-ci-tools/vip-go-ci/vip-go-ci.php ... 
+
+if [ "$?" == "0" ] ; then
+	export BUILD_STATE="success"
+	export BUILD_DESCRIPTION="No problems were identified"
+else
+	export BUILD_STATE="failure"
+	export BUILD_DESCRIPTION="Problems were identified"
+fi
+
+php ~/vip-go-ci-tools/vip-go-ci/github-commit-status.php --repo-owner=`repo-owner` --repo-name=`repo-name` --github-token=`token` --github-commit=`commit-ID` --build-context=`vip-go-ci` --build-description="$BUILD_DESCRIPTION" --build-state="$BUILD_STATE"
+```
+
+Note that the utility supports setting options via [environmental variables](#configuring-via-environmental-variables), just like `vip-go-ci` does.
 

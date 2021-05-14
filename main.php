@@ -127,14 +127,9 @@ function vipgoci_run() {
 	}
 
 	/*
-	 * Set how to deal with errors:
-	 * Report all errors, and display them.
+	 * Configure PHP error reporting.
 	 */
-	ini_set( 'error_log', '' );
-
-	error_reporting( E_ALL );
-	ini_set( 'display_errors', 'on' );
-
+	vipgoci_set_php_error_reporting();
 
 	// Set with a temp value for now, user value set later
 	$vipgoci_debug_level = 0;
@@ -144,11 +139,13 @@ function vipgoci_run() {
 	$options_recognized =
 		array(
 			'env-options:',
+			'debug-level:',
+			'max-exec-time:',
+			'enforce-https-urls:',
 			'repo-owner:',
 			'repo-name:',
 			'commit:',
 			'token:',
-			'enforce-https-urls:',
 			'skip-draft-prs:',
 			'results-comments-sort:',
 			'review-comments-max:',
@@ -209,7 +206,6 @@ function vipgoci_run() {
 			'autoapprove-label:',
 			'autoapprove-php-nonfunctional-changes:',
 			'help',
-			'debug-level:',
 		);
 
 	/*
@@ -264,16 +260,22 @@ function vipgoci_run() {
 			"\t" . 'Note that if option --autoapprove is specified, --autoapprove-label needs to' . PHP_EOL .
 			"\t" . 'be specified as well.' . PHP_EOL .
 			PHP_EOL .
-			"\t" . '--repo-owner=STRING            Specify repository owner, can be an organization' . PHP_EOL .
-			"\t" . '--repo-name=STRING             Specify name of the repository' . PHP_EOL .
-			"\t" . '--commit=STRING                Specify the exact commit to scan (SHA)' . PHP_EOL .
-			"\t" . '--token=STRING                 The access-token to use to communicate with GitHub' . PHP_EOL .
+			"\t" . '--debug-level=NUMBER           Specify minimum debug-level of messages to print' . PHP_EOL .
+			"\t" . '                                -- higher number indicates more detailed debugging-messages.' . PHP_EOL .
+			"\t" . '                               Default is zero' . PHP_EOL .
+			PHP_EOL .
+			"\t" . '--max-exec-time=NUMBER         Maximum execution time for vip-go-ci, in seconds. Will exit if exceeded.' . PHP_EOL .
 			PHP_EOL .
 			"\t" . '--enforce-https-urls=BOOL      Check and enforce that all URLs provided to parameters ' .PHP_EOL .
 			"\t" . '                               that expect a URL are HTTPS and not HTTP. Default is true.' . PHP_EOL .
 			PHP_EOL .
 			"\t" . '--skip-draft-prs=BOOL          If true, skip scanning of all Pull-Requests that are in draft mode.' . PHP_EOL .
 			"\t" . '                               Default is false.' . PHP_EOL .
+			PHP_EOL .
+			"\t" . '--repo-owner=STRING            Specify repository owner, can be an organization' . PHP_EOL .
+			"\t" . '--repo-name=STRING             Specify name of the repository' . PHP_EOL .
+			"\t" . '--commit=STRING                Specify the exact commit to scan (SHA)' . PHP_EOL .
+			"\t" . '--token=STRING                 The access-token to use to communicate with GitHub' . PHP_EOL .
 			PHP_EOL .
 			"\t" . '--results-comments-sort=BOOL     Sort issues found according to severity, from high ' . PHP_EOL .
 			"\t" . '                               to low, before submitting to GitHub. Not sorted by default.' . PHP_EOL .
@@ -432,11 +434,7 @@ function vipgoci_run() {
 			"\t" . '                               and --post-generic-pr-support-comments via options file' . PHP_EOL .
 			"\t" . '                               ("' . VIPGOCI_OPTIONS_FILE_NAME . '") placed in root of the repository.' . PHP_EOL .
 			"\t" . '--repo-options-allowed=STRING  Limits the options that can be set via repository options ' . PHP_EOL .
-			"\t" . '                               configuration file. Values are separated by commas. ' . PHP_EOL .
-			PHP_EOL .
-			"\t" . '--debug-level=NUMBER           Specify minimum debug-level of messages to print' . PHP_EOL .
-			"\t" . '                                -- higher number indicates more detailed debugging-messages.' . PHP_EOL .
-			"\t" . '                               Default is zero' . PHP_EOL;
+			"\t" . '                               configuration file. Values are separated by commas. ' . PHP_EOL;
 
 		exit( VIPGOCI_EXIT_USAGE_ERROR );
 	}
@@ -684,6 +682,25 @@ function vipgoci_run() {
 
 	// Set the value to global
 	$vipgoci_debug_level = $options['debug-level'];
+
+	/*
+	 * Handle optional --max-exec-time parameter
+	 */
+	vipgoci_option_integer_handle(
+		$options,
+		'max-exec-time',
+		0,
+		null
+	);
+
+	if ( $options['max-exec-time'] < 0 ) {
+		vipgoci_sysexit(
+			'Invalid value for --max-exec-time; must be positive',
+			array(
+				'max-exec-time'	=> $options['max-exec-time'],
+			)
+		);
+	}
 
 	/*
 	 * Maximum number of inline comments posted to
@@ -1548,6 +1565,29 @@ function vipgoci_run() {
 	}
 
 	/*
+	 * Set maximum execution time if
+	 * configured to do so.
+	 */
+	if ( $options['max-exec-time'] > 0 ) {
+		/*
+		 * Set max execution time, minus the
+		 * time already spent.
+		 */
+		$tmp_runtime = time() - $startup_time;
+
+		vipgoci_set_maximum_exec_time(
+			$options['max-exec-time'] - $tmp_runtime,
+			VIPGOCI_GITHUB_WEB_BASE_URL . '/' .
+				rawurlencode( $options['repo-owner'] ) . '/' .
+				rawurlencode( $options['repo-name'] ) . '/' .
+				'commit/' . 
+				rawurlencode( $options['commit'] )
+		);
+
+		unset( $tmp_runtime );
+	}
+
+	/*
 	 * Log that we started working,
 	 * and the arguments provided as well.
 	 *
@@ -1557,7 +1597,7 @@ function vipgoci_run() {
 	vipgoci_log(
 		'Starting up...',
 		array(
-			'options' => vipgoci_options_sensitive_clean(
+			'options'	=> vipgoci_options_sensitive_clean(
 				$options
 			)
 		)
@@ -2186,7 +2226,6 @@ function vipgoci_run() {
 			'results'		=> $results,
 		)
 	);
-
 
 	/*
 	 * Determine exit code.
