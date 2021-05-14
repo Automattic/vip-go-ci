@@ -576,7 +576,7 @@ function vipgoci_phpcs_scan_commit(
 			 */
 			$files_issues_arr[ $file_name ] = [];
 
-			$commit_skipped_files[ $pr_item->number ] = get_skipped_files(
+			$commit_skipped_files[ $pr_item->number ] = vipgoci_get_skipped_files(
 				$commit_skipped_files[ $pr_item->number ],
 				$tmp_scanning_results[ 'validation' ]
 			);
@@ -994,7 +994,7 @@ function vipgoci_phpcs_scan_commit(
  * @todo move this to the main/skipped logic?
  * @return mixed
  */
-function get_skipped_files( $skipped, $validation ) {
+function vipgoci_get_skipped_files( $skipped, $validation ) {
 	$skipped[ 'issues' ] = array_merge_recursive( $skipped['issues'], $validation[ 'issues' ] );
 	$skipped[ 'total' ] += $validation[ 'total' ];
 

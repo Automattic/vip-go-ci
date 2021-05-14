@@ -52,23 +52,6 @@ function vipgoci_stats_init( $options, $prs_implicated, &$results ) {
 	}
 }
 
-/**
- * @param array $results
- * @param int $pr_number
- * @param string $result_type
- *
- * @return mixed
- */
-function get_result_type( $results, $pr_number, $result_type )
-{
-	if ( empty( $results[ $result_type ][ $pr_number ] ) ) {
-		$results[ $result_type ][ $pr_number ] = $results[ $result_type ];
-	}
-
-	return $results;
-}
-
-
 /*
  * A simple function to keep record of how
  * much a time a particular action takes to execute.
