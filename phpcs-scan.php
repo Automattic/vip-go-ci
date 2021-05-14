@@ -212,26 +212,18 @@ function vipgoci_phpcs_scan_single_file(
 		$file_contents
 	);
 
-	/**
-	 * @todo Ariana validate lines number here!
-	 * Not execute if the line number is higher than the config
-	 * Get rid of the temp file
-		array(
-			'file_issues_arr_master'	=> $file_issues_arr_master,
-			'file_issues_str'		=> $file_issues_str,
-			'temp_file_name'		=> $temp_file_name,
-		);
+	$validation = vipgoci_validate( $temp_file_name, $file_name );
+
+	/*
+	 * Skips the phpcs scan if the validation contains any issue
 	 */
-	if ( false === vipgoci_validate_number_of_lines( $temp_file_name ) ) {
-		$skipped = [
-			'file_issues_arr_master'=>
-			[
-				'totals' => [ VIPGOCI_SKIPPED_FILES => 1 ],
-				'files' => [ $temp_file_name => 'Too many lines' ]
-			],
-			'file_issues_str'		=> null,
+	if ( 0 !== $validation[ 'total' ] ) {
+		$skipped = array(
+			'file_issues_arr_master'	=> array(),
+			'file_issues_str'		=> array(),
 			'temp_file_name'		=> $temp_file_name,
-		];
+			'validation'            => $validation
+		);
 		unlink( $temp_file_name );
 
 		return $skipped;
@@ -323,6 +315,7 @@ function vipgoci_phpcs_scan_single_file(
 		'file_issues_arr_master'	=> $file_issues_arr_master,
 		'file_issues_str'		=> $file_issues_str,
 		'temp_file_name'		=> $temp_file_name,
+		'validation'            => $validation
 	);
 }
 
@@ -563,6 +556,34 @@ function vipgoci_phpcs_scan_commit(
 			$file_name
 		);
 
+		if ( 0 !== $tmp_scanning_results[ 'validation' ][ 'total' ] ) {
+			vipgoci_log(
+				VIPGOCI_SKIPPED_FILES,
+				array(
+					'repo_owner' => $repo_owner,
+					'repo_name' => $repo_name,
+					'commit_id' => $commit_id,
+					'file' => $file_name,
+				),
+				0,
+				true
+			);
+
+			/*
+			 * No further processing in case of invalid file
+			 * Set the skipped file
+			 * Set an empty array just in case to avoid warnings.
+			 */
+			$files_issues_arr[ $file_name ] = [];
+
+			$commit_skipped_files[ $pr_item->number ] = get_skipped_files(
+				$commit_skipped_files[ $pr_item->number ],
+				$tmp_scanning_results[ 'validation' ]
+			);
+
+			continue;
+		}
+
 		$file_issues_arr_master =
 			$tmp_scanning_results['file_issues_arr_master'];
 
@@ -571,45 +592,6 @@ function vipgoci_phpcs_scan_commit(
 
 		$temp_file_name =
 			$tmp_scanning_results['temp_file_name'];
-
-		/**
-		 * @todo Ariana
-		 * Shouldnt count the skipped files
-		 * Create class to count skipped
-		 */
-		/*
-		 * Keep statistics on number of lines
-		 * and files we scan.
-		 */
-		if ( ! empty( $file_issues_arr_master['totals'][VIPGOCI_SKIPPED_FILES] ) ) {
-			/**
-			 * @todo Ariana get error message
-			 */
-			vipgoci_log(
-				$file_issues_arr_master['totals'][VIPGOCI_SKIPPED_FILES] . 'lines allowed exceeded',
-				array(
-					'repo_owner' => $repo_owner,
-					'repo_name' => $repo_name,
-					'commit_id' => $commit_id,
-					'file_issues_arr_master' => $file_issues_arr_master,
-					'file_issues_str' => $file_issues_str,
-				),
-				0,
-				true
-			);
-
-			/**
-			 * @todo ariana
-			 * No further processing in case of an error.
-			 *
-			 * Set an empty array just in case to avoid warnings.
-			 */
-			$files_issues_arr[ $file_name ] = [];
-//			$commit_issues_file[ $file_name ] = 'Number of lines exceeded';
-			/** @var $pr_item $commit_skipped_files */
-			$commit_skipped_files[ $pr_item->number ][ $file_name ] = 'Number of lines exceeded';
-			continue;
-		}
 
 		vipgoci_stats_per_file(
 			$options,
@@ -1004,6 +986,19 @@ function vipgoci_phpcs_scan_commit(
 	gc_collect_cycles();
 
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'phpcs_scan_commit' );
+}
+
+/**
+ * @param $skipped
+ * @param $validation
+ * @todo move this to the main/skipped logic?
+ * @return mixed
+ */
+function get_skipped_files( $skipped, $validation ) {
+	$skipped[ 'issues' ] = array_merge_recursive( $skipped['issues'], $validation[ 'issues' ] );
+	$skipped[ 'total' ] += $validation[ 'total' ];
+
+	return $skipped;
 }
 
 /*

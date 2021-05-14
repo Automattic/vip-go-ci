@@ -1833,7 +1833,7 @@ function vipgoci_run() {
 			$options,
 			$results['issues'],
 			$results['stats'][ VIPGOCI_STATS_PHPCS ],
-			$results[VIPGOCI_SKIPPED_FILES]
+			$results[ VIPGOCI_SKIPPED_FILES ]
 		);
 	}
 

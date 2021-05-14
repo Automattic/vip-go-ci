@@ -13,8 +13,15 @@ function vipgoci_stats_init( $options, $prs_implicated, &$results ) {
 		 * Initialize array for stats and
 		 * results of scanning, if needed.
 		 */
-		set_result_type( $results, $pr_item->number, 'issues');
-		set_result_type( $results, $pr_item->number, VIPGOCI_SKIPPED_FILES);
+		if ( empty( $results['issues'][ $pr_item->number ] ) ) {
+			$results['issues'][ $pr_item->number ] = array();
+		}
+
+		if ( empty( $results[ VIPGOCI_SKIPPED_FILES ][ $pr_item->number ] ) ) {
+			$results[ VIPGOCI_SKIPPED_FILES ][ $pr_item->number ] = array(
+				'issues' => array(), 'total' => 0
+			);
+		}
 
 		foreach (
 			array(
@@ -52,11 +59,13 @@ function vipgoci_stats_init( $options, $prs_implicated, &$results ) {
  *
  * @return mixed
  */
-function set_result_type( array&$results, int $pr_number, string $result_type ): void
+function get_result_type( $results, $pr_number, $result_type )
 {
 	if ( empty( $results[ $result_type ][ $pr_number ] ) ) {
-		$results[ $result_type ][ $pr_number ] = array();
+		$results[ $result_type ][ $pr_number ] = $results[ $result_type ];
 	}
+
+	return $results;
 }
 
 
