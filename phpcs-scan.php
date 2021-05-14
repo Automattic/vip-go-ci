@@ -224,46 +224,74 @@ function vipgoci_phpcs_scan_single_file(
 		)
 	);
 
+	$retry_cnt = 0;
 
-	$file_issues_str = vipgoci_phpcs_do_scan(
-		$temp_file_name,
-		$options['phpcs-path'],
-		$options['phpcs-standard'],
-		$options['phpcs-sniffs-exclude'],
-		$options['phpcs-severity'],
-		$options['phpcs-runtime-set']
+	/*
+	 * Try to PHPCS scan, retry
+	 * a few times if needed.
+	 */
+	do {
+		if ( $retry_cnt > 0 ) {
+			/*
+			 * If retrying, log and wait a second.
+			 */
+			vipgoci_log(
+				'Retrying PHPCS scan...',
+				array(
+					'filename' => $file_name,
+				)
+			);
+
+			sleep( 1 );
+		}
+
+		$file_issues_str = vipgoci_phpcs_do_scan(
+			$temp_file_name,
+			$options['phpcs-path'],
+			$options['phpcs-standard'],
+			$options['phpcs-sniffs-exclude'],
+			$options['phpcs-severity'],
+			$options['phpcs-runtime-set']
+		);
+
+		$file_issues_arr_master = json_decode(
+			$file_issues_str,
+			true
+		);
+
+		/*
+		 * Detect errors and report
+		 */
+		if ( null === $file_issues_arr_master ) {
+			vipgoci_log(
+				'Error when running PHPCS',
+				array(
+					'filename'
+						=> $file_name,
+
+					'file_issues_str'
+						=> $file_issues_str,
+				)
+			);
+		}
+
+		else {
+			vipgoci_log(
+				'PHPCS returned results',
+				array(
+					'filename'	=> $file_name,
+					'issues_stats'	=>
+						$file_issues_arr_master['totals'],
+				)
+			);
+		}
+	} while (
+		( null === $file_issues_arr_master ) &&
+		( $retry_cnt++ <= 2 )
 	);
 
 	/* Get rid of temporary file */
 	unlink( $temp_file_name );
-
-	$file_issues_arr_master = json_decode(
-		$file_issues_str,
-		true
-	);
-
-	/*
-	 * Detect errors and report
-	 */
-	if ( null === $file_issues_arr_master ) {
-		vipgoci_log(
-			'Error when running PHPCS',
-			array(
-				'file_issues_str' => $file_issues_str,
-			)
-		);
-	}
-
-	else {
-		vipgoci_log(
-			'PHPCS returned results',
-			array(
-				'filename'	=> $file_name,
-				'issues_stats'	=>
-					$file_issues_arr_master['totals'],
-			)
-		);
-	}
 
 	return array(
 		'file_issues_arr_master'	=> $file_issues_arr_master,
