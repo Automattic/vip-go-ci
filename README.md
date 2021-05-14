@@ -638,7 +638,7 @@ This file is not included, and needs to be configured manually. When that is com
 
 ## Setting GitHub Build Status
 
-`vip-go-ci` comes with an independent utility, `github-commit-status.php` to set [GitHub build status indication](https://docs.github.com/en/rest/reference/repos#statuses) for a particular commit. Use the utility to indicate that `vip-go-ci` is currently scanning or what the results of the scanning was (success, failure). The utility will communicate directly with the GitHub API to set the status.
+`vip-go-ci` ships with an independent utility, `github-commit-status.php` to set [GitHub build status indication](https://docs.github.com/en/rest/reference/repos#statuses) for a particular commit. Use the utility to indicate that `vip-go-ci` is currently scanning or what the results of the scanning was (success, failure). The utility will communicate directly with the GitHub API to set the status.
 
 Example usage:
 
@@ -654,6 +654,7 @@ else
 	export BUILD_STATE="failure"
 	export BUILD_DESCRIPTION="Problems were identified"
 fi
+
 php ~/vip-go-ci-tools/vip-go-ci/github-commit-status.php --repo-owner=`repo-owner` --repo-name=`repo-name` --github-token=`token` --github-commit=`commit-ID` --build-context=`vip-go-ci` --build-description="$BUILD_DESCRIPTION" --build-state="$BUILD_STATE"
 ```
 
