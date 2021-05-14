@@ -693,6 +693,15 @@ function vipgoci_run() {
 		null
 	);
 
+	if ( $options['max-exec-time'] < 0 ) {
+		vipgoci_sysexit(
+			'Invalid value for --max-exec-time; must be positive',
+			array(
+				'max-exec-time'	=> $options['max-exec-time'],
+			)
+		);
+	}
+
 	/*
 	 * Maximum number of inline comments posted to
 	 * Github with one review -- from 5 to 100.
