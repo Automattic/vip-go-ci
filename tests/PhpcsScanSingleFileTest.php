@@ -160,6 +160,7 @@ final class PhpcsScanSingleFileTest extends TestCase {
 
 			'file_issues_str'	=> '',
 			'temp_file_name'	=> $scan_results['temp_file_name'],
+			'validation'        => [ 'total' => 0 ]
 		);
 
 		$expected_results['file_issues_str'] = json_encode(

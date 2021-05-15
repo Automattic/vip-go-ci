@@ -70,6 +70,11 @@ final class StatsStatsInitTest extends TestCase {
 						),
 						// no hashes-api; not supposed to initialize that
 					),
+				),
+
+				'skipped-files' => array(
+					100 => array( 'issues' => array(), 'total' => 0 ),
+					110 => array( 'issues' => array(), 'total' => 0 )
 				)
 			),
 			$stats_arr
