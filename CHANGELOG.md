@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 - [#169](https://github.com/Automattic/vip-go-ci/pull/169): Support for build status indication.
 - [#170](https://github.com/Automattic/vip-go-ci/pull/170): Improved PHPCS logging.
 - [#172](https://github.com/Automattic/vip-go-ci/pull/172): Retry PHPCS scan on failure
+- [#173](https://github.com/Automattic/vip-go-ci/pull/173): Make messages in IRC queue unique before sending
 
 ## [1.0.4](https://github.com/Automattic/vip-go-ci/releases/tag/1.0.4) - 2021-05-10
 
