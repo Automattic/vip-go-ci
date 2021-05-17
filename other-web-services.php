@@ -22,6 +22,52 @@ function vipgoci_irc_api_alert_queue(
 	$msg_queue[] = $message;
 }
 
+/*
+ * Make messages in IRC queue unique, but add
+ * a prefix to those messages that were not unique
+ * indicating how many they were.
+ */
+function vipgoci_irc_api_alert_queue_unique( array $msg_queue ) {
+	$msg_queue_unique = array_unique(
+		$msg_queue
+	);
+
+	/*
+	 * If all messages were unique,
+	 * nothing more to do.
+	 */
+	if (
+		count( $msg_queue ) ===
+		count( $msg_queue_unique )
+	) {
+		return $msg_queue;
+	}
+
+	/*
+	 * Not all unique, count values
+	 */
+	$msg_queue_count = array_count_values(
+		$msg_queue
+	);
+
+	$msg_queue_new = array();
+
+	/*
+	 * Add prefix where needed.
+	 */
+	foreach( $msg_queue_count as $msg => $cnt ) {
+		$msg_prefix = '';
+
+		if ( $cnt > 1 ) {
+			$msg_prefix = '(' . $cnt . 'x) ';
+		}
+
+		$msg_queue_new[] = $msg_prefix . $msg;
+	}
+
+	return $msg_queue_new;
+}
+
 /**
  * Empty IRC message queue and send off
  * to the IRC API.
@@ -36,6 +82,10 @@ function vipgoci_irc_api_alerts_send(
 ) {
 	$msg_queue = vipgoci_irc_api_alert_queue(
 		null, true
+	);
+
+	$msg_queue = vipgoci_irc_api_alert_queue_unique(
+		$msg_queue
 	);
 
 	vipgoci_log(
