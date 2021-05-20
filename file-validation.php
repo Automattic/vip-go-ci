@@ -21,7 +21,7 @@
 function vipgoci_validate( $temp_file_name, $file_name ) {
 	$validation_result = array();
 
-	if ( vipgoci_is_maximum_number_of_lines_valid( $temp_file_name ) ) {
+	if ( false === vipgoci_is_number_of_lines_valid( $temp_file_name ) ) {
 		$validation_result[ 'issues' ][ VIPGOCI_VALIDATION_MAXIMUM_LINES ] = [ $file_name ];
 	}
 
@@ -38,7 +38,7 @@ function vipgoci_validate( $temp_file_name, $file_name ) {
  *
  * @return bool
  */
-function vipgoci_is_maximum_number_of_lines_valid( $temp_file_name ) {
+function vipgoci_is_number_of_lines_valid( $temp_file_name ) {
 	/**
 	 * Calculates the file number of lines
 	 *
@@ -60,5 +60,5 @@ function vipgoci_is_maximum_number_of_lines_valid( $temp_file_name ) {
 
 	vipgoci_log( 'Validation file number of lines output', array( 'output' => $output ), 0 );
 
-	return $output > VIPGOCI_VALIDATION_MAXIMUM_LINES_LIMIT;
+	return $output < VIPGOCI_VALIDATION_MAXIMUM_LINES_LIMIT;
 }
