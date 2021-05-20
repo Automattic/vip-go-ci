@@ -215,7 +215,7 @@ function vipgoci_phpcs_scan_single_file(
 	$validation = vipgoci_validate( $temp_file_name, $file_name );
 
 	/*
-	 * Skips the phpcs scan if the validation contains any issue
+	 * Skips the phpcs scan when the validation contains any issue
 	 */
 	if ( 0 !== $validation[ 'total' ] ) {
 		$skipped = array(
