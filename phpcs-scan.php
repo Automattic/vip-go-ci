@@ -988,19 +988,6 @@ function vipgoci_phpcs_scan_commit(
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'phpcs_scan_commit' );
 }
 
-/**
- * @param $skipped
- * @param $validation
- * @todo move this to the main/skipped logic?
- * @return mixed
- */
-function vipgoci_get_skipped_files( $skipped, $validation ) {
-	$skipped[ 'issues' ] = array_merge_recursive( $skipped['issues'], $validation[ 'issues' ] );
-	$skipped[ 'total' ] += $validation[ 'total' ];
-
-	return $skipped;
-}
-
 /*
  * Ask PHPCS for a list of all standards installed.
  * Returns with an array of those standards.

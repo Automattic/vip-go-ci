@@ -198,7 +198,8 @@ function vipgoci_lint_parse_results(
 function vipgoci_lint_scan_commit(
 	$options,
 	&$commit_issues_submit,
-	&$commit_issues_stats
+	&$commit_issues_stats,
+	&$commit_skipped_files
 ) {
 	$repo_owner = $options['repo-owner'];
 	$repo_name  = $options['repo-name'];
@@ -279,6 +280,23 @@ function vipgoci_lint_scan_commit(
 			$file_contents
 		);
 
+		/**
+		 * Validates the file
+		 * and if it's not valid, the scans skips it
+		 */
+		$validation = vipgoci_validate( $temp_file_name, $filename );
+		if ( 0 !== $validation[ 'total' ] ) {
+			unlink( $temp_file_name );
+
+			vipgoci_set_prs_implicated_skipped_files( $prs_implicated, $commit_skipped_files, $validation );
+			vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'lint_scan_single_file' );
+
+			continue;
+		}
+		/**
+		 * The lint scan will only proceed if the file is valid
+		 *
+		 */
 		/*
 		 * Keep statistics of what we do.
 		 */

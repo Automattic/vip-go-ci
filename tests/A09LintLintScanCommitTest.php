@@ -103,6 +103,7 @@ final class A09LintLintScanCommitTest extends TestCase {
 
 		$issues_submit = array();
 		$issues_stat = array();
+		$issues_skipped = array();
 
 		/*
 		 * Get PRs implicated and warm up stats.
@@ -121,6 +122,8 @@ final class A09LintLintScanCommitTest extends TestCase {
 			][
 				'error'
 			] = 0;
+
+			$issues_skipped[ $pr_item->number ][ 'issues' ][ 'max-lines' ][ 'total' ] = 0;
 		}
 
 		if (
@@ -138,7 +141,8 @@ final class A09LintLintScanCommitTest extends TestCase {
 		vipgoci_lint_scan_commit(
 			$this->options,
 			$issues_submit,
-			$issues_stat
+			$issues_stat,
+			$issues_skipped
 		);
 
 		vipgoci_unittests_output_unsuppress();
@@ -224,6 +228,7 @@ final class A09LintLintScanCommitTest extends TestCase {
 
 		$issues_submit = array();
 		$issues_stat = array();
+		$issues_skipped = array();
 
 		/*
 		 * Get PRs implicated and warm up stats.
@@ -242,6 +247,8 @@ final class A09LintLintScanCommitTest extends TestCase {
 			][
 				'error'
 			] = 0;
+
+			$issues_skipped[ $pr_item->number ][ 'issues' ][ 'max-lines' ][ 'total' ] = 0;
 		}
 
 		if (
@@ -259,7 +266,8 @@ final class A09LintLintScanCommitTest extends TestCase {
 		vipgoci_lint_scan_commit(
 			$this->options,
 			$issues_submit,
-			$issues_stat
+			$issues_stat,
+			$issues_skipped
 		);
 
 		vipgoci_unittests_output_unsuppress();

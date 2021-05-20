@@ -1819,7 +1819,8 @@ function vipgoci_run() {
 		vipgoci_lint_scan_commit(
 			$options,
 			$results['issues'],
-			$results['stats'][ VIPGOCI_STATS_LINT ]
+			$results['stats'][ VIPGOCI_STATS_LINT ],
+			$results[ VIPGOCI_SKIPPED_FILES ]
 		);
 	}
 
