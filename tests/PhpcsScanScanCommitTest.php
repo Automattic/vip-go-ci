@@ -99,7 +99,7 @@ final class PhpcsScanScanCommitTest extends TestCase {
 
 		$issues_submit = array();
 		$issues_stats = array();
-		$skipped_files = array();
+		$issues_skipped = array();
 
 		vipgoci_unittests_output_suppress();
 
@@ -118,6 +118,8 @@ final class PhpcsScanScanCommitTest extends TestCase {
 			][
 				'error'
 			] = 0;
+
+			$issues_skipped[ $pr_item->number ][ 'issues' ][ 'max-lines' ][ 'total' ] = 0;
 		}
 
 
@@ -139,7 +141,7 @@ final class PhpcsScanScanCommitTest extends TestCase {
 			$this->options,
 			$issues_submit,
 			$issues_stats,
-			$skipped_files
+			$issues_skipped
 		);
 
 		vipgoci_unittests_output_unsuppress();
@@ -237,6 +239,7 @@ final class PhpcsScanScanCommitTest extends TestCase {
 
 		$issues_submit = array();
 		$issues_stats = array();
+		$issues_skipped = array();
 
 		vipgoci_unittests_output_suppress();
 
@@ -255,6 +258,8 @@ final class PhpcsScanScanCommitTest extends TestCase {
 			][
 				'error'
 			] = 0;
+
+			$issues_skipped[ $pr_item->number ][ 'issues' ][ 'max-lines' ][ 'total' ] = 0;
 		}
 
 		vipgoci_unittests_output_unsuppress();
@@ -297,7 +302,7 @@ final class PhpcsScanScanCommitTest extends TestCase {
 			$this->options,
 			$issues_submit,
 			$issues_stats,
-			$skipped_files
+			$issues_skipped
 		);
 
 		vipgoci_unittests_output_unsuppress();
@@ -393,6 +398,7 @@ final class PhpcsScanScanCommitTest extends TestCase {
 
 		$issues_submit = array();
 		$issues_stats = array();
+		$issues_skipped = array();
 
 		vipgoci_unittests_output_suppress();
 
@@ -417,6 +423,8 @@ final class PhpcsScanScanCommitTest extends TestCase {
 			][
 				'warning'
 			] = 0;
+
+			$issues_skipped[ $pr_item->number ][ 'issues' ][ 'max-lines' ][ 'total' ] = 0;
 		}
 
 
@@ -438,7 +446,7 @@ final class PhpcsScanScanCommitTest extends TestCase {
 			$this->options,
 			$issues_submit,
 			$issues_stats,
-			$skipped_files
+			$issues_skipped
 		);
 
 		vipgoci_unittests_output_unsuppress();
@@ -566,6 +574,7 @@ final class PhpcsScanScanCommitTest extends TestCase {
 
 		$issues_submit = array();
 		$issues_stats = array();
+		$issues_skipped = array();
 
 		vipgoci_unittests_output_suppress();
 
@@ -592,6 +601,8 @@ final class PhpcsScanScanCommitTest extends TestCase {
 			][
 				'error'
 			] = 0;
+
+			$issues_skipped[ $pr_item->number ][ 'issues' ][ 'max-lines' ][ 'total' ] = 0;
 		}
 
 		vipgoci_unittests_output_suppress();
@@ -618,7 +629,7 @@ final class PhpcsScanScanCommitTest extends TestCase {
 			$this->options,
 			$issues_submit,
 			$issues_stats,
-			$skipped_files
+			$issues_skipped
 		);
 
 		vipgoci_unittests_output_unsuppress();
@@ -691,6 +702,7 @@ final class PhpcsScanScanCommitTest extends TestCase {
 
 		$issues_submit = array();
 		$issues_stats = array();
+		$issues_skipped = array();
 
 
 		/*
@@ -767,6 +779,8 @@ final class PhpcsScanScanCommitTest extends TestCase {
 			][
 				'warning'
 			] = 0;
+
+			$issues_skipped[ $pr_item->number ][ 'issues' ][ 'max-lines' ][ 'total' ] = 0;
 		}
 
 
@@ -788,7 +802,7 @@ final class PhpcsScanScanCommitTest extends TestCase {
 			$this->options,
 			$issues_submit,
 			$issues_stats,
-			$skipped_files
+			$issues_skipped
 		);
 
 		vipgoci_unittests_output_unsuppress();
