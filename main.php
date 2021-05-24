@@ -130,11 +130,7 @@ function vipgoci_run() {
 	 * Set how to deal with errors:
 	 * Report all errors, and display them.
 	 */
-	ini_set( 'error_log', '' );
-
-	error_reporting( E_ALL );
-	ini_set( 'display_errors', 'on' );
-
+	vipgoci_set_php_error_reporting();
 
 	// Set with a temp value for now, user value set later
 	$vipgoci_debug_level = 0;
