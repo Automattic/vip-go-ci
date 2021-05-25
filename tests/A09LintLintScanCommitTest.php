@@ -9,6 +9,7 @@ final class A09LintLintScanCommitTest extends TestCase {
 		'php-path'				=> null,
 		'commit-test-lint-scan-commit-1'	=> null,
 		'commit-test-lint-scan-commit-2'	=> null,
+		'commit-test-lint-scan-commit-3'	=> null,
 	);
 
 	var $options_git = array(
@@ -95,7 +96,7 @@ final class A09LintLintScanCommitTest extends TestCase {
 		if ( false === $this->options['local-git-repo'] ) {
 			$this->markTestSkipped(
 				'Could not set up git repository: ' .
-					vipgoci_unittests_output_get()
+				vipgoci_unittests_output_get()
 			);
 
 			return;
@@ -118,9 +119,9 @@ final class A09LintLintScanCommitTest extends TestCase {
 
 		foreach( $prs_implicated as $pr_item ) {
 			$issues_stat[
-				$pr_item->number
+			$pr_item->number
 			][
-				'error'
+			'error'
 			] = 0;
 
 			$issues_skipped[ $pr_item->number ][ 'issues' ][ 'max-lines' ][ 'total' ] = 0;
@@ -220,7 +221,7 @@ final class A09LintLintScanCommitTest extends TestCase {
 		if ( false === $this->options['local-git-repo'] ) {
 			$this->markTestSkipped(
 				'Could not set up git repository: ' .
-					vipgoci_unittests_output_get()
+				vipgoci_unittests_output_get()
 			);
 
 			return;
@@ -243,9 +244,9 @@ final class A09LintLintScanCommitTest extends TestCase {
 
 		foreach( $prs_implicated as $pr_item ) {
 			$issues_stat[
-				$pr_item->number
+			$pr_item->number
 			][
-				'error'
+			'error'
 			] = 0;
 
 			$issues_skipped[ $pr_item->number ][ 'issues' ][ 'max-lines' ][ 'total' ] = 0;
@@ -311,7 +312,7 @@ final class A09LintLintScanCommitTest extends TestCase {
 						)
 					),
 					/*
-					 * Note: tests3/myfile1.php should be skipped, 
+					 * Note: tests3/myfile1.php should be skipped,
 					 * according to --lint-skip-folders option
 					 * set above.
 					 */
@@ -332,5 +333,103 @@ final class A09LintLintScanCommitTest extends TestCase {
 		unset( $this->options['commit'] );
 	}
 
+	/**
+	 * @covers ::vipgoci_lint_scan_commit
+	 */
+	public function testLintWontScanNumberOfLinesInvalid() {
 
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( 'github-token', 'token' ),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
+		$this->options['commit'] = $this->options['commit-test-lint-scan-commit-3'];
+
+		vipgoci_unittests_output_suppress();
+
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped(
+				'Could not set up git repository: ' .
+				vipgoci_unittests_output_get()
+			);
+
+			return;
+		}
+
+		$issues_submit = array();
+		$issues_stat = array();
+		$issues_skipped = array();
+
+		/*
+		 * Get PRs implicated and warm up stats.
+		 */
+		$prs_implicated = vipgoci_github_prs_implicated(
+			$this->options['repo-owner'],
+			$this->options['repo-name'],
+			$this->options['commit'],
+			$this->options['github-token'],
+			$this->options['branches-ignore']
+		);
+
+		foreach( $prs_implicated as $pr_item ) {
+			$issues_stat[ $pr_item->number ][ 'error' ] = 0;
+			$issues_skipped[ $pr_item->number ] = $this->getDefaultSkippedFilesDueIssuesMock();
+		}
+
+		if (
+			( ! isset( $pr_item->number ) ) ||
+			( ! is_numeric( $pr_item->number ) )
+		) {
+			$this->markTestSkipped(
+				'Could not get Pull-Request information for the test: ' .
+				vipgoci_unittests_output_get()
+			);
+
+			return;
+		}
+
+
+		vipgoci_lint_scan_commit(
+			$this->options,
+			$issues_submit,
+			$issues_stat,
+			$issues_skipped
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		$expected_issues_skipped = array(
+			39 => array(
+				'issues' => array(
+					'max-lines' => array ( 'test1/myfile-1.php' )
+				),
+				'total' => 1
+			)
+		);
+
+		$this->assertSame(
+			$expected_issues_skipped,
+			$issues_skipped
+		);
+
+		unset( $this->options['commit'] );
+	}
+
+
+	private function getDefaultSkippedFilesDueIssuesMock() {
+		return array(
+			'issues' => array(),
+			'total' => 0
+		);
+	}
 }
