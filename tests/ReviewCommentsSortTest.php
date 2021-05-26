@@ -1,10 +1,14 @@
 <?php
 
+namespace Vipgoci\tests;
+
 require_once( __DIR__ . '/IncludesForTests.php' );
 
 use PHPUnit\Framework\TestCase;
 
-final class ResultsSortBySeverityTest extends TestCase {
+// phpcs:disable PSR1.Files.SideEffects
+
+final class ReviewCommentsSortBySeverityTest extends TestCase {
 	protected function setUp(): void {
 		$this->results = array(
 			'issues' => array(
@@ -146,7 +150,7 @@ final class ResultsSortBySeverityTest extends TestCase {
 	 * @covers ::vipgoci_results_sort_by_severity
 	 */
 	public function testSortingNotConfigured() {
-		$this->options['results-comments-sort'] = false;
+		$this->options['review-comments-sort'] = false;
 		$this->results_before = $this->results;
 
 		vipgoci_unittests_output_suppress();
@@ -173,7 +177,7 @@ final class ResultsSortBySeverityTest extends TestCase {
 	 * @covers ::vipgoci_results_sort_by_severity
 	 */
 	public function testSortingCorrect1() {
-		$this->options['results-comments-sort'] = true;
+		$this->options['review-comments-sort'] = true;
 
 		vipgoci_unittests_output_suppress();
 

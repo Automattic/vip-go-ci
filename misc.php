@@ -1138,7 +1138,7 @@ function vipgoci_results_sort_by_severity(
 	&$results
 ) {
 
-	if ( true !== $options['results-comments-sort'] ) {
+	if ( true !== $options['review-comments-sort'] ) {
 		return;
 	}
 

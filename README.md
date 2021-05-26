@@ -479,12 +479,12 @@ One can sort the review comments posted according to severity of the issue found
 
 The option can be used in this way:
 
-> ./vip-go-ci.php --results-comments-sort=true
+> ./vip-go-ci.php --review-comments-sort=true
 
 This option can be configured via repository-config file as well:
 
 ```
-{"results-comments-sort":true}
+{"review-comments-sort":true}
 ```
 
 #### Including severity in review comments
