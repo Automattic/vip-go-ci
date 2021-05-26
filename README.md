@@ -4,7 +4,7 @@ Continuous integration for VIP Go repositories.
 
 `vip-go-ci` is a PHP-program that can be called for latest commits pushed to Pull-Requests on GitHub, looking for problems in the code using PHP linting, [PHPCS](https://github.com/squizlabs/PHP_CodeSniffer/), and a [SVG scanner](https://github.com/Automattic/vip-go-svg-sanitizer) -- and then posting back to GitHub comments and reviews, detailing the issues found. `vip-go-ci` can also automatically approve Pull-Requests that contain already-approved files (registered in a special database) and/or contain file-types that are approvable by default.
 
-`vip-go-ci` is to be called from the commandline, using several arguments specifying the repository and commit-ID to scan, and various other options. During execution, `vip-go-ci` will provide a detailed log of its actions and what it encounters. The program expects a fully-functional git-repository to be stored locally on the computer running it (i.e., all branches are available), were from it can extract various information.
+`vip-go-ci` is to be called from the commandline, using several arguments specifying the repository and commit-ID to scan, and various other options. During execution, `vip-go-ci` will provide a detailed log of its actions and what it encounters. The program expects a fully-functional git-repository to be stored locally on the computer running it (i.e., all branches are available), where from it can extract various information.
 
 It has different behaviours for different scanning-methods. For PHP linting, it will loop through every file existing in the code-base, and post a generic Pull-Request comment for any issues it finds with the PHP-code. In case of PHPCS scanning, however, it will scan only the files affected by the Pull-Request using PHPCS, and for any issues outputted by PHPCS, post a comment on the commit with the issue, in the form of a 'GitHub Review' (this includes inline comments and a review-message). SVG scanning behaves similar to PHPCS scanning. What scanning is performed can be customised on the command-line.
 
@@ -24,9 +24,9 @@ This program comes with a small utility, `tools-init.sh`, that will install PHPC
 
 After the tools have been installed, `vip-go-ci.php` can be run on your local console to scan a particular commit in a particular repository:
 
-> ./vip-go-ci.php --repo-owner=`repo-owner` --repo-name=`repo-name` --commit=`commit-ID` --token=`GitHub-Access-Token` --local-git-repo=`Local-Git-Repo` --phpcs-path=`phpcs-path` --phpcs=true --lint=true --autoapprove=true --autoapprove-filetypes=`File-Types`
+> ./vip-go-ci.php --repo-owner=`repo-owner` --repo-name=`repo-name` --commit=`commit-ID` --token=`GitHub-Access-Token` --local-git-repo=`Local-Git-Repo` --phpcs-path=`phpcs-path` --phpcs=true --lint=true --autoapprove=true --autoapprove-filetypes=`File-Types` --autoapprove-label=`[Status] Auto Approved` --informational-url=`Informational-URL`
 
--- where `repo-owner` is the GitHub repository-owner, `repo-name` is the name of the repository, `commit-ID` is the SHA-hash identifying the commit, `Local-Git-Repo` is a path to the git-repository used to scan, `GitHub-Access-Token` is a access-token created on GitHub that allows reading and commenting on the repository in question, `path-to-phpcs` is a full path to PHPCS, and `File-Types` refers to a list of file-types to be approved (such as `css,txt,pdf`). 
+-- where `repo-owner` is the GitHub repository-owner, `repo-name` is the name of the repository, `commit-ID` is the SHA-hash identifying the commit, `Local-Git-Repo` is a path to the git-repository used to scan, `GitHub-Access-Token` is a access-token created on GitHub that allows reading and commenting on the repository in question, `path-to-phpcs` is a full path to PHPCS, `File-Types` refers to a list of file-types to be approved (such as `css,txt,pdf`), and `Informational-URL` is a page explaining the CI process.
 
 The output from `vip-go-ci` you will get by running the command above should be something like this:
 
