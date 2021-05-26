@@ -4,9 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [1.0.6](https://github.com/Automattic/vip-go-ci/releases/tag/1.0.6) - To be decided
 
+### Fixed
+- [#152](https://github.com/Automattic/vip-go-ci/pull/152): Add status code 100 as valid GitHub post response 
+
 ### Updated
 - [#174](https://github.com/Automattic/vip-go-ci/pull/174): Updating README: Add required parameters to example
-- [#152](https://github.com/Automattic/vip-go-ci/pull/152): Add status code 100 as valid GitHub post response 
 - [#177](https://github.com/Automattic/vip-go-ci/pull/177): Renaming option --results-comments-sort to --review-comments-sort
 - [#179](https://github.com/Automattic/vip-go-ci/pull/179): SVG scanning: Renaming source of issue
 
