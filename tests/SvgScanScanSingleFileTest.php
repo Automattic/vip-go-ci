@@ -117,7 +117,7 @@ final class SvgScanScanSingleFileTest extends TestCase {
 								'line'		=> 8,
 								'severity'	=> 5,
 								'type'		=> 'ERROR',
-								'source'	=> 'WordPressVIPMinimum.Security.SVG.DisallowedTags',
+								'source'	=> 'VipgociInternal.SVG.DisallowedTags',
 								'level'		=> 'ERROR',
 								'fixable'	=> false,
 								'column'	=> 0
@@ -127,7 +127,7 @@ final class SvgScanScanSingleFileTest extends TestCase {
 								'line'		=> 5,
 								'severity'	=> 5,
 								'type'		=> 'ERROR',
-								'source'	=> 'WordPressVIPMinimum.Security.SVG.DisallowedTags',
+								'source'	=> 'VipgociInternal.SVG.DisallowedTags',
 								'level'		=> 'ERROR',
 								'fixable'	=> false,
 								'column'	=> 0
