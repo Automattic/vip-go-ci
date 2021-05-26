@@ -41,7 +41,14 @@ function vipgoci_exit_status( $results ) {
 				return VIPGOCI_EXIT_CODE_ISSUES;
 			}
 		}
+	}
 
+	if ( ! empty( $results['skipped-files'] ) ) {
+		foreach ( $results['skipped-files'] as $pr_number ) {
+			if( 0 < $pr_number[ 'total' ] ) {
+				return VIPGOCI_EXIT_CODE_ISSUES;
+			}
+		}
 	}
 
 	return 0;
