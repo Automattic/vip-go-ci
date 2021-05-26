@@ -277,7 +277,7 @@ function vipgoci_run() {
 			"\t" . '--commit=STRING                Specify the exact commit to scan (SHA)' . PHP_EOL .
 			"\t" . '--token=STRING                 The access-token to use to communicate with GitHub' . PHP_EOL .
 			PHP_EOL .
-			"\t" . '--review-comments-sort=BOOL     Sort issues found according to severity, from high ' . PHP_EOL .
+			"\t" . '--review-comments-sort=BOOL    Sort issues found according to severity, from high ' . PHP_EOL .
 			"\t" . '                               to low, before submitting to GitHub. Not sorted by default.' . PHP_EOL .
 			"\t" . '--review-comments-max=NUMBER   Maximum number of inline comments to submit' . PHP_EOL .
 			"\t" . '                               to GitHub in one review. If the number of ' . PHP_EOL .
