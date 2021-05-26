@@ -283,7 +283,7 @@ function vipgoci_svg_scan_single_file(
 		function( $issue_item ) {
 			$issue_item['severity'] = 5;
 			$issue_item['type'] = 'ERROR';
-			$issue_item['source'] = 'WordPressVIPMinimum.Security.SVG.DisallowedTags';
+			$issue_item['source'] = 'VipgociInternal.SVG.DisallowedTags';
 			$issue_item['level'] = $issue_item['type'];
 			$issue_item['fixable'] = false;
 			$issue_item['column'] = 0;

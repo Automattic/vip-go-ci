@@ -156,8 +156,8 @@ function vipgoci_auto_approval_non_approval(
 				'message'=> VIPGOCI_FILE_IS_APPROVED_MSG,
 
 				'source'
-					=> 'WordPressVIPMinimum.' .
-					'Info.ApprovedHashesToHashesAPI',
+					=> 'VipgociInternal.Info.' .
+					'ApprovedHashesToHashesAPI',
 
 				'severity'	=> 1,
 				'fixable'	=> false,
