@@ -522,7 +522,8 @@ function vipgoci_github_post_url(
 			(
 				( false === $http_delete ) &&
 				( intval( $resp_headers['status'][0] ) !== 200 ) &&
-				( intval( $resp_headers['status'][0] ) !== 201 )
+				( intval( $resp_headers['status'][0] ) !== 201 ) &&
+				( intval( $resp_headers['status'][0] ) !== 100 )
 			)
 
 			||
