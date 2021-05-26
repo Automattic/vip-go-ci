@@ -19,15 +19,12 @@
  *	]
  */
 function vipgoci_validate( $temp_file_name, $file_name ) {
-	$validation_result = array();
+	$validation_result = array( 'total' => 0 );
 
 	if ( false === vipgoci_is_number_of_lines_valid( $temp_file_name ) ) {
 		$validation_result[ 'issues' ][ VIPGOCI_VALIDATION_MAXIMUM_LINES ] = [ $file_name ];
+		$validation_result[ 'total' ] = count( $validation_result[ 'issues' ] );
 	}
-
-	$validation_result[ 'total' ] = ! empty( $validation_result[ 'issues' ] )
-		? count( $validation_result[ 'issues' ] )
-		: 0 ;
 
 	return $validation_result;
 }

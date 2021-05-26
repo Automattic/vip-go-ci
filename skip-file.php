@@ -5,11 +5,10 @@
 /**
  * @param array $skipped
  * @param array $validation
- * @todo move this to the main/skipped logic?
  * @return array
  */
 function vipgoci_get_skipped_files( $skipped, $validation ) {
-	$skipped[ 'issues' ] = array_merge_recursive( $skipped['issues'], $validation[ 'issues' ] );
+	$skipped[ 'issues' ] = array_merge_recursive( $skipped[ 'issues' ], $validation[ 'issues' ] );
 	$skipped[ 'total' ] += $validation[ 'total' ];
 
 	return $skipped;
