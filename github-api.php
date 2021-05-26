@@ -2850,41 +2850,6 @@ function vipgoci_github_pr_review_submit(
 	return;
 }
 
-/**
- * @param $skipped
- *
- * @return string
- */
-function vipgoci_get_skipped_files_message( $skipped )
-{
-	$body = '';
-	foreach ( $skipped[ 'issues' ] as $issue => $file ) {
-		$body .= vipgoci_get_skipped_files_issue_message(
-			implode( '-', $skipped[ 'issues' ][ $issue ] ),
-			$issue
-		);
-	}
-
-	return $body;
-}
-
-/**
- * @param $affected_files
- * @param $issue_type
- * Ex.: ****\n**skipped-files**- Files exceeded the limit of number of lines (15000)\n-fileName.php
- * @return string
- */
-function vipgoci_get_skipped_files_issue_message( $affected_files, $issue_type)
-{
-	return sprintf(
-		'****%s**%s**- %s%s',
-		PHP_EOL,
-		VIPGOCI_VALIDATION[ $issue_type ],
-		PHP_EOL,
-		$affected_files
-	);
-}
-
 /*
  * Dismiss a particular review
  * previously submitted to a Pull-Request.

@@ -38,3 +38,39 @@ function vipgoci_set_prs_implicated_skipped_files( $prs_implicated, &$commit_ski
 		vipgoci_set_skipped_file( $commit_skipped_files, $validation, $pr_item->number );
 	}
 }
+
+/**
+ * @param $skipped
+ *
+ * @return string
+ */
+function vipgoci_get_skipped_files_message( $skipped ) {
+	$body = '****' . PHP_EOL . '**' . VIPGOCI_SKIPPED_FILES . '**' . PHP_EOL;
+	foreach ( $skipped[ 'issues' ] as $issue => $file ) {
+		$body .= vipgoci_get_skipped_files_issue_message(
+			$skipped[ 'issues' ][ $issue ],
+			$issue
+		);
+	}
+
+	return $body;
+}
+
+/**
+ * @param string $affected_files
+ * @param string $issue_type
+ *
+ * Get Markdown Skipped File error message
+ *
+ * @return string
+ */
+function vipgoci_get_skipped_files_issue_message( $affected_files, $issue_type ) {
+	$affected_files = implode( PHP_EOL . ' -', $affected_files );
+
+	return sprintf(
+		'%s:%s -%s',
+		VIPGOCI_VALIDATION[ $issue_type ],
+		PHP_EOL,
+		$affected_files
+	);
+}
