@@ -1,8 +1,12 @@
 <?php
 
+namespace Vipgoci\tests;
+
 require_once( __DIR__ . '/IncludesForTests.php' );
 
 use PHPUnit\Framework\TestCase;
+
+// phpcs:disable PSR1.Files.SideEffects
 
 final class VipgociSkipFileTest extends TestCase {
 	/**
@@ -123,7 +127,7 @@ final class VipgociSkipFileTest extends TestCase {
 	 * @covers ::vipgoci_set_prs_implicated_skipped_files
 	 */
 	public function testSetPRsImplicatedSkippedFilesWillSetCorrectValues() {
-		$pr = new stdClass();
+		$pr = new \stdClass();
 		$pr->number = 8;
 		$prs_implicated = array( 8 => $pr);
 		$commit_skipped_files = array(
