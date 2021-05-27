@@ -601,6 +601,10 @@ function vipgoci_phpcs_scan_commit(
 		$temp_file_name =
 			$tmp_scanning_results['temp_file_name'];
 
+		/*
+		 * Keep statistics on number of lines
+		 * and files we scan.
+		 */
 		vipgoci_stats_per_file(
 			$options,
 			$file_name,

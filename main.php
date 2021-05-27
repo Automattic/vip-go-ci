@@ -135,8 +135,7 @@ function vipgoci_run() {
 	}
 
 	/*
-	 * Set how to deal with errors:
-	 * Report all errors, and display them.
+	 * Configure PHP error reporting.
 	 */
 	vipgoci_set_php_error_reporting();
 
@@ -148,11 +147,13 @@ function vipgoci_run() {
 	$options_recognized =
 		array(
 			'env-options:',
+			'debug-level:',
+			'max-exec-time:',
+			'enforce-https-urls:',
 			'repo-owner:',
 			'repo-name:',
 			'commit:',
 			'token:',
-			'enforce-https-urls:',
 			'skip-draft-prs:',
 			'results-comments-sort:',
 			'review-comments-max:',
@@ -213,7 +214,6 @@ function vipgoci_run() {
 			'autoapprove-label:',
 			'autoapprove-php-nonfunctional-changes:',
 			'help',
-			'debug-level:',
 		);
 
 	/*
