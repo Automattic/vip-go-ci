@@ -46,6 +46,7 @@ function vipgoci_exit_status( $results ) {
 	if ( ! empty( $results['skipped-files'] ) ) {
 		foreach ( $results['skipped-files'] as $pr_number ) {
 			if( 0 < $pr_number[ 'total' ] ) {
+				// Results contains skipped files due issues, return non-zero
 				return VIPGOCI_EXIT_CODE_ISSUES;
 			}
 		}
