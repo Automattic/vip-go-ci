@@ -124,7 +124,7 @@ final class A09LintLintScanCommitTest extends TestCase {
 			'error'
 			] = 0;
 
-			$issues_skipped[ $pr_item->number ][ 'issues' ][ 'max-lines' ][ 'total' ] = 0;
+			$issues_skipped[ $pr_item->number ][ 'issues' ][ 'total' ] = 0;
 		}
 
 		if (
@@ -249,7 +249,7 @@ final class A09LintLintScanCommitTest extends TestCase {
 			'error'
 			] = 0;
 
-			$issues_skipped[ $pr_item->number ][ 'issues' ][ 'max-lines' ][ 'total' ] = 0;
+			$issues_skipped[ $pr_item->number ][ 'issues' ][ 'total' ] = 0;
 		}
 
 		if (

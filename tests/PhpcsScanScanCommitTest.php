@@ -120,7 +120,8 @@ final class PhpcsScanScanCommitTest extends TestCase {
 			'error'
 			] = 0;
 
-			$issues_skipped[ $pr_item->number ][ 'issues' ][ 'max-lines' ][ 'total' ] = 0;
+			$issues_skipped[ $pr_item->number ][ 'issues' ][ 'max-lines' ] = array();
+			$issues_skipped[ $pr_item->number ][ 'issues' ][ 'total' ] = 0;
 		}
 
 
@@ -260,7 +261,8 @@ final class PhpcsScanScanCommitTest extends TestCase {
 			'error'
 			] = 0;
 
-			$issues_skipped[ $pr_item->number ][ 'issues' ][ 'max-lines' ][ 'total' ] = 0;
+			$issues_skipped[ $pr_item->number ][ 'issues' ][ 'max-lines' ] = array();
+			$issues_skipped[ $pr_item->number ][ 'issues' ][ 'total' ] = 0;
 		}
 
 		vipgoci_unittests_output_unsuppress();
@@ -425,7 +427,8 @@ final class PhpcsScanScanCommitTest extends TestCase {
 			'warning'
 			] = 0;
 
-			$issues_skipped[ $pr_item->number ][ 'issues' ][ 'max-lines' ][ 'total' ] = 0;
+			$issues_skipped[ $pr_item->number ][ 'issues' ][ 'max-lines' ] = array();
+			$issues_skipped[ $pr_item->number ][ 'issues' ][ 'total' ] = 0;
 		}
 
 
@@ -603,7 +606,8 @@ final class PhpcsScanScanCommitTest extends TestCase {
 			'error'
 			] = 0;
 
-			$issues_skipped[ $pr_item->number ][ 'issues' ][ 'max-lines' ][ 'total' ] = 0;
+			$issues_skipped[ $pr_item->number ][ 'issues' ][ 'max-lines' ] = array();
+			$issues_skipped[ $pr_item->number ][ 'issues' ][ 'total' ] = 0;
 		}
 
 		vipgoci_unittests_output_suppress();
@@ -781,7 +785,8 @@ final class PhpcsScanScanCommitTest extends TestCase {
 			'warning'
 			] = 0;
 
-			$issues_skipped[ $pr_item->number ][ 'issues' ][ 'max-lines' ][ 'total' ] = 0;
+			$issues_skipped[ $pr_item->number ][ 'issues' ][ 'max-lines' ] = array();
+			$issues_skipped[ $pr_item->number ][ 'issues' ][ 'total' ] = 0;
 		}
 
 
