@@ -1,5 +1,7 @@
 <?php
-/*
+declare(strict_types=1);
+
+/**
  * Validation applied to verify wether the bot should execute or skip the file specified
  */
 
@@ -18,7 +20,8 @@
  *		'total' => 1
  *	]
  */
-function vipgoci_validate( $temp_file_name, $file_name ) {
+function vipgoci_validate( string $temp_file_name, string $file_name ): array
+{
 	$validation_result = array( 'total' => 0 );
 
 	if ( false === vipgoci_is_number_of_lines_valid( $temp_file_name, $file_name ) ) {
@@ -30,12 +33,13 @@ function vipgoci_validate( $temp_file_name, $file_name ) {
 }
 
 /**
- * @param $temp_file_name
- * Validates if the number of lines is lower than the maximun
+ * @param string $temp_file_name
+ * @param string $file_name
  *
  * @return bool
  */
-function vipgoci_is_number_of_lines_valid( $temp_file_name, $file_name ) {
+function vipgoci_is_number_of_lines_valid( string $temp_file_name, string $file_name ): bool
+{
 	/**
 	 * Calculates the file number of lines
 	 *
