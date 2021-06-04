@@ -24,9 +24,9 @@ This program comes with a small utility, `tools-init.sh`, that will install PHPC
 
 After the tools have been installed, `vip-go-ci.php` can be run on your local console to scan a particular commit in a particular repository:
 
-> ./vip-go-ci.php --repo-owner=`repo-owner` --repo-name=`repo-name` --commit=`commit-ID` --token=`GitHub-Access-Token` --local-git-repo=`Local-Git-Repo` --phpcs-path=`phpcs-path` --phpcs=true --lint=true --autoapprove=true --autoapprove-filetypes=`File-Types` --autoapprove-label=`[Status] Auto Approved` --informational-url=`Informational-URL`
+> ./vip-go-ci.php --repo-owner=`repo-owner` --repo-name=`repo-name` --commit=`commit-ID` --token=`GitHub-Access-Token` --local-git-repo=`Local-Git-Repo` --phpcs-path=`phpcs-path` --phpcs=true --lint=true --autoapprove=true --autoapprove-filetypes=`File-Types` --autoapprove-label=`[Status] Auto Approved` --informational-msg=`Informational-Msg
 
--- where `repo-owner` is the GitHub repository-owner, `repo-name` is the name of the repository, `commit-ID` is the SHA-hash identifying the commit, `Local-Git-Repo` is a path to the git-repository used to scan, `GitHub-Access-Token` is a access-token created on GitHub that allows reading and commenting on the repository in question, `path-to-phpcs` is a full path to PHPCS, `File-Types` refers to a list of file-types to be approved (such as `css,txt,pdf`), and `Informational-URL` is a page explaining the CI process.
+-- where `repo-owner` is the GitHub repository-owner, `repo-name` is the name of the repository, `commit-ID` is the SHA-hash identifying the commit, `Local-Git-Repo` is a path to the git-repository used to scan, `GitHub-Access-Token` is a access-token created on GitHub that allows reading and commenting on the repository in question, `path-to-phpcs` is a full path to PHPCS, `File-Types` refers to a list of file-types to be approved (such as `css,txt,pdf`), and `Informational-Msg` is a message that explains the CI process.
 
 The output from `vip-go-ci` you will get by running the command above should be something like this:
 
@@ -311,15 +311,15 @@ Use the `--max-exec-time` option to set maximum execution time (in seconds):
 
 > ./vip-go-ci.php ... --max-exec-time=600
 
-### Informational URL
+### Informational message
 
 To help users understand better why a bot is posting comments and reviews on their Pull-Requests, and sometimes automatically approving them, it can be helpful to have a bit of information added to the comments `vip-go-ci` posts. This feature serves this purpose.
 
-To have a URL posted, simply run `vip-go-ci` with a `--informational-url` parameter:
+To have a message posted, simply run `vip-go-ci` with a `--informational-msg` parameter:
 
-> ./vip-go-ci.php --informational-url=https://myservice.mycompany.is/info-on-scanning
+> ./vip-go-ci.php --informational-msg="This bot provides automated PHP Linting and PHPCS scanning, read more [here](https://github.com/automattic/vip-go-ci/)."
 
-The URL will be included in any generic Pull-Request comments or Pull-Request reviews submitted.
+The message will be included in any generic Pull-Request comments or Pull-Request reviews submitted.
 
 ### PHPCS configuration
 
