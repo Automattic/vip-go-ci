@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
 - [#174](https://github.com/Automattic/vip-go-ci/pull/174): Updating README: Add required parameters to example
 - [#177](https://github.com/Automattic/vip-go-ci/pull/177): Renaming option --results-comments-sort to --review-comments-sort
 - [#179](https://github.com/Automattic/vip-go-ci/pull/179): SVG scanning: Renaming source of issue
+- [#181](https://github.com/Automattic/vip-go-ci/pull/181): Replace informational URL with a message
 
 ## [1.0.5](https://github.com/Automattic/vip-go-ci/releases/tag/1.0.5) - 2021-05-18
 
