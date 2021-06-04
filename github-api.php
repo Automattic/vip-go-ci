@@ -1654,7 +1654,7 @@ function vipgoci_github_pr_generic_comment_submit_results(
 	$github_token,
 	$commit_id,
 	$results,
-	$informational_url
+	$informational_msg
 ) {
 	$stats_types_to_process = array(
 		VIPGOCI_STATS_LINT,
@@ -1804,12 +1804,9 @@ function vipgoci_github_pr_generic_comment_submit_results(
 		 * If we have informational URL, append that
 		 * and a generic message.
 		 */
-		if ( null !== $informational_url ) {
+		if ( null !== $informational_msg ) {
 			$tmp_postfields_body .=
-				sprintf(
-					VIPGOCI_INFORMATIONAL_MESSAGE,
-					$informational_url
-				) .
+				$informational_msg .
 				"\n\r";
 
 			vipgoci_markdown_comment_add_pagebreak(
@@ -2416,7 +2413,7 @@ function vipgoci_github_pr_review_submit(
 	$github_token,
 	$commit_id,
 	$results,
-	$informational_url,
+	$informational_msg,
 	$github_review_comments_max,
 	$github_review_comments_include_severity
 ) {
@@ -2726,7 +2723,7 @@ function vipgoci_github_pr_review_submit(
 		 * the bot, append it along with a generic
 		 * message.
 		 */
-		if ( null !== $informational_url ) {
+		if ( null !== $informational_msg ) {
 			$github_postfields['body'] .=
 				"\n\r";
 
@@ -2735,11 +2732,7 @@ function vipgoci_github_pr_review_submit(
 			);
 
 
-			$github_postfields['body'] .=
-				sprintf(
-					VIPGOCI_INFORMATIONAL_MESSAGE,
-					$informational_url
-				);
+			$github_postfields['body'] .= $informational_msg;
 		}
 
 

@@ -33,12 +33,6 @@ if ( ! defined( 'VIPGOCI_GITHUB_BASE_URL' ) ) {
  * Various messages.
  */
 
-define( 'VIPGOCI_INFORMATIONAL_MESSAGE',
-					'This bot provides automated ' .
-					'PHP Linting and PHPCS scanning, ' .
-					'read more [here](%s).'
-);
-
 define( 'VIPGOCI_FILE_IS_APPROVED_MSG', 'File is approved in review database ' .
 					'(hashes-to-hashes).' );
 
