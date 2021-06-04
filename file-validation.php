@@ -48,21 +48,32 @@ function vipgoci_is_number_of_lines_valid( string $temp_file_name, string $file_
 	 * the bot won't scan it
 	 */
 	$cmd = sprintf(
-		'wc -l %s | awk \'{print $1;}\'',
+		'wc -l %s | awk \'{print $1;}\' 2>&1',
 		escapeshellcmd( $temp_file_name )
 	);
 
-	$output = ( int ) vipgoci_runtime_measure_shell_exec(
+	vipgoci_log(
+		'Validating file number of lines',
+		array( 'file_name' => $file_name ), 0
+	);
+
+	$output = vipgoci_runtime_measure_shell_exec(
 		$cmd,
 		'file_validation'
 	);
+
+	$output = vipgoci_sanitize_string($output);
 
 	$log_message = sprintf(
 		'Validation number of lines for %s ',
 		$file_name
 	);
 
-	vipgoci_log( $log_message, array( 'output' => $output ), 0 );
+	vipgoci_log( $log_message, array( 'cmd' => $cmd, 'output' => $output ), 0 );
+
+	if ( ! is_numeric( $output ) ) {
+		return false;
+	}
 
 	return $output < VIPGOCI_VALIDATION_MAXIMUM_LINES_LIMIT;
 }
