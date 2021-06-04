@@ -157,7 +157,7 @@ function vipgoci_run() {
 			'dismissed-reviews-exclude-reviews-from-team:',
 			'branches-ignore:',
 			'output:',
-			'informational-url:',
+			'informational-msg:',
 			'post-generic-pr-support-comments:',
 			'post-generic-pr-support-comments-on-drafts:',
 			'post-generic-pr-support-comments-string:',
@@ -314,8 +314,8 @@ function vipgoci_run() {
 			"\t" . '                                                      only works in conjunction with ' . PHP_EOL .
 			PHP_EOL .
 			"\t" . '                                                      --dismissed-reviews-repost-comments' . PHP_EOL .
-			"\t" . '--informational-url=STRING     URL to documentation on what this bot does. Should ' . PHP_EOL .
-			"\t" . '                               start with https:// or https:// ' . PHP_EOL .
+			"\t" . '--informational-msg=STRING     Message to append to GitHub reviews and generic comments. Useful to ' . PHP_EOL .
+			"\t" . '                               explain what the bot does. Can contain HTML or Markdown. ' . PHP_EOL .
 			PHP_EOL .
 			"\t" . '--post-generic-pr-support-comments=BOOL            Whether to post generic comment to Pull-Requests ' . PHP_EOL .
 			"\t" . '                                                   with support-related information for users. Will ' . PHP_EOL .
@@ -726,18 +726,6 @@ function vipgoci_run() {
 		200,
 		range( 0, 500, 1 )
 	);
-
-	/*
-	 * Handle optional --informational-url --
-	 * URL to information on what this bot does.
-	 */
-
-	vipgoci_option_url_handle(
-		$options,
-		'informational-url',
-		null
-	);
-
 
 	/*
 	 * Handle boolean parameters
@@ -2041,7 +2029,7 @@ function vipgoci_run() {
 		$options['token'],
 		$options['commit'],
 		$results,
-		$options['informational-url']
+		$options['informational-msg']
 	);
 
 
@@ -2051,7 +2039,7 @@ function vipgoci_run() {
 		$options['token'],
 		$options['commit'],
 		$results,
-		$options['informational-url'],
+		$options['informational-msg'],
 		$options['review-comments-max'],
 		$options['review-comments-include-severity']
 	);
