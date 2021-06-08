@@ -1804,7 +1804,7 @@ function vipgoci_github_pr_generic_comment_submit_results(
 		 * If we have informational URL, append that
 		 * and a generic message.
 		 */
-		if ( null !== $informational_msg ) {
+		if ( ! empty( $informational_msg ) ) {
 			$tmp_postfields_body .=
 				$informational_msg .
 				"\n\r";
@@ -2723,7 +2723,7 @@ function vipgoci_github_pr_review_submit(
 		 * the bot, append it along with a generic
 		 * message.
 		 */
-		if ( null !== $informational_msg ) {
+		if ( ! empty( $informational_msg ) ) {
 			$github_postfields['body'] .=
 				"\n\r";
 
