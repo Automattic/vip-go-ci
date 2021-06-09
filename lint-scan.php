@@ -199,7 +199,7 @@ function vipgoci_lint_scan_commit(
 	$options,
 	&$commit_issues_submit,
 	&$commit_issues_stats,
-	&$commit_skipped_files
+	array &$commit_skipped_files
 ) {
 	$repo_owner = $options['repo-owner'];
 	$repo_name  = $options['repo-name'];
@@ -259,6 +259,7 @@ function vipgoci_lint_scan_commit(
 
 	/*
 	 * Lint every PHP file existing in the commit
+	 * $commit_tree is an array of files for that commit
 	 */
 
 	foreach( $commit_tree as $filename ) {
@@ -284,7 +285,7 @@ function vipgoci_lint_scan_commit(
 		 * Validates the file
 		 * and if it's not valid, the scans skips it
 		 */
-		$validation = vipgoci_validate( $temp_file_name, $filename );
+		$validation = vipgoci_validate( $temp_file_name, $filename, $commit_id );
 		if ( 0 !== $validation[ 'total' ] ) {
 			unlink( $temp_file_name );
 

@@ -212,7 +212,7 @@ function vipgoci_phpcs_scan_single_file(
 		$file_contents
 	);
 
-	$validation = vipgoci_validate( $temp_file_name, $file_name );
+	$validation = vipgoci_validate( $temp_file_name, $file_name, $options['commit'] );
 
 	/*
 	 * Skips the phpcs scan when the validation contains any issue
