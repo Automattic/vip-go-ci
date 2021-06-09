@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.0.6](https://github.com/Automattic/vip-go-ci/releases/tag/1.0.6) - To be decided
+## [1.0.6](https://github.com/Automattic/vip-go-ci/releases/tag/1.0.6) - 2021-06-09
 
 ### Fixed
 - [#152](https://github.com/Automattic/vip-go-ci/pull/152): Add status code 100 as valid GitHub post response 
