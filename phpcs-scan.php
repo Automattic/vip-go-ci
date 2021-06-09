@@ -526,9 +526,9 @@ function vipgoci_phpcs_scan_commit(
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'phpcs_scan_single_file' );
 
 	foreach ( $pr_item_files_changed['all'] as $file_name ) {
-
 		if (
-			true === in_array(
+			isset( $commit_skipped_files[ $pr_item->number ][ 'issues' ][ VIPGOCI_VALIDATION_MAXIMUM_LINES ] )
+			&& true === in_array(
 				$file_name,
 				$commit_skipped_files[ $pr_item->number ][ 'issues' ][ VIPGOCI_VALIDATION_MAXIMUM_LINES ],
 				true
