@@ -48,9 +48,9 @@ function vipgoci_is_number_of_lines_valid( string $temp_file_name, string $file_
 	 * Verifies if number of lines validation are in the cache
 	 * If so, returns the value
 	 */
-	$cache_key = vipgoci_cache_get_is_number_of_lines_valid_key( $commit_id );
-	$current_cached_value = vipgoci_cache_get_is_number_of_lines_valid( $cache_key );
-	$is_number_of_lines_valid = vipgoci_cache_get_is_number_of_lines_valid_by_file_name( $current_cached_value, $file_name );
+
+	$cache_key = vipgoci_cache_get_is_number_of_lines_valid_key( $file_name, $commit_id );
+	$is_number_of_lines_valid = vipgoci_cache_get_is_number_of_lines_valid( $cache_key );
 	if ( ! is_null( $is_number_of_lines_valid ) ) {
 		return $is_number_of_lines_valid;
 	}
@@ -61,21 +61,36 @@ function vipgoci_is_number_of_lines_valid( string $temp_file_name, string $file_
 	 * the bot won't scan it
 	 */
 	$cmd = sprintf( 'wc -l %s | awk \'{print $1;}\' 2>&1', escapeshellcmd( $temp_file_name ) );
-	vipgoci_log( 'Validating file number of lines', array( 'file_name' => $file_name ) );
+	vipgoci_log( 'Validating number of lines', array( 'file_name' => $file_name ) );
 
 	$output = vipgoci_sanitize_string(
 		vipgoci_runtime_measure_shell_exec( $cmd, 'file_validation' )
 	);
 
 	vipgoci_log(
-		sprintf( 'Validation number of lines ', $file_name ),
-		array( 'file_name' => $file_name, 'cmd' => $cmd, 'output' => $output ), 0
+		'Validation number of lines ',
+		array( 'file_name' => $file_name, 'cmd' => $cmd, 'output' => $output )
 	);
 
 	$is_number_of_lines_valid = vipgoci_verify_number_of_lines_output( $output );
-	vipgoci_cache_set_is_number_of_lines_valid_by_file_name( $cache_key, $current_cached_value, $file_name, $is_number_of_lines_valid );
+
+	vipgoci_cache_set_is_number_of_lines_valid( $cache_key, $is_number_of_lines_valid );
 
 	return $is_number_of_lines_valid;
+}
+
+/**
+ * @param array $cache_key
+ * @param bool $is_number_of_lines_valid
+ *
+ * Sets cache for converted is_number_of_lines_valid
+ */
+function vipgoci_cache_set_is_number_of_lines_valid( array $cache_key, bool $is_number_of_lines_valid ): void
+{
+	vipgoci_cache(
+		$cache_key,
+		$is_number_of_lines_valid === true ? 'true' : 'false'
+	);
 }
 
 /**
@@ -91,72 +106,28 @@ function vipgoci_verify_number_of_lines_output( string $output ): bool
 }
 
 /**
- * @param string $cache_key
- * @param array $cache_value
- * @param string $file_name
- * @param bool $is_number_of_lines_valid
- * Performs caching logic
- * TODO Perhaps this should be in a different file and be "injected" as dependency
- */
-
-function vipgoci_cache_set_is_number_of_lines_valid_by_file_name(
-	string $cache_key,
-	array $cache_value,
-	string $file_name,
-	bool $is_number_of_lines_valid
-): void {
-	// Prepares object
-	$cache_value[ $file_name ] = $is_number_of_lines_valid;
-	// Saves
-	vipgoci_cache_set_is_number_of_lines_valid( $cache_key, $cache_value );
-}
-
-/**
- * @param string $cache_key
- * @param array $cache_value
- * Caches result of number of validation
+ * @param array $cache_key
  *
- */
-function vipgoci_cache_set_is_number_of_lines_valid(
-	string $cache_key,
-	array $cache_value
-): void {
-	vipgoci_cache( $cache_key, $cache_value );
-}
-
-/**
- * @param string $cache_key
- * Gets entire number of lines object from the cache
- *
- * @return array
- */
-function vipgoci_cache_get_is_number_of_lines_valid( string $cache_key ): array
-{
-	$current_cached_value = vipgoci_cache( $cache_key, null );
-
-	return is_array($current_cached_value)? $current_cached_value : array();
-}
-
-/**
- * @param string $$current_cached_value
- * @param string $file_name
- * Verifies if there's validation available for the specific file in the
- * number of lines cache object
+ * Verifies if there's cached validation result available
+ * returns it if it does, else returns null
  *
  * @return bool|null
  */
-function vipgoci_cache_get_is_number_of_lines_valid_by_file_name( array $current_cached_value, string $file_name ): ?bool
+function vipgoci_cache_get_is_number_of_lines_valid( array $cache_key ): ?bool
 {
-	return $current_cached_value[ $file_name ] ?? null;
+	$cached_value = vipgoci_cache( $cache_key );
+
+	return false !== $cached_value? 'true' === $cached_value : null;
 }
 
 /**
+ * @param string $file_name
  * @param string $commit_id
- * Built the cache key for the number of lines validation
+ * Builds the cache key for the number of lines validation
  *
- * @return string
+ * @return array
  */
-function vipgoci_cache_get_is_number_of_lines_valid_key( string $commit_id ): string
+function vipgoci_cache_get_is_number_of_lines_valid_key( string $file_name, string $commit_id ): array
 {
-	return 'number-of-lines-' . $commit_id ;
+	return array( __FUNCTION__, $file_name, $commit_id );
 }

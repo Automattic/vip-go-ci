@@ -588,6 +588,7 @@ function vipgoci_phpcs_scan_commit(
 			 */
 
 			vipgoci_set_skipped_file( $commit_skipped_files, $tmp_scanning_results[ 'validation' ], $pr_item->number );
+			$files_issues_arr[ $file_name ] = [];
 
 			continue;
 		}
