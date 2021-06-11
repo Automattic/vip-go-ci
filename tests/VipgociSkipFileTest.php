@@ -31,20 +31,20 @@ final class VipgociSkipFileTest extends TestCase {
 		);
 
 		$expected_skipped_files = array(
-				'issues' => array(
-                    'max-lines' => array(
-                        'MyFailedClass1.php',
-	                    'MyFailedClass2.php',
-	                    'MyFailedClass3.php'
-                    )
-				),
-				'total' => 3
+			'total' => 3,
+			'issues' => array(
+                'max-lines' => array(
+                    'MyFailedClass1.php',
+                    'MyFailedClass2.php',
+                    'MyFailedClass3.php',
+                ),
+			),
 		);
 
 		sort( $expected_skipped_files[ 'issues' ][ 'max-lines' ] );
 		sort( $skipped_files[ 'issues' ][ 'max-lines' ] );
 
-		$this->assertEquals(
+		$this->assertSame(
 			$expected_skipped_files,
 			$skipped_files
 		);
@@ -77,7 +77,7 @@ final class VipgociSkipFileTest extends TestCase {
 			),
 		);
 
-		$this->assertEquals(
+		$this->assertSame(
 			$expected_skipped_files,
 			$skipped_files
 		);

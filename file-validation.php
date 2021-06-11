@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * Validation applied to verify wether the bot should execute or skip the file specified
+ * Validation applied to verify wether the bot should scan or skip the file specified
  */
 
 /**
