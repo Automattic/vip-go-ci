@@ -233,18 +233,6 @@ function vipgoci_lint_scan_commit(
 		)
 	);
 
-	// Fetch list of files that exist in the commit
-	$commit_tree = vipgoci_gitrepo_fetch_tree(
-		$options,
-		$commit_id,
-		array(
-			'file_extensions'
-				=> array( 'php' ),
-			'skip_folders'
-				=> $options['lint-skip-folders'],
-		)
-	);
-
 	// Ask for all Pull-Requests that this commit is part of
 	$prs_implicated = vipgoci_github_prs_implicated(
 		$repo_owner,
@@ -260,7 +248,9 @@ function vipgoci_lint_scan_commit(
 	 * Lint every PHP file existing in the commit
 	 */
 
-	foreach( $commit_tree as $filename ) {
+	$commit_tree = $commit_info->files;
+	foreach( $commit_tree as $file ) {
+		$filename = $file->filename;
 		vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'lint_scan_single_file' );
 
 		$file_contents = vipgoci_gitrepo_fetch_committed_file(
