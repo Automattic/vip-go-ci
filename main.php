@@ -6,7 +6,7 @@
  * @codeCoverageIgnore
  */
 function vipgoci_help_print( $argv ) {
-	print 'Usage: ' . $argv[0] . PHP_EOL .
+	print 'Usage: ' . $argv[0] . ' [OPTION]...' . PHP_EOL .
 		PHP_EOL .
 		"\t" . 'Options --repo-owner, --repo-name, --commit, --token, --local-git-repo, --phpcs-path are' . PHP_EOL .
 		"\t" . 'mandatory, while others are optional.' . PHP_EOL .
