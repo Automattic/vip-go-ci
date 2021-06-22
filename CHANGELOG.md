@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ### Updated
 - [#183](https://github.com/Automattic/vip-go-ci/pull/183): Refine help message and options
+- [#185](https://github.com/Automattic/vip-go-ci/pull/185): Upgrade phpcs-variable-analysis to 2.11.1
 
 ## [1.0.6](https://github.com/Automattic/vip-go-ci/releases/tag/1.0.6) - 2021-06-09
 
