@@ -1,6 +1,346 @@
 <?php
 
 /**
+ * Print help message.
+ *
+ * @codeCoverageIgnore
+ */
+function vipgoci_help_print( $argv ) {
+	print 'Usage: ' . $argv[0] . ' [OPTION]...' . PHP_EOL .
+		PHP_EOL .
+		"\t" . 'Options --repo-owner, --repo-name, --commit, --token, --local-git-repo, --phpcs-path are' . PHP_EOL .
+		"\t" . 'mandatory, while others are optional.' . PHP_EOL .
+		PHP_EOL .
+		"\t" . 'Note that if option --autoapprove is specified, --autoapprove-label needs to' . PHP_EOL .
+		"\t" . 'be specified as well.' . PHP_EOL .
+		PHP_EOL .
+		'General configuration:' . PHP_EOL .
+		"\t" . '--help                         Displays this message' . PHP_EOL .
+		"\t" . '--debug-level=NUMBER           Specify minimum debug-level of messages to print' . PHP_EOL .
+		"\t" . '                                -- higher number indicates more detailed debugging-messages.' . PHP_EOL .
+		"\t" . '                               Default is zero' . PHP_EOL .
+		"\t" . '--max-exec-time=NUMBER         Maximum execution time for vip-go-ci, in seconds. Will exit if exceeded.' . PHP_EOL .
+		"\t" . '--enforce-https-urls=BOOL      Check and enforce that all URLs provided to parameters ' .PHP_EOL .
+		"\t" . '                               that expect a URL are HTTPS and not HTTP. Default is true.' . PHP_EOL .
+		"\t" . '--skip-draft-prs=BOOL          If true, skip scanning of all Pull-Requests that are in draft mode.' . PHP_EOL .
+		"\t" . '                               Default is false.' . PHP_EOL .
+		"\t" . '--branches-ignore=STRING,...   What branches to ignore -- useful to make sure' . PHP_EOL .
+		"\t" . '                               some branches never get scanned. Separate branches' . PHP_EOL .
+		"\t" . '                               with commas.' . PHP_EOL .
+		"\t" . '--local-git-repo=FILE          The local git repository to use for direct access to code.' . PHP_EOL .
+		PHP_EOL .
+		'Environmental & repo configuration:' . PHP_EOL .
+		"\t" . '--env-options=STRING           Specifies configuration options to be read from environmental' . PHP_EOL .
+		"\t" . '                               variables -- any variable can be specified. For instance, with' . PHP_EOL .
+		"\t" . '                               --env-options="repo-owner=U_ROWNER,output=U_FOUTPUT" specified' . PHP_EOL .
+		"\t" . '                               vip-go-ci will attempt to read the --repo-owner and --output' . PHP_EOL .
+		"\t" . '                               from the $U_ROWNER and $U_FOUTPUT environmental variables,' . PHP_EOL .
+		"\t" . '                               respectively. This is useful for environments, such as' . PHP_EOL .
+		"\t" . '                               TeamCity or GitHub Actions, where vital configuration.' . PHP_EOL .
+		"\t" . '                               are specified via environmental variables.' . PHP_EOL .
+		"\t" . '--repo-options=BOOL            Whether to allow configuring of certain configuration parameters' . PHP_EOL .
+		"\t" . '                               via options file ("' . VIPGOCI_OPTIONS_FILE_NAME . '") placed in' . PHP_EOL .
+		"\t" . '                               root of the repository.' . PHP_EOL .
+		"\t" . '--repo-options-allowed=STRING  Limits the options that can be set via repository options' . PHP_EOL .
+		"\t" . '                               configuration file. Values are separated by commas. Default' . PHP_EOL .
+		"\t" . '                               are all options supported (see README.md).' . PHP_EOL .
+		PHP_EOL .
+		'GitHub configuration:' . PHP_EOL .
+		"\t" . '--repo-owner=STRING            Specify repository owner, can be an organization.' . PHP_EOL .
+		"\t" . '--repo-name=STRING             Specify name of the repository.' . PHP_EOL .
+		"\t" . '--commit=STRING                Specify the exact commit to scan (SHA).' . PHP_EOL .
+		"\t" . '--token=STRING                 The access-token to use to communicate with GitHub.' . PHP_EOL .
+		PHP_EOL .
+		'PHP Linting configuration:' . PHP_EOL .
+		"\t" . '--lint=BOOL                    Whether to do PHP linting. Default is true.' . PHP_EOL .
+		"\t" . '--lint-skip-folders=STRING     Specify folders relative to root of the git repository in which' . PHP_EOL .
+		"\t" . '                               files should not be PHP linted. Values are comma separated.' . PHP_EOL .
+		"\t" . '--lint-skip-folders-in-repo-options-file=BOOL   Whether to allow specifying folders that are not' . PHP_EOL .
+		"\t" . '                                                to be PHP Linted in a file in root of repository' . PHP_EOL .
+		"\t" . '                                                (.vipgoci_lint_skip_folders). Folders should be' . PHP_EOL .
+		"\t" . '                                                separated by newlines.' . PHP_EOL .
+		"\t" . '--php-path=FILE                Full path to PHP. If not specified the default in $PATH will be' . PHP_EOL .
+		"\t" . '                               used instead.' . PHP_EOL .
+		PHP_EOL .
+		'PHPCS configuration:' . PHP_EOL .
+		"\t" . '--phpcs=BOOL                   Whether to run PHPCS. Default is true.' . PHP_EOL .
+		"\t" . '--phpcs-path=FILE              Full path to PHPCS script.' . PHP_EOL .
+		"\t" . '--phpcs-standard=STRING        Specify which PHPCS standard(s) to use. Separate by commas.' . PHP_EOL .
+		"\t" . '--phpcs-severity=NUMBER        Specify severity for PHPCS.' . PHP_EOL .
+		"\t" . '--phpcs-sniffs-include=ARRAY   Specify which sniffs to include when PHPCS scanning,' . PHP_EOL .
+		"\t" . '                               should be an array with items separated by commas.' . PHP_EOL .
+		"\t" . '--phpcs-sniffs-exclude=ARRAY   Specify which sniffs to exclude from PHPCS scanning,' . PHP_EOL .
+		"\t" . '                               should be an array with items separated by commas.' . PHP_EOL .
+		"\t" . '--phpcs-runtime-set=STRING     Specify --runtime-set values passed on to PHPCS' . PHP_EOL .
+		"\t" . '                               -- expected to be a comma-separated value string of' . PHP_EOL .
+		"\t" . '                               key-value pairs.' . PHP_EOL .
+		"\t" . '                               For example: --phpcs-runtime-set="key1 value1,key2 value2"' . PHP_EOL .
+		"\t" . '--phpcs-skip-scanning-via-labels-allowed=BOOL    Whether to allow users to skip PHPCS' . PHP_EOL .
+		"\t" . '                                                 scanning of Pull-Requests via labels' . PHP_EOL .
+		"\t" . '                                                 attached to them. The label should be' . PHP_EOL .
+		"\t" . '                                                 named "skip-phpcs-scan".' . PHP_EOL .
+		"\t" . '--phpcs-skip-folders=STRING    Specify folders relative to root of the git repository in which' . PHP_EOL .
+		"\t" . '                               files are not to be scanned using PHPCS. Values are comma' . PHP_EOL .
+		"\t" . '                               separated.' . PHP_EOL .
+		"\t" . '--phpcs-skip-folders-in-repo-options-file=BOOL   Whether to allow specifying folders that are not' . PHP_EOL .
+		"\t" . '                                                 to be PHPCS scanned to be specified in file in root' . PHP_EOL .
+		"\t" . '                                                 of repository (.vipgoci_phpcs_skip_folders).' . PHP_EOL .
+		"\t" . '                                                 Folders should be separated by newlines.' . PHP_EOL .
+		"\t" . '--output=FILE                  Where to save PHPCS output.' . PHP_EOL .
+		PHP_EOL .
+		'SVG scanning configuration:' . PHP_EOL .
+		"\t" . '--svg-checks=BOOL              Enable or disable SVG checks, both auto-approval of SVG' . PHP_EOL .
+		"\t" . '                               files and problem checking of these files. Note that if' . PHP_EOL .
+		"\t" . '                               auto-approvals are turned off globally, no auto-approval' . PHP_EOL .
+		"\t" . '                               is performed for SVG files.' . PHP_EOL .
+		"\t" . '--svg-scanner-path=FILE        Path to SVG scanning tool. Should return similar output' . PHP_EOL .
+		"\t" . '                               as PHPCS.' . PHP_EOL .
+		PHP_EOL .
+		'Auto approve configuration:' . PHP_EOL .
+		"\t" . '--autoapprove=BOOL             Whether to auto-approve Pull-Requests that fulfil' . PHP_EOL .
+		"\t" . '                               certain conditions -- see README.md for details.' . PHP_EOL .
+		"\t" . '--autoapprove-filetypes=STRING Specify what file-types can be auto-' . PHP_EOL .
+		"\t" . '                               approved. PHP files cannot be specified.' . PHP_EOL .
+		"\t" . '--autoapprove-php-nonfunctional-changes=BOOL    For autoapprovals, also consider' . PHP_EOL .
+		"\t" . '                                                PHP files approved that contain' . PHP_EOL .
+		"\t" . '                                                only non-functional changes, such as' . PHP_EOL .
+		"\t" . '                                                whitespacing and comment changes.' . PHP_EOL .
+		"\t" . '--autoapprove-label=STRING     String to use for labels when auto-approving.' . PHP_EOL .
+		PHP_EOL .
+		'Hashes API configuration:' . PHP_EOL .
+		"\t" . '--hashes-api=BOOL              Whether to do hashes-to-hashes API verfication with' . PHP_EOL .
+		"\t" . '                               individual PHP files found to be altered in' . PHP_EOL .
+		"\t" . '                               scanned Pull-Requests.' . PHP_EOL .
+		"\t" . '--hashes-api-url=STRING        URL to hashes-to-hashes HTTP API root' . PHP_EOL .
+		"\t" . '                               -- note that it should not include any specific' . PHP_EOL .
+		"\t" . '                               paths to individual parts of the API.' . PHP_EOL .
+		"\t" . '--hashes-oauth-token=STRING,' . PHP_EOL .
+		"\t" . '--hashes-oauth-token-secret=STRING,' . PHP_EOL .
+		"\t" . '--hashes-oauth-consumer-key=STRING,' . PHP_EOL .
+		"\t" . '--hashes-oauth-consumer-secret=STRING' . PHP_EOL .
+		"\t" . '                               OAuth 1.0 token, token secret, consumer key and' . PHP_EOL .
+		"\t" . '                               consumer secret needed for hashes-to-hashes HTTP requests.' . PHP_EOL .
+		"\t" . '                               All required for hashes-to-hashes requests.' . PHP_EOL .
+		PHP_EOL .
+		'GitHub reviews & generic comments configuration:' . PHP_EOL .
+		"\t" . '--review-comments-sort=BOOL    Sort issues found according to severity, from high' . PHP_EOL .
+		"\t" . '                               to low, before submitting to GitHub. Not sorted by default.' . PHP_EOL .
+		"\t" . '--review-comments-max=NUMBER   Maximum number of inline comments to submit' . PHP_EOL .
+		"\t" . '                               to GitHub in one review. If the number of' . PHP_EOL .
+		"\t" . '                               comments exceed this number, additional reviews' . PHP_EOL .
+		"\t" . '                               will be submitted.' . PHP_EOL .
+		"\t" . '--review-comments-total-max=NUMBER  Maximum number of inline comments submitted to'   . PHP_EOL .
+		"\t" . '                                    a single Pull-Request by the program -- includes' . PHP_EOL .
+		"\t" . '                                    comments from previous executions. A value of' . PHP_EOL .
+		"\t" . '                                    \'0\' indicates no limit.' . PHP_EOL .
+		"\t" . '--review-comments-ignore=STRING     Specify which result comments to ignore' . PHP_EOL .
+		"\t" . '                                    -- e.g. useful if one type of message is to be ignored' . PHP_EOL .
+		"\t" . '                                    rather than a whole PHPCS sniff. Should be a' . PHP_EOL .
+		"\t" . '                                    whole string with items separated by \"|||\".' . PHP_EOL .
+		"\t" . '--review-comments-include-severity=BOOL  Whether to include severity level with' . PHP_EOL .
+		"\t" . '                                         each review comment. Default is false.' . PHP_EOL .
+		PHP_EOL .
+		"\t" . '--dismiss-stale-reviews=BOOL   Dismiss any reviews associated with Pull-Requests' . PHP_EOL .
+		"\t" . '                               that we process which have no active comments.' . PHP_EOL .
+		"\t" . '--dismissed-reviews-repost-comments=BOOL  When avoiding double-posting comments,' . PHP_EOL .
+		"\t" . '                                          do not take into consideration comments' . PHP_EOL .
+		"\t" . '                                          posted against reviews that have now been' . PHP_EOL .
+		"\t" . '                                          dismissed. Setting this to true entails' . PHP_EOL .
+		"\t" . '                                          that comments from dismissed reviews will' . PHP_EOL .
+		"\t" . '                                          be posted again, should the underlying issue' . PHP_EOL .
+		"\t" . '                                          be detected during the run.' . PHP_EOL .
+		"\t" . '--dismissed-reviews-exclude-reviews-from-team=STRING  With this parameter set,' . PHP_EOL .
+		"\t" . '                                                      comments that are part of reviews' . PHP_EOL .
+		"\t" . '                                                      dismissed by members of the teams specified,' . PHP_EOL .
+		"\t" . '                                                      would be taken into consideration when' . PHP_EOL .
+		"\t" . '                                                      avoiding double-posting; they would be' . PHP_EOL .
+		"\t" . '                                                      excluded. Note that this parameter' . PHP_EOL .
+		"\t" . '                                                      only works in conjunction with' . PHP_EOL .
+		"\t" . '                                                      --dismissed-reviews-repost-comments .' . PHP_EOL .
+		"\t" . '--informational-msg=STRING     Message to append to GitHub reviews and generic comments. Useful to' . PHP_EOL .
+		"\t" . '                               explain what the bot does. Can contain HTML or Markdown.' . PHP_EOL .
+		PHP_EOL .
+		'Generic support comments configuration:' . PHP_EOL .
+		"\t" . '--post-generic-pr-support-comments=BOOL            Whether to post generic comment to Pull-Requests' . PHP_EOL .
+		"\t" . '                                                   with support-related information for users. Will' . PHP_EOL .
+		"\t" . '                                                   be posted only once per Pull-Request.' . PHP_EOL .
+		"\t" . '--post-generic-pr-support-comments-on-drafts=BOOL  Determine if to post generic comment to draft' . PHP_EOL .
+		"\t" . '                                                   Pull-Requests also. Default is true.' . PHP_EOL .
+		"\t" . '--post-generic-pr-support-comments-string=STRING   String to use when posting support-comment.' . PHP_EOL .
+		"\t" . '--post-generic-pr-support-comments-skip-if-label-exists=STRING  If the specified label exists on' . PHP_EOL .
+		"\t" . '                                                                the Pull-Request, do not post support' . PHP_EOL .
+		"\t" . '                                                                comment.' . PHP_EOL .
+		"\t" . '--post-generic-pr-support-comments-branches=ARRAY  Only post support-comments to Pull-Requests' . PHP_EOL .
+		"\t" . '                                                   with the target branches specified. The' . PHP_EOL .
+		"\t" . '                                                   parameter can be a string with one value, or' . PHP_EOL .
+		"\t" . '                                                   comma separated. A single "any" value will' . PHP_EOL .
+		"\t" . '                                                   cause the message to be posted to any' . PHP_EOL .
+		"\t" . '                                                   branch.' . PHP_EOL .
+		"\t" . '--post-generic-pr-support-comments-repo-meta-match=ARRAY   Only post generic support' . PHP_EOL .
+		"\t" . '                                                           messages when data from repo-meta API' . PHP_EOL .
+		"\t" . '                                                           matches the criteria specified here.' . PHP_EOL .
+		"\t" . '                                                           See README.md for usage.' . PHP_EOL .
+		PHP_EOL .
+		'Support level configuration:' . PHP_EOL .
+		"\t" . '--set-support-level-label=BOOL       Whether to attach support level labels to Pull-Requests.' . PHP_EOL .
+		"\t" . '                                     Will fetch information on support levels from repo-meta API.' . PHP_EOL .
+		"\t" . '--set-support-level-label-prefix=STRING    Prefix to use for support level labels. Should be longer than five letters.' . PHP_EOL .
+		"\t" . '--set-support-level-field=STRING     Field in responses from repo-meta API which we use to extract support level.' . PHP_EOL .
+		PHP_EOL .
+		'Repo meta API configuration:' . PHP_EOL .
+		"\t" . '--repo-meta-api-base-url=STRING      Base URL to repo-meta API, containing support level and other' . PHP_EOL .
+		"\t" . '                                     information.' . PHP_EOL .
+		"\t" . '--repo-meta-api-user-id=STRING       Authentication detail for the repo-meta API.' . PHP_EOL .
+		"\t" . '--repo-meta-api-access-token=STRING  Access token for the repo-meta API.' . PHP_EOL .
+		PHP_EOL .
+		'IRC API configuration:' . PHP_EOL .
+		"\t" . '--irc-api-url=STRING           URL to IRC API to send messages.' . PHP_EOL .
+		"\t" . '--irc-api-token=STRING         Access-token to use to communicate with the IRC' . PHP_EOL .
+		"\t" . '                               API.' . PHP_EOL .
+		"\t" . '--irc-api-bot=STRING           Name for the bot which is supposed to send the IRC' .PHP_EOL .
+		"\t" . '                               messages.' . PHP_EOL .
+		"\t" . '--irc-api-room=STRING          Name for the chatroom to which the IRC messages should' . PHP_EOL .
+		"\t" . '                               be sent.' . PHP_EOL .
+		PHP_EOL .
+		'Pixel API configuration:' . PHP_EOL .
+		"\t" . '--pixel-api-url=STRING             URL to Pixel API.' . PHP_EOL .
+		"\t" . '--pixel-api-groupprefix=STRING     Group to use when sending statistics to Pixel API.' . PHP_EOL;
+}
+
+/**
+ * Returns options supported.
+ *
+ * @codeCoverageIgnore
+ */
+function vipgoci_options_recognized() {
+	return array(
+		/*
+		 * General configuration
+		 */
+		'help',
+		'debug-level:',
+		'max-exec-time:',
+		'enforce-https-urls:',
+		'skip-draft-prs:',
+		'branches-ignore:',
+		'local-git-repo:',
+
+		/*
+		 * Environmental & repo configuration
+		 */
+		'env-options:',
+		'repo-options:',
+		'repo-options-allowed:',
+
+		/*
+		 * GitHub configuration
+		 */
+		'repo-owner:',
+		'repo-name:',
+		'commit:',
+		'token:',
+
+		/*
+		 * PHP Linting configuration
+		 */	
+		'lint:',
+		'lint-skip-folders:',
+		'lint-skip-folders-in-repo-options-file:',
+		'php-path:',
+
+		/*
+		 * PHPCS configuration
+		 */
+		'phpcs:',
+		'phpcs-path:',
+		'phpcs-standard:',
+		'phpcs-severity:',
+		'phpcs-sniffs-include:',
+		'phpcs-sniffs-exclude:',
+		'phpcs-runtime-set:',
+		'phpcs-skip-scanning-via-labels-allowed:',
+		'phpcs-skip-folders:',
+		'phpcs-skip-folders-in-repo-options-file:',
+		'output:',
+
+		/*
+		 * SVG scanning configuration
+		 */
+		'svg-checks:',
+		'svg-scanner-path:',
+
+		/*
+		 * Auto approve configuration
+		 */
+		'autoapprove:',
+		'autoapprove-filetypes:',
+		'autoapprove-php-nonfunctional-changes:',
+		'autoapprove-label:',
+
+		/*
+		 * Hashes API configuration
+		 */
+		'hashes-api:',
+		'hashes-api-url:',
+		'hashes-oauth-token:',
+		'hashes-oauth-token-secret:',
+		'hashes-oauth-consumer-key:',
+		'hashes-oauth-consumer-secret:',
+
+		/*
+		 * GitHub reviews & generic comments configuration
+		 */
+		'review-comments-sort:',
+		'review-comments-max:',
+		'review-comments-total-max:',
+		'review-comments-ignore:',
+		'review-comments-include-severity:',
+		'dismiss-stale-reviews:',
+		'dismissed-reviews-repost-comments:',
+		'dismissed-reviews-exclude-reviews-from-team:',
+		'informational-msg:',
+
+		/*
+		 * Generic support comments configuration
+		 */
+		'post-generic-pr-support-comments:',
+		'post-generic-pr-support-comments-on-drafts:',
+		'post-generic-pr-support-comments-string:',
+		'post-generic-pr-support-comments-skip-if-label-exists:',
+		'post-generic-pr-support-comments-branches:',
+		'post-generic-pr-support-comments-repo-meta-match:',
+
+		/*
+		 * Support level configuration
+		 */
+		'set-support-level-label:',
+		'set-support-level-label-prefix:',
+		'set-support-level-field:',
+
+		/*
+		 * Repo meta API configuration
+		 */
+		'repo-meta-api-base-url:',
+		'repo-meta-api-user-id:',
+		'repo-meta-api-access-token:',
+
+		/*
+		 * IRC API configuration
+		 */	
+		'irc-api-url:',
+		'irc-api-token:',
+		'irc-api-bot:',
+		'irc-api-room:',
+
+		/*
+		 * Pixel API configuration
+		 */
+		'pixel-api-url:',
+		'pixel-api-groupprefix:',
+	);
+}
+
+/**
  * Determine exit status.
  *
  * If any 'error'-type issues were submitted to
@@ -9,7 +349,6 @@
  *
  * If we only submitted warnings, we do not announce failure.
  */
-
 function vipgoci_exit_status( $results ) {
 	foreach (
 		array_keys(
@@ -46,7 +385,6 @@ function vipgoci_exit_status( $results ) {
 
 	return 0;
 }
-
 
 /**
  * Main invocation function.
@@ -136,77 +474,7 @@ function vipgoci_run() {
 
 	$startup_time = time();
 
-	$options_recognized =
-		array(
-			'env-options:',
-			'debug-level:',
-			'max-exec-time:',
-			'enforce-https-urls:',
-			'repo-owner:',
-			'repo-name:',
-			'commit:',
-			'token:',
-			'skip-draft-prs:',
-			'review-comments-sort:',
-			'review-comments-max:',
-			'review-comments-total-max:',
-			'review-comments-ignore:',
-			'review-comments-include-severity:',
-			'dismiss-stale-reviews:',
-			'dismissed-reviews-repost-comments:',
-			'dismissed-reviews-exclude-reviews-from-team:',
-			'branches-ignore:',
-			'output:',
-			'informational-msg:',
-			'post-generic-pr-support-comments:',
-			'post-generic-pr-support-comments-on-drafts:',
-			'post-generic-pr-support-comments-string:',
-			'post-generic-pr-support-comments-skip-if-label-exists:',
-			'post-generic-pr-support-comments-branches:',
-			'post-generic-pr-support-comments-repo-meta-match:',
-			'set-support-level-label:',
-			'set-support-level-label-prefix:',
-			'set-support-level-field:',
-			'repo-meta-api-base-url:',
-			'repo-meta-api-user-id:',
-			'repo-meta-api-access-token:',
-			'phpcs:',
-			'phpcs-path:',
-			'phpcs-standard:',
-			'phpcs-severity:',
-			'phpcs-sniffs-include:',
-			'phpcs-sniffs-exclude:',
-			'phpcs-runtime-set:',
-			'phpcs-skip-scanning-via-labels-allowed:',
-			'phpcs-skip-folders:',
-			'phpcs-skip-folders-in-repo-options-file:',
-			'repo-options:',
-			'repo-options-allowed:',
-			'hashes-api:',
-			'hashes-api-url:',
-			'hashes-oauth-token:',
-			'hashes-oauth-token-secret:',
-			'hashes-oauth-consumer-key:',
-			'hashes-oauth-consumer-secret:',
-			'irc-api-url:',
-			'irc-api-token:',
-			'irc-api-bot:',
-			'irc-api-room:',
-			'pixel-api-url:',
-			'pixel-api-groupprefix:',
-			'php-path:',
-			'local-git-repo:',
-			'lint:',
-			'lint-skip-folders:',
-			'lint-skip-folders-in-repo-options-file:',
-			'svg-checks:',
-			'svg-scanner-path:',
-			'autoapprove:',
-			'autoapprove-filetypes:',
-			'autoapprove-label:',
-			'autoapprove-php-nonfunctional-changes:',
-			'help',
-		);
+	$options_recognized = vipgoci_options_recognized();
 
 	/*
 	 * Try to read options from command-line parameters.
@@ -253,189 +521,7 @@ function vipgoci_run() {
 		! isset( $options['local-git-repo']) ||
 		isset( $options['help'] )
 	) {
-		print 'Usage: ' . $argv[0] . PHP_EOL .
-			"\t" . 'Options --repo-owner, --repo-name, --commit, --token, --local-git-repo, --phpcs-path are ' . PHP_EOL .
-			"\t" . 'mandatory, while others are optional.' . PHP_EOL .
-			PHP_EOL .
-			"\t" . 'Note that if option --autoapprove is specified, --autoapprove-label needs to' . PHP_EOL .
-			"\t" . 'be specified as well.' . PHP_EOL .
-			PHP_EOL .
-			"\t" . '--debug-level=NUMBER           Specify minimum debug-level of messages to print' . PHP_EOL .
-			"\t" . '                                -- higher number indicates more detailed debugging-messages.' . PHP_EOL .
-			"\t" . '                               Default is zero' . PHP_EOL .
-			PHP_EOL .
-			"\t" . '--max-exec-time=NUMBER         Maximum execution time for vip-go-ci, in seconds. Will exit if exceeded.' . PHP_EOL .
-			PHP_EOL .
-			"\t" . '--enforce-https-urls=BOOL      Check and enforce that all URLs provided to parameters ' .PHP_EOL .
-			"\t" . '                               that expect a URL are HTTPS and not HTTP. Default is true.' . PHP_EOL .
-			PHP_EOL .
-			"\t" . '--skip-draft-prs=BOOL          If true, skip scanning of all Pull-Requests that are in draft mode.' . PHP_EOL .
-			"\t" . '                               Default is false.' . PHP_EOL .
-			PHP_EOL .
-			"\t" . '--repo-owner=STRING            Specify repository owner, can be an organization' . PHP_EOL .
-			"\t" . '--repo-name=STRING             Specify name of the repository' . PHP_EOL .
-			"\t" . '--commit=STRING                Specify the exact commit to scan (SHA)' . PHP_EOL .
-			"\t" . '--token=STRING                 The access-token to use to communicate with GitHub' . PHP_EOL .
-			PHP_EOL .
-			"\t" . '--review-comments-sort=BOOL    Sort issues found according to severity, from high ' . PHP_EOL .
-			"\t" . '                               to low, before submitting to GitHub. Not sorted by default.' . PHP_EOL .
-			"\t" . '--review-comments-max=NUMBER   Maximum number of inline comments to submit' . PHP_EOL .
-			"\t" . '                               to GitHub in one review. If the number of ' . PHP_EOL .
-			"\t" . '                               comments exceed this number, additional reviews ' . PHP_EOL .
-			"\t" . '                               will be submitted.' . PHP_EOL .
-			"\t" . '--review-comments-total-max=NUMBER  Maximum number of inline comments submitted to'   . PHP_EOL .
-			"\t" . '                                    a single Pull-Request by the program -- includes' . PHP_EOL .
-			"\t" . '                                    comments from previous executions. A value of ' . PHP_EOL .
-			"\t" . '                                    \'0\' indicates no limit.' . PHP_EOL .
-			"\t" . '--review-comments-ignore=STRING     Specify which result comments to ignore' . PHP_EOL .
-			"\t" . '                                    -- e.g. useful if one type of message is to be ignored' . PHP_EOL .
-			"\t" . '                                    rather than a whole PHPCS sniff. Should be a ' . PHP_EOL .
-			"\t" . '                                    whole string with items separated by \"|||\".' . PHP_EOL .
-			"\t" . '--review-comments-include-severity=BOOL  Whether to include severity level with' . PHP_EOL .
-			"\t" . '                                         each review comment. Default is false.' . PHP_EOL .
-			PHP_EOL .
-			"\t" . '--dismiss-stale-reviews=BOOL   Dismiss any reviews associated with Pull-Requests ' . PHP_EOL .
-			"\t" . '                               that we process which have no active comments. ' . PHP_EOL .
-			"\t" . '                               The Pull-Requests we process are those associated ' . PHP_EOL .
-			"\t" . '                               with the commit specified.' . PHP_EOL .
-			"\t" . '--dismissed-reviews-repost-comments=BOOL  When avoiding double-posting comments,' . PHP_EOL .
-			"\t" . '                                          do not take into consideration comments ' . PHP_EOL .
-			"\t" . '                                          posted against reviews that have now been ' . PHP_EOL .
-			"\t" . '                                          dismissed. Setting this to true entails ' . PHP_EOL .
-			"\t" . '                                          that comments from dismissed reviews will ' . PHP_EOL .
-			"\t" . '                                          be posted again, should the underlying issue ' . PHP_EOL .
-			"\t" . '                                          be detected during the run.' . PHP_EOL .
-			"\t" . '--dismissed-reviews-exclude-reviews-from-team=STRING  With this parameter set, ' . PHP_EOL .
-			"\t" . '                                                      comments that are part of reviews ' . PHP_EOL .
-			"\t" . '                                                      dismissed by members of the teams specified,  ' . PHP_EOL .
-			"\t" . '                                                      would be taken into consideration when ' . PHP_EOL .
-			"\t" . '                                                      avoiding double-posting; they would be ' . PHP_EOL .
-			"\t" . '                                                      excluded. Note that this parameter ' . PHP_EOL .
-			"\t" . '                                                      only works in conjunction with ' . PHP_EOL .
-			PHP_EOL .
-			"\t" . '                                                      --dismissed-reviews-repost-comments' . PHP_EOL .
-			"\t" . '--informational-msg=STRING     Message to append to GitHub reviews and generic comments. Useful to ' . PHP_EOL .
-			"\t" . '                               explain what the bot does. Can contain HTML or Markdown. ' . PHP_EOL .
-			PHP_EOL .
-			"\t" . '--post-generic-pr-support-comments=BOOL            Whether to post generic comment to Pull-Requests ' . PHP_EOL .
-			"\t" . '                                                   with support-related information for users. Will ' . PHP_EOL .
-			"\t" . '                                                   be posted only once per Pull-Request. ' . PHP_EOL .
-			"\t" . '--post-generic-pr-support-comments-string=STRING   String to use when posting support-comment. ' . PHP_EOL .
-			"\t" . '--post-generic-pr-support-comments-skip-if-label-exists=STRING  If the specified label exists on ' . PHP_EOL .
-			"\t" . '                                                                the Pull-Request, do not post support ' . PHP_EOL .
-			"\t" . '                                                                comment' . PHP_EOL .
-			"\t" . '--post-generic-pr-support-comments-branches=ARRAY  Only post support-comments to Pull-Requests ' . PHP_EOL .
-			"\t" . '                                                   with the target branches specified. The ' . PHP_EOL .
-			"\t" . '                                                   parameter can be a string with one value, or ' . PHP_EOL .
-			"\t" . '                                                   comma separated. A single "any" value will ' . PHP_EOL .
-			"\t" . '                                                   cause the message to be posted to any ' . PHP_EOL .
-			"\t" . '                                                   branch.' . PHP_EOL .
-			"\t" . '--post-generic-pr-support-comments-repo-meta-match=ARRAY   Only post generic support ' . PHP_EOL .
-			"\t" . '                                                           messages when data from repo-meta API' . PHP_EOL .
-			"\t" . '                                                           matches the criteria specified here. ' . PHP_EOL .
-			"\t" . '                                                           See README.md for usage. ' . PHP_EOL .
-			PHP_EOL .
-			"\t" . '--set-support-level-label=BOOL       Whether to attach support level labels to Pull-Requests. ' . PHP_EOL .
-			"\t" . '                                     Will fetch information on support levels from repo-meta API. ' . PHP_EOL .
-			"\t" . '--set-support-level-label-prefix=STRING    Prefix to use for support level labels. Should be longer than five letters.' . PHP_EOL .
-			"\t" . '--set-support-level-field=STRING     Name for field in responses from repo-meta API which we use to extract support level. ' . PHP_EOL .
-			"\t" . '--repo-meta-api-base-url=STRING      Base URL to repo-meta API, containing support level and other ' . PHP_EOL .
-			"\t" . '                                     information. ' . PHP_EOL .
-			"\t" . '--repo-meta-api-user-id=STRING       Authentication detail for the repo-meta API. ' . PHP_EOL .
-			"\t" . '--repo-meta-api-access-token=STRING  Access token for the repo-meta API. ' . PHP_EOL .
-			PHP_EOL .
-			"\t" . '--phpcs=BOOL                   Whether to run PHPCS (true/false)' . PHP_EOL .
-			"\t" . '--phpcs-path=FILE              Full path to PHPCS script' . PHP_EOL .
-			"\t" . '--phpcs-standard=STRING        Specify which PHPCS standard to use' . PHP_EOL .
-			"\t" . '--phpcs-severity=NUMBER        Specify severity for PHPCS' . PHP_EOL .
-			"\t" . '--phpcs-sniffs-include=ARRAY   Specify which sniffs to include when PHPCS scanning, ' . PHP_EOL .
-			"\t" . '                               should be an array with items separated by commas. ' . PHP_EOL .
-			"\t" . '--phpcs-sniffs-exclude=ARRAY   Specify which sniffs to exclude from PHPCS scanning, ' . PHP_EOL .
-			"\t" . '                               should be an array with items separated by commas. ' . PHP_EOL .
-			"\t" . '--phpcs-runtime-set=STRING     Specify --runtime-set values passed on to PHPCS' . PHP_EOL .
-			"\t" . '                               -- expected to be a comma-separated value string of ' . PHP_EOL .
-			"\t" . '                               key-value pairs.' . PHP_EOL .
-			"\t" . '                               For example: --phpcs-runtime-set="key1 value1,key2 value2"' . PHP_EOL .
-			"\t" . '--phpcs-skip-scanning-via-labels-allowed=BOOL    Whether to allow users to skip ' . PHP_EOL .
-			"\t" . '                                                 PHPCS scanning of Pull-Requests ' . PHP_EOL .
-			"\t" . '                                                 via labels attached to them. ' . PHP_EOL .
-			"\t" . '                                                 The labels should be named "skip-phpcs-scan".' . PHP_EOL .
-			"\t" . '--phpcs-skip-folders=STRING    Specify folders relative to root of the git repository in which ' . PHP_EOL .
-			"\t" . '                               files are not to be scanned using PHPCS. Values are comma' . PHP_EOL .
-			"\t" . '                               separated' . PHP_EOL .
-			"\t" . '--phpcs-skip-folders-in-repo-options-file=BOOL   Allows folders that are not to be PHPCS ' . PHP_EOL .
-			"\t" . '                                                 scanned to be specified in file in root of ' . PHP_EOL .
-			"\t" . '                                                 repository (.vipgoci_phpcs_skip_folders).' . PHP_EOL .
-			"\t" . '                                                 Folders should be separated by newlines.' . PHP_EOL .
-			PHP_EOL .
-			"\t" . '--autoapprove=BOOL             Whether to auto-approve Pull-Requests' . PHP_EOL .
-			"\t" . '                               altering only files of certain types or ' . PHP_EOL .
-			"\t" . '                               already approved files. ' . PHP_EOL .
-			"\t" . '--autoapprove-filetypes=STRING Specify what file-types can be auto-' . PHP_EOL .
-			"\t" . '                               approved. PHP files cannot be specified.' . PHP_EOL .
-			"\t" . '--autoapprove-php-nonfunctional-changes=BOOL    For autoapprovals, also consider ' . PHP_EOL .
-			"\t" . '                                                PHP files approved that contain ' . PHP_EOL .
-			"\t" . '                                                non-functional changes, such as  ' . PHP_EOL .
-			"\t" . '                                                whitespacing and comments alterations. ' . PHP_EOL .
-			"\t" . '--autoapprove-label=STRING     String to use for labels when auto-approving' . PHP_EOL .
-			"\t" . '--php-path=FILE                Full path to PHP, if not specified the' . PHP_EOL .
-			"\t" . '                               default in $PATH will be used instead' . PHP_EOL .
-			"\t" . '--svg-checks=BOOL              Enable or disable SVG checks, both' . PHP_EOL .
-			"\t" . '                               auto-approval of SVG files and problem' . PHP_EOL .
-			"\t" . '                               checking of these files. Note that if' . PHP_EOL .
-			"\t" . '                               auto-approvals are turned off globally, no' . PHP_EOL .
-			"\t" . '                               auto-approval is performed for SVG files.' . PHP_EOL .
-			"\t" . '--svg-scanner-path=FILE        Path to SVG scanning tool. Should return' . PHP_EOL .
-			"\t" . '                               similar output as PHPCS. ' . PHP_EOL .
-			"\t" . '--hashes-api=BOOL              Whether to do hashes-to-hashes API verfication ' . PHP_EOL .
-			"\t" . '                               with individual PHP files found to be altered ' . PHP_EOL .
-			"\t" . '                               in the branch specified' . PHP_EOL .
-			"\t" . '--hashes-api-url=STRING        URL to hashes-to-hashes HTTP API root' . PHP_EOL .
-			"\t" . '                               -- note that it should not include any specific' . PHP_EOL .
-			"\t" . '                               paths to individual parts of the API.' . PHP_EOL .
-			PHP_EOL .
-			"\t" . '--hashes-oauth-token=STRING,        --hashes-oauth-token-secret=STRING, ' . PHP_EOL .
-			"\t" . '--hashes-oauth-consumer-key=STRING, --hashes-oauth-consumer-secret=STRING ' . PHP_EOL .
-			"\t" . '                               OAuth 1.0 token, token secret, consumer key and ' . PHP_EOL .
-			"\t" . '                               consumer secret needed for hashes-to-hashes HTTP requests' . PHP_EOL .
-			"\t" . '                               All required for hashes-to-hashes requests.' . PHP_EOL .
-			PHP_EOL .
-			"\t" . '--irc-api-url=STRING           URL to IRC API to send alerts' . PHP_EOL .
-			"\t" . '--irc-api-token=STRING         Access-token to use to communicate with the IRC ' . PHP_EOL .
-			"\t" . '                               API' . PHP_EOL .
-			"\t" . '--irc-api-bot=STRING           Name for the bot which is supposed to send the IRC ' .PHP_EOL .
-			"\t" . '                               messages.' . PHP_EOL .
-			"\t" . '--irc-api-room=STRING          Name for the chatroom to which the IRC messages should ' . PHP_EOL .
-			"\t" . '                               be sent. ' . PHP_EOL .
-			"\t" . '--branches-ignore=STRING,...   What branches to ignore -- useful to make sure' . PHP_EOL .
-			"\t" . '                               some branches never get scanned. Separate branches' . PHP_EOL .
-			"\t" . '                               with commas' . PHP_EOL .
-			"\t" . '--local-git-repo=FILE          The local git repository to use for direct access to code' . PHP_EOL .
-			"\t" . '--output=FILE                  Where to save output made from running PHPCS' . PHP_EOL .
-			PHP_EOL .
-			"\t" . '--lint=BOOL                    Whether to do PHP linting (true/false)' . PHP_EOL .
-			"\t" . '--lint-skip-folders=STRING     Specify folders relative to root of the git repository in which ' . PHP_EOL .
-			"\t" . '                               files should not be PHP linted. Values are comma separated.' . PHP_EOL .
-			"\t" . '--lint-skip-folders-in-repo-options-file=BOOL   Allows folders that are not to be PHP Linted ' . PHP_EOL .
-			"\t" . '                                                to be specified in file in root of repository ' . PHP_EOL .
-			"\t" . '                                                (.vipgoci_lint_skip_folders). Folders should be ' . PHP_EOL .
-			"\t" . '                                                separated by newlines.' . PHP_EOL .
-			PHP_EOL .
-			"\t" . '--help                         Displays this message' . PHP_EOL .
-			"\t" . '--env-options=STRING           Specifies configuration options to be read from environmental ' . PHP_EOL .
-			"\t" . '                               variables -- any variable can be specified. For instance, with ' . PHP_EOL .
-			"\t" . '                               --env-options="repo-owner=U_ROWNER,output=U_FOUTPUT" specified ' . PHP_EOL .
-			"\t" . '                               vip-go-ci will attempt to read the --repo-owner and --output ' . PHP_EOL .
-			"\t" . '                               from the $U_ROWNER and $U_FOUTPUT environmental variables, ' . PHP_EOL .
-			"\t" . '                               respectively. This is useful for environments, such as ' . PHP_EOL .
-			"\t" . '                               TeamCity or GitHub Actions, where vital configuration. ' . PHP_EOL .
-			"\t" . '                               are specified via environmental variables. ' . PHP_EOL .
-			"\t" . '--repo-options=BOOL            Whether to allow configuring of --phpcs-severity ' . PHP_EOL .
-			"\t" . '                               and --post-generic-pr-support-comments via options file' . PHP_EOL .
-			"\t" . '                               ("' . VIPGOCI_OPTIONS_FILE_NAME . '") placed in root of the repository.' . PHP_EOL .
-			"\t" . '--repo-options-allowed=STRING  Limits the options that can be set via repository options ' . PHP_EOL .
-			"\t" . '                               configuration file. Values are separated by commas. ' . PHP_EOL;
-
+		vipgoci_help_print( $argv );
 		exit( VIPGOCI_EXIT_USAGE_ERROR );
 	}
 

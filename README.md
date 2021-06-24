@@ -396,7 +396,9 @@ Auto-approvals can be configured so to auto-approve Pull-Requests that only chan
 
 With this setting, any PHP files having only whitespacing changes or updating to comments, will be automatically approved.
 
-Note that `vip-go-ci` will collect which files of the relevant Pull-Request are approved, whether `.css`, `.gif`, `.php` or other, and if _all_ the files altered by it have been found to be auto-approvable, the whole Pull-Request will be approved automatically. This applies also to the Hashes API (see below).
+Note also that if set up to auto-approve, and the Hases API feature (see below) is configured, it will be utilised.
+
+If _all_ files altered by a Pull-Request have been found to be auto-approvable -- for example, by the non-functional changes or Hashes API --, the whole Pull-Request will be approved automatically.
 
 The following Autoapprovals-related options can be configured via repository config-file:
 
