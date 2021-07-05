@@ -4,7 +4,7 @@
  * Version number.
  */
 
-define( 'VIPGOCI_VERSION',		'1.0.6' );
+define( 'VIPGOCI_VERSION',		'1.0.7' );
 
 /*
  * Define minimum version requirements.
