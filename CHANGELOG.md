@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [1.0.7](https://github.com/Automattic/vip-go-ci/releases/tag/1.0.7) - To be decided
 
+### Fixed
+- [#187](https://github.com/Automattic/vip-go-ci/pull/187): Attempt to reduce GitHub API usage a bit
+
 ### Updated
 - [#183](https://github.com/Automattic/vip-go-ci/pull/183): Refine help message and options
 - [#185](https://github.com/Automattic/vip-go-ci/pull/185): Upgrade phpcs-variable-analysis to 2.11.1
