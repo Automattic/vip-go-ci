@@ -285,15 +285,18 @@ function vipgoci_lint_scan_commit(
 		 * Validates the file
 		 * and if it's not valid, the scans skips it
 		 */
-		$validation = vipgoci_validate( $temp_file_name, $filename, $commit_id );
-		if ( 0 !== $validation[ 'total' ] ) {
-			unlink( $temp_file_name );
+		if ( true === $options['skip-large-files'] ) {
+			$validation = vipgoci_validate( $temp_file_name, $filename, $commit_id );
+			if ( 0 !== $validation[ 'total' ] ) {
+				unlink( $temp_file_name );
 
-			vipgoci_set_prs_implicated_skipped_files( $prs_implicated, $commit_skipped_files, $validation );
-			vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'lint_scan_single_file' );
+				vipgoci_set_prs_implicated_skipped_files( $prs_implicated, $commit_skipped_files, $validation );
+				vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'lint_scan_single_file' );
 
-			continue;
+				continue;
+			}
 		}
+
 		/**
 		 * The lint scan will only proceed if the file is valid
 		 *

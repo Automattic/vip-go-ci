@@ -224,6 +224,7 @@ function vipgoci_options_recognized() {
 		'skip-draft-prs:',
 		'branches-ignore:',
 		'local-git-repo:',
+		'skip-large-files:',
 
 		/*
 		 * Environmental & repo configuration
@@ -836,6 +837,8 @@ function vipgoci_run() {
 	vipgoci_option_bool_handle( $options, 'repo-options', 'false' );
 
 	vipgoci_option_bool_handle( $options, 'lint', 'true' );
+
+	vipgoci_option_bool_handle( $options, 'skip-large-files', 'true' );
 
 	vipgoci_option_bool_handle( $options, 'lint-skip-folders-in-repo-options-file', 'false' );
 

@@ -55,6 +55,8 @@ final class PhpcsScanSingleFileTest extends TestCase {
 		$this->options['lint-skip-folders'] = array();
 
 		$this->options['phpcs-skip-folders'] = array();
+
+		$this->options['skip-large-files'] = true;
 	}
 	
 	protected function tearDown(): void {

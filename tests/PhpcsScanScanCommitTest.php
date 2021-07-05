@@ -64,6 +64,8 @@ final class PhpcsScanScanCommitTest extends TestCase {
 		$this->options['phpcs-skip-folders'] = array();
 
 		$this->options['skip-draft-prs'] = false;
+
+		$this->options['skip-large-files'] = true;
 	}
 
 	protected function tearDown(): void {

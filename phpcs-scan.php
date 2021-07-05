@@ -217,18 +217,19 @@ function vipgoci_phpcs_scan_single_file(
 	/*
 	 * Skips the phpcs scan when the validation contains any issue
 	 */
-	if ( 0 !== $validation[ 'total' ] ) {
-		$skipped = array(
-			'file_issues_arr_master'	=> array(),
-			'file_issues_str'		=> array(),
-			'temp_file_name'		=> $temp_file_name,
-			'validation'            => $validation
-		);
-		unlink( $temp_file_name );
+	if ( true === $options['skip-large-files'] ) {
+		if ( 0 !== $validation[ 'total' ] ) {
+			$skipped = array(
+				'file_issues_arr_master'	=> array(),
+				'file_issues_str'		=> array(),
+				'temp_file_name'		=> $temp_file_name,
+				'validation'            => $validation
+			);
+			unlink( $temp_file_name );
 
-		return $skipped;
+			return $skipped;
+		}
 	}
-
 
 	vipgoci_log(
 		'About to PHPCS-scan file',

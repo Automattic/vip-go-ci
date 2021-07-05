@@ -53,6 +53,8 @@ final class A09LintLintScanCommitTest extends TestCase {
 
 		$this->options['skip-draft-prs'] = false;
 
+		$this->options['skip-large-files'] = true;
+
 		global $vipgoci_debug_level;
 		$vipgoci_debug_level = 2;
 	}
