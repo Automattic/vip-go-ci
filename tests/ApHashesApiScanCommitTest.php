@@ -93,7 +93,7 @@ final class ApHashesApiScanCommitTest extends TestCase {
 	public function testApHashesApiScanCommitTest1() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
-			array( 'github-token', 'token' ),
+			array( ),
 			$this
 		);
 
