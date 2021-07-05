@@ -76,7 +76,15 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 		$this->options['commit'] =
 			$this->options['test-github-pr-generic-support-comment-1'];
 
-		if ( empty( $this->current_user_info ) ) {
+		/*
+		 * Try to fetch information about current user,
+		 * but only if we have a token. This info will
+		 * be re-used.
+		 */
+		if (
+			( empty( $this->current_user_info ) ) &&
+			( ! empty( $this->options['github-token'] ) )
+		) {
 			$this->current_user_info = vipgoci_github_authenticated_user_get(
 				$this->options['github-token']
 			);
