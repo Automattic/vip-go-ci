@@ -11,10 +11,10 @@ final class VipgociExitStatusTest extends TestCase {
 	public function testExitStatus1() {
 		$exit_status = vipgoci_exit_status(
 			array(
-				'stats'	=> array(
-					'lint'	=> array(
-						25	=> array(
-							'error'	=> 0,
+				'stats' => array(
+					'lint' => array(
+						25 => array(
+							'error' => 0,
 						)
 					)
 				)
@@ -33,10 +33,10 @@ final class VipgociExitStatusTest extends TestCase {
 	public function testExitStatus2() {
 		$exit_status = vipgoci_exit_status(
 			array(
-				'stats'	=> array(
-					'lint'	=> array(
-						25	=> array(
-							'error'	=> 30
+				'stats' => array(
+					'lint' => array(
+						25 => array(
+							'error' => 30
 						)
 					)
 				)
@@ -55,7 +55,7 @@ final class VipgociExitStatusTest extends TestCase {
 	public function testExitStatusWillReturn250WhenSkippedFilesIsFound() {
 		$exit_status = vipgoci_exit_status(
 			array(
-				'stats' => array(),
+				'stats'         => array(),
 				'skipped-files' => array(
 					25 => array( 'total' => 1 )
 				)

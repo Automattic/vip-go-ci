@@ -6,17 +6,17 @@ use PHPUnit\Framework\TestCase;
 
 final class A09LintLintScanCommitTest extends TestCase {
 	var $options_lint_scan = array(
-		'php-path'				=> null,
-		'commit-test-lint-scan-commit-1'	=> null,
-		'commit-test-lint-scan-commit-2'	=> null,
-		'commit-test-lint-scan-commit-3'	=> null,
+		'php-path'                       => null,
+		'commit-test-lint-scan-commit-1' => null,
+		'commit-test-lint-scan-commit-2' => null,
+		'commit-test-lint-scan-commit-3' => null,
 	);
 
 	var $options_git = array(
-		'git-path'		=> null,
-		'github-repo-url'	=> null,
-		'repo-name'		=> null,
-		'repo-owner'		=> null,
+		'git-path'        => null,
+		'github-repo-url' => null,
+		'repo-name'       => null,
+		'repo-owner'      => null,
 	);
 
 	protected function setUp(): void {
@@ -35,7 +35,7 @@ final class A09LintLintScanCommitTest extends TestCase {
 			$this->options_git
 		);
 
-		$this->options[ 'github-token' ] =
+		$this->options['github-token'] =
 			vipgoci_unittests_get_config_value(
 				'git-secrets',
 				'github-token',
@@ -67,8 +67,8 @@ final class A09LintLintScanCommitTest extends TestCase {
 		}
 
 		$this->options_lint_scan = null;
-		$this->options_git = null;
-		$this->options = null;
+		$this->options_git       = null;
+		$this->options           = null;
 	}
 
 	/**
@@ -81,7 +81,7 @@ final class A09LintLintScanCommitTest extends TestCase {
 			$this
 		);
 
-		if ( -1 === $options_test ) {
+		if ( - 1 === $options_test ) {
 			return;
 		}
 
@@ -104,8 +104,8 @@ final class A09LintLintScanCommitTest extends TestCase {
 			return;
 		}
 
-		$issues_submit = array();
-		$issues_stat = array();
+		$issues_submit  = array();
+		$issues_stat    = array();
 		$issues_skipped = array();
 
 		/*
@@ -119,14 +119,10 @@ final class A09LintLintScanCommitTest extends TestCase {
 			$this->options['branches-ignore']
 		);
 
-		foreach( $prs_implicated as $pr_item ) {
-			$issues_stat[
-			$pr_item->number
-			][
-			'error'
-			] = 0;
+		foreach ( $prs_implicated as $pr_item ) {
+			$issues_stat[ $pr_item->number ]['error'] = 0;
 
-			$issues_skipped[ $pr_item->number ][ 'issues' ][ 'total' ] = 0;
+			$issues_skipped[ $pr_item->number ]['issues']['total'] = 0;
 		}
 
 		if (
@@ -156,20 +152,20 @@ final class A09LintLintScanCommitTest extends TestCase {
 		 */
 		$issues_submit[ $pr_item->number ][0]['issue']['message'] =
 			vipgoci_unittests_php_syntax_error_compat(
-				$issues_submit[ $pr_item->number][0]['issue']['message']
+				$issues_submit[ $pr_item->number ][0]['issue']['message']
 			);
 
 		$this->assertSame(
 			array(
 				$pr_item->number => array(
 					array(
-						'type' => 'lint',
+						'type'      => 'lint',
 						'file_name' => 'lint-scan-commit-test-2.php',
 						'file_line' => 4,
-						'issue' => array(
-							'message'	=> "syntax error, unexpected end of file, expecting ',' or ';'",
-							'level'		=> 'ERROR',
-							'severity'	=> 5,
+						'issue'     => array(
+							'message'  => "syntax error, unexpected end of file, expecting ',' or ';'",
+							'level'    => 'ERROR',
+							'severity' => 5,
 						)
 					)
 				)
@@ -200,7 +196,7 @@ final class A09LintLintScanCommitTest extends TestCase {
 			$this
 		);
 
-		if ( -1 === $options_test ) {
+		if ( - 1 === $options_test ) {
 			return;
 		}
 
@@ -229,8 +225,8 @@ final class A09LintLintScanCommitTest extends TestCase {
 			return;
 		}
 
-		$issues_submit = array();
-		$issues_stat = array();
+		$issues_submit  = array();
+		$issues_stat    = array();
 		$issues_skipped = array();
 
 		/*
@@ -244,14 +240,10 @@ final class A09LintLintScanCommitTest extends TestCase {
 			$this->options['branches-ignore']
 		);
 
-		foreach( $prs_implicated as $pr_item ) {
-			$issues_stat[
-			$pr_item->number
-			][
-			'error'
-			] = 0;
+		foreach ( $prs_implicated as $pr_item ) {
+			$issues_stat[ $pr_item->number ]['error'] = 0;
 
-			$issues_skipped[ $pr_item->number ][ 'issues' ][ 'total' ] = 0;
+			$issues_skipped[ $pr_item->number ]['issues']['total'] = 0;
 		}
 
 		if (
@@ -281,12 +273,12 @@ final class A09LintLintScanCommitTest extends TestCase {
 		 */
 		$issues_submit[ $pr_item->number ][0]['issue']['message'] =
 			vipgoci_unittests_php_syntax_error_compat(
-				$issues_submit[ $pr_item->number][0]['issue']['message']
+				$issues_submit[ $pr_item->number ][0]['issue']['message']
 			);
 
 		$issues_submit[ $pr_item->number ][1]['issue']['message'] =
 			vipgoci_unittests_php_syntax_error_compat(
-				$issues_submit[ $pr_item->number][1]['issue']['message']
+				$issues_submit[ $pr_item->number ][1]['issue']['message']
 			);
 
 
@@ -294,23 +286,23 @@ final class A09LintLintScanCommitTest extends TestCase {
 			array(
 				$pr_item->number => array(
 					array(
-						'type' => 'lint',
+						'type'      => 'lint',
 						'file_name' => 'tests1/myfile1.php',
 						'file_line' => 4,
-						'issue' => array(
-							'message'	=> "syntax error, unexpected end of file, expecting ',' or ';'",
-							'level'		=> 'ERROR',
-							'severity'	=> 5,
+						'issue'     => array(
+							'message'  => "syntax error, unexpected end of file, expecting ',' or ';'",
+							'level'    => 'ERROR',
+							'severity' => 5,
 						)
 					),
 					array(
-						'type' => 'lint',
+						'type'      => 'lint',
 						'file_name' => 'tests2/myfile1.php',
 						'file_line' => 4,
-						'issue' => array(
-							'message'	=> "syntax error, unexpected end of file, expecting ',' or ';'",
-							'level'		=> 'ERROR',
-							'severity'	=> 5,
+						'issue'     => array(
+							'message'  => "syntax error, unexpected end of file, expecting ',' or ';'",
+							'level'    => 'ERROR',
+							'severity' => 5,
 						)
 					),
 					/*
@@ -346,7 +338,7 @@ final class A09LintLintScanCommitTest extends TestCase {
 			$this
 		);
 
-		if ( -1 === $options_test ) {
+		if ( - 1 === $options_test ) {
 			return;
 		}
 
@@ -368,8 +360,8 @@ final class A09LintLintScanCommitTest extends TestCase {
 			return;
 		}
 
-		$issues_submit = array();
-		$issues_stat = array();
+		$issues_submit  = array();
+		$issues_stat    = array();
 		$issues_skipped = array();
 
 		/*
@@ -383,9 +375,9 @@ final class A09LintLintScanCommitTest extends TestCase {
 			$this->options['branches-ignore']
 		);
 
-		foreach( $prs_implicated as $pr_item ) {
-			$issues_stat[ $pr_item->number ][ 'error' ] = 0;
-			$issues_skipped[ $pr_item->number ] = $this->getDefaultSkippedFilesDueIssuesMock();
+		foreach ( $prs_implicated as $pr_item ) {
+			$issues_stat[ $pr_item->number ]['error'] = 0;
+			$issues_skipped[ $pr_item->number ]       = $this->getDefaultSkippedFilesDueIssuesMock();
 		}
 
 		if (
@@ -413,9 +405,9 @@ final class A09LintLintScanCommitTest extends TestCase {
 		$expected_issues_skipped = array(
 			39 => array(
 				'issues' => array(
-					'max-lines' => array ( 'test1/myfile-1.php' )
+					'max-lines' => array( 'test1/myfile-1.php' )
 				),
-				'total' => 1
+				'total'  => 1
 			)
 		);
 
@@ -431,7 +423,7 @@ final class A09LintLintScanCommitTest extends TestCase {
 	private function getDefaultSkippedFilesDueIssuesMock() {
 		return array(
 			'issues' => array(),
-			'total' => 0
+			'total'  => 0
 		);
 	}
 }

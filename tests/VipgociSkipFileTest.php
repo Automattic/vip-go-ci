@@ -15,11 +15,11 @@ final class VipgociSkipFileTest extends TestCase {
 	public function testGetSkippedFilesWillReturnCorrectValue() {
 		$validation_mock = array(
 			'issues' => array( 'max-lines' => array( 'MyFailedClass1.php' ) ),
-			'total' => 1
+			'total'  => 1
 		);
 
 		$current_skipped_files_mock = array(
-			'total' => 2,
+			'total'  => 2,
 			'issues' => array(
 				'max-lines' => array( 'MyFailedClass2.php', 'MyFailedClass3.php' )
 			),
@@ -31,18 +31,18 @@ final class VipgociSkipFileTest extends TestCase {
 		);
 
 		$expected_skipped_files = array(
-			'total' => 3,
+			'total'  => 3,
 			'issues' => array(
-                'max-lines' => array(
-                    'MyFailedClass1.php',
-                    'MyFailedClass2.php',
-                    'MyFailedClass3.php',
-                ),
+				'max-lines' => array(
+					'MyFailedClass1.php',
+					'MyFailedClass2.php',
+					'MyFailedClass3.php',
+				),
 			),
 		);
 
-		sort( $expected_skipped_files[ 'issues' ][ 'max-lines' ] );
-		sort( $skipped_files[ 'issues' ][ 'max-lines' ] );
+		sort( $expected_skipped_files['issues']['max-lines'] );
+		sort( $skipped_files['issues']['max-lines'] );
 
 		$this->assertSame(
 			$expected_skipped_files,
@@ -55,11 +55,12 @@ final class VipgociSkipFileTest extends TestCase {
 	 */
 	public function testGetSkippedFilesWillReturnCorrectValueForTotal0() {
 		$validation_mock = array(
-			'issues' => array(), 'total' => 0
+			'issues' => array(),
+			'total'  => 0
 		);
 
 		$current_skipped_files_mock = array(
-			'total' => 2,
+			'total'  => 2,
 			'issues' => array(
 				'max-lines' => array( 'MyFailedClass2.php', 'MyFailedClass3.php' )
 			),
@@ -71,7 +72,7 @@ final class VipgociSkipFileTest extends TestCase {
 		);
 
 		$expected_skipped_files = array(
-			'total' => 2,
+			'total'  => 2,
 			'issues' => array(
 				'max-lines' => array( 'MyFailedClass2.php', 'MyFailedClass3.php' )
 			),
@@ -87,16 +88,16 @@ final class VipgociSkipFileTest extends TestCase {
 	 * @covers ::vipgoci_set_skipped_file
 	 */
 	public function testSetSkippedFilesWillSetCorrectValues() {
-		$commid_id_mock = 8;
+		$commid_id_mock       = 8;
 		$commit_skipped_files = array(
-			$commid_id_mock  => array(
+			$commid_id_mock => array(
 				'issues' => array(),
-				'total' => 0
-	        )
+				'total'  => 0
+			)
 		);
-		$validation_mock = array(
-			'total' => 1,
-            'issues' => array(
+		$validation_mock      = array(
+			'total'  => 1,
+			'issues' => array(
 				'max-lines' => array( 'MyFailedClass.php' )
 			)
 		);
@@ -113,7 +114,7 @@ final class VipgociSkipFileTest extends TestCase {
 					'max-lines' => array( 'MyFailedClass.php' )
 
 				),
-				'total' => 1
+				'total'  => 1
 			)
 		);
 
@@ -127,17 +128,17 @@ final class VipgociSkipFileTest extends TestCase {
 	 * @covers ::vipgoci_set_prs_implicated_skipped_files
 	 */
 	public function testSetPRsImplicatedSkippedFilesWillSetCorrectValues() {
-		$pr = new \stdClass();
-		$pr->number = 8;
-		$prs_implicated = array( 8 => $pr);
+		$pr                   = new \stdClass();
+		$pr->number           = 8;
+		$prs_implicated       = array( 8 => $pr );
 		$commit_skipped_files = array(
-			8  => array(
+			8 => array(
 				'issues' => array(),
-				'total' => 0
+				'total'  => 0
 			)
 		);
-		$validation_mock = array(
-			'total' => 1,
+		$validation_mock      = array(
+			'total'  => 1,
 			'issues' => array(
 				'max-lines' => array( 'MyFailedClass.php' )
 			)
@@ -155,7 +156,7 @@ final class VipgociSkipFileTest extends TestCase {
 					'max-lines' => array( 'MyFailedClass.php' )
 
 				),
-				'total' => 1
+				'total'  => 1
 			)
 		);
 
@@ -170,11 +171,11 @@ final class VipgociSkipFileTest extends TestCase {
 	 */
 	public function testGetSkippedFilesMessage() {
 
-		$skipped = array(
+		$skipped               = array(
 			'issues' => array(
 				'max-lines' => array( 'MyFailedClass.php', 'MyFailedClass2.php' )
-            ),
-	        'total' => 2
+			),
+			'total'  => 2
 		);
 		$skipped_files_message = vipgoci_get_skipped_files_message( $skipped );
 
@@ -184,7 +185,7 @@ Maximum number of lines exceeded (15000):
  -MyFailedClass.php
  -MyFailedClass2.php';
 
-		$this->assertSame($expected_skipped_files_message, $skipped_files_message);
+		$this->assertSame( $expected_skipped_files_message, $skipped_files_message );
 	}
 
 	/**
