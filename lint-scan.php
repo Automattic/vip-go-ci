@@ -286,7 +286,12 @@ function vipgoci_lint_scan_commit(
 		 * and if it's not valid, the scans skips it
 		 */
 		if ( true === $options['skip-large-files'] ) {
-			$validation = vipgoci_validate( $temp_file_name, $filename, $commit_id );
+			$validation = vipgoci_validate(
+				$temp_file_name,
+				$filename,
+				$commit_id,
+				$options[ 'skip-large-files-limit' ]
+			);
 			if ( 0 !== $validation[ 'total' ] ) {
 				unlink( $temp_file_name );
 

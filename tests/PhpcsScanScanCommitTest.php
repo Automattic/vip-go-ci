@@ -6,21 +6,22 @@ use PHPUnit\Framework\TestCase;
 
 final class PhpcsScanScanCommitTest extends TestCase {
 	var $options_phpcs = array(
-		'phpcs-path'				=> null,
-		'phpcs-standard'			=> null,
-		'phpcs-severity'			=> null,
-		'phpcs-runtime-set'			=> null,
-		'commit-test-phpcs-scan-commit-1'	=> null,
-		'commit-test-phpcs-scan-commit-2'	=> null,
-		'commit-test-phpcs-scan-commit-4'	=> null,
-		'commit-test-phpcs-scan-commit-5'	=> null,
+		'phpcs-path'                      => null,
+		'phpcs-standard'                  => null,
+		'phpcs-severity'                  => null,
+		'phpcs-runtime-set'               => null,
+		'commit-test-phpcs-scan-commit-1' => null,
+		'commit-test-phpcs-scan-commit-2' => null,
+		'commit-test-phpcs-scan-commit-4' => null,
+		'commit-test-phpcs-scan-commit-5' => null,
+		'commit-test-phpcs-scan-commit-6' => null,
 	);
 
 	var $options_git_repo = array(
-		'repo-owner'				=> null,
-		'repo-name'				=> null,
-		'git-path'				=> null,
-		'github-repo-url'			=> null,
+		'repo-owner'      => null,
+		'repo-name'       => null,
+		'git-path'        => null,
+		'github-repo-url' => null,
 	);
 
 	protected function setUp(): void {
@@ -41,7 +42,7 @@ final class PhpcsScanScanCommitTest extends TestCase {
 			$this->options_phpcs
 		);
 
-		$this->options[ 'github-token' ] =
+		$this->options['github-token'] =
 			vipgoci_unittests_get_config_value(
 				'git-secrets',
 				'github-token',
@@ -65,7 +66,9 @@ final class PhpcsScanScanCommitTest extends TestCase {
 
 		$this->options['skip-draft-prs'] = false;
 
-		$this->options['skip-large-files'] = true;
+		$this->options['skip-large-files'] = false;
+
+		$this->options['skip-large-files-limit'] = 15;
 	}
 
 	protected function tearDown(): void {
@@ -75,9 +78,9 @@ final class PhpcsScanScanCommitTest extends TestCase {
 			);
 		}
 
-		$this->options_phpcs = null;
+		$this->options_phpcs    = null;
 		$this->options_git_repo = null;
-		$this->options = null;
+		$this->options          = null;
 	}
 
 	/**
@@ -94,11 +97,8 @@ final class PhpcsScanScanCommitTest extends TestCase {
 			return;
 		}
 
-		$this->options['commit'] =
-			$this->options['commit-test-phpcs-scan-commit-1'];
-
-		$this->options['phpcs-skip-scanning-via-labels-allowed'] =
-			false;
+		$this->options['commit'] = $this->options['commit-test-phpcs-scan-commit-1'];
+		$this->options['phpcs-skip-scanning-via-labels-allowed'] = false;
 
 		$issues_submit = array();
 		$issues_stats = array();
@@ -106,14 +106,7 @@ final class PhpcsScanScanCommitTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
-		$prs_implicated = vipgoci_github_prs_implicated(
-			$this->options['repo-owner'],
-			$this->options['repo-name'],
-			$this->options['commit'],
-			$this->options['github-token'],
-			$this->options['branches-ignore']
-		);
-
+		$prs_implicated = $this->getPRsImplicated();
 
 		foreach( $prs_implicated as $pr_item ) {
 			$issues_stats[
@@ -247,14 +240,7 @@ final class PhpcsScanScanCommitTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
-		$prs_implicated = vipgoci_github_prs_implicated(
-			$this->options['repo-owner'],
-			$this->options['repo-name'],
-			$this->options['commit'],
-			$this->options['github-token'],
-			$this->options['branches-ignore']
-		);
-
+		$prs_implicated = $this->getPRsImplicated();
 
 		foreach( $prs_implicated as $pr_item ) {
 			$issues_stats[
@@ -407,14 +393,7 @@ final class PhpcsScanScanCommitTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
-		$prs_implicated = vipgoci_github_prs_implicated(
-			$this->options['repo-owner'],
-			$this->options['repo-name'],
-			$this->options['commit'],
-			$this->options['github-token'],
-			$this->options['branches-ignore']
-		);
-
+		$prs_implicated = $this->getPRsImplicated();
 
 		foreach( $prs_implicated as $pr_item ) {
 			$issues_stats[
@@ -584,13 +563,7 @@ final class PhpcsScanScanCommitTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
-		$prs_implicated = vipgoci_github_prs_implicated(
-			$this->options['repo-owner'],
-			$this->options['repo-name'],
-			$this->options['commit'],
-			$this->options['github-token'],
-			$this->options['branches-ignore']
-		);
+		$prs_implicated = $this->getPRsImplicated();
 
 		vipgoci_unittests_output_unsuppress();
 
@@ -680,7 +653,6 @@ final class PhpcsScanScanCommitTest extends TestCase {
 		);
 	}
 
-
 	/**
 	 * Tests when PHPCS uses basepath "." in its configuration.
 	 *
@@ -693,7 +665,7 @@ final class PhpcsScanScanCommitTest extends TestCase {
 			$this
 		);
 
-		if ( -1 === $options_test ) {
+		if ( - 1 === $options_test ) {
 			return;
 		}
 
@@ -707,8 +679,8 @@ final class PhpcsScanScanCommitTest extends TestCase {
 
 		$this->options['phpcs-skip-folders'] = array();
 
-		$issues_submit = array();
-		$issues_stats = array();
+		$issues_submit  = array();
+		$issues_stats   = array();
 		$issues_skipped = array();
 
 
@@ -732,7 +704,7 @@ final class PhpcsScanScanCommitTest extends TestCase {
 		 * the path returned.
 		 */
 
-		$rand_str = rand(100000, 999999);
+		$rand_str = rand( 100000, 999999 );
 
 		$tmp_standard_new = str_replace(
 			'/ruleset',
@@ -755,42 +727,23 @@ final class PhpcsScanScanCommitTest extends TestCase {
 		);
 
 		$tmp_standard = $tmp_standard_new;
-		unset($tmp_standard_new);
+		unset( $tmp_standard_new );
 
 		/*
 		 * Actually use the new standard.
 		 */
 		$this->options['phpcs-standard'] = $tmp_standard;
 
-
 		vipgoci_unittests_output_suppress();
 
-		$prs_implicated = vipgoci_github_prs_implicated(
-			$this->options['repo-owner'],
-			$this->options['repo-name'],
-			$this->options['commit'],
-			$this->options['github-token'],
-			$this->options['branches-ignore']
-		);
+		$prs_implicated = $this->getPRsImplicated();
 
-
-		foreach( $prs_implicated as $pr_item ) {
-			$issues_stats[
-			$pr_item->number
-			][
-			'error'
-			] = 0;
-
-			$issues_stats[
-			$pr_item->number
-			][
-			'warning'
-			] = 0;
-
-			$issues_skipped[ $pr_item->number ][ 'issues' ][ 'max-lines' ] = array();
-			$issues_skipped[ $pr_item->number ][ 'issues' ][ 'total' ] = 0;
+		foreach ( $prs_implicated as $pr_item ) {
+			$issues_stats[ $pr_item->number ]['error'] = 0;
+			$issues_stats[ $pr_item->number ]['warning'] = 0;
+			$issues_skipped[ $pr_item->number ]['issues']['max-lines'] = array();
+			$issues_skipped[ $pr_item->number ]['issues']['total']     = 0;
 		}
-
 
 		$this->options['local-git-repo'] =
 			vipgoci_unittests_setup_git_repo(
@@ -830,94 +783,93 @@ final class PhpcsScanScanCommitTest extends TestCase {
 			array(
 				30 => array(
 					array(
-						'type'		=> 'phpcs',
-						'file_name'	=> 'test.php',
-						'file_line'	=> 3,
-						'issue'	=> array(
-							'message' => "All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found 'time'.",
-							'source' => 'WordPress.Security.EscapeOutput.OutputNotEscaped',
+						'type'      => 'phpcs',
+						'file_name' => 'test.php',
+						'file_line' => 3,
+						'issue'     => array(
+							'message'  => "All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found 'time'.",
+							'source'   => 'WordPress.Security.EscapeOutput.OutputNotEscaped',
 							'severity' => 5,
-							'fixable' => false,
-							'type' => 'ERROR',
-							'line' => 3,
-							'column' => 20,
-							'level' => 'ERROR',
+							'fixable'  => false,
+							'type'     => 'ERROR',
+							'line'     => 3,
+							'column'   => 20,
+							'level'    => 'ERROR',
 						)
 					),
 
 					array(
-						'type'		=> 'phpcs',
-						'file_name'	=> 'test.php',
-						'file_line'	=> 7,
-						'issue'		=> array(
-							'message' => "All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found 'time'.",
-							'source' => 'WordPress.Security.EscapeOutput.OutputNotEscaped',
+						'type'      => 'phpcs',
+						'file_name' => 'test.php',
+						'file_line' => 7,
+						'issue'     => array(
+							'message'  => "All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found 'time'.",
+							'source'   => 'WordPress.Security.EscapeOutput.OutputNotEscaped',
 							'severity' => 5,
-							'fixable' => false,
-							'type' => 'ERROR',
-							'line' => 7,
-							'column' => 20,
-							'level' => 'ERROR',
+							'fixable'  => false,
+							'type'     => 'ERROR',
+							'line'     => 7,
+							'column'   => 20,
+							'level'    => 'ERROR',
 						)
 					),
 
 					array(
-						'type'		=> 'phpcs',
-						'file_name'	=> 'test.php',
-						'file_line'	=> 10,
-						'issue'	=> array(
-							'message' => "Scripts should be registered/enqueued via `wp_enqueue_script`. This can improve the site's performance due to script concatenation.",
-							'source' => 'WordPress.WP.EnqueuedResources.NonEnqueuedScript',
+						'type'      => 'phpcs',
+						'file_name' => 'test.php',
+						'file_line' => 10,
+						'issue'     => array(
+							'message'  => "Scripts should be registered/enqueued via `wp_enqueue_script`. This can improve the site's performance due to script concatenation.",
+							'source'   => 'WordPress.WP.EnqueuedResources.NonEnqueuedScript',
 							'severity' => 3,
-							'fixable' => false,
-							'type' => 'WARNING',
-							'line' => 10,
-							'column' => 6,
-							'level' => 'WARNING'
+							'fixable'  => false,
+							'type'     => 'WARNING',
+							'line'     => 10,
+							'column'   => 6,
+							'level'    => 'WARNING'
 						)
 					),
 
 					array(
-						'type'		=> 'phpcs',
-						'file_name'	=> 'tests1/some_phpcs_issues.php',
-						'file_line'	=> 3,
-						'issue'	=> array(
-							'message' => "All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found 'time'.",
-							'source' => 'WordPress.Security.EscapeOutput.OutputNotEscaped',
+						'type'      => 'phpcs',
+						'file_name' => 'tests1/some_phpcs_issues.php',
+						'file_line' => 3,
+						'issue'     => array(
+							'message'  => "All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found 'time'.",
+							'source'   => 'WordPress.Security.EscapeOutput.OutputNotEscaped',
 							'severity' => 5,
-							'fixable' => false,
-							'type' => 'ERROR',
-							'line' => 3,
-							'column' => 20,
-							'level' => 'ERROR'
+							'fixable'  => false,
+							'type'     => 'ERROR',
+							'line'     => 3,
+							'column'   => 20,
+							'level'    => 'ERROR'
 						)
 					),
 
 					array(
-						'type'		=> 'phpcs',
-						'file_name'	=> 'tests2/some_phpcs_issues.php',
-						'file_line'	=> 3,
-						'issue'	=> array(
-							'message' => "All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found 'time'.",
-							'source' => 'WordPress.Security.EscapeOutput.OutputNotEscaped',
+						'type'      => 'phpcs',
+						'file_name' => 'tests2/some_phpcs_issues.php',
+						'file_line' => 3,
+						'issue'     => array(
+							'message'  => "All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found 'time'.",
+							'source'   => 'WordPress.Security.EscapeOutput.OutputNotEscaped',
 							'severity' => 5,
-							'fixable' => false,
-							'type' => 'ERROR',
-							'line' => 3,
-							'column' => 20,
-							'level' => 'ERROR',
+							'fixable'  => false,
+							'type'     => 'ERROR',
+							'line'     => 3,
+							'column'   => 20,
+							'level'    => 'ERROR',
 						)
 					),
 				)
 			),
-
 			$issues_submit
 		);
 
 		$this->assertSame(
 			array(
 				30 => array(
-					'error' => 4,
+					'error'   => 4,
 					'warning' => 1,
 				),
 			),
@@ -925,59 +877,31 @@ final class PhpcsScanScanCommitTest extends TestCase {
 		);
 	}
 
-	public function testLintWontScanNumberOfLinesInvalid() {
+	/**
+	 * @covers ::vipgoci_phpcs_scan_commit
+	 * Should skip files with more than 15000 lines
+	 * Expected to skip 1 file
+	 * skip-large-files = true
+	 * skip-large-files-limit = 15000
+	 */
+	public function testLintSkipLargeFilesWhenSkipLargeFilesOptionIsOnAndFileIsLargerThanLimit() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'phpcs-runtime-set', 'github-token', 'token' ),
 			$this
 		);
 
-		if ( -1 === $options_test ) {
+		if ( - 1 === $options_test ) {
 			return;
 		}
 
-		$this->options['commit'] =
-			$this->options['commit-test-phpcs-scan-commit-5'];
-
-		$this->options['phpcs-skip-scanning-via-labels-allowed'] =
-			false;
-
-		$issues_submit = array();
-		$issues_stats = array();
-		$issues_skipped = array();
-
+		$this->options['phpcs-skip-scanning-via-labels-allowed'] = false;
+		$this->options['commit']                                 = $this->options['commit-test-phpcs-scan-commit-5'];
 		vipgoci_unittests_output_suppress();
 
-		$prs_implicated = vipgoci_github_prs_implicated(
-			$this->options['repo-owner'],
-			$this->options['repo-name'],
-			$this->options['commit'],
-			$this->options['github-token'],
-			$this->options['branches-ignore']
-		);
+		$prs_implicated = $this->getPRsImplicated();
 
-
-		foreach( $prs_implicated as $pr_item ) {
-			$issues_stats[
-			$pr_item->number
-			][
-			'error'
-			] = 0;
-
-			$issues_skipped[ $pr_item->number ] = $this->getDefaultSkippedFilesDueIssuesMock();
-		}
-
-		$issues_skipped[39] = array(
-			'issues' => array(
-				'max-lines' => array ( 'test1/myfile-1.php' )
-			),
-			'total' => 1
-		);
-
-		$this->options['local-git-repo'] =
-			vipgoci_unittests_setup_git_repo(
-				$this->options
-			);
+		$this->options['local-git-repo'] = vipgoci_unittests_setup_git_repo( $this->options );
 
 		if ( false === $this->options['local-git-repo'] ) {
 			$this->markTestSkipped(
@@ -986,6 +910,25 @@ final class PhpcsScanScanCommitTest extends TestCase {
 			);
 
 			return;
+		}
+
+		/**
+		 * Test actually starts here
+		 * These options will define the test result
+		 */
+		$this->options['skip-large-files']       = true;
+		$this->options['skip-large-files-limit'] = 15000;
+
+		/**
+		 * Prepare mock data
+		 */
+		$issues_submit  = array();
+		$issues_stats   = array();
+		$issues_skipped = array();
+
+		foreach ( $prs_implicated as $pr_item ) {
+			$issues_stats[ $pr_item->number ]['error'] = 0;
+			$issues_skipped[ $pr_item->number ]        = $this->getDefaultSkippedFilesDueIssuesMock();
 		}
 
 		vipgoci_phpcs_scan_commit(
@@ -1000,9 +943,9 @@ final class PhpcsScanScanCommitTest extends TestCase {
 		$expected_issues_skipped = array(
 			39 => array(
 				'issues' => array(
-					'max-lines' => array ( 'test1/myfile-1.php' )
+					'max-lines' => array( 'test1/myfile-1.php' )
 				),
-				'total' => 1
+				'total'  => 1
 			)
 		);
 
@@ -1012,10 +955,306 @@ final class PhpcsScanScanCommitTest extends TestCase {
 		);
 	}
 
+	/**
+	 * @covers ::vipgoci_phpcs_scan_commit
+	 * Should skip files with more than 15 and can otherwise
+	 * Expected to scan 1 file normally and skip 1 file
+	 * tests1/myfile1.php should be skipped
+	 * tests1/myfile2.php should be scanned
+	 * skip-large-files = true
+	 * skip-large-files-limit = 15
+	 */
+	public function testShouldScanRegularFilesAndSkipLargeFilesWhenSkipLargeFilesOptionIsOnAndFileIsLargerThanLimit() {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( 'phpcs-runtime-set', 'github-token', 'token' ),
+			$this
+		);
+
+		if ( - 1 === $options_test ) {
+			return;
+		}
+
+		vipgoci_unittests_output_suppress();
+		$this->options['skip-large-files']                       = true;
+		$this->options['skip-large-files-limit']                 = 15;
+		$this->options['commit']                                 = $this->options['commit-test-phpcs-scan-commit-6'];
+		$this->options['phpcs-skip-scanning-via-labels-allowed'] = false;
+		$this->options['local-git-repo']                         = vipgoci_unittests_setup_git_repo( $this->options );
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped( 'Could not set up git repository: ' . vipgoci_unittests_output_get() );
+
+			return;
+		}
+
+		$prs_implicated = $this->getPRsImplicated();
+		$issues_submit  = array();
+		$issues_stats   = array();
+		$issues_skipped = array();
+
+		foreach ( $prs_implicated as $pr_item ) {
+			$issues_stats[ $pr_item->number ]   = $this->getStatsDefault();
+			$issues_submit[ $pr_item->number ]  = [];
+			$issues_skipped[ $pr_item->number ] = $this->getDefaultSkippedFilesDueIssuesMock();
+		}
+
+		vipgoci_phpcs_scan_commit(
+			$this->options,
+			$issues_submit,
+			$issues_stats,
+			$issues_skipped
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		$expected_issues_skipped = array(
+			'issues' => array(
+				'max-lines' => array( 'tests1/myfile1.php' )
+			),
+			'total'  => 1
+		);
+
+		$this->assertSame(
+			$expected_issues_skipped,
+			$issues_skipped[43]
+		);
+
+		$this->assertSame(
+			array( 'error' => 3, 'warning' => 1, 'info' => 0 ),
+			$issues_stats[43]
+		);
+
+		$this->assertSame(
+			$this->getFailedIssuesSubmitMock(),
+			$issues_submit[43]
+		);
+	}
+
+	/**
+	 * @covers ::vipgoci_phpcs_scan_commit
+	 * Should scan all the files
+	 * Expected to scan 2 files normally
+	 * skip-large-files = false
+	 * skip-large-files-limit = any
+	 */
+	public function testShouldScanAllTheFilesWhenSkipLargeFilesOptionIsOff() {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( 'phpcs-runtime-set', 'github-token', 'token' ),
+			$this
+		);
+		if ( - 1 === $options_test ) {
+			return;
+		}
+
+		vipgoci_unittests_output_suppress();
+
+		$this->options['commit']                                 = $this->options['commit-test-phpcs-scan-commit-6'];
+		$this->options['phpcs-skip-scanning-via-labels-allowed'] = false;
+		$this->options['local-git-repo']                         = vipgoci_unittests_setup_git_repo( $this->options );
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped( 'Could not set up git repository: ' . vipgoci_unittests_output_get() );
+
+			return;
+		}
+
+		$prs_implicated = $this->getPRsImplicated();
+
+		$this->options['skip-large-files']       = false; // if we set to false, it will fail
+		$this->options['skip-large-files-limit'] = 15; // if we decrease to 4, it will include 2 files in the result
+
+		$issues_submit  = array();
+		$issues_stats   = array();
+		$issues_skipped = array();
+
+		foreach ( $prs_implicated as $pr_item ) {
+			$issues_stats[ $pr_item->number ]   = $this->getStatsDefault();
+			$issues_submit[ $pr_item->number ]  = [];
+			$issues_skipped[ $pr_item->number ] = $this->getDefaultSkippedFilesDueIssuesMock();
+		}
+
+		vipgoci_phpcs_scan_commit(
+			$this->options,
+			$issues_submit,
+			$issues_stats,
+			$issues_skipped
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		$this->assertSame(
+			array( 'error' => 7, 'warning' => 2, 'info' => 0 ),
+			$issues_stats[43]
+		);
+
+		$this->assertSame(
+			$issues_skipped[43],
+			$this->getDefaultSkippedFilesDueIssuesMock()
+		);
+
+		$failedMultipleFilesSubmitMock = $this->getFailedMultipleFilesSubmitMock();
+		$this->assertSame(
+			$issues_submit[43][0],
+			$failedMultipleFilesSubmitMock[0]
+		);
+
+		$this->assertSame(
+			$issues_submit[43][5],
+			$failedMultipleFilesSubmitMock[1]
+		);
+	}
+
+	/**
+	 * @return array
+	 */
 	private function getDefaultSkippedFilesDueIssuesMock() {
 		return array(
 			'issues' => array(),
-			'total' => 0
+			'total'  => 0
+		);
+	}
+
+	/**
+	 * @return array[]
+	 */
+	private function getFailedIssuesSubmitMock(): array {
+		return array (
+			0 =>
+				array (
+					'type' => 'phpcs',
+					'file_name' => 'tests1/myfile2.php',
+					'file_line' => 3,
+					'issue' =>
+						array (
+							'message' => 'Detected usage of a non-sanitized input variable: $_POST[\'phpcs should catch this problem\']',
+							'source' => 'WordPress.Security.ValidatedSanitizedInput.InputNotSanitized',
+							'severity' => 10,
+							'fixable' => false,
+							'type' => 'WARNING',
+							'line' => 3,
+							'column' => 6,
+							'level' => 'WARNING',
+						),
+				),
+			1 =>
+				array (
+					'type' => 'phpcs',
+					'file_name' => 'tests1/myfile2.php',
+					'file_line' => 3,
+					'issue' =>
+						array (
+							'message' => 'All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found \'$_POST[\'phpcs should catch this problem\']\'.',
+							'source' => 'WordPress.Security.EscapeOutput.OutputNotEscaped',
+							'severity' => 5,
+							'fixable' => false,
+							'type' => 'ERROR',
+							'line' => 3,
+							'column' => 6,
+							'level' => 'ERROR',
+						),
+				),
+			2 =>
+				array (
+					'type' => 'phpcs',
+					'file_name' => 'tests1/myfile2.php',
+					'file_line' => 3,
+					'issue' =>
+						array (
+							'message' => 'Processing form data without nonce verification.',
+							'source' => 'WordPress.Security.NonceVerification.Missing',
+							'severity' => 5,
+							'fixable' => false,
+							'type' => 'ERROR',
+							'line' => 3,
+							'column' => 6,
+							'level' => 'ERROR',
+						),
+				),
+			3 =>
+				array (
+					'type' => 'phpcs',
+					'file_name' => 'tests1/myfile2.php',
+					'file_line' => 3,
+					'issue' =>
+						array (
+							'message' => 'Detected usage of a possibly undefined superglobal array index: $_POST[\'phpcs should catch this problem\']. Use isset() or empty() to check the index exists before using it',
+							'source' => 'WordPress.Security.ValidatedSanitizedInput.InputNotValidated',
+							'severity' => 5,
+							'fixable' => false,
+							'type' => 'ERROR',
+							'line' => 3,
+							'column' => 6,
+							'level' => 'ERROR',
+						),
+				),
+		);
+	}
+
+	/**
+	 * @return string
+	 */
+	private function getFailedMultipleFilesSubmitMock(): array {
+		return array(
+			array(
+				'type'      => 'phpcs',
+				'file_name' => 'tests1/myfile1.php',
+				'file_line' => 3,
+				'issue'     =>
+					array(
+						'message'  => 'Detected usage of a non-sanitized input variable: $_POST[\'phpcs should catch this problem\']',
+						'source'   => 'WordPress.Security.ValidatedSanitizedInput.InputNotSanitized',
+						'severity' => 10,
+						'fixable'  => false,
+						'type'     => 'WARNING',
+						'line'     => 3,
+						'column'   => 6,
+						'level'    => 'WARNING',
+					),
+			),
+			array(
+				'type'      => 'phpcs',
+				'file_name' => 'tests1/myfile2.php',
+				'file_line' => 3,
+				'issue'     =>
+					array(
+						'message'  => 'Detected usage of a non-sanitized input variable: $_POST[\'phpcs should catch this problem\']',
+						'source'   => 'WordPress.Security.ValidatedSanitizedInput.InputNotSanitized',
+						'severity' => 10,
+						'fixable'  => false,
+						'type'     => 'WARNING',
+						'line'     => 3,
+						'column'   => 6,
+						'level'    => 'WARNING',
+					),
+			),
+		);
+	}
+
+	/**
+	 * @return array|bool|mixed|null
+	 */
+	public function getPRsImplicated() {
+		$prs_implicated = vipgoci_github_prs_implicated(
+			$this->options['repo-owner'],
+			$this->options['repo-name'],
+			$this->options['commit'],
+			$this->options['github-token'],
+			$this->options['branches-ignore']
+		);
+
+		return $prs_implicated;
+	}
+
+	/**
+	 * @return int[]
+	 */
+	public function getStatsDefault(): array {
+		return array(
+			'error'   => 0,
+			'warning' => 0,
+			'info'    => 0
 		);
 	}
 }

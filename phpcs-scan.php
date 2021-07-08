@@ -212,12 +212,17 @@ function vipgoci_phpcs_scan_single_file(
 		$file_contents
 	);
 
-	$validation = vipgoci_validate( $temp_file_name, $file_name, $options['commit'] );
-
 	/*
 	 * Skips the phpcs scan when the validation contains any issue
 	 */
 	if ( true === $options['skip-large-files'] ) {
+		$validation = vipgoci_validate(
+			$temp_file_name,
+			$file_name,
+			$options['commit'],
+			$options['skip-large-files-limit']
+		);
+
 		if ( 0 !== $validation[ 'total' ] ) {
 			$skipped = array(
 				'file_issues_arr_master'	=> array(),
@@ -316,7 +321,7 @@ function vipgoci_phpcs_scan_single_file(
 		'file_issues_arr_master'	=> $file_issues_arr_master,
 		'file_issues_str'		=> $file_issues_str,
 		'temp_file_name'		=> $temp_file_name,
-		'validation'            => $validation
+		'validation'            => $validation??[]
 	);
 }
 
@@ -569,7 +574,7 @@ function vipgoci_phpcs_scan_commit(
 			$file_name
 		);
 
-		if ( 0 !== $tmp_scanning_results[ 'validation' ][ 'total' ] ) {
+		if ( true === $options[ 'skip-large-files' ] && 0 !== $tmp_scanning_results[ 'validation' ][ 'total' ] ) {
 			vipgoci_log(
 				VIPGOCI_SKIPPED_FILES,
 				array(

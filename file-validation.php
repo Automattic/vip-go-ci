@@ -1,35 +1,35 @@
 <?php
-declare(strict_types=1);
+declare( strict_types=1 );
 
 /**
  * Validation applied to verify wether the bot should scan or skip the file specified
  */
 
 /**
- * @param $temp_file_name
- * @param $file_name
+ * @param string $temp_file_name
+ * @param string $file_name
  * @param string $commit_id
+ * @param int $max_lines
  *
  * Validates if the file is valid to be scanned by vip-go-ci
  *
  * @return array
- *	[
- *		'issues' =>
- *		[
- *			'max-lines' => [$file_name],
- *		],
- *		'total' => 1
- *	]
+ *    [
+ *        'issues' =>
+ *        [
+ *            'max-lines' => [$file_name],
+ *        ],
+ *        'total' => 1
+ *    ]
  * In a oop we could simply inject a service for caching
  * Vars and set values in the constructor
  */
-function vipgoci_validate( string $temp_file_name, string $file_name, string $commit_id ): array
-{
+function vipgoci_validate( string $temp_file_name, string $file_name, string $commit_id, int $max_lines ): array {
 	$validation_result = array( 'total' => 0 );
 
-	if ( false === vipgoci_is_number_of_lines_valid( $temp_file_name, $file_name, $commit_id ) ) {
-		$validation_result[ 'issues' ][ VIPGOCI_VALIDATION_MAXIMUM_LINES ] = [ $file_name ];
-		$validation_result[ 'total' ] = count( $validation_result[ 'issues' ] );
+	if ( false === vipgoci_is_number_of_lines_valid( $temp_file_name, $file_name, $commit_id, $max_lines ) ) {
+		$validation_result['issues'][ VIPGOCI_VALIDATION_MAXIMUM_LINES ] = [ $file_name ];
+		$validation_result['total'] = count( $validation_result['issues'] );
 	}
 
 	return $validation_result;
@@ -39,17 +39,17 @@ function vipgoci_validate( string $temp_file_name, string $file_name, string $co
  * @param string $temp_file_name
  * @param string $file_name
  * @param string $commit_id
+ * @param int $max_lines
  *
  * @return bool
  */
-function vipgoci_is_number_of_lines_valid( string $temp_file_name, string $file_name, string $commit_id ): bool
-{
+function vipgoci_is_number_of_lines_valid( string $temp_file_name, string $file_name, string $commit_id, int $max_lines ): bool {
 	/**
 	 * Verifies if number of lines validation are in the cache
 	 * If so, returns the value
 	 */
 
-	$cache_key = vipgoci_cache_get_is_number_of_lines_valid_key( $file_name, $commit_id );
+	$cache_key                = vipgoci_cache_get_is_number_of_lines_valid_key( $file_name, $commit_id );
 	$is_number_of_lines_valid = vipgoci_cache_get_is_number_of_lines_valid( $cache_key );
 	if ( ! is_null( $is_number_of_lines_valid ) ) {
 		return $is_number_of_lines_valid;
@@ -72,7 +72,7 @@ function vipgoci_is_number_of_lines_valid( string $temp_file_name, string $file_
 		array( 'file_name' => $file_name, 'cmd' => $cmd, 'output' => $output )
 	);
 
-	$is_number_of_lines_valid = vipgoci_verify_number_of_lines_output( $output );
+	$is_number_of_lines_valid = vipgoci_verify_number_of_lines_output( $output, $max_lines );
 
 	vipgoci_cache_set_is_number_of_lines_valid( $cache_key, $is_number_of_lines_valid );
 
@@ -85,8 +85,7 @@ function vipgoci_is_number_of_lines_valid( string $temp_file_name, string $file_
  *
  * Sets cache for converted is_number_of_lines_valid
  */
-function vipgoci_cache_set_is_number_of_lines_valid( array $cache_key, bool $is_number_of_lines_valid ): void
-{
+function vipgoci_cache_set_is_number_of_lines_valid( array $cache_key, bool $is_number_of_lines_valid ): void {
 	vipgoci_cache(
 		$cache_key,
 		$is_number_of_lines_valid === true ? 'true' : 'false'
@@ -95,14 +94,12 @@ function vipgoci_cache_set_is_number_of_lines_valid( array $cache_key, bool $is_
 
 /**
  * @param string $output
+ * @param int $max_lines
  *
  * @return bool
  */
-function vipgoci_verify_number_of_lines_output( string $output ): bool
-{
-	return is_numeric( $output )
-		? $output < VIPGOCI_VALIDATION_MAXIMUM_LINES_LIMIT
-		: false;
+function vipgoci_verify_number_of_lines_output( string $output, int $max_lines ): bool {
+	return is_numeric( $output ) && $output < $max_lines;
 }
 
 /**
@@ -113,11 +110,10 @@ function vipgoci_verify_number_of_lines_output( string $output ): bool
  *
  * @return bool|null
  */
-function vipgoci_cache_get_is_number_of_lines_valid( array $cache_key ): ?bool
-{
+function vipgoci_cache_get_is_number_of_lines_valid( array $cache_key ): ?bool {
 	$cached_value = vipgoci_cache( $cache_key );
 
-	return false !== $cached_value? 'true' === $cached_value : null;
+	return false !== $cached_value ? 'true' === $cached_value : null;
 }
 
 /**
@@ -127,7 +123,6 @@ function vipgoci_cache_get_is_number_of_lines_valid( array $cache_key ): ?bool
  *
  * @return array
  */
-function vipgoci_cache_get_is_number_of_lines_valid_key( string $file_name, string $commit_id ): array
-{
+function vipgoci_cache_get_is_number_of_lines_valid_key( string $file_name, string $commit_id ): array {
 	return array( __FUNCTION__, $file_name, $commit_id );
 }

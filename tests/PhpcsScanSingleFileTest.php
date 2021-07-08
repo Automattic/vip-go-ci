@@ -57,6 +57,8 @@ final class PhpcsScanSingleFileTest extends TestCase {
 		$this->options['phpcs-skip-folders'] = array();
 
 		$this->options['skip-large-files'] = true;
+
+		$this->options['skip-large-files-limit'] = 15000;
 	}
 
 	protected function tearDown(): void {

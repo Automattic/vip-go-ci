@@ -73,13 +73,20 @@ function vipgoci_get_skipped_files_message( array $skipped ): string
  * Get Markdown Skipped File error message
  * @return string
  */
-function vipgoci_get_skipped_files_issue_message( array $affected_files, string $issue_type ): string
-{
+function vipgoci_get_skipped_files_issue_message(
+	array $affected_files,
+	string $issue_type,
+	int $max_lines = 15000
+): string {
 	$affected_files = implode( PHP_EOL . ' -', $affected_files );
+	$validation_message = sprintf(
+		VIPGOCI_VALIDATION[ $issue_type ],
+		$max_lines
+	);
 
 	return sprintf(
 		'%s:%s -%s',
-		VIPGOCI_VALIDATION[ $issue_type ],
+		$validation_message,
 		PHP_EOL,
 		$affected_files
 	);

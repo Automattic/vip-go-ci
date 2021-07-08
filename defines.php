@@ -151,6 +151,6 @@ define(
 	'VIPGOCI_VALIDATION',
 	[
 		VIPGOCI_VALIDATION_MAXIMUM_LINES
-			=> 'Maximum number of lines exceeded (' . VIPGOCI_VALIDATION_MAXIMUM_LINES_LIMIT . ')'
+			=> 'Maximum number of lines exceeded (%d)'
 	]
 );

@@ -225,6 +225,7 @@ function vipgoci_options_recognized() {
 		'branches-ignore:',
 		'local-git-repo:',
 		'skip-large-files:',
+		'skip-large-files-limit:',
 
 		/*
 		 * Environmental & repo configuration
@@ -822,10 +823,11 @@ function vipgoci_run() {
 		range( 0, 500, 1 )
 	);
 
+	vipgoci_option_integer_handle( $options, 'skip-large-files-limit', 15000 );
+
 	/*
 	 * Handle boolean parameters
 	 */
-
 	vipgoci_option_bool_handle( $options, 'skip-draft-prs', 'false' );
 
 	vipgoci_option_bool_handle( $options, 'phpcs', 'true' );
