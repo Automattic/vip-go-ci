@@ -1454,3 +1454,32 @@ function vipgoci_option_phpcs_runtime_set(
 	}
 }
 
+/*
+ * Return options as key-value pairs that start
+ * with $start_with, but skip any options in
+ * $options_skip. Will sort the results according
+ * to key.
+ */
+function vipgoci_options_get_starting_with(
+	array $options,
+	string $starts_with,
+	array $options_skip
+) :array {
+	$ret_vals = array();
+
+	foreach( array_keys( $options ) as $option_name ) {
+		if ( 0 !== strpos( $option_name, $starts_with ) ) {
+			continue;
+		}
+
+		if ( in_array( $option_name, $options_skip ) ) {
+			continue;
+		}
+
+		$ret_vals[ $option_name ] = $options[ $option_name ];
+	}
+
+	ksort( $ret_vals );
+
+	return $ret_vals;
+}
