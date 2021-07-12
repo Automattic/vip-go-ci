@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.8](https://github.com/Automattic/vip-go-ci/releases/tag/1.0.8) - To be decided
+- [#189](https://github.com/Automattic/vip-go-ci/pull/189): Adding function vipgoci_options_get_starting_with()
+
 ## [1.0.7](https://github.com/Automattic/vip-go-ci/releases/tag/1.0.7) - 2021-07-05
 
 ### Fixed
