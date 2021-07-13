@@ -3,7 +3,13 @@
 All notable changes to this project will be documented in this file.
 
 ## [1.0.8](https://github.com/Automattic/vip-go-ci/releases/tag/1.0.8) - To be decided
-- [#189](https://github.com/Automattic/vip-go-ci/pull/189): Adding function vipgoci_options_get_starting_with()
+
+### Added
+- [#186](https://github.com/Automattic/vip-go-ci/pull/186): Skip large files functionality (``skip-large-files`` and ``skip-large-files-limit`` options).
+- [#189](https://github.com/Automattic/vip-go-ci/pull/189): Function ``vipgoci_options_get_starting_with()``.
+
+### Fixed
+- [#no-issue-number](https://github.com/Automattic/vip-go-ci/commit/a8988c4b932f2f5fdf5873c33c28ae91608bbc44): Github unit test that was failing due to an out-to-date ``merge_commit_sha`` value.
 
 ## [1.0.7](https://github.com/Automattic/vip-go-ci/releases/tag/1.0.7) - 2021-07-05
 
