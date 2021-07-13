@@ -24,6 +24,10 @@ function vipgoci_help_print( $argv ) {
 		"\t" . '                               that expect a URL are HTTPS and not HTTP. Default is true.' . PHP_EOL .
 		"\t" . '--skip-draft-prs=BOOL          If true, skip scanning of all Pull-Requests that are in draft mode.' . PHP_EOL .
 		"\t" . '                               Default is false.' . PHP_EOL .
+		"\t" . '--skip-large-files=true=BOOL          If true, skip scanning files that have number of lines higher than the skip-large-files-limit value.' . PHP_EOL .
+		"\t" . '                                      Default is true.' . PHP_EOL .
+		"\t" . '--skip-large-files-limit=INTEGER      Defines the maximum number of lines limit per file.' . PHP_EOL .
+		"\t" . '                                      Default is 15000 lines.' . PHP_EOL .
 		"\t" . '--branches-ignore=STRING,...   What branches to ignore -- useful to make sure' . PHP_EOL .
 		"\t" . '                               some branches never get scanned. Separate branches' . PHP_EOL .
 		"\t" . '                               with commas.' . PHP_EOL .
