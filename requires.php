@@ -10,6 +10,8 @@ require_once( __DIR__ . '/misc.php' );
 require_once( __DIR__ . '/results.php' );
 require_once( __DIR__ . '/options.php' ) ;
 require_once( __DIR__ . '/statistics.php' );
+require_once( __DIR__ . '/file-validation.php' );
+require_once( __DIR__ . '/skip-file.php' );
 require_once( __DIR__ . '/phpcs-scan.php' );
 require_once( __DIR__ . '/lint-scan.php' );
 require_once( __DIR__ . '/auto-approval.php' );

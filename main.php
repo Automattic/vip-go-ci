@@ -24,6 +24,10 @@ function vipgoci_help_print( $argv ) {
 		"\t" . '                               that expect a URL are HTTPS and not HTTP. Default is true.' . PHP_EOL .
 		"\t" . '--skip-draft-prs=BOOL          If true, skip scanning of all Pull-Requests that are in draft mode.' . PHP_EOL .
 		"\t" . '                               Default is false.' . PHP_EOL .
+		"\t" . '--skip-large-files=true=BOOL          If true, skip scanning files that have number of lines higher than the skip-large-files-limit value.' . PHP_EOL .
+		"\t" . '                                      Default is true.' . PHP_EOL .
+		"\t" . '--skip-large-files-limit=INTEGER      Defines the maximum number of lines limit per file.' . PHP_EOL .
+		"\t" . '                                      Default is 15000 lines.' . PHP_EOL .
 		"\t" . '--branches-ignore=STRING,...   What branches to ignore -- useful to make sure' . PHP_EOL .
 		"\t" . '                               some branches never get scanned. Separate branches' . PHP_EOL .
 		"\t" . '                               with commas.' . PHP_EOL .
@@ -224,6 +228,8 @@ function vipgoci_options_recognized() {
 		'skip-draft-prs:',
 		'branches-ignore:',
 		'local-git-repo:',
+		'skip-large-files:',
+		'skip-large-files-limit:',
 
 		/*
 		 * Environmental & repo configuration
@@ -380,7 +386,15 @@ function vipgoci_exit_status( $results ) {
 				return VIPGOCI_EXIT_CODE_ISSUES;
 			}
 		}
+	}
 
+	if ( ! empty( $results['skipped-files'] ) ) {
+		foreach ( $results['skipped-files'] as $pr_number ) {
+			if( 0 < $pr_number[ 'total' ] ) {
+				// Results contains skipped files due issues, return non-zero
+				return VIPGOCI_EXIT_CODE_ISSUES;
+			}
+		}
 	}
 
 	return 0;
@@ -813,10 +827,11 @@ function vipgoci_run() {
 		range( 0, 500, 1 )
 	);
 
+	vipgoci_option_integer_handle( $options, 'skip-large-files-limit', 15000 );
+
 	/*
 	 * Handle boolean parameters
 	 */
-
 	vipgoci_option_bool_handle( $options, 'skip-draft-prs', 'false' );
 
 	vipgoci_option_bool_handle( $options, 'phpcs', 'true' );
@@ -828,6 +843,8 @@ function vipgoci_run() {
 	vipgoci_option_bool_handle( $options, 'repo-options', 'false' );
 
 	vipgoci_option_bool_handle( $options, 'lint', 'true' );
+
+	vipgoci_option_bool_handle( $options, 'skip-large-files', 'true' );
 
 	vipgoci_option_bool_handle( $options, 'lint-skip-folders-in-repo-options-file', 'false' );
 
@@ -1654,7 +1671,7 @@ function vipgoci_run() {
 			VIPGOCI_GITHUB_WEB_BASE_URL . '/' .
 				rawurlencode( $options['repo-owner'] ) . '/' .
 				rawurlencode( $options['repo-name'] ) . '/' .
-				'commit/' . 
+				'commit/' .
 				rawurlencode( $options['commit'] )
 		);
 
@@ -1671,7 +1688,7 @@ function vipgoci_run() {
 	vipgoci_log(
 		'Starting up...',
 		array(
-			'options'	=> vipgoci_options_sensitive_clean(
+			'options' => vipgoci_options_sensitive_clean(
 				$options
 			)
 		)
@@ -1889,7 +1906,8 @@ function vipgoci_run() {
 		vipgoci_lint_scan_commit(
 			$options,
 			$results['issues'],
-			$results['stats'][ VIPGOCI_STATS_LINT ]
+			$results['stats'][ VIPGOCI_STATS_LINT ],
+			$results[ VIPGOCI_SKIPPED_FILES ]
 		);
 	}
 
@@ -1902,7 +1920,8 @@ function vipgoci_run() {
 		vipgoci_phpcs_scan_commit(
 			$options,
 			$results['issues'],
-			$results['stats'][ VIPGOCI_STATS_PHPCS ]
+			$results['stats'][ VIPGOCI_STATS_PHPCS ],
+			$results[ VIPGOCI_SKIPPED_FILES ]
 		);
 	}
 

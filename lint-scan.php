@@ -198,7 +198,8 @@ function vipgoci_lint_parse_results(
 function vipgoci_lint_scan_commit(
 	$options,
 	&$commit_issues_submit,
-	&$commit_issues_stats
+	&$commit_issues_stats,
+	array &$commit_skipped_files
 ) {
 	$repo_owner = $options['repo-owner'];
 	$repo_name  = $options['repo-name'];
@@ -258,6 +259,7 @@ function vipgoci_lint_scan_commit(
 
 	/*
 	 * Lint every PHP file existing in the commit
+	 * $commit_tree is an array of files for that commit
 	 */
 
 	foreach( $commit_tree as $filename ) {
@@ -279,6 +281,31 @@ function vipgoci_lint_scan_commit(
 			$file_contents
 		);
 
+		/**
+		 * Validates the file
+		 * and if it's not valid, the scans skips it
+		 */
+		if ( true === $options['skip-large-files'] ) {
+			$validation = vipgoci_validate(
+				$temp_file_name,
+				$filename,
+				$commit_id,
+				$options[ 'skip-large-files-limit' ]
+			);
+			if ( 0 !== $validation[ 'total' ] ) {
+				unlink( $temp_file_name );
+
+				vipgoci_set_prs_implicated_skipped_files( $prs_implicated, $commit_skipped_files, $validation );
+				vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'lint_scan_single_file' );
+
+				continue;
+			}
+		}
+
+		/**
+		 * The lint scan will only proceed if the file is valid
+		 *
+		 */
 		/*
 		 * Keep statistics of what we do.
 		 */

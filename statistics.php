@@ -13,9 +13,13 @@ function vipgoci_stats_init( $options, $prs_implicated, &$results ) {
 		 * Initialize array for stats and
 		 * results of scanning, if needed.
 		 */
-
 		if ( empty( $results['issues'][ $pr_item->number ] ) ) {
-			$results['issues'][ $pr_item->number ] = array(
+			$results['issues'][ $pr_item->number ] = array();
+		}
+
+		if ( empty( $results[ VIPGOCI_SKIPPED_FILES ][ $pr_item->number ] ) ) {
+			$results[ VIPGOCI_SKIPPED_FILES ][ $pr_item->number ] = array(
+				'issues' => array(), 'total' => 0
 			);
 		}
 
@@ -47,7 +51,6 @@ function vipgoci_stats_init( $options, $prs_implicated, &$results ) {
 		}
 	}
 }
-
 
 /*
  * A simple function to keep record of how
@@ -282,4 +285,3 @@ function vipgoci_stats_per_file(
 		$file_lines_cnt
 	);
 }
-
