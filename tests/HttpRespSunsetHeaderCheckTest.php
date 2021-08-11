@@ -13,7 +13,7 @@ final class HttpRespSunsetHeaderCheckTest extends TestCase {
 		vipgoci_irc_api_alert_queue( null, true ); // Empty IRC queue
 	}
 
-	private function _searchIrcMsgQueue() :boolean {
+	private function _searchIrcMsgQueue() :bool {
 		$found = false;
 
 		$irc_msg_queue = vipgoci_irc_api_alert_queue( null, true );
