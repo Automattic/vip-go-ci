@@ -278,6 +278,24 @@ function vipgoci_convert_string_to_type( $str ) {
 }
 
 /*
+ * Round items in an array to a certain precision, return
+ * new array with results. Essentially a wrapper around the
+ * PHP round() function.
+ */
+function vipgoci_round_array_items(
+	array $arr,
+	int $precision = 0,
+	int $mode = PHP_ROUND_HALF_UP
+): array {
+	return array_map(
+		function( $item ) use ( $precision, $mode ) {
+			return round( $item, $precision, $mode );
+		},
+		$arr
+	);
+}
+
+/*
  * Given a patch-file, the function will return an
  * associative array, mapping the patch-file
  * to the raw committed file.
