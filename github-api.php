@@ -132,6 +132,17 @@ function vipgoci_http_resp_sunset_header_check(
 	array $resp_headers
 ) {
 	/*
+	 * Only do detection in 20% of cases, to limit
+	 * amount of logging. In case of unit-testing this
+	 * will be 100%.
+	 */
+	if ( ( ! defined( 'VIPGOCI_UNIT_TESTING' ) ) || ( true !== VIPGOCI_UNIT_TESTING ) ) {
+		if ( rand( 1, 5 ) > 1 ) {
+			return;
+		}
+	}
+
+	/*
 	 * If no sunset header is found, do nothing.
 	 */
 	if (
