@@ -117,6 +117,79 @@ function vipgoci_curl_set_security_options( $ch ) {
 	);
 }
 
+/*
+ * Log a warning if a Sunset HTTP header is
+ * found in array of response headers, as this indicates
+ * that the API feature will become deprecated in the
+ * future. Will log the URL called, but without query
+ * component, as it may contain sensitive information.
+ *
+ * Information on Sunset HTTP headers:
+ * https://datatracker.ietf.org/doc/html/draft-wilde-sunset-header-03
+ */
+function vipgoci_http_resp_sunset_header_check(
+	string $http_url,
+	array $resp_headers
+) {
+	/*
+	 * Only do detection in 20% of cases, to limit
+	 * amount of logging. In case of unit-testing this
+	 * will be 100%.
+	 */
+	if ( ( ! defined( 'VIPGOCI_UNIT_TESTING' ) ) || ( true !== VIPGOCI_UNIT_TESTING ) ) {
+		if ( rand( 1, 5 ) > 1 ) {
+			return;
+		}
+	}
+
+	/*
+	 * If no sunset header is found, do nothing.
+	 */
+	if (
+		( ! isset( $resp_headers['sunset'][0] ) ) ||
+		( strlen( $resp_headers['sunset'][0] ) <= 0 )
+	) {
+		return;
+	}
+
+	$sunset_date = $resp_headers['sunset'];
+
+	/*
+	 * To minimize likelihood of data-leaks via the URL being
+	 * logged, remove any query parameters and leave
+	 * only the base URL.
+	 */
+
+	$http_url_parsed = parse_url( $http_url );
+
+	$http_url_clean =
+		$http_url_parsed['scheme'] . '://' .
+		$http_url_parsed['host'];
+
+	
+	if ( isset( $http_url_parsed['port'] ) ) {
+		$http_url_clean .= ':' . (int) $http_url_parsed['port'];
+	}
+
+	if ( isset( $http_url_parsed['path'] ) ) {
+		$http_url_clean .=
+			'/' .
+			$http_url_parsed['path'];
+	}
+
+
+	vipgoci_log(
+		'Warning: Sunset HTTP header detected, feature will become unavailable',
+		array(
+			'http_url_clean'	=> $http_url_clean,
+			'sunset_date'		=> $sunset_date,
+		),
+		0,
+		true // Log to IRC.
+	);
+}
+
+
 /**
  * Detect if we exceeded the GitHub rate-limits,
  * and if so, exit with error.
@@ -623,6 +696,10 @@ function vipgoci_github_post_url(
 			$resp_headers
 		);
 
+		vipgoci_http_resp_sunset_header_check(
+			$github_url,
+			$resp_headers
+		);
 
 		curl_close( $ch );
 
@@ -766,6 +843,11 @@ function vipgoci_github_fetch_url(
 
 
 		vipgoci_github_rate_limits_check(
+			$github_url,
+			$resp_headers
+		);
+
+		vipgoci_http_resp_sunset_header_check(
 			$github_url,
 			$resp_headers
 		);
@@ -986,6 +1068,10 @@ function vipgoci_github_put_url(
 			$resp_headers
 		);
 
+		vipgoci_http_resp_sunset_header_check(
+			$github_url,
+			$resp_headers
+		);
 
 		curl_close( $ch );
 
