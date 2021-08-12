@@ -2305,11 +2305,19 @@ function vipgoci_run() {
 	vipgoci_log(
 		'Shutting down',
 		array(
+			'vipgoci_version'	=> VIPGOCI_VERSION,
+			'repo_owner'		=> $options['repo-owner'],
+			'repo_name'		=> $options['repo-name'],
+			'pr_numbers'		=> array_column( $prs_implicated, 'number' ),
 			'run_time_seconds'	=> time() - $startup_time,
 			'run_time_measurements'	=>
-				vipgoci_runtime_measure(
-					VIPGOCI_RUNTIME_DUMP,
-					null
+				vipgoci_round_array_items(
+					vipgoci_runtime_measure(
+						VIPGOCI_RUNTIME_DUMP,
+						null
+					),
+					4,
+					PHP_ROUND_HALF_UP
 				),
 			'counters_report'	=> $counter_report,
 
@@ -2317,7 +2325,9 @@ function vipgoci_run() {
 				$github_api_rate_limit_usage->resources->core,
 
 			'results'		=> $results,
-		)
+		),
+		0,
+		true // Log to IRC
 	);
 
 	/*
