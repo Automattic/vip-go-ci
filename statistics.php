@@ -81,6 +81,11 @@ function vipgoci_runtime_measure( $action = null, $type = null ) {
 
 	// Dump all runtimes we have
 	if ( VIPGOCI_RUNTIME_DUMP === $action ) {
+		/*
+		 * Sort by value and maintain index association
+		 */
+		arsort( $runtime, SORT_NUMERIC );
+
 		return $runtime;
 	}
 
