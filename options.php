@@ -1177,7 +1177,8 @@ function vipgoci_option_generic_support_comments_process(
 			array(
 				'option_name'	=> $option_name,
 				'option_value'	=> $options[ $option_name ],
-			)
+			),
+			VIPGOCI_EXIT_USAGE_ERROR
 		);
 	}
 
@@ -1236,7 +1237,8 @@ function vipgoci_option_generic_support_comments_process(
 						'option_name'		=> $option_name,
 						'option_value'		=> $original_option_value,
 						'option_value_problem'	=> $tmp_value,
-					)
+					),
+					VIPGOCI_EXIT_USAGE_ERROR
 				);
 			}
 
@@ -1362,7 +1364,8 @@ function vipgoci_option_generic_support_comments_match(
 
 						'match_key_value_item_arr'
 							=> $match_key_value_item_arr[0],
-					)
+					),
+					VIPGOCI_EXIT_USAGE_ERROR
 				);
 			}
 
