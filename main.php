@@ -798,7 +798,8 @@ function vipgoci_run() {
 			'Invalid value for --max-exec-time; must be positive',
 			array(
 				'max-exec-time'	=> $options['max-exec-time'],
-			)
+			),
+			VIPGOCI_EXIT_USAGE_ERROR
 		);
 	}
 
@@ -1151,7 +1152,8 @@ function vipgoci_run() {
 					array(
 						$tmp_option_name
 							=> ( isset( $options[ $tmp_option_name ] ) ? $options[ $tmp_option_name ] : null ),
-					)
+					),
+					VIPGOCI_EXIT_USAGE_ERROR
 				);
 			}
 		}
@@ -1215,7 +1217,8 @@ function vipgoci_run() {
 
 					'post-generic-pr-support-comments-repo-meta-match' =>
 						$options['post-generic-pr-support-comments-repo-meta-match'],
-				)
+				),
+				VIPGOCI_EXIT_USAGE_ERROR
 			);
 		}
 
@@ -1306,7 +1309,8 @@ function vipgoci_run() {
 
 							'post-generic-pr-support-comments-repo-meta-match' =>
 								array_keys( $options['post-generic-pr-support-comments-repo-meta-match'] ),
-						)
+						),
+						VIPGOCI_EXIT_USAGE_ERROR
 					);
 				}
 			}
@@ -1735,8 +1739,13 @@ function vipgoci_run() {
 		vipgoci_sysexit(
 			'Skipping scanning entirely, as the commit ' .
 				'is not a part of any Pull-Request',
-			array(),
-			VIPGOCI_EXIT_NORMAL
+			array(
+				'repo_owner'	=> $options['repo-owner'],
+				'repo_name'	=> $options['repo-name'],
+				'commit'	=> $options['commit'],
+			),
+			VIPGOCI_EXIT_COMMIT_NOT_PART_OF_PR,
+			true
 		);
 	}
 
