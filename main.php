@@ -1724,17 +1724,25 @@ function vipgoci_run() {
 	/*
 	 * If no Pull-Requests are implicated by this commit,
 	 * bail now, as there is no point in continuing running.
+	 *
+	 * Will retry if fails at first attempt. We do this as
+	 * sometimes GitHub API does not invalidate its cache
+	 * within the first seconds even though PR has been opened.
 	 */
-
-	$prs_implicated = vipgoci_github_prs_implicated(
+	$prs_implicated = vipgoci_github_prs_implicated_with_retries(
 		$options['repo-owner'],
 		$options['repo-name'],
 		$options['commit'],
 		$options['token'],
 		$options['branches-ignore'],
-		$options['skip-draft-prs']
+		$options['skip-draft-prs'],
+		2, // Attempt to get PRs maximum twice
+		30 // Sleep time between attempts
 	);
 
+	/*
+	 * No PR found despite retry, exit.
+	 */
 	if ( empty( $prs_implicated ) ) {
 		vipgoci_sysexit(
 			'Skipping scanning entirely, as the commit ' .
