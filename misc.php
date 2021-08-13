@@ -79,7 +79,8 @@ function vipgoci_log(
 function vipgoci_sysexit(
 	$str,
 	$debug_data = array(),
-	$exit_status = VIPGOCI_EXIT_USAGE_ERROR
+	$exit_status = VIPGOCI_EXIT_USAGE_ERROR,
+	$irc = false
 ) {
 	if ( $exit_status === VIPGOCI_EXIT_USAGE_ERROR ) {
 		$str = 'Usage: ' . $str;
@@ -88,7 +89,8 @@ function vipgoci_sysexit(
 	vipgoci_log(
 		$str,
 		$debug_data,
-		0
+		0,
+		$irc
 	);
 
 	exit( $exit_status );
