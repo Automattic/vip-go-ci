@@ -2125,6 +2125,33 @@ function vipgoci_run() {
 	}
 
 	/*
+	 * Temporary: Log if any files were skipped.
+	 */
+	foreach ( $prs_implicated as $pr_item ) {	
+		if ( ! empty(
+			$results[
+				VIPGOCI_SKIPPED_FILES
+			][
+				$pr_item->number
+			][
+				'issues'
+			]
+		) ) {
+			vipgoci_log(
+				'Too large file(s) was/were detected during analysis: ' .
+					VIPGOCI_GITHUB_WEB_BASE_URL . '/' . $options['repo-owner'] . '/' . $options['repo-name'] . '/pull/' . $pr_item->number,
+				array(
+					'repo_owner'	=> $options['repo-owner'],
+					'repo_name'	=> $options['repo-name'],
+					'pr_number'     => $pr_item->number,
+				),
+				0,
+				true
+			);
+		}
+	}
+
+	/*
 	 * Submit any remaining issues to GitHub
 	 */
 
