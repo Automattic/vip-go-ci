@@ -143,7 +143,9 @@ final class SvgScanScanSingleFileTest extends TestCase {
 
 			'file_issues_str'	=> '',
 			'temp_file_name'	=> $temp_file_name,
-			'validation'		=> array(),
+			'validation'		=> array(
+				'total' => 0
+			),
 		);
 
 		$expected_result['file_issues_str'] = json_encode(
