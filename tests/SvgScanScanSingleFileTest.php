@@ -45,9 +45,9 @@ final class SvgScanScanSingleFileTest extends TestCase {
 
 		$this->options['svg-checks'] = true;
 
-		$this->options['skip-large-files'] = false;
+		$this->options['skip-large-files'] = true;
                 
-		$this->options['skip-large-files-limit'] = 15;
+		$this->options['skip-large-files-limit'] = 15000;
 	}
 
 	protected function tearDown(): void {
