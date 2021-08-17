@@ -179,11 +179,14 @@ final class VipgociSkipFileTest extends TestCase {
 		);
 		$skipped_files_message = vipgoci_get_skipped_files_message( $skipped );
 
-		$expected_skipped_files_message = '****
+		$expected_skipped_files_message = '
 **skipped-files**
+
 Maximum number of lines exceeded (15000):
- -MyFailedClass.php
- -MyFailedClass2.php';
+ - MyFailedClass.php
+ - MyFailedClass2.php
+
+Note that the above file(s) were not analyzed due to their length.';
 
 		$this->assertSame( $expected_skipped_files_message, $skipped_files_message );
 	}
@@ -200,8 +203,8 @@ Maximum number of lines exceeded (15000):
 		);
 
 		$expected_skipped_files_issue_message = 'Maximum number of lines exceeded (15000):
- -MyFailedClass.php
- -MyFailedClass2.php';
+ - MyFailedClass.php
+ - MyFailedClass2.php';
 
 		$this->assertSame(
 			$expected_skipped_files_issue_message,
