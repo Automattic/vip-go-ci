@@ -2808,6 +2808,10 @@ function vipgoci_github_pr_review_submit(
 		 * Format skipped files message if it validation has issues
 		 */
 		if ( ! empty( $results[ VIPGOCI_SKIPPED_FILES ][ $pr_number ]['issues'] ) ) {
+			vipgoci_markdown_comment_add_pagebreak(
+				$github_postfields['body']
+			);
+
 			$github_postfields[ 'body' ] .= vipgoci_get_skipped_files_message(
 				$results[ VIPGOCI_SKIPPED_FILES ][ $pr_number ],
 				$pr_number
