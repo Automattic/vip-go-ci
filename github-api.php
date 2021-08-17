@@ -2688,7 +2688,7 @@ function vipgoci_github_pr_review_submit(
 			( false === $github_errors ) &&
 			( false === $github_warnings ) &&
 			( false === $github_info ) &&
-			empty( $results[ VIPGOCI_SKIPPED_FILES ][ $pr_number ] )
+			empty( $results[ VIPGOCI_SKIPPED_FILES ][ $pr_number ]['issues'] )
 		) {
 			continue;
 		}
@@ -2807,7 +2807,7 @@ function vipgoci_github_pr_review_submit(
 		/**
 		 * Format skipped files message if it validation has issues
 		 */
-		if ( ! empty( $results[ VIPGOCI_SKIPPED_FILES ][ $pr_number ] ) ) {
+		if ( ! empty( $results[ VIPGOCI_SKIPPED_FILES ][ $pr_number ]['issues'] ) ) {
 			$github_postfields[ 'body' ] .= vipgoci_get_skipped_files_message(
 				$results[ VIPGOCI_SKIPPED_FILES ][ $pr_number ],
 				$pr_number
