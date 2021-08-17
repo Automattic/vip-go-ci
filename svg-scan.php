@@ -227,6 +227,31 @@ function vipgoci_svg_scan_single_file(
 		$file_contents
 	);
 
+	/*
+	 * Skips the SVG scanning when the validation contains any issue
+	 */
+	if ( true === $options['skip-large-files'] ) {
+		$validation = vipgoci_validate(
+			$temp_file_name,
+			$file_name,
+			$options['commit'],
+			$options['skip-large-files-limit']
+		);
+
+		if ( 0 !== $validation[ 'total' ] ) {
+			$skipped = array(
+				'file_issues_arr_master'	=> array(),
+				'file_issues_str'		=> null,
+				'temp_file_name'		=> $temp_file_name,
+				'validation'			=> $validation
+			);
+
+			unlink( $temp_file_name );
+
+			return $skipped;
+		}
+	}
+
 
 	/*
 	 * Use the svg-sanitizer's library scanner
@@ -261,7 +286,7 @@ function vipgoci_svg_scan_single_file(
 			'file_issues_arr_master'	=> $results,
 			'file_issues_str'		=> null,
 			'temp_file_name'		=> $temp_file_name,
-			'validation'            => array( 'total' => 0 )
+			'validation'            	=> array( 'total' => 0 )
 		);
 	}
 
@@ -328,6 +353,7 @@ function vipgoci_svg_scan_single_file(
 		'file_issues_arr_master'	=> $results,
 		'file_issues_str'		=> json_encode( $results ),
 		'temp_file_name'		=> $temp_file_name,
+		'validation'			=> $validation ?? [],
 	);
 }
 
