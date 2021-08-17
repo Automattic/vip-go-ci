@@ -651,12 +651,40 @@ php ~/vip-go-ci-tools/vip-go-ci/github-commit-status.php --repo-owner=`repo-owne
 
 php ~/vip-go-ci-tools/vip-go-ci/vip-go-ci.php ... 
 
-if [ "$?" == "0" ] ; then
+export VIPGOCI_EXIT_CODE="$?"
+
+if [ "$VIPGOCI_EXIT_CODE" == "0" ] ; then
 	export BUILD_STATE="success"
 	export BUILD_DESCRIPTION="No problems were identified"
-else
+
+elif [ "$VIPGOCI_EXIT_CODE" == "230" ] ; then
+	export BUILD_STATE="failure"
+	export BUILD_DESCRIPTION="Pull request not found for commit"
+
+elif [ "$VIPGOCI_EXIT_CODE" == "249" ] ; then
+	export BUILD_STATE="failure"
+	export BUILD_DESCRIPTION="Build timed out, PR may be too large"
+
+elif [ "$VIPGOCI_EXIT_CODE" == "250" ] ; then
 	export BUILD_STATE="failure"
 	export BUILD_DESCRIPTION="Problems were identified"
+
+elif [ "$VIPGOCI_EXIT_CODE" == "251" ] ; then
+	export BUILD_STATE="failure"
+	export BUILD_DESCRIPTION="Build setup problem"
+
+elif [ "$VIPGOCI_EXIT_CODE" == "252" ] ; then
+	export BUILD_STATE="failure"
+	export BUILD_DESCRIPTION="GitHub communication error. Please retry"
+
+elif [ "$VIPGOCI_EXIT_CODE" == "253" ] ; then
+	export BUILD_STATE="failure"
+	export BUILD_DESCRIPTION="vip-go-ci usage error"
+
+else
+	export BUILD_STATE="failure"
+	export BUILD_DESCRIPTION="Unknown error"
+
 fi
 
 php ~/vip-go-ci-tools/vip-go-ci/github-commit-status.php --repo-owner=`repo-owner` --repo-name=`repo-name` --github-token=`token` --github-commit=`commit-ID` --build-context=`vip-go-ci` --build-description="$BUILD_DESCRIPTION" --build-state="$BUILD_STATE"
