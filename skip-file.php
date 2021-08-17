@@ -78,14 +78,14 @@ function vipgoci_get_skipped_files_issue_message(
 	string $issue_type,
 	int $max_lines = 15000
 ): string {
-	$affected_files = implode( PHP_EOL . ' -', $affected_files );
+	$affected_files = implode( PHP_EOL . ' - ', $affected_files );
 	$validation_message = sprintf(
 		VIPGOCI_VALIDATION[ $issue_type ],
 		$max_lines
 	);
 
 	return sprintf(
-		'%s:%s -%s',
+		'%s:%s - %s',
 		$validation_message,
 		PHP_EOL,
 		$affected_files
