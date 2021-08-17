@@ -1236,6 +1236,13 @@ function vipgoci_markdown_comment_add_pagebreak(
 	$comment_copy = rtrim( $comment_copy, " \n\r" );
 
 	/*
+	 * If there is no comment, do not add pagebreak.
+	 */
+	if ( empty( $comment_copy ) ) {
+		return;
+	}
+
+	/*
 	 * Find the last pagebreak in the comment.
 	 */
 	$pagebreak_location = strrpos(
