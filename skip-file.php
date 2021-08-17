@@ -55,13 +55,15 @@ function vipgoci_set_prs_implicated_skipped_files(
  */
 function vipgoci_get_skipped_files_message( array $skipped ): string
 {
-	$body = PHP_EOL . '**' . VIPGOCI_SKIPPED_FILES . '**' . PHP_EOL;
+	$body = PHP_EOL . '**' . VIPGOCI_SKIPPED_FILES . '**' . PHP_EOL . PHP_EOL;
 	foreach ( $skipped[ 'issues' ] as $issue => $file ) {
 		$body .= vipgoci_get_skipped_files_issue_message(
 			$skipped[ 'issues' ][ $issue ],
 			$issue
 		);
 	}
+
+	$body .= PHP_EOL . PHP_EOL . VIPGOCI_VALIDATION_MAXIMUM_DETAIL_MSG;
 
 	return $body;
 }
