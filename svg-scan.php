@@ -286,7 +286,7 @@ function vipgoci_svg_scan_single_file(
 			'file_issues_arr_master'	=> $results,
 			'file_issues_str'		=> null,
 			'temp_file_name'		=> $temp_file_name,
-			'validation'            	=> array( 'total' => 0 )
+			'validation'                    => array( 'total' => 0 )
 		);
 	}
 
