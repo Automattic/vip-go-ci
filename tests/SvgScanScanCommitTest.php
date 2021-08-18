@@ -1,5 +1,7 @@
 <?php
 
+namespace Vipgoci\tests;
+
 require_once( __DIR__ . '/IncludesForTests.php' );
 
 use PHPUnit\Framework\TestCase;
