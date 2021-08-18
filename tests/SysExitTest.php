@@ -41,7 +41,7 @@ final class SysExitTest extends TestCase {
 			array(
 				'key1' => 'value1',
 			),
-			VIPGOCI_EXIT_CODE_ISSUES,
+			VIPGOCI_EXIT_USAGE_ERROR,
 			true
 		);
 
@@ -53,7 +53,7 @@ final class SysExitTest extends TestCase {
 		 * Check for correct exit status
 		 */
 		$this->assertSame(
-			VIPGOCI_EXIT_CODE_ISSUES,
+			VIPGOCI_EXIT_USAGE_ERROR,
 			$sysexit_status
 		);
 
