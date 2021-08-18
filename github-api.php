@@ -3208,29 +3208,37 @@ function vipgoci_github_prs_implicated(
 	$commit_id,
 	$github_token,
 	$branches_ignore,
-	$skip_draft_prs = false
+	$skip_draft_prs = false,
+	$bypass_cache = false
 ) {
-
 	/*
-	 * Check for cached copy
+	 * Check for data in cache if
+	 * not asked to bypass cache.
+	 * Otherwise simply bypass.
 	 */
-
 	$cached_id = array(
 		__FUNCTION__, $repo_owner, $repo_name,
 		$commit_id, $github_token, $branches_ignore
 	);
 
-	$cached_data = vipgoci_cache( $cached_id );
+	if ( false === $bypass_cache ) {
+		$cached_data = vipgoci_cache( $cached_id );
+	}
+
+	else {
+		$cached_data = false;
+	}
 
 	vipgoci_log(
 		'Fetching all open Pull-Requests from GitHub' .
 			vipgoci_cached_indication_str( $cached_data ),
 		array(
-			'repo_owner' => $repo_owner,
-			'repo_name' => $repo_name,
-			'commit_id' => $commit_id,
-			'branches_ignore' => $branches_ignore,
-			'skip_draft_prs' => $skip_draft_prs,
+			'repo_owner'		=> $repo_owner,
+			'repo_name'		=> $repo_name,
+			'commit_id'		=> $commit_id,
+			'branches_ignore'	=> $branches_ignore,
+			'skip_draft_prs'	=> $skip_draft_prs,
+			'bypass_cache'		=> $bypass_cache,
 		)
 	);
 
@@ -3246,7 +3254,6 @@ function vipgoci_github_prs_implicated(
 
 		return $cached_data;
 	}
-
 
 	/*
 	 * Nothing cached; ask GitHub.
@@ -3348,6 +3355,65 @@ function vipgoci_github_prs_implicated(
 	return $prs_implicated;
 }
 
+/**
+ * @param string $repo_owner 
+ * @param string $repo_name
+ * @param string $commit_id
+ * @param string $github_token
+ * @param array $branches_ignore
+ * @param bool $skip_draft_prs
+ * @param int $try_total
+ * @param int $sleep_time
+ *
+ * Get pull requests currently open, but retry if
+ * nothing is found. Uses vipgoci_github_prs_implicated().
+ *
+ * @return array
+ *
+ * @codeCoverageIgnore
+ */
+function vipgoci_github_prs_implicated_with_retries(
+	string $repo_owner,
+	string $repo_name,
+	string $commit_id,
+	string $github_token,
+	array $branches_ignore,
+	bool $skip_draft_prs = false,
+	int $try_total = 2,
+	int $sleep_time = 10
+) : ?array {
+	$prs_implicated_retries = 0;
+
+	do {
+		if ( $prs_implicated_retries > 0 ) {
+			vipgoci_log(
+				'No PR found, retrying...',
+				array(
+					'sleep_time'	=> $sleep_time,
+				)
+			);
+
+			sleep( $sleep_time );
+		}
+
+		$prs_implicated = vipgoci_github_prs_implicated(
+			$repo_owner,
+			$repo_name,
+			$commit_id,
+			$github_token,
+			$branches_ignore,
+			$skip_draft_prs,
+			( $prs_implicated_retries === 0 ) ? false : true
+		);
+		
+		$prs_implicated_retries++;
+	} while (
+		( empty( $prs_implicated ) ) &&
+		( $prs_implicated_retries < $try_total )
+	);
+
+	return $prs_implicated;
+}
 
 /*
  * Get all commits that are a part of a Pull-Request.
