@@ -70,6 +70,10 @@ final class ApSvgFilesTest extends TestCase {
 		$this->options['branches-ignore'] = array();
 
 		$this->options['skip-draft-prs'] = false;
+		
+		$this->options['skip-large-files'] = false;
+
+		$this->options['skip-large-files-limit'] = 15;
 	}
 
 	protected function tearDown(): void {

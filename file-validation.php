@@ -68,7 +68,7 @@ function vipgoci_is_number_of_lines_valid( string $temp_file_name, string $file_
 	);
 
 	vipgoci_log(
-		'Validation number of lines ',
+		'Validating number of lines output',
 		array( 'file_name' => $file_name, 'cmd' => $cmd, 'output' => $output )
 	);
 

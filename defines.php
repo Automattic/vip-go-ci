@@ -154,3 +154,5 @@ define(
 			=> 'Maximum number of lines exceeded (%d)'
 	]
 );
+
+define( 'VIPGOCI_VALIDATION_MAXIMUM_DETAIL_MSG', 'Note that the above file(s) were not analyzed due to their length.');

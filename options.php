@@ -166,7 +166,7 @@ function vipgoci_options_read_repo_file(
 					'option_overwritable_conf'
 						=> $option_overwritable_conf,
 
-					'repo_options_arr[' . $option_overwritable_name .' ]'
+					'repo_options_arr[' . $option_overwritable_name . ']'
 						=> $repo_options_arr[ $option_overwritable_name ],
 
 					'repo_options_allowed'

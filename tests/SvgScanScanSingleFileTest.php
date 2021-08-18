@@ -44,6 +44,10 @@ final class SvgScanScanSingleFileTest extends TestCase {
 			$this->options['github-token'];
 
 		$this->options['svg-checks'] = true;
+
+		$this->options['skip-large-files'] = true;
+                
+		$this->options['skip-large-files-limit'] = 15000;
 	}
 
 	protected function tearDown(): void {
@@ -139,6 +143,9 @@ final class SvgScanScanSingleFileTest extends TestCase {
 
 			'file_issues_str'	=> '',
 			'temp_file_name'	=> $temp_file_name,
+			'validation'		=> array(
+				'total' => 0
+			),
 		);
 
 		$expected_result['file_issues_str'] = json_encode(
