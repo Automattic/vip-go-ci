@@ -353,7 +353,7 @@ function vipgoci_svg_scan_single_file(
 		'file_issues_arr_master'	=> $results,
 		'file_issues_str'		=> json_encode( $results ),
 		'temp_file_name'		=> $temp_file_name,
-		'validation'			=> $validation ?? [],
+		'validation'                    => $validation ?? [],
 	);
 }
 
