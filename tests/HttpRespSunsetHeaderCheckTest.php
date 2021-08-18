@@ -13,23 +13,6 @@ final class HttpRespSunsetHeaderCheckTest extends TestCase {
 		vipgoci_irc_api_alert_queue( null, true ); // Empty IRC queue
 	}
 
-	private function _searchIrcMsgQueue() :bool {
-		$found = false;
-
-		$irc_msg_queue = vipgoci_irc_api_alert_queue( null, true );
-
-		foreach( $irc_msg_queue as $irc_msg_queue_item ) {
-			if ( false !== strpos(
-				$irc_msg_queue_item,
-				'Warning: Sunset HTTP header detected, feature will become unavailable'
-			) ) {
-				$found = true;
-			}
-		}
-
-		return $found;
-	}
-
 	/**
 	 * @covers ::vipgoci_http_resp_sunset_header_check
 	 */
@@ -50,7 +33,9 @@ final class HttpRespSunsetHeaderCheckTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$found = $this->_searchIrcMsgQueue();
+		$found = vipgoci_unittests_check_irc_api_alert_queue(
+			'Warning: Sunset HTTP header detected, feature will become unavailable'
+		);
 
 		$this->assertTrue(
 			$found
@@ -76,7 +61,9 @@ final class HttpRespSunsetHeaderCheckTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$found = $this->_searchIrcMsgQueue();
+		$found = vipgoci_unittests_check_irc_api_alert_queue(
+			'Warning: Sunset HTTP header detected, feature will become unavailable'
+		);
 
 		$this->assertFalse(
 			$found

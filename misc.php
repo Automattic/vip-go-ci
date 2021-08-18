@@ -93,6 +93,15 @@ function vipgoci_sysexit(
 		$irc
 	);
 
+	/*
+	 * For SysExitTest.php unit-test
+	 */
+	global $_vipgoci_sysexit_test;
+
+	if ( isset( $_vipgoci_sysexit_test ) && ( true === $_vipgoci_sysexit_test ) ) {
+		return $exit_status;
+	}
+
 	exit( $exit_status );
 }
 

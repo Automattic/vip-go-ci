@@ -341,5 +341,25 @@ function vipgoci_unittests_php_syntax_error_compat( $str ) {
 	return $str;
 }
 
+/*
+ * Check for expected data in IRC queue.
+ */
+function vipgoci_unittests_check_irc_api_alert_queue( $str_expected ) {
+	$found = false;
+
+	$irc_msg_queue = vipgoci_irc_api_alert_queue( null, true );
+
+	foreach( $irc_msg_queue as $irc_msg_queue_item ) {
+		if ( false !== strpos(
+			$irc_msg_queue_item,
+			$str_expected
+		) ) {
+			$found = true;
+		}
+	}
+
+	return $found;
+}
+
 require_once( __DIR__ . '/../requires.php' );
 
