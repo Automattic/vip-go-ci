@@ -10,6 +10,8 @@ if ( ! defined( 'VIPGOCI_UNIT_TESTS_INI_DIR_PATH' ) ) {
 	define( 'VIPGOCI_UNIT_TESTS_INI_DIR_PATH', dirname( __DIR__ ) );
 }
 
+define( 'VIPGOCI_UNIT_TESTS_TEST_ID_KEY', 'vipgoci_unittests_test_ids' );
+
 function vipgoci_unittests_get_config_value(
 	$section,
 	$key,
@@ -359,6 +361,43 @@ function vipgoci_unittests_check_irc_api_alert_queue( $str_expected ) {
 	}
 
 	return $found;
+}
+
+/*
+ * Functions to easily indicate and determine if we are running
+ * specific unit-tests. This is useful if we need to add or 
+ * bypass particular functionality in the main code base 
+ * while running a particular unit-test.
+ */
+
+/**
+ * Indicate that we are running a particular test.
+ */
+function vipgoci_unittests_indicate_test_id( string $test_id ) {
+	$GLOBALS[ VIPGOCI_UNIT_TESTS_TEST_ID_KEY ][ $test_id ] = true;
+}
+
+/**
+ * Remove indication of running a particular test.
+ */
+function vipgoci_unittests_remove_indication_for_test_id( string $test_id ) {
+	$GLOBALS[ VIPGOCI_UNIT_TESTS_TEST_ID_KEY ][ $test_id ] = false;
+
+	unset( $GLOBALS[ VIPGOCI_UNIT_TESTS_TEST_ID_KEY ][ $test_id ] );
+}
+
+/**
+ * Determine if we are running a particular test.
+ */
+function vipgoci_unittests_check_indication_for_test_id( string $test_id ) {
+	if (
+		( ( isset( $GLOBALS[ VIPGOCI_UNIT_TESTS_TEST_ID_KEY ][ $test_id ] ) ) ) &&
+		( true === $GLOBALS[ VIPGOCI_UNIT_TESTS_TEST_ID_KEY ][ $test_id ] )
+	) {
+		return true;
+	}
+
+	return false;
 }
 
 require_once( __DIR__ . '/../requires.php' );
