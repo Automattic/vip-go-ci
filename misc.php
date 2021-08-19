@@ -95,7 +95,10 @@ function vipgoci_sysexit(
 	 * If running SysExitTest.php unit-test, return
 	 * with exit status.
 	 */
-	if ( vipgoci_unittests_check_indication_for_test_id( 'SysExitTest' ) ) {
+	if (
+		( function_exists( 'vipgoci_unittests_check_indication_for_test_id' )) &&
+		( vipgoci_unittests_check_indication_for_test_id( 'SysExitTest' ) )
+	) {
 		return $exit_status;
 	}
 
