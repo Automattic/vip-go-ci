@@ -10,19 +10,23 @@ use PHPUnit\Framework\TestCase;
 
 final class SysExitTest extends TestCase {
 	protected function setUp(): void {
-		global $_vipgoci_sysexit_test;
-
-		$_vipgoci_sysexit_test = true;
+		/*
+		 * Indicate that this particular test is running,
+		 * needed so that vipgoci_sysexit() can return
+		 * with exit status instead of exiting. See the
+		 * function itself.
+		 */
+		vipgoci_unittests_indicate_test_id( 'SysExitTest' ); 
 
 		vipgoci_irc_api_alert_queue( null, true ); // Empty IRC queue
 	}
 
 	protected function tearDown(): void {
-		global $_vipgoci_sysexit_test;
-
-		$_vipgoci_sysexit_test = false;
-
-		unset( $_vipgoci_sysexit_test );
+		/*
+	 	 * We are no longer running the test,
+		 * remove the indication.
+		 */
+		vipgoci_unittests_remove_indication_for_test_id( 'SysExitTest' );
 	}
 
 	/**
