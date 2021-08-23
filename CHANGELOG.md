@@ -12,6 +12,7 @@ All notable changes to this project will be documented in this file.
 - [#199](https://github.com/Automattic/vip-go-ci/pull/199): Special exit status when no implicated PR was found, retry fetching PRs
 - [#198](https://github.com/Automattic/vip-go-ci/pull/198): Validate SVG files, added details to message, and formatting changed slightly, add logging
 - [#201](https://github.com/Automattic/vip-go-ci/pull/201): Adding missing namespace to SVG unit-test
+- [#202](https://github.com/Automattic/vip-go-ci/pull/202): Rename branch "master" to "main" in tools-init.sh
 
 ### Fixed
 - [#no-issue-number](https://github.com/Automattic/vip-go-ci/commit/a8988c4b932f2f5fdf5873c33c28ae91608bbc44): Github unit test that was failing due to an out-to-date ``merge_commit_sha`` value.
