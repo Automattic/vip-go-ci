@@ -27,7 +27,7 @@ function vipgoci_help_print( $argv ) {
 		"\t" . '--skip-large-files=true=BOOL          If true, skip scanning files that have number of lines higher than the skip-large-files-limit value.' . PHP_EOL .
 		"\t" . '                                      Default is true.' . PHP_EOL .
 		"\t" . '--skip-large-files-limit=INTEGER      Defines the maximum number of lines limit per file.' . PHP_EOL .
-		"\t" . '                                      Default is 15000 lines.' . PHP_EOL .
+		"\t" . '                                      Default is ' . VIPGOCI_VALIDATION_MAXIMUM_LINES_LIMIT . ' lines.' . PHP_EOL .
 		"\t" . '--branches-ignore=STRING,...   What branches to ignore -- useful to make sure' . PHP_EOL .
 		"\t" . '                               some branches never get scanned. Separate branches' . PHP_EOL .
 		"\t" . '                               with commas.' . PHP_EOL .
@@ -828,7 +828,7 @@ function vipgoci_run() {
 		range( 0, 500, 1 )
 	);
 
-	vipgoci_option_integer_handle( $options, 'skip-large-files-limit', 15000 );
+	vipgoci_option_integer_handle( $options, 'skip-large-files-limit', VIPGOCI_VALIDATION_MAXIMUM_LINES_LIMIT );
 
 	/*
 	 * Handle boolean parameters
@@ -2190,7 +2190,8 @@ function vipgoci_run() {
 		$results,
 		$options['informational-msg'],
 		$options['review-comments-max'],
-		$options['review-comments-include-severity']
+		$options['review-comments-include-severity'],
+		$options['skip-large-files-limit']
 	);
 
 	if ( true === $options['dismiss-stale-reviews'] ) {
