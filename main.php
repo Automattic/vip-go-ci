@@ -2036,6 +2036,7 @@ function vipgoci_run() {
 
 	$team_members_ids_arr = vipgoci_github_team_members_many_get(
 		$options['token'],
+		$options['repo-owner'],
 		$options['dismissed-reviews-exclude-reviews-from-team']
 	);
 
