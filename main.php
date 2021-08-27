@@ -161,6 +161,7 @@ function vipgoci_help_print( $argv ) {
 		"\t" . '                                                      excluded. Note that this parameter' . PHP_EOL .
 		"\t" . '                                                      only works in conjunction with' . PHP_EOL .
 		"\t" . '                                                      --dismissed-reviews-repost-comments .' . PHP_EOL .
+		"\t" . '                                                      The parameter expects a team slug, not ID.' . PHP_EOL .
 		"\t" . '--informational-msg=STRING     Message to append to GitHub reviews and generic comments. Useful to' . PHP_EOL .
 		"\t" . '                               explain what the bot does. Can contain HTML or Markdown.' . PHP_EOL .
 		PHP_EOL .
