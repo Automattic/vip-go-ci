@@ -3901,12 +3901,13 @@ function vipgoci_github_pr_review_events_get(
  * Get members for a team.
  */
 function vipgoci_github_team_members_get(
-	$github_token,
-	$team_id,
+	string $github_token,
+	string $org_slug,
+	string $team_slug,
 	$return_values_only = null
 ) {
 	$cached_id = array(
-		__FUNCTION__, $github_token, $team_id
+		__FUNCTION__, $github_token, $org_slug, $team_slug
 	);
 
 	$cached_data = vipgoci_cache( $cached_id );
@@ -3915,7 +3916,8 @@ function vipgoci_github_team_members_get(
 		'Getting members for organization team' .
 		vipgoci_cached_indication_str( $cached_data ),
 		array(
-			'team_id' => $team_id,
+			'org_slug'           => $org_slug,
+			'team_slug'          => $team_slug,
 			'return_values_only' => $return_values_only,
 		)
 	);
@@ -3929,8 +3931,10 @@ function vipgoci_github_team_members_get(
 		do {
 			$github_url =
 				VIPGOCI_GITHUB_BASE_URL . '/' .
-				'teams/' .
-				rawurlencode( $team_id ) . '/' .
+				'orgs/' .
+				rawurlencode( $org_slug ) . '/' .
+				'teams/' . 
+				rawurlencode( $team_slug ) . '/' .
 				'members?' .
 				'page=' . rawurlencode( $page ) . '&' .
 				'per_page=' . rawurlencode( $per_page );
@@ -3982,42 +3986,43 @@ function vipgoci_github_team_members_get(
 
 
 /*
- * Get team members for one or more teams,
+ * Get team member IDs for one or more teams,
  * return members as a merged array.
- *
- * @codeCoverageIgnore
  */
 function vipgoci_github_team_members_many_get(
-	$github_token,
-	$team_ids_arr = array()
+	string $github_token,
+	string $org_slug,
+	array $team_slugs_arr = array()
 ) {
 	vipgoci_log(
 		'Getting members of teams specified by caller',
 		array(
-			'teams_ids' => $team_ids_arr,
+			'org_slug'    => $org_slug,
+			'teams_slugs' => $team_slugs_arr,
 		)
 	);
 
-	$team_members_ids_arr = array();
+	$team_members_slugs_arr = array();
 
-	foreach( $team_ids_arr as $team_id_item ) {
-		$team_id_members = vipgoci_github_team_members_get(
+	foreach( $team_slugs_arr as $team_slug_item ) {
+		$team_slug_members = vipgoci_github_team_members_get(
 			$github_token,
-			$team_id_item,
+			$org_slug,
+			$team_slug_item,
 			'id'
 		);
 
-		$team_members_ids_arr = array_merge(
-			$team_members_ids_arr,
-			$team_id_members
+		$team_members_slugs_arr = array_merge(
+			$team_members_slugs_arr,
+			$team_slug_members
 		);
 	}
 
-	$team_members_ids_arr = array_unique(
-		$team_members_ids_arr
+	$team_members_slugs_arr = array_unique(
+		$team_members_slugs_arr
 	);
 
-	return $team_members_ids_arr;
+	return $team_members_slugs_arr;
 }
 
 
@@ -4026,13 +4031,13 @@ function vipgoci_github_team_members_many_get(
  * user from the GitHub API.
  */
 function vipgoci_github_org_teams_get(
-	$github_token,
-	$org_id,
+	string $github_token,
+	string $org_slug,
 	$filter = null,
 	$keyed_by = null
 ) {
 	$cached_id = array(
-		__FUNCTION__, $github_token, $org_id
+		__FUNCTION__, $github_token, $org_slug
 	);
 
 	$cached_data = vipgoci_cache( $cached_id );
@@ -4041,8 +4046,8 @@ function vipgoci_github_org_teams_get(
 		'Getting organization teams from GitHub API' .
 		vipgoci_cached_indication_str( $cached_data ),
 		array(
-			'org_id' => $org_id,
-			'filter' => $filter,
+			'org_slug' => $org_slug,
+			'filter'   => $filter,
 			'keyed_by' => $keyed_by,
 		)
 	);
@@ -4057,7 +4062,7 @@ function vipgoci_github_org_teams_get(
 			$github_url =
 				VIPGOCI_GITHUB_BASE_URL . '/' .
 				'orgs/' .
-				rawurlencode( $org_id ) . '/' .
+				rawurlencode( $org_slug ) . '/' .
 				'teams?' .
 				'page=' . rawurlencode( $page ) . '&' .
 				'per_page=' . rawurlencode( $per_page );
