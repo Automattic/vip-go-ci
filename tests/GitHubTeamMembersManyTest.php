@@ -6,9 +6,9 @@ use PHPUnit\Framework\TestCase;
 
 final class GitHubTeamMembersManyTest extends TestCase {
 	var $options = array(
-		'github-token'	=> null,
-		'team-id'	=> null,
-		'team-slug'	=> null,
+		'github-token'  => null,
+		'team-slug'     => null,
+		'org-name'      => null,
 	);
 
 	public function setUp(): void {
@@ -53,9 +53,10 @@ final class GitHubTeamMembersManyTest extends TestCase {
 
 		$team_members_res1_actual = vipgoci_github_team_members_many_get(
 			$this->options['github-token'],
+			$this->options['org-name'],
 			array(
-				$this->options['team-id'],
-				$this->options['team-id'],
+				$this->options['team-slug'],
+				$this->options['team-slug'],
 			)
 		);
 
