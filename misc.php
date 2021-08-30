@@ -72,13 +72,20 @@ function vipgoci_log(
 /**
  * Exit program, using vipgoci_log() to print a
  * message before doing so.
+ *
+ * @param string $str         Log message to print before exiting.
+ * @param array  $debug_data  Debug data to print along with log message.
+ * @param int    $exit_status Exit status of program to use.
+ * @param bool   $irc         Whether to send log message to IRC or not.
+ *
+ * @return void|int Does not return when running normally, will return
+ *                  an integer value when running in unit-test mode.
  */
-
 function vipgoci_sysexit(
-	$str,
-	$debug_data = array(),
-	$exit_status = VIPGOCI_EXIT_USAGE_ERROR,
-	$irc = false
+	string $str,
+	array $debug_data = array(),
+	int $exit_status = VIPGOCI_EXIT_USAGE_ERROR,
+	bool $irc = false
 ) {
 	if ( $exit_status === VIPGOCI_EXIT_USAGE_ERROR ) {
 		$str = 'Usage: ' . $str;
