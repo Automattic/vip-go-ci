@@ -3897,15 +3897,22 @@ function vipgoci_github_pr_review_events_get(
 }
 
 
-/*
+/**
  * Get members for a team.
+ *
+ * @param string      $github_token       GitHub token to use to make GitHub API requests.
+ * @param string      $org_slug           Organization slug for the organization that the team belongs to.
+ * @param string      $team_slug          Slug of team to get members for.
+ * @param string|null $return_values_only If specified, returns value of a particular field only from results.
+ *
+ * @return array Array with results.
  */
 function vipgoci_github_team_members_get(
 	string $github_token,
 	string $org_slug,
 	string $team_slug,
 	$return_values_only = null
-) {
+): array {
 	$cached_id = array(
 		__FUNCTION__, $github_token, $org_slug, $team_slug
 	);
@@ -3985,15 +3992,21 @@ function vipgoci_github_team_members_get(
 }
 
 
-/*
+/**
  * Get team member IDs for one or more teams,
  * return members as a merged array.
+ *
+ * @param string $github_token   GitHub token to use to make GitHub API requests.
+ * @param string $org_slug       Organization slug for the organization that the team belongs to.
+ * @param array  $team_slugs_arr Array of team slugs to get team members for.
+ *
+ * @return array Array with team member IDs.
  */
 function vipgoci_github_team_members_many_get(
 	string $github_token,
 	string $org_slug,
 	array $team_slugs_arr = array()
-) {
+): array {
 	vipgoci_log(
 		'Getting members of teams specified by caller',
 		array(
@@ -4026,16 +4039,23 @@ function vipgoci_github_team_members_many_get(
 }
 
 
-/*
+/**
  * Get organization teams available to the calling
  * user from the GitHub API.
+ *
+ * @param string $github_token GitHub token to use to make GitHub API requests.
+ * @param string $org_slug     Organization slug which to get teams for.
+ * @param mixed  $filter       If specified, will apply filter to results.
+ * @param mixed  $keyed_by     If specified, will key results according to this parameter.
+ *
+ * @return array Array of teams.
  */
 function vipgoci_github_org_teams_get(
 	string $github_token,
 	string $org_slug,
 	$filter = null,
 	$keyed_by = null
-) {
+): array {
 	$cached_id = array(
 		__FUNCTION__, $github_token, $org_slug
 	);
