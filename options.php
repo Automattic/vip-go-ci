@@ -987,17 +987,21 @@ function vipgoci_option_url_handle(
 	}
 }
 
-/*
+/**
  * Handle parameter that we expect to contain team slugs.
  *
  * Will check if the teams are valid, removing invalid ones
  * and reconstructing the option afterwards.
+ *
+ * @param array  $options     Options array.
+ * @param string $option_name Option name to process.
+ *
+ * @return void Nothing is returned.
  */
-
 function vipgoci_option_teams_handle(
 	array &$options,
 	string $option_name
-) {
+): void {
 	if (
 		( ! isset( $options[ $option_name ] ) ) ||
 		( ! is_array( $options[ $option_name ] ) )
