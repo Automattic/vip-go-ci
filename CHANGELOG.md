@@ -2,7 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.0.8](https://github.com/Automattic/vip-go-ci/releases/tag/1.0.8) - To be decided
+
+## [1.0.9](https://github.com/Automattic/vip-go-ci/releases/tag/1.0.9) - To be decided
+
+### Added
+- [#200](https://github.com/Automattic/vip-go-ci/pull/200): Add vipgoci_sysexit() unit test
+
+### Updated
+- [#205](https://github.com/Automattic/vip-go-ci/pull/205): Use new GitHub Teams API
+- [#203](https://github.com/Automattic/vip-go-ci/pull/203): Updating README file
+
+## [1.0.8](https://github.com/Automattic/vip-go-ci/releases/tag/1.0.8) - 2021-08-25
 
 ### Added
 - [#186](https://github.com/Automattic/vip-go-ci/pull/186): Skip large files functionality (``skip-large-files`` and ``skip-large-files-limit`` options).
