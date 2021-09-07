@@ -206,6 +206,17 @@ function vipgoci_lint_scan_commit(
 	$commit_id  = $options['commit'];
 	$github_token = $options['token'];
 
+	if ( false === $options['lint'] ) {
+		vipgoci_log(
+			'Will not lint PHP files, not configured to do so',
+			array(
+				'repo_owner'	=> $repo_owner,
+				'repo_name'	=> $repo_name,
+				'commit_id'	=> $commit_id,
+			)
+		);
+	}
+
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'lint_scan_commit' );
 
 	vipgoci_log(
