@@ -12,6 +12,9 @@ All notable changes to this project will be documented in this file.
 - [#205](https://github.com/Automattic/vip-go-ci/pull/205): Use new GitHub Teams API
 - [#203](https://github.com/Automattic/vip-go-ci/pull/203): Updating README file
 
+### Fixed
+- [#204](https://github.com/Automattic/vip-go-ci/pull/204): Replaces constant with variable to build message about limit of lines per file reached
+
 ## [1.0.8](https://github.com/Automattic/vip-go-ci/releases/tag/1.0.8) - 2021-08-25
 
 ### Added
