@@ -518,6 +518,12 @@ Folders can also be specified in files placed at the root of the repository, `.v
 
 Any folders found in the files at the root of the repository will be merged with options specified on the command-line.
 
+### Skipping large files
+
+By default, `vip-go-ci` will skip scanning of any files that are longer than 15,000 lines and display a warning in GitHub reviews about the files skipped. This means that these files are not PHP linted, not PHPCS scanned nor SVG scanned. This feature was implemented because very large files will often cause scanning to take much longer time than is ideal, delaying submission of results, as well as causing GitHub API errors.
+
+This feature can be disabled by setting the `--skip-large-files` parameter to `false`. The size limit can be changed from 15,000 to a custom value by setting the `--skip-large-files-limit` option.
+
 ### Configuring review comments 
 
 Review comments posted can be configured and number of them limited.
