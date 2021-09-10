@@ -240,4 +240,82 @@ Note that the above file(s) were not analyzed due to their length.';
 			$skipped_files_issue_message
 		);
 	}
+
+	/**
+	 * @covers ::vipgo_skip_file_check_pr_comments
+	 */
+	public function testVipgoci_verify_skip_file_message_duplication()
+	{
+		$comments_mock = $this->getCommentsMock();
+		$results_mock = $this->getResultsMock();
+		$modified_files_mock = [ 'tests1/myfile2.php' ];
+
+		$result = vipgo_skip_file_check_pr_comments(
+			$results_mock[ 15 ],
+			$comments_mock,
+			$modified_files_mock
+		);
+
+		$expected = array (
+			'issues' =>
+				array (
+					'max-lines' =>
+						array ( 'tests1/myfile2.php' ),
+				),
+			'total' => 1,
+		);
+
+		$this->assertSame(
+			$result,
+			$expected
+		);
+	}
+
+	private function getCommentsMock()
+	{
+		$commentMock = $this->createMock('stdClass');
+		$commentMock->body =
+			'**hashes-api**-scanning skipped
+***
+
+**skipped-files**
+
+Maximum number of lines exceeded (3):
+ - GoogleAtom.php
+ - MySuccessClass.php
+ - MySuccessClass2.php
+ - src/MySuccesClasss.php
+ - src/SyntaxError.php
+ - tests1/myfile1.php
+ - tests1/myfile2.php
+
+Note that the above file(s) were not analyzed due to their length.';
+		$commentsMock = [ $commentMock ];
+
+		return $commentsMock;
+	}
+
+	private function getResultsMock(): array
+	{
+		return array (
+			15 => array (
+					'issues' =>
+						array (
+							'max-lines' =>
+								array (
+									0 => 'GoogleAtom.php',
+									1 => 'MySuccessClass.php',
+									2 => 'MySuccessClass2.php',
+									3 => 'src/MySuccesClasss.php',
+									4 => 'src/SyntaxError.php',
+									5 => 'tests1/myfile1.php',
+									6 => 'tests1/myfile2.php',
+								),
+						),
+					'total' => 7,
+				),
+		);
+	}
+
+
 }
