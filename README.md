@@ -10,11 +10,11 @@ Currently, a number of types of scanners are supported:
 * [PHPCS](https://github.com/squizlabs/PHP_CodeSniffer/). Intended to find operational issues, etc.
 * [SVG scanner](https://github.com/Automattic/vip-go-svg-sanitizer). Intended to find suspicious elements, attributes or external references.
 
-Here is how the scanning feedback from `vip-go-ci` will look like:
+Here is an example of the scanning results provided by `vip-go-ci`:
 
 ![Scanning results!](docs/vipgoci-scanning-feedback.png "Scanning results")
 
-It scans files differently depending on file type:
+`vip-go-ci` scans files differently depending on file type:
 
 * For PHP linting, it will loop through every file existing in the code-base, and post a generic pull request comment for any issues it finds with the PHP-code. 
 * With PHPCS scanning it will scan only the files affected by the pull request using PHPCS and post a GitHub review on the pull request.
@@ -28,7 +28,7 @@ In addition to the above scanning, `vip-go-ci` can also automatically approve pu
 * Only CSS, images and other objects are altered and no PHP or JavaScript code. This is based on file-endings, and is configurable. For example, `.txt, .css, .gif, .jpg, .jpeg, .png`.
 * Any combination of the above that covers all the changes in the pull request submitted is automatically approved.
 
-Here is how an auto approval by `vip-go-ci` will look like:
+Here is an example auto approval by `vip-go-ci`:
 
 ![Example auto approval!](docs/vipgoci-auto-approvals-approved.png "Example auto approval")
 
@@ -739,3 +739,6 @@ php ~/vip-go-ci-tools/vip-go-ci/github-commit-status.php --repo-owner=`repo-owne
 
 Note that the utility supports setting options via [environmental variables](#configuring-via-environmental-variables), just like `vip-go-ci` does.
 
+Here is an example GitHub build status:
+
+![Example build statusl!](docs/vipgoci-github-build-status-success.png "Example build status")
