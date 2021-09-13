@@ -10,6 +10,7 @@ define( 'VIPGOCI_VERSION',		'1.0.7' );
  * Define minimum version requirements.
  */
 define( 'VIPGOCI_GIT_VERSION_MINIMUM',	'2.10' );
+define( 'VIPGOCI_PHP_VERSION_MINIMUM',  '7.3.0' );
 
 /*
  * Client-ID for curl-requests, etc.
@@ -77,6 +78,8 @@ define( 'VIPGOCI_PHPCS_DUPLICATE_SNIFFS_CONT',
 
 define( 'VIPGOCI_EXIT_NORMAL',			0 );
 
+define( 'VIPGOCI_EXIT_INTERNAL_ERROR',		220 );
+
 define( 'VIPGOCI_EXIT_COMMIT_NOT_PART_OF_PR',	230 );
 
 define( 'VIPGOCI_EXIT_EXEC_TIME', 		249 );
@@ -84,7 +87,6 @@ define( 'VIPGOCI_EXIT_CODE_ISSUES',		250 );
 define( 'VIPGOCI_EXIT_SYSTEM_PROBLEM',		251 );
 define( 'VIPGOCI_EXIT_GITHUB_PROBLEM',		252 );
 define( 'VIPGOCI_EXIT_USAGE_ERROR',		253 );
-
 
 /*
  * Define statistics-types.
