@@ -245,6 +245,7 @@ Alternatively, if you do not wish to run TeamCity in a Docker-instance, you can 
 `vip-go-ci.php` exits with different UNIX exit codes depending on what problems were found and if any system issues were encountered:
 
 * Code `0`: Normal, no errors were found in the code scanned and no fatal system errors were encountered. There could have been warnings found in the code, though.
+* Code `220`: Internal error in `vip-go-ci`.
 * Code `230`: Commit specified is not associated with any pull request.
 * Code `249`: Scanning exceeded maximum time allowed.
 * Code `250`: Scanning was completed, but some errors were found in the code.
@@ -308,6 +309,8 @@ For example:
 ### Maximum execution time
 
 `vip-go-ci` supports setting maximum execution time. Once the maximum time is exceeded, it will exit with an error code (see [above](#exit-codes)).
+
+Note that only time spent after options are initialized and during scanning is considered as execution time. Time initializing is excluded.
 
 Use the `--max-exec-time` option to set maximum execution time (in seconds):
 
