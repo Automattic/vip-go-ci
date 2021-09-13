@@ -2611,25 +2611,14 @@ function vipgoci_run_scan(
 	 * If to do auto-approvals, then do so now.
 	 * Will start by collecting what files are auto-
 	 * approvable.
+	 *
+	 * Will also remove from $results any files
+	 * auto-approved in hashes-to-hashes API.
 	 */
-	$auto_approved_files_arr = array();
-
 	vipgoci_auto_approval_process(
 		$options,
-		$auto_approved_files_arr,
 		$results
 	);
-
-	/*
-	 * Remove issues from $results for files
-	 * that are approved in hashes-to-hashes API.
-	 */
-	vipgoci_results_approved_files_comments_remove(
-		$options,
-		$results,
-		$auto_approved_files_arr
-	);
-
 
 	/*
 	 * Remove comments from $results that have
