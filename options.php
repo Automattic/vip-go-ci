@@ -473,7 +473,7 @@ function vipgoci_options_read_env(
 	vipgoci_log(
 		'Attempting to read configuration from environmental variables',
 		array(
-			'env-options' => $options['env-options'],
+			'env-options'        => $options['env-options'],
 			'options-recognized' => $options_recognized,
 		)
 	);
