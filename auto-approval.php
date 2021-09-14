@@ -676,11 +676,8 @@ function vipgoci_auto_approval_scan_commit(
  * can be auto-approved, and then actually do the
  * auto-approval if possible.
  *
- * @param array $options                 Array of options.
- * @param array $auto_approved_files_arr Auto-approved files.
- * @param array $results
- *
- * @return array Files auto-approvable.
+ * @param array $options Array of options.
+ * @param array $results Array of results from scanning.
  */
 function vipgoci_auto_approval_process(
 	&$options,
