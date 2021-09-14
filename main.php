@@ -4,8 +4,6 @@
  * Print help message.
  *
  * @return void
- *
- * @codeCoverageIgnore
  */
 function vipgoci_help_print() :void {
 	global $argv;
@@ -222,8 +220,6 @@ function vipgoci_help_print() :void {
  * Returns options supported.
  *
  * @return array Recognized options.
- *
- * @codeCoverageIgnore
  */
 function vipgoci_options_recognized() :array {
 	return array(
