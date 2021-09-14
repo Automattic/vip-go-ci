@@ -10,7 +10,7 @@ define( 'VIPGOCI_VERSION',		'1.0.7' );
  * Define minimum version requirements.
  */
 define( 'VIPGOCI_GIT_VERSION_MINIMUM',	'2.10' );
-define( 'VIPGOCI_PHP_VERSION_MINIMUM',  '7.3.0' );
+define( 'VIPGOCI_PHP_VERSION_MINIMUM',	'7.3.0' );
 
 /*
  * Client-ID for curl-requests, etc.
