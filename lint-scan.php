@@ -193,14 +193,20 @@ function vipgoci_lint_parse_results(
 
 
 /**
- * Run PHP lint on all files in a path
+ * Run PHP lint on all files in a path.
+ *
+ * @param array $options              Options array for the program.
+ * @param array $commit_issues_submit Results for PHP linting (reference).
+ * @param array $commit_issues_stats  Result statistics, focussed on PHP linting (reference).
+ *
+ * @return void 
  */
 function vipgoci_lint_scan_commit(
-	$options,
-	&$commit_issues_submit,
-	&$commit_issues_stats,
+	array $options,
+	array &$commit_issues_submit,
+	array &$commit_issues_stats,
 	array &$commit_skipped_files
-) {
+) :void {
 	$repo_owner = $options['repo-owner'];
 	$repo_name  = $options['repo-name'];
 	$commit_id  = $options['commit'];
