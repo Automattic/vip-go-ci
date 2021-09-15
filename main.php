@@ -57,6 +57,10 @@ function vipgoci_help_print( $argv ) {
 		PHP_EOL .
 		'PHP Linting configuration:' . PHP_EOL .
 		"\t" . '--lint=BOOL                    Whether to do PHP linting. Default is true.' . PHP_EOL .
+		"\t" . '--lint-modified-files-only=BOOL   Whether to limit lint scan to run against only modified or new' . PHP_EOL .
+		"\t" . '                               files in the PR to be scanned. Default is true. It can be ' . PHP_EOL .
+		"\t" . '                               modified via options file ("' . VIPGOCI_OPTIONS_FILE_NAME . '") placed in' . PHP_EOL .
+		"\t" . '                               root of the repository.' . PHP_EOL .
 		"\t" . '--lint-skip-folders=STRING     Specify folders relative to root of the git repository in which' . PHP_EOL .
 		"\t" . '                               files should not be PHP linted. Values are comma separated.' . PHP_EOL .
 		"\t" . '--lint-skip-folders-in-repo-options-file=BOOL   Whether to allow specifying folders that are not' . PHP_EOL .
@@ -252,6 +256,7 @@ function vipgoci_options_recognized() {
 		'lint:',
 		'lint-skip-folders:',
 		'lint-skip-folders-in-repo-options-file:',
+		'lint-modified-files-only:',
 		'php-path:',
 
 		/*
@@ -845,6 +850,8 @@ function vipgoci_run() {
 
 	vipgoci_option_bool_handle( $options, 'lint', 'true' );
 
+	vipgoci_option_bool_handle( $options, 'lint-modified-files-only', 'true' );
+
 	vipgoci_option_bool_handle( $options, 'skip-large-files', 'true' );
 
 	vipgoci_option_bool_handle( $options, 'lint-skip-folders-in-repo-options-file', 'false' );
@@ -1110,6 +1117,7 @@ function vipgoci_run() {
 			'svg-checks',
 			'autoapprove',
 			'autoapprove-php-nonfunctional-changes',
+			'lint-modified-files-only'
 		)
 	);
 
@@ -1623,6 +1631,11 @@ function vipgoci_run() {
 			),
 
 			'autoapprove-php-nonfunctional-changes' => array(
+				'type'		=> 'boolean',
+				'valid_values'	=> array( true, false ),
+			),
+
+			'lint-modified-files-only' => array(
 				'type'		=> 'boolean',
 				'valid_values'	=> array( true, false ),
 			),
