@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
 
 final class AllUnitTestsInplaceTest extends TestCase {
 	public function testAllUnitTestsInPlace() {
-		$files_arr = scandir("tests/");
+		$files_arr = scandir("tests/integration");
 
 		/*
 		 * Filter away any files that
