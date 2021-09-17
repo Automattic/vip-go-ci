@@ -2,6 +2,11 @@
 
 declare( strict_types=1 );
 
+/**
+ * @todo add this to the bootstrap
+ * Transform into a listener
+ */
+
 if ( ! defined( 'VIPGOCI_UNIT_TESTING' ) ) {
 	define( 'VIPGOCI_UNIT_TESTING', true );
 }
@@ -19,14 +24,14 @@ function vipgoci_unittests_get_config_value(
 ) {
 	if ( false === $secret_file ) {
 		$ini_array = parse_ini_file(
-			VIPGOCI_UNIT_TESTS_INI_DIR_PATH . '/unittests.ini',
+			VIPGOCI_UNIT_TESTS_INI_DIR_PATH . '/../unittests.ini',
 			true
 		);
 	}
 
 	else {
 		$ini_array = parse_ini_file(
-			VIPGOCI_UNIT_TESTS_INI_DIR_PATH . '/unittests-secrets.ini',
+			VIPGOCI_UNIT_TESTS_INI_DIR_PATH . '/../unittests-secrets.ini',
 			true
 		);
 	}
@@ -423,5 +428,4 @@ function vipgoci_unittests_check_indication_for_test_id(
 	return false;
 }
 
-require_once( __DIR__ . '/../requires.php' );
-
+require_once( __DIR__ . '/../../requires.php' );

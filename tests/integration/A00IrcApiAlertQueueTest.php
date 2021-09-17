@@ -2,6 +2,7 @@
 
 require_once( __DIR__ . '/IncludesForTests.php' );
 
+
 use PHPUnit\Framework\TestCase;
 
 final class A00IrcApiAlertQueueTest extends TestCase {
