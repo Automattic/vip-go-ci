@@ -26,7 +26,7 @@ commands:
       # No secrets available for unit-tests
       - run: touch ~/project/unittests-secrets.ini
       # Run unit-tests
-      - run: ./vendor/bin/phpunit -vv ~/project/tests
+      - run: ./vendor/bin/phpunit -vv ~/project/tests/integration
       # Run PHPCS, check for PHP compatibility issues
       - run: ~/vip-go-ci-tools/phpcs/bin/phpcs --runtime-set 'testVersion' '7.4-'  --standard=PHPCompatibility,PHPCompatibilityParagonieRandomCompat,PHPCompatibilityParagonieSodiumCompat --ignore="vendor/*"  ~/project
 
