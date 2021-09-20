@@ -4,7 +4,6 @@ declare( strict_types=1 );
 
 /**
  * Mock functions required to execute tests/OptionsReadRepositoryConfigFileTest.php
- * @todo: find a better structure to accommodate mock functions
  */
 
 /**

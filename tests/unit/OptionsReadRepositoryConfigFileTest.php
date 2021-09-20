@@ -6,8 +6,11 @@ namespace Vipgoci\Tests\Options;
 
 use PHPUnit\Framework\TestCase;
 
-require_once( __DIR__ . '/options/OptionsReadRepositoryConfigFileMockedFunctions.php' );
-require_once( __DIR__ . '/../options.php' );
+require_once( __DIR__ . '/mock/OptionsReadRepositoryConfigFile.php' );
+require_once( __DIR__ . '/../../misc.php' );
+require_once( __DIR__ . '/../../options.php' );
+
+// phpcs:disable PSR1.Files.SideEffects
 
 final class OptionsReadRepositoryConfigFileTest extends TestCase {
 
