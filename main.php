@@ -785,6 +785,8 @@ function vipgoci_run_init_options_autoapprove( array &$options ) :void {
  * @param array $hashes_oauth_arguments OAuth 1.0a options for hashes-to-hashes API.
  *
  * @return void
+ *
+ * @codeCoverageIgnore
  */
 function vipgoci_run_init_options_hashes_options(
 	array &$options,
