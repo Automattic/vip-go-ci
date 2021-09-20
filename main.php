@@ -480,7 +480,7 @@ function vipgoci_run_init_options_phpcs( array &$options ) :void {
 	/*
 	 * Handle boolean options related to PHPCS
 	 */
-	vipgoci_option_bool_handle( $options, 'phpcs', 'true' );
+	vipgoci_option_bool_handle( $options, 'phpcs', 'false' );
 
 	vipgoci_option_bool_handle( $options, 'phpcs-skip-folders-in-repo-options-file', 'false' );
 
@@ -609,7 +609,6 @@ function vipgoci_run_cleanup_phpcs( array &$options ) :void {
 	 * Remove temporary PHPCS XML standard
 	 * file if used.
 	 */
-
 	if (
 		( true === $options['phpcs-standard-file'] ) &&
 		( file_exists(
