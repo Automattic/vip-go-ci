@@ -30,6 +30,16 @@ final class VipgociRunInitOptionsPhpcsTest extends TestCase {
 	 * @covers ::vipgoci_run_init_options_phpcs
 	 */
 	public function testRunInitOptionsPhpcsDefaults() {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array(),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
 		$this->options = array_merge(
 			array(
 				'phpcs'                                   => null,
@@ -72,6 +82,16 @@ final class VipgociRunInitOptionsPhpcsTest extends TestCase {
 	 * @covers ::vipgoci_run_init_options_phpcs
 	 */
 	public function testRunInitOptionsPhpcsCustom() {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array(),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
 		$this->assertNotEmpty( $this->phpcs_path, 'No path found for PHPCS to test' );
 
 		// Set options with custom settings.
