@@ -680,7 +680,10 @@ By running this command, you will run the tests that do not depend on external c
 
 By using this command, you will run the tests of the test-suite which can be run (depending on tokens and other detail), and get feedback on any errors or warnings. Note that when run, requests will be made to the GitHub API, but using anonymous calls (unless configured as shown below). It can happen that the GitHub API returns with an error indicating that the maximum limit of API requests has been reached; the solution is to wait and re-run or use authenticated calls (see below). 
 
-`vip-go-ci` ships with a default `unittests.ini` file which includes configuration details needed for the unit tests to run. This includes repository to use for testing, pull request IDs and more.
+`vip-go-ci` ships with a default `unittests.ini.dist` file which includes configuration details needed for the unit tests to run. This includes repository to use for testing, pull request IDs and more.
+
+Run:
+> cp unittests.ini.dist unittests.ini
 
 Note that by default, some tests will be skipped, as these will require a GitHub token to write to GitHub in order to complete, need access to the hashes-to-hashes database, or to a repo-meta API. To enable the testing of these, you need to set up a `unittests-secrets.ini` file in the root of the repository. It should include the following fields:
 
