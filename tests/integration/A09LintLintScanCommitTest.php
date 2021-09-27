@@ -58,6 +58,8 @@ final class A09LintLintScanCommitTest extends TestCase {
 
 		$this->options['skip-large-files-limit'] = 3;
 
+		$this->options['lint-scan-only-modified-files'] = false;
+
 		global $vipgoci_debug_level;
 		$vipgoci_debug_level = 2;
 	}
