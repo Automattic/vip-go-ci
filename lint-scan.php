@@ -313,6 +313,7 @@ function scan_commit_tree_toRename0( array $commit_tree, array $options, array $
 		// If there are no new issues, just leave it at that
 		if ( empty( $file_issues_arr ) ) {
 			vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'lint_scan_single_file' );
+			continue;
 		}
 
 		/*

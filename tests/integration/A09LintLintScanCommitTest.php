@@ -58,6 +58,8 @@ final class A09LintLintScanCommitTest extends TestCase {
 
 		$this->options['skip-large-files-limit'] = 3;
 
+		$this->options['lint-scan-only-modified-files'] = false;
+
 		global $vipgoci_debug_level;
 		$vipgoci_debug_level = 2;
 	}
@@ -332,7 +334,7 @@ final class A09LintLintScanCommitTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_lint_scan_commit
 	 */
-	public function testLintWillSkipLargeFileWhenOptionIsOn() {
+	public function testLintWillSkipLargeFileWhenOptionIsOn(): void {
 
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
@@ -513,7 +515,7 @@ final class A09LintLintScanCommitTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_lint_scan_commit
 	 */
-	public function testLintShouldValidateAndSkipLargeFileWhenSkipLargeFilesAndLimitOptionsAreOn() {
+	public function testLintShouldValidateAndSkipLargeFileWhenSkipLargeFilesAndLimitOptionsAreOn(): void {
 
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,

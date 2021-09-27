@@ -77,6 +77,8 @@ final class SvgScanScanCommitTest extends TestCase {
 		$this->options['skip-large-files'] = false;
 
 		$this->options['skip-large-files-limit'] = 15;
+
+		$this->options['lint-scan-only-modified-files'] = false;
 	}
 
 	protected function tearDown(): void {
