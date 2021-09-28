@@ -2262,8 +2262,6 @@ function vipgoci_run_scan_check_latest_commit(
 		 * As for lint === false && true === phpcs,
 		 * we do not care, as then we will not be linting.
 		 */
-
-		unset( $commit_check_res );
 	}
 }
 
@@ -2279,7 +2277,10 @@ function vipgoci_run_scan_check_latest_commit(
  *
  * @codeCoverageIgnore
  */
-function vipgoci_run_scan_fetch_prs_reviews( array &$options ) :array {
+function vipgoci_run_scan_fetch_prs_reviews(
+	array &$options,
+	array $prs_implicated
+) :array {
 	/*
 	 * Start with getting team members.
 	 */
@@ -2631,7 +2632,8 @@ function vipgoci_run_scan(
 	 * already been submitted.
 	 */
 	$prs_events_dismissed_by_team = vipgoci_run_scan_fetch_prs_reviews(
-		$options
+		$options,
+		$prs_implicated
 	);
 
 	vipgoci_results_remove_existing_github_comments(
@@ -2655,11 +2657,10 @@ function vipgoci_run_scan(
 	 * Remove ignorable comments from $results.
 	 */
 	if ( ! empty( $options['review-comments-ignore'] ) ) {
-		$file_issues_arr_master =
-			vipgoci_results_filter_ignorable(
-				$options,
-				$results
-			);
+		vipgoci_results_filter_ignorable(
+			$options,
+			$results
+		);
 	}
 
 	// Keep record of how many issues we found.
