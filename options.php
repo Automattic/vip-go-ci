@@ -973,8 +973,15 @@ function vipgoci_option_url_handle(
 		}
 	}
 
+	/*
+	 * Ensure the URL is HTTPS if we are to check this
+	 * and if the option value is a string. This is so
+	 * that null can be passed.
+	 */
 	if (
+		( isset( $options['enforce-https-urls'] ) ) &&
 		( true === $options['enforce-https-urls'] ) &&
+		( is_string( $options[ $option_name ] ) ) &&
 		( 0 !== strpos( $options[ $option_name ], 'https://' ) )
 	) {
 		vipgoci_sysexit(
