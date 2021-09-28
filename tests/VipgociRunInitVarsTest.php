@@ -39,6 +39,13 @@ final class VipgociRunInitVarsTest extends TestCase {
 			'Invalid value for $results variable'
 		);
 
+		/*
+		 * Cannot alter command-line arguments after execution,
+		 * so cannot influence what getopt() returns and thus
+		 * cannot alter $options.
+		 */
+		unset( $options );
+
 		$this->assertTrue(
 			in_array( 'help', $options_recognized ),
 			'\'help\' not found in $options_recognized variable'
