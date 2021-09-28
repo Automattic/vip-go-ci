@@ -6,6 +6,7 @@ TODO:
 - [ ] Specify a parameter to make [feature] configurable
 - [ ] Implement [new feature / logic]
 - [ ] Add/update unit-tests
+- [ ] Add or update `PHPDoc` comments for new or updated functions (main code only).
 - [ ] Update README
 - [ ] Changelog entry
 - [ ] Public documentation changes

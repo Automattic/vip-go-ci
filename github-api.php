@@ -2501,7 +2501,8 @@ function vipgoci_github_pr_review_submit(
 	$results,
 	$informational_msg,
 	$github_review_comments_max,
-	$github_review_comments_include_severity
+	$github_review_comments_include_severity,
+	int $skip_large_files_limit
 ) {
 
 	$stats_types_to_process = array(
@@ -2814,7 +2815,7 @@ function vipgoci_github_pr_review_submit(
 
 			$github_postfields[ 'body' ] .= vipgoci_get_skipped_files_message(
 				$results[ VIPGOCI_SKIPPED_FILES ][ $pr_number ],
-				$pr_number
+				$skip_large_files_limit
 			);
 		}
 

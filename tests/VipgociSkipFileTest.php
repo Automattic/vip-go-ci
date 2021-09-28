@@ -177,12 +177,37 @@ final class VipgociSkipFileTest extends TestCase {
 			),
 			'total'  => 2
 		);
-		$skipped_files_message = vipgoci_get_skipped_files_message( $skipped );
+		$skipped_files_message = vipgoci_get_skipped_files_message( $skipped, 15000 );
 
 		$expected_skipped_files_message = '
 **skipped-files**
 
 Maximum number of lines exceeded (15000):
+ - MyFailedClass.php
+ - MyFailedClass2.php
+
+Note that the above file(s) were not analyzed due to their length.';
+
+		$this->assertSame( $expected_skipped_files_message, $skipped_files_message );
+	}
+
+	/**
+	 * @covers ::vipgoci_get_skipped_files_message
+	 */
+	public function testGetSkippedFilesMessageWithNumberOfLinesExceededDifferentThanDefault() {
+
+		$skipped               = array(
+			'issues' => array(
+				'max-lines' => array( 'MyFailedClass.php', 'MyFailedClass2.php' )
+			),
+			'total'  => 2
+		);
+		$skipped_files_message = vipgoci_get_skipped_files_message( $skipped, 25000 );
+
+		$expected_skipped_files_message = '
+**skipped-files**
+
+Maximum number of lines exceeded (25000):
  - MyFailedClass.php
  - MyFailedClass2.php
 
@@ -199,7 +224,8 @@ Note that the above file(s) were not analyzed due to their length.';
 
 		$skipped_files_issue_message = vipgoci_get_skipped_files_issue_message(
 			$affected_files_mock,
-			'max-lines'
+			'max-lines',
+			15000
 		);
 
 		$expected_skipped_files_issue_message = 'Maximum number of lines exceeded (15000):
