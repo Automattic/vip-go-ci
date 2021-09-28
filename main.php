@@ -1282,6 +1282,8 @@ function vipgoci_run_init_options_post_generic_pr_support_comments( array &$opti
  * @param array $options Array of options.
  *
  * @return void
+ *
+ * @codeCoverageIgnore
  */
 function vipgoci_run_init_options_git_repo( array &$options ): void {
 	/*
@@ -1310,6 +1312,8 @@ function vipgoci_run_init_options_git_repo( array &$options ): void {
  * @param array $options Array of options.
  *
  * @return void
+ *
+ * @codeCoverageIgnore
  */
 function vipgoci_run_init_github_token_option( array &$options ) :void {
 	/*
@@ -1364,6 +1368,8 @@ function vipgoci_run_init_github_token_option( array &$options ) :void {
  * @param array $options Array of options.
  *
  * @return void
+ *
+ * @codeCoverageIgnore
  */
 function vipgoci_run_init_options_output( array &$options ) :void {
 	/*
@@ -1443,6 +1449,8 @@ function vipgoci_run_init_options_output( array &$options ) :void {
  * @param array $options Array of options.
  *
  * @return void
+ *
+ * @codeCoverageIgnore
  */
 function vipgoci_run_init_options_irc( array &$options ) :void {
 	/*
@@ -1525,6 +1533,8 @@ function vipgoci_run_init_options_irc( array &$options ) :void {
  * @param array $options Array of options.
  *
  * @return void
+ *
+ * @codeCoverageIgnore
  */
 function vipgoci_run_cleanup_irc( array &$options ) :void {
 	/*
@@ -1675,6 +1685,8 @@ function vipgoci_run_init_options_pixel_api( array &$options ) :void {
  * @param array $counter_report Array with counter statistics.
  *
  * @return void
+ *
+ * @codeCoverageIgnore
  */
 function vipgoci_run_cleanup_send_pixel_api(
 	array &$options,
@@ -1765,38 +1777,9 @@ function vipgoci_run_init_options_repo_options( array &$options ):void {
 	vipgoci_option_bool_handle( $options, 'repo-options', 'false' );
 
 	/*
-	 * Handle --repo-options-allowed parameter
-	 */
-	$repo_options_allowed_arr = array(
-		'skip-execution',
-		'skip-draft-prs',
-		'review-comments-sort',
-		'review-comments-include-severity',
-		'phpcs',
-		'phpcs-severity',
-		'post-generic-pr-support-comments',
-		'phpcs-sniffs-include',
-		'phpcs-sniffs-exclude',
-		'hashes-api',
-		'svg-checks',
-		'autoapprove',
-		'autoapprove-php-nonfunctional-changes',
-	);
-
-	vipgoci_option_array_handle(
-		$options,
-		'repo-options-allowed',
-		$repo_options_allowed_arr
-	);
-
-	/*
 	 * Certain options are configurable via
-	 * options-file in the repository. Set
-	 * these options here.
-	 *
-	 * Note that any new option added here should
-	 * be added to the --repo-options-allowed option
-	 * found above.
+	 * options-file in the repository. Specify those
+	 * options here.
 	 */
 	$repo_options_read_repo_file_arr = array(
 		'skip-execution'        => array(
@@ -1867,36 +1850,42 @@ function vipgoci_run_init_options_repo_options( array &$options ):void {
 		),
 	);
 
+	/*
+	 * Handle --repo-options-allowed parameter
+	 */
+	$repo_options_allowed_arr = array_keys(
+		$repo_options_read_repo_file_arr
+	);
+
+	vipgoci_option_array_handle(
+		$options,
+		'repo-options-allowed',
+		$repo_options_allowed_arr
+	);
+
+	/*
+	 * Check if any values specified for --repo-options-allowed are invalid.
+	 */
+	if ( ! empty( 
+		array_diff(
+			$options['repo-options-allowed'],
+			$repo_options_allowed_arr
+		) 
+	) ) {
+		vipgoci_sysexit(
+			'Invalid value specified for --repo-options-allowed',
+			array(
+				'allowed_values'   => $repo_options_allowed_arr,
+				'specified_values' => $options['repo-options-allowed'],
+			)
+		);
+	}
+
 	vipgoci_options_read_repo_file(
 		$options,
 		VIPGOCI_OPTIONS_FILE_NAME,
 		$repo_options_read_repo_file_arr
 	);
-
-	/*
-	 * Check if two arrays have the same options specified.
-	 */
-	$repo_options_read_repo_file_arr_keys = array_keys(
-		$repo_options_read_repo_file_arr
-	);
-
-	sort( $repo_options_read_repo_file_arr_keys );
-
-	$repo_options_read_repo_file_arr_keys = array_keys(
-		$repo_options_read_repo_file_arr
-	);
-
-	sort( $repo_options_read_repo_file_arr_keys );
-
-	/* If two arrays do not match, quit with error */
-	if ( $repo_options_read_repo_file_arr_keys !== $repo_options_read_repo_file_arr_keys ) {
-		vipgoci_sysexit(
-			'Internal inconsistency found in function ' . __FUNCTION__ . '!! Config arrays should have same keys.',
-			array(
-			),
-			VIPGOCI_EXIT_INTERNAL_ERROR
-		);
-	}
 }
 
 /**
@@ -1907,6 +1896,8 @@ function vipgoci_run_init_options_repo_options( array &$options ):void {
  * @param array $options_recognized Array of recognized options by the program.
  *
  * @return void
+ *
+ * @codeCoverageIgnore
  */
 function vipgoci_run_init_options(
 	array &$options,
@@ -2069,6 +2060,8 @@ function vipgoci_run_init_options(
  * @param int   $startup_time Startup time in UNIX seconds.
  *
  * @return void
+ *
+ * @codeCoverageIgnore
  */
 function vipgoci_run_scan_max_exec_time(
 	array &$options,
@@ -2104,6 +2097,8 @@ function vipgoci_run_scan_max_exec_time(
  * @param array $options Array of options.
  *
  * @return void
+ *
+ * @codeCoverageIgnore
  */
 function vipgoci_run_scan_skip_execution( array &$options ) :void {
 	/*
@@ -2126,6 +2121,8 @@ function vipgoci_run_scan_skip_execution( array &$options ) :void {
  * @param array $options Array of options.
  *
  * @return array Pull requests found.
+ *
+ * @codeCoverageIgnore
  */
 function vipgoci_run_scan_find_prs( array &$options ) :array {
 	/*
@@ -2186,6 +2183,8 @@ function vipgoci_run_scan_find_prs( array &$options ) :array {
  * @param array $prs_implicated Pull requests implicated.
  *
  * @return void
+ *
+ * @codeCoverageIgnore
  */
 function vipgoci_run_scan_check_latest_commit(
 	array &$options,
@@ -2277,6 +2276,8 @@ function vipgoci_run_scan_check_latest_commit(
  * @param array $options Array of options.
  *
  * @return array Events related to dismissed reviews.
+ *
+ * @codeCoverageIgnore
  */
 function vipgoci_run_scan_fetch_prs_reviews( array &$options ) :array {
 	/*
@@ -2391,6 +2392,8 @@ function vipgoci_run_scan_log_skipped_files(
  * @param array $prs_implicated Pull requests implicated.
  *
  * @return void
+ *
+ * @codeCoverageIgnore
  */
 function vipgoci_run_scan_dismiss_stale_reviews(
 	array &$options,
@@ -2426,6 +2429,8 @@ function vipgoci_run_scan_dismiss_stale_reviews(
  *
  * @return array PRs with maximum number of
  *               comments reached.
+ *
+ * @codeCoverageIgnore
  */
 function vipgoci_run_scan_reviews_comments_enforce_maximum(
 	array &$options,
@@ -2453,6 +2458,8 @@ function vipgoci_run_scan_reviews_comments_enforce_maximum(
  * @param array $prs_comments_maxed Array of PRs with maximum number of
  *                                  comments reached.
  * @return void
+ *
+ * @codeCoverageIgnore
  */
 function vipgoci_run_scan_total_comments_max_warning_post(
 	array &$options,
@@ -2484,6 +2491,8 @@ function vipgoci_run_scan_total_comments_max_warning_post(
  * @param int   $startup_time   Start up time, in UNIX seconds.
  *
  * @return void
+ *
+ * @codeCoverageIgnore
  */
 function vipgoci_run_scan(
 	array &$options,
@@ -2722,6 +2731,8 @@ function vipgoci_run_scan(
  * Do initial checks at startup.
  *
  * @return void
+ *
+ * @codeCoverageIgnore
  */
 function vipgoci_run_checks() :void {
 	/*
