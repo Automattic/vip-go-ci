@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
-require_once( __DIR__ . '/helper/SysExit.php' );
+require_once( __DIR__ . '/helper/IndicateTestId.php' );
+require_once( __DIR__ . '/helper/CheckIrcApiAlertQueue.php' );
 
 require_once( __DIR__ . './../../defines.php' );
 require_once( __DIR__ . './../../other-web-services.php' );

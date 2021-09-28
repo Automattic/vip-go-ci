@@ -2,11 +2,6 @@
 
 declare( strict_types=1 );
 
-/**
- * @todo add this to the bootstrap
- * Transform into a listener
- */
-
 if ( ! defined( 'VIPGOCI_UNIT_TESTING' ) ) {
 	define( 'VIPGOCI_UNIT_TESTING', true );
 }
