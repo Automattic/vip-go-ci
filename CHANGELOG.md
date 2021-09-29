@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 ## [1.0.9](https://github.com/Automattic/vip-go-ci/releases/tag/1.0.9) - To be decided
 
 ### Added
+- [#209](https://github.com/Automattic/vip-go-ci/pull/209): Add PHPUnit configuration, create suites for unit and integration tests. And split existent tests into those two suites.
 - [#200](https://github.com/Automattic/vip-go-ci/pull/200): Add vipgoci_sysexit() unit test
 
 ### Updated
