@@ -655,15 +655,35 @@ export WP_CODING_STANDARDS_SHA1SUM="d35ec268531453cbf2078c57356e38c5f8936e87";
 
 All utilities in `tools-init.sh` follow the same pattern.
 
-## Unittests
+## Tests
 
-To run the unit tests for `vip-go-ci`, you will need to install `phpunit` and any dependencies needed (this would include `xdebug`). Then run the unit tests using the following command:
+To run the tests for `vip-go-ci`, you will need to install `phpunit` and any dependencies needed (this would include `xdebug`).
 
-> phpunit tests/ -vv
+### PHPUnit configuration file:
+Run:
+> mv phpunit.xml.dist phpunit.xml
+
+Replace the string ``PROJECT_DIR`` with your local project directory. E.g.:
+> <directory>PROJECT_DIR/tests/integration</directory>
+will be:
+> <directory>~/Projects/tests/integration</directory>
+
+Then run the unit tests using the following command:
+
+### Unit test suite
+> phpunit --testsuite=integration-tests -vv
+
+By running this command, you will run the tests that do not depend on external calls. 
+
+### Integration test suite
+> phpunit --testsuite=unit-tests -vv
 
 By using this command, you will run the tests of the test-suite which can be run (depending on tokens and other detail), and get feedback on any errors or warnings. Note that when run, requests will be made to the GitHub API, but using anonymous calls (unless configured as shown below). It can happen that the GitHub API returns with an error indicating that the maximum limit of API requests has been reached; the solution is to wait and re-run or use authenticated calls (see below). 
 
-`vip-go-ci` ships with a default `unittests.ini` file which includes configuration details needed for the unit tests to run. This includes repository to use for testing, pull request IDs and more.
+`vip-go-ci` ships with a default `unittests.ini.dist` file which includes configuration details needed for the unit tests to run. This includes repository to use for testing, pull request IDs and more.
+
+Run:
+> cp unittests.ini.dist unittests.ini
 
 Note that by default, some tests will be skipped, as these will require a GitHub token to write to GitHub in order to complete, need access to the hashes-to-hashes database, or to a repo-meta API. To enable the testing of these, you need to set up a `unittests-secrets.ini` file in the root of the repository. It should include the following fields:
 
