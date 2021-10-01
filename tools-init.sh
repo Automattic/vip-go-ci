@@ -15,8 +15,8 @@ export WP_CODING_STANDARDS_VER="2.3.0"
 export WP_CODING_STANDARDS_SHA1SUM="c8161d77fcf63bdeaa3e8e6aa36bc1936b469070";
 
 # https://github.com/automattic/vip-coding-standards/releases
-export VIP_CODING_STANDARDS_VER="2.3.2"
-export VIP_CODING_STANDARDS_SHA1SUM="fd3833fa69feb8ab3f02c894c00790ea45e7103d";
+export VIP_CODING_STANDARDS_VER="2.3.3"
+export VIP_CODING_STANDARDS_SHA1SUM="44c6519c628d450be5330b2706ae9dbb09dbd6be";
 
 # https://github.com/sirbrillig/phpcs-variable-analysis/releases
 export PHPCS_VARIABLE_ANALYSIS_VER="2.11.1"
