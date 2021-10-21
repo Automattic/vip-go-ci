@@ -872,6 +872,17 @@ function vipgoci_phpcs_scan_commit(
 				$_tmp => $file_name
 			) {
 
+			if (
+				isset( $commit_skipped_files[ $pr_item->number ][ 'issues' ][ VIPGOCI_VALIDATION_MAXIMUM_LINES ] )
+				&& true === in_array(
+					$file_name,
+					$commit_skipped_files[ $pr_item->number ][ 'issues' ][ VIPGOCI_VALIDATION_MAXIMUM_LINES ],
+					true
+				)
+			) {
+				continue;
+			}
+
 			/*
 			 * Get blame log for file
 			 */
