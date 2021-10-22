@@ -10,7 +10,6 @@ All notable changes to this project will be documented in this file.
 - [#200](https://github.com/Automattic/vip-go-ci/pull/200): Add vipgoci_sysexit() unit test
 
 ### Updated
-- [#205](https://github.com/Automattic/vip-go-ci/pull/205): Use new GitHub Teams API
 - [#203](https://github.com/Automattic/vip-go-ci/pull/203): Updating README file
 
 ### Fixed
