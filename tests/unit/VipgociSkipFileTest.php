@@ -242,18 +242,15 @@ Note that the above file(s) were not analyzed due to their length.';
 	}
 
 	/**
-	 * @covers ::vipgo_skip_file_check_pr_comments
+	 * @covers ::vipgo_skip_file_check_previous_pr_comments
 	 */
-	public function testVipgoci_verify_skip_file_message_duplication()
-	{
+	public function testVipgociVerifySkipFileMessageDuplication(): void	{
 		$comments_mock = $this->getCommentsMock();
 		$results_mock = $this->getResultsMock();
-		$modified_files_mock = [ 'tests1/myfile2.php' ];
 
-		$result = vipgo_skip_file_check_pr_comments(
+		$result = vipgo_skip_file_check_previous_pr_comments(
 			$results_mock[ 15 ],
-			$comments_mock,
-			$modified_files_mock
+			$comments_mock
 		);
 
 		$expected = array (
@@ -287,7 +284,6 @@ Maximum number of lines exceeded (3):
  - src/MySuccesClasss.php
  - src/SyntaxError.php
  - tests1/myfile1.php
- - tests1/myfile2.php
 
 Note that the above file(s) were not analyzed due to their length.';
 		$commentsMock = [ $commentMock ];

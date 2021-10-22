@@ -1,5 +1,5 @@
 <?php
-declare(strict_types=1);
+declare( strict_types=1 );
 
 /**
  * Logic related to skip files
@@ -7,12 +7,12 @@ declare(strict_types=1);
 /**
  * @param array $skipped
  * @param array $validation
+ *
  * @return array
  */
-function vipgoci_get_skipped_files( array $skipped, array $validation ): array
-{
-	$skipped[ 'issues' ] = array_merge_recursive( $skipped[ 'issues' ], $validation[ 'issues' ] );
-	$skipped[ 'total' ] += $validation[ 'total' ];
+function vipgoci_get_skipped_files( array $skipped, array $validation ): array {
+	$skipped['issues'] = array_merge_recursive( $skipped['issues'], $validation['issues'] );
+	$skipped['total']  += $validation['total'];
 
 	return $skipped;
 }
@@ -54,12 +54,11 @@ function vipgoci_set_prs_implicated_skipped_files(
  *
  * @return string
  */
-function vipgoci_get_skipped_files_message( array $skipped, int $skip_large_files_limit ): string
-{
+function vipgoci_get_skipped_files_message( array $skipped, int $skip_large_files_limit ): string {
 	$body = PHP_EOL . '**' . VIPGOCI_SKIPPED_FILES . '**' . PHP_EOL . PHP_EOL;
-	foreach ( $skipped[ 'issues' ] as $issue => $file ) {
+	foreach ( $skipped['issues'] as $issue => $file ) {
 		$body .= vipgoci_get_skipped_files_issue_message(
-			$skipped[ 'issues' ][ $issue ],
+			$skipped['issues'][ $issue ],
 			$issue,
 			$skip_large_files_limit
 		);
@@ -84,7 +83,7 @@ function vipgoci_get_skipped_files_issue_message(
 	string $issue_type,
 	int $max_lines
 ): string {
-	$affected_files = implode( PHP_EOL . ' - ', $affected_files );
+	$affected_files     = implode( PHP_EOL . ' - ', $affected_files );
 	$validation_message = sprintf(
 		VIPGOCI_VALIDATION[ $issue_type ],
 		$max_lines
@@ -99,102 +98,85 @@ function vipgoci_get_skipped_files_issue_message(
 }
 
 /**
-  * IF the file
- *  Is modified in THIS very commit
- *  Or New in THIS very commit
- *  Or Doesn't exist in the previous comments $reached_limit_files
- *      Let the bot post the comment
- * ELSE:
- *     REMOVE FROM the $results
- *
  * @param array $pr_issues_results
  * @param array $comments
- * @param array $modified_files
+ *
+ * Removes skipped files from the results list
+ * when there are previous comments
+ * preventing duplicated comments
+ *
+ * @return array
  */
-function vipgo_skip_file_check_pr_comments(array $pr_issues_results = [], array $comments = [], array $modified_files = [])
-{
-	// git diff-tree --no-commit-id --name-only -r 773b2bc0b46d0cf6fde031af79e957d3a0cc9172
+function vipgo_skip_file_check_previous_pr_comments( array $pr_issues_results = [], array $comments = [] ): array {
 	/**
-	 * If there is no PR previous comments, return
+	 * If there is no previous comments in this PR, return
 	 */
 	if ( 0 === count( $comments ) ) {
 		return $pr_issues_results;
 	}
 
-	/**
-	 * List of modified files in this very COMMIT
-	 * @todo get_list
-	 */
-	$reached_limit_files = [];
+	$large_files = getLargeFilesFromPRComments( $comments );
+	$result      = [ 'issues' => [ 'max-lines' => [] ], 'total' => 0 ];
 
 	/**
-	 * Iterates all the comments to check the files affected by the skip files due max lines limit reached
-	 * @todo: move the comment iteration logic to its own function
+	 * Iterates the list of files that reached the lines limit in this scan
+	 * For each file, verifies if there's a previous comment about it
+	 * If so, prevent a new comment about the same file
 	 */
+	foreach ( $pr_issues_results['issues']['max-lines'] as $file ) {
+		if ( in_array( $file, $large_files, true ) ) {
+			continue;
+		}
+		$result['issues']['max-lines'][] = $file;
+		$result['total'] ++;
+	}
+
+	return $result;
+}
+
+/**
+ * @param array $comments
+ * Iterates all the comments to check the files affected by the skip files due max lines limit reached
+ * returns array of files
+ *
+ * @return array
+ * @todo add unit tests
+ */
+function getLargeFilesFromPRComments( array $comments ): array {
+	$large_files = [];
+
 	foreach ( $comments as $comment ) {
 		/**
-		 * @todo use options limit values and constant
-		 *  sprintf(VIPGOCI_VALIDATION[VIPGOCI_VALIDATION_MAXIMUM_LINES], $pr_number, $option  limit)
-		 * $prefix = Maximum number of lines exceeded (15000):
-		 * $suffix = PHP_EOL . PHP_EOL . VIPGOCI_VALIDATION_MAXIMUM_DETAIL_MSG
-		 * @todo: move the getting files logic to its own function
+		 * Checks if the comment contains skipped-files
+		 * if it is not, ignore
 		 */
-		$prefix = '):';
-		$suffix = strlen( PHP_EOL . PHP_EOL . VIPGOCI_VALIDATION_MAXIMUM_DETAIL_MSG );
-		$files = explode(
-			"\n - ",
-			substr(
-				$comment->body,
-				strpos( $comment->body, $prefix ) + 6,
-				-$suffix
-			),
-		);
-
-		$reached_limit_files = array_merge( $reached_limit_files, $files );
-	}
-
-	/**
-	 * This could also be a foreach
-	 * @todo cleanup: this is the only bit that will stay in this function
-	 *
-	 * Existe na lista novo e nao tem na lista de comentarios anterioes!
-	 * Existe na lista nova e existe na lista de comentarios anteriores
-	 *      Faz parte de modificado?
-	 *          SIM: mantem
-     *          NAO: REMOVE
-	 */
-	$total_issues = $pr_issues_results['total'];
-	for ( $i = 0; $i < $total_issues; $i++ ) {
-		$file = $pr_issues_results['issues']['max-lines'][ $i ];
-
-		/**
-		 * Verifies if there's a message about skipped files in previous PR comments.
-		 * If there's not, keep the message to be posted
-		 */
-		if ( ! in_array( $file, $reached_limit_files ) ) {
+		if ( false === strpos( $comment->body, 'skipped-files' ) ) {
 			continue;
 		}
-
-		/**
-		 * If there is: Verify if it's modified in this very commit
-		 *
-		 * If it is modified, keep the message to be posted
-		 * @todo: get $modified_files
-		 */
-		if ( in_array( $file, $modified_files ) ) {
-			continue;
-		}
-		/**
-		 * Otherwise, remove it from the issues
-		 */
-		/**
-		 *  @todo implement removing file from the $results
-		 */
-		unset( $pr_issues_results['issues']['max-lines'][ $i ] );
-		$pr_issues_results['total']--;
+		$files       = getLargeFilesFromComments( $comment );
+		$large_files = array_merge( $large_files, $files );
 	}
 
-	$pr_issues_results['issues']['max-lines'] = array_values( $pr_issues_results['issues']['max-lines'] );
+	return $large_files;
+}
 
-	return $pr_issues_results;
+/**
+ * @param $comment
+ *
+ * @return string[]
+ * @todo add unit tests
+ */
+function getLargeFilesFromComments( $comment ): array {
+	$prefix = '):';
+	$suffix = strlen( PHP_EOL . PHP_EOL . VIPGOCI_VALIDATION_MAXIMUM_DETAIL_MSG );
+	$files  = explode(
+		"\n - ",
+		substr(
+			$comment->body,
+			strpos( $comment->body, $prefix ) + 6,
+			- $suffix
+		),
+	);
+
+	return $files ?: [];
 }
