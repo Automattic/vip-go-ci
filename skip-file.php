@@ -115,7 +115,7 @@ function vipgo_skip_file_check_previous_pr_comments( array $pr_issues_results = 
 		return $pr_issues_results;
 	}
 
-	$large_files = getLargeFilesFromPRComments( $comments );
+	$large_files = vipgo_get_large_files_from_pr_comments( $comments );
 	$result      = [ 'issues' => [ 'max-lines' => [] ], 'total' => 0 ];
 
 	/**
@@ -127,6 +127,7 @@ function vipgo_skip_file_check_previous_pr_comments( array $pr_issues_results = 
 		if ( in_array( $file, $large_files, true ) ) {
 			continue;
 		}
+
 		$result['issues']['max-lines'][] = $file;
 		$result['total'] ++;
 	}
@@ -142,7 +143,7 @@ function vipgo_skip_file_check_previous_pr_comments( array $pr_issues_results = 
  * @return array
  * @todo add unit tests
  */
-function getLargeFilesFromPRComments( array $comments ): array {
+function vipgo_get_large_files_from_pr_comments( array $comments ): array {
 	$large_files = [];
 
 	foreach ( $comments as $comment ) {
@@ -153,7 +154,7 @@ function getLargeFilesFromPRComments( array $comments ): array {
 		if ( false === strpos( $comment->body, 'skipped-files' ) ) {
 			continue;
 		}
-		$files       = getLargeFilesFromComments( $comment );
+		$files       = vipgo_get_large_files_from_comment( $comment );
 		$large_files = array_merge( $large_files, $files );
 	}
 
@@ -164,9 +165,8 @@ function getLargeFilesFromPRComments( array $comments ): array {
  * @param $comment
  *
  * @return string[]
- * @todo add unit tests
  */
-function getLargeFilesFromComments( $comment ): array {
+function vipgo_get_large_files_from_comment( $comment ): array {
 	$prefix = '):';
 	$suffix = strlen( PHP_EOL . PHP_EOL . VIPGOCI_VALIDATION_MAXIMUM_DETAIL_MSG );
 	$files  = explode(

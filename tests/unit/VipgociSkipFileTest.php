@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare( strict_types=1 );
 
 namespace Vipgoci\Tests\Unit;
 
@@ -90,7 +90,7 @@ final class VipgociSkipFileTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_set_skipped_file
 	 */
-	public function testSetSkippedFilesWillSetCorrectValues() {
+	public function testSetSkippedFilesWillSetCorrectValues(): void {
 		$commid_id_mock       = 8;
 		$commit_skipped_files = array(
 			$commid_id_mock => array(
@@ -130,7 +130,7 @@ final class VipgociSkipFileTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_set_prs_implicated_skipped_files
 	 */
-	public function testSetPRsImplicatedSkippedFilesWillSetCorrectValues() {
+	public function testSetPRsImplicatedSkippedFilesWillSetCorrectValues(): void {
 		$pr                   = new \stdClass();
 		$pr->number           = 8;
 		$prs_implicated       = array( 8 => $pr );
@@ -172,7 +172,7 @@ final class VipgociSkipFileTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_get_skipped_files_message
 	 */
-	public function testGetSkippedFilesMessage() {
+	public function testGetSkippedFilesMessage(): void {
 
 		$skipped               = array(
 			'issues' => array(
@@ -222,7 +222,7 @@ Note that the above file(s) were not analyzed due to their length.';
 	/**
 	 * @covers ::vipgoci_get_skipped_files_issue_message
 	 */
-	public function testGetSkippedFilesIssueMessage() {
+	public function testGetSkippedFilesIssueMessage(): void {
 		$affected_files_mock = array( 'MyFailedClass.php', 'MyFailedClass2.php' );
 
 		$skipped_files_issue_message = vipgoci_get_skipped_files_issue_message(
@@ -244,22 +244,22 @@ Note that the above file(s) were not analyzed due to their length.';
 	/**
 	 * @covers ::vipgo_skip_file_check_previous_pr_comments
 	 */
-	public function testVipgociVerifySkipFileMessageDuplication(): void	{
-		$comments_mock = $this->getCommentsMock();
-		$results_mock = $this->getResultsMock();
+	public function testVipgociVerifySkipFileMessageDuplication(): void {
+		$comments_mock = $this->getSkippedFilesCommentsMock();
+		$results_mock  = $this->getResultsMock();
 
 		$result = vipgo_skip_file_check_previous_pr_comments(
-			$results_mock[ 15 ],
+			$results_mock[15],
 			$comments_mock
 		);
 
-		$expected = array (
+		$expected = array(
 			'issues' =>
-				array (
+				array(
 					'max-lines' =>
-						array ( 'tests1/myfile2.php' ),
+						array( 'tests1/myfile2.php' ),
 				),
-			'total' => 1,
+			'total'  => 1,
 		);
 
 		$this->assertSame(
