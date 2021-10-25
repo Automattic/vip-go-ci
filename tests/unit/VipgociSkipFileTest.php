@@ -371,7 +371,7 @@ Note that the above file(s) were not analyzed due to their length.';
 	 * @return array
 	 */
 	private function getSkippedFilesCommentsMock(): array {
-		$mock  = $this->getSkippedFilesCommentMock();
+		$mock = $this->getSkippedFilesCommentMock();
 
 		return [ $mock ];
 	}

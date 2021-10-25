@@ -178,5 +178,8 @@ function vipgo_get_large_files_from_comment( $comment ): array {
 		return [];
 	}
 
-	return explode( "\n - ", $comment ) ?: [];
+	$files = explode( "\n - ", $comment );
+
+	// This return is to be compatible with php 8.0
+	return empty( $files[0] ) ? array() : $files;
 }
