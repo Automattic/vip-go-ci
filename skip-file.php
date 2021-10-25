@@ -169,14 +169,14 @@ function vipgo_get_large_files_from_pr_comments( array $comments ): array {
 function vipgo_get_large_files_from_comment( $comment ): array {
 	$prefix = '):';
 	$suffix = strlen( PHP_EOL . PHP_EOL . VIPGOCI_VALIDATION_MAXIMUM_DETAIL_MSG );
-	$files  = explode(
-		"\n - ",
-		substr(
+
+	if ( false === $comment = substr(
 			$comment->body,
 			strpos( $comment->body, $prefix ) + 6,
 			- $suffix
-		),
-	);
+		) ) {
+		return [];
+	}
 
-	return $files ?: [];
+	return explode( "\n - ", $comment ) ?: [];
 }

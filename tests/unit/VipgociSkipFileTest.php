@@ -12,6 +12,7 @@ use PHPUnit\Framework\TestCase;
 // phpcs:disable PSR1.Files.SideEffects
 
 final class VipgociSkipFileTest extends TestCase {
+
 	/**
 	 * @covers ::vipgoci_get_skipped_files
 	 */
@@ -268,10 +269,119 @@ Note that the above file(s) were not analyzed due to their length.';
 		);
 	}
 
-	private function getCommentsMock()
-	{
-		$commentMock = $this->createMock('stdClass');
-		$commentMock->body =
+	/**
+	 * @covers ::vipgo_get_large_files_from_comment
+	 */
+	public function testGetLargeFilesFromComments(): void {
+		$skippedFileCommentMock = $this->getSkippedFilesCommentMock();
+
+		$result   = vipgo_get_large_files_from_comment( $skippedFileCommentMock );
+		$expected = [
+			'GoogleAtom.php',
+			'MySuccessClass.php',
+			'MySuccessClass2.php',
+			'src/MySuccesClasss.php',
+			'src/SyntaxError.php',
+			'tests1/myfile1.php',
+		];
+
+		$this->assertSame(
+			$expected,
+			$result
+		);
+	}
+
+	/**
+	 * @covers ::vipgo_get_large_files_from_comment
+	 */
+	public function testGetLargeFilesFromCommentsWillReturnEmptyWhenCommentIsNotAboutSkippedFiles(): void {
+		$commentMock = $this->getCommentMock();
+
+		$result   = vipgo_get_large_files_from_comment( $commentMock );
+		$expected = array();
+
+		$this->assertSame(
+			$expected,
+			$result
+		);
+	}
+
+	/**
+	 * @covers ::vipgo_get_large_files_from_pr_comments
+	 */
+	public function testGetLargeFilesFromPRComments(): void {
+		$commentsSkippedFilesMock = $this->getSkippedFilesCommentsMock();
+
+		$result   = vipgo_get_large_files_from_pr_comments( $commentsSkippedFilesMock );
+		$expected = [
+			'GoogleAtom.php',
+			'MySuccessClass.php',
+			'MySuccessClass2.php',
+			'src/MySuccesClasss.php',
+			'src/SyntaxError.php',
+			'tests1/myfile1.php',
+		];
+
+		$this->assertSame(
+			$expected,
+			$result
+		);
+	}
+
+	/**
+	 * @covers ::vipgo_get_large_files_from_pr_comments
+	 */
+	public function testGetLargeFilesFromPRCommentsWhenCommentsAreNotAboutSkippedFilesWillReturnEmpty(): void {
+		$commentsMock = $this->getCommentMock();
+
+		$result   = vipgo_get_large_files_from_pr_comments( [ $commentsMock ] );
+		$expected = array();
+
+		$this->assertSame(
+			$expected,
+			$result
+		);
+	}
+
+	/**
+	 * @return array[]
+	 */
+	private function getResultsMock(): array {
+		return array(
+			15 => array(
+				'issues' =>
+					array(
+						'max-lines' =>
+							array(
+								0 => 'GoogleAtom.php',
+								1 => 'MySuccessClass.php',
+								2 => 'MySuccessClass2.php',
+								3 => 'src/MySuccesClasss.php',
+								4 => 'src/SyntaxError.php',
+								5 => 'tests1/myfile1.php',
+								6 => 'tests1/myfile2.php',
+							),
+					),
+				'total'  => 7,
+			),
+		);
+	}
+
+	/**
+	 * @return array
+	 */
+	private function getSkippedFilesCommentsMock(): array {
+		$mock  = $this->getSkippedFilesCommentMock();
+
+		return [ $mock ];
+	}
+
+	/**
+	 * @return mixed
+	 */
+	private function getSkippedFilesCommentMock(): \stdClass {
+		$mock       = $this->createMock( 'stdClass' );
+		$mock->body =
 			'**hashes-api**-scanning skipped
 ***
 
@@ -286,32 +396,18 @@ Maximum number of lines exceeded (3):
  - tests1/myfile1.php
 
 Note that the above file(s) were not analyzed due to their length.';
-		$commentsMock = [ $commentMock ];
 
-		return $commentsMock;
+		return $mock;
 	}
 
-	private function getResultsMock(): array
-	{
-		return array (
-			15 => array (
-					'issues' =>
-						array (
-							'max-lines' =>
-								array (
-									0 => 'GoogleAtom.php',
-									1 => 'MySuccessClass.php',
-									2 => 'MySuccessClass2.php',
-									3 => 'src/MySuccesClasss.php',
-									4 => 'src/SyntaxError.php',
-									5 => 'tests1/myfile1.php',
-									6 => 'tests1/myfile2.php',
-								),
-						),
-					'total' => 7,
-				),
-		);
+	/**
+	 * @return mixed
+	 */
+	private function getCommentMock(): \stdClass {
+		$commentMock       = $this->createMock( 'stdClass' );
+		$commentMock->body =
+			'**hashes-api**';
+
+		return $commentMock;
 	}
-
-
 }
