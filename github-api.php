@@ -2561,6 +2561,18 @@ function vipgoci_github_pr_review_submit(
 			'comments'	=> array(),
 		);
 
+		$pr_reviews_commented = vipgoci_github_pr_reviews_get(
+			$repo_owner,
+			$repo_name,
+			$pr_number,
+			$github_token,
+			array(
+				'login' => 'myself',
+				'state' => array( 'COMMENTED' )
+			)
+		);
+
+		$results['skipped-files'][ $pr_number ] = vipgo_skip_file_check_previous_pr_comments( $results['skipped-files'][ $pr_number ], $pr_reviews_commented );
 
 		/*
 		 * For each issue reported, format
@@ -2806,9 +2818,24 @@ function vipgoci_github_pr_review_submit(
 		}
 
 		/**
-		 * Format skipped files message if it validation has issues
+		 * Check if there're previous existent comments about the same files
 		 */
-		if ( ! empty( $results[ VIPGOCI_SKIPPED_FILES ][ $pr_number ]['issues'] ) ) {
+		$pr_reviews_commented = vipgoci_github_pr_reviews_get(
+			$repo_owner,
+			$repo_name,
+			$pr_number,
+			$github_token,
+			array(
+				'login' => 'myself',
+				'state' => array( 'COMMENTED' )
+			)
+		);
+		$results['skipped-files'][ $pr_number ] = vipgo_skip_file_check_previous_pr_comments( $results['skipped-files'][ $pr_number ], $pr_reviews_commented );
+
+		/**
+		 * Format skipped files message if the validation has issues
+		 */
+		if ( 0 === $results[ VIPGOCI_SKIPPED_FILES ][ $pr_number ]['total'] ) {
 			vipgoci_markdown_comment_add_pagebreak(
 				$github_postfields['body']
 			);

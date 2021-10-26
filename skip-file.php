@@ -1,5 +1,5 @@
 <?php
-declare(strict_types=1);
+declare( strict_types=1 );
 
 /**
  * Logic related to skip files
@@ -7,12 +7,12 @@ declare(strict_types=1);
 /**
  * @param array $skipped
  * @param array $validation
+ *
  * @return array
  */
-function vipgoci_get_skipped_files( array $skipped, array $validation ): array
-{
-	$skipped[ 'issues' ] = array_merge_recursive( $skipped[ 'issues' ], $validation[ 'issues' ] );
-	$skipped[ 'total' ] += $validation[ 'total' ];
+function vipgoci_get_skipped_files( array $skipped, array $validation ): array {
+	$skipped['issues'] = array_merge_recursive( $skipped['issues'], $validation['issues'] );
+	$skipped['total']  += $validation['total'];
 
 	return $skipped;
 }
@@ -50,18 +50,17 @@ function vipgoci_set_prs_implicated_skipped_files(
 
 /**
  * @param array $skipped
- * @param int $skip_large_files_limit
+ * @param int $skip_files_lines_limit
  *
  * @return string
  */
-function vipgoci_get_skipped_files_message( array $skipped, int $skip_large_files_limit ): string
-{
+function vipgoci_get_skipped_files_message( array $skipped, int $skip_files_lines_limit ): string {
 	$body = PHP_EOL . '**' . VIPGOCI_SKIPPED_FILES . '**' . PHP_EOL . PHP_EOL;
-	foreach ( $skipped[ 'issues' ] as $issue => $file ) {
+	foreach ( $skipped['issues'] as $issue => $file ) {
 		$body .= vipgoci_get_skipped_files_issue_message(
-			$skipped[ 'issues' ][ $issue ],
+			$skipped['issues'][ $issue ],
 			$issue,
-			$skip_large_files_limit
+			$skip_files_lines_limit
 		);
 	}
 
@@ -84,7 +83,7 @@ function vipgoci_get_skipped_files_issue_message(
 	string $issue_type,
 	int $max_lines
 ): string {
-	$affected_files = implode( PHP_EOL . ' - ', $affected_files );
+	$affected_files     = implode( PHP_EOL . ' - ', $affected_files );
 	$validation_message = sprintf(
 		VIPGOCI_VALIDATION[ $issue_type ],
 		$max_lines
@@ -96,4 +95,91 @@ function vipgoci_get_skipped_files_issue_message(
 		PHP_EOL,
 		$affected_files
 	);
+}
+
+/**
+ * @param array $pr_issues_results
+ * @param array $comments
+ *
+ * Removes skipped files from the results list
+ * when there are previous comments
+ * preventing duplicated comments
+ *
+ * @return array $pr_issues_result
+ */
+function vipgo_skip_file_check_previous_pr_comments( array $pr_issues_results = [], array $comments = [] ): array {
+	/**
+	 * If there is no previous comments in this PR, return
+	 */
+	if ( 0 === count( $comments ) || 0 === $pr_issues_results['total'] ) {
+		return $pr_issues_results;
+	}
+
+	$skipped_files = vipgo_get_skipped_files_from_pr_comments( $comments );
+	$result      = [ 'issues' => [ 'max-lines' => [] ], 'total' => 0 ];
+
+	/**
+	 * Iterates the list of files that reached the lines limit in this scan
+	 * For each file, verifies if there's a previous comment about it
+	 * If so, prevent a new comment about the same file
+	 */
+	foreach ( $pr_issues_results['issues']['max-lines'] as $file ) {
+		if ( in_array( $file, $skipped_files, true ) ) {
+			continue;
+		}
+
+		$result['issues']['max-lines'][] = $file;
+		$result['total'] ++;
+	}
+
+	return $result;
+}
+
+/**
+ * @param array $comments
+ * Iterates all the comments to check the files affected by the skip files due max lines limit reached
+ * returns array of files
+ *
+ * @return array
+ * @todo add unit tests
+ */
+function vipgo_get_skipped_files_from_pr_comments( array $comments ): array {
+	$skipped_files = [];
+
+	foreach ( $comments as $comment ) {
+		/**
+		 * Checks if the comment contains skipped-files
+		 * if it is not, ignore
+		 */
+		if ( false === strpos( $comment->body, 'skipped-files' ) ) {
+			continue;
+		}
+		$files       = vipgo_get_skipped_files_from_comment( $comment );
+		$skipped_files = array_merge( $skipped_files, $files );
+	}
+
+	return $skipped_files;
+}
+
+/**
+ * @param $comment
+ *
+ * @return string[]
+ */
+function vipgo_get_skipped_files_from_comment( $comment ): array {
+	$prefix = '):';
+	$suffix = strlen( PHP_EOL . PHP_EOL . VIPGOCI_VALIDATION_MAXIMUM_DETAIL_MSG );
+
+	if ( false === $comment = substr(
+			$comment->body,
+			strpos( $comment->body, $prefix ) + 6,
+			- $suffix
+		) ) {
+		return [];
+	}
+
+	$files = explode( "\n - ", $comment );
+
+	// This return is to be compatible with php 8.0
+	return empty( $files[0] ) ? array() : $files;
 }
