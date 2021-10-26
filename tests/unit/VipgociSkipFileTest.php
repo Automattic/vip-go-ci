@@ -270,12 +270,36 @@ Note that the above file(s) were not analyzed due to their length.';
 	}
 
 	/**
-	 * @covers ::vipgo_get_large_files_from_comment
+	 * @covers ::vipgo_skip_file_check_previous_pr_comments
+	 * @dataProvider vipgociVerifySkipFileMessageDuplicationWillReturnOfCommentsOreIssuesResultsAreZeroProvider
+	 */
+	public function testVipgociVerifySkipFileMessageDuplicationWillReturnOfCommentsOreIssuesResultsAreZero( array $skipped_files_result, array $comments ): void {
+		$result = vipgo_skip_file_check_previous_pr_comments(
+			$skipped_files_result,
+			$comments,
+		);
+
+		$this->assertSame(
+			$result,
+			$skipped_files_result,
+		);
+	}
+
+	public function vipgociVerifySkipFileMessageDuplicationWillReturnOfCommentsOreIssuesResultsAreZeroProvider(): array {
+		return [
+			[ [ 'total' => 0 ], [ 'any' ] ],
+			[ [ 'total' => 2 ], [] ],
+			[ [ 'issues' => [ 'max-lines' => [ 'test.php' ] ], 'total' => 1 ], [ $this->getCommentMock() ] ],
+		];
+	}
+
+	/**
+	 * @covers ::vipgo_get_skipped_files_from_comment
 	 */
 	public function testGetLargeFilesFromComments(): void {
 		$skippedFileCommentMock = $this->getSkippedFilesCommentMock();
 
-		$result   = vipgo_get_large_files_from_comment( $skippedFileCommentMock );
+		$result   = vipgo_get_skipped_files_from_comment( $skippedFileCommentMock );
 		$expected = [
 			'GoogleAtom.php',
 			'MySuccessClass.php',
@@ -292,12 +316,12 @@ Note that the above file(s) were not analyzed due to their length.';
 	}
 
 	/**
-	 * @covers ::vipgo_get_large_files_from_comment
+	 * @covers ::vipgo_get_skipped_files_from_comment
 	 */
 	public function testGetLargeFilesFromCommentsWillReturnEmptyWhenCommentIsNotAboutSkippedFiles(): void {
 		$commentMock = $this->getCommentMock();
 
-		$result   = vipgo_get_large_files_from_comment( $commentMock );
+		$result   = vipgo_get_skipped_files_from_comment( $commentMock );
 		$expected = array();
 
 		$this->assertSame(
@@ -307,12 +331,12 @@ Note that the above file(s) were not analyzed due to their length.';
 	}
 
 	/**
-	 * @covers ::vipgo_get_large_files_from_pr_comments
+	 * @covers ::vipgo_get_skipped_files_from_pr_comments
 	 */
 	public function testGetLargeFilesFromPRComments(): void {
 		$commentsSkippedFilesMock = $this->getSkippedFilesCommentsMock();
 
-		$result   = vipgo_get_large_files_from_pr_comments( $commentsSkippedFilesMock );
+		$result   = vipgo_get_skipped_files_from_pr_comments( $commentsSkippedFilesMock );
 		$expected = [
 			'GoogleAtom.php',
 			'MySuccessClass.php',
@@ -329,12 +353,12 @@ Note that the above file(s) were not analyzed due to their length.';
 	}
 
 	/**
-	 * @covers ::vipgo_get_large_files_from_pr_comments
+	 * @covers ::vipgo_get_skipped_files_from_pr_comments
 	 */
 	public function testGetLargeFilesFromPRCommentsWhenCommentsAreNotAboutSkippedFilesWillReturnEmpty(): void {
 		$commentsMock = $this->getCommentMock();
 
-		$result   = vipgo_get_large_files_from_pr_comments( [ $commentsMock ] );
+		$result   = vipgo_get_skipped_files_from_pr_comments( [ $commentsMock ] );
 		$expected = array();
 
 		$this->assertSame(
