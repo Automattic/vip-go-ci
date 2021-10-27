@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
 
 ### Updated
 - [#203](https://github.com/Automattic/vip-go-ci/pull/203): Updating README file
+- [#214](https://github.com/Automattic/vip-go-ci/pull/214): Update VIPCS to ``2.3.3`` version
 
 ### Fixed
 - [#204](https://github.com/Automattic/vip-go-ci/pull/204): Replaces constant with variable to build message about limit of lines per file reached
