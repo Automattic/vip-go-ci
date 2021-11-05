@@ -50,17 +50,17 @@ function vipgoci_set_prs_implicated_skipped_files(
 
 /**
  * @param array $skipped
- * @param int $skip_files_lines_limit
+ * @param string $validation_message
  *
  * @return string
  */
-function vipgoci_get_skipped_files_message( array $skipped, int $skip_files_lines_limit ): string {
+function vipgoci_get_skipped_files_message( array $skipped, string $validation_message ): string {
 	$body = PHP_EOL . '**' . VIPGOCI_SKIPPED_FILES . '**' . PHP_EOL . PHP_EOL;
 	foreach ( $skipped['issues'] as $issue => $file ) {
+
 		$body .= vipgoci_get_skipped_files_issue_message(
 			$skipped['issues'][ $issue ],
-			$issue,
-			$skip_files_lines_limit
+			$validation_message
 		);
 	}
 
@@ -70,29 +70,35 @@ function vipgoci_get_skipped_files_message( array $skipped, int $skip_files_line
 }
 
 /**
- * @param array $affected_files
  * @param string $issue_type
- * @param int $max_lines
+ * @param int $skip_files_lines_limit
+ * Maximum number of lines exceeded (15000)
  *
- * Get Markdown Skipped File error message
+ * @return string
+ */
+function get_validation_message_prefix( string $issue_type, int $skip_files_lines_limit ): string {
+	return sprintf(
+		VIPGOCI_VALIDATION[ $issue_type ] . ':%s - ',
+		$skip_files_lines_limit,
+		PHP_EOL
+	);
+}
+
+/**
+ * @param array $affected_files
+ * @param string $validation_message
  *
  * @return string
  */
 function vipgoci_get_skipped_files_issue_message(
 	array $affected_files,
-	string $issue_type,
-	int $max_lines
+	string $validation_message
 ): string {
-	$affected_files     = implode( PHP_EOL . ' - ', $affected_files );
-	$validation_message = sprintf(
-		VIPGOCI_VALIDATION[ $issue_type ],
-		$max_lines
-	);
+	$affected_files = implode( PHP_EOL . ' - ', $affected_files );
 
 	return sprintf(
-		'%s:%s - %s',
+		'%s%s',
 		$validation_message,
-		PHP_EOL,
 		$affected_files
 	);
 }
@@ -100,6 +106,7 @@ function vipgoci_get_skipped_files_issue_message(
 /**
  * @param array $pr_issues_results
  * @param array $comments
+ * @param string $validation_message
  *
  * Removes skipped files from the results list
  * when there are previous comments
@@ -107,7 +114,7 @@ function vipgoci_get_skipped_files_issue_message(
  *
  * @return array $pr_issues_result
  */
-function vipgo_skip_file_check_previous_pr_comments( array $pr_issues_results = [], array $comments = [] ): array {
+function vipgo_skip_file_check_previous_pr_comments( array $pr_issues_results, array $comments, string $validation_message ): array {
 	/**
 	 * If there is no previous comments in this PR, return
 	 */
@@ -115,20 +122,21 @@ function vipgo_skip_file_check_previous_pr_comments( array $pr_issues_results = 
 		return $pr_issues_results;
 	}
 
-	$skipped_files = vipgo_get_skipped_files_from_pr_comments( $comments );
-	$result      = [ 'issues' => [ 'max-lines' => [] ], 'total' => 0 ];
+	$skipped_files = vipgo_get_skipped_files_from_pr_comments( $comments, $validation_message );
+
+	$result = [ 'issues' => [ VIPGOCI_VALIDATION_MAXIMUM_LINES => array() ], 'total' => 0 ];
 
 	/**
 	 * Iterates the list of files that reached the lines limit in this scan
 	 * For each file, verifies if there's a previous comment about it
 	 * If so, prevent a new comment about the same file
 	 */
-	foreach ( $pr_issues_results['issues']['max-lines'] as $file ) {
+	foreach ( $pr_issues_results['issues'][ VIPGOCI_VALIDATION_MAXIMUM_LINES ] as $file ) {
 		if ( in_array( $file, $skipped_files, true ) ) {
 			continue;
 		}
 
-		$result['issues']['max-lines'][] = $file;
+		$result['issues'][ VIPGOCI_VALIDATION_MAXIMUM_LINES ][] = $file;
 		$result['total'] ++;
 	}
 
@@ -137,24 +145,17 @@ function vipgo_skip_file_check_previous_pr_comments( array $pr_issues_results = 
 
 /**
  * @param array $comments
+ * @param string $validation_message
  * Iterates all the comments to check the files affected by the skip files due max lines limit reached
  * returns array of files
  *
  * @return array
- * @todo add unit tests
  */
-function vipgo_get_skipped_files_from_pr_comments( array $comments ): array {
-	$skipped_files = [];
+function vipgo_get_skipped_files_from_pr_comments( array $comments, string $validation_message ): array {
+	$skipped_files = array();
 
 	foreach ( $comments as $comment ) {
-		/**
-		 * Checks if the comment contains skipped-files
-		 * if it is not, ignore
-		 */
-		if ( false === strpos( $comment->body, 'skipped-files' ) ) {
-			continue;
-		}
-		$files       = vipgo_get_skipped_files_from_comment( $comment );
+		$files         = vipgo_get_skipped_files_from_comment( $comment, $validation_message );
 		$skipped_files = array_merge( $skipped_files, $files );
 	}
 
@@ -162,24 +163,50 @@ function vipgo_get_skipped_files_from_pr_comments( array $comments ): array {
 }
 
 /**
- * @param $comment
+ * @param stdClass $comment
+ * @param string $validation_message_prefix
  *
  * @return string[]
  */
-function vipgo_get_skipped_files_from_comment( $comment ): array {
-	$prefix = '):';
-	$suffix = strlen( PHP_EOL . PHP_EOL . VIPGOCI_VALIDATION_MAXIMUM_DETAIL_MSG );
-
-	if ( false === $comment = substr(
-			$comment->body,
-			strpos( $comment->body, $prefix ) + 6,
-			- $suffix
-		) ) {
-		return [];
+function vipgo_get_skipped_files_from_comment( stdClass $comment, string $validation_message_prefix ): array {
+	/**
+	 * Checks if the comment contains skipped-files
+	 * if it is not, ignore
+	 */
+	if ( false === strpos( $comment->body, 'skipped-files' ) ) {
+		return array();
 	}
 
-	$files = explode( "\n - ", $comment );
+	$skipped_files_comment = vipgo_get_skipped_files_message_from_comment( $comment->body, $validation_message_prefix );
+
+	if ( '' === $skipped_files_comment ) {
+		return array();
+	}
+
+	$files = explode( PHP_EOL . ' - ', $skipped_files_comment );
 
 	// This return is to be compatible with php 8.0
 	return empty( $files[0] ) ? array() : $files;
+}
+
+/**
+ * @param string $comment
+ * @param string $validation_message_prefix
+ * Removes any extra noise before/after the skipped files message in a comment
+ * This function implementation tends to bee defensive to avoid Errors in php 8.0
+ *
+ * @return string
+ */
+function vipgo_get_skipped_files_message_from_comment( string $comment, string $validation_message_prefix ): string {
+
+	if ( false === $prefix_pos = strpos( $comment, $validation_message_prefix ) ) {
+		return '';
+	}
+	$message_start_pos = $prefix_pos + strlen( $validation_message_prefix );
+
+	if ( false === $message_end_pos = strpos( $comment, PHP_EOL . PHP_EOL . VIPGOCI_VALIDATION_MAXIMUM_DETAIL_MSG, $message_start_pos ) ) {
+		return '';
+	}
+
+	return ( false === $message = substr( $comment, $message_start_pos, $message_end_pos - $message_start_pos ) ) ? '' : $message;
 }
