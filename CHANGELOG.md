@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 
 
-## [1.0.9](https://github.com/Automattic/vip-go-ci/releases/tag/1.0.9) - To be decided
+## [1.0.9](https://github.com/Automattic/vip-go-ci/releases/tag/1.0.9) - 2021-11-10
 
 ### Added
 - [#209](https://github.com/Automattic/vip-go-ci/pull/209): Add PHPUnit configuration, create suites for unit and integration tests. And split existent tests into those two suites.
@@ -17,6 +17,7 @@ All notable changes to this project will be documented in this file.
 - [#204](https://github.com/Automattic/vip-go-ci/pull/204): Replaces constant with variable to build message about limit of lines per file reached
 - [#217](https://github.com/Automattic/vip-go-ci/pull/217): Add skip large files conditions to post PHPCS checks
 - [#208](https://github.com/Automattic/vip-go-ci/pull/208): Add logic to avoid duplicated comments about limit of lines exceeded in the same PR
+- [#218](https://github.com/Automattic/vip-go-ci/pull/218): + Add logic to avoid duplicated comments about limit of lines exceeded in the same PR
 
 ## [1.0.8](https://github.com/Automattic/vip-go-ci/releases/tag/1.0.8) - 2021-08-25
 
