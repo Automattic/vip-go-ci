@@ -243,7 +243,7 @@ function vipgoci_lint_scan_commit(
 		$options['skip-draft-prs']
 	);
 
-	if ( true === $options['lint-scan-modified-files-only'] ) {
+	if ( true === $options['lint-modified-files-only'] ) {
 		vipgoci_gitrepo_scan_modified_files_only( $prs_implicated, $options, $commit_skipped_files,$commit_issues_stats, $commit_issues_submit );
 	} else {
 		/**

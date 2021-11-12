@@ -60,7 +60,7 @@ final class PhpcsScanSingleFileTest extends TestCase {
 
 		$this->options['skip-large-files-limit'] = 15000;
 
-		$this->options['lint-scan-only-modified-files'] = false;
+		$this->options['lint-modified-files-only'] = false;
 	}
 
 	protected function tearDown(): void {
