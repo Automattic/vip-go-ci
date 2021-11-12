@@ -243,8 +243,8 @@ function vipgoci_lint_scan_commit(
 		$options['skip-draft-prs']
 	);
 
-	if ( true === $options['lint-scan-only-modified-files'] ) {
-		vipgoci_gitrepo_scan_modified_files_only( $prs_implicated, array('.php'), '', $options, $commit_skipped_files,$commit_issues_stats, $commit_issues_submit );
+	if ( true === $options['lint-scan-modified-files-only'] ) {
+		vipgoci_gitrepo_scan_modified_files_only( $prs_implicated, $options, $commit_skipped_files,$commit_issues_stats, $commit_issues_submit );
 	} else {
 		/**
 		 * Keep it as is
@@ -529,14 +529,7 @@ function scan_file_toRename1( string $filename, array $options, array $prs_impli
 
 
 /**
- * This signature is not ready
- *
- * This function will be split into different functions that can be moved to
- * other files (eg git-repo.php for git function calls)
- *
  * @param array $prs_implicated
- * @param array $filter_extensions
- * @param string $filter_skip_folders
  * @param array $options
  * @param array $commit_skipped_files
  * @param array $commit_issues_stats
@@ -544,112 +537,36 @@ function scan_file_toRename1( string $filename, array $options, array $prs_impli
  *
  * @return array
  */
-function vipgoci_gitrepo_scan_modified_files_only( array $prs_implicated, array $filter_extensions = [], string $filter_skip_folders = '', array $options, array &$commit_skipped_files, array &$commit_issues_stats, array &$commit_issues_submit  ): array {
-
-	/**
-	 * Get modified files in each PR that is implicated by the commit
-	 * Iterate it and compare base with head
-	 */
-
-
-	$local_git_repo = $options['local-git-repo'];
-	$prs_modified_files = array();
-
-	/**
-	 * @todo split param arrays and mout the desired strings:
-	 * -- '\'*.php\' '
-	 * -- '\':!tests1/*\' \':!tests/*\''
-	 */
-	$filter_extensions = '-- \'*.php\'';
-//	$filter_skip_folders = '-- \':!tests1/*\'';
-
-	/**
-	 * Save current branch so that we can checkout it at the end of the process
-	 */
-	$cmd     = sprintf(
-		"git -C %s branch --show-current 2>&1",
-		$local_git_repo
-	);
-	$local_git_branch = shell_exec($cmd);
-
-	foreach ($prs_implicated as $pr_number => $pr) {
-		/**
-		 * @todo these attributions are not required
-		 */
-		$pr_base_ref    = $pr->base->ref; // develop main
-		$pr_head_ref    = $pr->head->ref; // branches that contains that commit at the top of the tree, and has open PRs
-
-		/**
-		 * Checkout PR base branch so that git local gets information to compare
-		 */
-		$cmd     = sprintf(
-			"git -C %s checkout %s 2>&1",
-			$local_git_repo,
-			$pr_base_ref
-		);
-		$checkout_base_output = shell_exec( $cmd );
-
-		/**
-		 * Checkout PR branch so that git local gets information to compare
-		 */
-		$cmd     = sprintf(
-			"git -C %s checkout %s 2>&1",
-			$local_git_repo,
-			$pr_head_ref
-		);
-		$checkout_head_output = shell_exec( $cmd );
-
-		/**
-		 * Compares base and head log to get modified files only
-		 * git -C LOCAL_ATH log -M --no-merges --name-only --pretty=format: develop.. -- '*.php' -- . ':!tests1/*' 2>&1
-		 */
-		$cmd     = sprintf(
-			'git  -C %s log -M --oneline --no-merges --name-only --pretty=format: %s.. %s %s 2>&1',
-			$local_git_repo,
-			$pr_base_ref,
-			$filter_extensions,
-			$filter_skip_folders
-		);
-		$pr_modified_files = shell_exec( $cmd );
-
-		if ( 0 < strpos( $pr_modified_files, 'fatal' ) ) {
-			continue;
+function vipgoci_gitrepo_scan_modified_files_only( array $prs_implicated, array $options, array &$commit_skipped_files, array &$commit_issues_stats, array &$commit_issues_submit ): array {
+	foreach ( $prs_implicated as $pr_number => $pr ) {
+		if ( ! isset( $pr_item_files_changed[ $pr_item->number ] ) ) {
+			$pr_item_files_changed[ $pr->number ] = [];
 		}
 
-		$pr_modified_files = explode("\n", $pr_modified_files);
+		$pr_item_files_tmp = vipgoci_git_diffs_fetch(
+			$options['local-git-repo'],
+			$options['repo-owner'],
+			$options['repo-name'],
+			$options['token'],
+			$pr->base->sha,
+			$options['commit'],
+			false, // exclude renamed files
+			false, // exclude removed files
+			false, // exclude permission changes
+			array(
+				'file_extensions' => array( 'php' ),
+				'skip_folders'    => $options['phpcs-skip-folders']
+			)
+		);
 
-		$files = array_filter(array_unique($pr_modified_files), function($file) {
-			return trim($file) !== '';
-		});
-
-		if ( ! is_array( $files ) ) {
-			continue;
-		}
-
-		/**
-		 * Gets the modified files to scan lint
-		 */
-//		$prs_modified_files[$pr_number] = array_values( $files );
-		$files = array_values($files);
-
-		/**
-		 * @todo IMPLEMENT SCAN THE FILES AND ADD PR ERRORS STATS HERE.
-		 */
-		foreach ( $files as $filename ) {
-			$file_issues_arr = scan_file_toRename1( $filename, $options, $prs_implicated, $commit_skipped_files );
-			add_scan_results_toRename2( $file_issues_arr, $filename, $commit_issues_submit, $pr_number, $commit_issues_stats );
+		foreach ( $pr_item_files_tmp['files'] as $pr_item_file_name => $_tmp ) {
+			if ( false === in_array( $pr_item_file_name, $pr_item_files_changed['all'], true ) ) {
+				$pr_item_files_changed['all'][] = $pr_item_file_name;
+				$file_issues_arr                = scan_file_toRename1( $pr_item_file_name, $options, $prs_implicated, $commit_skipped_files );
+				add_scan_results_toRename2( $file_issues_arr, $pr_item_file_name, $commit_issues_submit, $pr_number, $commit_issues_stats );
+			}
 		}
 	}
 
-	/**
-	 * Add state back
-	 */
-	$cmd     = sprintf(
-		"git -C %s checkout %s 2>&1",
-		$local_git_repo,
-		$local_git_branch
-	);
-	$results = shell_exec( $cmd );
-
-	return $prs_modified_files;
+	return ! empty( $pr_item_files_changed['all'] ) ? $pr_item_files_changed['all'] : [];
 }
