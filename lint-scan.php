@@ -244,7 +244,7 @@ function vipgoci_lint_scan_commit(
 	);
 
 	if ( true === $options['lint-modified-files-only'] ) {
-		vipgoci_gitrepo_scan_modified_files_only( $prs_implicated, $options, $commit_skipped_files,$commit_issues_stats, $commit_issues_submit );
+		vipgoci_gitrepo_scan_modified_files_only( $commit_issues_stats, $commit_issues_submit, $commit_skipped_files, $options, $prs_implicated );
 	} else {
 		/**
 		 * Keep it as is
@@ -254,10 +254,8 @@ function vipgoci_lint_scan_commit(
 			$options,
 			$commit_id,
 			array(
-				'file_extensions'
-				=> array( 'php' ),
-				'skip_folders'
-				=> $options['lint-skip-folders'],
+				'file_extensions' => array( 'php' ),
+				'skip_folders' => $options['lint-skip-folders'],
 			)
 		);
 		/*
@@ -267,18 +265,17 @@ function vipgoci_lint_scan_commit(
 
 		/**
 		 * This doesnt need to cover any previous commit in the PR since it scans the entire repo
+		 * The function was not modified, it was only moved to a different function
 		 */
-		scan_commit_tree_toRename0(
-			$commit_tree,
+		vipgoci_scan_commit_tree(
+			$commit_issues_stats,
+			$commit_issues_submit,
+			$commit_skipped_files,
 			$options,
 			$prs_implicated,
-			$commit_skipped_files,
-			$commit_issues_submit,
-			$commit_issues_stats
+			$commit_tree
 		);
 	}
-
-
 
 	/*
 	 * Reduce memory-usage, as possible.
@@ -287,21 +284,21 @@ function vipgoci_lint_scan_commit(
 	unset( $commit_tree );
 	unset( $commit_info );
 
-
 	gc_collect_cycles();
 
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'lint_scan_commit' );
 }
 
 /**
- * @param array $commit_tree
+ * @param array $commit_issues_stats
+ * @param array $commit_issues_submit
+ * @param array $commit_skipped_files
  * @param array $options
  * @param array $prs_implicated
- * @param array $commit_skipped_files
- * @param array $commit_issues_submit
- * @param array $commit_issues_stats
+ * @param array $commit_tree
+ *
  */
-function scan_commit_tree_toRename0( array $commit_tree, array $options, array $prs_implicated, array &$commit_skipped_files, array &$commit_issues_submit, array &$commit_issues_stats): void {
+function vipgoci_scan_commit_tree( array &$commit_issues_stats, array &$commit_issues_submit, array &$commit_skipped_files, array $options, array $prs_implicated, array $commit_tree ): void {
 	$repo_owner = $options['repo-owner'];
 	$repo_name  = $options['repo-name'];
 	$commit_id  = $options['commit'];
@@ -309,7 +306,7 @@ function scan_commit_tree_toRename0( array $commit_tree, array $options, array $
 	foreach ( $commit_tree as $filename ) {
 		vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'lint_scan_single_file' );
 
-		$file_issues_arr = scan_file_toRename1( $filename, $options, $prs_implicated, $commit_skipped_files );
+		$file_issues_arr = vipgoci_lint_file( $commit_skipped_files, $options, $prs_implicated, $filename );
 		// If there are no new issues, just leave it at that
 		if ( empty( $file_issues_arr ) ) {
 			vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'lint_scan_single_file' );
@@ -325,28 +322,22 @@ function scan_commit_tree_toRename0( array $commit_tree, array $options, array $
 			vipgoci_log(
 				'Linting issues found',
 				array(
-					'repo_owner' => $repo_owner,
-					'repo_name'  => $repo_name,
-					'commit_id'  => $commit_id,
-
-					'filename'
-					=> $filename,
-
-					'pr_number'
-					=> $pr_item->number,
-
-					'file_issues_arr'
-					=> $file_issues_arr,
+					'repo_owner'      => $repo_owner,
+					'repo_name'       => $repo_name,
+					'commit_id'       => $commit_id,
+					'filename'        => $filename,
+					'pr_number'       => $pr_item->number,
+					'file_issues_arr' => $file_issues_arr,
 				),
 				2
 			);
 
-
 			/*
 			 * Loop through array of lines in which
 			 * issues exist.
+			 * Function was not modified
 			 */
-			add_scan_results_toRename2( $file_issues_arr, $filename, $commit_issues_submit, $pr_item->number, $commit_issues_stats );
+			vipgoci_set_commit_issues_results( $commit_issues_stats, $commit_issues_submit, $file_issues_arr, $pr_item->number, $filename );
 		}
 
 		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'lint_scan_single_file' );
@@ -364,55 +355,41 @@ function scan_commit_tree_toRename0( array $commit_tree, array $options, array $
 }
 
 /**
- * @param array|null $file_issues_arr
- * @param string $filename
- * @param array $commit_issues_submit
- * @param int $pr_number
  * @param array $commit_issues_stats
- * @param array $file_issue_values
+ * @param array $commit_issues_submit
+ * @param array|null $file_issues_arr
+ * @param int $pr_number
+ * @param string $filename
  */
-function add_scan_results_toRename2( ?array $file_issues_arr, string $filename, array &$commit_issues_submit, int $pr_number, array &$commit_issues_stats ): void {
-	foreach (
-		$file_issues_arr as
-		$file_issue_line => $file_issue_values
-	) {
+function vipgoci_set_commit_issues_results( array &$commit_issues_stats, array &$commit_issues_submit, ?array $file_issues_arr, int $pr_number, string $filename ): void {
+	foreach ( $file_issues_arr as $file_issue_line => $file_issue_values ) {
 		/*
 		 * Loop through each issue for the particular
 		 * line.
 		 */
 
-		foreach (
-			$file_issue_values as
-			$file_issue_val_item
-		) {
+		foreach ( $file_issue_values as $file_issue_val_item ) {
 			$commit_issues_submit[ $pr_number ][] = array(
-				'type' => VIPGOCI_STATS_LINT,
-
-				'file_name' =>
-					$filename,
-
-				'file_line' => intval(
-					$file_issue_line
-				),
-
-				'issue' =>
-					$file_issue_val_item
+				'type'      => VIPGOCI_STATS_LINT,
+				'file_name' => $filename,
+				'file_line' => intval( $file_issue_line ),
+				'issue'     => $file_issue_val_item
 			);
 
-			$commit_issues_stats[ $pr_number ]['error']++;
+			$commit_issues_stats[ $pr_number ]['error'] ++;
 		}
 	}
 }
 
 /**
- * @param string $filename
+ * @param array $commit_skipped_files
  * @param array $options
  * @param array $prs_implicated
- * @param array $commit_skipped_files
+ * @param string $filename
  *
  * @return array|null
  */
-function scan_file_toRename1( string $filename, array $options, array $prs_implicated, array &$commit_skipped_files ): ?array {
+function vipgoci_lint_file( array &$commit_skipped_files, array $options, array $prs_implicated, string $filename ): ?array {
 
 	$repo_owner = $options['repo-owner'];
 	$repo_name  = $options['repo-name'];
@@ -464,11 +441,7 @@ function scan_file_toRename1( string $filename, array $options, array $prs_impli
 	 * Keep statistics of what we do.
 	 */
 
-	vipgoci_stats_per_file(
-		$options,
-		$filename,
-		'linted'
-	);
+	vipgoci_stats_per_file( $options, $filename, 'linted' );
 
 	/*
 	 * Actually lint the file
@@ -476,7 +449,6 @@ function scan_file_toRename1( string $filename, array $options, array $prs_impli
 
 	vipgoci_log(
 		'About to PHP-lint file',
-
 		array(
 			'repo_owner'     => $repo_owner,
 			'repo_name'      => $repo_name,
@@ -524,25 +496,20 @@ function scan_file_toRename1( string $filename, array $options, array $prs_impli
 
 
 	return $file_issues_arr;
-
 }
 
 
 /**
- * @param array $prs_implicated
- * @param array $options
- * @param array $commit_skipped_files
  * @param array $commit_issues_stats
  * @param array $commit_issues_submit
+ * @param array $commit_skipped_files
+ * @param array $options
+ * @param array $prs_implicated
  *
- * @return array
  */
-function vipgoci_gitrepo_scan_modified_files_only( array $prs_implicated, array $options, array &$commit_skipped_files, array &$commit_issues_stats, array &$commit_issues_submit ): array {
+function vipgoci_gitrepo_scan_modified_files_only( array &$commit_issues_stats, array &$commit_issues_submit, array &$commit_skipped_files, array $options, array $prs_implicated ): void {
+	$pr_item_files_changed = [];
 	foreach ( $prs_implicated as $pr_number => $pr ) {
-		if ( ! isset( $pr_item_files_changed[ $pr_item->number ] ) ) {
-			$pr_item_files_changed[ $pr->number ] = [];
-		}
-
 		$pr_item_files_tmp = vipgoci_git_diffs_fetch(
 			$options['local-git-repo'],
 			$options['repo-owner'],
@@ -559,14 +526,16 @@ function vipgoci_gitrepo_scan_modified_files_only( array $prs_implicated, array 
 			)
 		);
 
+		/**
+		 * Scan files
+		 * and set stats
+		 */
 		foreach ( $pr_item_files_tmp['files'] as $pr_item_file_name => $_tmp ) {
-			if ( false === in_array( $pr_item_file_name, $pr_item_files_changed['all'], true ) ) {
-				$pr_item_files_changed['all'][] = $pr_item_file_name;
-				$file_issues_arr                = scan_file_toRename1( $pr_item_file_name, $options, $prs_implicated, $commit_skipped_files );
-				add_scan_results_toRename2( $file_issues_arr, $pr_item_file_name, $commit_issues_submit, $pr_number, $commit_issues_stats );
+			if ( false === in_array( $pr_item_file_name, $pr_item_files_changed, true ) ) {
+				$pr_item_files_changed[] = $pr_item_file_name;
+				$file_issues_arr                = vipgoci_lint_file( $commit_skipped_files, $options, $prs_implicated, $pr_item_file_name );
+				vipgoci_set_commit_issues_results( $commit_issues_stats, $commit_issues_submit, $file_issues_arr, $pr_number, $pr_item_file_name );
 			}
 		}
 	}
-
-	return ! empty( $pr_item_files_changed['all'] ) ? $pr_item_files_changed['all'] : [];
 }
