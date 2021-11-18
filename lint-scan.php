@@ -64,9 +64,9 @@ function vipgoci_lint_do_scan_file(
 	$file_issues_arr = array_map(
 		function ( $str ) {
 			if ( strpos(
-				$str,
-				'Parse error: '
-			) === 0 ) {
+				     $str,
+				     'Parse error: '
+			     ) === 0 ) {
 				$str = str_replace(
 					'Parse error: ',
 					'PHP Parse error:  ',
@@ -123,9 +123,9 @@ function vipgoci_lint_parse_results(
 	foreach( $file_issues_arr as $index => $message ) {
 		if (
 			( 0 === strpos(
-				$message,
-				'No syntax errors detected'
-			) )
+					$message,
+					'No syntax errors detected'
+				) )
 		) {
 			// Skip non-errors we do not care about
 			continue;
@@ -156,9 +156,9 @@ function vipgoci_lint_parse_results(
 			 * Figure out on what line the problem is
 			 */
 			$pos = strpos(
-				$message,
-				' on line '
-			) + strlen( ' on line ' );
+				       $message,
+				       ' on line '
+			       ) + strlen( ' on line ' );
 
 
 			$file_line = substr(
@@ -193,324 +193,22 @@ function vipgoci_lint_parse_results(
 
 
 /**
- * Run PHP lint on all files in a path
- */
-function vipgoci_lint_scan_commit(
-	$options,
-	&$commit_issues_submit,
-	&$commit_issues_stats,
-	array &$commit_skipped_files
-) {
-	$repo_owner = $options['repo-owner'];
-	$repo_name  = $options['repo-name'];
-	$commit_id  = $options['commit'];
-	$github_token = $options['token'];
-
-	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'lint_scan_commit' );
-
-	vipgoci_log(
-		'About to lint PHP-files',
-
-		array(
-			'repo_owner'	=> $repo_owner,
-			'repo_name'	=> $repo_name,
-			'commit_id'	=> $commit_id,
-		)
-	);
-
-
-	// Ask for information about the commit
-	$commit_info = vipgoci_github_fetch_commit_info(
-		$repo_owner,
-		$repo_name,
-		$commit_id,
-		$github_token,
-		array(
-			'file_extensions'
-				=> array( 'php' ),
-
-			'status'
-				=> array( 'added', 'modified' ),
-		)
-	);
-	// Ask for all Pull-Requests that this commit is part of
-	$prs_implicated = vipgoci_github_prs_implicated(
-		$repo_owner,
-		$repo_name,
-		$commit_id,
-		$github_token,
-		$options['branches-ignore'],
-		$options['skip-draft-prs']
-	);
-
-	if ( true === $options['lint-modified-files-only'] ) {
-		vipgoci_gitrepo_scan_modified_files_only( $commit_issues_stats, $commit_issues_submit, $commit_skipped_files, $options, $prs_implicated );
-	} else {
-		/**
-		 * Keep it as is
-		 */
-		// Fetch list of files that exist in the commit
-		$commit_tree = vipgoci_gitrepo_fetch_tree(
-			$options,
-			$commit_id,
-			array(
-				'file_extensions' => array( 'php' ),
-				'skip_folders' => $options['lint-skip-folders'],
-			)
-		);
-		/*
-		 * Lint every PHP file existing in the commit
-		 * $commit_tree is an array of files for that commit
-		 */
-
-		/**
-		 * This doesnt need to cover any previous commit in the PR since it scans the entire repo
-		 * The function was not modified, it was only moved to a different function
-		 */
-		vipgoci_scan_commit_tree(
-			$commit_issues_stats,
-			$commit_issues_submit,
-			$commit_skipped_files,
-			$options,
-			$prs_implicated,
-			$commit_tree
-		);
-	}
-
-	/*
-	 * Reduce memory-usage, as possible.
-	 */
-	unset( $prs_implicated );
-	unset( $commit_tree );
-	unset( $commit_info );
-
-	gc_collect_cycles();
-
-	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'lint_scan_commit' );
-}
-
-/**
- * @param array $commit_issues_stats
- * @param array $commit_issues_submit
- * @param array $commit_skipped_files
- * @param array $options
- * @param array $prs_implicated
- * @param array $commit_tree
- *
- */
-function vipgoci_scan_commit_tree( array &$commit_issues_stats, array &$commit_issues_submit, array &$commit_skipped_files, array $options, array $prs_implicated, array $commit_tree ): void {
-	$repo_owner = $options['repo-owner'];
-	$repo_name  = $options['repo-name'];
-	$commit_id  = $options['commit'];
-
-	foreach ( $commit_tree as $filename ) {
-		vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'lint_scan_single_file' );
-
-		$file_issues_arr = vipgoci_lint_file( $commit_skipped_files, $options, $prs_implicated, $filename );
-		// If there are no new issues, just leave it at that
-		if ( empty( $file_issues_arr ) ) {
-			vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'lint_scan_single_file' );
-			continue;
-		}
-
-		/*
-		 * Process results of linting
-		 * for each Pull-Request -- actually
-		 * queue issues for submission.
-		 */
-		foreach ( $prs_implicated as $pr_item ) {
-			vipgoci_log(
-				'Linting issues found',
-				array(
-					'repo_owner'      => $repo_owner,
-					'repo_name'       => $repo_name,
-					'commit_id'       => $commit_id,
-					'filename'        => $filename,
-					'pr_number'       => $pr_item->number,
-					'file_issues_arr' => $file_issues_arr,
-				),
-				2
-			);
-
-			/*
-			 * Loop through array of lines in which
-			 * issues exist.
-			 * Function was not modified
-			 */
-			vipgoci_set_commit_issues_results( $commit_issues_stats, $commit_issues_submit, $file_issues_arr, $pr_item->number, $filename );
-		}
-
-		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'lint_scan_single_file' );
-	}
-	/*
-	 * Reduce memory-usage, as possible.
-	 */
-	unset( $file_contents );
-	unset( $file_issues_arr );
-	unset( $file_issues_arr_raw );
-	unset( $prs_implicated );
-	unset( $file_issue_values );
-	unset( $commit_tree );
-	unset( $commit_info );
-}
-
-/**
- * @param array $commit_issues_stats
- * @param array $commit_issues_submit
- * @param array|null $file_issues_arr
- * @param int $pr_number
- * @param string $filename
- */
-function vipgoci_set_commit_issues_results( array &$commit_issues_stats, array &$commit_issues_submit, ?array $file_issues_arr, int $pr_number, string $filename ): void {
-	foreach ( $file_issues_arr as $file_issue_line => $file_issue_values ) {
-		/*
-		 * Loop through each issue for the particular
-		 * line.
-		 */
-
-		foreach ( $file_issue_values as $file_issue_val_item ) {
-			$commit_issues_submit[ $pr_number ][] = array(
-				'type'      => VIPGOCI_STATS_LINT,
-				'file_name' => $filename,
-				'file_line' => intval( $file_issue_line ),
-				'issue'     => $file_issue_val_item
-			);
-
-			$commit_issues_stats[ $pr_number ]['error'] ++;
-		}
-	}
-}
-
-/**
- * @param array $commit_skipped_files
- * @param array $options
- * @param array $prs_implicated
- * @param string $filename
- *
- * @return array|null
- */
-function vipgoci_lint_file( array &$commit_skipped_files, array $options, array $prs_implicated, string $filename ): ?array {
-
-	$repo_owner = $options['repo-owner'];
-	$repo_name  = $options['repo-name'];
-	$commit_id  = $options['commit'];
-	$github_token = $options['token'];
-
-	$file_contents = vipgoci_gitrepo_fetch_committed_file(
-		$repo_owner,
-		$repo_name,
-		$github_token,
-		$commit_id,
-		$filename,
-		$options['local-git-repo']
-	);
-
-	// Save the file-contents in a temporary-file
-	$temp_file_name = vipgoci_save_temp_file(
-		'lint-scan-',
-		null,
-		$file_contents
-	);
-
-	/**
-	 * Validates the file
-	 * and if it's not valid, the scans skips it
-	 */
-	if ( true === $options['skip-large-files'] ) {
-		$validation = vipgoci_validate(
-			$temp_file_name,
-			$filename,
-			$commit_id,
-			$options['skip-large-files-limit']
-		);
-		if ( 0 !== $validation['total'] ) {
-			unlink( $temp_file_name );
-
-			vipgoci_set_prs_implicated_skipped_files( $prs_implicated, $commit_skipped_files, $validation );
-			vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'lint_scan_single_file' );
-
-			return null;
-		}
-	}
-
-	/**
-	 * The lint scan will only proceed if the file is valid
-	 *
-	 */
-	/*
-	 * Keep statistics of what we do.
-	 */
-
-	vipgoci_stats_per_file( $options, $filename, 'linted' );
-
-	/*
-	 * Actually lint the file
-	 */
-
-	vipgoci_log(
-		'About to PHP-lint file',
-		array(
-			'repo_owner'     => $repo_owner,
-			'repo_name'      => $repo_name,
-			'commit_id'      => $commit_id,
-			'filename'       => $filename,
-			'temp_file_name' => $temp_file_name,
-		)
-	);
-
-	$file_issues_arr_raw = vipgoci_lint_do_scan_file(
-		$options['php-path'],
-		$temp_file_name
-	);
-
-	/* Get rid of temporary file */
-	unlink( $temp_file_name );
-
-
-	/*
-	 * Process the results, get them in an array format
-	 */
-
-	$file_issues_arr = vipgoci_lint_parse_results(
-		$filename,
-		$temp_file_name,
-		$file_issues_arr_raw
-	);
-
-	vipgoci_log(
-		'Linting issues details',
-		array(
-			'repo_owner'          => $repo_owner,
-			'repo_name'           => $repo_name,
-			'commit_id'           => $commit_id,
-			'filename'            => $filename,
-			'temp_file_name'      => $temp_file_name,
-			'file_issues_arr'     => $file_issues_arr,
-			'file_issues_arr_raw' => $file_issues_arr_raw,
-		),
-		2
-	);
-
-	/* Get rid of the raw version of issues */
-	unset( $file_issues_arr_raw );
-
-
-	return $file_issues_arr;
-}
-
-
-/**
- * @param array $commit_issues_stats
- * @param array $commit_issues_submit
- * @param array $commit_skipped_files
  * @param array $options
  * @param array $prs_implicated
  *
+ * @return array
  */
-function vipgoci_gitrepo_scan_modified_files_only( array &$commit_issues_stats, array &$commit_issues_submit, array &$commit_skipped_files, array $options, array $prs_implicated ): void {
-	$pr_item_files_changed = [];
+function vipgoci_get_prs_modified_files( array $options, array $prs_implicated ): array {
+	if ( empty ( $prs_implicated ) ) {
+		return [];
+	}
+
+	$prs_modified_files = array();
+	$all_modified_files = array();
+
 	foreach ( $prs_implicated as $pr_number => $pr ) {
-		$pr_item_files_tmp = vipgoci_git_diffs_fetch(
+		// this is cached, so it'' okay to call it
+		$pr_modified_files                = vipgoci_git_diffs_fetch(
 			$options['local-git-repo'],
 			$options['repo-owner'],
 			$options['repo-name'],
@@ -525,17 +223,264 @@ function vipgoci_gitrepo_scan_modified_files_only( array &$commit_issues_stats, 
 				'skip_folders'    => $options['phpcs-skip-folders']
 			)
 		);
+		$modified_files                   = array_keys( $pr_modified_files['files'] );
+		$all_modified_files               = array_merge( $modified_files, $all_modified_files );
+		$prs_modified_files[ $pr_number ] = $modified_files;
+	}
+
+
+	return [ 'all' => array_unique( $all_modified_files ), 'prs_implicated' => $prs_modified_files ];
+}
+
+/**
+ * Run PHP lint on all files in a path
+ */
+function vipgoci_lint_scan_commit(
+	$options,
+	&$commit_issues_submit,
+	&$commit_issues_stats,
+	array &$commit_skipped_files
+) {
+	$repo_owner   = $options['repo-owner'];
+	$repo_name    = $options['repo-name'];
+	$commit_id    = $options['commit'];
+	$github_token = $options['token'];
+
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'lint_scan_commit' );
+
+	vipgoci_log(
+		'About to lint PHP-files',
+		array(
+			'repo_owner' => $repo_owner,
+			'repo_name'  => $repo_name,
+			'commit_id'  => $commit_id,
+		)
+	);
+
+	// Ask for information about the commit
+	$commit_info = vipgoci_github_fetch_commit_info(
+		$repo_owner,
+		$repo_name,
+		$commit_id,
+		$github_token,
+		array(
+			'file_extensions' => array( 'php' ),
+			'status'          => array( 'added', 'modified' ),
+		)
+	);
+
+	$prs_implicated = vipgoci_github_prs_implicated(
+		$repo_owner,
+		$repo_name,
+		$commit_id,
+		$github_token,
+		$options['branches-ignore'],
+		$options['skip-draft-prs']
+	);
+
+	if ( true === $options['lint-modified-files-only'] ) {
+		$modified_files      = vipgoci_get_prs_modified_files( $options, $prs_implicated );
+		$files_to_be_scanned = $modified_files['all'];
+		$files_changed_in_pr = $modified_files['prs_implicated'];
+	} else {
+		// Fetch list of files that exist in the commit
+		$files_to_be_scanned = vipgoci_gitrepo_fetch_tree(
+			$options,
+			$commit_id,
+			array(
+				'file_extensions'
+				=> array( 'php' ),
+				'skip_folders'
+				=> $options['lint-skip-folders'],
+			)
+		);
+	}
+
+	$scanning_results = array();
+
+	/*
+	 * Lint every PHP file existing in the commit
+	 * $commit_tree is an array of files for that commit
+	 */
+	foreach ( $files_to_be_scanned as $filename ) {
+		vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'lint_scan_single_file' );
+
+		$file_contents = vipgoci_gitrepo_fetch_committed_file(
+			$repo_owner,
+			$repo_name,
+			$github_token,
+			$commit_id,
+			$filename,
+			$options['local-git-repo']
+		);
+
+		// Save the file-contents in a temporary-file
+		$temp_file_name = vipgoci_save_temp_file(
+			'lint-scan-',
+			null,
+			$file_contents
+		);
 
 		/**
-		 * Scan files
-		 * and set stats
+		 * Validates the file
+		 * and if it's not valid, the scans skips it
 		 */
-		foreach ( $pr_item_files_tmp['files'] as $pr_item_file_name => $_tmp ) {
-			if ( false === in_array( $pr_item_file_name, $pr_item_files_changed, true ) ) {
-				$pr_item_files_changed[] = $pr_item_file_name;
-				$file_issues_arr                = vipgoci_lint_file( $commit_skipped_files, $options, $prs_implicated, $pr_item_file_name );
-				vipgoci_set_commit_issues_results( $commit_issues_stats, $commit_issues_submit, $file_issues_arr, $pr_number, $pr_item_file_name );
+		if ( true === $options['skip-large-files'] ) {
+			$validation = vipgoci_validate(
+				$temp_file_name,
+				$filename,
+				$commit_id,
+				$options['skip-large-files-limit']
+			);
+			if ( 0 !== $validation['total'] ) {
+				unlink( $temp_file_name );
+
+				vipgoci_set_prs_implicated_skipped_files( $prs_implicated, $commit_skipped_files, $validation );
+				vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'lint_scan_single_file' );
+
+				continue;
+			}
+		}
+
+		/**
+		 * The lint scan will only proceed if the file is valid
+		 *
+		 */
+		/*
+		 * Keep statistics of what we do.
+		 */
+
+		vipgoci_stats_per_file(
+			$options,
+			$filename,
+			'linted'
+		);
+
+		/*
+		 * Actually lint the file
+		 */
+
+		vipgoci_log(
+			'About to PHP-lint file',
+
+			array(
+				'repo_owner'     => $repo_owner,
+				'repo_name'      => $repo_name,
+				'commit_id'      => $commit_id,
+				'filename'       => $filename,
+				'temp_file_name' => $temp_file_name,
+			)
+		);
+
+		$file_issues_arr_raw = vipgoci_lint_do_scan_file(
+			$options['php-path'],
+			$temp_file_name
+		);
+
+		/* Get rid of temporary file */
+		unlink( $temp_file_name );
+
+
+		/*
+		 * Process the results, get them in an array format
+		 */
+		$file_issues_arr = vipgoci_lint_parse_results(
+			$filename,
+			$temp_file_name,
+			$file_issues_arr_raw
+		);
+
+		vipgoci_log(
+			'Linting issues details',
+			array(
+				'repo_owner'          => $repo_owner,
+				'repo_name'           => $repo_name,
+				'commit_id'           => $commit_id,
+				'filename'            => $filename,
+				'temp_file_name'      => $temp_file_name,
+				'file_issues_arr'     => $file_issues_arr,
+				'file_issues_arr_raw' => $file_issues_arr_raw,
+			),
+			2
+		);
+
+		/* Get rid of the raw version of issues */
+		unset( $file_issues_arr_raw );
+
+		// If there are no new issues, just leave it at that
+		if ( empty( $file_issues_arr ) ) {
+			vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'lint_scan_single_file' );
+			continue;
+		}
+
+		$scanning_results[ $filename ] = $file_issues_arr;
+
+		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'lint_scan_single_file' );
+	}
+
+	/*
+	 * Process results of linting
+	 * for each Pull-Request -- actually
+	 * queue issues for submission.
+	 * Para cada PR, itera os file_issues_array array de files com problema
+	 */
+	foreach ( $prs_implicated as $pr_item ) {
+		vipgoci_log(
+			'Linting issues found',
+			array(
+				'repo_owner'      => $repo_owner,
+				'repo_name'       => $repo_name,
+				'commit_id'       => $commit_id,
+				'filename'        => $filename,
+				'pr_number'       => $pr_item->number,
+				'file_issues_arr' => $file_issues_arr,
+			),
+			2
+		);
+		$file_names = array_keys( $scanning_results );
+
+		foreach ( $file_names as $file_name ) {
+			// No problems found, skip as there is nothing to report.
+			if ( empty( $scanning_results[ $file_name ] ) ) {
+				continue;
+			}
+
+			if ( ( true === $options['lint-modified-files-only']
+			       && in_array( $file_name, $files_changed_in_pr[ $pr_item->number ] ) )
+			     || ( false === $options['lint-scan-only-modified-files'] )
+			) {
+				foreach ( $scanning_results[ $file_name ] as $file_issue_line => $file_issue_values ) {
+					/*
+					 * Loop through each issue for the particular
+					 * line.
+					 */
+					foreach ( $file_issue_values as $file_issue_val_item ) {
+						$commit_issues_submit[ $pr_item->number ][] = array(
+							'type'      => VIPGOCI_STATS_LINT,
+							'file_name' => $filename,
+							'file_line' => intval( $file_issue_line ),
+							'issue'     => $file_issue_val_item
+						);
+
+						$commit_issues_stats[ $pr_item->number ]['error'] ++;
+					}
+				}
 			}
 		}
 	}
+
+	/*
+	 * Reduce memory-usage, as possible.
+	 */
+	unset( $file_contents );
+	unset( $file_issues_arr );
+	unset( $file_issues_arr_raw );
+	unset( $prs_implicated );
+	unset( $file_issue_values );
+	unset( $commit_tree );
+	unset( $commit_info );
+
+	gc_collect_cycles();
+
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'lint_scan_commit' );
 }
