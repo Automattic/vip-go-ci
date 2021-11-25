@@ -608,10 +608,120 @@ final class A09LintLintScanCommitTest extends TestCase {
 		unset( $this->options['commit'] );
 	}
 
-	private function getDefaultSkippedFilesDueIssuesMock() {
+	/**
+	 * @return array
+	 */
+	private function getDefaultSkippedFilesDueIssuesMock(): array {
 		return array(
 			'issues' => array(),
 			'total'  => 0
 		);
+	}
+
+	/**
+	 * @covers ::vipgoci_lint_scan_commit
+	 */
+	public function testLintDoScan3() {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( 'github-token', 'token' ),
+			$this
+		);
+
+		if ( - 1 === $options_test ) {
+			return;
+		}
+
+		$this->options['commit'] = $this->options['commit-test-lint-scan-commit-1'];
+
+		vipgoci_unittests_output_suppress();
+
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped(
+				'Could not set up git repository: ' .
+				vipgoci_unittests_output_get()
+			);
+
+			return;
+		}
+
+		$issues_submit  = array();
+		$issues_stat    = array();
+		$issues_skipped = array();
+
+		/*
+		 * Get PRs implicated and warm up stats.
+		 */
+		$prs_implicated = vipgoci_github_prs_implicated(
+			$this->options['repo-owner'],
+			$this->options['repo-name'],
+			$this->options['commit'],
+			$this->options['github-token'],
+			$this->options['branches-ignore']
+		);
+
+		foreach ( $prs_implicated as $pr_item ) {
+			$issues_stat[ $pr_item->number ]['error'] = 0;
+			$issues_skipped[ $pr_item->number ]['issues']['total'] = 0;
+		}
+
+		if ( ! isset( $pr_item->number ) || ! is_numeric( $pr_item->number ) ) {
+			$this->markTestSkipped(
+				'Could not get Pull-Request information for the test: ' .
+				vipgoci_unittests_output_get()
+			);
+
+			return;
+		}
+
+		$this->options['lint-modified-files-only'] = true;
+		vipgoci_lint_scan_commit(
+			$this->options,
+			$issues_submit,
+			$issues_stat,
+			$issues_skipped
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		/*
+		 * Some versions of PHP reverse the ',' and ';'
+		 * in the string below; deal with that.
+		 */
+		$issues_submit[ $pr_item->number ][0]['issue']['message'] = vipgoci_unittests_php_syntax_error_compat(
+			$issues_submit[ $pr_item->number ][0]['issue']['message']
+		);
+
+		$this->assertSame(
+			array(
+				$pr_item->number => array(
+					array(
+						'type'      => 'lint',
+						'file_name' => 'lint-scan-commit-test-2.php',
+						'file_line' => 4,
+						'issue'     => array(
+							'message'  => "syntax error, unexpected end of file, expecting ',' or ';'",
+							'level'    => 'ERROR',
+							'severity' => 5,
+						)
+					)
+				)
+			),
+			$issues_submit
+		);
+
+		$this->assertSame(
+			array(
+				$pr_item->number => array( 'error' => 1 )
+			),
+			$issues_stat
+		);
+
+		unset( $this->options['commit'] );
 	}
 }
