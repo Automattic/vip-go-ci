@@ -620,14 +620,20 @@ final class A09LintLintScanCommitTest extends TestCase {
 
 	/**
 	 * @covers ::vipgoci_lint_scan_commit
+	 * With the lint-modified-files-only option on
 	 */
-	public function testLintDoScan3() {
-		$options_test = vipgoci_unittests_options_test(
-			$this->options,
-			array( 'github-token', 'token' ),
-			$this
-		);
+	public function testLintDoScan3(): void {
+		$options_test = $this->options['github-token'] =
+			vipgoci_unittests_get_config_value(
+				'git-secrets',
+				'github-token',
+				true // Fetch from secrets file
+			);
+		if ( empty( $this->options['github-token'] ) ) {
+			$this->options['github-token'] = '';
+		}
 
+		$this->options['token'] = $this->options['github-token'];
 		if ( - 1 === $options_test ) {
 			return;
 		}
@@ -636,8 +642,10 @@ final class A09LintLintScanCommitTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
-		$this->options['local-git-repo'] = vipgoci_unittests_setup_git_repo( $this->options );
-
+		$this->options['local-git-repo']           = vipgoci_unittests_setup_git_repo(
+			$this->options
+		);
+		$this->options['lint-modified-files-only'] = true;
 		if ( false === $this->options['local-git-repo'] ) {
 			$this->markTestSkipped(
 				'Could not set up git repository: ' .
@@ -676,7 +684,6 @@ final class A09LintLintScanCommitTest extends TestCase {
 			return;
 		}
 
-		$this->options['lint-modified-files-only'] = true;
 		vipgoci_lint_scan_commit(
 			$this->options,
 			$issues_submit,
