@@ -4,11 +4,10 @@
 # Before updating these version numbers and
 # hashes, please read the documentation here:
 # https://github.com/Automattic/vip-go-ci/#updating-tools-initsh-with-new-versions
-#
 
 # https://github.com/squizlabs/PHP_CodeSniffer/releases
-export PHP_CODESNIFFER_VER="3.5.5"
-export PHP_CODESNIFFER_SHA1SUM="0f51879e5caa7147ef47f61f7b3ecdc2d088422a"
+export PHP_CODESNIFFER_VER="3.6.1"
+export PHP_CODESNIFFER_SHA1SUM="6e81bc997045d5634d00bacb9cf95e33d5f6b189"
 
 # https://github.com/WordPress/WordPress-Coding-Standards/releases
 export WP_CODING_STANDARDS_VER="2.3.0"
