@@ -406,6 +406,13 @@ The `phpcs-sniffs-include` is configured in the same way as the `phpcs-sniffs-ex
 
 Please note that should any of the PHPCS sniffs specified be invalid, a warning will be posted on any pull request scanned. The warning will be removed during next scan and not posted again if the issue is fixed.
 
+#### Options `--lint-modified-files-only`
+
+The ``lint-modified-files-only`` option specifies whether the ``vip-go-ci`` bot should scan all the PHP files in the repository (including already merged files) or files modified by the PR only.
+
+Due to performance concerns, the lint-modified-files-only option is enabled by default. It can be disabled through the ``.vipgoci_options`` configuration file. To disable the ``lint-modified-files-only`` option, ensure the ``.vipgoci_options`` configuration file is created in the git-repository and define the option as false. See the example below:
+
+> {"lint-modified-files-only":false}
 
 ### SVG scanning
 
