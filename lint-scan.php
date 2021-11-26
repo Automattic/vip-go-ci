@@ -191,43 +191,6 @@ function vipgoci_lint_parse_results(
 	return $file_issues_arr_new;
 }
 
-
-/**
- * @param array $options
- * @param array $prs_implicated
- *
- * @return array
- */
-function vipgoci_get_prs_modified_files( array $options, array $prs_implicated ): array {
-	$prs_modified_files = array();
-	$all_modified_files = array();
-
-	foreach ( $prs_implicated as $pr_number => $pr ) {
-		// this is cached, so it'' okay to call it
-		$pr_modified_files                = vipgoci_git_diffs_fetch(
-			$options['local-git-repo'],
-			$options['repo-owner'],
-			$options['repo-name'],
-			$options['token'],
-			$pr->base->sha,
-			$options['commit'],
-			false, // exclude renamed files
-			false, // exclude removed files
-			false, // exclude permission changes
-			array(
-				'file_extensions' => array( 'php' ),
-				'skip_folders'    => $options['phpcs-skip-folders']
-			)
-		);
-		$modified_files                   = array_keys( $pr_modified_files['files'] );
-		$all_modified_files               = array_merge( $modified_files, $all_modified_files );
-		$prs_modified_files[ $pr_number ] = $modified_files;
-	}
-
-
-	return [ 'all' => array_unique( $all_modified_files ), 'prs_implicated' => $prs_modified_files ];
-}
-
 /**
  * Run PHP lint on all files in a path
  */
@@ -275,17 +238,18 @@ function vipgoci_lint_scan_commit(
 	);
 
 	if ( true === $options['lint-modified-files-only'] ) {
+		// Fetch list of files that exist in the commit
 		$modified_files      = vipgoci_get_prs_modified_files( $options, $prs_implicated );
 		$files_to_be_scanned = $modified_files['all'];
 		$files_changed_in_pr = $modified_files['prs_implicated'];
 	} else {
-		// Fetch list of files that exist in the commit
+		// Fetch list of files that exist in the repository
 		$files_to_be_scanned = vipgoci_gitrepo_fetch_tree(
 			$options,
 			$commit_id,
 			array(
 				'file_extensions' => array( 'php' ),
-				'skip_folders' => $options['lint-skip-folders'],
+				'skip_folders'    => $options['lint-skip-folders'],
 			)
 		);
 	}
@@ -456,6 +420,42 @@ function vipgoci_lint_scan_commit(
 	gc_collect_cycles();
 
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'lint_scan_commit' );
+}
+
+/**
+ * @param array $options
+ * @param array $prs_implicated
+ *
+ * @return array
+ */
+function vipgoci_get_prs_modified_files( array $options, array $prs_implicated ): array {
+	$prs_modified_files = array();
+	$all_modified_files = array();
+
+	foreach ( $prs_implicated as $pr_number => $pr ) {
+		// vipgoci_git_diffs_fetch will return a cached value at this point
+		$pr_modified_files                = vipgoci_git_diffs_fetch(
+			$options['local-git-repo'],
+			$options['repo-owner'],
+			$options['repo-name'],
+			$options['token'],
+			$pr->base->sha,
+			$options['commit'],
+			false, // exclude renamed files
+			false, // exclude removed files
+			false, // exclude permission changes
+			array(
+				'file_extensions' => array( 'php' ),
+				'skip_folders'    => $options['phpcs-skip-folders']
+			)
+		);
+		$modified_files                   = array_keys( $pr_modified_files['files'] );
+		$all_modified_files               = array_merge( $modified_files, $all_modified_files );
+		$prs_modified_files[ $pr_number ] = $modified_files;
+	}
+
+
+	return [ 'all' => array_unique( $all_modified_files ), 'prs_implicated' => $prs_modified_files ];
 }
 
 /**

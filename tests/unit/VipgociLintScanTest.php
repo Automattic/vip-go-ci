@@ -106,18 +106,17 @@ final class VipgociLintScanTest extends TestCase {
 	 */
 	public function setFileIssuesResultProvider(): array {
 		$submitExpected      = array(
-			0 =>
-				array(
-					'type'      => 'lint',
-					'file_name' => 'MySuccessClass.php',
-					'file_line' => 15,
-					'issue'     =>
-						array(
-							'message'  => 'syntax error, unexpected end of file',
-							'level'    => 'ERROR',
-							'severity' => 5,
-						),
-				),
+			array(
+				'type'      => 'lint',
+				'file_name' => 'MySuccessClass.php',
+				'file_line' => 15,
+				'issue'     =>
+					array(
+						'message'  => 'syntax error, unexpected end of file',
+						'level'    => 'ERROR',
+						'severity' => 5,
+					),
+			),
 		);
 		$statsExpected       = array(
 			'error'   => 1,
@@ -125,15 +124,13 @@ final class VipgociLintScanTest extends TestCase {
 			'info'    => 0
 		);
 		$fileScanningResults = array(
-			15 =>
+			15 => array(
 				array(
-					0 =>
-						array(
-							'message'  => 'syntax error, unexpected end of file',
-							'level'    => 'ERROR',
-							'severity' => 5,
-						),
+					'message'  => 'syntax error, unexpected end of file',
+					'level'    => 'ERROR',
+					'severity' => 5,
 				),
+			),
 		);
 
 		// File with 1 line with issues && 2 issues in the same line
@@ -168,18 +165,16 @@ final class VipgociLintScanTest extends TestCase {
 		);
 		$fileScanningResults1x2 = array(
 			15 => array(
-				0 =>
-					array(
-						'message'  => '1 syntax error, unexpected end of file',
-						'level'    => 'ERROR',
-						'severity' => 5,
-					),
-				1 =>
-					array(
-						'message'  => '2 syntax error, unexpected end of file',
-						'level'    => 'ERROR',
-						'severity' => 5,
-					),
+				array(
+					'message'  => '1 syntax error, unexpected end of file',
+					'level'    => 'ERROR',
+					'severity' => 5,
+				),
+				array(
+					'message'  => '2 syntax error, unexpected end of file',
+					'level'    => 'ERROR',
+					'severity' => 5,
+				),
 			),
 		);
 
@@ -214,24 +209,20 @@ final class VipgociLintScanTest extends TestCase {
 			'info'    => 0
 		);
 		$fileScanningResults2x1 = array(
-			15 =>
+			15 => array(
 				array(
-					0 =>
-						array(
-							'message'  => '1 syntax error, unexpected end of file',
-							'level'    => 'ERROR',
-							'severity' => 5,
-						),
+					'message'  => '1 syntax error, unexpected end of file',
+					'level'    => 'ERROR',
+					'severity' => 5,
 				),
-			21 =>
+			),
+			21 => array(
 				array(
-					0 =>
-						array(
-							'message'  => '1 syntax error, unexpected end of file',
-							'level'    => 'ERROR',
-							'severity' => 5,
-						),
+					'message'  => '1 syntax error, unexpected end of file',
+					'level'    => 'ERROR',
+					'severity' => 5,
 				),
+			),
 		);
 
 		// File with 2 lines with 2 issues each line
@@ -287,36 +278,30 @@ final class VipgociLintScanTest extends TestCase {
 			'info'    => 0
 		);
 		$fileScanningResults2x2 = array(
-			15 =>
+			15 => array(
 				array(
-					0 =>
-						array(
-							'message'  => '1 syntax error, unexpected end of file',
-							'level'    => 'ERROR',
-							'severity' => 5,
-						),
-					1 =>
-						array(
-							'message'  => '2 syntax error, unexpected end of file',
-							'level'    => 'ERROR',
-							'severity' => 5,
-						),
+					'message'  => '1 syntax error, unexpected end of file',
+					'level'    => 'ERROR',
+					'severity' => 5,
 				),
-			21 =>
 				array(
-					0 =>
-						array(
-							'message'  => '1 syntax error, unexpected end of file',
-							'level'    => 'ERROR',
-							'severity' => 5,
-						),
-					1 =>
-						array(
-							'message'  => '2 syntax error, unexpected end of file',
-							'level'    => 'ERROR',
-							'severity' => 5,
-						),
+					'message'  => '2 syntax error, unexpected end of file',
+					'level'    => 'ERROR',
+					'severity' => 5,
 				),
+			),
+			21 => array(
+				array(
+					'message'  => '1 syntax error, unexpected end of file',
+					'level'    => 'ERROR',
+					'severity' => 5,
+				),
+				array(
+					'message'  => '2 syntax error, unexpected end of file',
+					'level'    => 'ERROR',
+					'severity' => 5,
+				),
+			),
 
 		);
 

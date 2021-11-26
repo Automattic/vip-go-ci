@@ -125,7 +125,7 @@ final class A09LintLintScanCommitTest extends TestCase {
 		);
 
 		foreach ( $prs_implicated as $pr_item ) {
-			$issues_stat[ $pr_item->number ]['error'] = 0;
+			$issues_stat[ $pr_item->number ]['error']              = 0;
 			$issues_skipped[ $pr_item->number ]['issues']['total'] = 0;
 		}
 
@@ -529,7 +529,7 @@ final class A09LintLintScanCommitTest extends TestCase {
 
 		$this->options['commit'] = $this->options['commit-test-lint-scan-commit-4'];
 
-		$this->options['skip-large-files'] = true;
+		$this->options['skip-large-files']       = true;
 		$this->options['skip-large-files-limit'] = 15;
 
 		vipgoci_unittests_output_suppress();
@@ -591,12 +591,12 @@ final class A09LintLintScanCommitTest extends TestCase {
 
 		$expected_issues_skipped = array(
 			43 => array(
-			        'issues' => array(
-		            'max-lines' => array (
-		                0 => 'tests1/myfile1.php'
+				'issues' => array(
+					'max-lines' => array(
+						0 => 'tests1/myfile1.php'
 					)
-	            ),
-                'total' => 1
+				),
+				'total'  => 1
 			)
 		);
 
@@ -636,10 +636,7 @@ final class A09LintLintScanCommitTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
-		$this->options['local-git-repo'] =
-			vipgoci_unittests_setup_git_repo(
-				$this->options
-			);
+		$this->options['local-git-repo'] = vipgoci_unittests_setup_git_repo( $this->options );
 
 		if ( false === $this->options['local-git-repo'] ) {
 			$this->markTestSkipped(
@@ -666,7 +663,7 @@ final class A09LintLintScanCommitTest extends TestCase {
 		);
 
 		foreach ( $prs_implicated as $pr_item ) {
-			$issues_stat[ $pr_item->number ]['error'] = 0;
+			$issues_stat[ $pr_item->number ]['error']              = 0;
 			$issues_skipped[ $pr_item->number ]['issues']['total'] = 0;
 		}
 
@@ -716,9 +713,7 @@ final class A09LintLintScanCommitTest extends TestCase {
 		);
 
 		$this->assertSame(
-			array(
-				$pr_item->number => array( 'error' => 1 )
-			),
+			array( $pr_item->number => array( 'error' => 1 ) ),
 			$issues_stat
 		);
 
