@@ -120,13 +120,8 @@ function vipgoci_lint_parse_results(
 	$file_issues_arr_new = array();
 
 	// Loop through everything we got from the command
-	foreach ( $file_issues_arr as $index => $message ) {
-		if (
-			( 0 === strpos(
-					$message,
-					'No syntax errors detected'
-				) )
-		) {
+	foreach ( $file_issues_arr as $message ) {
+		if ( 0 === strpos( $message, 'No syntax errors detected' ) ) {
 			// Skip non-errors we do not care about
 			continue;
 		}
