@@ -74,6 +74,8 @@ final class ApSvgFilesTest extends TestCase {
 		$this->options['skip-large-files'] = false;
 
 		$this->options['skip-large-files-limit'] = 15;
+
+		$this->options['lint-modified-files-only'] = false;
 	}
 
 	protected function tearDown(): void {
