@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.0](https://github.com/Automattic/vip-go-ci/releases/tag/1.1.0) - 2021-12-13
+
+### Added
+- [https://github.com/Automattic/vip-go-ci/pull/221]: PHP lint altered files only option (``lint-modified-files-only``)
 
 ## [1.0.9](https://github.com/Automattic/vip-go-ci/releases/tag/1.0.9) - 2021-11-10
 
