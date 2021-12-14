@@ -498,6 +498,14 @@ Specifies if to check for approved files in Hashes-API. For instance:
 {"hashes-api":true}
 ```
 
+#### Option `--hashes-oauth-proxy` and ``--hashes-oauth-proxy-type=5``
+
+Specifies proxy information to be used during requests to the hashes-api. 
+
+#### E.g.
+
+> ./vip-go-ci.php --autoapprove=true --hashes-api=true --hashes-api-url=https://myservice.mycompany.is/wp-json/viphash/ --hashes-oauth-proxy=localhost:3000 --hashes-oauth-proxy-type=5
+
 ### Ignore certain branches
 
 Sometimes users do not want specific branches scanned for any issues -- they want them effectively to be ignored. To do this, you can use the `--branches-ignore` option. 
@@ -701,6 +709,8 @@ hashes-oauth-consumer-key=
 hashes-oauth-consumer-secret=
 hashes-oauth-token=
 hashes-oauth-token-secret=
+hashes-oauth-proxy=
+hashes-oauth-proxy-type=
 
 [git-secrets]
 github-token= ; Personal access token from GitHub

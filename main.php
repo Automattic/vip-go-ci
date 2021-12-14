@@ -126,6 +126,8 @@ function vipgoci_help_print( $argv ) {
 		"\t" . '--hashes-oauth-token-secret=STRING,' . PHP_EOL .
 		"\t" . '--hashes-oauth-consumer-key=STRING,' . PHP_EOL .
 		"\t" . '--hashes-oauth-consumer-secret=STRING' . PHP_EOL .
+		"\t" . '--hashes-oauth-proxy=STRING' . PHP_EOL .
+		"\t" . '--hashes-oauth-proxy-type=STRING' . PHP_EOL .
 		"\t" . '                               OAuth 1.0 token, token secret, consumer key and' . PHP_EOL .
 		"\t" . '                               consumer secret needed for hashes-to-hashes HTTP requests.' . PHP_EOL .
 		"\t" . '                               All required for hashes-to-hashes requests.' . PHP_EOL .
@@ -297,6 +299,8 @@ function vipgoci_options_recognized() {
 		'hashes-oauth-token-secret:',
 		'hashes-oauth-consumer-key:',
 		'hashes-oauth-consumer-secret:',
+		'hashes-oauth-proxy:',
+		'hashes-oauth-proxy-type:',
 
 		/*
 		 * GitHub reviews & generic comments configuration
@@ -427,7 +431,9 @@ function vipgoci_run() {
 			'hashes-oauth-token',
 			'hashes-oauth-token-secret',
 			'hashes-oauth-consumer-key',
-			'hashes-oauth-consumer-secret'
+			'hashes-oauth-consumer-secret',
+			'hashes-oauth-proxy',
+			'hashes-oauth-proxy-type',
 		);
 
 

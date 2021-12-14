@@ -105,7 +105,7 @@ function vipgoci_curl_set_security_options( $ch ) {
 		$ch,
 		CURLOPT_MAXREDIRS,
 		0
-	);	
+	);
 
 	/*
 	 * Do not follow any "Location:" headers.
@@ -166,7 +166,7 @@ function vipgoci_http_resp_sunset_header_check(
 		$http_url_parsed['scheme'] . '://' .
 		$http_url_parsed['host'];
 
-	
+
 	if ( isset( $http_url_parsed['port'] ) ) {
 		$http_url_clean .= ':' . (int) $http_url_parsed['port'];
 	}
@@ -732,6 +732,11 @@ function vipgoci_github_fetch_url(
 		curl_setopt( $ch, CURLOPT_URL,			$github_url );
 		curl_setopt( $ch, CURLOPT_RETURNTRANSFER,	1 );
 		curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT,	20 );
+
+		if ( ! empty( $github_token[ 'oauth_proxy' ] ) ) {
+			curl_setopt( $ch, CURLOPT_PROXY, $github_token[ 'oauth_proxy' ] );
+			curl_setopt( $ch, CURLOPT_PROXYTYPE, $github_token[ 'oauth_proxy_type' ] );
+		}
 
 		curl_setopt(
 			$ch,
@@ -2253,7 +2258,7 @@ function vipgoci_github_pr_generic_support_comment_submit(
 		 * has been added to the Pull-Request.
 		 */
 
-		if ( ! empty( $options[ 'post-generic-pr-support-comments-skip-if-label-exists' ][ $option_key_no_match ] ) ) {			
+		if ( ! empty( $options[ 'post-generic-pr-support-comments-skip-if-label-exists' ][ $option_key_no_match ] ) ) {
 			$pr_label_support_comment_skip = vipgoci_github_pr_labels_get(
 				$options['repo-owner'],
 				$options['repo-name'],
@@ -3373,7 +3378,7 @@ function vipgoci_github_prs_implicated(
 }
 
 /**
- * @param string $repo_owner 
+ * @param string $repo_owner
  * @param string $repo_name
  * @param string $commit_id
  * @param string $github_token
@@ -3422,7 +3427,7 @@ function vipgoci_github_prs_implicated_with_retries(
 			$skip_draft_prs,
 			( $prs_implicated_retries === 0 ) ? false : true
 		);
-		
+
 		$prs_implicated_retries++;
 	} while (
 		( empty( $prs_implicated ) ) &&

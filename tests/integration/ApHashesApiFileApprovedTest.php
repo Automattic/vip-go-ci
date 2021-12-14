@@ -52,6 +52,8 @@ final class ApHashesApiFileApprovedTest extends TestCase {
 				'hashes-oauth-token-secret',
 				'hashes-oauth-consumer-key',
 				'hashes-oauth-consumer-secret',
+				'hashes-oauth-proxy',
+				'hashes-oauth-proxy-type',
 			) as $option_secret_key
 		) {
 			$this->options[ $option_secret_key ] =

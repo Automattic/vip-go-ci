@@ -154,18 +154,14 @@ function vipgoci_ap_hashes_api_file_approved(
 		vipgoci_github_fetch_url(
 			$hashes_to_hashes_url,
 			array(
-				'oauth_consumer_key' =>
-					$options['hashes-oauth-consumer-key'],
+				'oauth_consumer_key' => $options['hashes-oauth-consumer-key'],
+				'oauth_consumer_secret' => $options['hashes-oauth-consumer-secret'],
+				'oauth_token' => $options['hashes-oauth-token'],
+				'oauth_token_secret' => $options['hashes-oauth-token-secret'],
+				'oauth_proxy' => $options['hashes-oauth-proxy'],
+				'oauth_proxy_type' => $options['hashes-oauth-proxy-type']
+			),
 
-				'oauth_consumer_secret' =>
-					$options['hashes-oauth-consumer-secret'],
-
-				'oauth_token' =>
-					$options['hashes-oauth-token'],
-
-				'oauth_token_secret' =>
-					$options['hashes-oauth-token-secret'],
-			)
 		);
 
 
