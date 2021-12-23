@@ -1,6 +1,6 @@
 <?php
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+require_once __DIR__ . '/IncludesForTests.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -9,15 +9,15 @@ final class ApAutoApprovalTest extends TestCase {
 
 	protected function setUp(): void {
 		$this->options_git = array(
-			'git-path'				=> null,
-			'github-repo-url'			=> null,
-			'repo-owner'				=> null,
-			'repo-name'				=> null,
+			'git-path'        => null,
+			'github-repo-url' => null,
+			'repo-owner'      => null,
+			'repo-name'       => null,
 		);
 
 		$this->options_auto_approvals = array(
-			'pr-test-ap-auto-approval-1'		=> null,
-			'commit-test-ap-auto-approval-1'	=> null,
+			'pr-test-ap-auto-approval-1'     => null,
+			'commit-test-ap-auto-approval-1' => null,
 		);
 
 		vipgoci_unittests_get_config_values(
@@ -63,7 +63,7 @@ final class ApAutoApprovalTest extends TestCase {
 				'css',
 				'txt',
 				'json',
-				'md'
+				'md',
 			);
 
 		// Same, not used, but needs to be defined
@@ -88,15 +88,15 @@ final class ApAutoApprovalTest extends TestCase {
 
 		$this->cleanup_prs();
 
-		$this->options_git = null;
+		$this->options_git            = null;
 		$this->options_auto_approvals = null;
-		$this->options = null;
+		$this->options                = null;
 	}
 
 	private function cleanup_prs() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
-			array( ),
+			array(),
 			$this
 		);
 
@@ -132,9 +132,7 @@ final class ApAutoApprovalTest extends TestCase {
 				$this->safe_to_run = false;
 
 				continue;
-			}
-
-			else {
+			} else {
 				if ( null === $this->safe_to_run ) {
 					$this->safe_to_run = true;
 				}
@@ -154,7 +152,7 @@ final class ApAutoApprovalTest extends TestCase {
 				true // skip cache
 			);
 
-			foreach( $pr_item_reviews as $pr_item_review ) {
+			foreach ( $pr_item_reviews as $pr_item_review ) {
 				vipgoci_github_pr_review_dismiss(
 					$this->options['repo-owner'],
 					$this->options['repo-name'],
@@ -186,7 +184,7 @@ final class ApAutoApprovalTest extends TestCase {
 
 		$data = json_decode( $data );
 
-		foreach( $data as $data_item ) {
+		foreach ( $data as $data_item ) {
 			if (
 				$data_item->name ===
 				$this->options['autoapprove-label']
@@ -209,7 +207,7 @@ final class ApAutoApprovalTest extends TestCase {
 	public function testAutoApproval1() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
-			array( ),
+			array(),
 			$this
 		);
 
@@ -257,7 +255,7 @@ final class ApAutoApprovalTest extends TestCase {
 	public function testAutoApproval2() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
-			array( ),
+			array(),
 			$this
 		);
 
@@ -286,11 +284,11 @@ final class ApAutoApprovalTest extends TestCase {
 		}
 
 		$auto_approved_files_arr = array(
-			'file-1.php' => 'autoapprove-hashes-to-hashes',
-			'file-2.css' => 'autoapprove-filetypes',
-			'file-3.txt' => 'autoapprove-filetypes',
+			'file-1.php'  => 'autoapprove-hashes-to-hashes',
+			'file-2.css'  => 'autoapprove-filetypes',
+			'file-3.txt'  => 'autoapprove-filetypes',
 			'file-4.json' => 'autoapprove-filetypes',
-			'README.md' => 'autoapprove-filetypes',
+			'README.md'   => 'autoapprove-filetypes',
 		);
 
 		$results = array();
@@ -354,7 +352,7 @@ final class ApAutoApprovalTest extends TestCase {
 				count( $pr_item_reviews )
 			);
 
-			foreach( $pr_item_reviews as $pr_item_review ) {
+			foreach ( $pr_item_reviews as $pr_item_review ) {
 				$this->assertSame(
 					'APPROVED',
 					$pr_item_review->state
@@ -379,7 +377,7 @@ final class ApAutoApprovalTest extends TestCase {
 	public function testAutoApproval3() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
-			array( ),
+			array(),
 			$this
 		);
 
@@ -409,10 +407,10 @@ final class ApAutoApprovalTest extends TestCase {
 
 		$auto_approved_files_arr = array(
 			// note: file-1.php is NOT approved
-			'file-2.css' => 'autoapprove-filetypes',
-			'file-3.txt' => 'autoapprove-filetypes',
+			'file-2.css'  => 'autoapprove-filetypes',
+			'file-3.txt'  => 'autoapprove-filetypes',
 			'file-4.json' => 'autoapprove-filetypes',
-			'README.md' => 'autoapprove-filetypes',
+			'README.md'   => 'autoapprove-filetypes',
 		);
 
 		$results = array();
@@ -495,7 +493,7 @@ final class ApAutoApprovalTest extends TestCase {
 	public function testAutoApproval4() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
-			array( ),
+			array(),
 			$this
 		);
 
@@ -530,17 +528,17 @@ final class ApAutoApprovalTest extends TestCase {
 			'file-2.css' => 'autoapprove-filetypes',
 			'file-3.txt' => 'autoapprove-filetypes',
 			// file-4.json is not approved
-			'README.md' => 'autoapprove-filetypes',
+			'README.md'  => 'autoapprove-filetypes',
 		);
 
 		$results = array(
 			'stats' => array(
 				VIPGOCI_STATS_HASHES_API => array(
 					$this->options['pr-test-ap-auto-approval-1'] => array(
-						'info' => 0
-					)
-				)
-			)
+						'info' => 0,
+					),
+				),
+			),
 		);
 
 		vipgoci_unittests_output_suppress();
@@ -606,14 +604,14 @@ final class ApAutoApprovalTest extends TestCase {
 			$results['stats']
 				[ VIPGOCI_STATS_HASHES_API ]
 				[ $this->options['pr-test-ap-auto-approval-1'] ]
-				[ 'info' ]
+				['info']
 		);
 
 		$this->assertSame(
 			'file-1.php',
 			$results['issues']
 				[ $this->options['pr-test-ap-auto-approval-1'] ]
-				[ 0 ]
+				[0]
 				['file_name']
 		);
 	}
@@ -628,7 +626,7 @@ final class ApAutoApprovalTest extends TestCase {
 	public function testAutoApproval5() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
-			array( ),
+			array(),
 			$this
 		);
 
@@ -686,20 +684,20 @@ final class ApAutoApprovalTest extends TestCase {
 
 		$auto_approved_files_arr = array(
 			// all files in the PR are approvable
-			'file-1.php' => 'autoapprove-hashes-to-hashes', 
-			'file-2.css' => 'autoapprove-filetypes',
-			'file-3.txt' => 'autoapprove-filetypes',
+			'file-1.php'  => 'autoapprove-hashes-to-hashes',
+			'file-2.css'  => 'autoapprove-filetypes',
+			'file-3.txt'  => 'autoapprove-filetypes',
 			'file-4.json' => 'autoapprove-filetypes',
 		);
-		
+
 		$results = array(
 			'stats' => array(
 				VIPGOCI_STATS_HASHES_API => array(
 					$this->options['pr-test-ap-auto-approval-1'] => array(
-						'info' => 0
-					)
-				)
-			)
+						'info' => 0,
+					),
+				),
+			),
 		);
 
 		vipgoci_unittests_output_suppress();

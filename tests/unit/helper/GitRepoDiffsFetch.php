@@ -19,7 +19,7 @@ function vipgoci_git_diffs_fetch(
 			'File1.php'     => 'any',
 			'File2.php'     => 'any',
 			'src/File3.php' => 'any',
-			'src/File4.php' => 'any'
+			'src/File4.php' => 'any',
 		),
 	);
 }

@@ -1,17 +1,17 @@
 <?php
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+require_once __DIR__ . '/IncludesForTests.php';
 
 use PHPUnit\Framework\TestCase;
 
 final class PhpcsScanDoScanTest extends TestCase {
 	var $options_phpcs = array(
-		'phpcs-path'		=> null,
-		'phpcs-standard'	=> null,
-		'phpcs-severity'	=> null,
-		'phpcs-runtime-set'	=> null,
-		'phpcs-sniffs-include'	=> null,
-		'phpcs-sniffs-exclude'	=> null,
+		'phpcs-path'           => null,
+		'phpcs-standard'       => null,
+		'phpcs-severity'       => null,
+		'phpcs-runtime-set'    => null,
+		'phpcs-sniffs-include' => null,
+		'phpcs-sniffs-exclude' => null,
 	);
 
 	protected function setUp(): void {
@@ -60,7 +60,7 @@ final class PhpcsScanDoScanTest extends TestCase {
 		$this->options_phpcs['phpcs-sniffs-include'] = array();
 		$this->options_phpcs['phpcs-sniffs-exclude'] = array();
 
-		$temp_file_contents = 
+		$temp_file_contents =
 			'<?php' . PHP_EOL .
 			'echo time();' . PHP_EOL .
 			'echo "foo" . PHP_EOL;' . PHP_EOL .
@@ -116,7 +116,7 @@ final class PhpcsScanDoScanTest extends TestCase {
 
 		$this->options_phpcs['phpcs-sniffs-exclude'] = array();
 
-		$temp_file_contents = 
+		$temp_file_contents =
 			'<?php' . PHP_EOL .
 			'echo time();' . PHP_EOL .
 			'echo "foo" . PHP_EOL;' . PHP_EOL .
@@ -205,7 +205,7 @@ final class PhpcsScanDoScanTest extends TestCase {
 
 		$this->options_phpcs['phpcs-sniffs-include'] = array();
 
-		$temp_file_contents = 
+		$temp_file_contents =
 			'<?php' . PHP_EOL .
 			'echo time();' . PHP_EOL .
 			'echo "foo" . PHP_EOL;' . PHP_EOL .
@@ -259,7 +259,7 @@ final class PhpcsScanDoScanTest extends TestCase {
 			return;
 		}
 
-		$temp_file_contents = 
+		$temp_file_contents =
 			'<?php' . PHP_EOL .
 			'echo time();' . PHP_EOL .
 			'echo "foo" . PHP_EOL;' . PHP_EOL .
@@ -274,7 +274,6 @@ final class PhpcsScanDoScanTest extends TestCase {
 			$temp_file_ext,
 			$temp_file_contents
 		);
-
 
 		/*
 		 * Write new XML standard file and
@@ -293,7 +292,6 @@ final class PhpcsScanDoScanTest extends TestCase {
 			$this->options_phpcs['phpcs-standard-orig'],
 			$this->options_phpcs['phpcs-standard']
 		);
-
 
 		vipgoci_unittests_output_suppress();
 

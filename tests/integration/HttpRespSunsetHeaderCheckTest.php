@@ -2,7 +2,7 @@
 
 namespace Vipgoci\tests;
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+require_once __DIR__ . '/IncludesForTests.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -25,9 +25,9 @@ final class HttpRespSunsetHeaderCheckTest extends TestCase {
 		vipgoci_http_resp_sunset_header_check(
 			'https://mytest.localdomain:5000/test/foo?test1=test2',
 			array(
-				'test1'		=> 'data',
-				'test2'		=> 'data2',
-				'sunset'	=> 'Tue 10 Aug 17:21:00 GMT 2051',
+				'test1'  => 'data',
+				'test2'  => 'data2',
+				'sunset' => 'Tue 10 Aug 17:21:00 GMT 2051',
 			)
 		);
 
@@ -54,8 +54,8 @@ final class HttpRespSunsetHeaderCheckTest extends TestCase {
 		vipgoci_http_resp_sunset_header_check(
 			'https://mytest.localdomain:5000/test/foo?test1=test2',
 			array(
-				'test1'		=> 'data',
-				'test2'		=> 'data2',
+				'test1' => 'data',
+				'test2' => 'data2',
 			)
 		);
 

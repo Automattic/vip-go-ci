@@ -1,21 +1,21 @@
 <?php
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+require_once __DIR__ . '/IncludesForTests.php';
 
 use PHPUnit\Framework\TestCase;
 
 final class GitRepoRepoGetFileAtCommitTest extends TestCase {
 	var $options_git = array(
-		'repo-owner'			=> null,
-		'repo-name'			=> null,
-		'git-path'			=> null,
-		'github-repo-url'		=> null,
+		'repo-owner'      => null,
+		'repo-name'       => null,
+		'git-path'        => null,
+		'github-repo-url' => null,
 	);
 
 	// Use auto-approval settings for repository-data
 	var $options_auto_approvals_nonfunc = array(
-		'commit-test-repo-get-file-at-commit-1'		=> null,
-		'commit-test-repo-get-file-at-commit-2'		=> null,
+		'commit-test-repo-get-file-at-commit-1' => null,
+		'commit-test-repo-get-file-at-commit-2' => null,
 	);
 
 	protected function setUp(): void {
@@ -50,8 +50,8 @@ final class GitRepoRepoGetFileAtCommitTest extends TestCase {
 			);
 		}
 
-		$this->options = null;
-		$this->options_git = null;
+		$this->options                        = null;
+		$this->options_git                    = null;
 		$this->options_auto_approvals_nonfunc = null;
 	}
 
@@ -63,7 +63,7 @@ final class GitRepoRepoGetFileAtCommitTest extends TestCase {
 			$this->options,
 			array(
 				'commit-test-repo-get-file-at-commit-1',
-				'commit-test-repo-get-file-at-commit-2'
+				'commit-test-repo-get-file-at-commit-2',
 			),
 			$this
 		);
@@ -108,7 +108,6 @@ final class GitRepoRepoGetFileAtCommitTest extends TestCase {
 			'c4587f2e42de3ab1ecdf51c993a3135bb1314b68',
 			sha1( $file_content )
 		);
-
 
 		/*
 		 * Same with file2.php.

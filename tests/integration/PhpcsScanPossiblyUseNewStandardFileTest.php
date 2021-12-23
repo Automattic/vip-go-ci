@@ -1,6 +1,6 @@
 <?php
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+require_once __DIR__ . '/IncludesForTests.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -8,9 +8,9 @@ final class PhpcsScanPossiblyUseNewStandardFileTest extends TestCase {
 	protected function setUp(): void {
 		$this->original_standard = array( 'WordPress-VIP-Go' );
 
-		$this->options = array();
-		$this->options['phpcs-standard'] = $this->original_standard;
-		$this->options['phpcs-standard-file'] = false;
+		$this->options                         = array();
+		$this->options['phpcs-standard']       = $this->original_standard;
+		$this->options['phpcs-standard-file']  = false;
 		$this->options['phpcs-sniffs-include'] = array();
 	}
 
@@ -57,7 +57,7 @@ final class PhpcsScanPossiblyUseNewStandardFileTest extends TestCase {
 	 */
 	public function testDoUseNewstandardFileTest() {
 		$this->options['phpcs-sniffs-include'] = array(
-			'WordPress.DB.RestrictedFunctions'
+			'WordPress.DB.RestrictedFunctions',
 		);
 
 		vipgoci_phpcs_possibly_use_new_standard_file(

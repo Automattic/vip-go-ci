@@ -55,7 +55,7 @@ function vipgoci_irc_api_alert_queue_unique( array $msg_queue ) {
 	/*
 	 * Add prefix where needed.
 	 */
-	foreach( $msg_queue_count as $msg => $cnt ) {
+	foreach ( $msg_queue_count as $msg => $cnt ) {
 		$msg_prefix = '';
 
 		if ( $cnt > 1 ) {
@@ -81,7 +81,8 @@ function vipgoci_irc_api_alerts_send(
 	$channel
 ) {
 	$msg_queue = vipgoci_irc_api_alert_queue(
-		null, true
+		null,
+		true
 	);
 
 	$msg_queue = vipgoci_irc_api_alert_queue_unique(
@@ -95,7 +96,7 @@ function vipgoci_irc_api_alerts_send(
 		)
 	);
 
-	foreach( $msg_queue as $message ) {
+	foreach ( $msg_queue as $message ) {
 		$irc_api_postfields = array(
 			'message' => $message,
 			'botname' => $botname,
@@ -105,23 +106,33 @@ function vipgoci_irc_api_alerts_send(
 		$ch = curl_init();
 
 		curl_setopt(
-			$ch, CURLOPT_URL, $irc_api_url
+			$ch,
+			CURLOPT_URL,
+			$irc_api_url
 		);
 
 		curl_setopt(
-			$ch, CURLOPT_RETURNTRANSFER, 1
+			$ch,
+			CURLOPT_RETURNTRANSFER,
+			1
 		);
 
 		curl_setopt(
-			$ch, CURLOPT_CONNECTTIMEOUT, 5
+			$ch,
+			CURLOPT_CONNECTTIMEOUT,
+			5
 		);
 
 		curl_setopt(
-			$ch, CURLOPT_USERAGENT, VIPGOCI_CLIENT_ID
+			$ch,
+			CURLOPT_USERAGENT,
+			VIPGOCI_CLIENT_ID
 		);
 
 		curl_setopt(
-			$ch, CURLOPT_POST, 1
+			$ch,
+			CURLOPT_POST,
+			1
 		);
 
 		curl_setopt(
@@ -194,29 +205,24 @@ function vipgoci_send_stats_to_pixel_api(
 		'Sending statistics to pixel API service',
 		array(
 			'stat_names_to_report' =>
-				$stat_names_to_report
+				$stat_names_to_report,
 		)
 	);
 
-	$stat_names_to_groups = array(
-	);
+	$stat_names_to_groups = array();
 
-	foreach(
+	foreach (
 		array_keys( $stat_names_to_report ) as
 			$statistic_group
 	) {
-		foreach(
-			$stat_names_to_report[
-				$statistic_group
-			] as $stat_name
+		foreach (
+			$stat_names_to_report[ $statistic_group ] as $stat_name
 		) {
-			$stat_names_to_groups[
-				$stat_name
-			] = $statistic_group;
+			$stat_names_to_groups[ $stat_name ] = $statistic_group;
 		}
 	}
 
-	foreach(
+	foreach (
 		$statistics as
 			$stat_name => $stat_value
 	) {
@@ -245,9 +251,7 @@ function vipgoci_send_stats_to_pixel_api(
 			'v=wpcom-no-pv' .
 			'&' .
 			'x_' . rawurlencode(
-				$stat_names_to_groups[
-					$stat_name
-				]
+				$stat_names_to_groups[ $stat_name ]
 			) .
 			'/' .
 			rawurlencode(
@@ -264,8 +268,8 @@ function vipgoci_send_stats_to_pixel_api(
 		$ctx = stream_context_create(
 			array(
 				'http' => array(
-					'timeout' => 5
-				)
+					'timeout' => 5,
+				),
 			)
 		);
 

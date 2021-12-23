@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
-require_once( __DIR__ . './../../defines.php' );
-require_once( __DIR__ . './../../misc.php' );
+require_once __DIR__ . './../../defines.php';
+require_once __DIR__ . './../../misc.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -18,13 +18,13 @@ final class MiscCacheTest extends TestCase {
 	public function testCache1() {
 		$cache_id1 =
 			__CLASS__ .
-			'_' . 
+			'_' .
 			__FUNCTION__ .
 			'_mytest1';
 
 		$cache_id2 =
 			__CLASS__ .
-			'_' . 
+			'_' .
 			__FUNCTION__ .
 			'_mytest2';
 
@@ -62,7 +62,6 @@ final class MiscCacheTest extends TestCase {
 			$r2_retrieved
 		);
 
-
 		$this->assertNotEquals(
 			$r1,
 			$r2
@@ -82,7 +81,7 @@ final class MiscCacheTest extends TestCase {
 	public function testCache2() {
 		$cache_id =
 			__CLASS__ .
-			'_' . 
+			'_' .
 			__FUNCTION__;
 
 		/*

@@ -1,6 +1,6 @@
 <?php
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+require_once __DIR__ . '/IncludesForTests.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -130,7 +130,6 @@ final class SvgScanWithScannerTest extends TestCase {
 			'{"totals":{"errors":0,"warnings":0,"fixable":0},"files":{"' . addcslashes( $temp_file_name, '/' ) . '":{"errors":0,"messages":[]}}}',
 			true
 		);
-
 
 		unlink(
 			$temp_file_name

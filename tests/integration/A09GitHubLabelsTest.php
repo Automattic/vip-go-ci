@@ -1,6 +1,6 @@
 <?php
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+require_once __DIR__ . '/IncludesForTests.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -8,17 +8,16 @@ final class A09GitHubLabelsTest extends TestCase {
 	const label_name = 'Label for testing';
 
 	var $options_git = array(
-		'github-repo-url'	=> null,
-		'repo-name'		=> null,
-		'repo-owner'		=> null,
+		'github-repo-url' => null,
+		'repo-name'       => null,
+		'repo-owner'      => null,
 	);
 
 	var $options_labels = array(
-		'labels-pr-to-modify'	=> null,
+		'labels-pr-to-modify' => null,
 	);
 
-	var $options_secrets = array(
-	);
+	var $options_secrets = array();
 
 	protected function setUp(): void {
 		vipgoci_unittests_get_config_values(
@@ -31,7 +30,7 @@ final class A09GitHubLabelsTest extends TestCase {
 			$this->options_labels
 		);
 
-		$this->options_secrets[ 'github-token' ] =
+		$this->options_secrets['github-token'] =
 			vipgoci_unittests_get_config_value(
 				'git-secrets',
 				'github-token',
@@ -46,10 +45,10 @@ final class A09GitHubLabelsTest extends TestCase {
 	}
 
 	protected function tearDown(): void {
-		$this->options_git = null;
+		$this->options_git     = null;
 		$this->options_secrets = null;
-		$this->options_labels = null;
-		$this->options = null;
+		$this->options_labels  = null;
+		$this->options         = null;
 	}
 
 	/**
@@ -58,7 +57,7 @@ final class A09GitHubLabelsTest extends TestCase {
 	public function testGitHubAddLabel1() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
-			array( ),
+			array(),
 			$this
 		);
 
@@ -99,7 +98,7 @@ final class A09GitHubLabelsTest extends TestCase {
 	public function testGitHubRemoveLabel1() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
-			array( ),
+			array(),
 			$this
 		);
 

@@ -1,24 +1,24 @@
 <?php
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+require_once __DIR__ . '/IncludesForTests.php';
 
 use PHPUnit\Framework\TestCase;
 
 final class SupportLevelLabelSetTest extends TestCase {
 	var $options_meta_api_secrets = array(
-		'repo-meta-api-base-url'	=> null,
-		'repo-meta-api-user-id'		=> null,
-		'repo-meta-api-access-token'	=> null,
+		'repo-meta-api-base-url'     => null,
+		'repo-meta-api-user-id'      => null,
+		'repo-meta-api-access-token' => null,
 
-		'support-level'			=> null,
-		'support-level-field-name'	=> null,
+		'support-level'              => null,
+		'support-level-field-name'   => null,
 	);
 
 	var $options_git = array(
-		'git-path'		=> null,
-		'github-repo-url'	=> null,
-		'repo-name'		=> null,
-		'repo-owner'		=> null,
+		'git-path'        => null,
+		'github-repo-url' => null,
+		'repo-name'       => null,
+		'repo-owner'      => null,
 	);
 
 	protected function setUp(): void {
@@ -61,8 +61,8 @@ final class SupportLevelLabelSetTest extends TestCase {
 
 	protected function tearDown(): void {
 		$this->options_meta_api_secrets = null;
-		$this->options_git = null;
-		$this->options = null;
+		$this->options_git              = null;
+		$this->options                  = null;
 	}
 
 	protected function _findPrsImplicated() {
@@ -76,7 +76,7 @@ final class SupportLevelLabelSetTest extends TestCase {
 	}
 
 	/*
-	 * Loop through each PR, count 
+	 * Loop through each PR, count
 	 * number of support-level labels
 	 * found and return.
 	 */
@@ -104,9 +104,8 @@ final class SupportLevelLabelSetTest extends TestCase {
 				continue;
 			}
 
-			foreach( $pr_item_labels as $label_item ) {
-				if ( 
-					$this->options['set-support-level-label-prefix'] . ' ' . ucfirst( strtolower( $this->options['support-level'] ) )
+			foreach ( $pr_item_labels as $label_item ) {
+				if ( $this->options['set-support-level-label-prefix'] . ' ' . ucfirst( strtolower( $this->options['support-level'] ) )
 					===
 					$label_item->name
 				) {
@@ -186,7 +185,7 @@ final class SupportLevelLabelSetTest extends TestCase {
 			0,
 			$support_labels_cnt
 		);
-	
+
 		/*
 		 * Attempt to set support level label.
 		 */
@@ -203,7 +202,7 @@ final class SupportLevelLabelSetTest extends TestCase {
 		 * support level label. Then delete any
 		 * we find to clean up.
 		 */
-	
+
 		$this->assertNotEmpty(
 			$prs_implicated
 		);
@@ -224,14 +223,14 @@ final class SupportLevelLabelSetTest extends TestCase {
 
 			$found_support_level_label = false;
 
-			foreach( $pr_item_labels as $label_item ) {
+			foreach ( $pr_item_labels as $label_item ) {
 				if (
 					$this->options['set-support-level-label-prefix'] . ' ' . ucfirst( strtolower( $this->options['support-level'] ) ) ===
 					$label_item->name
 				) {
 					/*
 					 * Clean up label and indicate we found it.
-					 */	
+					 */
 					vipgoci_github_pr_label_remove(
 						$this->options['repo-owner'],
 						$this->options['repo-name'],

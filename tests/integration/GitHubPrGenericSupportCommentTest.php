@@ -1,17 +1,17 @@
 <?php
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+require_once __DIR__ . '/IncludesForTests.php';
 
 use PHPUnit\Framework\TestCase;
 
 final class GitHubPrGenericSupportCommentTest extends TestCase {
 	var $options_git = array(
-		'repo-owner'	=> null,
-		'repo-name'	=> null,
+		'repo-owner' => null,
+		'repo-name'  => null,
 	);
 
 	var $options_git_repo_tests = array(
-		'test-github-pr-generic-support-comment-1'	=> null,
+		'test-github-pr-generic-support-comment-1' => null,
 	);
 
 	protected function setUp(): void {
@@ -37,7 +37,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 
 		$this->options = array();
 
-		$this->options['token'] =
+		$this->options['token']        =
 		$this->options['github-token'] =
 			vipgoci_unittests_get_config_value(
 				'git-secrets',
@@ -56,7 +56,6 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 			array(
 				2 => 'This is a generic support message from `vip-go-ci`. We hope this is useful.',
 			);
-				
 
 		$this->options['post-generic-pr-support-comments-branches'] =
 			array(
@@ -64,8 +63,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 			);
 
 		$this->options['post-generic-pr-support-comments-repo-meta-match'] =
-			array(
-			);
+			array();
 
 		$this->options = array_merge(
 			$this->options_git,
@@ -116,8 +114,8 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 			$this->_clearOldSupportComments();
 		}
 
-		$this->options = null;
-		$this->options_git = null;
+		$this->options                = null;
+		$this->options_git            = null;
 		$this->options_git_repo_tests = null;
 	}
 
@@ -149,7 +147,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 	) {
 		$pr_comments_ret = array();
 
-		$page = 1;
+		$page     = 1;
 		$per_page = 100;
 
 		do {
@@ -164,19 +162,18 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 				'?page=' . rawurlencode( $page ) . '&' .
 				'per_page=' . rawurlencode( $per_page );
 
+					$pr_comments_raw = json_decode(
+						vipgoci_github_fetch_url(
+							$github_url,
+							$this->options['github-token']
+						)
+					);
 
-	                $pr_comments_raw = json_decode(
-	                        vipgoci_github_fetch_url(
-        	                        $github_url,
-                	                $this->options['github-token']
-                        	)
-	                );
+			foreach ( $pr_comments_raw as $pr_comment ) {
+					$pr_comments_ret[] = $pr_comment;
+			}
 
-	                foreach ( $pr_comments_raw as $pr_comment ) {
-	                        $pr_comments_ret[] = $pr_comment;
-        	        }
-
-	                $page++;
+					$page++;
 		} while ( count( $pr_comments_raw ) >= $per_page );
 
 		return $pr_comments_ret;
@@ -193,7 +190,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 	protected function _clearOldSupportComments() {
 		$prs_implicated = $this->_getPrsImplicated();
 
-		foreach( $prs_implicated as $pr_item ) {
+		foreach ( $prs_implicated as $pr_item ) {
 			// Check if any comments already exist
 			$pr_comments = $this->_getPrGenericComments(
 				$pr_item->number
@@ -205,7 +202,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 				}
 
 				// Look for a support-comment
-				foreach(
+				foreach (
 					array_values(
 						$this->options['post-generic-pr-support-comments-string']
 					)
@@ -237,16 +234,16 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 	 */
 	protected function _countSupportCommentsFromUs(
 		$pr_comments
-	) {	
+	) {
 		$valid_comments_found = 0;
 
-		foreach( $pr_comments as $pr_comment ) {
+		foreach ( $pr_comments as $pr_comment ) {
 			if ( $pr_comment->user->login !== $this->current_user_info->login ) {
 				continue;
 			}
 
 			// Check if the comment contains the support-comment
-			foreach(
+			foreach (
 				array_values(
 					$this->options['post-generic-pr-support-comments-string']
 				)
@@ -280,7 +277,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 		if ( -1 === $options_test ) {
 			return;
 		}
-	
+
 		// Configure branches we can post against
 		$this->options['post-generic-pr-support-comments-branches'] =
 			array(
@@ -291,7 +288,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 		$this->options['post-generic-pr-support-comments'] = false;
 
 		// Get Pull-Requests
-        	$prs_implicated = $this->_getPrsImplicated();
+			$prs_implicated = $this->_getPrsImplicated();
 
 		// Check we have at least one PR
 		$this->assertTrue(
@@ -317,7 +314,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 		);
 
 		// Check if commenting succeeded
-		foreach( $prs_implicated as $pr_item ) {
+		foreach ( $prs_implicated as $pr_item ) {
 			$pr_comments = $this->_getPrGenericComments(
 				$pr_item->number
 			);
@@ -333,7 +330,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 				)
 			);
 		}
-	
+
 		vipgoci_cache(
 			VIPGOCI_CACHE_CLEAR
 		);
@@ -360,7 +357,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 			);
 
 		// Get Pull-Requests
-        	$prs_implicated = $this->_getPrsImplicated();
+			$prs_implicated = $this->_getPrsImplicated();
 
 		// Check we have at least one PR
 		$this->assertTrue(
@@ -374,7 +371,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 		);
 
 		// Check if commenting succeeded
-		foreach( $prs_implicated as $pr_item ) {
+		foreach ( $prs_implicated as $pr_item ) {
 			$pr_comments = $this->_getPrGenericComments(
 				$pr_item->number
 			);
@@ -390,9 +387,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 						$pr_comments
 					)
 				);
-			}
-
-			else {
+			} else {
 				$this->assertTrue(
 					count( $pr_comments ) > 0
 				);
@@ -413,7 +408,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 		vipgoci_cache(
 			VIPGOCI_CACHE_CLEAR
 		);
-		
+
 		// Try re-posting
 		vipgoci_github_pr_generic_support_comment_submit(
 			$this->options,
@@ -421,7 +416,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 		);
 
 		// And make sure it did not succeed
-		foreach( $prs_implicated as $pr_item ) {
+		foreach ( $prs_implicated as $pr_item ) {
 			$pr_comments = $this->_getPrGenericComments(
 				$pr_item->number
 			);
@@ -437,9 +432,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 						$pr_comments
 					)
 				);
-			}
-
-			else {
+			} else {
 				$this->assertTrue(
 					count( $pr_comments ) > 0
 				);
@@ -475,7 +468,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 			);
 
 		// Get Pull-Requests
-        	$prs_implicated = $this->_getPrsImplicated();
+			$prs_implicated = $this->_getPrsImplicated();
 
 		// Check we have at least one PR
 		$this->assertTrue(
@@ -489,7 +482,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 		);
 
 		// Check if commenting succeeded
-		foreach( $prs_implicated as $pr_item ) {
+		foreach ( $prs_implicated as $pr_item ) {
 			$pr_comments = $this->_getPrGenericComments(
 				$pr_item->number
 			);
@@ -505,9 +498,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 						$pr_comments
 					)
 				);
-			}
-
-			else {
+			} else {
 				$this->assertTrue(
 					count( $pr_comments ) > 0
 				);
@@ -528,7 +519,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 		vipgoci_cache(
 			VIPGOCI_CACHE_CLEAR
 		);
-		
+
 		// Try re-posting
 		vipgoci_github_pr_generic_support_comment_submit(
 			$this->options,
@@ -536,7 +527,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 		);
 
 		// And make sure it did not succeed
-		foreach( $prs_implicated as $pr_item ) {
+		foreach ( $prs_implicated as $pr_item ) {
 			$pr_comments = $this->_getPrGenericComments(
 				$pr_item->number
 			);
@@ -545,16 +536,14 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 				$this->assertTrue(
 					count( $pr_comments ) === 0
 				);
-	
+
 				$this->assertSame(
 					0,
 					$this->_countSupportCommentsFromUs(
 						$pr_comments
 					)
 				);
-			}
-
-			else {
+			} else {
 				$this->assertTrue(
 					count( $pr_comments ) > 0
 				);
@@ -590,7 +579,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 			);
 
 		// Get Pull-Requests
-        	$prs_implicated = $this->_getPrsImplicated();
+			$prs_implicated = $this->_getPrsImplicated();
 
 		// Check we have at least one PR
 		$this->assertTrue(
@@ -604,7 +593,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 		);
 
 		// Check if commenting succeeded -- should not have, as branch is invalid
-		foreach( $prs_implicated as $pr_item ) {
+		foreach ( $prs_implicated as $pr_item ) {
 			$pr_comments = $this->_getPrGenericComments(
 				$pr_item->number
 			);
@@ -624,7 +613,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 		vipgoci_cache(
 			VIPGOCI_CACHE_CLEAR
 		);
-		
+
 		// Try re-posting
 		vipgoci_github_pr_generic_support_comment_submit(
 			$this->options,
@@ -632,7 +621,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 		);
 
 		// And make sure it did not succeed the second time
-		foreach( $prs_implicated as $pr_item ) {
+		foreach ( $prs_implicated as $pr_item ) {
 			$pr_comments = $this->_getPrGenericComments(
 				$pr_item->number
 			);
@@ -667,7 +656,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 			);
 
 		// Get Pull-Requests
-        	$prs_implicated = $this->_getPrsImplicated();
+			$prs_implicated = $this->_getPrsImplicated();
 
 		// Check we have at least one PR
 		$this->assertTrue(
@@ -681,7 +670,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 		);
 
 		// Check if commenting succeeded
-		foreach( $prs_implicated as $pr_item ) {
+		foreach ( $prs_implicated as $pr_item ) {
 			$pr_comments = $this->_getPrGenericComments(
 				$pr_item->number
 			);
@@ -690,16 +679,14 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 				$this->assertTrue(
 					count( $pr_comments ) === 0
 				);
-	
+
 				$this->assertSame(
 					0,
 					$this->_countSupportCommentsFromUs(
 						$pr_comments
 					)
 				);
-			}
-
-			else {
+			} else {
 				$this->assertTrue(
 					count( $pr_comments ) > 0
 				);
@@ -720,7 +707,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 		vipgoci_cache(
 			VIPGOCI_CACHE_CLEAR
 		);
-		
+
 		// Try re-posting
 		vipgoci_github_pr_generic_support_comment_submit(
 			$this->options,
@@ -728,7 +715,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 		);
 
 		// And make sure it did not succeed
-		foreach( $prs_implicated as $pr_item ) {
+		foreach ( $prs_implicated as $pr_item ) {
 			$pr_comments = $this->_getPrGenericComments(
 				$pr_item->number
 			);
@@ -737,16 +724,14 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 				$this->assertTrue(
 					count( $pr_comments ) === 0
 				);
-	
+
 				$this->assertSame(
 					0,
 					$this->_countSupportCommentsFromUs(
 						$pr_comments
 					)
 				);
-			}
-
-			else {
+			} else {
 				$this->assertTrue(
 					count( $pr_comments ) > 0
 				);
@@ -780,7 +765,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 		);
 
 		// And make sure it did succeed
-		foreach( $prs_implicated as $pr_item ) {
+		foreach ( $prs_implicated as $pr_item ) {
 			$pr_comments = $this->_getPrGenericComments(
 				$pr_item->number
 			);
@@ -825,14 +810,14 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 		);
 
 		// Get Pull-Requests
-        	$prs_implicated = $this->_getPrsImplicated();
+			$prs_implicated = $this->_getPrsImplicated();
 
 		// Check we have at least one PR
 		$this->assertTrue(
 			count( $prs_implicated ) > 0
 		);
 
-		foreach( $prs_implicated as $pr_item ) {
+		foreach ( $prs_implicated as $pr_item ) {
 			// Make sure there are no comments
 			$pr_comments = $this->_getPrGenericComments(
 				$pr_item->number
@@ -841,7 +826,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 			$this->assertTrue(
 				count( $pr_comments ) === 0
 			);
-	
+
 			// Add label to make sure no comment is posted
 			vipgoci_github_label_add_to_pr(
 				$this->options['repo-owner'],
@@ -859,7 +844,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 		);
 
 		// Make sure commenting did not succeed
-		foreach( $prs_implicated as $pr_item ) {
+		foreach ( $prs_implicated as $pr_item ) {
 			$pr_comments = $this->_getPrGenericComments(
 				$pr_item->number
 			);
@@ -867,7 +852,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 			$this->assertTrue(
 				count( $pr_comments ) === 0
 			);
-	
+
 			$this->assertSame(
 				0,
 				$this->_countSupportCommentsFromUs(
@@ -883,7 +868,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 		vipgoci_cache(
 			VIPGOCI_CACHE_CLEAR
 		);
-		
+
 		// Try re-posting
 		vipgoci_github_pr_generic_support_comment_submit(
 			$this->options,
@@ -891,7 +876,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 		);
 
 		// And make sure it did not succeed
-		foreach( $prs_implicated as $pr_item ) {
+		foreach ( $prs_implicated as $pr_item ) {
 			$pr_comments = $this->_getPrGenericComments(
 				$pr_item->number
 			);
@@ -928,7 +913,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 		);
 
 		// And make sure it did not succeed
-		foreach( $prs_implicated as $pr_item ) {
+		foreach ( $prs_implicated as $pr_item ) {
 			$pr_comments = $this->_getPrGenericComments(
 				$pr_item->number
 			);

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
-require_once( __DIR__ . './../../defines.php' );
-require_once( __DIR__ . './../../statistics.php' );
+require_once __DIR__ . './../../defines.php';
+require_once __DIR__ . './../../statistics.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -74,18 +74,17 @@ final class A00StatsCountersTest extends TestCase {
 			'stats' => array(
 				'unique_issue' => array(
 					120 => array(
-						'errors' => 1,
+						'errors'   => 1,
 						'warnings' => 1,
 					),
 
 					121 => array(
-						'errors' => 2,
+						'errors'   => 2,
 						'warnings' => 1,
 					),
-				)
-			)
+				),
+			),
 		);
-
 
 		vipgoci_counter_update_with_issues_found(
 			$results
@@ -95,16 +94,14 @@ final class A00StatsCountersTest extends TestCase {
 			VIPGOCI_COUNTERS_DUMP
 		);
 
-
 		unset( $report['mycounter2'] );
 
-	
 		$this->assertSame(
 			array(
 				'github_pr_unique_issue_issues' => 3,
 			),
 			$report
-		);	
+		);
 	}
 }
 

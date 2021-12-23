@@ -1,12 +1,12 @@
 <?php
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+require_once __DIR__ . '/IncludesForTests.php';
 
 use PHPUnit\Framework\TestCase;
 
 final class LintLintGetIssuesTest extends TestCase {
 	var $options_php = array(
-		'php-path'	=> null,
+		'php-path' => null,
 	);
 
 	protected function setUp(): void {
@@ -26,7 +26,7 @@ final class LintLintGetIssuesTest extends TestCase {
 	public function testLintGetIssues1() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options_php,
-			array(  ),
+			array(),
 			$this
 		);
 
@@ -61,8 +61,7 @@ final class LintLintGetIssuesTest extends TestCase {
 		vipgoci_unittests_output_unsuppress();
 
 		$this->assertSame(
-			array(
-			),
+			array(),
 			$lint_issues_parsed
 		);
 	}
@@ -73,7 +72,7 @@ final class LintLintGetIssuesTest extends TestCase {
 	public function testLintDoScan2() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options_php,
-			array(  ),
+			array(),
 			$this
 		);
 
@@ -108,7 +107,7 @@ final class LintLintGetIssuesTest extends TestCase {
 		vipgoci_unittests_output_unsuppress();
 
 		/* Fix PHP compatibility issue */
-		$lint_issues_parsed[3][0]['message'] = 
+		$lint_issues_parsed[3][0]['message'] =
 			vipgoci_unittests_php_syntax_error_compat(
 				$lint_issues_parsed[3][0]['message']
 			);
@@ -117,11 +116,11 @@ final class LintLintGetIssuesTest extends TestCase {
 			array(
 				3 => array(
 					array(
-						'message' 	=> "syntax error, unexpected end of file, expecting ',' or ';'",
-						'level'		=> 'ERROR',
-						'severity'	=> 5,
-					)
-				)
+						'message'  => "syntax error, unexpected end of file, expecting ',' or ';'",
+						'level'    => 'ERROR',
+						'severity' => 5,
+					),
+				),
 			),
 			$lint_issues_parsed
 		);

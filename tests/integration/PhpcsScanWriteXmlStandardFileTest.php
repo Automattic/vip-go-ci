@@ -1,6 +1,6 @@
 <?php
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+require_once __DIR__ . '/IncludesForTests.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -24,12 +24,12 @@ final class PhpcsScanWriteXmlStandardFileTest extends TestCase {
 	public function testWriteXmlStandardFile1() {
 		$phpcs_standards = array(
 			'WordPress-VIP-Go',
-			'MyStandard1'
+			'MyStandard1',
 		);
 
 		$phpcs_sniffs = array(
 			'WordPress.DB.RestrictedFunctions',
-			'WordPress.DB.PreparedSQL'
+			'WordPress.DB.PreparedSQL',
 		);
 
 		vipgoci_phpcs_write_xml_standard_file(
@@ -41,10 +41,10 @@ final class PhpcsScanWriteXmlStandardFileTest extends TestCase {
 		$xml_content = file_get_contents(
 			$this->xml_file_path
 		);
-	
+
 		$xml_content = str_replace(
 			array( "\t", "\n", "\r" ),
-			array( "", "", "" ),
+			array( '', '', '' ),
 			$xml_content
 		);
 

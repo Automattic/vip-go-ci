@@ -2,7 +2,7 @@
 
 namespace Vipgoci\tests;
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+require_once __DIR__ . '/IncludesForTests.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -12,7 +12,7 @@ final class GitHubRateLimitUsageTest extends TestCase {
 	protected function setUp(): void {
 		$this->options = array();
 
-		$this->options[ 'github-token' ] =
+		$this->options['github-token'] =
 			vipgoci_unittests_get_config_value(
 				'git-secrets',
 				'github-token',
@@ -30,10 +30,10 @@ final class GitHubRateLimitUsageTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_github_rate_limit_usage
 	 */
-	public function testGitHubRateLimitUsage1 () {
+	public function testGitHubRateLimitUsage1() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
-			array( ),
+			array(),
 			$this
 		);
 
@@ -54,7 +54,7 @@ final class GitHubRateLimitUsageTest extends TestCase {
 				is_numeric( $gh_result->resources->core->used )
 			)
 		);
-	
+
 		$this->assertTrue(
 			isset(
 				$gh_result->resources->core->limit

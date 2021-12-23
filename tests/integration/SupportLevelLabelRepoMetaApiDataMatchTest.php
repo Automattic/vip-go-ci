@@ -1,20 +1,20 @@
 <?php
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+require_once __DIR__ . '/IncludesForTests.php';
 
 use PHPUnit\Framework\TestCase;
 
 final class SupportLevelLabelRepoMetaApiDataMatchTest extends TestCase {
 	var $options_meta_api_secrets = array(
-		'repo-meta-api-base-url'	=> null,
-		'repo-meta-api-user-id'		=> null,
-		'repo-meta-api-access-token'	=> null,
+		'repo-meta-api-base-url'     => null,
+		'repo-meta-api-user-id'      => null,
+		'repo-meta-api-access-token' => null,
 
-		'repo-name'			=> null,
-		'repo-owner'			=> null,
+		'repo-name'                  => null,
+		'repo-owner'                 => null,
 
-		'support-level'			=> null,
-		'support-level-field-name'	=> null,
+		'support-level'              => null,
+		'support-level-field-name'   => null,
 	);
 
 	protected function setUp(): void {
@@ -26,42 +26,41 @@ final class SupportLevelLabelRepoMetaApiDataMatchTest extends TestCase {
 
 		$this->options = $this->options_meta_api_secrets;
 
-		$this->options['data_match0'] = array(
-		);
+		$this->options['data_match0'] = array();
 
 		$this->options['data_match1'] = array(
 			2 => array(
 				'__invalid_field' => array(
-					'__somethinginvalid'
+					'__somethinginvalid',
 				),
 			),
 
 			3 => array(
 				'invalid_field_761a' => array(
 					'invalid_value',
-				)
-			)
+				),
+			),
 		);
 
 		$this->options['data_match2'] = array(
 			2 => array(
 				$this->options['support-level-field-name'] => array(
-					$this->options['support-level']
+					$this->options['support-level'],
 				),
 			),
 
 			3 => array(
 				'invalid_field_761a' => array(
 					'invalid_value',
-				)
-			)
+				),
+			),
 		);
 
 		$this->options['branches-ignore'] = array();
 	}
 
 	protected function tearDown(): void {
-		$this->options = null;
+		$this->options                  = null;
 		$this->options_meta_api_secrets = null;
 	}
 
@@ -83,7 +82,6 @@ final class SupportLevelLabelRepoMetaApiDataMatchTest extends TestCase {
 
 		$this->assertSame(
 			false,
-
 			vipgoci_repo_meta_api_data_match(
 				$this->options,
 				'',
@@ -115,7 +113,6 @@ final class SupportLevelLabelRepoMetaApiDataMatchTest extends TestCase {
 
 		$this->assertSame(
 			false,
-
 			vipgoci_repo_meta_api_data_match(
 				$this->options,
 				'data_match0',
@@ -147,14 +144,13 @@ final class SupportLevelLabelRepoMetaApiDataMatchTest extends TestCase {
 
 		$this->assertSame(
 			false,
-
 			vipgoci_repo_meta_api_data_match(
 				$this->options,
 				'data_match1',
 				$option_key_no
 			)
 		);
-	
+
 		$this->assertSame(
 			null,
 			$option_key_no
@@ -179,7 +175,6 @@ final class SupportLevelLabelRepoMetaApiDataMatchTest extends TestCase {
 
 		$this->assertSame(
 			true,
-
 			vipgoci_repo_meta_api_data_match(
 				$this->options,
 				'data_match2',

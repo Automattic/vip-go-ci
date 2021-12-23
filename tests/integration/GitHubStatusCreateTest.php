@@ -2,7 +2,7 @@
 
 namespace Vipgoci\tests;
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+require_once __DIR__ . '/IncludesForTests.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -10,12 +10,12 @@ use PHPUnit\Framework\TestCase;
 
 final class GitHubStatusCreateTest extends TestCase {
 	var $options_git_repo_tests = array(
-		'commit-test-repo-pr-diffs-4-a'	=> null,
+		'commit-test-repo-pr-diffs-4-a' => null,
 	);
 
 	var $options_git = array(
-		'repo-owner'		=> null,
-		'repo-name'		=> null,
+		'repo-owner' => null,
+		'repo-name'  => null,
 	);
 
 	public function setUp(): void {
@@ -51,13 +51,13 @@ final class GitHubStatusCreateTest extends TestCase {
 	}
 
 	public function tearDown(): void {
-		$this->options = null;
-		$this->options_git = null;
+		$this->options                = null;
+		$this->options_git            = null;
 		$this->options_git_repo_tests = null;
 	}
 
 	private function _setBuildStatus(): void {
-		sleep(2); // GitHub API requirement
+		sleep( 2 ); // GitHub API requirement
 
 		$github_url =
 			VIPGOCI_GITHUB_BASE_URL . '/' .
@@ -68,10 +68,10 @@ final class GitHubStatusCreateTest extends TestCase {
 			rawurlencode( $this->options['github-commit'] );
 
 		$github_postfields = array(
-			'state'		=> $this->options['build-state'],
-			'description'	=> $this->options['build-description'],
-			'context'	=> $this->options['build-context'],
-			'target_url'	=> $this->options['build-target-url'],
+			'state'       => $this->options['build-state'],
+			'description' => $this->options['build-description'],
+			'context'     => $this->options['build-context'],
+			'target_url'  => $this->options['build-target-url'],
 		);
 
 		vipgoci_github_post_url(
@@ -82,7 +82,7 @@ final class GitHubStatusCreateTest extends TestCase {
 	}
 
 	private function _getCurrentBuildStatus(): ?array {
-		sleep(2);
+		sleep( 2 );
 
 		$github_url =
 			VIPGOCI_GITHUB_BASE_URL . '/' .
@@ -103,16 +103,16 @@ final class GitHubStatusCreateTest extends TestCase {
 			true
 		);
 
-		foreach( $data['statuses'] as $tmp_status ) {
+		foreach ( $data['statuses'] as $tmp_status ) {
 			if (
 				$this->options['build-context'] ===
 				$tmp_status['context']
 			) {
 				return array(
-					'state'		=> $tmp_status['state'],
-					'description'	=> $tmp_status['description'],
-					'context'	=> $tmp_status['context'],
-					'target_url'	=> $tmp_status['target_url'],
+					'state'       => $tmp_status['state'],
+					'description' => $tmp_status['description'],
+					'context'     => $tmp_status['context'],
+					'target_url'  => $tmp_status['target_url'],
 				);
 			}
 		}
@@ -126,7 +126,7 @@ final class GitHubStatusCreateTest extends TestCase {
 	public function testGitHubStatusCreate1(): void {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
-			array( ),
+			array(),
 			$this
 		);
 
@@ -138,20 +138,20 @@ final class GitHubStatusCreateTest extends TestCase {
 		 * Set build status and
 		 * then verify that it is failed.
 		 */
-		$new_build_description  = 'Build failure: ' . time();
+		$new_build_description = 'Build failure: ' . time();
 
-		$this->options['build-state'] = 'failure';
+		$this->options['build-state']       = 'failure';
 		$this->options['build-description'] = $new_build_description;
-		$this->options['build-target-url'] = null;
+		$this->options['build-target-url']  = null;
 
 		$this->_setBuildStatus();
 
 		$this->assertSame(
 			array(
-				'state'		=> 'failure',
-				'description'	=> $new_build_description,
-				'context'	=> $this->options['build-context'],
-				'target_url'	=> null,
+				'state'       => 'failure',
+				'description' => $new_build_description,
+				'context'     => $this->options['build-context'],
+				'target_url'  => null,
 			),
 			$this->_getCurrentBuildStatus()
 		);
@@ -179,10 +179,10 @@ final class GitHubStatusCreateTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				'state'		=> 'success',
-				'description'	=> $new_build_description,
-				'context'	=> $this->options['build-context'],
-				'target_url'	=> 'https://automattic.com/test1',
+				'state'       => 'success',
+				'description' => $new_build_description,
+				'context'     => $this->options['build-context'],
+				'target_url'  => 'https://automattic.com/test1',
 			),
 			$this->_getCurrentBuildStatus()
 		);

@@ -1,22 +1,22 @@
 <?php
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+require_once __DIR__ . '/IncludesForTests.php';
 
 use PHPUnit\Framework\TestCase;
 
 final class MiscPatchChangedLinesTest extends TestCase {
 	var $options_git = array(
-		'git-path'		=> null,
-		'github-repo-url'	=> null,
-		'repo-owner'		=> null,
-		'repo-name'		=> null,
+		'git-path'        => null,
+		'github-repo-url' => null,
+		'repo-owner'      => null,
+		'repo-name'       => null,
 	);
 
 	var $options_patch_changed_lines = array(
-		'pr-base-sha'		=> null,
-		'commit-id'		=> null,
-		'pr-base-sha-2'		=> null,
-		'commit-id-2'		=> null,
+		'pr-base-sha'   => null,
+		'commit-id'     => null,
+		'pr-base-sha-2' => null,
+		'commit-id-2'   => null,
 	);
 
 	protected function setUp(): void {
@@ -35,7 +35,7 @@ final class MiscPatchChangedLinesTest extends TestCase {
 			$this->options_patch_changed_lines
 		);
 
-		$this->options[ 'github-token' ] =
+		$this->options['github-token'] =
 			vipgoci_unittests_get_config_value(
 				'git-secrets',
 				'github-token',
@@ -47,7 +47,7 @@ final class MiscPatchChangedLinesTest extends TestCase {
 		}
 
 		$this->options['token'] =
-			$this->options[ 'github-token' ];
+			$this->options['github-token'];
 
 		$this->options['commit'] = 'master';
 	}
@@ -131,7 +131,16 @@ final class MiscPatchChangedLinesTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				null, 1, null, "1", 2, 3, 4, 5, 6, 7
+				null,
+				1,
+				null,
+				'1',
+				2,
+				3,
+				4,
+				5,
+				6,
+				7,
 			),
 			$patch_arr
 		);
@@ -155,19 +164,19 @@ final class MiscPatchChangedLinesTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				0 => null,
-				1 => '1',
-				2 => 2,
-				3 => null,
-				4 => 3, 
-				5 => null,
-				6 => null,
-				7 => 4,
-				8 => null,
-				9 => null, 
-				10 => 5, 
-				11 => 6, 
-				12 => 7
+				0  => null,
+				1  => '1',
+				2  => 2,
+				3  => null,
+				4  => 3,
+				5  => null,
+				6  => null,
+				7  => 4,
+				8  => null,
+				9  => null,
+				10 => 5,
+				11 => 6,
+				12 => 7,
 			),
 			$patch_arr
 		);
@@ -192,7 +201,7 @@ final class MiscPatchChangedLinesTest extends TestCase {
 				1 => '7',
 				2 => 8,
 				3 => 9,
-				4 => null, 
+				4 => null,
 				5 => 10,
 				6 => 11,
 				7 => 12,

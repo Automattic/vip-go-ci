@@ -18,7 +18,7 @@ function vipgoci_curl_headers( $ch, $header ) {
 		 *
 		 * Make sure to empty the headers collected.
 		 */
-		$ret = $resp_headers;
+		$ret          = $resp_headers;
 		$resp_headers = array();
 
 		/*
@@ -38,7 +38,6 @@ function vipgoci_curl_headers( $ch, $header ) {
 
 		return $ret;
 	}
-
 
 	/*
 	 * Get header length
@@ -74,7 +73,6 @@ function vipgoci_curl_headers( $ch, $header ) {
 		return $header_len;
 	}
 
-
 	/*
 	 * Save the header as a key => value
 	 * in our associative array.
@@ -105,7 +103,7 @@ function vipgoci_curl_set_security_options( $ch ) {
 		$ch,
 		CURLOPT_MAXREDIRS,
 		0
-	);	
+	);
 
 	/*
 	 * Do not follow any "Location:" headers.
@@ -166,7 +164,6 @@ function vipgoci_http_resp_sunset_header_check(
 		$http_url_parsed['scheme'] . '://' .
 		$http_url_parsed['host'];
 
-	
 	if ( isset( $http_url_parsed['port'] ) ) {
 		$http_url_clean .= ':' . (int) $http_url_parsed['port'];
 	}
@@ -177,12 +174,11 @@ function vipgoci_http_resp_sunset_header_check(
 			$http_url_parsed['path'];
 	}
 
-
 	vipgoci_log(
 		'Warning: Sunset HTTP header detected, feature will become unavailable',
 		array(
-			'http_url_clean'	=> $http_url_clean,
-			'sunset_date'		=> $sunset_date,
+			'http_url_clean' => $http_url_clean,
+			'sunset_date'    => $sunset_date,
 		),
 		0,
 		true // Log to IRC.
@@ -210,12 +206,12 @@ function vipgoci_github_rate_limits_check(
 				'cannot continue without making ' .
 				'making further requests.',
 			array(
-				'github_url' => $github_url,
+				'github_url'            => $github_url,
 
 				'x-ratelimit-remaining' =>
 					$resp_headers['x-ratelimit-remaining'][0],
 
-				'x-ratelimit-limit' =>
+				'x-ratelimit-limit'     =>
 					$resp_headers['x-ratelimit-limit'][0],
 			),
 			VIPGOCI_EXIT_GITHUB_PROBLEM
@@ -298,9 +294,8 @@ function vipgoci_oauth1_signature_get_hmac_sha1(
 	 * Start constructing the 'base string' --
 	 * a crucial part of the signature.
 	 */
-	$base_string = strtoupper( $http_method ) . '&';
+	$base_string  = strtoupper( $http_method ) . '&';
 	$base_string .= rawurlencode( $request_url ) . '&';
-
 
 	/*
 	 * New array for parameters, temporary
@@ -321,7 +316,7 @@ function vipgoci_oauth1_signature_get_hmac_sha1(
 	 * Add parameters to the new array, these
 	 * need to be encoded in a certain way.
 	 */
-	foreach( $parameters_arr as $key => $value ) {
+	foreach ( $parameters_arr as $key => $value ) {
 		$parameters_arr_new[ rawurlencode( $key ) ] =
 			rawurlencode( $value );
 	}
@@ -338,16 +333,15 @@ function vipgoci_oauth1_signature_get_hmac_sha1(
 	 */
 	ksort( $parameters_arr_new );
 
-
 	/*
 	 * Loop through the parameters, and add them
 	 * to a temporary 'base string' according to the standard.
 	 */
 
-	$delimiter = '';
+	$delimiter       = '';
 	$base_string_tmp = '';
 
-	foreach( $parameters_arr_new as $key => $value ) {
+	foreach ( $parameters_arr_new as $key => $value ) {
 		$base_string_tmp .=
 			$delimiter .
 			$key .
@@ -407,7 +401,7 @@ function vipgoci_oauth1_headers_get(
 	/*
 	 * Set timestamp and nonce.
 	 */
-	$github_token['oauth_timestamp'] = (string) ( time() - 1);
+	$github_token['oauth_timestamp'] = (string) ( time() - 1 );
 
 	$github_token['oauth_nonce'] = (string) md5(
 		openssl_random_pseudo_bytes( 100 )
@@ -428,17 +422,17 @@ function vipgoci_oauth1_headers_get(
 	 * so we remove them to limit any risk
 	 * of information leakage.
 	 */
-	unset( $github_token['oauth_token_secret' ] );
-	unset( $github_token['oauth_consumer_secret' ] );
+	unset( $github_token['oauth_token_secret'] );
+	unset( $github_token['oauth_consumer_secret'] );
 
 	/*
 	 * Actually create the full HTTP header
 	 */
 
 	$res_header = 'OAuth ';
-	$sep = '';
+	$sep        = '';
 
-	foreach(
+	foreach (
 		$github_token as
 			$github_token_key =>
 			$github_token_value
@@ -460,7 +454,7 @@ function vipgoci_oauth1_headers_get(
 			$github_token_key . '="' .
 			rawurlencode( $github_token_value ) .
 			'"';
-		$sep = ', ';
+		$sep         = ', ';
 	}
 
 	/*
@@ -511,30 +505,40 @@ function vipgoci_github_post_url(
 		$ch = curl_init();
 
 		curl_setopt(
-			$ch, CURLOPT_URL, $github_url
+			$ch,
+			CURLOPT_URL,
+			$github_url
 		);
 
 		curl_setopt(
-			$ch, CURLOPT_RETURNTRANSFER, 1
+			$ch,
+			CURLOPT_RETURNTRANSFER,
+			1
 		);
 
 		curl_setopt(
-			$ch, CURLOPT_CONNECTTIMEOUT, 20
+			$ch,
+			CURLOPT_CONNECTTIMEOUT,
+			20
 		);
 
 		curl_setopt(
-			$ch, CURLOPT_USERAGENT,	VIPGOCI_CLIENT_ID
+			$ch,
+			CURLOPT_USERAGENT,
+			VIPGOCI_CLIENT_ID
 		);
 
 		if ( false === $http_delete ) {
 			curl_setopt(
-				$ch, CURLOPT_POST, 1
+				$ch,
+				CURLOPT_POST,
+				1
 			);
-		}
-
-		else {
+		} else {
 			curl_setopt(
-				$ch, CURLOPT_CUSTOMREQUEST, 'DELETE'
+				$ch,
+				CURLOPT_CUSTOMREQUEST,
+				'DELETE'
 			);
 		}
 
@@ -581,12 +585,10 @@ function vipgoci_github_post_url(
 
 		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'github_api_post' );
 
-
 		$resp_headers = vipgoci_curl_headers(
 			null,
 			null
 		);
-
 
 		/*
 		 * Allow certain statuses, depending on type of request
@@ -632,13 +634,11 @@ function vipgoci_github_post_url(
 					$resp_headers['retry-after']
 				) > 0 )
 			) {
-				$retry_req = true;
+				$retry_req   = true;
 				$retry_sleep = intval(
 					$resp_headers['retry-after']
 				);
-			}
-
-			else if (
+			} elseif (
 				( $resp_data->message ==
 					'Validation Failed' ) &&
 
@@ -652,18 +652,14 @@ function vipgoci_github_post_url(
 				 * as a spam by GitHub -- no good
 				 * reason to retry, really.
 				 */
-				$retry_req = false;
+				$retry_req   = false;
 				$retry_sleep = 20;
-			}
-
-			else if (
+			} elseif (
 				( $resp_data->message ==
 					'Validation Failed' )
 			) {
 				$retry_req = false;
-			}
-
-			else if (
+			} elseif (
 				( $resp_data->message ==
 					'Server Error' )
 			) {
@@ -729,9 +725,9 @@ function vipgoci_github_fetch_url(
 	do {
 		$ch = curl_init();
 
-		curl_setopt( $ch, CURLOPT_URL,			$github_url );
-		curl_setopt( $ch, CURLOPT_RETURNTRANSFER,	1 );
-		curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT,	20 );
+		curl_setopt( $ch, CURLOPT_URL, $github_url );
+		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
+		curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, 20 );
 
 		curl_setopt(
 			$ch,
@@ -754,14 +750,12 @@ function vipgoci_github_fetch_url(
 				CURLOPT_HTTPHEADER,
 				array( 'Authorization: token ' . $github_token )
 			);
-		}
-
-		else if ( is_array( $github_token ) ) {
+		} elseif ( is_array( $github_token ) ) {
 			if (
-				( isset( $github_token[ 'oauth_consumer_key' ] ) ) &&
-				( isset( $github_token[ 'oauth_consumer_secret' ] ) ) &&
-				( isset( $github_token[ 'oauth_token' ] ) ) &&
-				( isset( $github_token[ 'oauth_token_secret' ] ) )
+				( isset( $github_token['oauth_consumer_key'] ) ) &&
+				( isset( $github_token['oauth_consumer_secret'] ) ) &&
+				( isset( $github_token['oauth_token'] ) ) &&
+				( isset( $github_token['oauth_token_secret'] ) )
 			) {
 				$github_auth_header = vipgoci_oauth1_headers_get(
 					'GET',
@@ -774,7 +768,7 @@ function vipgoci_github_fetch_url(
 					CURLOPT_HTTPHEADER,
 					array(
 						'Authorization: ' .
-						$github_auth_header
+						$github_auth_header,
 					)
 				);
 			}
@@ -784,10 +778,8 @@ function vipgoci_github_fetch_url(
 			$ch
 		);
 
-
 		// Make sure to pause between GitHub-requests
 		vipgoci_github_wait();
-
 
 		/*
 		 * Execute query to GitHub, keep
@@ -806,12 +798,10 @@ function vipgoci_github_fetch_url(
 
 		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'github_api_get' );
 
-
 		$resp_headers = vipgoci_curl_headers(
 			null,
 			null
 		);
-
 
 		/*
 		 * Detect and process possible errors
@@ -823,12 +813,11 @@ function vipgoci_github_fetch_url(
 			vipgoci_log(
 				'Sending request to GitHub failed, will ' .
 					'retry in a bit... ',
-
 				array(
-					'github_url' => $github_url,
-					'curl_retries' => $curl_retries,
+					'github_url'    => $github_url,
+					'curl_retries'  => $curl_retries,
 
-					'curl_errno' => curl_errno(
+					'curl_errno'    => curl_errno(
 						$ch
 					),
 
@@ -840,7 +829,6 @@ function vipgoci_github_fetch_url(
 
 			sleep( 10 );
 		}
-
 
 		vipgoci_github_rate_limits_check(
 			$github_url,
@@ -858,7 +846,6 @@ function vipgoci_github_fetch_url(
 		( false === $resp_data ) &&
 		( $curl_retries++ < 2 )
 	);
-
 
 	if ( false === $resp_data ) {
 		vipgoci_sysexit(
@@ -906,23 +893,33 @@ function vipgoci_github_put_url(
 		$ch = curl_init();
 
 		curl_setopt(
-			$ch, CURLOPT_URL, $github_url
+			$ch,
+			CURLOPT_URL,
+			$github_url
 		);
 
 		curl_setopt(
-			$ch, CURLOPT_RETURNTRANSFER, 1
+			$ch,
+			CURLOPT_RETURNTRANSFER,
+			1
 		);
 
 		curl_setopt(
-			$ch, CURLOPT_CONNECTTIMEOUT, 20
+			$ch,
+			CURLOPT_CONNECTTIMEOUT,
+			20
 		);
 
 		curl_setopt(
-			$ch, CURLOPT_USERAGENT,	VIPGOCI_CLIENT_ID
+			$ch,
+			CURLOPT_USERAGENT,
+			VIPGOCI_CLIENT_ID
 		);
 
 		curl_setopt(
-			$ch, CURLOPT_CUSTOMREQUEST, 'PUT'
+			$ch,
+			CURLOPT_CUSTOMREQUEST,
+			'PUT'
 		);
 
 		curl_setopt(
@@ -968,12 +965,10 @@ function vipgoci_github_put_url(
 
 		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'github_api_put' );
 
-
 		$resp_headers = vipgoci_curl_headers(
 			null,
 			null
 		);
-
 
 		/*
 		 * Assume 200 for success, everything else for failure.
@@ -1004,13 +999,11 @@ function vipgoci_github_put_url(
 					$resp_headers['retry-after']
 				) > 0 )
 			) {
-				$retry_req = true;
+				$retry_req   = true;
 				$retry_sleep = intval(
 					$resp_headers['retry-after']
 				);
-			}
-
-			else if (
+			} elseif (
 				( $resp_data->message ==
 					'Validation Failed' ) &&
 
@@ -1024,18 +1017,14 @@ function vipgoci_github_put_url(
 				 * as a spam by GitHub -- no good
 				 * reason to retry, really.
 				 */
-				$retry_req = false;
+				$retry_req   = false;
 				$retry_sleep = 20;
-			}
-
-			else if (
+			} elseif (
 				( $resp_data->message ==
 					'Validation Failed' )
 			) {
 				$retry_req = false;
-			}
-
-			else if (
+			} elseif (
 				( $resp_data->message ==
 					'Server Error' )
 			) {
@@ -1096,8 +1085,11 @@ function vipgoci_github_diffs_fetch_unfiltered(
 	 * Check for a cached copy of the diffs
 	 */
 	$cached_id = array(
-		__FUNCTION__, $repo_owner, $repo_name,
-		$commit_id_a, $commit_id_b
+		__FUNCTION__,
+		$repo_owner,
+		$repo_name,
+		$commit_id_a,
+		$commit_id_b,
 	);
 
 	$cached_data = vipgoci_cache( $cached_id );
@@ -1106,12 +1098,11 @@ function vipgoci_github_diffs_fetch_unfiltered(
 		'Fetching diffs between two commits ' .
 			'from GitHub' .
 			vipgoci_cached_indication_str( $cached_data ),
-
 		array(
-			'repo_owner'	=> $repo_owner,
-			'repo_name'	=> $repo_name,
-			'commit_id_a'	=> $commit_id_a,
-			'commit_id_b'	=> $commit_id_b,
+			'repo_owner'  => $repo_owner,
+			'repo_name'   => $repo_name,
+			'commit_id_a' => $commit_id_a,
+			'commit_id_b' => $commit_id_b,
 		)
 	);
 
@@ -1153,34 +1144,30 @@ function vipgoci_github_diffs_fetch_unfiltered(
 	 * Prepare results array.
 	 */
 	$diff_results = array(
-		'files'         => array(),
-		'statistics'    => array(
-			VIPGOCI_GIT_DIFF_CALC_CHANGES['+']      => 0,
-			VIPGOCI_GIT_DIFF_CALC_CHANGES['-']      => 0,
-			'changes'                               => 0,
+		'files'      => array(),
+		'statistics' => array(
+			VIPGOCI_GIT_DIFF_CALC_CHANGES['+'] => 0,
+			VIPGOCI_GIT_DIFF_CALC_CHANGES['-'] => 0,
+			'changes'                          => 0,
 		),
 	);
 
-	foreach( array_values( $resp_raw['files'] ) as $file_item ) {
-		$diff_results['files'][
-			$file_item['filename']
-		] = array(
-			'filename'	=> $file_item['filename'],
-			'patch'		=> (
+	foreach ( array_values( $resp_raw['files'] ) as $file_item ) {
+		$diff_results['files'][ $file_item['filename'] ] = array(
+			'filename'  => $file_item['filename'],
+			'patch'     => (
 				isset( $file_item['patch'] ) ?
 				$file_item['patch'] :
 				''
 			),
-			'status'	=> $file_item['status'],
-			'additions'	=> $file_item['additions'],
-			'deletions'	=> $file_item['deletions'],
-			'changes'	=> $file_item['changes'],
+			'status'    => $file_item['status'],
+			'additions' => $file_item['additions'],
+			'deletions' => $file_item['deletions'],
+			'changes'   => $file_item['changes'],
 		);
 
 		if ( isset( $file_item['previous_filename'] ) ) {
-			$diff_results['files'][
-				$file_item['filename']
-			]['previous_filename'] =
+			$diff_results['files'][ $file_item['filename'] ]['previous_filename'] =
 				$file_item['previous_filename'];
 		}
 
@@ -1204,14 +1191,14 @@ function vipgoci_github_diffs_fetch_unfiltered(
 	vipgoci_log(
 		'Fetched git diff from GitHub API',
 		array(
-			'statistics'            => $diff_results['statistics'],
-			'files_partial_20_max'  => array_slice(
+			'statistics'           => $diff_results['statistics'],
+			'files_partial_20_max' => array_slice(
 				array_keys(
 					$diff_results['files']
 				),
 				0,
 				20
-			)
+			),
 		)
 	);
 
@@ -1235,24 +1222,25 @@ function vipgoci_github_fetch_commit_info(
 ) {
 	/* Check for cached version */
 	$cached_id = array(
-		__FUNCTION__, $repo_owner, $repo_name,
-		$commit_id, $github_token
+		__FUNCTION__,
+		$repo_owner,
+		$repo_name,
+		$commit_id,
+		$github_token,
 	);
 
 	$cached_data = vipgoci_cache( $cached_id );
-
 
 	vipgoci_log(
 		'Fetching commit info from GitHub' .
 			vipgoci_cached_indication_str( $cached_data ),
 		array(
 			'repo_owner' => $repo_owner,
-			'repo_name' => $repo_name,
-			'commit_id' => $commit_id,
-			'filter' => $filter,
+			'repo_name'  => $repo_name,
+			'commit_id'  => $commit_id,
+			'filter'     => $filter,
 		)
 	);
-
 
 	if ( false === $cached_data ) {
 
@@ -1276,7 +1264,6 @@ function vipgoci_github_fetch_commit_info(
 			)
 		);
 
-
 		if (
 			( isset( $data->message ) ) &&
 			( 'Not Found' === $data->message )
@@ -1285,7 +1272,7 @@ function vipgoci_github_fetch_commit_info(
 				'Unable to fetch commit-info from GitHub, ' .
 					'the commit does not exist.',
 				array(
-					'error_data' => $data
+					'error_data' => $data,
 				),
 				VIPGOCI_EXIT_GITHUB_PROBLEM
 			);
@@ -1296,9 +1283,7 @@ function vipgoci_github_fetch_commit_info(
 			$cached_id,
 			$data
 		);
-	}
-
-	else {
+	} else {
 		$data = $cached_data;
 	}
 
@@ -1312,7 +1297,7 @@ function vipgoci_github_fetch_commit_info(
 	if ( null !== $filter ) {
 		$files_new = array();
 
-		foreach( $data->files as $file_info ) {
+		foreach ( $data->files as $file_info ) {
 			/*
 			 * If the file does not have an acceptable
 			 * file-extension, skip
@@ -1324,7 +1309,6 @@ function vipgoci_github_fetch_commit_info(
 			) ) {
 				continue;
 			}
-
 
 			/*
 			 * Process status based on filter.
@@ -1340,12 +1324,11 @@ function vipgoci_github_fetch_commit_info(
 				vipgoci_log(
 					'Skipping file that does not have a  ' .
 						'matching modification status',
-
 					array(
-						'filename'	=>
+						'filename'      =>
 							$file_info->filename,
 
-						'status'	=>
+						'status'        =>
 							$file_info->status,
 
 						'filter_status' =>
@@ -1382,16 +1365,19 @@ function vipgoci_github_pr_reviews_comments_get(
 	$commit_made_at,
 	&$prs_comments
 ) {
-	$repo_owner = $options['repo-owner'];
-	$repo_name = $options['repo-name'];
+	$repo_owner   = $options['repo-owner'];
+	$repo_name    = $options['repo-name'];
 	$github_token = $options['token'];
 
 	/*
 	 * Try to get comments from cache
 	 */
 	$cached_id = array(
-		__FUNCTION__, $repo_owner, $repo_name,
-		$commit_made_at, $github_token
+		__FUNCTION__,
+		$repo_owner,
+		$repo_name,
+		$commit_made_at,
+		$github_token,
 	);
 
 	$cached_data = vipgoci_cache( $cached_id );
@@ -1399,27 +1385,23 @@ function vipgoci_github_pr_reviews_comments_get(
 	vipgoci_log(
 		'Fetching Pull-Requests comments info from GitHub' .
 			vipgoci_cached_indication_str( $cached_data ),
-
 		array(
-			'repo_owner' => $repo_owner,
-			'repo_name' => $repo_name,
-			'commit_id' => $commit_id,
+			'repo_owner'     => $repo_owner,
+			'repo_name'      => $repo_name,
+			'commit_id'      => $commit_id,
 			'commit_made_at' => $commit_made_at,
 		)
 	);
 
-
 	if ( false !== $cached_data ) {
 		$prs_comments_cache = $cached_data;
-	}
-
-	else {
+	} else {
 		/*
 		 * Nothing in cache, ask GitHub.
 		 */
 
-		$page = 1;
-		$per_page = 100;
+		$page               = 1;
+		$per_page           = 100;
 		$prs_comments_cache = array();
 
 		do {
@@ -1454,7 +1436,6 @@ function vipgoci_github_pr_reviews_comments_get(
 		vipgoci_cache( $cached_id, $prs_comments_cache );
 	}
 
-
 	foreach ( $prs_comments_cache as $pr_comment ) {
 		if ( null === $pr_comment->position ) {
 			/*
@@ -1478,10 +1459,8 @@ function vipgoci_github_pr_reviews_comments_get(
 		 * can easily be found.
 		 */
 
-		$prs_comments[
-			$pr_comment->path . ':' .
-			$pr_comment->position
-		][] = $pr_comment;
+		$prs_comments[ $pr_comment->path . ':' .
+			$pr_comment->position ][] = $pr_comment;
 	}
 }
 
@@ -1512,8 +1491,11 @@ function vipgoci_github_pr_reviews_comments_get_by_pr(
 	 * (i.e. avoiding of caching by callers).
 	 */
 	$cache_id = array(
-		__FUNCTION__, $options['repo-owner'], $options['repo-name'],
-		$pr_number, $filter
+		__FUNCTION__,
+		$options['repo-owner'],
+		$options['repo-name'],
+		$pr_number,
+		$filter,
 	);
 
 	/*
@@ -1525,10 +1507,10 @@ function vipgoci_github_pr_reviews_comments_get_by_pr(
 		'Fetching all review comments submitted to a Pull-Request' .
 			vipgoci_cached_indication_str( $cached_data ),
 		array(
-			'repo_owner'	=> $options['repo-owner'],
-			'repo_name'	=> $options['repo-name'],
-			'pr_number'	=> $pr_number,
-			'filter'	=> $filter,
+			'repo_owner' => $options['repo-owner'],
+			'repo_name'  => $options['repo-name'],
+			'pr_number'  => $pr_number,
+			'filter'     => $filter,
 		)
 	);
 
@@ -1552,7 +1534,7 @@ function vipgoci_github_pr_reviews_comments_get_by_pr(
 		$filter['login'] = $current_user_info->login;
 	}
 
-	$page = 1;
+	$page     = 1;
 	$per_page = 100;
 
 	$all_comments = array();
@@ -1576,7 +1558,7 @@ function vipgoci_github_pr_reviews_comments_get_by_pr(
 			)
 		);
 
-		foreach( $comments as $comment ) {
+		foreach ( $comments as $comment ) {
 			if (
 				( isset( $filter['login'] ) ) &&
 				( $comment->user->login !== $filter['login'] )
@@ -1600,7 +1582,7 @@ function vipgoci_github_pr_reviews_comments_get_by_pr(
 		}
 
 		$page++;
-	} while( count( $comments ) >= $per_page );
+	} while ( count( $comments ) >= $per_page );
 
 	/*
 	 * Cache the results and return
@@ -1623,9 +1605,9 @@ function vipgoci_github_pr_reviews_comments_delete(
 		'Deleting an inline comment from a Pull-Request ' .
 			'Review',
 		array(
-			'repo_owner'	=> $options['repo-owner'],
-			'repo_name'	=> $options['repo-name'],
-			'comment_id'	=> $comment_id,
+			'repo_owner' => $options['repo-owner'],
+			'repo_name'  => $options['repo-name'],
+			'comment_id' => $comment_id,
 		)
 	);
 
@@ -1660,8 +1642,11 @@ function vipgoci_github_pr_generic_comments_get_all(
 	 * Try to get comments from cache
 	 */
 	$cached_id = array(
-		__FUNCTION__, $repo_owner, $repo_name,
-		$pr_number, $github_token
+		__FUNCTION__,
+		$repo_owner,
+		$repo_name,
+		$pr_number,
+		$github_token,
 	);
 
 	$cached_data = vipgoci_cache( $cached_id );
@@ -1669,11 +1654,10 @@ function vipgoci_github_pr_generic_comments_get_all(
 	vipgoci_log(
 		'Fetching Pull-Requests generic comments from GitHub' .
 			vipgoci_cached_indication_str( $cached_data ),
-
 		array(
 			'repo_owner' => $repo_owner,
-			'repo_name' => $repo_name,
-			'pr_number' => $pr_number,
+			'repo_name'  => $repo_name,
+			'pr_number'  => $pr_number,
 		)
 	);
 
@@ -1681,14 +1665,13 @@ function vipgoci_github_pr_generic_comments_get_all(
 		return $cached_data;
 	}
 
-
 	/*
 	 * Nothing in cache, ask GitHub.
 	 */
 
 	$pr_comments_ret = array();
 
-	$page = 1;
+	$page     = 1;
 	$per_page = 100;
 
 	do {
@@ -1703,7 +1686,6 @@ function vipgoci_github_pr_generic_comments_get_all(
 			'?page=' . rawurlencode( $page ) . '&' .
 			'per_page=' . rawurlencode( $per_page );
 
-
 		$pr_comments_raw = json_decode(
 			vipgoci_github_fetch_url(
 				$github_url,
@@ -1717,7 +1699,6 @@ function vipgoci_github_pr_generic_comments_get_all(
 
 		$page++;
 	} while ( count( $pr_comments_raw ) >= $per_page );
-
 
 	vipgoci_cache(
 		$cached_id,
@@ -1746,18 +1727,16 @@ function vipgoci_github_pr_generic_comment_submit_results(
 		VIPGOCI_STATS_LINT,
 	);
 
-
 	vipgoci_log(
 		'About to ' .
 		'submit generic PR comment to GitHub about issues',
 		array(
 			'repo_owner' => $repo_owner,
-			'repo_name' => $repo_name,
-			'commit_id' => $commit_id,
-			'results' => $results,
+			'repo_name'  => $repo_name,
+			'commit_id'  => $commit_id,
+			'results'    => $results,
 		)
 	);
-
 
 	foreach (
 		// The $results['issues'] array is keyed by Pull-Request number
@@ -1774,11 +1753,9 @@ function vipgoci_github_pr_generic_comment_submit_results(
 			rawurlencode( $pr_number ) . '/' .
 			'comments';
 
-
 		$github_postfields = array(
-			'body' => ''
+			'body' => '',
 		);
-
 
 		$tmp_linebreak = false;
 
@@ -1797,23 +1774,19 @@ function vipgoci_github_pr_generic_comment_submit_results(
 				continue;
 			}
 
-
 			/*
 			 * Put in linebreaks
 			 */
 
 			if ( false === $tmp_linebreak ) {
 				$tmp_linebreak = true;
-			}
-
-			else {
+			} else {
 				$github_postfields['body'] .= "\n\r";
 
 				vipgoci_markdown_comment_add_pagebreak(
 					$github_postfields['body']
 				);
 			}
-
 
 			/*
 			 * Construct comment -- (start or continue)
@@ -1822,9 +1795,11 @@ function vipgoci_github_pr_generic_comment_submit_results(
 				'**' .
 
 				// First in: level (error, warning)
-				ucfirst( strtolower(
-					$commit_issue['issue']['level']
-				) ) .
+				ucfirst(
+					strtolower(
+						$commit_issue['issue']['level']
+					)
+				) .
 
 				'**' .
 
@@ -1851,7 +1826,6 @@ function vipgoci_github_pr_generic_comment_submit_results(
 				"\n\r";
 		}
 
-
 		if ( $github_postfields['body'] === '' ) {
 			/*
 			 * No issues? Nothing to report to GitHub.
@@ -1859,7 +1833,6 @@ function vipgoci_github_pr_generic_comment_submit_results(
 
 			continue;
 		}
-
 
 		/*
 		 * There are issues, report them.
@@ -1872,14 +1845,14 @@ function vipgoci_github_pr_generic_comment_submit_results(
 			'**' . VIPGOCI_SYNTAX_ERROR_STR . '**' .
 			"\n\r\n\r" .
 
-			"Scan performed on the code at commit " . $commit_id .
-				" ([view code](" .
+			'Scan performed on the code at commit ' . $commit_id .
+				' ([view code](' .
 				VIPGOCI_GITHUB_WEB_BASE_URL . '/' .
-				rawurlencode( $repo_owner ) . "/" .
-				rawurlencode( $repo_name ) . "/" .
-				"tree/" .
+				rawurlencode( $repo_owner ) . '/' .
+				rawurlencode( $repo_name ) . '/' .
+				'tree/' .
 				rawurlencode( $commit_id ) .
-				"))." .
+				')).' .
 				"\n\r";
 
 		vipgoci_markdown_comment_add_pagebreak(
@@ -1934,10 +1907,10 @@ function vipgoci_github_pr_comments_generic_submit(
 		'Posting a comment to a Pull-Request',
 		array(
 			'repo_owner' => $repo_owner,
-			'repo_name' => $repo_name,
-			'pr_number' => $pr_number,
-			'commit_id' => $commit_id,
-			'message' => $message,
+			'repo_name'  => $repo_name,
+			'pr_number'  => $pr_number,
+			'commit_id'  => $commit_id,
+			'message'    => $message,
 		),
 		0,
 		true // Log to IRC as well
@@ -1952,8 +1925,7 @@ function vipgoci_github_pr_comments_generic_submit(
 		rawurlencode( $pr_number ) . '/' .
 		'comments';
 
-
-	$github_postfields = array();
+	$github_postfields         = array();
 	$github_postfields['body'] =
 		$message;
 
@@ -1988,12 +1960,12 @@ function vipgoci_github_pr_comments_cleanup(
 	vipgoci_log(
 		'About to clean up generic PR comments on Github',
 		array(
-			'repo_owner' => $repo_owner,
-			'repo_name' => $repo_name,
-			'commit_id' => $commit_id,
+			'repo_owner'      => $repo_owner,
+			'repo_name'       => $repo_name,
+			'commit_id'       => $commit_id,
 			'branches_ignore' => $branches_ignore,
 			'comments_remove' => $comments_remove,
-			'skip_draft_prs' => $skip_draft_prs,
+			'skip_draft_prs'  => $skip_draft_prs,
 		)
 	);
 
@@ -2001,7 +1973,6 @@ function vipgoci_github_pr_comments_cleanup(
 	$current_user_info = vipgoci_github_authenticated_user_get(
 		$github_token
 	);
-
 
 	$prs_implicated = vipgoci_github_prs_implicated(
 		$repo_owner,
@@ -2027,7 +1998,6 @@ function vipgoci_github_pr_comments_cleanup(
 				continue;
 			}
 
-
 			/*
 			 * Check if the comment is actually
 			 * a feedback generated by vip-go-ci -- we might
@@ -2036,7 +2006,7 @@ function vipgoci_github_pr_comments_cleanup(
 			 * not want to remove those. Avoid that.
 			 */
 
-			foreach( $comments_remove as $comments_remove_item ) {
+			foreach ( $comments_remove as $comments_remove_item ) {
 				if ( strpos(
 					$pr_comment->body,
 					$comments_remove_item
@@ -2069,12 +2039,11 @@ function vipgoci_github_pr_generic_comment_delete(
 		'About to remove generic PR comment on Github',
 		array(
 			'repo_owner' => $repo_owner,
-			'repo_name' => $repo_name,
+			'repo_name'  => $repo_name,
 			'comment_id' => $comment_id,
 		),
 		1
 	);
-
 
 	$github_url =
 		VIPGOCI_GITHUB_BASE_URL . '/' .
@@ -2110,16 +2079,16 @@ function vipgoci_github_pr_generic_support_comment_submit(
 
 	$log_debugmsg =
 		array(
-			'post-generic-pr-support-comments' =>
+			'post-generic-pr-support-comments'           =>
 				$options['post-generic-pr-support-comments'],
 
 			'post-generic-pr-support-comments-on-drafts' =>
 				$options['post-generic-pr-support-comments-on-drafts'],
 
-			'post-generic-pr-support-comments-string' =>
+			'post-generic-pr-support-comments-string'    =>
 				$options['post-generic-pr-support-comments-string'],
 
-			'post-generic-pr-support-comments-branches' =>
+			'post-generic-pr-support-comments-branches'  =>
 				$options['post-generic-pr-support-comments-branches'],
 
 			'post-generic-pr-support-comments-repo-meta-match' =>
@@ -2142,9 +2111,7 @@ function vipgoci_github_pr_generic_support_comment_submit(
 		);
 
 		return;
-	}
-
-	else {
+	} else {
 		vipgoci_log(
 			'Posting support-comments on Pull-Requests',
 			$log_debugmsg
@@ -2168,15 +2135,12 @@ function vipgoci_github_pr_generic_support_comment_submit(
 		if ( true !== $repo_meta_api_data_match ) {
 			vipgoci_log(
 				'Not posting generic support comment, as repo-meta API field-value did not match given criteria',
-				array(
-				)
+				array()
 			);
 
 			return;
 		}
-	}
-
-	else {
+	} else {
 		/*
 		 * If matching is not configured, we post
 		 * first message we can find.
@@ -2189,8 +2153,7 @@ function vipgoci_github_pr_generic_support_comment_submit(
 		$option_key_no_match = $tmp_generic_support_msgs_keys[0];
 	}
 
-
-	foreach(
+	foreach (
 		$prs_implicated as $pr_item
 	) {
 		/*
@@ -2213,10 +2176,10 @@ function vipgoci_github_pr_generic_support_comment_submit(
 			vipgoci_log(
 				'Not posting support-comment to PR, not in list of target branches',
 				array(
-					'repo-owner'	=> $options['repo-owner'],
-					'repo-name'	=> $options['repo-name'],
-					'pr_number'	=> $pr_item->number,
-					'pr_base_ref'	=> $pr_item->base->ref,
+					'repo-owner'  => $options['repo-owner'],
+					'repo-name'   => $options['repo-name'],
+					'pr_number'   => $pr_item->number,
+					'pr_base_ref' => $pr_item->base->ref,
 					'post-generic-pr-support-comments-branches' =>
 						$options['post-generic-pr-support-comments-branches'][ $option_key_no_match ],
 				)
@@ -2236,14 +2199,14 @@ function vipgoci_github_pr_generic_support_comment_submit(
 			vipgoci_log(
 				'Not posting support-comment to PR, is draft',
 				array(
-					'repo-owner'	=> $options['repo-owner'],
-					'repo-name'	=> $options['repo-name'],
-					'pr_number'	=> $pr_item->number,
-					'pr_base_ref'	=> $pr_item->base->ref,
+					'repo-owner'  => $options['repo-owner'],
+					'repo-name'   => $options['repo-name'],
+					'pr_number'   => $pr_item->number,
+					'pr_base_ref' => $pr_item->base->ref,
 					'post-generic-pr-support-comments-on-drafts' =>
 						$options['post-generic-pr-support-comments-on-drafts'][ $option_key_no_match ],
 				)
-		);
+			);
 
 			continue;
 		}
@@ -2253,25 +2216,25 @@ function vipgoci_github_pr_generic_support_comment_submit(
 		 * has been added to the Pull-Request.
 		 */
 
-		if ( ! empty( $options[ 'post-generic-pr-support-comments-skip-if-label-exists' ][ $option_key_no_match ] ) ) {			
+		if ( ! empty( $options['post-generic-pr-support-comments-skip-if-label-exists'][ $option_key_no_match ] ) ) {
 			$pr_label_support_comment_skip = vipgoci_github_pr_labels_get(
 				$options['repo-owner'],
 				$options['repo-name'],
 				$options['token'],
 				$pr_item->number,
-				$options[ 'post-generic-pr-support-comments-skip-if-label-exists' ][ $option_key_no_match ]
+				$options['post-generic-pr-support-comments-skip-if-label-exists'][ $option_key_no_match ]
 			);
 
 			if ( false !== $pr_label_support_comment_skip ) {
 				vipgoci_log(
 					'Not posting support comment to PR, label exists',
 					array(
-						'repo-owner'	=> $options['repo-owner'],
-						'repo-name'	=> $options['repo-name'],
-						'pr_number'	=> $pr_item->number,
-						'pr_base_ref'	=> $pr_item->base->ref,
+						'repo-owner'  => $options['repo-owner'],
+						'repo-name'   => $options['repo-name'],
+						'pr_number'   => $pr_item->number,
+						'pr_base_ref' => $pr_item->base->ref,
 						'post-generic-pr-support-comments-skip-if-label-exists' =>
-							$options[ 'post-generic-pr-support-comments-skip-if-label-exists' ][ $option_key_no_match ]
+							$options['post-generic-pr-support-comments-skip-if-label-exists'][ $option_key_no_match ],
 					)
 				);
 
@@ -2294,7 +2257,7 @@ function vipgoci_github_pr_generic_support_comment_submit(
 
 		$comment_exists_already = false;
 
-		foreach(
+		foreach (
 			$existing_comments as
 				$existing_comment_item
 		) {
@@ -2311,7 +2274,7 @@ function vipgoci_github_pr_generic_support_comment_submit(
 			vipgoci_log(
 				'Not submitting support-comment to Pull-Request as it already exists',
 				array(
-					'pr_number'	=> $pr_item->number,
+					'pr_number' => $pr_item->number,
 				)
 			);
 
@@ -2353,7 +2316,10 @@ function vipgoci_github_pr_reviews_get(
 ) {
 
 	$cache_id = array(
-		__FUNCTION__, $repo_owner, $repo_name, $pr_number,
+		__FUNCTION__,
+		$repo_owner,
+		$repo_name,
+		$pr_number,
 		$github_token,
 	);
 
@@ -2368,13 +2334,12 @@ function vipgoci_github_pr_reviews_get(
 			vipgoci_cached_indication_str( $cached_data ),
 		array(
 			'repo_owner' => $repo_owner,
-			'repo_name' => $repo_name,
-			'pr_number' => $pr_number,
-			'filter' => $filter,
+			'repo_name'  => $repo_name,
+			'pr_number'  => $pr_number,
+			'filter'     => $filter,
 			'skip_cache' => $skip_cache,
 		)
 	);
-
 
 	if ( false === $cached_data ) {
 		/*
@@ -2383,7 +2348,7 @@ function vipgoci_github_pr_reviews_get(
 
 		$ret_reviews = array();
 
-		$page = 1;
+		$page     = 1;
 		$per_page = 100;
 
 		do {
@@ -2398,7 +2363,6 @@ function vipgoci_github_pr_reviews_get(
 				'?per_page=' . rawurlencode( $per_page ) . '&' .
 				'page=' . rawurlencode( $page );
 
-
 			/*
 			 * Fetch reviews, decode result.
 			 */
@@ -2409,26 +2373,22 @@ function vipgoci_github_pr_reviews_get(
 				)
 			);
 
-			foreach( $pr_reviews as $pr_review ) {
+			foreach ( $pr_reviews as $pr_review ) {
 				$ret_reviews[] = $pr_review;
 			}
 
 			unset( $pr_review );
 
 			$page++;
-		} while( count( $pr_reviews ) >= $per_page );
-
+		} while ( count( $pr_reviews ) >= $per_page );
 
 		vipgoci_cache(
 			$cache_id,
 			$ret_reviews
 		);
-	}
-
-	else {
+	} else {
 		$ret_reviews = $cached_data;
 	}
-
 
 	/*
 	 * Figure out login name.
@@ -2452,7 +2412,7 @@ function vipgoci_github_pr_reviews_get(
 
 	$ret_reviews_filtered = array();
 
-	foreach( $ret_reviews as $pr_review ) {
+	foreach ( $ret_reviews as $pr_review ) {
 		if ( ! empty( $filter['login'] ) ) {
 			if (
 				$pr_review->user->login !==
@@ -2465,7 +2425,7 @@ function vipgoci_github_pr_reviews_get(
 		if ( ! empty( $filter['state'] ) ) {
 			$match = false;
 
-			foreach(
+			foreach (
 				$filter['state'] as
 					$allowed_state
 			) {
@@ -2484,7 +2444,6 @@ function vipgoci_github_pr_reviews_get(
 
 		$ret_reviews_filtered[] = $pr_review;
 	}
-
 
 	return $ret_reviews_filtered;
 }
@@ -2514,12 +2473,11 @@ function vipgoci_github_pr_review_submit(
 		'About to submit comment(s) to GitHub about issue(s)',
 		array(
 			'repo_owner' => $repo_owner,
-			'repo_name' => $repo_name,
-			'commit_id' => $commit_id,
-			'results' => $results,
+			'repo_name'  => $repo_name,
+			'commit_id'  => $commit_id,
+			'results'    => $results,
 		)
 	);
-
 
 	/*
 	 * Reverse results before starting processing,
@@ -2553,12 +2511,11 @@ function vipgoci_github_pr_review_submit(
 			rawurlencode( $pr_number ) . '/' .
 			'reviews';
 
-
 		$github_postfields = array(
-			'commit_id'	=> $commit_id,
-			'body'		=> '',
-			'event'		=> '',
-			'comments'	=> array(),
+			'commit_id' => $commit_id,
+			'body'      => '',
+			'event'     => '',
+			'comments'  => array(),
 		);
 
 		/*
@@ -2587,20 +2544,21 @@ function vipgoci_github_pr_review_submit(
 			 */
 
 			$github_postfields['comments'][] = array(
-				'body'		=>
+				'body'     =>
 
 					// Add nice label
 					vipgoci_github_transform_to_emojis(
 						$commit_issue['issue']['level']
 					) . ' ' .
 
-
 					'**' .
 
 					// Level -- error, warning
-					ucfirst( strtolower(
-						$commit_issue['issue']['level']
-						)) .
+					ucfirst(
+						strtolower(
+							$commit_issue['issue']['level']
+						)
+					) .
 
 					(
 						true === $github_review_comments_include_severity ?
@@ -2623,18 +2581,16 @@ function vipgoci_github_pr_review_submit(
 						)
 					)
 
-
 					. ' (*' .
 					htmlentities(
 						$commit_issue['issue']['source']
 					)
 					. '*).',
 
-				'position'	=> $commit_issue['file_line'],
-				'path'		=> $commit_issue['file_name']
+				'position' => $commit_issue['file_line'],
+				'path'     => $commit_issue['file_name'],
 			);
 		}
-
 
 		/*
 		 * Figure out what to report to GitHub.
@@ -2648,9 +2604,9 @@ function vipgoci_github_pr_review_submit(
 
 		$github_postfields['event'] = 'COMMENT';
 
-		$github_errors = false;
+		$github_errors   = false;
 		$github_warnings = false;
-		$github_info = false;
+		$github_info     = false;
 
 		foreach (
 			$stats_types_to_process as
@@ -2661,7 +2617,7 @@ function vipgoci_github_pr_review_submit(
 					[ $stats_type ][ $pr_number ]['error']
 			) ) {
 				$github_postfields['event'] = 'REQUEST_CHANGES';
-				$github_errors = true;
+				$github_errors              = true;
 			}
 
 			if ( ! empty(
@@ -2695,7 +2651,6 @@ function vipgoci_github_pr_review_submit(
 
 		unset( $github_errors );
 		unset( $github_warnings );
-
 
 		/*
 		 * Compose the number of warnings/errors for the
@@ -2734,7 +2689,6 @@ function vipgoci_github_pr_review_submit(
 				continue;
 			}
 
-
 			/*
 			 * If the current stat-type has no items
 			 * to report, do not print out anything for
@@ -2743,7 +2697,7 @@ function vipgoci_github_pr_review_submit(
 
 			$found_stats_to_ignore = true;
 
-			foreach(
+			foreach (
 				$results
 					['stats']
 					[ strtolower( $stats_type ) ]
@@ -2763,7 +2717,6 @@ function vipgoci_github_pr_review_submit(
 			}
 
 			unset( $found_stats_to_ignore );
-
 
 			$github_postfields['body'] .=
 				'**' . $stats_type . '**' .
@@ -2814,12 +2767,12 @@ function vipgoci_github_pr_review_submit(
 			$github_token,
 			array(
 				'login' => 'myself',
-				'state' => array( 'COMMENTED', 'CHANGES_REQUESTED' )
+				'state' => array( 'COMMENTED', 'CHANGES_REQUESTED' ),
 			)
 		);
 
-		$validation_message = get_validation_message_prefix( VIPGOCI_VALIDATION_MAXIMUM_LINES, $skip_large_files_limit );
-		$results[VIPGOCI_SKIPPED_FILES][ $pr_number ] = vipgo_skip_file_check_previous_pr_comments( $results[VIPGOCI_SKIPPED_FILES][ $pr_number ], $pr_reviews_commented, $validation_message );
+		$validation_message                             = get_validation_message_prefix( VIPGOCI_VALIDATION_MAXIMUM_LINES, $skip_large_files_limit );
+		$results[ VIPGOCI_SKIPPED_FILES ][ $pr_number ] = vipgo_skip_file_check_previous_pr_comments( $results[ VIPGOCI_SKIPPED_FILES ][ $pr_number ], $pr_reviews_commented, $validation_message );
 
 		/**
 		 * Format skipped files message if the validation has issues
@@ -2829,7 +2782,7 @@ function vipgoci_github_pr_review_submit(
 				$github_postfields['body']
 			);
 
-			$github_postfields[ 'body' ] .= vipgoci_get_skipped_files_message(
+			$github_postfields['body'] .= vipgoci_get_skipped_files_message(
 				$results[ VIPGOCI_SKIPPED_FILES ][ $pr_number ],
 				$validation_message
 			);
@@ -2848,10 +2801,8 @@ function vipgoci_github_pr_review_submit(
 				$github_postfields['body']
 			);
 
-
 			$github_postfields['body'] .= $informational_msg;
 		}
-
 
 		/*
 		 * Only submit a specific number of comments in one go.
@@ -2873,7 +2824,6 @@ function vipgoci_github_pr_review_submit(
 				"\n\r" .
 				'Posting will continue in further review(s)';
 		}
-
 
 		do {
 			/*
@@ -2968,11 +2918,11 @@ function vipgoci_github_pr_review_dismiss(
 	vipgoci_log(
 		'Dismissing a Pull-Request Review',
 		array(
-			'repo_owner'		=> $repo_owner,
-			'repo_name'		=> $repo_name,
-			'pr_number'		=> $pr_number,
-			'review_id'		=> $review_id,
-			'dismiss_message'	=> $dismiss_message,
+			'repo_owner'      => $repo_owner,
+			'repo_name'       => $repo_name,
+			'pr_number'       => $pr_number,
+			'review_id'       => $review_id,
+			'dismiss_message' => $dismiss_message,
 		)
 	);
 
@@ -2990,7 +2940,7 @@ function vipgoci_github_pr_review_dismiss(
 	vipgoci_github_put_url(
 		$github_url,
 		array(
-			'message' => $dismiss_message
+			'message' => $dismiss_message,
 		),
 		$github_token
 	);
@@ -3009,15 +2959,15 @@ function vipgoci_github_pr_reviews_dismiss_with_non_active_comments(
 		'Dismissing any Pull-Request reviews submitted by ' .
 			'us and contain no active inline comments any more',
 		array(
-			'repo_owner'		=> $options['repo-owner'],
-			'repo_name'		=> $options['repo-name'],
-			'pr_number'		=> $pr_number,
+			'repo_owner' => $options['repo-owner'],
+			'repo_name'  => $options['repo-name'],
+			'pr_number'  => $pr_number,
 		)
 	);
 
 	/*
 	 * Get any Pull-Request reviews with changes
- 	 * required status, and submitted by us.
+	  * required status, and submitted by us.
 	 */
 	$pr_reviews = vipgoci_github_pr_reviews_get(
 		$options['repo-owner'],
@@ -3026,7 +2976,7 @@ function vipgoci_github_pr_reviews_dismiss_with_non_active_comments(
 		$options['token'],
 		array(
 			'login' => 'myself',
-			'state' => array( 'CHANGES_REQUESTED' )
+			'state' => array( 'CHANGES_REQUESTED' ),
 		)
 	);
 
@@ -3039,8 +2989,8 @@ function vipgoci_github_pr_reviews_dismiss_with_non_active_comments(
 		$options,
 		$pr_number,
 		array(
-			'login' => 'myself',
-			'timestamp' => time() // To bypass caching
+			'login'     => 'myself',
+			'timestamp' => time(), // To bypass caching
 		)
 	);
 
@@ -3060,9 +3010,9 @@ function vipgoci_github_pr_reviews_dismiss_with_non_active_comments(
 				'comments submitted to the Pull-Request ' .
 				'were found',
 			array(
-				'repo_owner'	=> $options['repo-owner'],
-				'repo_name'	=> $options['repo-name'],
-				'pr_number'	=> $pr_number,
+				'repo_owner' => $options['repo-owner'],
+				'repo_name'  => $options['repo-name'],
+				'pr_number'  => $pr_number,
 			)
 		);
 
@@ -3071,7 +3021,7 @@ function vipgoci_github_pr_reviews_dismiss_with_non_active_comments(
 
 	$reviews_status = array();
 
-	foreach( $all_comments as $comment_item ) {
+	foreach ( $all_comments as $comment_item ) {
 		/*
 		 * Not associated with a review? Ignore then.
 		 */
@@ -3083,12 +3033,10 @@ function vipgoci_github_pr_reviews_dismiss_with_non_active_comments(
 		 * If the review ID is not found in
 		 * the array of reviews, put in 'null'.
 		 */
-		if ( ! isset( $reviews_status[
-			$comment_item->pull_request_review_id
-		] ) ) {
-			$reviews_status[
-				$comment_item->pull_request_review_id
-			] = null;
+		if ( ! isset(
+			$reviews_status[ $comment_item->pull_request_review_id ]
+		) ) {
+			$reviews_status[ $comment_item->pull_request_review_id ] = null;
 		}
 
 		/*
@@ -3102,20 +3050,12 @@ function vipgoci_github_pr_reviews_dismiss_with_non_active_comments(
 		 */
 		if ( null === $comment_item->position ) {
 			if (
-				$reviews_status[
-					$comment_item->pull_request_review_id
-				] !== false
+				$reviews_status[ $comment_item->pull_request_review_id ] !== false
 			) {
-				$reviews_status[
-					$comment_item->pull_request_review_id
-				] = true;
+				$reviews_status[ $comment_item->pull_request_review_id ] = true;
 			}
-		}
-
-		else {
-			$reviews_status[
-				$comment_item->pull_request_review_id
-			] = false;
+		} else {
+			$reviews_status[ $comment_item->pull_request_review_id ] = false;
 		}
 	}
 
@@ -3127,7 +3067,7 @@ function vipgoci_github_pr_reviews_dismiss_with_non_active_comments(
 	 * there must be some comments attached to a
 	 * review so it becomes dismissable at all.
 	 */
-	foreach( $pr_reviews as $pr_review ) {
+	foreach ( $pr_reviews as $pr_review ) {
 		/*
 		 * If no active comments were found,
 		 * it should be safe to dismiss the review.
@@ -3180,9 +3120,9 @@ function vipgoci_github_approve_pr(
 
 	$github_postfields = array(
 		'commit_id' => $latest_commit_id,
-		'body' => null,
-		'event' => 'APPROVE',
-		'comments' => array()
+		'body'      => null,
+		'event'     => 'APPROVE',
+		'comments'  => array(),
 	);
 
 	$github_postfields['body'] = $message;
@@ -3190,12 +3130,12 @@ function vipgoci_github_approve_pr(
 	vipgoci_log(
 		'Sending request to GitHub to approve Pull-Request',
 		array(
-			'repo_owner'		=> $repo_owner,
-			'repo_name'		=> $repo_name,
-			'pr_number'		=> $pr_number,
-			'latest_commit_id'	=> $latest_commit_id,
-			'github_url'		=> $github_url,
-			'github_postfields'	=> $github_postfields,
+			'repo_owner'        => $repo_owner,
+			'repo_name'         => $repo_name,
+			'pr_number'         => $pr_number,
+			'latest_commit_id'  => $latest_commit_id,
+			'github_url'        => $github_url,
+			'github_postfields' => $github_postfields,
 		),
 		2
 	);
@@ -3234,15 +3174,17 @@ function vipgoci_github_prs_implicated(
 	 * Otherwise simply bypass.
 	 */
 	$cached_id = array(
-		__FUNCTION__, $repo_owner, $repo_name,
-		$commit_id, $github_token, $branches_ignore
+		__FUNCTION__,
+		$repo_owner,
+		$repo_name,
+		$commit_id,
+		$github_token,
+		$branches_ignore,
 	);
 
 	if ( false === $bypass_cache ) {
 		$cached_data = vipgoci_cache( $cached_id );
-	}
-
-	else {
+	} else {
 		$cached_data = false;
 	}
 
@@ -3250,12 +3192,12 @@ function vipgoci_github_prs_implicated(
 		'Fetching all open Pull-Requests from GitHub' .
 			vipgoci_cached_indication_str( $cached_data ),
 		array(
-			'repo_owner'		=> $repo_owner,
-			'repo_name'		=> $repo_name,
-			'commit_id'		=> $commit_id,
-			'branches_ignore'	=> $branches_ignore,
-			'skip_draft_prs'	=> $skip_draft_prs,
-			'bypass_cache'		=> $bypass_cache,
+			'repo_owner'      => $repo_owner,
+			'repo_name'       => $repo_name,
+			'commit_id'       => $commit_id,
+			'branches_ignore' => $branches_ignore,
+			'skip_draft_prs'  => $skip_draft_prs,
+			'bypass_cache'    => $bypass_cache,
 		)
 	);
 
@@ -3278,8 +3220,7 @@ function vipgoci_github_prs_implicated(
 
 	$prs_implicated = array();
 
-
-	$page = 1;
+	$page     = 1;
 	$per_page = 100;
 
 	/*
@@ -3298,7 +3239,6 @@ function vipgoci_github_prs_implicated(
 			'page=' . rawurlencode( $page ) . '&' .
 			'per_page=' . rawurlencode( $per_page );
 
-
 		// FIXME: Detect when GitHub sent back an error
 		$prs_implicated_unfiltered = json_decode(
 			vipgoci_github_fetch_url(
@@ -3306,7 +3246,6 @@ function vipgoci_github_prs_implicated(
 				$github_token
 			)
 		);
-
 
 		foreach ( $prs_implicated_unfiltered as $pr_item ) {
 			if ( ! isset( $pr_item->head->ref ) ) {
@@ -3325,7 +3264,6 @@ function vipgoci_github_prs_implicated(
 				continue;
 			}
 
-
 			/*
 			 * If the commit we are processing currently
 			 * matches the head-commit of the Pull-Request,
@@ -3337,18 +3275,17 @@ function vipgoci_github_prs_implicated(
 			}
 		}
 
-		sleep ( 2 );
+		sleep( 2 );
 
 		$page++;
 	} while ( count( $prs_implicated_unfiltered ) >= $per_page );
-
 
 	/*
 	 * Convert number parameter of each object
 	 * saved to an integer.
 	 */
 
-	foreach(
+	foreach (
 		array_keys( $prs_implicated ) as
 			$pr_implicated
 	) {
@@ -3373,14 +3310,14 @@ function vipgoci_github_prs_implicated(
 }
 
 /**
- * @param string $repo_owner 
+ * @param string $repo_owner
  * @param string $repo_name
  * @param string $commit_id
  * @param string $github_token
- * @param array $branches_ignore
- * @param bool $skip_draft_prs
- * @param int $try_total
- * @param int $sleep_time
+ * @param array  $branches_ignore
+ * @param bool   $skip_draft_prs
+ * @param int    $try_total
+ * @param int    $sleep_time
  *
  * Get pull requests currently open, but retry if
  * nothing is found. Uses vipgoci_github_prs_implicated().
@@ -3406,7 +3343,7 @@ function vipgoci_github_prs_implicated_with_retries(
 			vipgoci_log(
 				'No PR found, retrying...',
 				array(
-					'sleep_time'	=> $sleep_time,
+					'sleep_time' => $sleep_time,
 				)
 			);
 
@@ -3422,7 +3359,7 @@ function vipgoci_github_prs_implicated_with_retries(
 			$skip_draft_prs,
 			( $prs_implicated_retries === 0 ) ? false : true
 		);
-		
+
 		$prs_implicated_retries++;
 	} while (
 		( empty( $prs_implicated ) ) &&
@@ -3447,23 +3384,24 @@ function vipgoci_github_prs_commits_list(
 	 * Check for cached copy
 	 */
 	$cached_id = array(
-		__FUNCTION__, $repo_owner, $repo_name,
-		$pr_number, $github_token
+		__FUNCTION__,
+		$repo_owner,
+		$repo_name,
+		$pr_number,
+		$github_token,
 	);
 
 	$cached_data = vipgoci_cache( $cached_id );
-
 
 	vipgoci_log(
 		'Fetching information about all commits made' .
 			' to Pull-Request #' .
 			(int) $pr_number . ' from GitHub' .
 			vipgoci_cached_indication_str( $cached_data ),
-
 		array(
 			'repo_owner' => $repo_owner,
-			'repo_name' => $repo_name,
-			'pr_number' => $pr_number,
+			'repo_name'  => $repo_name,
+			'pr_number'  => $pr_number,
 		)
 	);
 
@@ -3477,8 +3415,7 @@ function vipgoci_github_prs_commits_list(
 
 	$pr_commits = array();
 
-
-	$page = 1;
+	$page     = 1;
 	$per_page = 100;
 
 	do {
@@ -3492,7 +3429,6 @@ function vipgoci_github_prs_commits_list(
 			'commits?' .
 			'page=' . rawurlencode( $page ) . '&' .
 			'per_page=' . rawurlencode( $per_page );
-
 
 		// FIXME: Detect when GitHub sent back an error
 		$pr_commits_raw = json_decode(
@@ -3522,7 +3458,8 @@ function vipgoci_github_prs_commits_list(
  */
 function vipgoci_github_authenticated_user_get( $github_token ) {
 	$cached_id = array(
-		__FUNCTION__, $github_token
+		__FUNCTION__,
+		$github_token,
 	);
 
 	$cached_data = vipgoci_cache( $cached_id );
@@ -3530,14 +3467,12 @@ function vipgoci_github_authenticated_user_get( $github_token ) {
 	vipgoci_log(
 		'Trying to get information about the user the GitHub-token belongs to' .
 			vipgoci_cached_indication_str( $cached_data ),
-		array(
-		)
+		array()
 	);
 
 	if ( false !== $cached_data ) {
 		return $cached_data;
 	}
-
 
 	$github_url =
 		VIPGOCI_GITHUB_BASE_URL . '/' .
@@ -3565,13 +3500,12 @@ function vipgoci_github_authenticated_user_get( $github_token ) {
 				'GitHub due to error',
 			array(
 				'current_user_info_json' => $current_user_info_json,
-				'current_user_info' => $current_user_info,
+				'current_user_info'      => $current_user_info,
 			)
 		);
 
 		return false;
 	}
-
 
 	vipgoci_cache( $cached_id, $current_user_info );
 
@@ -3594,8 +3528,8 @@ function vipgoci_github_label_add_to_pr(
 		'Adding label to GitHub issue',
 		array(
 			'repo_owner' => $repo_owner,
-			'repo_name' => $repo_name,
-			'pr_number' => $pr_number,
+			'repo_name'  => $repo_name,
+			'pr_number'  => $pr_number,
 			'label_name' => $label_name,
 		)
 	);
@@ -3610,7 +3544,7 @@ function vipgoci_github_label_add_to_pr(
 		'labels';
 
 	$github_postfields = array(
-		$label_name
+		$label_name,
 	);
 
 	vipgoci_github_post_url(
@@ -3637,8 +3571,11 @@ function vipgoci_github_pr_labels_get(
 	 * got the information cached
 	 */
 	$cache_id = array(
-		__FUNCTION__, $repo_owner, $repo_name,
-		$github_token, $pr_number
+		__FUNCTION__,
+		$repo_owner,
+		$repo_name,
+		$github_token,
+		$pr_number,
 	);
 
 	$cached_data = vipgoci_cache( $cache_id );
@@ -3658,11 +3595,11 @@ function vipgoci_github_pr_labels_get(
 		'Getting labels associated with GitHub issue' .
 			vipgoci_cached_indication_str( $cached_data ),
 		array(
-			'repo_owner' => $repo_owner,
-			'repo_name' => $repo_name,
-			'pr_number' => $pr_number,
+			'repo_owner'        => $repo_owner,
+			'repo_name'         => $repo_name,
+			'pr_number'         => $pr_number,
 			'label_to_look_for' => $label_to_look_for,
-			'skip_cache' => $skip_cache,
+			'skip_cache'        => $skip_cache,
 		)
 	);
 
@@ -3688,9 +3625,7 @@ function vipgoci_github_pr_labels_get(
 		$data = json_decode( $data );
 
 		vipgoci_cache( $cache_id, $data );
-	}
-
-	else {
+	} else {
 		$data = $cached_data;
 	}
 
@@ -3700,15 +3635,13 @@ function vipgoci_github_pr_labels_get(
 
 	if ( empty( $data ) ) {
 		return false;
-	}
-
-	else if ( ( ! empty( $data ) ) && ( null !== $label_to_look_for ) ) {
+	} elseif ( ( ! empty( $data ) ) && ( null !== $label_to_look_for ) ) {
 		/*
 		 * Decoding of data succeeded,
 		 * look for any labels and return
 		 * them specifically
 		 */
-		foreach( $data as $data_item ) {
+		foreach ( $data as $data_item ) {
 			if ( $data_item->name === $label_to_look_for ) {
 				return $data_item;
 			}
@@ -3736,8 +3669,8 @@ function vipgoci_github_pr_label_remove(
 		'Removing label from GitHub issue',
 		array(
 			'repo_owner' => $repo_owner,
-			'repo_name' => $repo_name,
-			'pr_number' => $pr_number,
+			'repo_name'  => $repo_name,
+			'pr_number'  => $pr_number,
 			'label_name' => $label_name,
 		)
 	);
@@ -3776,8 +3709,11 @@ function vipgoci_github_pr_review_events_get(
 	$review_ids_only = false
 ) {
 	$cached_id = array(
-		__FUNCTION__, $options['repo-owner'], $options['repo-name'],
-		$options['token'], $pr_number
+		__FUNCTION__,
+		$options['repo-owner'],
+		$options['repo-name'],
+		$options['token'],
+		$pr_number,
 	);
 
 	$cached_data = vipgoci_cache( $cached_id );
@@ -3786,16 +3722,16 @@ function vipgoci_github_pr_review_events_get(
 		'Getting issue events for Pull-Request from GitHub API' .
 		vipgoci_cached_indication_str( $cached_data ),
 		array(
-			'repo_owner' => $options['repo-owner'],
-			'repo_name' => $options['repo-name'],
-			'pr_number' => $pr_number,
-			'filter' => $filter,
+			'repo_owner'      => $options['repo-owner'],
+			'repo_name'       => $options['repo-name'],
+			'pr_number'       => $pr_number,
+			'filter'          => $filter,
 			'review_ids_only' => $review_ids_only,
 		)
 	);
 
 	if ( false === $cached_data ) {
-		$page = 1;
+		$page     = 1;
 		$per_page = 100;
 
 		$all_issue_events = array();
@@ -3812,7 +3748,6 @@ function vipgoci_github_pr_review_events_get(
 				'page=' . rawurlencode( $page ) . '&' .
 				'per_page=' . rawurlencode( $per_page );
 
-
 			$issue_events = vipgoci_github_fetch_url(
 				$github_url,
 				$options['token']
@@ -3822,7 +3757,7 @@ function vipgoci_github_pr_review_events_get(
 				$issue_events
 			);
 
-			foreach( $issue_events as $issue_event ) {
+			foreach ( $issue_events as $issue_event ) {
 				$all_issue_events[] = $issue_event;
 			}
 
@@ -3838,9 +3773,7 @@ function vipgoci_github_pr_review_events_get(
 			$cached_id,
 			$issue_events
 		);
-	}
-
-	else {
+	} else {
 		$issue_events = $cached_data;
 	}
 
@@ -3852,7 +3785,7 @@ function vipgoci_github_pr_review_events_get(
 	if ( null !== $filter ) {
 		$filtered_issue_events = array();
 
-		foreach( $issue_events as $issue_event ) {
+		foreach ( $issue_events as $issue_event ) {
 			if (
 				( ! empty( $filter['event_type'] ) ) &&
 				( is_string( $filter['event_type'] ) ) &&
@@ -3886,7 +3819,6 @@ function vipgoci_github_pr_review_events_get(
 				continue;
 			}
 
-
 			$filtered_issue_events[] = $issue_event;
 		}
 
@@ -3896,7 +3828,7 @@ function vipgoci_github_pr_review_events_get(
 	if ( true === $review_ids_only ) {
 		$issue_events_ret = array();
 
-		foreach( $issue_events as $issue_event ) {
+		foreach ( $issue_events as $issue_event ) {
 			if ( ! isset(
 				$issue_event->dismissed_review->review_id
 			) ) {
@@ -3923,7 +3855,9 @@ function vipgoci_github_team_members_get(
 	$return_values_only = null
 ) {
 	$cached_id = array(
-		__FUNCTION__, $github_token, $team_id
+		__FUNCTION__,
+		$github_token,
+		$team_id,
 	);
 
 	$cached_data = vipgoci_cache( $cached_id );
@@ -3932,13 +3866,13 @@ function vipgoci_github_team_members_get(
 		'Getting members for organization team' .
 		vipgoci_cached_indication_str( $cached_data ),
 		array(
-			'team_id' => $team_id,
+			'team_id'            => $team_id,
 			'return_values_only' => $return_values_only,
 		)
 	);
 
 	if ( false === $cached_data ) {
-		$page = 1;
+		$page     = 1;
 		$per_page = 100;
 
 		$team_members_all = array();
@@ -3952,7 +3886,6 @@ function vipgoci_github_team_members_get(
 				'page=' . rawurlencode( $page ) . '&' .
 				'per_page=' . rawurlencode( $per_page );
 
-
 			$team_members = vipgoci_github_fetch_url(
 				$github_url,
 				$github_token
@@ -3962,7 +3895,7 @@ function vipgoci_github_team_members_get(
 				$team_members
 			);
 
-			foreach( $team_members as $team_member ) {
+			foreach ( $team_members as $team_member ) {
 				$team_members_all[] = $team_member;
 			}
 
@@ -3977,9 +3910,7 @@ function vipgoci_github_team_members_get(
 			$cached_id,
 			$team_members
 		);
-	}
-
-	else {
+	} else {
 		$team_members = $cached_data;
 	}
 
@@ -4017,7 +3948,7 @@ function vipgoci_github_team_members_many_get(
 
 	$team_members_ids_arr = array();
 
-	foreach( $team_ids_arr as $team_id_item ) {
+	foreach ( $team_ids_arr as $team_id_item ) {
 		$team_id_members = vipgoci_github_team_members_get(
 			$github_token,
 			$team_id_item,
@@ -4049,7 +3980,9 @@ function vipgoci_github_org_teams_get(
 	$keyed_by = null
 ) {
 	$cached_id = array(
-		__FUNCTION__, $github_token, $org_id
+		__FUNCTION__,
+		$github_token,
+		$org_id,
 	);
 
 	$cached_data = vipgoci_cache( $cached_id );
@@ -4058,14 +3991,14 @@ function vipgoci_github_org_teams_get(
 		'Getting organization teams from GitHub API' .
 		vipgoci_cached_indication_str( $cached_data ),
 		array(
-			'org_id' => $org_id,
-			'filter' => $filter,
+			'org_id'   => $org_id,
+			'filter'   => $filter,
 			'keyed_by' => $keyed_by,
 		)
 	);
 
 	if ( false === $cached_data ) {
-		$page = 1;
+		$page     = 1;
 		$per_page = 100;
 
 		$org_teams_all = array();
@@ -4079,7 +4012,6 @@ function vipgoci_github_org_teams_get(
 				'page=' . rawurlencode( $page ) . '&' .
 				'per_page=' . rawurlencode( $per_page );
 
-
 			$org_teams = vipgoci_github_fetch_url(
 				$github_url,
 				$github_token
@@ -4089,7 +4021,7 @@ function vipgoci_github_org_teams_get(
 				$org_teams
 			);
 
-			foreach( $org_teams as $org_team ) {
+			foreach ( $org_teams as $org_team ) {
 				$org_teams_all[] = $org_team;
 			}
 
@@ -4103,12 +4035,9 @@ function vipgoci_github_org_teams_get(
 			$cached_id,
 			$org_teams
 		);
-	}
-
-	else {
+	} else {
 		$org_teams = $cached_data;
 	}
-
 
 	/*
 	 * Filter the results according to criteria.
@@ -4120,7 +4049,7 @@ function vipgoci_github_org_teams_get(
 	) {
 		$org_teams_filtered = array();
 
-		foreach( $org_teams as $org_team ) {
+		foreach ( $org_teams as $org_team ) {
 			if ( $filter['slug'] === $org_team->slug ) {
 				$org_teams_filtered[] = $org_team;
 			}
@@ -4129,7 +4058,6 @@ function vipgoci_github_org_teams_get(
 		$org_teams = $org_teams_filtered;
 	}
 
-
 	/*
 	 * If asked for, let the resulting
 	 * array be keyed with a certain field.
@@ -4137,7 +4065,7 @@ function vipgoci_github_org_teams_get(
 	if ( null !== $keyed_by ) {
 		$org_teams_keyed = array();
 
-		foreach( $org_teams as $org_team ) {
+		foreach ( $org_teams as $org_team ) {
 			$org_team_arr = (array) $org_team;
 
 			/*
@@ -4148,11 +4076,7 @@ function vipgoci_github_org_teams_get(
 				continue;
 			}
 
-			$org_teams_keyed[
-				$org_team_arr[
-					$keyed_by
-				]
-			][] = $org_team;
+			$org_teams_keyed[ $org_team_arr[ $keyed_by ] ][] = $org_team;
 		}
 
 		$org_teams = $org_teams_keyed;
@@ -4178,7 +4102,10 @@ function vipgoci_github_repo_collaborators_get(
 	$filter = array()
 ) {
 	$cached_id = array(
-		__FUNCTION__, $repo_owner, $repo_name, $affiliation
+		__FUNCTION__,
+		$repo_owner,
+		$repo_name,
+		$affiliation,
 	);
 
 	$cached_data = vipgoci_cache( $cached_id );
@@ -4187,15 +4114,15 @@ function vipgoci_github_repo_collaborators_get(
 		'Getting collaborators for repository from GitHub API' .
 		vipgoci_cached_indication_str( $cached_data ),
 		array(
-			'repo_owner'	=> $repo_owner,
-			'repo_name'	=> $repo_name,
-			'affiliation'	=> $affiliation,
-			'filter'	=> $filter,
+			'repo_owner'  => $repo_owner,
+			'repo_name'   => $repo_name,
+			'affiliation' => $affiliation,
+			'filter'      => $filter,
 		)
 	);
 
 	if ( false === $cached_data ) {
-		$page = 1;
+		$page     = 1;
 		$per_page = 100;
 
 		$repo_users_all = array();
@@ -4223,7 +4150,7 @@ function vipgoci_github_repo_collaborators_get(
 				$repo_users
 			);
 
-			foreach( $repo_users as $repo_user_item ) {
+			foreach ( $repo_users as $repo_user_item ) {
 				$repo_users_all[] = $repo_user_item;
 			}
 
@@ -4236,9 +4163,7 @@ function vipgoci_github_repo_collaborators_get(
 			$cached_id,
 			$repo_users_all
 		);
-	}
-
-	else {
+	} else {
 		$repo_users_all = $cached_data;
 	}
 
@@ -4251,7 +4176,7 @@ function vipgoci_github_repo_collaborators_get(
 	foreach (
 		$repo_users_all as $repo_user_item
 	) {
-		foreach( array( 'admin', 'push', 'pull' ) as $_prop ) {
+		foreach ( array( 'admin', 'push', 'pull' ) as $_prop ) {
 			$repo_user_item_tmp = (array) $repo_user_item;
 
 			if ( isset( $repo_user_item_tmp['permissions'] ) ) {
@@ -4299,23 +4224,23 @@ function vipgoci_github_status_create(
 		rawurlencode( $commit_id );
 
 	$github_postfields = array(
-		'state'		=> $state,
-		'description'	=> $description,
-		'context'	=> $context,
+		'state'       => $state,
+		'description' => $description,
+		'context'     => $context,
 	);
 
 	if ( ! empty( $target_url ) ) {
-		$github_postfields[ 'target_url' ] =
+		$github_postfields['target_url'] =
 			$target_url;
 	}
 
 	vipgoci_log(
 		'Setting GitHub commit status for a particular commit-ID',
 		array(
-			'repo_owner'	=> $repo_owner,
-			'repo_name'	=> $repo_name,
-			'commit_id'	=> $commit_id,
-			'status'	=> $github_postfields,
+			'repo_owner' => $repo_owner,
+			'repo_name'  => $repo_name,
+			'commit_id'  => $commit_id,
+			'status'     => $github_postfields,
 		)
 	);
 

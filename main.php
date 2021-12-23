@@ -20,7 +20,7 @@ function vipgoci_help_print( $argv ) {
 		"\t" . '                                -- higher number indicates more detailed debugging-messages.' . PHP_EOL .
 		"\t" . '                               Default is zero' . PHP_EOL .
 		"\t" . '--max-exec-time=NUMBER         Maximum execution time for vip-go-ci, in seconds. Will exit if exceeded.' . PHP_EOL .
-		"\t" . '--enforce-https-urls=BOOL      Check and enforce that all URLs provided to parameters ' .PHP_EOL .
+		"\t" . '--enforce-https-urls=BOOL      Check and enforce that all URLs provided to parameters ' . PHP_EOL .
 		"\t" . '                               that expect a URL are HTTPS and not HTTP. Default is true.' . PHP_EOL .
 		"\t" . '--skip-draft-prs=BOOL          If true, skip scanning of all Pull-Requests that are in draft mode.' . PHP_EOL .
 		"\t" . '                               Default is false.' . PHP_EOL .
@@ -137,7 +137,7 @@ function vipgoci_help_print( $argv ) {
 		"\t" . '                               to GitHub in one review. If the number of' . PHP_EOL .
 		"\t" . '                               comments exceed this number, additional reviews' . PHP_EOL .
 		"\t" . '                               will be submitted.' . PHP_EOL .
-		"\t" . '--review-comments-total-max=NUMBER  Maximum number of inline comments submitted to'   . PHP_EOL .
+		"\t" . '--review-comments-total-max=NUMBER  Maximum number of inline comments submitted to' . PHP_EOL .
 		"\t" . '                                    a single Pull-Request by the program -- includes' . PHP_EOL .
 		"\t" . '                                    comments from previous executions. A value of' . PHP_EOL .
 		"\t" . '                                    \'0\' indicates no limit.' . PHP_EOL .
@@ -205,7 +205,7 @@ function vipgoci_help_print( $argv ) {
 		"\t" . '--irc-api-url=STRING           URL to IRC API to send messages.' . PHP_EOL .
 		"\t" . '--irc-api-token=STRING         Access-token to use to communicate with the IRC' . PHP_EOL .
 		"\t" . '                               API.' . PHP_EOL .
-		"\t" . '--irc-api-bot=STRING           Name for the bot which is supposed to send the IRC' .PHP_EOL .
+		"\t" . '--irc-api-bot=STRING           Name for the bot which is supposed to send the IRC' . PHP_EOL .
 		"\t" . '                               messages.' . PHP_EOL .
 		"\t" . '--irc-api-room=STRING          Name for the chatroom to which the IRC messages should' . PHP_EOL .
 		"\t" . '                               be sent.' . PHP_EOL .
@@ -252,7 +252,7 @@ function vipgoci_options_recognized() {
 
 		/*
 		 * PHP Linting configuration
-		 */	
+		 */
 		'lint:',
 		'lint-skip-folders:',
 		'lint-skip-folders-in-repo-options-file:',
@@ -337,7 +337,7 @@ function vipgoci_options_recognized() {
 
 		/*
 		 * IRC API configuration
-		 */	
+		 */
 		'irc-api-url:',
 		'irc-api-token:',
 		'irc-api-bot:',
@@ -395,7 +395,7 @@ function vipgoci_exit_status( $results ) {
 
 	if ( ! empty( $results['skipped-files'] ) ) {
 		foreach ( $results['skipped-files'] as $pr_number ) {
-			if( 0 < $pr_number[ 'total' ] ) {
+			if ( 0 < $pr_number['total'] ) {
 				// Results contains skipped files due issues, return non-zero
 				return VIPGOCI_EXIT_CODE_ISSUES;
 			}
@@ -427,20 +427,19 @@ function vipgoci_run() {
 			'hashes-oauth-token',
 			'hashes-oauth-token-secret',
 			'hashes-oauth-consumer-key',
-			'hashes-oauth-consumer-secret'
+			'hashes-oauth-consumer-secret',
 		);
-
 
 	vipgoci_log(
 		'Initializing...',
 		array(
 			'debug_info' => array(
-				'vipgoci_version'	=> VIPGOCI_VERSION,
-				'php_version'		=> phpversion(),
-				'hostname'		=> gethostname(),
-				'php_uname'		=> php_uname(),
-				'git_version'		=> vipgoci_git_version(),
-			)
+				'vipgoci_version' => VIPGOCI_VERSION,
+				'php_version'     => phpversion(),
+				'hostname'        => gethostname(),
+				'php_uname'       => php_uname(),
+				'git_version'     => vipgoci_git_version(),
+			),
 		)
 	);
 
@@ -511,7 +510,6 @@ function vipgoci_run() {
 	 */
 	vipgoci_option_bool_handle( $options, 'enforce-https-urls', 'true' );
 
-
 	/*
 	 * Try to read configuration from
 	 * environmental variables.
@@ -537,13 +535,12 @@ function vipgoci_run() {
 		! isset( $options['repo-name'] ) ||
 		! isset( $options['commit'] ) ||
 		! isset( $options['token'] ) ||
-		! isset( $options['local-git-repo']) ||
+		! isset( $options['local-git-repo'] ) ||
 		isset( $options['help'] )
 	) {
 		vipgoci_help_print( $argv );
 		exit( VIPGOCI_EXIT_USAGE_ERROR );
 	}
-
 
 	/*
 	 * Process the --branches-ignore parameter,
@@ -555,7 +552,6 @@ function vipgoci_run() {
 		'branches-ignore',
 		array()
 	);
-
 
 	/*
 	 * Process --phpcs-path -- expected to
@@ -575,11 +571,9 @@ function vipgoci_run() {
 
 	if ( empty( $options['phpcs-standard'] ) ) {
 		$options['phpcs-standard'] = array(
-			'WordPress-VIP-Go'
+			'WordPress-VIP-Go',
 		);
-	}
-
-	else {
+	} else {
 		vipgoci_option_array_handle(
 			$options,
 			'phpcs-standard',
@@ -590,16 +584,13 @@ function vipgoci_run() {
 		);
 	}
 
-
 	/*
 	 * Process --phpcs-sniffs-include and --phpcs-sniffs-exclude
 	 * -- both expected to be an array.
 	 */
 	if ( empty( $options['phpcs-sniffs-include'] ) ) {
 		$options['phpcs-sniffs-include'] = array();
-	}
-
-	else {
+	} else {
 		vipgoci_option_array_handle(
 			$options,
 			'phpcs-sniffs-include',
@@ -612,9 +603,7 @@ function vipgoci_run() {
 
 	if ( empty( $options['phpcs-sniffs-exclude'] ) ) {
 		$options['phpcs-sniffs-exclude'] = array();
-	}
-
-	else {
+	} else {
 		vipgoci_option_array_handle(
 			$options,
 			'phpcs-sniffs-exclude',
@@ -653,7 +642,7 @@ function vipgoci_run() {
 		'|||'
 	);
 
-	if ( ! empty( $options[ 'review-comments-ignore' ] ) ) {
+	if ( ! empty( $options['review-comments-ignore'] ) ) {
 		$options['review-comments-ignore'] = array_map(
 			'strtolower',
 			$options['review-comments-ignore']
@@ -672,7 +661,6 @@ function vipgoci_run() {
 		array(),
 		','
 	);
-
 
 	/*
 	 * Process --phpcs-severity -- expected to be
@@ -697,7 +685,6 @@ function vipgoci_run() {
 		'php'
 	);
 
-
 	/*
 	 * Process --hashes-api -- expected to be a boolean.
 	*/
@@ -715,7 +702,6 @@ function vipgoci_run() {
 		'svg-scanner-path',
 		'invalid'
 	);
-
 
 	/*
 	 * Process --hashes-api-url -- expected to
@@ -737,14 +723,16 @@ function vipgoci_run() {
 	 * Process hashes-oauth arguments
 	 */
 
-	foreach( $hashes_oauth_arguments as $tmp_key ) {
+	foreach ( $hashes_oauth_arguments as $tmp_key ) {
 		if ( ! isset( $options[ $tmp_key ] ) ) {
 			continue;
 		}
 
-		$options[ $tmp_key ] = rtrim( trim(
-			$options[ $tmp_key ]
-		) );
+		$options[ $tmp_key ] = rtrim(
+			trim(
+				$options[ $tmp_key ]
+			)
+		);
 	}
 
 	/*
@@ -757,7 +745,6 @@ function vipgoci_run() {
 		$hashes_oauth_arguments
 	);
 
-
 	/*
 	 * Handle --local-git-repo parameter
 	 */
@@ -767,12 +754,10 @@ function vipgoci_run() {
 		'/'
 	);
 
-
 	vipgoci_gitrepo_ok(
 		$options['commit'],
 		$options['local-git-repo']
 	);
-
 
 	/*
 	 * Handle optional --debug-level parameter
@@ -802,7 +787,7 @@ function vipgoci_run() {
 		vipgoci_sysexit(
 			'Invalid value for --max-exec-time; must be positive',
 			array(
-				'max-exec-time'	=> $options['max-exec-time'],
+				'max-exec-time' => $options['max-exec-time'],
 			),
 			VIPGOCI_EXIT_USAGE_ERROR
 		);
@@ -942,7 +927,6 @@ function vipgoci_run() {
 		'post-generic-pr-support-comments-repo-meta-match'
 	);
 
-
 	/*
 	 * Handle option for setting support
 	 * labels. Handle prefix and field too.
@@ -957,9 +941,7 @@ function vipgoci_run() {
 		$options['set-support-level-label-prefix'] = trim(
 			$options['set-support-level-label-prefix']
 		);
-	}
-
-	else {
+	} else {
 		$options['set-support-level-label-prefix'] = null;
 	}
 
@@ -970,24 +952,20 @@ function vipgoci_run() {
 		$options['set-support-level-field'] = trim(
 			$options['set-support-level-field']
 		);
-	}
-
-	else {
+	} else {
 		$options['set-support-level-field'] = null;
 	}
 
 	/*
 	 * Handle options for repo-meta API.
 	 */
-	if ( isset( $options['repo-meta-api-base-url' ] ) ) {
+	if ( isset( $options['repo-meta-api-base-url'] ) ) {
 		vipgoci_option_url_handle( $options, 'repo-meta-api-base-url', null );
 	}
 
 	if ( isset( $options['repo-meta-api-user-id'] ) ) {
 		vipgoci_option_integer_handle( $options, 'repo-meta-api-user-id', 0 );
-	}
-
-	else {
+	} else {
 		$options['repo-meta-api-user-id'] = null;
 	}
 
@@ -997,16 +975,14 @@ function vipgoci_run() {
 		$options['repo-meta-api-access-token'] = trim(
 			$options['repo-meta-api-access-token']
 		);
-	}
-
-	else {
+	} else {
 		$options['repo-meta-api-access-token'] = null;
 	}
 
 	vipgoci_options_sensitive_clean(
 		null,
 		array(
-			'repo-meta-api-access-token'
+			'repo-meta-api-access-token',
 		)
 	);
 
@@ -1016,12 +992,12 @@ function vipgoci_run() {
 
 	$irc_params_defined = 0;
 
-	foreach( array(
-			'irc-api-url',
-			'irc-api-token',
-			'irc-api-bot',
-			'irc-api-room'
-		) as $irc_api_param ) {
+	foreach ( array(
+		'irc-api-url',
+		'irc-api-token',
+		'irc-api-bot',
+		'irc-api-room',
+	) as $irc_api_param ) {
 
 		if ( isset( $options[ $irc_api_param ] ) ) {
 			$options[ $irc_api_param ] = trim(
@@ -1050,8 +1026,7 @@ function vipgoci_run() {
 	) {
 		vipgoci_sysexit(
 			'Some IRC API parameters defined but not all; all must be defined to be useful',
-			array(
-			),
+			array(),
 			VIPGOCI_EXIT_USAGE_ERROR
 		);
 	}
@@ -1087,7 +1062,6 @@ function vipgoci_run() {
 		);
 	}
 
-
 	/*
 	 * Handle --lint-skip-folders
 	 */
@@ -1117,7 +1091,7 @@ function vipgoci_run() {
 			'svg-checks',
 			'autoapprove',
 			'autoapprove-php-nonfunctional-changes',
-			'lint-modified-files-only'
+			'lint-modified-files-only',
 		)
 	);
 
@@ -1134,11 +1108,11 @@ function vipgoci_run() {
 	 */
 
 	if ( true === $options['post-generic-pr-support-comments'] ) {
-		foreach(
+		foreach (
 			array(
 				'post-generic-pr-support-comments-on-drafts',
 				'post-generic-pr-support-comments-string',
-				'post-generic-pr-support-comments-branches'
+				'post-generic-pr-support-comments-branches',
 			)
 			as
 			$tmp_option_name
@@ -1236,7 +1210,7 @@ function vipgoci_run() {
 		 */
 		$tmp_option_keys = null;
 
-		foreach(
+		foreach (
 			array(
 				'post-generic-pr-support-comments-string',
 				'post-generic-pr-support-comments-skip-if-label-exists',
@@ -1278,7 +1252,6 @@ function vipgoci_run() {
 				continue;
 			}
 
-
 			if ( null === $tmp_option_keys ) {
 				$tmp_option_keys = array_keys(
 					$options[ $tmp_option_name ]
@@ -1287,16 +1260,12 @@ function vipgoci_run() {
 				continue;
 			}
 
-			foreach(
+			foreach (
 				$tmp_option_keys as
 					$tmp_option_key
 			) {
 				if ( ! isset(
-					$options[
-						$tmp_option_name
-					][
-						$tmp_option_key
-					]
+					$options[ $tmp_option_name ][ $tmp_option_key ]
 				) ) {
 					vipgoci_sysexit(
 						'Inconsistent keys in or more ' .
@@ -1308,7 +1277,7 @@ function vipgoci_run() {
 
 							'post-generic-pr-support-comments-string' =>
 								array_keys( $options['post-generic-pr-support-comments-string'] ),
-	
+
 							'post-generic-pr-support-comments-skip-if-label-exists' =>
 								array_keys( $options['post-generic-pr-support-comments-skip-if-label-exists'] ),
 
@@ -1383,14 +1352,11 @@ function vipgoci_run() {
 
 	if ( empty( $options['autoapprove-label'] ) ) {
 		$options['autoapprove-label'] = false;
-	}
-
-	else {
+	} else {
 		$options['autoapprove-label'] = trim(
 			$options['autoapprove-label']
 		);
 	}
-
 
 	if (
 		( true === $options['autoapprove'] ) &&
@@ -1470,8 +1436,7 @@ function vipgoci_run() {
 		vipgoci_sysexit(
 			'PHP and JS files cannot be auto-approved on file-type basis, as they ' .
 				'can cause serious problems for execution',
-			array(
-			),
+			array(),
 			VIPGOCI_EXIT_USAGE_ERROR
 		);
 	}
@@ -1496,12 +1461,10 @@ function vipgoci_run() {
 			'SVG files cannot be auto-approved on file-type basis, as they ' .
 				'can contain problematic code. Use --svg-checks=true to ' .
 				'allow auto-approval of SVG files',
-			array(
-			),
+			array(),
 			VIPGOCI_EXIT_USAGE_ERROR
 		);
 	}
-
 
 	/*
 	 * Ask GitHub about information about
@@ -1518,17 +1481,14 @@ function vipgoci_run() {
 	) {
 		vipgoci_sysexit(
 			'Unable to get information about token-holder user from GitHub',
-			array(
-			),
+			array(),
 			VIPGOCI_EXIT_GITHUB_PROBLEM
 		);
-	}
-
-	else {
+	} else {
 		vipgoci_log(
 			'Got information about token-holder user from GitHub',
 			array(
-				'login' => $current_user_info->login,
+				'login'    => $current_user_info->login,
 				'html_url' => $current_user_info->html_url,
 			)
 		);
@@ -1543,7 +1503,6 @@ function vipgoci_run() {
 			'token',
 		)
 	);
-
 
 	/*
 	 * Check if the teams specified in the
@@ -1568,76 +1527,76 @@ function vipgoci_run() {
 		$options,
 		VIPGOCI_OPTIONS_FILE_NAME,
 		array(
-			'skip-execution'	=> array(
-				'type'		=> 'boolean',
-				'valid_values'	=> array( true, false ),
+			'skip-execution'                        => array(
+				'type'         => 'boolean',
+				'valid_values' => array( true, false ),
 			),
 
-			'skip-draft-prs'	=> array(
-				'type'		=> 'boolean',
-				'valid_values'	=> array( true, false ),
+			'skip-draft-prs'                        => array(
+				'type'         => 'boolean',
+				'valid_values' => array( true, false ),
 			),
 
-			'review-comments-sort' => array(
-				'type'		=> 'boolean',
-				'valid_values'	=> array( true, false ),
+			'review-comments-sort'                  => array(
+				'type'         => 'boolean',
+				'valid_values' => array( true, false ),
 			),
 
-			'review-comments-include-severity' => array(
-				'type'		=> 'boolean',
-				'valid_values'	=> array( true, false ),
+			'review-comments-include-severity'      => array(
+				'type'         => 'boolean',
+				'valid_values' => array( true, false ),
 			),
 
-			'phpcs' => array(
-				'type'		=> 'boolean',
-				'valid_values'	=> array( true, false ),
+			'phpcs'                                 => array(
+				'type'         => 'boolean',
+				'valid_values' => array( true, false ),
 			),
 
-			'phpcs-severity' => array(
-				'type'		=> 'integer',
-				'valid_values'	=> array( 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ),
+			'phpcs-severity'                        => array(
+				'type'         => 'integer',
+				'valid_values' => array( 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ),
 			),
 
-			'post-generic-pr-support-comments' => array(
-				'type'		=> 'boolean',
-				'valid_values'	=> array( true, false ),
+			'post-generic-pr-support-comments'      => array(
+				'type'         => 'boolean',
+				'valid_values' => array( true, false ),
 			),
 
-			'phpcs-sniffs-include' => array(
-				'type'		=> 'array',
-				'append'	=> true,
-				'valid_values'	=> null,
+			'phpcs-sniffs-include'                  => array(
+				'type'         => 'array',
+				'append'       => true,
+				'valid_values' => null,
 			),
 
-			'phpcs-sniffs-exclude' => array(
-				'type'		=> 'array',
-				'append'	=> true,
-				'valid_values'	=> null,
+			'phpcs-sniffs-exclude'                  => array(
+				'type'         => 'array',
+				'append'       => true,
+				'valid_values' => null,
 			),
 
-			'hashes-api' => array(
-				'type'		=> 'boolean',
-				'valid_values'	=> array( true, false ),
+			'hashes-api'                            => array(
+				'type'         => 'boolean',
+				'valid_values' => array( true, false ),
 			),
 
-			'svg-checks' => array(
-				'type'		=> 'boolean',
-				'valid_values'	=> array( true, false ),	
+			'svg-checks'                            => array(
+				'type'         => 'boolean',
+				'valid_values' => array( true, false ),
 			),
 
-			'autoapprove' => array(
-				'type'		=> 'boolean',
-				'valid_values'	=> array( true, false ),
+			'autoapprove'                           => array(
+				'type'         => 'boolean',
+				'valid_values' => array( true, false ),
 			),
 
 			'autoapprove-php-nonfunctional-changes' => array(
-				'type'		=> 'boolean',
-				'valid_values'	=> array( true, false ),
+				'type'         => 'boolean',
+				'valid_values' => array( true, false ),
 			),
 
-			'lint-modified-files-only' => array(
-				'type'		=> 'boolean',
-				'valid_values'	=> array( true, false ),
+			'lint-modified-files-only'              => array(
+				'type'         => 'boolean',
+				'valid_values' => array( true, false ),
 			),
 		)
 	);
@@ -1707,16 +1666,16 @@ function vipgoci_run() {
 		array(
 			'options' => vipgoci_options_sensitive_clean(
 				$options
-			)
+			),
 		)
 	);
 
 	$results = array(
-		'issues'	=> array(),
+		'issues' => array(),
 
-		'stats'		=> array(
-			VIPGOCI_STATS_PHPCS	=> null,
-			VIPGOCI_STATS_LINT	=> null,
+		'stats'  => array(
+			VIPGOCI_STATS_PHPCS      => null,
+			VIPGOCI_STATS_LINT       => null,
 			VIPGOCI_STATS_HASHES_API => null,
 		),
 	);
@@ -1728,8 +1687,7 @@ function vipgoci_run() {
 		vipgoci_sysexit(
 			'Skipping scanning entirely, as determined ' .
 				'by configuration',
-			array(
-			),
+			array(),
 			VIPGOCI_EXIT_NORMAL
 		);
 	}
@@ -1761,9 +1719,9 @@ function vipgoci_run() {
 			'Skipping scanning entirely, as the commit ' .
 				'is not a part of any Pull-Request',
 			array(
-				'repo_owner'	=> $options['repo-owner'],
-				'repo_name'	=> $options['repo-name'],
-				'commit'	=> $options['commit'],
+				'repo_owner' => $options['repo-owner'],
+				'repo_name'  => $options['repo-name'],
+				'commit'     => $options['commit'],
 			),
 			VIPGOCI_EXIT_COMMIT_NOT_PART_OF_PR,
 			true
@@ -1803,7 +1761,6 @@ function vipgoci_run() {
 		// Reverse array, so we get the last commit first
 		$commits_list = array_reverse( $commits_list );
 
-
 		// If latest commit to the PR, we do not care at all
 		if ( $commits_list[0] === $options['commit'] ) {
 			continue;
@@ -1826,14 +1783,12 @@ function vipgoci_run() {
 					'-- nothing to do',
 				array(
 					'repo_owner' => $options['repo-owner'],
-					'repo_name' => $options['repo-name'],
-					'pr_number' => $pr_item->number,
+					'repo_name'  => $options['repo-name'],
+					'pr_number'  => $pr_item->number,
 				),
 				VIPGOCI_EXIT_NORMAL
 			);
-		}
-
-		else if (
+		} elseif (
 			( true === $options['lint'] ) &&
 			( true === $options['phpcs'] )
 		) {
@@ -1846,8 +1801,8 @@ function vipgoci_run() {
 					'skipping linting',
 				array(
 					'repo_owner' => $options['repo-owner'],
-					'repo_name' => $options['repo-name'],
-					'pr_number' => $pr_item->number,
+					'repo_name'  => $options['repo-name'],
+					'pr_number'  => $pr_item->number,
 				)
 			);
 		}
@@ -1859,7 +1814,6 @@ function vipgoci_run() {
 
 		unset( $commits_list );
 	}
-
 
 	/*
 	 * Init stats
@@ -1978,7 +1932,7 @@ function vipgoci_run() {
 		 * register which can be auto-approved.
 		 */
 
-		if ( ! empty( $options[ 'autoapprove-filetypes' ] ) ) {
+		if ( ! empty( $options['autoapprove-filetypes'] ) ) {
 			vipgoci_ap_file_types(
 				$options,
 				$auto_approved_files_arr
@@ -2028,7 +1982,6 @@ function vipgoci_run() {
 		);
 	}
 
-
 	/*
 	 * Remove issues from $results for files
 	 * that are approved in hashes-to-hashes API.
@@ -2040,7 +1993,6 @@ function vipgoci_run() {
 		$auto_approved_files_arr
 	);
 
-
 	/*
 	 * Get all events on dismissed reviews
 	 * from members of the specified team(s),
@@ -2051,7 +2003,6 @@ function vipgoci_run() {
 		$options['token'],
 		$options['dismissed-reviews-exclude-reviews-from-team']
 	);
-
 
 	/*
 	 * If we have any team member's logins,
@@ -2085,7 +2036,7 @@ function vipgoci_run() {
 		vipgoci_log(
 			'Fetched list of Pull-Request reviews dismissed by members of a team',
 			array(
-				'team_members' =>
+				'team_members'              =>
 					$team_members_ids_arr,
 				'reviews_dismissed_by_team' =>
 					$prs_events_dismissed_by_team,
@@ -2094,7 +2045,6 @@ function vipgoci_run() {
 	}
 
 	unset( $team_members_ids_arr );
-
 
 	/*
 	 * Remove comments from $results that have
@@ -2157,23 +2107,17 @@ function vipgoci_run() {
 	/*
 	 * Temporary: Log if any files were skipped.
 	 */
-	foreach ( $prs_implicated as $pr_item ) {	
+	foreach ( $prs_implicated as $pr_item ) {
 		if ( ! empty(
-			$results[
-				VIPGOCI_SKIPPED_FILES
-			][
-				$pr_item->number
-			][
-				'issues'
-			]
+			$results[ VIPGOCI_SKIPPED_FILES ][ $pr_item->number ]['issues']
 		) ) {
 			vipgoci_log(
 				'Too large file(s) was/were detected during analysis: ' .
 					VIPGOCI_GITHUB_WEB_BASE_URL . '/' . $options['repo-owner'] . '/' . $options['repo-name'] . '/pull/' . $pr_item->number,
 				array(
-					'repo_owner'	=> $options['repo-owner'],
-					'repo_name'	=> $options['repo-name'],
-					'pr_number'     => $pr_item->number,
+					'repo_owner' => $options['repo-owner'],
+					'repo_name'  => $options['repo-name'],
+					'pr_number'  => $pr_item->number,
 				),
 				0,
 				true
@@ -2193,7 +2137,6 @@ function vipgoci_run() {
 		$results,
 		$options['informational-msg']
 	);
-
 
 	vipgoci_github_pr_review_submit(
 		$options['repo-owner'],
@@ -2233,7 +2176,7 @@ function vipgoci_run() {
 	 */
 
 	if ( $options['review-comments-total-max'] > 0 ) {
-		foreach( array_keys(
+		foreach ( array_keys(
 			$prs_comments_maxed
 		) as $pr_number ) {
 			vipgoci_github_pr_comments_generic_submit(
@@ -2294,11 +2237,10 @@ function vipgoci_run() {
 
 	if (
 		( ! empty( $options['pixel-api-url'] ) ) &&
-		( ! empty( $options['pixel-api-groupprefix' ] ) )
+		( ! empty( $options['pixel-api-groupprefix'] ) )
 	) {
 		vipgoci_send_stats_to_pixel_api(
 			$options['pixel-api-url'],
-
 			/*
 			 * Which statistics to send.
 			 */
@@ -2316,7 +2258,7 @@ function vipgoci_run() {
 					'github_api_request_post',
 					'github_api_request_put',
 					'github_api_request_fetch',
-					'github_api_request_delete'
+					'github_api_request_delete',
 				),
 
 				/*
@@ -2333,8 +2275,8 @@ function vipgoci_run() {
 					'github_pr_files_linted',
 					'github_pr_lines_linted',
 					'github_pr_phpcs_issues',
-					'github_pr_lint_issues'
-				)
+					'github_pr_lint_issues',
+				),
 			),
 			$counter_report
 		);
@@ -2356,19 +2298,18 @@ function vipgoci_run() {
 		);
 	}
 
-
 	/*
 	 * Final logging before quitting.
 	 */
 	vipgoci_log(
 		'Shutting down',
 		array(
-			'vipgoci_version'	=> VIPGOCI_VERSION,
-			'repo_owner'		=> $options['repo-owner'],
-			'repo_name'		=> $options['repo-name'],
-			'pr_numbers'		=> array_column( $prs_implicated, 'number' ),
-			'run_time_seconds'	=> time() - $startup_time,
-			'run_time_measurements'	=>
+			'vipgoci_version'       => VIPGOCI_VERSION,
+			'repo_owner'            => $options['repo-owner'],
+			'repo_name'             => $options['repo-name'],
+			'pr_numbers'            => array_column( $prs_implicated, 'number' ),
+			'run_time_seconds'      => time() - $startup_time,
+			'run_time_measurements' =>
 				vipgoci_round_array_items(
 					vipgoci_runtime_measure(
 						VIPGOCI_RUNTIME_DUMP,
@@ -2377,12 +2318,12 @@ function vipgoci_run() {
 					4,
 					PHP_ROUND_HALF_UP
 				),
-			'counters_report'	=> $counter_report,
+			'counters_report'       => $counter_report,
 
 			'github_api_rate_limit' =>
 				$github_api_rate_limit_usage->resources->core,
 
-			'results'		=> $results,
+			'results'               => $results,
 		),
 		0,
 		true // Log to IRC

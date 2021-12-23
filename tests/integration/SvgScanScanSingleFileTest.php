@@ -1,20 +1,20 @@
 <?php
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+require_once __DIR__ . '/IncludesForTests.php';
 
 use PHPUnit\Framework\TestCase;
 
 final class SvgScanScanSingleFileTest extends TestCase {
 	var $options_git = array(
-		'git-path'		=> null,
-		'github-repo-url'	=> null,
-		'repo-name'		=> null,
-		'repo-owner'		=> null,
+		'git-path'        => null,
+		'github-repo-url' => null,
+		'repo-name'       => null,
+		'repo-owner'      => null,
 	);
 
 	var $options_svg_scan = array(
-		'svg-scanner-path'				=> null,
-		'commit-test-svg-scan-single-file-test-1'	=> null,
+		'svg-scanner-path'                        => null,
+		'commit-test-svg-scan-single-file-test-1' => null,
 	);
 
 	protected function setUp(): void {
@@ -33,7 +33,7 @@ final class SvgScanScanSingleFileTest extends TestCase {
 			$this->options_svg_scan
 		);
 
-		$this->options[ 'github-token' ] =
+		$this->options['github-token'] =
 			vipgoci_unittests_get_config_value(
 				'git-secrets',
 				'github-token',
@@ -46,7 +46,7 @@ final class SvgScanScanSingleFileTest extends TestCase {
 		$this->options['svg-checks'] = true;
 
 		$this->options['skip-large-files'] = true;
-                
+
 		$this->options['skip-large-files-limit'] = 15000;
 
 		$this->options['lint-modified-files-only'] = false;
@@ -59,9 +59,9 @@ final class SvgScanScanSingleFileTest extends TestCase {
 			);
 		}
 
-		$this->options_git = null;
+		$this->options_git      = null;
 		$this->options_svg_scan = null;
-		$this->options = null;
+		$this->options          = null;
 	}
 
 	/**
@@ -108,52 +108,52 @@ final class SvgScanScanSingleFileTest extends TestCase {
 
 		$expected_result = array(
 			'file_issues_arr_master' => array(
-				'totals'	=> array(
-					'errors'	=> 2,
-					'warnings'	=> 0,
-					'fixable'	=> 0,
+				'totals' => array(
+					'errors'   => 2,
+					'warnings' => 0,
+					'fixable'  => 0,
 				),
 
-				'files'		=> array(
-					$temp_file_name	=> array(
-						'errors'	=> 2,
-						'messages'	=> array(
+				'files'  => array(
+					$temp_file_name => array(
+						'errors'   => 2,
+						'messages' => array(
 							array(
-								'message'	=> "Suspicious attribute 'someotherfield2'",
-								'line'		=> 8,
-								'severity'	=> 5,
-								'type'		=> 'ERROR',
-								'source'	=> 'VipgociInternal.SVG.DisallowedTags',
-								'level'		=> 'ERROR',
-								'fixable'	=> false,
-								'column'	=> 0
+								'message'  => "Suspicious attribute 'someotherfield2'",
+								'line'     => 8,
+								'severity' => 5,
+								'type'     => 'ERROR',
+								'source'   => 'VipgociInternal.SVG.DisallowedTags',
+								'level'    => 'ERROR',
+								'fixable'  => false,
+								'column'   => 0,
 							),
 							array(
-								'message'	=> "Suspicious attribute 'myotherfield'",
-								'line'		=> 5,
-								'severity'	=> 5,
-								'type'		=> 'ERROR',
-								'source'	=> 'VipgociInternal.SVG.DisallowedTags',
-								'level'		=> 'ERROR',
-								'fixable'	=> false,
-								'column'	=> 0
-							)
-						)
-					)
+								'message'  => "Suspicious attribute 'myotherfield'",
+								'line'     => 5,
+								'severity' => 5,
+								'type'     => 'ERROR',
+								'source'   => 'VipgociInternal.SVG.DisallowedTags',
+								'level'    => 'ERROR',
+								'fixable'  => false,
+								'column'   => 0,
+							),
+						),
+					),
 				),
 			),
 
-			'file_issues_str'	=> '',
-			'temp_file_name'	=> $temp_file_name,
-			'validation'		=> array(
-				'total' => 0
+			'file_issues_str'        => '',
+			'temp_file_name'         => $temp_file_name,
+			'validation'             => array(
+				'total' => 0,
 			),
 		);
 
 		$expected_result['file_issues_str'] = json_encode(
 			$expected_result['file_issues_arr_master']
 		);
-	
+
 		$this->assertSame(
 			$expected_result,
 			$ret

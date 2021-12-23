@@ -1,17 +1,17 @@
 <?php
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+require_once __DIR__ . '/IncludesForTests.php';
 
 use PHPUnit\Framework\TestCase;
 
 final class GitHubPrReviewsGetTest extends TestCase {
 	var $options_git_repo_tests = array(
-		'pr-test-github-pr-reviews-get-1'	=> null
+		'pr-test-github-pr-reviews-get-1' => null,
 	);
 
 	var $options_git = array(
-		'repo-owner'				=> null,
-		'repo-name'				=> null,
+		'repo-owner' => null,
+		'repo-name'  => null,
 	);
 
 	protected function setUp(): void {
@@ -30,7 +30,7 @@ final class GitHubPrReviewsGetTest extends TestCase {
 			$this->options_git_repo_tests
 		);
 
-		$this->options[ 'github-token' ] =
+		$this->options['github-token'] =
 			vipgoci_unittests_get_config_value(
 				'git-secrets',
 				'github-token',
@@ -40,8 +40,8 @@ final class GitHubPrReviewsGetTest extends TestCase {
 
 	protected function tearDown(): void {
 		$this->options_git_repo_tests = null;
-		$this->options_git = null;
-		$this->options = null;
+		$this->options_git            = null;
+		$this->options                = null;
 	}
 
 	/**
@@ -79,7 +79,6 @@ final class GitHubPrReviewsGetTest extends TestCase {
 			212601504,
 			$reviews_actual[0]->id
 		);
-
 
 		$this->assertSame(
 			'Test review',

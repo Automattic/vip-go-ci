@@ -1,19 +1,19 @@
 <?php
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+require_once __DIR__ . '/IncludesForTests.php';
 
 use PHPUnit\Framework\TestCase;
 
 final class ApNonfunctionalChangesTest extends TestCase {
 	var $options_git = array(
-		'repo-owner'			=> null,
-		'repo-name'			=> null,
-		'git-path'			=> null,
-		'github-repo-url'		=> null,
+		'repo-owner'      => null,
+		'repo-name'       => null,
+		'git-path'        => null,
+		'github-repo-url' => null,
 	);
 
 	var $options_auto_approvals_nonfunc = array(
-		'commit-test-ap-nonfunctionalchanges-1b'	=> null,
+		'commit-test-ap-nonfunctionalchanges-1b' => null,
 	);
 
 	protected function setUp(): void {
@@ -32,7 +32,7 @@ final class ApNonfunctionalChangesTest extends TestCase {
 			$this->options_auto_approvals_nonfunc
 		);
 
-		$this->options[ 'github-token' ] =
+		$this->options['github-token'] =
 			vipgoci_unittests_get_config_value(
 				'git-secrets',
 				'github-token',
@@ -47,10 +47,10 @@ final class ApNonfunctionalChangesTest extends TestCase {
 			$this->options['github-token'];
 
 		unset( $this->options['github-token'] );
-	
+
 		$this->options['commit'] =
 			$this->options['commit-test-ap-nonfunctionalchanges-1b'];
-	
+
 		$this->options['autoapprove'] = true;
 
 		$this->options['branches-ignore'] = array();
@@ -70,8 +70,8 @@ final class ApNonfunctionalChangesTest extends TestCase {
 			);
 		}
 
-		$this->options = null;
-		$this->options_git = null;
+		$this->options               = null;
+		$this->options_git           = null;
 		$this->options_auto_approval = null;
 	}
 
@@ -93,8 +93,8 @@ final class ApNonfunctionalChangesTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				'file1.php'	=> 'autoapprove-nonfunctional-changes',
-				'file2.php'	=> 'autoapprove-nonfunctional-changes',
+				'file1.php' => 'autoapprove-nonfunctional-changes',
+				'file2.php' => 'autoapprove-nonfunctional-changes',
 				/*
 				 * - file3.php is not approved, has changed functionally
 				 * - file100.txt is not approvable by this function

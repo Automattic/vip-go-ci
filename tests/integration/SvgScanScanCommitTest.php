@@ -2,21 +2,21 @@
 
 namespace Vipgoci\tests;
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+require_once __DIR__ . '/IncludesForTests.php';
 
 use PHPUnit\Framework\TestCase;
 
 /**
  * Minimal testing of scanning whole commits
- * using SVG scanner. The reason is that most 
- * of the functionality provided by 
+ * using SVG scanner. The reason is that most
+ * of the functionality provided by
  * vipgoci_phpcs_scan_commit() -- the
- * function being tested here -- is tested in 
- * PhpcsScanScanCommitTest.php already and 
- * re-implementing these tests here will not 
+ * function being tested here -- is tested in
+ * PhpcsScanScanCommitTest.php already and
+ * re-implementing these tests here will not
  * yield much benefit.
- * 
- * Here we only test if SVG scanning does work 
+ *
+ * Here we only test if SVG scanning does work
  * as expected.
  */
 final class SvgScanScanCommitTest extends TestCase {
@@ -111,22 +111,17 @@ final class SvgScanScanCommitTest extends TestCase {
 
 		$this->options['commit'] = $this->options['commit-test-svg-scan-single-file-test-1'];
 
-		$issues_submit = array();
-		$issues_stats = array();
+		$issues_submit  = array();
+		$issues_stats   = array();
 		$issues_skipped = array();
-
 
 		$prs_implicated = $this->getPRsImplicated();
 
-		foreach( $prs_implicated as $pr_item ) {
-			$issues_stats[
-			$pr_item->number
-			][
-			'error'
-			] = 0;
+		foreach ( $prs_implicated as $pr_item ) {
+			$issues_stats[ $pr_item->number ]['error'] = 0;
 
-			$issues_skipped[ $pr_item->number ][ 'issues' ][ 'max-lines' ] = array();
-			$issues_skipped[ $pr_item->number ][ 'issues' ][ 'total' ] = 0;
+			$issues_skipped[ $pr_item->number ]['issues']['max-lines'] = array();
+			$issues_skipped[ $pr_item->number ]['issues']['total']     = 0;
 		}
 
 		vipgoci_unittests_output_suppress();
@@ -158,10 +153,10 @@ final class SvgScanScanCommitTest extends TestCase {
 			array(
 				5 => array(
 					array(
-						'type'          => 'phpcs',
-						'file_name'     => 'svg-file-with-issues-1.svg',
-						'file_line'     => 8,
-						'issue'	=> array(
+						'type'      => 'phpcs',
+						'file_name' => 'svg-file-with-issues-1.svg',
+						'file_line' => 8,
+						'issue'     => array(
 							'message'  => "Suspicious attribute 'someotherfield2'",
 							'line'     => 8,
 							'severity' => 5,
@@ -170,14 +165,14 @@ final class SvgScanScanCommitTest extends TestCase {
 							'level'    => 'ERROR',
 							'fixable'  => false,
 							'column'   => 0,
-						)
+						),
 					),
 
 					array(
-						'type'          => 'phpcs',
-						'file_name'     => 'svg-file-with-issues-1.svg',
-						'file_line'     => 5,
-						'issue'         => array(
+						'type'      => 'phpcs',
+						'file_name' => 'svg-file-with-issues-1.svg',
+						'file_line' => 5,
+						'issue'     => array(
 							'message'  => "Suspicious attribute 'myotherfield'",
 							'line'     => 5,
 							'severity' => 5,
@@ -186,11 +181,10 @@ final class SvgScanScanCommitTest extends TestCase {
 							'level'    => 'ERROR',
 							'fixable'  => false,
 							'column'   => 0,
-						)
-					)
-				)
+						),
+					),
+				),
 			),
-  
 			$issues_submit
 		);
 
@@ -198,7 +192,7 @@ final class SvgScanScanCommitTest extends TestCase {
 			array(
 				5 => array(
 					'error' => 2,
-				)
+				),
 			),
 			$issues_stats
 		);

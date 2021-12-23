@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
-require_once( __DIR__ . './../../options.php' );
+require_once __DIR__ . './../../options.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -17,11 +17,11 @@ final class VipgociOptionsPhpcsRuntimeSetTest extends TestCase {
 	public function testOptionsPhpcsRuntimeSet1() {
 		$this->options = array(
 			'myphpcsruntimeoption' => 'testVersion 7.4-,allowUnusedVariablesBeforeRequire true,allowUndefinedVariablesInFileScope false',
-			'other-option1' => '123 456',
-			'other-option2' => array(
+			'other-option1'        => '123 456',
+			'other-option2'        => array(
 				'1',
 				'2',
-			)
+			),
 		);
 
 		vipgoci_option_phpcs_runtime_set(
@@ -34,7 +34,7 @@ final class VipgociOptionsPhpcsRuntimeSetTest extends TestCase {
 				'myphpcsruntimeoption' => array(
 					array(
 						'testVersion',
-						'7.4-'
+						'7.4-',
 					),
 					array(
 						'allowUnusedVariablesBeforeRequire',
@@ -42,14 +42,14 @@ final class VipgociOptionsPhpcsRuntimeSetTest extends TestCase {
 					),
 					array(
 						'allowUndefinedVariablesInFileScope',
-						'false'
+						'false',
 					),
 				),
-				'other-option1' => '123 456',
-				'other-option2' => array(
+				'other-option1'        => '123 456',
+				'other-option2'        => array(
 					'1',
 					'2',
-				)
+				),
 			),
 			$this->options
 		);

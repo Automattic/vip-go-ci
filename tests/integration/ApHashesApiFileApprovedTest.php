@@ -1,21 +1,21 @@
 <?php
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+require_once __DIR__ . '/IncludesForTests.php';
 
 use PHPUnit\Framework\TestCase;
 
 final class ApHashesApiFileApprovedTest extends TestCase {
 	var $options_git = array(
-		'repo-owner'			=> null,
-		'repo-name'			=> null,
-		'github-repo-url'		=> null,
-		'git-path'			=> null,
+		'repo-owner'      => null,
+		'repo-name'       => null,
+		'github-repo-url' => null,
+		'git-path'        => null,
 	);
 
 	var $options_auto_approvals = array(
-		'commit-test-ap-hashes-file-approved-1'	=> null,
+		'commit-test-ap-hashes-file-approved-1' => null,
 	);
-	
+
 	protected function setUp(): void {
 		vipgoci_unittests_get_config_values(
 			'git',
@@ -31,7 +31,7 @@ final class ApHashesApiFileApprovedTest extends TestCase {
 			$this->options_auto_approvals
 		);
 
-		$this->options[ 'github-token' ] =
+		$this->options['github-token'] =
 			vipgoci_unittests_get_config_value(
 				'git-secrets',
 				'github-token',
@@ -42,7 +42,7 @@ final class ApHashesApiFileApprovedTest extends TestCase {
 			$this->options['github-token'];
 
 		unset( $this->options['github-token'] );
-		
+
 		$this->options['branches-ignore'] = array();
 
 		foreach (
@@ -61,7 +61,7 @@ final class ApHashesApiFileApprovedTest extends TestCase {
 					true // Fetch from secrets file
 				);
 		}
-	
+
 		$this->options['commit'] =
 			$this->options['commit-test-ap-hashes-file-approved-1'];
 
@@ -78,9 +78,9 @@ final class ApHashesApiFileApprovedTest extends TestCase {
 			);
 		}
 
-		$this->options = null;
+		$this->options                = null;
 		$this->options_auto_approvals = null;
-		$this->options_git = null;
+		$this->options_git            = null;
 	}
 
 	/**
@@ -183,7 +183,7 @@ final class ApHashesApiFileApprovedTest extends TestCase {
 		}
 
 		// Invalid config
-		$this->options['hashes-api-url'] .= "////";
+		$this->options['hashes-api-url'] .= '////';
 
 		$file_status = vipgoci_ap_hashes_api_file_approved(
 			$this->options,

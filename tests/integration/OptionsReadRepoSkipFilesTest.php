@@ -1,20 +1,20 @@
 <?php
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+require_once __DIR__ . '/IncludesForTests.php';
 
 use PHPUnit\Framework\TestCase;
 
 final class OptionsReadRepoSkipFilesTest extends TestCase {
 	var $options_git = array(
-		'git-path'		=> null,
-		'github-repo-url'	=> null,
-		'repo-owner'		=> null,
-		'repo-name'		=> null,
+		'git-path'        => null,
+		'github-repo-url' => null,
+		'repo-owner'      => null,
+		'repo-name'       => null,
 	);
 
 	var $options_git_repo_tests = array(
-		'commit-test-options-read-repo-skip-files-1'	=> null,
-		'commit-test-options-read-repo-skip-files-2'	=> null,
+		'commit-test-options-read-repo-skip-files-1' => null,
+		'commit-test-options-read-repo-skip-files-2' => null,
 	);
 
 	protected function setUp(): void {
@@ -36,7 +36,7 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 		$this->options['phpcs-skip-folders-in-repo-options-file'] = false;
 
 		$this->options['phpcs-skip-folders'] = array(
-			'qqq-75x-n/plugins'
+			'qqq-75x-n/plugins',
 		);
 
 		$this->options['lint-skip-folders-in-repo-options-file'] = false;
@@ -51,16 +51,16 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 	protected function tearDown(): void {
 		$this->tearDownLocalGitrepo();
 
-		$this->options = null;
+		$this->options                = null;
 		$this->options_git_repo_tests = null;
-		$this->options_git = null;
+		$this->options_git            = null;
 	}
 
 	protected function setUpLocalGitRepo() {
 		$this->options['local-git-repo'] =
 			vipgoci_unittests_setup_git_repo(
 				$this->options
-		);
+			);
 	}
 
 	protected function tearDownLocalGitrepo() {

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
-require_once( __DIR__ . './../../FILE-TO-BE-TESTED' );
+require_once __DIR__ . './../../FILE-TO-BE-TESTED';
 
 use PHPUnit\Framework\TestCase;
 
@@ -14,6 +14,6 @@ final class Skeleton extends TestCase {
 	/**
 	 * @covers ::
 	 */
-	public function test (): void {
+	public function test(): void {
 	}
 }

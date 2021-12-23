@@ -28,7 +28,6 @@ function vipgoci_lint_do_scan_file(
 		escapeshellarg( $temp_file_name )
 	);
 
-
 	$file_issues_arr = array();
 
 	/*
@@ -64,9 +63,9 @@ function vipgoci_lint_do_scan_file(
 	$file_issues_arr = array_map(
 		function ( $str ) {
 			if ( strpos(
-				     $str,
-				     'Parse error: '
-			     ) === 0 ) {
+				$str,
+				'Parse error: '
+			) === 0 ) {
 				$str = str_replace(
 					'Parse error: ',
 					'PHP Parse error:  ',
@@ -91,7 +90,6 @@ function vipgoci_lint_do_scan_file(
 				$file_issues_arr
 			)
 		);
-
 
 	vipgoci_log(
 		'PHP linting execution details',
@@ -126,7 +124,6 @@ function vipgoci_lint_parse_results(
 			continue;
 		}
 
-
 		/*
 		 * Catch any syntax-error problems
 		 */
@@ -146,15 +143,13 @@ function vipgoci_lint_parse_results(
 				$message
 			);
 
-
 			/*
 			 * Figure out on what line the problem is
 			 */
 			$pos = strpos(
-				       $message,
-				       ' on line '
-			       ) + strlen( ' on line ' );
-
+				$message,
+				' on line '
+			) + strlen( ' on line ' );
 
 			$file_line = substr(
 				$message,
@@ -164,7 +159,6 @@ function vipgoci_lint_parse_results(
 
 			unset( $pos );
 			unset( $pos2 );
-
 
 			/*
 			 * Get rid of name of the file, and
@@ -297,7 +291,6 @@ function vipgoci_lint_scan_commit(
 
 		/**
 		 * The lint scan will only proceed if the file is valid
-		 *
 		 */
 		/*
 		 * Keep statistics of what we do.
@@ -315,7 +308,6 @@ function vipgoci_lint_scan_commit(
 
 		vipgoci_log(
 			'About to PHP-lint file',
-
 			array(
 				'repo_owner'     => $repo_owner,
 				'repo_name'      => $repo_name,
@@ -332,7 +324,6 @@ function vipgoci_lint_scan_commit(
 
 		/* Get rid of temporary file */
 		unlink( $temp_file_name );
-
 
 		/*
 		 * Process the results, get them in an array format
@@ -441,7 +432,7 @@ function vipgoci_get_prs_modified_files( array $options, array $prs_implicated )
 			false, // exclude permission changes
 			array(
 				'file_extensions' => array( 'php' ),
-				'skip_folders'    => $options['phpcs-skip-folders']
+				'skip_folders'    => $options['phpcs-skip-folders'],
 			)
 		);
 		$modified_files                   = array_keys( $pr_modified_files['files'] );
@@ -449,15 +440,17 @@ function vipgoci_get_prs_modified_files( array $options, array $prs_implicated )
 		$prs_modified_files[ $pr_number ] = $modified_files;
 	}
 
-
-	return [ 'all' => array_unique( $all_modified_files ), 'prs_implicated' => $prs_modified_files ];
+	return array(
+		'all'            => array_unique( $all_modified_files ),
+		'prs_implicated' => $prs_modified_files,
+	);
 }
 
 /**
  * @param array|null $commit_issues_submit_pr
- * @param int $error
- * @param string $file_name
- * @param array $file_scanning_results
+ * @param int        $error
+ * @param string     $file_name
+ * @param array      $file_scanning_results
  *
  *
  * Loop through each issue for the particular
@@ -470,7 +463,7 @@ function vipgoci_set_file_issues_result( ?array &$commit_issues_submit_pr, int &
 				'type'      => VIPGOCI_STATS_LINT,
 				'file_name' => $file_name,
 				'file_line' => intval( $file_issue_line ),
-				'issue'     => $file_issue_val_item
+				'issue'     => $file_issue_val_item,
 			);
 			$error ++;
 		}

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
-require_once( __DIR__ . './../../options.php' );
+require_once __DIR__ . './../../options.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -14,14 +14,14 @@ final class OptionsSensitiveCleanTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_options_sensitive_clean
 	 */
-	public function testSensitiveClean1 () {
+	public function testSensitiveClean1() {
 		$options = array(
-			'a1'	=> 'secret',
-			'b1'	=> 'notsecret',
-			'c1'	=> 'secret',
-			'd1'	=> 'secret',
-			'e1'	=> 'notsecret',
-			'f1'	=> 'notsecret',
+			'a1' => 'secret',
+			'b1' => 'notsecret',
+			'c1' => 'secret',
+			'd1' => 'secret',
+			'e1' => 'notsecret',
+			'f1' => 'notsecret',
 		);
 
 		$options_clean = vipgoci_options_sensitive_clean(
@@ -31,7 +31,7 @@ final class OptionsSensitiveCleanTest extends TestCase {
 		/*
 		 * No options have been registered for
 		 * cleaning, should remain unchanged.
-		 */		
+		 */
 
 		$this->assertSame(
 			$options,
@@ -57,12 +57,12 @@ final class OptionsSensitiveCleanTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				'a1'	=> '***',
-				'b1'	=> 'notsecret',
-				'c1'	=> '***',
-				'd1'	=> 'secret',
-				'e1'	=> 'notsecret',
-				'f1'	=> 'notsecret',
+				'a1' => '***',
+				'b1' => 'notsecret',
+				'c1' => '***',
+				'd1' => 'secret',
+				'e1' => 'notsecret',
+				'f1' => 'notsecret',
 			),
 			$options_clean
 		);
@@ -75,7 +75,7 @@ final class OptionsSensitiveCleanTest extends TestCase {
 		vipgoci_options_sensitive_clean(
 			null,
 			array(
-				'd1'
+				'd1',
 			)
 		);
 
@@ -85,12 +85,12 @@ final class OptionsSensitiveCleanTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				'a1'	=> '***',
-				'b1'	=> 'notsecret',
-				'c1'	=> '***',
-				'd1'	=> '***',
-				'e1'	=> 'notsecret',
-				'f1'	=> 'notsecret',
+				'a1' => '***',
+				'b1' => 'notsecret',
+				'c1' => '***',
+				'd1' => '***',
+				'e1' => 'notsecret',
+				'f1' => 'notsecret',
 			),
 			$options_clean
 		);

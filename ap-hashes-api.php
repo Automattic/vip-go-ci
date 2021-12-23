@@ -25,11 +25,9 @@ function vipgoci_ap_hashes_api_file_approved(
 		'js',
 	);
 
-
 	$file_info_extension = vipgoci_file_extension_get(
 		$file_path
 	);
-
 
 	if ( in_array(
 		$file_info_extension,
@@ -39,7 +37,6 @@ function vipgoci_ap_hashes_api_file_approved(
 			'Not checking file for approval in hashes-to-hashes ' .
 				'API, as it is not a file-type that is ' .
 				'to be checked using it',
-
 			array(
 				'file_path'
 					=> $file_path,
@@ -57,15 +54,14 @@ function vipgoci_ap_hashes_api_file_approved(
 		return null;
 	}
 
-
 	vipgoci_log(
 		'Checking if file is already approved in ' .
 			'hashes-to-hashes API',
 		array(
-			'repo_owner'	=> $options['repo-owner'],
-			'repo_name'	=> $options['repo-name'],
-			'commit'	=> $options['commit'],
-			'file_path'	=> $file_path,
+			'repo_owner' => $options['repo-owner'],
+			'repo_name'  => $options['repo-name'],
+			'commit'     => $options['commit'],
+			'file_path'  => $file_path,
 		)
 	);
 
@@ -106,7 +102,6 @@ function vipgoci_ap_hashes_api_file_approved(
 		2
 	);
 
-
 	$file_temp_path = vipgoci_save_temp_file(
 		$file_path,
 		null,
@@ -117,13 +112,11 @@ function vipgoci_ap_hashes_api_file_approved(
 		$file_temp_path
 	);
 
-
 	$file_sha1 = sha1( $file_contents_stripped );
 
 	unlink( $file_temp_path );
 	unset( $file_contents );
 	unset( $file_contents_stripped );
-
 
 	/*
 	 * Ask the API for information about
@@ -134,8 +127,8 @@ function vipgoci_ap_hashes_api_file_approved(
 		'Asking hashes-to-hashes HTTP API if hash of file is ' .
 			'known',
 		array(
-			'file_path'	=> $file_path,
-			'file_sha1'	=> $file_sha1,
+			'file_path' => $file_path,
+			'file_sha1' => $file_sha1,
 		)
 	);
 
@@ -154,20 +147,19 @@ function vipgoci_ap_hashes_api_file_approved(
 		vipgoci_github_fetch_url(
 			$hashes_to_hashes_url,
 			array(
-				'oauth_consumer_key' =>
+				'oauth_consumer_key'    =>
 					$options['hashes-oauth-consumer-key'],
 
 				'oauth_consumer_secret' =>
 					$options['hashes-oauth-consumer-secret'],
 
-				'oauth_token' =>
+				'oauth_token'           =>
 					$options['hashes-oauth-token'],
 
-				'oauth_token_secret' =>
+				'oauth_token_secret'    =>
 					$options['hashes-oauth-token-secret'],
 			)
 		);
-
 
 	/*
 	 * Try to parse, and check for errors.
@@ -180,7 +172,6 @@ function vipgoci_ap_hashes_api_file_approved(
 		);
 	}
 
-
 	if (
 		( false === $file_hashes_info ) ||
 		( null === $file_hashes_info ) ||
@@ -190,9 +181,9 @@ function vipgoci_ap_hashes_api_file_approved(
 			'Unable to get information from ' .
 				'hashes-to-hashes HTTP API',
 			array(
-				'hashes_to_hashes_url'	=> $hashes_to_hashes_url,
-				'file_path'		=> $file_path,
-				'http_reply'		=> $file_hashes_info,
+				'hashes_to_hashes_url' => $hashes_to_hashes_url,
+				'file_path'            => $file_path,
+				'http_reply'           => $file_hashes_info,
 			),
 			0,
 			true // log to IRC
@@ -210,21 +201,19 @@ function vipgoci_ap_hashes_api_file_approved(
 	 * the file to be approved.
 	 */
 
-	foreach( $file_hashes_info as $file_hash_info ) {
-		if ( ! isset( $file_hash_info[ 'status' ] ) ) {
+	foreach ( $file_hashes_info as $file_hash_info ) {
+		if ( ! isset( $file_hash_info['status'] ) ) {
 			$file_approved = false;
 		}
 
 		if (
-			( 'false' === $file_hash_info[ 'status' ] ) ||
-			( false === $file_hash_info[ 'status' ] )
+			( 'false' === $file_hash_info['status'] ) ||
+			( false === $file_hash_info['status'] )
 		) {
 			$file_approved = false;
-		}
-
-		else if (
-			( 'true' === $file_hash_info[ 'status' ] ) ||
-			( true === $file_hash_info[ 'status' ] )
+		} elseif (
+			( 'true' === $file_hash_info['status'] ) ||
+			( true === $file_hash_info['status'] )
 		) {
 			/*
 			 * Only update approval-flag if we have not
@@ -236,7 +225,6 @@ function vipgoci_ap_hashes_api_file_approved(
 			}
 		}
 	}
-
 
 	/*
 	 * If no approval is seen, assume it is not
@@ -271,14 +259,13 @@ function vipgoci_ap_hashes_api_scan_commit(
 		'Scanning altered or new files affected by Pull-Request(s) ' .
 			'using hashes-to-hashes API',
 		array(
-			'repo_owner'		=> $options['repo-owner'],
-			'repo_name'		=> $options['repo-name'],
-			'commit_id'		=> $options['commit'],
-			'hashes-api'		=> $options['hashes-api'],
-			'hashes-api-url'	=> $options['hashes-api-url'],
+			'repo_owner'     => $options['repo-owner'],
+			'repo_name'      => $options['repo-name'],
+			'commit_id'      => $options['commit'],
+			'hashes-api'     => $options['hashes-api'],
+			'hashes-api-url' => $options['hashes-api-url'],
 		)
 	);
-
 
 	$prs_implicated = vipgoci_github_prs_implicated(
 		$options['repo-owner'],
@@ -288,7 +275,6 @@ function vipgoci_ap_hashes_api_scan_commit(
 		$options['branches-ignore'],
 		$options['skip-draft-prs']
 	);
-
 
 	foreach ( $prs_implicated as $pr_item ) {
 		/*
@@ -311,8 +297,7 @@ function vipgoci_ap_hashes_api_scan_commit(
 			false // exclude permission changes
 		);
 
-
-		foreach( $pr_diff['files'] as
+		foreach ( $pr_diff['files'] as
 			$pr_diff_file_name => $pr_diff_contents
 		) {
 			/*
@@ -321,9 +306,7 @@ function vipgoci_ap_hashes_api_scan_commit(
 			 */
 
 			if ( isset(
-				$auto_approved_files_arr[
-					$pr_diff_file_name
-				]
+				$auto_approved_files_arr[ $pr_diff_file_name ]
 			) ) {
 				continue;
 			}
@@ -339,7 +322,6 @@ function vipgoci_ap_hashes_api_scan_commit(
 				$pr_diff_file_name
 			);
 
-
 			/*
 			 * Add the file to a list of approved files
 			 * of these affected by the Pull-Request.
@@ -353,12 +335,8 @@ function vipgoci_ap_hashes_api_scan_commit(
 					)
 				);
 
-				$auto_approved_files_arr[
-					$pr_diff_file_name
-				] = 'autoapprove-hashes-to-hashes';
-			}
-
-			else if ( false === $approval_status ) {
+				$auto_approved_files_arr[ $pr_diff_file_name ] = 'autoapprove-hashes-to-hashes';
+			} elseif ( false === $approval_status ) {
 				vipgoci_log(
 					'File is not approved in ' .
 						'hashes-to-hashes API',
@@ -366,9 +344,7 @@ function vipgoci_ap_hashes_api_scan_commit(
 						'file_name' => $pr_diff_file_name,
 					)
 				);
-			}
-
-			else if ( null === $approval_status ) {
+			} elseif ( null === $approval_status ) {
 				vipgoci_log(
 					'Could not determine if file is approved ' .
 						'in hashes-to-hashes API',
@@ -379,7 +355,6 @@ function vipgoci_ap_hashes_api_scan_commit(
 			}
 		}
 	}
-
 
 	/*
 	 * Reduce memory-usage as possible

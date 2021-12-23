@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
-require_once( __DIR__ . './../../defines.php' );
-require_once( __DIR__ . './../../other-web-services.php' ); // @todo: mock for functions calls
-require_once( __DIR__ . './../../statistics.php' );
+require_once __DIR__ . './../../defines.php';
+require_once __DIR__ . './../../other-web-services.php'; // @todo: mock for functions calls
+require_once __DIR__ . './../../statistics.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -20,7 +20,7 @@ final class A00IrcApiAlertQueueUniqueTest extends TestCase {
 		$msg_queue = array(
 			'Msg 1',
 			'Msg 2',
-			'Msg 3'
+			'Msg 3',
 		);
 
 		$msg_queue_new = vipgoci_irc_api_alert_queue_unique(

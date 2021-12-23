@@ -1,6 +1,6 @@
 <?php
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+require_once __DIR__ . '/IncludesForTests.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -170,9 +170,9 @@ final class A09LintLintScanCommitTest extends TestCase {
 							'message'  => "syntax error, unexpected end of file, expecting ',' or ';'",
 							'level'    => 'ERROR',
 							'severity' => 5,
-						)
-					)
-				)
+						),
+					),
+				),
 			),
 			$issues_submit
 		);
@@ -181,7 +181,7 @@ final class A09LintLintScanCommitTest extends TestCase {
 			array(
 				$pr_item->number => array(
 					'error' => 1,
-				)
+				),
 			),
 			$issues_stat
 		);
@@ -285,7 +285,6 @@ final class A09LintLintScanCommitTest extends TestCase {
 				$issues_submit[ $pr_item->number ][1]['issue']['message']
 			);
 
-
 		$this->assertSame(
 			array(
 				$pr_item->number => array(
@@ -297,7 +296,7 @@ final class A09LintLintScanCommitTest extends TestCase {
 							'message'  => "syntax error, unexpected end of file, expecting ',' or ';'",
 							'level'    => 'ERROR',
 							'severity' => 5,
-						)
+						),
 					),
 					array(
 						'type'      => 'lint',
@@ -307,14 +306,14 @@ final class A09LintLintScanCommitTest extends TestCase {
 							'message'  => "syntax error, unexpected end of file, expecting ',' or ';'",
 							'level'    => 'ERROR',
 							'severity' => 5,
-						)
+						),
 					),
 					/*
 					 * Note: tests3/myfile1.php should be skipped,
 					 * according to --lint-skip-folders option
 					 * set above.
 					 */
-				)
+				),
 			),
 			$issues_submit
 		);
@@ -323,7 +322,7 @@ final class A09LintLintScanCommitTest extends TestCase {
 			array(
 				$pr_item->number => array(
 					'error' => 2,
-				)
+				),
 			),
 			$issues_stat
 		);
@@ -410,10 +409,10 @@ final class A09LintLintScanCommitTest extends TestCase {
 		$expected_issues_skipped = array(
 			39 => array(
 				'issues' => array(
-					'max-lines' => array( 'test1/myfile-1.php' )
+					'max-lines' => array( 'test1/myfile-1.php' ),
 				),
-				'total'  => 1
-			)
+				'total'  => 1,
+			),
 		);
 
 		$this->assertSame(
@@ -500,8 +499,8 @@ final class A09LintLintScanCommitTest extends TestCase {
 		$expected_issues_skipped = array(
 			43 => array(
 				'issues' => array(),
-				'total'  => 0
-			)
+				'total'  => 0,
+			),
 		);
 
 		$this->assertSame(
@@ -593,11 +592,11 @@ final class A09LintLintScanCommitTest extends TestCase {
 			43 => array(
 				'issues' => array(
 					'max-lines' => array(
-						0 => 'tests1/myfile1.php'
-					)
+						0 => 'tests1/myfile1.php',
+					),
 				),
-				'total'  => 1
-			)
+				'total'  => 1,
+			),
 		);
 
 		$this->assertSame(
@@ -614,7 +613,7 @@ final class A09LintLintScanCommitTest extends TestCase {
 	private function getDefaultSkippedFilesDueIssuesMock(): array {
 		return array(
 			'issues' => array(),
-			'total'  => 0
+			'total'  => 0,
 		);
 	}
 
@@ -712,9 +711,9 @@ final class A09LintLintScanCommitTest extends TestCase {
 							'message'  => "syntax error, unexpected end of file, expecting ',' or ';'",
 							'level'    => 'ERROR',
 							'severity' => 5,
-						)
-					)
-				)
+						),
+					),
+				),
 			),
 			$issues_submit
 		);

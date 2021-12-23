@@ -2,7 +2,7 @@
 
 namespace Vipgoci\tests;
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+require_once __DIR__ . '/IncludesForTests.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -12,7 +12,7 @@ final class GitHubAuthenticatedUserGetTest extends TestCase {
 	protected function setUp(): void {
 		$this->options = array();
 
-		$this->options[ 'github-token' ] =
+		$this->options['github-token'] =
 			vipgoci_unittests_get_config_value(
 				'git-secrets',
 				'github-token',
@@ -30,10 +30,10 @@ final class GitHubAuthenticatedUserGetTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_github_authenticated_user_get
 	 */
-	public function testGitHubAuthenticatedUserGet1 () {
+	public function testGitHubAuthenticatedUserGet1() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
-			array( ),
+			array(),
 			$this
 		);
 

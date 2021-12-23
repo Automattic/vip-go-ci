@@ -103,7 +103,7 @@ function vipgoci_sysexit(
 	 * with exit status.
 	 */
 	if (
-		( function_exists( 'vipgoci_unittests_check_indication_for_test_id' )) &&
+		( function_exists( 'vipgoci_unittests_check_indication_for_test_id' ) ) &&
 		( vipgoci_unittests_check_indication_for_test_id( 'SysExitTest' ) )
 	) {
 		return $exit_status;
@@ -147,7 +147,7 @@ function vipgoci_set_maximum_exec_time(
 	vipgoci_log(
 		'Setting maximum execution time',
 		array(
-			'max_exec_time'	=> $max_exec_time,
+			'max_exec_time' => $max_exec_time,
 		)
 	);
 
@@ -230,19 +230,19 @@ function vipgoci_set_maximum_exec_time(
 function vipgoci_find_fields_in_array( $fields_arr, $data_arr ) {
 	$res_arr = array();
 
-	for(
+	for (
 		$data_item_cnt = 0;
 		$data_item_cnt < count( $data_arr );
 		$data_item_cnt++
 	) {
 		$res_arr[ $data_item_cnt ] = 0;
 
-		foreach( $fields_arr as $field_name => $field_values ) {
+		foreach ( $fields_arr as $field_name => $field_values ) {
 			if ( ! array_key_exists( $field_name, $data_arr[ $data_item_cnt ] ) ) {
 				continue;
 			}
 
-			foreach( $field_values as $field_value_item ) {
+			foreach ( $field_values as $field_value_item ) {
 				if ( $data_arr[ $data_item_cnt ][ $field_name ] === $field_value_item ) {
 					$res_arr[ $data_item_cnt ]++;
 
@@ -257,9 +257,7 @@ function vipgoci_find_fields_in_array( $fields_arr, $data_arr ) {
 			}
 		}
 
-		$res_arr[
-			$data_item_cnt
-		] = (
+		$res_arr[ $data_item_cnt ] = (
 			$res_arr[ $data_item_cnt ]
 			===
 			count( array_keys( $fields_arr ) )
@@ -274,7 +272,7 @@ function vipgoci_find_fields_in_array( $fields_arr, $data_arr ) {
  * "null" to a variable of that type.
  */
 function vipgoci_convert_string_to_type( $str ) {
-	switch( $str ) {
+	switch ( $str ) {
 		case 'true':
 			$ret = true;
 			break;
@@ -375,7 +373,7 @@ function vipgoci_patch_changed_lines(
 
 	foreach ( $lines_arr as $line ) {
 		preg_match_all(
-			"/^@@\s+[-\+]([0-9]+,[0-9]+)\s+[-\+]([0-9]+,[0-9]+)\s+@@/",
+			'/^@@\s+[-\+]([0-9]+,[0-9]+)\s+[-\+]([0-9]+,[0-9]+)\s+@@/',
 			$line,
 			$matches
 		);
@@ -386,28 +384,20 @@ function vipgoci_patch_changed_lines(
 				$matches[2][0]
 			);
 
-
 			$i = $start_end[0];
 
-
 			$lines_changed[] = null;
-		}
-
-		else if ( empty( $matches[0] ) ) {
+		} elseif ( empty( $matches[0] ) ) {
 			if ( empty( $line[0] ) ) {
 				// Do nothing
-			}
-
-			else if (
+			} elseif (
 				( $line[0] == '-' ) ||
 				( $line[0] == '\\' )
 			) {
 				$lines_changed[] = null;
-			}
-
-			else if (
+			} elseif (
 				( $line[0] == '+' ) ||
-				( $line[0] == " " ) ||
+				( $line[0] == ' ' ) ||
 				( $line[0] == "\t" )
 			) {
 				$lines_changed[] = $i++;
@@ -478,7 +468,6 @@ function vipgoci_cache( $cache_id_arr, $data = null ) {
 		$cache_id_arr
 	);
 
-
 	if ( null === $data ) {
 		if ( isset( $vipgoci_cache_buffer[ $cache_id ] ) ) {
 			$ret = $vipgoci_cache_buffer[ $cache_id ];
@@ -489,9 +478,7 @@ function vipgoci_cache( $cache_id_arr, $data = null ) {
 			}
 
 			return $ret;
-		}
-
-		else {
+		} else {
 			return false;
 		}
 	}
@@ -546,7 +533,7 @@ function vipgoci_save_temp_file(
 		( false !== $temp_file_name )
 	) {
 		$temp_file_name_old = $temp_file_name;
-		$temp_file_name .= '.' . $file_name_extension;
+		$temp_file_name    .= '.' . $file_name_extension;
 
 		if ( true !== rename(
 			$temp_file_name_old,
@@ -581,7 +568,6 @@ function vipgoci_save_temp_file(
 		vipgoci_sysexit(
 			'Could not save file to disk, got ' .
 			'an error. Exiting...',
-
 			array(
 				'temp_file_name' => $temp_file_name,
 			),
@@ -621,7 +607,7 @@ function vipgoci_file_extension_get( $file_name ) {
  * to be submitted to GitHub.
  */
 function vipgoci_github_transform_to_emojis( $text_string ) {
-	switch( strtolower( $text_string ) ) {
+	switch ( strtolower( $text_string ) ) {
 		case 'warning':
 			return ':warning:';
 
@@ -703,7 +689,7 @@ function vipgoci_filter_file_path(
 		/*
 		 * Loop through all skip-folders.
 		 */
-		foreach(
+		foreach (
 			$filter['skip_folders'] as $tmp_skip_folder_item
 		) {
 			/*
@@ -748,16 +734,15 @@ function vipgoci_filter_file_path(
 			'Skipping file that does not seem ' .
 				'to be a file matching ' .
 				'filter-criteria',
-
 			array(
 				'filename' =>
 					$filename,
 
-				'filter' =>
+				'filter'   =>
 					$filter,
 
-				'matches' => array(
-					'file_ext_match' => $file_ext_match,
+				'matches'  => array(
+					'file_ext_match'     => $file_ext_match,
 					'file_folders_match' => $file_folders_match,
 				),
 			),
@@ -784,10 +769,9 @@ function vipgoci_scandir_git_repo( $path, $filter, $base_path = null ) {
 
 	vipgoci_log(
 		'Fetching git-tree using scandir()',
-
 		array(
-			'path' => $path,
-			'filter' => $filter,
+			'path'      => $path,
+			'filter'    => $filter,
 			'base_path' => $base_path,
 		),
 		2
@@ -799,7 +783,7 @@ function vipgoci_scandir_git_repo( $path, $filter, $base_path = null ) {
 	 * when making sure we do not
 	 * accidentally filter by the filesystem
 	 * outside of the git-repository (see below).
- 	 */
+	  */
 	if ( null === $base_path ) {
 		$base_path = $path;
 	}
@@ -810,7 +794,6 @@ function vipgoci_scandir_git_repo( $path, $filter, $base_path = null ) {
 
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'git_repo_scandir' );
 
-
 	foreach ( $cdir as $key => $value ) {
 		if ( in_array(
 			$value,
@@ -819,7 +802,6 @@ function vipgoci_scandir_git_repo( $path, $filter, $base_path = null ) {
 			// Skip '.' and '..'
 			continue;
 		}
-
 
 		if ( is_dir(
 			$path . DIRECTORY_SEPARATOR . $value
@@ -938,12 +920,9 @@ function vipgoci_github_comment_match(
 		':' .
 		$file_issue_line;
 
-
 	if ( ! isset(
-		$comments_made[
-			$comment_index_key
-		]
-	)) {
+		$comments_made[ $comment_index_key ]
+	) ) {
 		/*
 		 * No match on index-key within the
 		 * associative array -- the comment has
@@ -951,7 +930,6 @@ function vipgoci_github_comment_match(
 		 */
 		return false;
 	}
-
 
 	/*
 	 * Some comment matching the file and line-number
@@ -968,8 +946,8 @@ function vipgoci_github_comment_match(
 		 * as "Warning: ..." -- remove all of that.
 		 */
 		$comment_made_body = str_replace(
-			array("**", "Warning", "Error", "Info", ":no_entry_sign:", ":warning:", ":information_source:"),
-			array("", "", "", "", ""),
+			array( '**', 'Warning', 'Error', 'Info', ':no_entry_sign:', ':warning:', ':information_source:' ),
+			array( '', '', '', '', '' ),
 			$comment_made->body
 		);
 
@@ -1082,7 +1060,6 @@ function vipgoci_issues_filter_irrellevant(
 			$pr_item_commits
 		);
 
-
 	$file_issues_ret = array();
 
 	/*
@@ -1140,10 +1117,10 @@ function vipgoci_issues_filter_irrellevant(
  * a duplicate.
  */
 function vipgoci_issues_filter_duplicate( $file_issues_arr ) {
-	$issues_hashes = array();
+	$issues_hashes       = array();
 	$file_issues_arr_new = array();
 
-	foreach(
+	foreach (
 		$file_issues_arr as
 			$issue_item_key => $issue_item_value
 	) {
@@ -1180,12 +1157,10 @@ function vipgoci_results_sort_by_severity(
 
 	vipgoci_log(
 		'Sorting issues in results according to severity before submission',
-		array(
-		)
+		array()
 	);
 
-
-	foreach(
+	foreach (
 		array_keys(
 			$results['issues']
 		) as $pr_number
@@ -1196,38 +1171,38 @@ function vipgoci_results_sort_by_severity(
 		 * Temporarily add severity
 		 * column so we can sort using that.
 		 */
-		foreach(
+		foreach (
 			array_keys( $current_pr_results ) as
 				$current_pr_result_item_key
 		) {
-			$current_pr_results[ $current_pr_result_item_key ][ 'severity'] =
+			$current_pr_results[ $current_pr_result_item_key ]['severity'] =
 				$current_pr_results[ $current_pr_result_item_key ]['issue']['severity'];
 		}
 
 		/*
 		 * Do the actual sorting.
 		 */
-		$severity_column  = array_column(
+		$severity_column = array_column(
 			$current_pr_results,
 			'severity'
 		);
 
 		array_multisort(
-		        $severity_column,
-		        SORT_DESC,
-		        $current_pr_results
+			$severity_column,
+			SORT_DESC,
+			$current_pr_results
 		);
 
 		/*
 		 * Remove severity column
 		 * afterwards.
 		 */
-		foreach(
+		foreach (
 			array_keys( $current_pr_results ) as
 				$current_pr_result_item_key
 		) {
 			unset(
-				$current_pr_results[ $current_pr_result_item_key ][ 'severity']
+				$current_pr_results[ $current_pr_result_item_key ]['severity']
 			);
 		}
 	}
@@ -1268,7 +1243,6 @@ function vipgoci_markdown_comment_add_pagebreak(
 		$pagebreak_style
 	);
 
-
 	/*
 	 * If pagebreak is found, and is
 	 * at the end of the comment, bail
@@ -1296,9 +1270,13 @@ function vipgoci_markdown_comment_add_pagebreak(
  * from the beginning and end, and transform to lowercase.
  */
 function vipgoci_sanitize_string( $str ) {
-	return strtolower( ltrim( rtrim(
-		$str
-	) ) );
+	return strtolower(
+		ltrim(
+			rtrim(
+				$str
+			)
+		)
+	);
 }
 
 /*
@@ -1306,7 +1284,7 @@ function vipgoci_sanitize_string( $str ) {
  * if exist.
  */
 function vipgoci_sanitize_path_prefix( string $path, array $prefixes ): string {
-	foreach( $prefixes as $prefix ) {
+	foreach ( $prefixes as $prefix ) {
 		if ( 0 === strpos( $path, $prefix ) ) {
 			$path = substr(
 				$path,

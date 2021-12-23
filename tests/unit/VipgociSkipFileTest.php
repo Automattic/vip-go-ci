@@ -4,8 +4,8 @@ declare( strict_types=1 );
 
 namespace Vipgoci\Tests\Unit;
 
-require_once( __DIR__ . './../../defines.php' );
-require_once( __DIR__ . './../../skip-file.php' );
+require_once __DIR__ . './../../defines.php';
+require_once __DIR__ . './../../skip-file.php';
 
 use PHPUnit\Framework\TestCase;
 use stdClass;
@@ -22,13 +22,13 @@ final class VipgociSkipFileTest extends TestCase {
 	public function testGetSkippedFilesWillReturnCorrectValue(): void {
 		$validation_mock = array(
 			'issues' => array( 'max-lines' => array( 'MyFailedClass1.php' ) ),
-			'total'  => 1
+			'total'  => 1,
 		);
 
 		$current_skipped_files_mock = array(
 			'total'  => 2,
 			'issues' => array(
-				'max-lines' => array( 'MyFailedClass2.php', 'MyFailedClass3.php' )
+				'max-lines' => array( 'MyFailedClass2.php', 'MyFailedClass3.php' ),
 			),
 		);
 
@@ -63,13 +63,13 @@ final class VipgociSkipFileTest extends TestCase {
 	public function testGetSkippedFilesWillReturnCorrectValueForTotal0(): void {
 		$validation_mock = array(
 			'issues' => array(),
-			'total'  => 0
+			'total'  => 0,
 		);
 
 		$current_skipped_files_mock = array(
 			'total'  => 2,
 			'issues' => array(
-				'max-lines' => array( 'MyFailedClass2.php', 'MyFailedClass3.php' )
+				'max-lines' => array( 'MyFailedClass2.php', 'MyFailedClass3.php' ),
 			),
 		);
 
@@ -81,7 +81,7 @@ final class VipgociSkipFileTest extends TestCase {
 		$expected_skipped_files = array(
 			'total'  => 2,
 			'issues' => array(
-				'max-lines' => array( 'MyFailedClass2.php', 'MyFailedClass3.php' )
+				'max-lines' => array( 'MyFailedClass2.php', 'MyFailedClass3.php' ),
 			),
 		);
 
@@ -99,14 +99,14 @@ final class VipgociSkipFileTest extends TestCase {
 		$commit_skipped_files = array(
 			$commid_id_mock => array(
 				'issues' => array(),
-				'total'  => 0
-			)
+				'total'  => 0,
+			),
 		);
 		$validation_mock      = array(
 			'total'  => 1,
 			'issues' => array(
-				'max-lines' => array( 'MyFailedClass.php' )
-			)
+				'max-lines' => array( 'MyFailedClass.php' ),
+			),
 		);
 
 		vipgoci_set_skipped_file(
@@ -118,11 +118,11 @@ final class VipgociSkipFileTest extends TestCase {
 		$expected_skipped_files = array(
 			'8' => array(
 				'issues' => array(
-					'max-lines' => array( 'MyFailedClass.php' )
+					'max-lines' => array( 'MyFailedClass.php' ),
 
 				),
-				'total'  => 1
-			)
+				'total'  => 1,
+			),
 		);
 
 		$this->assertSame(
@@ -141,14 +141,14 @@ final class VipgociSkipFileTest extends TestCase {
 		$commit_skipped_files = array(
 			8 => array(
 				'issues' => array(),
-				'total'  => 0
-			)
+				'total'  => 0,
+			),
 		);
 		$validation_mock      = array(
 			'total'  => 1,
 			'issues' => array(
-				'max-lines' => array( 'MyFailedClass.php' )
-			)
+				'max-lines' => array( 'MyFailedClass.php' ),
+			),
 		);
 
 		vipgoci_set_prs_implicated_skipped_files(
@@ -160,11 +160,11 @@ final class VipgociSkipFileTest extends TestCase {
 		$expected_skipped_files = array(
 			'8' => array(
 				'issues' => array(
-					'max-lines' => array( 'MyFailedClass.php' )
+					'max-lines' => array( 'MyFailedClass.php' ),
 
 				),
-				'total'  => 1
-			)
+				'total'  => 1,
+			),
 		);
 
 		$this->assertSame(
@@ -180,9 +180,9 @@ final class VipgociSkipFileTest extends TestCase {
 
 		$skipped = array(
 			'issues' => array(
-				'max-lines' => array( 'MyFailedClass.php', 'MyFailedClass2.php' )
+				'max-lines' => array( 'MyFailedClass.php', 'MyFailedClass2.php' ),
 			),
-			'total'  => 2
+			'total'  => 2,
 		);
 
 		$skipped_files_message = vipgoci_get_skipped_files_message( $skipped, $this->validationMessagePrefix );
@@ -205,9 +205,9 @@ Note that the above file(s) were not analyzed due to their length.';
 	public function testGetSkippedFilesMessageWithNumberOfLinesExceededDifferentThanDefault(): void {
 		$skipped                 = array(
 			'issues' => array(
-				'max-lines' => array( 'MyFailedClass.php', 'MyFailedClass2.php' )
+				'max-lines' => array( 'MyFailedClass.php', 'MyFailedClass2.php' ),
 			),
-			'total'  => 2
+			'total'  => 2,
 		);
 		$validationMessagePrefix = 'Maximum number of lines exceeded (25000):' . PHP_EOL . ' - ';
 		$skipped_files_message   = vipgoci_get_skipped_files_message( $skipped, $validationMessagePrefix );
@@ -294,11 +294,17 @@ Note that the above file(s) were not analyzed due to their length.';
 	 * @return array[]
 	 */
 	public function vipgociVerifySkipFileMessageDuplicationWillReturnOfCommentsOreIssuesResultsAreZeroProvider(): array {
-		return [
-			[ [ 'total' => 0 ], [ 'any' ] ],
-			[ [ 'total' => 2 ], [] ],
-			[ [ 'issues' => [ 'max-lines' => [ 'test.php' ] ], 'total' => 1 ], [ $this->getCommentMock() ] ],
-		];
+		return array(
+			array( array( 'total' => 0 ), array( 'any' ) ),
+			array( array( 'total' => 2 ), array() ),
+			array(
+				array(
+					'issues' => array( 'max-lines' => array( 'test.php' ) ),
+					'total'  => 1,
+				),
+				array( $this->getCommentMock() ),
+			),
+		);
 	}
 
 	/**
@@ -308,14 +314,14 @@ Note that the above file(s) were not analyzed due to their length.';
 		$skippedFileCommentMock = $this->getSkippedFilesCommentMock();
 		$result                 = vipgo_get_skipped_files_from_comment( $skippedFileCommentMock, $this->validationMessagePrefix );
 
-		$expected = [
+		$expected = array(
 			'GoogleAtom.php',
 			'MySuccessClass.php',
 			'MySuccessClass2.php',
 			'src/MySuccesClasss.php',
 			'src/SyntaxError.php',
 			'tests1/myfile1.php',
-		];
+		);
 
 		$this->assertSame(
 			$expected,
@@ -330,9 +336,9 @@ Note that the above file(s) were not analyzed due to their length.';
 		$skippedFileCommentMock = $this->getSkippedSingleFileCommentMock();
 
 		$result   = vipgo_get_skipped_files_from_comment( $skippedFileCommentMock, $this->validationMessagePrefix );
-		$expected = [
-			'file-10.php'
-		];
+		$expected = array(
+			'file-10.php',
+		);
 
 		$this->assertSame(
 			$expected,
@@ -362,14 +368,14 @@ Note that the above file(s) were not analyzed due to their length.';
 		$commentsSkippedFilesMock = $this->getSkippedFilesCommentsMock();
 
 		$result   = vipgo_get_skipped_files_from_pr_comments( $commentsSkippedFilesMock, $this->validationMessagePrefix );
-		$expected = [
+		$expected = array(
 			'GoogleAtom.php',
 			'MySuccessClass.php',
 			'MySuccessClass2.php',
 			'src/MySuccesClasss.php',
 			'src/SyntaxError.php',
 			'tests1/myfile1.php',
-		];
+		);
 
 		$this->assertSame(
 			$expected,
@@ -410,12 +416,11 @@ Note that the above file(s) were not analyzed due to their length.';
 	 * @return string[][]
 	 */
 	public function getLargeFilesMessageFromPRCommentShouldReturnEmptyForCommentsWithNoSkippedFilesProvider(): array {
-		return
-			[
-				[ 'any' ],
-				[ PHP_EOL . PHP_EOL . VIPGOCI_VALIDATION_MAXIMUM_DETAIL_MSG ],
-				[ '**skipped-files** ANY' . PHP_EOL . PHP_EOL . VIPGOCI_VALIDATION_MAXIMUM_DETAIL_MSG ]
-			];
+		return array(
+			array( 'any' ),
+			array( PHP_EOL . PHP_EOL . VIPGOCI_VALIDATION_MAXIMUM_DETAIL_MSG ),
+			array( '**skipped-files** ANY' . PHP_EOL . PHP_EOL . VIPGOCI_VALIDATION_MAXIMUM_DETAIL_MSG ),
+		);
 	}
 
 	/**
@@ -423,7 +428,7 @@ Note that the above file(s) were not analyzed due to their length.';
 	 */
 	public function testGetLargeFilesFromPRCommentsWhenCommentsAreNotAboutSkippedFilesWillReturnEmpty(): void {
 		$commentsMock = $this->getCommentMock();
-		$result       = vipgo_get_skipped_files_from_pr_comments( [ $commentsMock ], $this->validationMessagePrefix );
+		$result       = vipgo_get_skipped_files_from_pr_comments( array( $commentsMock ), $this->validationMessagePrefix );
 		$expected     = array();
 
 		$this->assertSame(
@@ -462,7 +467,7 @@ Note that the above file(s) were not analyzed due to their length.';
 	private function getSkippedFilesCommentsMock(): array {
 		$mock = $this->getSkippedFilesCommentMock();
 
-		return [ $mock ];
+		return array( $mock );
 	}
 
 	/**

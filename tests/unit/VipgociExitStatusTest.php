@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
-require_once( __DIR__ . './../../defines.php' );
-require_once( __DIR__ . './../../main.php' );
+require_once __DIR__ . './../../defines.php';
+require_once __DIR__ . './../../main.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -22,9 +22,9 @@ final class VipgociExitStatusTest extends TestCase {
 					'lint' => array(
 						25 => array(
 							'error' => 0,
-						)
-					)
-				)
+						),
+					),
+				),
 			)
 		);
 
@@ -43,10 +43,10 @@ final class VipgociExitStatusTest extends TestCase {
 				'stats' => array(
 					'lint' => array(
 						25 => array(
-							'error' => 30
-						)
-					)
-				)
+							'error' => 30,
+						),
+					),
+				),
 			)
 		);
 
@@ -64,8 +64,8 @@ final class VipgociExitStatusTest extends TestCase {
 			array(
 				'stats'         => array(),
 				'skipped-files' => array(
-					25 => array( 'total' => 1 )
-				)
+					25 => array( 'total' => 1 ),
+				),
 			)
 		);
 

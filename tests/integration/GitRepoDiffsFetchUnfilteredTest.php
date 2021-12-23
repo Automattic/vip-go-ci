@@ -2,8 +2,8 @@
 
 namespace Vipgoci\tests;
 
-require_once( __DIR__ . '/IncludesForTests.php' );
-require_once( __DIR__ . '/GitDiffsFetchUnfilteredTrait.php' );
+require_once __DIR__ . '/IncludesForTests.php';
+require_once __DIR__ . '/GitDiffsFetchUnfilteredTrait.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -19,11 +19,11 @@ final class GitRepoDiffsFetchUnfilteredTest extends TestCase {
 	use GitDiffsFetchUnfilteredTrait;
 
 	var $options_git_repo_tests = array(
-		'commit-test-repo-pr-diffs-1-a'	=> null,
-		'commit-test-repo-pr-diffs-1-b'	=> null,
-		'commit-test-repo-pr-diffs-1-c'	=> null,
-		'commit-test-repo-pr-diffs-1-d'	=> null,
-		'commit-test-repo-pr-diffs-1-e'	=> null,
+		'commit-test-repo-pr-diffs-1-a' => null,
+		'commit-test-repo-pr-diffs-1-b' => null,
+		'commit-test-repo-pr-diffs-1-c' => null,
+		'commit-test-repo-pr-diffs-1-d' => null,
+		'commit-test-repo-pr-diffs-1-e' => null,
 		'commit-test-repo-pr-diffs-1-f' => null,
 		'commit-test-repo-pr-diffs-1-g' => null,
 		'commit-test-repo-pr-diffs-2-a' => null,
@@ -31,8 +31,8 @@ final class GitRepoDiffsFetchUnfilteredTest extends TestCase {
 	);
 
 	var $options_git = array(
-		'git-path'		=> null,
-		'github-repo-url'	=> null,
+		'git-path'        => null,
+		'github-repo-url' => null,
 	);
 
 	protected function setUp(): void {
@@ -51,7 +51,7 @@ final class GitRepoDiffsFetchUnfilteredTest extends TestCase {
 			$this->options_git
 		);
 
-		$this->options[ 'github-token' ] =
+		$this->options['github-token'] =
 			vipgoci_unittests_get_config_value(
 				'git-secrets',
 				'github-token',
@@ -78,8 +78,8 @@ final class GitRepoDiffsFetchUnfilteredTest extends TestCase {
 		}
 
 		$this->options_git_repo_tests = null;
-		$this->options_git = null;
-		$this->options = null;
+		$this->options_git            = null;
+		$this->options                = null;
 	}
 
 	/**
@@ -356,7 +356,7 @@ final class GitRepoDiffsFetchUnfilteredTest extends TestCase {
 			$this->_dataGitDiffsAssert6(),
 			$diff
 		);
-	
+
 		vipgoci_unittests_output_suppress();
 
 		/*

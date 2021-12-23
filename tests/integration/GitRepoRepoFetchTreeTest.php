@@ -1,20 +1,20 @@
 <?php
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+require_once __DIR__ . '/IncludesForTests.php';
 
 use PHPUnit\Framework\TestCase;
 
 final class GitRepoRepoFetchTreeTest extends TestCase {
 	var $options_git = array(
-		'git-path'			=> null,
-		'github-repo-url'		=> null,
-		'repo-owner'			=> null,
-		'repo-name'			=> null,
+		'git-path'        => null,
+		'github-repo-url' => null,
+		'repo-owner'      => null,
+		'repo-name'       => null,
 	);
 
 	var $options_git_repo_tests = array(
-		'commit-test-repo-fetch-tree-1'	=> null,
-		'commit-test-repo-fetch-tree-2'	=> null,
+		'commit-test-repo-fetch-tree-1' => null,
+		'commit-test-repo-fetch-tree-2' => null,
 	);
 
 	protected function setUp(): void {
@@ -33,7 +33,7 @@ final class GitRepoRepoFetchTreeTest extends TestCase {
 			$this->options_git_repo_tests
 		);
 
-		$this->options[ 'github-token' ] =
+		$this->options['github-token'] =
 			vipgoci_unittests_get_config_value(
 				'git-secrets',
 				'github-token',
@@ -72,7 +72,6 @@ final class GitRepoRepoFetchTreeTest extends TestCase {
 			vipgoci_unittests_setup_git_repo(
 				$this->options
 			);
-
 
 		if ( false === $this->options['local-git-repo'] ) {
 			$this->markTestSkipped(
@@ -127,7 +126,6 @@ final class GitRepoRepoFetchTreeTest extends TestCase {
 				$this->options
 			);
 
-
 		if ( false === $this->options['local-git-repo'] ) {
 			$this->markTestSkipped(
 				'Could not set up git repository: ' .
@@ -142,7 +140,7 @@ final class GitRepoRepoFetchTreeTest extends TestCase {
 			$this->options,
 			$this->options['commit-test-repo-fetch-tree-2'],
 			array(
-				'file_extensions' => array( 'txt' )
+				'file_extensions' => array( 'txt' ),
 			)
 		);
 

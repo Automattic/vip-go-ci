@@ -29,7 +29,6 @@ function vipgoci_svg_do_scan_with_scanner(
 		2
 	);
 
-
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'svg_scanner_cli' );
 
 	$result = shell_exec( $cmd );
@@ -55,8 +54,8 @@ function vipgoci_svg_look_for_specific_tokens(
 		vipgoci_log(
 			'Unable to open file for SVG specific tag scanning',
 			array(
-				'temp_file_name'	=> $temp_file_name,
-				'disallowed_tokens'	=> $disallowed_tokens,
+				'temp_file_name'    => $temp_file_name,
+				'disallowed_tokens' => $disallowed_tokens,
 			)
 		);
 
@@ -86,7 +85,7 @@ function vipgoci_svg_look_for_specific_tokens(
 		/*
 		 * Scan for each disallowed token
 		 */
-		foreach( $disallowed_tokens as $disallowed_token ) {
+		foreach ( $disallowed_tokens as $disallowed_token ) {
 			/*
 			 * Do a case insensitive search
 			 */
@@ -108,8 +107,8 @@ function vipgoci_svg_look_for_specific_tokens(
 				$results['files'][ $temp_file_name ]
 			) ) {
 				$results['files'][ $temp_file_name ] = array(
-					'errors' => 0,
-					'messages' => array()
+					'errors'   => 0,
+					'messages' => array(),
 				);
 			}
 
@@ -117,20 +116,19 @@ function vipgoci_svg_look_for_specific_tokens(
 
 			$results['files'][ $temp_file_name ]['messages'][] =
 				array(
-					'message'	=>
+					'message' =>
 						'Found forbidden tag in SVG ' .
 							'file: \'' .
 							$disallowed_token .
 							'\'',
 
-					'line'		=> $line_no,
-					'level'		=> 'ERROR',
+					'line'    => $line_no,
+					'level'   => 'ERROR',
 				);
 		}
 
 		$line_no++;
 	}
-
 
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'svg_scanner_specific' );
 
@@ -156,11 +154,11 @@ function vipgoci_svg_scan_single_file(
 	vipgoci_log(
 		'Scanning single SVG file',
 		array(
-			'repo_owner'	=> $options['repo-owner'],
-			'repo_name'	=> $options['repo-name'],
-			'commit_id'	=> $options['commit'],
-			'svg_checks'	=> $options['svg-checks'],
-			'file_name'	=> $file_name,
+			'repo_owner' => $options['repo-owner'],
+			'repo_name'  => $options['repo-name'],
+			'commit_id'  => $options['commit'],
+			'svg_checks' => $options['svg-checks'],
+			'file_name'  => $file_name,
 		)
 	);
 
@@ -209,14 +207,13 @@ function vipgoci_svg_scan_single_file(
 		vipgoci_log(
 			'Could not scan file, does not seem to be a SVG file',
 			array(
-				'repo_owner'	=> $options['repo-owner'],
-				'repo_name'	=> $options['repo-name'],
-				'commit_id'	=> $options['commit'],
-				'svg_checks'	=> $options['svg-checks'],
-				'file_name'	=> $file_name,
+				'repo_owner' => $options['repo-owner'],
+				'repo_name'  => $options['repo-name'],
+				'commit_id'  => $options['commit'],
+				'svg_checks' => $options['svg-checks'],
+				'file_name'  => $file_name,
 			)
 		);
-
 
 		return null;
 	}
@@ -238,12 +235,12 @@ function vipgoci_svg_scan_single_file(
 			$options['skip-large-files-limit']
 		);
 
-		if ( 0 !== $validation[ 'total' ] ) {
+		if ( 0 !== $validation['total'] ) {
 			$skipped = array(
-				'file_issues_arr_master'	=> array(),
-				'file_issues_str'		=> null,
-				'temp_file_name'		=> $temp_file_name,
-				'validation'			=> $validation
+				'file_issues_arr_master' => array(),
+				'file_issues_str'        => null,
+				'temp_file_name'         => $temp_file_name,
+				'validation'             => $validation,
 			);
 
 			unlink( $temp_file_name );
@@ -251,7 +248,6 @@ function vipgoci_svg_scan_single_file(
 			return $skipped;
 		}
 	}
-
 
 	/*
 	 * Use the svg-sanitizer's library scanner
@@ -263,7 +259,6 @@ function vipgoci_svg_scan_single_file(
 		$temp_file_name
 	);
 
-
 	$results = json_decode(
 		$results,
 		true
@@ -273,20 +268,20 @@ function vipgoci_svg_scan_single_file(
 		vipgoci_log(
 			'SVG scanning of a single file failed',
 			array(
-				'results'		=> $results,
-				'file_name'		=> $file_name,
-				'temp_file_name'	=> $temp_file_name,
-				'validation'            => array( 'total' => 0 )
+				'results'        => $results,
+				'file_name'      => $file_name,
+				'temp_file_name' => $temp_file_name,
+				'validation'     => array( 'total' => 0 ),
 			)
 		);
 
 		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'svg_scan_single_file' );
 
 		return array(
-			'file_issues_arr_master'	=> $results,
-			'file_issues_str'		=> null,
-			'temp_file_name'		=> $temp_file_name,
-			'validation'                    => array( 'total' => 0 )
+			'file_issues_arr_master' => $results,
+			'file_issues_str'        => null,
+			'temp_file_name'         => $temp_file_name,
+			'validation'             => array( 'total' => 0 ),
 		);
 	}
 
@@ -309,11 +304,11 @@ function vipgoci_svg_scan_single_file(
 	$results['files'][ $temp_file_name ]['messages'] = array_map(
 		function( $issue_item ) {
 			$issue_item['severity'] = 5;
-			$issue_item['type'] = 'ERROR';
-			$issue_item['source'] = 'VipgociInternal.SVG.DisallowedTags';
-			$issue_item['level'] = $issue_item['type'];
-			$issue_item['fixable'] = false;
-			$issue_item['column'] = 0;
+			$issue_item['type']     = 'ERROR';
+			$issue_item['source']   = 'VipgociInternal.SVG.DisallowedTags';
+			$issue_item['level']    = $issue_item['type'];
+			$issue_item['fixable']  = false;
+			$issue_item['column']   = 0;
 
 			/*
 			 * FIXME: In some cases $issue_item['line'] (line number),
@@ -326,7 +321,6 @@ function vipgoci_svg_scan_single_file(
 		$results['files'][ $temp_file_name ]['messages']
 	);
 
-
 	unlink( $temp_file_name );
 
 	/*
@@ -334,7 +328,7 @@ function vipgoci_svg_scan_single_file(
 	 * by vipgoci_phpcs_scan_single_file().
 	 */
 
-	foreach( array( 'errors', 'warnings', 'fixable' ) as $stats_key ) {
+	foreach ( array( 'errors', 'warnings', 'fixable' ) as $stats_key ) {
 		if ( ! isset( $results['totals']['errors'] ) ) {
 			$results['totals'][ $stats_key ] = 0;
 		}
@@ -350,10 +344,10 @@ function vipgoci_svg_scan_single_file(
 	);
 
 	return array(
-		'file_issues_arr_master'	=> $results,
-		'file_issues_str'		=> json_encode( $results ),
-		'temp_file_name'		=> $temp_file_name,
-		'validation'                    => $validation ?? [],
+		'file_issues_arr_master' => $results,
+		'file_issues_str'        => json_encode( $results ),
+		'temp_file_name'         => $temp_file_name,
+		'validation'             => $validation ?? array(),
 	);
 }
 

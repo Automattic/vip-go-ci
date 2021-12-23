@@ -12,7 +12,7 @@ declare( strict_types=1 );
  */
 function vipgoci_get_skipped_files( array $skipped, array $validation ): array {
 	$skipped['issues'] = array_merge_recursive( $skipped['issues'], $validation['issues'] );
-	$skipped['total']  += $validation['total'];
+	$skipped['total'] += $validation['total'];
 
 	return $skipped;
 }
@@ -20,7 +20,7 @@ function vipgoci_get_skipped_files( array $skipped, array $validation ): array {
 /**
  * @param array $commit_skipped_files
  * @param array $validation
- * @param int $pr_number
+ * @param int   $pr_number
  */
 function vipgoci_set_skipped_file(
 	array &$commit_skipped_files,
@@ -49,7 +49,7 @@ function vipgoci_set_prs_implicated_skipped_files(
 }
 
 /**
- * @param array $skipped
+ * @param array  $skipped
  * @param string $validation_message
  *
  * @return string
@@ -71,7 +71,7 @@ function vipgoci_get_skipped_files_message( array $skipped, string $validation_m
 
 /**
  * @param string $issue_type
- * @param int $skip_files_lines_limit
+ * @param int    $skip_files_lines_limit
  * Maximum number of lines exceeded (15000)
  *
  * @return string
@@ -85,7 +85,7 @@ function get_validation_message_prefix( string $issue_type, int $skip_files_line
 }
 
 /**
- * @param array $affected_files
+ * @param array  $affected_files
  * @param string $validation_message
  *
  * @return string
@@ -104,8 +104,8 @@ function vipgoci_get_skipped_files_issue_message(
 }
 
 /**
- * @param array $pr_issues_results
- * @param array $comments
+ * @param array  $pr_issues_results
+ * @param array  $comments
  * @param string $validation_message
  *
  * Removes skipped files from the results list
@@ -124,7 +124,10 @@ function vipgo_skip_file_check_previous_pr_comments( array $pr_issues_results, a
 
 	$skipped_files = vipgo_get_skipped_files_from_pr_comments( $comments, $validation_message );
 
-	$result = [ 'issues' => [ VIPGOCI_VALIDATION_MAXIMUM_LINES => array() ], 'total' => 0 ];
+	$result = array(
+		'issues' => array( VIPGOCI_VALIDATION_MAXIMUM_LINES => array() ),
+		'total'  => 0,
+	);
 
 	/**
 	 * Iterates the list of files that reached the lines limit in this scan
@@ -144,7 +147,7 @@ function vipgo_skip_file_check_previous_pr_comments( array $pr_issues_results, a
 }
 
 /**
- * @param array $comments
+ * @param array  $comments
  * @param string $validation_message
  * Iterates all the comments to check the files affected by the skip files due max lines limit reached
  * returns array of files
@@ -164,7 +167,7 @@ function vipgo_get_skipped_files_from_pr_comments( array $comments, string $vali
 
 /**
  * @param stdClass $comment
- * @param string $validation_message_prefix
+ * @param string   $validation_message_prefix
  *
  * @return string[]
  */

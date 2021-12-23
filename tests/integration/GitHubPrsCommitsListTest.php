@@ -1,20 +1,20 @@
 <?php
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+require_once __DIR__ . '/IncludesForTests.php';
 
 use PHPUnit\Framework\TestCase;
 
 final class GitHubPrsCommitsListTest extends TestCase {
 	var $options_git_repo_tests = array(
-		'commit-test-repo-prs-commits-list-1'	=> null,
-		'pr-test-repo-prs-commits-list-1'	=> null,
+		'commit-test-repo-prs-commits-list-1' => null,
+		'pr-test-repo-prs-commits-list-1'     => null,
 	);
 
 	var $options_git = array(
-		'git-path'		=> null,
-		'github-repo-url'	=> null,
-		'repo-name'		=> null,
-		'repo-owner'		=> null,
+		'git-path'        => null,
+		'github-repo-url' => null,
+		'repo-name'       => null,
+		'repo-owner'      => null,
 	);
 
 	protected function setUp(): void {
@@ -39,7 +39,7 @@ final class GitHubPrsCommitsListTest extends TestCase {
 
 		$this->options['branches-ignore'] = array();
 
-		$this->options[ 'github-token' ] =
+		$this->options['github-token'] =
 			vipgoci_unittests_get_config_value(
 				'git-secrets',
 				'github-token',
@@ -49,8 +49,8 @@ final class GitHubPrsCommitsListTest extends TestCase {
 
 	protected function tearDown(): void {
 		$this->options_git_repo_tests = null;
-		$this->options_git = null;
-		$this->options = null;
+		$this->options_git            = null;
+		$this->options                = null;
 	}
 
 	/**
@@ -80,7 +80,7 @@ final class GitHubPrsCommitsListTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				$this->options['commit-test-repo-prs-commits-list-1']
+				$this->options['commit-test-repo-prs-commits-list-1'],
 			),
 			$commits_list
 		);

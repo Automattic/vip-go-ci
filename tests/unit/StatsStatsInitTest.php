@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
-require_once( __DIR__ . './../../defines.php' );
-require_once( __DIR__ . './../../statistics.php' );
+require_once __DIR__ . './../../defines.php';
+require_once __DIR__ . './../../statistics.php';
 
 use PHPUnit\Framework\TestCase;
 use stdClass;
@@ -29,11 +29,11 @@ final class StatsStatsInitTest extends TestCase {
 			array(
 				'phpcs'      => true,
 				'lint'       => true,
-				'hashes-api' => false
+				'hashes-api' => false,
 			),
 			array(
 				$pr_item1,
-				$pr_item2
+				$pr_item2,
 			),
 			$stats_arr
 		);
@@ -44,8 +44,14 @@ final class StatsStatsInitTest extends TestCase {
 				110 => array(),
 			),
 			'skipped-files' => array(
-				100 => array( 'issues' => array(), 'total' => 0 ),
-				110 => array( 'issues' => array(), 'total' => 0 ),
+				100 => array(
+					'issues' => array(),
+					'total'  => 0,
+				),
+				110 => array(
+					'issues' => array(),
+					'total'  => 0,
+				),
 			),
 			'stats'         => array(
 				VIPGOCI_STATS_PHPCS => array(
@@ -62,7 +68,7 @@ final class StatsStatsInitTest extends TestCase {
 					// no hashes-api; not supposed to initialize that
 				),
 
-				VIPGOCI_STATS_LINT => array(
+				VIPGOCI_STATS_LINT  => array(
 					100 => array(
 						'error'   => 0,
 						'warning' => 0,

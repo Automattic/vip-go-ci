@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
-require_once( __DIR__ . './../../misc.php' );
-require_once( __DIR__ . './../../options.php' );
+require_once __DIR__ . './../../misc.php';
+require_once __DIR__ . './../../options.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -35,10 +35,10 @@ final class OptionsGenericSupportCommentsProcessTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				1	=> false,
-				5	=> true,
-				10	=> false,
-				15	=> true,
+				1  => false,
+				5  => true,
+				10 => false,
+				15 => true,
 			),
 			$this->options['myoption1']
 		);
@@ -60,12 +60,12 @@ final class OptionsGenericSupportCommentsProcessTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				3	=> 'bar',
-				6	=> 'foo',
-				9	=> 'bar',
-				12	=> 'foo',
-				15	=> 'false',
-				20	=> 'AbCdEfG',
+				3  => 'bar',
+				6  => 'foo',
+				9  => 'bar',
+				12 => 'foo',
+				15 => 'false',
+				20 => 'AbCdEfG',
 			),
 			$this->options['myoption2']
 		);
@@ -87,12 +87,12 @@ final class OptionsGenericSupportCommentsProcessTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				3	=> 'bar',
-				6	=> 'foo',
-				9	=> 'bar',
-				12	=> 'foo',
-				15	=> 'false',
-				20	=> 'abcdefg',
+				3  => 'bar',
+				6  => 'foo',
+				9  => 'bar',
+				12 => 'foo',
+				15 => 'false',
+				20 => 'abcdefg',
 			),
 			$this->options['myoption2']
 		);
@@ -114,23 +114,28 @@ final class OptionsGenericSupportCommentsProcessTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				3	=> array(
-					'foo', 'bar', 'test'
+				3  => array(
+					'foo',
+					'bar',
+					'test',
 				),
-				6	=> array(
-					'test', 'foo', 'foo',
+				6  => array(
+					'test',
+					'foo',
+					'foo',
 				),
-				9	=> array(
-					'aaa', 'bbb', 'ccc',
+				9  => array(
+					'aaa',
+					'bbb',
+					'ccc',
 				),
-				12	=> array(
+				12 => array(
 					'ddd',
 				),
-				15	=> array(
-				),
-				20	=> array(
+				15 => array(),
+				20 => array(
 					'AbCdEfG',
-				)
+				),
 			),
 			$this->options['myoption3']
 		);
@@ -152,23 +157,28 @@ final class OptionsGenericSupportCommentsProcessTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				3	=> array(
-					'foo', 'bar', 'test'
+				3  => array(
+					'foo',
+					'bar',
+					'test',
 				),
-				6	=> array(
-					'test', 'foo', 'foo',
+				6  => array(
+					'test',
+					'foo',
+					'foo',
 				),
-				9	=> array(
-					'aaa', 'bbb', 'ccc',
+				9  => array(
+					'aaa',
+					'bbb',
+					'ccc',
 				),
-				12	=> array(
+				12 => array(
 					'ddd',
 				),
-				15	=> array(
-				),
-				20	=> array(
+				15 => array(),
+				20 => array(
 					'abcdefg',
-				)
+				),
 			),
 			$this->options['myoption3']
 		);

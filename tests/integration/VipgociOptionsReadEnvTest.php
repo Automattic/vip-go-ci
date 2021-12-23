@@ -1,6 +1,6 @@
 <?php
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+require_once __DIR__ . '/IncludesForTests.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -21,7 +21,7 @@ final class VipgociOptionsReadEnvTest extends TestCase {
 		putenv(
 			'PHP_ROWNER'
 		);
-	
+
 		putenv(
 			'PHP_ROWNER2'
 		);
@@ -32,8 +32,8 @@ final class VipgociOptionsReadEnvTest extends TestCase {
 	 */
 	public function testOptionsReadEnv1() {
 		$options = array(
-			'repo-name' => 'repo-test-name',
-			'env-options' => 'repo-owner=PHP_ROWNER'
+			'repo-name'   => 'repo-test-name',
+			'env-options' => 'repo-owner=PHP_ROWNER',
 		);
 
 		$options_recognized = array(
@@ -43,7 +43,7 @@ final class VipgociOptionsReadEnvTest extends TestCase {
 		);
 
 		vipgoci_unittests_output_suppress();
- 
+
 		vipgoci_option_array_handle(
 			$options,
 			'env-options',
@@ -52,7 +52,7 @@ final class VipgociOptionsReadEnvTest extends TestCase {
 			',',
 			false
 		);
-       
+
 		vipgoci_options_read_env(
 			$options,
 			$options_recognized
@@ -65,11 +65,11 @@ final class VipgociOptionsReadEnvTest extends TestCase {
 		 */
 		$this->assertSame(
 			array(
-				'repo-name' => 'repo-test-name',
+				'repo-name'   => 'repo-test-name',
 				'env-options' => array(
 					0 => 'repo-owner=PHP_ROWNER',
 				),
-				'repo-owner' => 'repo-test-owner',
+				'repo-owner'  => 'repo-test-owner',
 			),
 			$options
 		);
@@ -80,8 +80,8 @@ final class VipgociOptionsReadEnvTest extends TestCase {
 	 */
 	public function testOptionsReadEnv2() {
 		$options = array(
-			'repo-name' => 'repo-test-name',
-			'env-options' => 'repo-owner=PHP_ROWNER500' // invalid env var
+			'repo-name'   => 'repo-test-name',
+			'env-options' => 'repo-owner=PHP_ROWNER500', // invalid env var
 		);
 
 		$options_recognized = array(
@@ -91,7 +91,7 @@ final class VipgociOptionsReadEnvTest extends TestCase {
 		);
 
 		vipgoci_unittests_output_suppress();
- 
+
 		vipgoci_option_array_handle(
 			$options,
 			'env-options',
@@ -100,7 +100,7 @@ final class VipgociOptionsReadEnvTest extends TestCase {
 			',',
 			false
 		);
-       
+
 		vipgoci_options_read_env(
 			$options,
 			$options_recognized
@@ -113,7 +113,7 @@ final class VipgociOptionsReadEnvTest extends TestCase {
 		 */
 		$this->assertSame(
 			array(
-				'repo-name' => 'repo-test-name',
+				'repo-name'   => 'repo-test-name',
 				'env-options' => array(
 					0 => 'repo-owner=PHP_ROWNER500',
 				),
@@ -139,7 +139,7 @@ final class VipgociOptionsReadEnvTest extends TestCase {
 		);
 
 		vipgoci_unittests_output_suppress();
- 
+
 		vipgoci_option_array_handle(
 			$options,
 			'env-options',
@@ -148,7 +148,7 @@ final class VipgociOptionsReadEnvTest extends TestCase {
 			',',
 			false
 		);
-       
+
 		vipgoci_options_read_env(
 			$options,
 			$options_recognized
@@ -161,9 +161,8 @@ final class VipgociOptionsReadEnvTest extends TestCase {
 		 */
 		$this->assertSame(
 			array(
-				'repo-name' => 'repo-test-name',
-				'env-options' => array(
-				),
+				'repo-name'   => 'repo-test-name',
+				'env-options' => array(),
 			),
 			$options
 		);
@@ -174,7 +173,7 @@ final class VipgociOptionsReadEnvTest extends TestCase {
 	 */
 	public function testOptionsReadEnv4() {
 		$options = array(
-			'repo-name' => 'repo-test-name',
+			'repo-name'   => 'repo-test-name',
 			'env-options' => 'FOO=TEST', // invalid option, is not recognized
 		);
 
@@ -185,7 +184,7 @@ final class VipgociOptionsReadEnvTest extends TestCase {
 		);
 
 		vipgoci_unittests_output_suppress();
- 
+
 		vipgoci_option_array_handle(
 			$options,
 			'env-options',
@@ -194,7 +193,7 @@ final class VipgociOptionsReadEnvTest extends TestCase {
 			',',
 			false
 		);
-       
+
 		vipgoci_options_read_env(
 			$options,
 			$options_recognized
@@ -207,7 +206,7 @@ final class VipgociOptionsReadEnvTest extends TestCase {
 		 */
 		$this->assertSame(
 			array(
-				'repo-name' => 'repo-test-name',
+				'repo-name'   => 'repo-test-name',
 				'env-options' => array(
 					0 => 'FOO=TEST',
 				),
@@ -221,7 +220,7 @@ final class VipgociOptionsReadEnvTest extends TestCase {
 	 */
 	public function testOptionsReadEnv5() {
 		$options = array(
-			'repo-name' => 'repo-test-name',
+			'repo-name'   => 'repo-test-name',
 			'env-options' => 'env-options=TEST', // invalid option, is not allowed
 		);
 
@@ -232,7 +231,7 @@ final class VipgociOptionsReadEnvTest extends TestCase {
 		);
 
 		vipgoci_unittests_output_suppress();
- 
+
 		vipgoci_option_array_handle(
 			$options,
 			'env-options',
@@ -241,7 +240,7 @@ final class VipgociOptionsReadEnvTest extends TestCase {
 			',',
 			false
 		);
-       
+
 		vipgoci_options_read_env(
 			$options,
 			$options_recognized
@@ -254,7 +253,7 @@ final class VipgociOptionsReadEnvTest extends TestCase {
 		 */
 		$this->assertSame(
 			array(
-				'repo-name' => 'repo-test-name',
+				'repo-name'   => 'repo-test-name',
 				'env-options' => array(
 					0 => 'env-options=TEST',
 				),
@@ -268,7 +267,7 @@ final class VipgociOptionsReadEnvTest extends TestCase {
 	 */
 	public function testOptionsReadEnv6() {
 		$options = array(
-			'repo-name' => 'repo-test-name',
+			'repo-name'   => 'repo-test-name',
 			'env-options' => 'repo-name=PHP_ROWNER', // invalid option, already specified
 		);
 
@@ -279,7 +278,7 @@ final class VipgociOptionsReadEnvTest extends TestCase {
 		);
 
 		vipgoci_unittests_output_suppress();
- 
+
 		vipgoci_option_array_handle(
 			$options,
 			'env-options',
@@ -288,7 +287,7 @@ final class VipgociOptionsReadEnvTest extends TestCase {
 			',',
 			false
 		);
-       
+
 		vipgoci_options_read_env(
 			$options,
 			$options_recognized
@@ -301,7 +300,7 @@ final class VipgociOptionsReadEnvTest extends TestCase {
 		 */
 		$this->assertSame(
 			array(
-				'repo-name' => 'repo-test-name',
+				'repo-name'   => 'repo-test-name',
 				'env-options' => array(
 					0 => 'repo-name=PHP_ROWNER',
 				),
@@ -315,7 +314,7 @@ final class VipgociOptionsReadEnvTest extends TestCase {
 	 */
 	public function testOptionsReadEnv7() {
 		$options = array(
-			'repo-name' => 'repo-test-name',
+			'repo-name'   => 'repo-test-name',
 			'env-options' => 'repo-owner=PHP_ROWNER,repo-owner=PHP_ROWNER2', // Should be allowed to overwrite
 		);
 
@@ -326,7 +325,7 @@ final class VipgociOptionsReadEnvTest extends TestCase {
 		);
 
 		vipgoci_unittests_output_suppress();
- 
+
 		vipgoci_option_array_handle(
 			$options,
 			'env-options',
@@ -335,7 +334,7 @@ final class VipgociOptionsReadEnvTest extends TestCase {
 			',',
 			false
 		);
-       
+
 		vipgoci_options_read_env(
 			$options,
 			$options_recognized
@@ -348,12 +347,12 @@ final class VipgociOptionsReadEnvTest extends TestCase {
 		 */
 		$this->assertSame(
 			array(
-				'repo-name' => 'repo-test-name',
+				'repo-name'   => 'repo-test-name',
 				'env-options' => array(
 					0 => 'repo-owner=PHP_ROWNER',
 					1 => 'repo-owner=PHP_ROWNER2',
 				),
-				'repo-owner' => 'repo-test-owner2',
+				'repo-owner'  => 'repo-test-owner2',
 			),
 			$options
 		);

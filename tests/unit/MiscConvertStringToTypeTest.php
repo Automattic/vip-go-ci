@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
-require_once( __DIR__ . './../../misc.php' );
+require_once __DIR__ . './../../misc.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -17,22 +17,22 @@ final class MiscConvertStringToTypeTest extends TestCase {
 	public function testConvert1() {
 		$this->assertSame(
 			true,
-			vipgoci_convert_string_to_type('true')
+			vipgoci_convert_string_to_type( 'true' )
 		);
 
 		$this->assertSame(
 			false,
-			vipgoci_convert_string_to_type('false')
+			vipgoci_convert_string_to_type( 'false' )
 		);
 
 		$this->assertSame(
 			null,
-			vipgoci_convert_string_to_type('null')
+			vipgoci_convert_string_to_type( 'null' )
 		);
 
 		$this->assertSame(
 			'somestring',
-			vipgoci_convert_string_to_type('somestring')
+			vipgoci_convert_string_to_type( 'somestring' )
 		);
 	}
 }

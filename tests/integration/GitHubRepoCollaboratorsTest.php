@@ -1,13 +1,13 @@
 <?php
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+require_once __DIR__ . '/IncludesForTests.php';
 
 use PHPUnit\Framework\TestCase;
 
 final class GitHubRepoCollaboratorsTest extends TestCase {
 	var $options_git = array(
-		'repo-owner'	=> null,
-		'repo-name'	=> null,
+		'repo-owner' => null,
+		'repo-name'  => null,
 	);
 
 	protected function setUp(): void {
@@ -18,7 +18,7 @@ final class GitHubRepoCollaboratorsTest extends TestCase {
 
 		$this->options = $this->options_git;
 
-		$this->options[ 'github-token' ] =
+		$this->options['github-token'] =
 			vipgoci_unittests_get_config_value(
 				'git-secrets',
 				'github-token',
@@ -27,7 +27,7 @@ final class GitHubRepoCollaboratorsTest extends TestCase {
 	}
 
 	protected function tearDown(): void {
-		$this->options = null;
+		$this->options     = null;
 		$this->options_git = null;
 	}
 
@@ -37,7 +37,7 @@ final class GitHubRepoCollaboratorsTest extends TestCase {
 	public function testRepocollaboratorsAll() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
-			array( ),
+			array(),
 			$this
 		);
 
@@ -54,8 +54,8 @@ final class GitHubRepoCollaboratorsTest extends TestCase {
 			'all',
 			array(
 				'admin' => 1,
-				'push' => 1,
-				'pull' => 1,
+				'push'  => 1,
+				'pull'  => 1,
 			)
 		);
 
@@ -82,7 +82,7 @@ final class GitHubRepoCollaboratorsTest extends TestCase {
 	public function testRepocollaboratorsDirect() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
-			array( ),
+			array(),
 			$this
 		);
 
@@ -99,8 +99,8 @@ final class GitHubRepoCollaboratorsTest extends TestCase {
 			'direct',
 			array(
 				'admin' => 1,
-				'push' => 1,
-				'pull' => 1,
+				'push'  => 1,
+				'pull'  => 1,
 			)
 		);
 

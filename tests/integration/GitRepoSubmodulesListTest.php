@@ -1,17 +1,17 @@
 <?php
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+require_once __DIR__ . '/IncludesForTests.php';
 
 use PHPUnit\Framework\TestCase;
 
 final class GitRepoSubmodulesListTest extends TestCase {
 	var $options_git = array(
-		'git-path'			=> null,
-		'github-repo-url'		=> null,
+		'git-path'        => null,
+		'github-repo-url' => null,
 	);
 
 	var $options_git_repo_tests = array(
-		'commit-test-submodule-list-get-1'	=> null,
+		'commit-test-submodule-list-get-1' => null,
 	);
 
 
@@ -39,8 +39,8 @@ final class GitRepoSubmodulesListTest extends TestCase {
 			);
 		}
 
-		$this->options = null;
-		$this->options_git = null;
+		$this->options                = null;
+		$this->options_git            = null;
 		$this->options_git_repo_tests = null;
 	}
 
@@ -50,7 +50,7 @@ final class GitRepoSubmodulesListTest extends TestCase {
 	public function testSubmodulesListGet1() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
-			array( ),
+			array(),
 			$this
 		);
 
@@ -68,7 +68,6 @@ final class GitRepoSubmodulesListTest extends TestCase {
 				$this->options
 			);
 
-	
 		if ( false === $this->options['local-git-repo'] ) {
 			$this->markTestSkipped(
 				'Could not set up git repository: ' .
@@ -92,9 +91,9 @@ final class GitRepoSubmodulesListTest extends TestCase {
 		$this->assertSame(
 			array(
 				array(
-					'commit_id'		=> 'a0dba40108fe19f028dbd5970022281cc2cabf81',
-					'submodule_path'	=> 'vip-go-ci',
-					'submodule_tag'		=> '0.47-1-ga0dba40',
+					'commit_id'      => 'a0dba40108fe19f028dbd5970022281cc2cabf81',
+					'submodule_path' => 'vip-go-ci',
+					'submodule_tag'  => '0.47-1-ga0dba40',
 				),
 			),
 			$ret,

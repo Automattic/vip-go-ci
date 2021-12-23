@@ -2,7 +2,7 @@
 
 namespace Vipgoci\tests;
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+require_once __DIR__ . '/IncludesForTests.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -10,12 +10,12 @@ use PHPUnit\Framework\TestCase;
 
 final class ResultsFilterCommentsToMaxTest extends TestCase {
 	var $options_git = array(
-		'repo-owner'	=> null,
-		'repo-name'	=> null,
+		'repo-owner' => null,
+		'repo-name'  => null,
 	);
 
 	var $options_git_repo_tests = array(
-		'pr-test-github-pr-results-max'	=> null,
+		'pr-test-github-pr-results-max' => null,
 	);
 
 	protected function setUp(): void {
@@ -42,50 +42,50 @@ final class ResultsFilterCommentsToMaxTest extends TestCase {
 			);
 
 		$this->results = array(
-			'issues'	=> array(
-				$this->options['pr-test-github-pr-results-max']	=> array(
+			'issues' => array(
+				$this->options['pr-test-github-pr-results-max'] => array(
 					array(
-						'type'		=> 'phpcs',
-						'file_name'	=> 'bla-8.php',
-						'file_line'	=> 9,
-						'issue'		=> array(
-							'message'	=> 'This comment is 36% valid code; is this commented out code?',
-							'source'	=> 'Squiz.PHP.CommentedOutCode.Found',
-							'severity'	=> 1,
-							'fixable'	=> false,
-							'type'		=> 'WARNING',
-							'line'		=> 9,
-							'column'	=> 1,
-							'level'	=> 'WARNING'
+						'type'      => 'phpcs',
+						'file_name' => 'bla-8.php',
+						'file_line' => 9,
+						'issue'     => array(
+							'message'  => 'This comment is 36% valid code; is this commented out code?',
+							'source'   => 'Squiz.PHP.CommentedOutCode.Found',
+							'severity' => 1,
+							'fixable'  => false,
+							'type'     => 'WARNING',
+							'line'     => 9,
+							'column'   => 1,
+							'level'    => 'WARNING',
 						),
 					),
 
 					array(
-						'type'		=> 'phpcs',
-						'file_name'	=> 'bla-9.php',
-						'file_line'	=> 10,
-						'issue'		=> array(
-							'message'	=> 'This comment is 100% valid code; is this commented out code?',
-							'source'	=> 'Squiz.PHP.CommentedOutCode.Found',
-							'severity'	=> 10,
-							'fixable'	=> false,
-							'type'		=> 'WARNING',
-							'line'		=> 10,
-							'column'	=> 1,
-							'level'	=> 'WARNING'
+						'type'      => 'phpcs',
+						'file_name' => 'bla-9.php',
+						'file_line' => 10,
+						'issue'     => array(
+							'message'  => 'This comment is 100% valid code; is this commented out code?',
+							'source'   => 'Squiz.PHP.CommentedOutCode.Found',
+							'severity' => 10,
+							'fixable'  => false,
+							'type'     => 'WARNING',
+							'line'     => 10,
+							'column'   => 1,
+							'level'    => 'WARNING',
 						),
 					),
-				)
+				),
 			),
 
-			'stats'		=> array(
-				'phpcs'		=> array(
+			'stats'  => array(
+				'phpcs' => array(
 					$this->options['pr-test-github-pr-results-max'] => array(
-						'error'		=> 0,
-						'warning'	=> 2,
-						'info'		=> 0,
-					)
-				)
+						'error'   => 0,
+						'warning' => 2,
+						'info'    => 0,
+					),
+				),
 			),
 		);
 
@@ -93,11 +93,11 @@ final class ResultsFilterCommentsToMaxTest extends TestCase {
 	}
 
 	protected function tearDown(): void {
-		$this->options = null;
-		$this->options_git = null;
+		$this->options                = null;
+		$this->options_git            = null;
 		$this->options_git_repo_tests = null;
-		$this->results = null;
-		$this->results_orig = null;
+		$this->results                = null;
+		$this->results_orig           = null;
 	}
 
 	/**
@@ -106,7 +106,7 @@ final class ResultsFilterCommentsToMaxTest extends TestCase {
 	public function testResultsFilterCommentsToMax1() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
-			array( ),
+			array(),
 			$this
 		);
 
@@ -129,7 +129,7 @@ final class ResultsFilterCommentsToMaxTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				$this->options['pr-test-github-pr-results-max']	=> true,
+				$this->options['pr-test-github-pr-results-max'] => true,
 			),
 			$prs_comments_maxed
 		);
@@ -137,19 +137,18 @@ final class ResultsFilterCommentsToMaxTest extends TestCase {
 		$this->assertSame(
 			array(
 				'issues' => array(
-					$this->options['pr-test-github-pr-results-max'] => array(
-					)
+					$this->options['pr-test-github-pr-results-max'] => array(),
 				),
 
-				'stats'		=> array(
-					'phpcs'		=> array(
+				'stats'  => array(
+					'phpcs' => array(
 						$this->options['pr-test-github-pr-results-max'] => array(
-							'error'		=> 0,
-							'warning'	=> 0,
-							'info'		=> 0,
-						)
-					)
-				)
+							'error'   => 0,
+							'warning' => 0,
+							'info'    => 0,
+						),
+					),
+				),
 			),
 			$this->results
 		);
@@ -161,7 +160,7 @@ final class ResultsFilterCommentsToMaxTest extends TestCase {
 	public function testResultsFilterCommentsToMax2() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
-			array( ),
+			array(),
 			$this
 		);
 
@@ -177,8 +176,8 @@ final class ResultsFilterCommentsToMaxTest extends TestCase {
 				$this->options,
 				$this->options['pr-test-github-pr-results-max'],
 				array(
-					'login'			=> 'myself',
-					'comments_active'	=> true,
+					'login'           => 'myself',
+					'comments_active' => true,
 				)
 			)
 		);
@@ -195,7 +194,7 @@ final class ResultsFilterCommentsToMaxTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				$this->options['pr-test-github-pr-results-max']	=> true,
+				$this->options['pr-test-github-pr-results-max'] => true,
 			),
 			$prs_comments_maxed
 		);
@@ -205,32 +204,32 @@ final class ResultsFilterCommentsToMaxTest extends TestCase {
 				'issues' => array(
 					$this->options['pr-test-github-pr-results-max'] => array(
 						array(
-							'type'		=> 'phpcs',
-							'file_name'	=> 'bla-9.php',
-							'file_line'	=> 10,
-								'issue'		=> array(
-								'message'	=> 'This comment is 100% valid code; is this commented out code?',
-								'source'	=> 'Squiz.PHP.CommentedOutCode.Found',
-								'severity'	=> 10,
-								'fixable'	=> false,
-								'type'		=> 'WARNING',
-								'line'		=> 10,
-								'column'	=> 1,
-								'level'	=> 'WARNING'
+							'type'      => 'phpcs',
+							'file_name' => 'bla-9.php',
+							'file_line' => 10,
+							'issue'     => array(
+								'message'  => 'This comment is 100% valid code; is this commented out code?',
+								'source'   => 'Squiz.PHP.CommentedOutCode.Found',
+								'severity' => 10,
+								'fixable'  => false,
+								'type'     => 'WARNING',
+								'line'     => 10,
+								'column'   => 1,
+								'level'    => 'WARNING',
 							),
 						),
-					)
+					),
 				),
 
-				'stats'		=> array(
-					'phpcs'		=> array(
+				'stats'  => array(
+					'phpcs' => array(
 						$this->options['pr-test-github-pr-results-max'] => array(
-							'error'		=> 0,
-							'warning'	=> 1,
-							'info'		=> 0,
-						)
-					)
-				)
+							'error'   => 0,
+							'warning' => 1,
+							'info'    => 0,
+						),
+					),
+				),
 			),
 			$this->results
 		);
@@ -242,7 +241,7 @@ final class ResultsFilterCommentsToMaxTest extends TestCase {
 	public function testResultsFilterCommentsToMax3() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
-			array( ),
+			array(),
 			$this
 		);
 
@@ -264,8 +263,7 @@ final class ResultsFilterCommentsToMaxTest extends TestCase {
 		);
 
 		$this->assertSame(
-			array(
-			),
+			array(),
 			$prs_comments_maxed
 		);
 

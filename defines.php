@@ -4,86 +4,101 @@
  * Version number.
  */
 
-define( 'VIPGOCI_VERSION',		'1.1.0' );
+define( 'VIPGOCI_VERSION', '1.1.0' );
 
 /*
  * Define minimum version requirements.
  */
-define( 'VIPGOCI_GIT_VERSION_MINIMUM',	'2.10' );
+define( 'VIPGOCI_GIT_VERSION_MINIMUM', '2.10' );
 
 /*
  * Client-ID for curl-requests, etc.
  */
 
-define( 'VIPGOCI_CLIENT_ID',		'automattic-vip-go-ci' );
-define( 'VIPGOCI_SYNTAX_ERROR_STR',	'PHP Syntax Errors Found' );
-define( 'VIPGOCI_GITHUB_ERROR_STR',	'GitHub API communication error. ' .
-						'Please contact a human.' );
+define( 'VIPGOCI_CLIENT_ID', 'automattic-vip-go-ci' );
+define( 'VIPGOCI_SYNTAX_ERROR_STR', 'PHP Syntax Errors Found' );
+define(
+	'VIPGOCI_GITHUB_ERROR_STR',
+	'GitHub API communication error. ' .
+	'Please contact a human.'
+);
 /*
  * Base URLs for GitHub
  */
-define( 'VIPGOCI_GITHUB_WEB_BASE_URL',	'https://github.com' );
+define( 'VIPGOCI_GITHUB_WEB_BASE_URL', 'https://github.com' );
 
 /* Define if not defined. Unit-tests can define this for testing. */
 if ( ! defined( 'VIPGOCI_GITHUB_BASE_URL' ) ) {
-	define( 'VIPGOCI_GITHUB_BASE_URL',	'https://api.github.com' );
+	define( 'VIPGOCI_GITHUB_BASE_URL', 'https://api.github.com' );
 }
 
 /*
  * Various messages.
  */
 
-define( 'VIPGOCI_FILE_IS_APPROVED_MSG', 'File is approved in review database ' .
-					'(hashes-to-hashes).' );
+define(
+	'VIPGOCI_FILE_IS_APPROVED_MSG',
+	'File is approved in review database ' .
+	'(hashes-to-hashes).'
+);
 
-define( 'VIPGOCI_REVIEW_COMMENTS_TOTAL_MAX',
-					'Total number of active review comments per ' .
+define(
+	'VIPGOCI_REVIEW_COMMENTS_TOTAL_MAX',
+	'Total number of active review comments per ' .
 					'Pull-Request has been reached and some ' .
 					'comments might not appear as a result. ' .
-					'Please resolve some issues to see more' );
+	'Please resolve some issues to see more'
+);
 
-define( 'VIPGOCI_PHPCS_INVALID_SNIFFS',
-					'Invalid PHPCS sniff(s) specified in ' .
+define(
+	'VIPGOCI_PHPCS_INVALID_SNIFFS',
+	'Invalid PHPCS sniff(s) specified in ' .
 					'options or options file. Those have ' .
 					'been ignored temporarily. Please ' .
 					'update the options so that scanning ' .
-					'can continue as expected. ' );
+	'can continue as expected. '
+);
 
-define( 'VIPGOCI_PHPCS_INVALID_SNIFFS_CONT',
-					'<br />' .
+define(
+	'VIPGOCI_PHPCS_INVALID_SNIFFS_CONT',
+	'<br />' .
 					PHP_EOL . PHP_EOL .
 					'* Option name: `%s`' . PHP_EOL .
 					'* Invalid sniff(s): `%s`' . PHP_EOL
-					);
+);
 
-define( 'VIPGOCI_PHPCS_DUPLICATE_SNIFFS',
-					'Sniff(s) has been found in duplicate in ' .
+define(
+	'VIPGOCI_PHPCS_DUPLICATE_SNIFFS',
+	'Sniff(s) has been found in duplicate in ' .
 					'options or options file. Those have ' .
 					'been ignored temporarily. Please ' .
 					'update the options so that scanning ' .
 					'can continue as expected. ' .
-					'<br /> ');
+	'<br /> '
+);
 
-define( 'VIPGOCI_PHPCS_DUPLICATE_SNIFFS_CONT',
-					'<br />' .
+define(
+	'VIPGOCI_PHPCS_DUPLICATE_SNIFFS_CONT',
+	'<br />' .
 					PHP_EOL . PHP_EOL .
 					'* Options: `%s` and `%s`' . PHP_EOL .
 					'* Sniff(s) in duplicate: `%s`' . PHP_EOL .
-					'<br />' );
+	'<br />'
+);
 
 /*
  * Define exit-codes
  */
 
-define( 'VIPGOCI_EXIT_NORMAL',			0 );
+define( 'VIPGOCI_EXIT_NORMAL', 0 );
 
-define( 'VIPGOCI_EXIT_COMMIT_NOT_PART_OF_PR',	230 );
+define( 'VIPGOCI_EXIT_COMMIT_NOT_PART_OF_PR', 230 );
 
-define( 'VIPGOCI_EXIT_EXEC_TIME', 		249 );
-define( 'VIPGOCI_EXIT_CODE_ISSUES',		250 );
-define( 'VIPGOCI_EXIT_SYSTEM_PROBLEM',		251 );
-define( 'VIPGOCI_EXIT_GITHUB_PROBLEM',		252 );
-define( 'VIPGOCI_EXIT_USAGE_ERROR',		253 );
+define( 'VIPGOCI_EXIT_EXEC_TIME', 249 );
+define( 'VIPGOCI_EXIT_CODE_ISSUES', 250 );
+define( 'VIPGOCI_EXIT_SYSTEM_PROBLEM', 251 );
+define( 'VIPGOCI_EXIT_GITHUB_PROBLEM', 252 );
+define( 'VIPGOCI_EXIT_USAGE_ERROR', 253 );
 
 
 /*
@@ -94,16 +109,16 @@ define( 'VIPGOCI_EXIT_USAGE_ERROR',		253 );
  * -- altering these is not recommended.
  */
 
-define( 'VIPGOCI_STATS_PHPCS',		'phpcs'		);
-define( 'VIPGOCI_STATS_LINT',		'lint'		);
-define( 'VIPGOCI_STATS_HASHES_API',	'hashes-api'	);
+define( 'VIPGOCI_STATS_PHPCS', 'phpcs' );
+define( 'VIPGOCI_STATS_LINT', 'lint' );
+define( 'VIPGOCI_STATS_HASHES_API', 'hashes-api' );
 
 /*
  * Define auto-approval types
  */
 
-define( 'VIPGOCI_APPROVAL_AUTOAPPROVE',		'auto-approval' );
-define( 'VIPGOCI_APPROVAL_HASHES_API',		'hashes-api' );
+define( 'VIPGOCI_APPROVAL_AUTOAPPROVE', 'auto-approval' );
+define( 'VIPGOCI_APPROVAL_HASHES_API', 'hashes-api' );
 
 
 /*
@@ -118,44 +133,50 @@ define( 'VIPGOCI_RUNTIME_DUMP', 'dump' );
  * Defines for vipgoci_counter_report()
  */
 
-define( 'VIPGOCI_COUNTERS_DUMP',	'dump' );
-define( 'VIPGOCI_COUNTERS_DO',		'do' );
+define( 'VIPGOCI_COUNTERS_DUMP', 'dump' );
+define( 'VIPGOCI_COUNTERS_DO', 'do' );
 
 /*
  * Define for vipgoci_cache()
  */
 
-define( 'VIPGOCI_CACHE_CLEAR',		'--VIPGOCI-CACHE-CLEAR-0x321--' );
+define( 'VIPGOCI_CACHE_CLEAR', '--VIPGOCI-CACHE-CLEAR-0x321--' );
 
 /*
  * Defines for files.
  */
 
-define( 'VIPGOCI_OPTIONS_FILE_NAME',	'.vipgoci_options' );
+define( 'VIPGOCI_OPTIONS_FILE_NAME', '.vipgoci_options' );
 
 /*
  * Define for vipgoci_git_diffs_fetch()
  */
 
-define( 'VIPGOCI_GIT_DIFF_CALC_CHANGES',		array ('+' => 'additions', '-' => 'deletions') );
-define( 'VIPGOCI_GIT_DIFF_DATA_SOURCE_GIT_REPO',	'local-git-repo' );
-define( 'VIPGOCI_GIT_DIFF_DATA_SOURCE_GITHUB_API',	'github-api' );
+define(
+	'VIPGOCI_GIT_DIFF_CALC_CHANGES',
+	array(
+		'+' => 'additions',
+		'-' => 'deletions',
+	)
+);
+define( 'VIPGOCI_GIT_DIFF_DATA_SOURCE_GIT_REPO', 'local-git-repo' );
+define( 'VIPGOCI_GIT_DIFF_DATA_SOURCE_GITHUB_API', 'github-api' );
 
 
 
 /**
  * Define file number of lines limit
  */
-define( 'VIPGOCI_SKIPPED_FILES',	        'skipped-files'	);
+define( 'VIPGOCI_SKIPPED_FILES', 'skipped-files' );
 
-define( 'VIPGOCI_VALIDATION_MAXIMUM_LINES_LIMIT',   15000   );
-define( 'VIPGOCI_VALIDATION_MAXIMUM_LINES', 'max-lines'     );
+define( 'VIPGOCI_VALIDATION_MAXIMUM_LINES_LIMIT', 15000 );
+define( 'VIPGOCI_VALIDATION_MAXIMUM_LINES', 'max-lines' );
 define(
 	'VIPGOCI_VALIDATION',
-	[
+	array(
 		VIPGOCI_VALIDATION_MAXIMUM_LINES
-			=> 'Maximum number of lines exceeded (%d)'
-	]
+			=> 'Maximum number of lines exceeded (%d)',
+	)
 );
 
-define( 'VIPGOCI_VALIDATION_MAXIMUM_DETAIL_MSG', 'Note that the above file(s) were not analyzed due to their length.');
+define( 'VIPGOCI_VALIDATION_MAXIMUM_DETAIL_MSG', 'Note that the above file(s) were not analyzed due to their length.' );

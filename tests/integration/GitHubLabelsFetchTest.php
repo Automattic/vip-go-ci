@@ -1,19 +1,19 @@
 <?php
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+require_once __DIR__ . '/IncludesForTests.php';
 
 use PHPUnit\Framework\TestCase;
 
 final class GitHubLabelsFetchTest extends TestCase {
 	var $options_git = array(
-		'git-path'			=> null,
-		'github-repo-url'		=> null,
-		'repo-owner'			=> null,
-		'repo-name'			=> null,
+		'git-path'        => null,
+		'github-repo-url' => null,
+		'repo-owner'      => null,
+		'repo-name'       => null,
 	);
 
 	var $options_git_repo_tests = array(
-		'pr-test-labels-fetch-test-1'	=> null,
+		'pr-test-labels-fetch-test-1' => null,
 	);
 
 	protected function setUp(): void {
@@ -32,7 +32,7 @@ final class GitHubLabelsFetchTest extends TestCase {
 			$this->options_git_repo_tests
 		);
 
-		$this->options[ 'github-token' ] =
+		$this->options['github-token'] =
 			vipgoci_unittests_get_config_value(
 				'git-secrets',
 				'github-token',
@@ -41,8 +41,8 @@ final class GitHubLabelsFetchTest extends TestCase {
 	}
 
 	protected function tearDown(): void {
-		$this->options = null;
-		$this->options_git = null;
+		$this->options                = null;
+		$this->options_git            = null;
 		$this->options_git_repo_tests = null;
 	}
 

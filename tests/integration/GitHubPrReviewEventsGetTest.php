@@ -1,18 +1,18 @@
 <?php
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+require_once __DIR__ . '/IncludesForTests.php';
 
 use PHPUnit\Framework\TestCase;
 
 final class GitHubPrReviewEventsGetTest extends TestCase {
 	var $options_git = array(
-		'repo-owner'                    => null,
-		'repo-name'                     => null,
+		'repo-owner' => null,
+		'repo-name'  => null,
 	);
 
 	var $options_git_repo_tests = array(
-		'test-github-pr-reviews-event-get-pr-number'	=> null,
-		'test-github-pr-reviews-event-get-username'	=> null,
+		'test-github-pr-reviews-event-get-pr-number' => null,
+		'test-github-pr-reviews-event-get-username'  => null,
 	);
 
 	protected function setUp(): void {
@@ -35,9 +35,9 @@ final class GitHubPrReviewEventsGetTest extends TestCase {
 	}
 
 	protected function tearDown(): void {
-		$this->options_git = null;
+		$this->options_git            = null;
 		$this->options_git_repo_tests = null;
-		$this->options = null;
+		$this->options                = null;
 	}
 
 	/**
@@ -84,7 +84,6 @@ final class GitHubPrReviewEventsGetTest extends TestCase {
 			) > 0
 		);
 
-
 		/*
 		 * Perform testing again, now to test caching.
 		 */
@@ -116,9 +115,9 @@ final class GitHubPrReviewEventsGetTest extends TestCase {
 			$this->options,
 			$this->options['test-github-pr-reviews-event-get-pr-number'],
 			array(
-				'event_type'	=> 'labeled',
-				'actors_logins'	=> array(
-					$this->options['test-github-pr-reviews-event-get-username']
+				'event_type'    => 'labeled',
+				'actors_logins' => array(
+					$this->options['test-github-pr-reviews-event-get-username'],
 				),
 			),
 			false
@@ -167,20 +166,19 @@ final class GitHubPrReviewEventsGetTest extends TestCase {
 			);
 		}
 
-
 		/*
 		 * Do the testing again, now using cached data
 		 */
 
 		vipgoci_unittests_output_suppress();
-	
+
 		$issue_events_cached = vipgoci_github_pr_review_events_get(
 			$this->options,
 			$this->options['test-github-pr-reviews-event-get-pr-number'],
 			array(
-				'event_type'	=> 'labeled',
-				'actors_logins'	=> array(
-					$this->options['test-github-pr-reviews-event-get-username']
+				'event_type'    => 'labeled',
+				'actors_logins' => array(
+					$this->options['test-github-pr-reviews-event-get-username'],
 				),
 			),
 			false
@@ -209,13 +207,12 @@ final class GitHubPrReviewEventsGetTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-
 		$this->assertNotEmpty(
 			$issue_events,
 			'Got empty response from vipgoci_github_pr_review_events_get()!'
 		);
 
-		foreach( $issue_events as $issue_event ) {
+		foreach ( $issue_events as $issue_event ) {
 			$this->assertTrue(
 				is_numeric(
 					$issue_event
@@ -237,7 +234,7 @@ final class GitHubPrReviewEventsGetTest extends TestCase {
 		);
 
 		vipgoci_unittests_output_unsuppress();
-	
+
 		$this->assertSame(
 			$issue_events,
 			$issue_events_cached

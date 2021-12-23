@@ -1,12 +1,12 @@
 <?php
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+require_once __DIR__ . '/IncludesForTests.php';
 
 use PHPUnit\Framework\TestCase;
 
 final class LintLintDoScanTest extends TestCase {
 	var $options_php = array(
-		'php-path'	=> null,
+		'php-path' => null,
 	);
 
 	protected function setUp(): void {
@@ -26,7 +26,7 @@ final class LintLintDoScanTest extends TestCase {
 	public function testLintDoScan1() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options_php,
-			array( ),
+			array(),
 			$this
 		);
 
@@ -56,7 +56,7 @@ final class LintLintDoScanTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				'No syntax errors detected in ' . $php_file_path
+				'No syntax errors detected in ' . $php_file_path,
 			),
 			$ret
 		);
@@ -68,7 +68,7 @@ final class LintLintDoScanTest extends TestCase {
 	public function testLintDoScan2() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options_php,
-			array( ),
+			array(),
 			$this
 		);
 
@@ -96,15 +96,14 @@ final class LintLintDoScanTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-
 		$ret[0] = vipgoci_unittests_php_syntax_error_compat(
 			$ret[0]
 		);
 
 		$this->assertSame(
 			array(
-				"PHP Parse error:  syntax error, unexpected end of file, expecting ',' or ';' in " . $php_file_path . " on line 3",
-				'Errors parsing ' . $php_file_path
+				"PHP Parse error:  syntax error, unexpected end of file, expecting ',' or ';' in " . $php_file_path . ' on line 3',
+				'Errors parsing ' . $php_file_path,
 			),
 			$ret
 		);

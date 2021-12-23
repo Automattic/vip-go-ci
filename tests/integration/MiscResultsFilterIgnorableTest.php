@@ -1,6 +1,6 @@
 <?php
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+require_once __DIR__ . '/IncludesForTests.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -10,12 +10,12 @@ final class MiscResultsFilterIgnorableTest extends TestCase {
 	 */
 	public function testFilterIgnorable1() {
 		$options = array(
- 			'review-comments-ignore' => array(
+			'review-comments-ignore' => array(
 				'json_encode() is discouraged. Use wp_json_encode() instead.',
 				'json_encode() is discouraged. ',
 				'Test 200',
-				'Test 300'
-			)
+				'Test 300',
+			),
 		);
 
 		$options['review-comments-ignore'] = array_map(

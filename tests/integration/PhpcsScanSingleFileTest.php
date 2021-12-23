@@ -1,6 +1,6 @@
 <?php
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+require_once __DIR__ . '/IncludesForTests.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -123,7 +123,7 @@ final class PhpcsScanSingleFileTest extends TestCase {
 					'fixable'  => 0,
 				),
 
-				'files' => array(
+				'files'  => array(
 					$scan_results['temp_file_name'] => array(
 						'errors'   => 3,
 						'warnings' => 0,
@@ -158,15 +158,15 @@ final class PhpcsScanSingleFileTest extends TestCase {
 								'column'   => 20,
 							),
 
-						)
+						),
 
-					)
-				)
+					),
+				),
 			),
 
-			'file_issues_str' => '',
-			'temp_file_name'  => $scan_results['temp_file_name'],
-			'validation'      => [ 'total' => 0 ]
+			'file_issues_str'        => '',
+			'temp_file_name'         => $scan_results['temp_file_name'],
+			'validation'             => array( 'total' => 0 ),
 		);
 
 		$expected_results['file_issues_str'] = json_encode(

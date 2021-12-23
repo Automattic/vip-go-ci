@@ -1,6 +1,6 @@
 <?php
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+require_once __DIR__ . '/IncludesForTests.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -97,28 +97,23 @@ final class PhpcsScanScanCommitTest extends TestCase {
 			return;
 		}
 
-		$this->options['commit'] = $this->options['commit-test-phpcs-scan-commit-1'];
+		$this->options['commit']                                 = $this->options['commit-test-phpcs-scan-commit-1'];
 		$this->options['phpcs-skip-scanning-via-labels-allowed'] = false;
 
-		$issues_submit = array();
-		$issues_stats = array();
+		$issues_submit  = array();
+		$issues_stats   = array();
 		$issues_skipped = array();
 
 		vipgoci_unittests_output_suppress();
 
 		$prs_implicated = $this->getPRsImplicated();
 
-		foreach( $prs_implicated as $pr_item ) {
-			$issues_stats[
-			$pr_item->number
-			][
-			'error'
-			] = 0;
+		foreach ( $prs_implicated as $pr_item ) {
+			$issues_stats[ $pr_item->number ]['error'] = 0;
 
-			$issues_skipped[ $pr_item->number ][ 'issues' ][ 'max-lines' ] = array();
-			$issues_skipped[ $pr_item->number ][ 'issues' ][ 'total' ] = 0;
+			$issues_skipped[ $pr_item->number ]['issues']['max-lines'] = array();
+			$issues_skipped[ $pr_item->number ]['issues']['total']     = 0;
 		}
-
 
 		$this->options['local-git-repo'] =
 			vipgoci_unittests_setup_git_repo(
@@ -147,55 +142,54 @@ final class PhpcsScanScanCommitTest extends TestCase {
 			array(
 				8 => array(
 					array(
-						'type'		=> 'phpcs',
-						'file_name'	=> 'my-test-file-1.php',
-						'file_line'	=> 3,
-						'issue'	=> array(
-							'message' => "All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found 'time'.",
-							'source' => 'WordPress.Security.EscapeOutput.OutputNotEscaped',
+						'type'      => 'phpcs',
+						'file_name' => 'my-test-file-1.php',
+						'file_line' => 3,
+						'issue'     => array(
+							'message'  => "All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found 'time'.",
+							'source'   => 'WordPress.Security.EscapeOutput.OutputNotEscaped',
 							'severity' => 5,
-							'fixable' => false,
-							'type' => 'ERROR',
-							'line' => 3,
-							'column' => 20,
-							'level' => 'ERROR',
-						)
+							'fixable'  => false,
+							'type'     => 'ERROR',
+							'line'     => 3,
+							'column'   => 20,
+							'level'    => 'ERROR',
+						),
 					),
 
 					array(
-						'type'		=> 'phpcs',
-						'file_name'	=> 'my-test-file-1.php',
-						'file_line'	=> 7,
-						'issue'		=> array(
-							'message' => "All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found 'time'.",
-							'source' => 'WordPress.Security.EscapeOutput.OutputNotEscaped',
+						'type'      => 'phpcs',
+						'file_name' => 'my-test-file-1.php',
+						'file_line' => 7,
+						'issue'     => array(
+							'message'  => "All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found 'time'.",
+							'source'   => 'WordPress.Security.EscapeOutput.OutputNotEscaped',
 							'severity' => 5,
-							'fixable' => false,
-							'type' => 'ERROR',
-							'line' => 7,
-							'column' => 20,
-							'level' => 'ERROR',
-						)
+							'fixable'  => false,
+							'type'     => 'ERROR',
+							'line'     => 7,
+							'column'   => 20,
+							'level'    => 'ERROR',
+						),
 					),
 
 					array(
-						'type'		=> 'phpcs',
-						'file_name'	=> 'my-test-file-1.php',
-						'file_line'	=> 11,
-						'issue'	=> array(
-							'message' => "All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found 'time'.",
-							'source' => 'WordPress.Security.EscapeOutput.OutputNotEscaped',
+						'type'      => 'phpcs',
+						'file_name' => 'my-test-file-1.php',
+						'file_line' => 11,
+						'issue'     => array(
+							'message'  => "All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found 'time'.",
+							'source'   => 'WordPress.Security.EscapeOutput.OutputNotEscaped',
 							'severity' => 5,
-							'fixable' => false,
-							'type' => 'ERROR',
-							'line' => 11,
-							'column' => 20,
-							'level' => 'ERROR'
-						)
-					)
-				)
+							'fixable'  => false,
+							'type'     => 'ERROR',
+							'line'     => 11,
+							'column'   => 20,
+							'level'    => 'ERROR',
+						),
+					),
+				),
 			),
-
 			$issues_submit
 		);
 
@@ -203,7 +197,7 @@ final class PhpcsScanScanCommitTest extends TestCase {
 			array(
 				8 => array(
 					'error' => 3,
-				)
+				),
 			),
 			$issues_stats
 		);
@@ -234,23 +228,19 @@ final class PhpcsScanScanCommitTest extends TestCase {
 		$this->options['phpcs-skip-scanning-via-labels-allowed'] =
 			true;
 
-		$issues_submit = array();
-		$issues_stats = array();
+		$issues_submit  = array();
+		$issues_stats   = array();
 		$issues_skipped = array();
 
 		vipgoci_unittests_output_suppress();
 
 		$prs_implicated = $this->getPRsImplicated();
 
-		foreach( $prs_implicated as $pr_item ) {
-			$issues_stats[
-			$pr_item->number
-			][
-			'error'
-			] = 0;
+		foreach ( $prs_implicated as $pr_item ) {
+			$issues_stats[ $pr_item->number ]['error'] = 0;
 
-			$issues_skipped[ $pr_item->number ][ 'issues' ][ 'max-lines' ] = array();
-			$issues_skipped[ $pr_item->number ][ 'issues' ][ 'total' ] = 0;
+			$issues_skipped[ $pr_item->number ]['issues']['max-lines'] = array();
+			$issues_skipped[ $pr_item->number ]['issues']['total']     = 0;
 		}
 
 		vipgoci_unittests_output_unsuppress();
@@ -302,35 +292,35 @@ final class PhpcsScanScanCommitTest extends TestCase {
 			array(
 				21 => array(
 					array(
-						'type'		=> 'phpcs',
-						'file_name'	=> 'test.php',
-						'file_line'	=> 3,
-						'issue'	=> array(
-							'message' => "All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found 'time'.",
-							'source' => 'WordPress.Security.EscapeOutput.OutputNotEscaped',
+						'type'      => 'phpcs',
+						'file_name' => 'test.php',
+						'file_line' => 3,
+						'issue'     => array(
+							'message'  => "All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found 'time'.",
+							'source'   => 'WordPress.Security.EscapeOutput.OutputNotEscaped',
 							'severity' => 5,
-							'fixable' => false,
-							'type' => 'ERROR',
-							'line' => 3,
-							'column' => 20,
-							'level' => 'ERROR',
-						)
+							'fixable'  => false,
+							'type'     => 'ERROR',
+							'line'     => 3,
+							'column'   => 20,
+							'level'    => 'ERROR',
+						),
 					),
 
 					array(
-						'type'		=> 'phpcs',
-						'file_name'	=> 'test.php',
-						'file_line'	=> 7,
-						'issue'		=> array(
-							'message' => "All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found 'time'.",
-							'source' => 'WordPress.Security.EscapeOutput.OutputNotEscaped',
+						'type'      => 'phpcs',
+						'file_name' => 'test.php',
+						'file_line' => 7,
+						'issue'     => array(
+							'message'  => "All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found 'time'.",
+							'source'   => 'WordPress.Security.EscapeOutput.OutputNotEscaped',
 							'severity' => 5,
-							'fixable' => false,
-							'type' => 'ERROR',
-							'line' => 7,
-							'column' => 20,
-							'level' => 'ERROR',
-						)
+							'fixable'  => false,
+							'type'     => 'ERROR',
+							'line'     => 7,
+							'column'   => 20,
+							'level'    => 'ERROR',
+						),
 					),
 				),
 
@@ -339,7 +329,6 @@ final class PhpcsScanScanCommitTest extends TestCase {
 				 * label is set to skip PHPCS scanning.
 				 */
 			),
-
 			$issues_submit
 		);
 
@@ -387,31 +376,22 @@ final class PhpcsScanScanCommitTest extends TestCase {
 			'tests4',
 		);
 
-		$issues_submit = array();
-		$issues_stats = array();
+		$issues_submit  = array();
+		$issues_stats   = array();
 		$issues_skipped = array();
 
 		vipgoci_unittests_output_suppress();
 
 		$prs_implicated = $this->getPRsImplicated();
 
-		foreach( $prs_implicated as $pr_item ) {
-			$issues_stats[
-			$pr_item->number
-			][
-			'error'
-			] = 0;
+		foreach ( $prs_implicated as $pr_item ) {
+			$issues_stats[ $pr_item->number ]['error'] = 0;
 
-			$issues_stats[
-			$pr_item->number
-			][
-			'warning'
-			] = 0;
+			$issues_stats[ $pr_item->number ]['warning'] = 0;
 
-			$issues_skipped[ $pr_item->number ][ 'issues' ][ 'max-lines' ] = array();
-			$issues_skipped[ $pr_item->number ][ 'issues' ][ 'total' ] = 0;
+			$issues_skipped[ $pr_item->number ]['issues']['max-lines'] = array();
+			$issues_skipped[ $pr_item->number ]['issues']['total']     = 0;
 		}
-
 
 		$this->options['local-git-repo'] =
 			vipgoci_unittests_setup_git_repo(
@@ -440,83 +420,82 @@ final class PhpcsScanScanCommitTest extends TestCase {
 			array(
 				30 => array(
 					array(
-						'type'		=> 'phpcs',
-						'file_name'	=> 'test.php',
-						'file_line'	=> 3,
-						'issue'	=> array(
-							'message' => "All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found 'time'.",
-							'source' => 'WordPress.Security.EscapeOutput.OutputNotEscaped',
+						'type'      => 'phpcs',
+						'file_name' => 'test.php',
+						'file_line' => 3,
+						'issue'     => array(
+							'message'  => "All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found 'time'.",
+							'source'   => 'WordPress.Security.EscapeOutput.OutputNotEscaped',
 							'severity' => 5,
-							'fixable' => false,
-							'type' => 'ERROR',
-							'line' => 3,
-							'column' => 20,
-							'level' => 'ERROR',
-						)
+							'fixable'  => false,
+							'type'     => 'ERROR',
+							'line'     => 3,
+							'column'   => 20,
+							'level'    => 'ERROR',
+						),
 					),
 
 					array(
-						'type'		=> 'phpcs',
-						'file_name'	=> 'test.php',
-						'file_line'	=> 7,
-						'issue'		=> array(
-							'message' => "All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found 'time'.",
-							'source' => 'WordPress.Security.EscapeOutput.OutputNotEscaped',
+						'type'      => 'phpcs',
+						'file_name' => 'test.php',
+						'file_line' => 7,
+						'issue'     => array(
+							'message'  => "All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found 'time'.",
+							'source'   => 'WordPress.Security.EscapeOutput.OutputNotEscaped',
 							'severity' => 5,
-							'fixable' => false,
-							'type' => 'ERROR',
-							'line' => 7,
-							'column' => 20,
-							'level' => 'ERROR',
-						)
+							'fixable'  => false,
+							'type'     => 'ERROR',
+							'line'     => 7,
+							'column'   => 20,
+							'level'    => 'ERROR',
+						),
 					),
 
 					array(
-						'type'		=> 'phpcs',
-						'file_name'	=> 'test.php',
-						'file_line'	=> 10,
-						'issue'	=> array(
-							'message' => "Scripts should be registered/enqueued via `wp_enqueue_script`. This can improve the site's performance due to script concatenation.",
-							'source' => 'WordPress.WP.EnqueuedResources.NonEnqueuedScript',
+						'type'      => 'phpcs',
+						'file_name' => 'test.php',
+						'file_line' => 10,
+						'issue'     => array(
+							'message'  => "Scripts should be registered/enqueued via `wp_enqueue_script`. This can improve the site's performance due to script concatenation.",
+							'source'   => 'WordPress.WP.EnqueuedResources.NonEnqueuedScript',
 							'severity' => 3,
-							'fixable' => false,
-							'type' => 'WARNING',
-							'line' => 10,
-							'column' => 6,
-							'level' => 'WARNING'
-						)
+							'fixable'  => false,
+							'type'     => 'WARNING',
+							'line'     => 10,
+							'column'   => 6,
+							'level'    => 'WARNING',
+						),
 					),
 
 					array(
-						'type'		=> 'phpcs',
-						'file_name'	=> 'tests1/some_phpcs_issues.php',
-						'file_line'	=> 3,
-						'issue'	=> array(
-							'message' => "All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found 'time'.",
-							'source' => 'WordPress.Security.EscapeOutput.OutputNotEscaped',
+						'type'      => 'phpcs',
+						'file_name' => 'tests1/some_phpcs_issues.php',
+						'file_line' => 3,
+						'issue'     => array(
+							'message'  => "All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found 'time'.",
+							'source'   => 'WordPress.Security.EscapeOutput.OutputNotEscaped',
 							'severity' => 5,
-							'fixable' => false,
-							'type' => 'ERROR',
-							'line' => 3,
-							'column' => 20,
-							'level' => 'ERROR'
-						)
-					)
+							'fixable'  => false,
+							'type'     => 'ERROR',
+							'line'     => 3,
+							'column'   => 20,
+							'level'    => 'ERROR',
+						),
+					),
 
 					/*
 					 * Note: tests2 folder is skipped from
 					 * scanning, so no results for that
 					 */
-				)
+				),
 			),
-
 			$issues_submit
 		);
 
 		$this->assertSame(
 			array(
 				30 => array(
-					'error' => 3,
+					'error'   => 3,
 					'warning' => 1,
 				),
 			),
@@ -557,8 +536,8 @@ final class PhpcsScanScanCommitTest extends TestCase {
 			'WordPress.Security.EscapeOutput',
 		);
 
-		$issues_submit = array();
-		$issues_stats = array();
+		$issues_submit  = array();
+		$issues_stats   = array();
 		$issues_skipped = array();
 
 		vipgoci_unittests_output_suppress();
@@ -567,22 +546,13 @@ final class PhpcsScanScanCommitTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
+		foreach ( $prs_implicated as $pr_item ) {
+			$issues_stats[ $pr_item->number ]['warning'] = 0;
 
-		foreach( $prs_implicated as $pr_item ) {
-			$issues_stats[
-			$pr_item->number
-			][
-			'warning'
-			] = 0;
+			$issues_stats[ $pr_item->number ]['error'] = 0;
 
-			$issues_stats[
-			$pr_item->number
-			][
-			'error'
-			] = 0;
-
-			$issues_skipped[ $pr_item->number ][ 'issues' ][ 'max-lines' ] = array();
-			$issues_skipped[ $pr_item->number ][ 'issues' ][ 'total' ] = 0;
+			$issues_skipped[ $pr_item->number ]['issues']['max-lines'] = array();
+			$issues_skipped[ $pr_item->number ]['issues']['total']     = 0;
 		}
 
 		vipgoci_unittests_output_suppress();
@@ -622,23 +592,22 @@ final class PhpcsScanScanCommitTest extends TestCase {
 					 * they should have been excluded.
 					 */
 					array(
-						'type'		=> 'phpcs',
-						'file_name'	=> 'test.php',
-						'file_line'	=> 10,
-						'issue'	=> array(
-							'message' => "Scripts should be registered/enqueued via `wp_enqueue_script`. This can improve the site's performance due to script concatenation.",
-							'source' => 'WordPress.WP.EnqueuedResources.NonEnqueuedScript',
+						'type'      => 'phpcs',
+						'file_name' => 'test.php',
+						'file_line' => 10,
+						'issue'     => array(
+							'message'  => "Scripts should be registered/enqueued via `wp_enqueue_script`. This can improve the site's performance due to script concatenation.",
+							'source'   => 'WordPress.WP.EnqueuedResources.NonEnqueuedScript',
 							'severity' => 3,
-							'fixable' => false,
-							'type' => 'WARNING',
-							'line' => 10,
-							'column' => 6,
-							'level' => 'WARNING'
-						)
-					)
-				)
+							'fixable'  => false,
+							'type'     => 'WARNING',
+							'line'     => 10,
+							'column'   => 6,
+							'level'    => 'WARNING',
+						),
+					),
+				),
 			),
-
 			$issues_submit
 		);
 
@@ -646,8 +615,8 @@ final class PhpcsScanScanCommitTest extends TestCase {
 			array(
 				30 => array(
 					'warning' => 1,
-					'error' => 0,
-				)
+					'error'   => 0,
+				),
 			),
 			$issues_stats
 		);
@@ -682,7 +651,6 @@ final class PhpcsScanScanCommitTest extends TestCase {
 		$issues_submit  = array();
 		$issues_stats   = array();
 		$issues_skipped = array();
-
 
 		/*
 		 * Write out a new PHPCS standard with
@@ -739,8 +707,8 @@ final class PhpcsScanScanCommitTest extends TestCase {
 		$prs_implicated = $this->getPRsImplicated();
 
 		foreach ( $prs_implicated as $pr_item ) {
-			$issues_stats[ $pr_item->number ]['error'] = 0;
-			$issues_stats[ $pr_item->number ]['warning'] = 0;
+			$issues_stats[ $pr_item->number ]['error']                 = 0;
+			$issues_stats[ $pr_item->number ]['warning']               = 0;
 			$issues_skipped[ $pr_item->number ]['issues']['max-lines'] = array();
 			$issues_skipped[ $pr_item->number ]['issues']['total']     = 0;
 		}
@@ -795,7 +763,7 @@ final class PhpcsScanScanCommitTest extends TestCase {
 							'line'     => 3,
 							'column'   => 20,
 							'level'    => 'ERROR',
-						)
+						),
 					),
 
 					array(
@@ -811,7 +779,7 @@ final class PhpcsScanScanCommitTest extends TestCase {
 							'line'     => 7,
 							'column'   => 20,
 							'level'    => 'ERROR',
-						)
+						),
 					),
 
 					array(
@@ -826,8 +794,8 @@ final class PhpcsScanScanCommitTest extends TestCase {
 							'type'     => 'WARNING',
 							'line'     => 10,
 							'column'   => 6,
-							'level'    => 'WARNING'
-						)
+							'level'    => 'WARNING',
+						),
 					),
 
 					array(
@@ -842,8 +810,8 @@ final class PhpcsScanScanCommitTest extends TestCase {
 							'type'     => 'ERROR',
 							'line'     => 3,
 							'column'   => 20,
-							'level'    => 'ERROR'
-						)
+							'level'    => 'ERROR',
+						),
 					),
 
 					array(
@@ -859,9 +827,9 @@ final class PhpcsScanScanCommitTest extends TestCase {
 							'line'     => 3,
 							'column'   => 20,
 							'level'    => 'ERROR',
-						)
+						),
 					),
-				)
+				),
 			),
 			$issues_submit
 		);
@@ -943,10 +911,10 @@ final class PhpcsScanScanCommitTest extends TestCase {
 		$expected_issues_skipped = array(
 			39 => array(
 				'issues' => array(
-					'max-lines' => array( 'test1/myfile-1.php' )
+					'max-lines' => array( 'test1/myfile-1.php' ),
 				),
-				'total'  => 1
-			)
+				'total'  => 1,
+			),
 		);
 
 		$this->assertSame(
@@ -995,7 +963,7 @@ final class PhpcsScanScanCommitTest extends TestCase {
 
 		foreach ( $prs_implicated as $pr_item ) {
 			$issues_stats[ $pr_item->number ]   = $this->getStatsDefault();
-			$issues_submit[ $pr_item->number ]  = [];
+			$issues_submit[ $pr_item->number ]  = array();
 			$issues_skipped[ $pr_item->number ] = $this->getDefaultSkippedFilesDueIssuesMock();
 		}
 
@@ -1010,9 +978,9 @@ final class PhpcsScanScanCommitTest extends TestCase {
 
 		$expected_issues_skipped = array(
 			'issues' => array(
-				'max-lines' => array( 'tests1/myfile1.php' )
+				'max-lines' => array( 'tests1/myfile1.php' ),
 			),
-			'total'  => 1
+			'total'  => 1,
 		);
 
 		$this->assertSame(
@@ -1021,7 +989,11 @@ final class PhpcsScanScanCommitTest extends TestCase {
 		);
 
 		$this->assertSame(
-			array( 'error' => 3, 'warning' => 1, 'info' => 0 ),
+			array(
+				'error'   => 3,
+				'warning' => 1,
+				'info'    => 0,
+			),
 			$issues_stats[43]
 		);
 
@@ -1071,7 +1043,7 @@ final class PhpcsScanScanCommitTest extends TestCase {
 
 		foreach ( $prs_implicated as $pr_item ) {
 			$issues_stats[ $pr_item->number ]   = $this->getStatsDefault();
-			$issues_submit[ $pr_item->number ]  = [];
+			$issues_submit[ $pr_item->number ]  = array();
 			$issues_skipped[ $pr_item->number ] = $this->getDefaultSkippedFilesDueIssuesMock();
 		}
 
@@ -1085,7 +1057,11 @@ final class PhpcsScanScanCommitTest extends TestCase {
 		vipgoci_unittests_output_unsuppress();
 
 		$this->assertSame(
-			array( 'error' => 7, 'warning' => 2, 'info' => 0 ),
+			array(
+				'error'   => 7,
+				'warning' => 2,
+				'info'    => 0,
+			),
 			$issues_stats[43]
 		);
 
@@ -1112,7 +1088,7 @@ final class PhpcsScanScanCommitTest extends TestCase {
 	private function getDefaultSkippedFilesDueIssuesMock() {
 		return array(
 			'issues' => array(),
-			'total'  => 0
+			'total'  => 0,
 		);
 	}
 
@@ -1120,73 +1096,73 @@ final class PhpcsScanScanCommitTest extends TestCase {
 	 * @return array[]
 	 */
 	private function getFailedIssuesSubmitMock(): array {
-		return array (
+		return array(
 			0 =>
-				array (
-					'type' => 'phpcs',
+				array(
+					'type'      => 'phpcs',
 					'file_name' => 'tests1/myfile2.php',
 					'file_line' => 3,
-					'issue' =>
-						array (
-							'message' => 'Detected usage of a non-sanitized input variable: $_POST[\'phpcs should catch this problem\']',
-							'source' => 'WordPress.Security.ValidatedSanitizedInput.InputNotSanitized',
+					'issue'     =>
+						array(
+							'message'  => 'Detected usage of a non-sanitized input variable: $_POST[\'phpcs should catch this problem\']',
+							'source'   => 'WordPress.Security.ValidatedSanitizedInput.InputNotSanitized',
 							'severity' => 10,
-							'fixable' => false,
-							'type' => 'WARNING',
-							'line' => 3,
-							'column' => 6,
-							'level' => 'WARNING',
+							'fixable'  => false,
+							'type'     => 'WARNING',
+							'line'     => 3,
+							'column'   => 6,
+							'level'    => 'WARNING',
 						),
 				),
 			1 =>
-				array (
-					'type' => 'phpcs',
+				array(
+					'type'      => 'phpcs',
 					'file_name' => 'tests1/myfile2.php',
 					'file_line' => 3,
-					'issue' =>
-						array (
-							'message' => 'All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found \'$_POST[\'phpcs should catch this problem\']\'.',
-							'source' => 'WordPress.Security.EscapeOutput.OutputNotEscaped',
+					'issue'     =>
+						array(
+							'message'  => 'All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found \'$_POST[\'phpcs should catch this problem\']\'.',
+							'source'   => 'WordPress.Security.EscapeOutput.OutputNotEscaped',
 							'severity' => 5,
-							'fixable' => false,
-							'type' => 'ERROR',
-							'line' => 3,
-							'column' => 6,
-							'level' => 'ERROR',
+							'fixable'  => false,
+							'type'     => 'ERROR',
+							'line'     => 3,
+							'column'   => 6,
+							'level'    => 'ERROR',
 						),
 				),
 			2 =>
-				array (
-					'type' => 'phpcs',
+				array(
+					'type'      => 'phpcs',
 					'file_name' => 'tests1/myfile2.php',
 					'file_line' => 3,
-					'issue' =>
-						array (
-							'message' => 'Processing form data without nonce verification.',
-							'source' => 'WordPress.Security.NonceVerification.Missing',
+					'issue'     =>
+						array(
+							'message'  => 'Processing form data without nonce verification.',
+							'source'   => 'WordPress.Security.NonceVerification.Missing',
 							'severity' => 5,
-							'fixable' => false,
-							'type' => 'ERROR',
-							'line' => 3,
-							'column' => 6,
-							'level' => 'ERROR',
+							'fixable'  => false,
+							'type'     => 'ERROR',
+							'line'     => 3,
+							'column'   => 6,
+							'level'    => 'ERROR',
 						),
 				),
 			3 =>
-				array (
-					'type' => 'phpcs',
+				array(
+					'type'      => 'phpcs',
 					'file_name' => 'tests1/myfile2.php',
 					'file_line' => 3,
-					'issue' =>
-						array (
-							'message' => 'Detected usage of a possibly undefined superglobal array index: $_POST[\'phpcs should catch this problem\']. Use isset() or empty() to check the index exists before using it',
-							'source' => 'WordPress.Security.ValidatedSanitizedInput.InputNotValidated',
+					'issue'     =>
+						array(
+							'message'  => 'Detected usage of a possibly undefined superglobal array index: $_POST[\'phpcs should catch this problem\']. Use isset() or empty() to check the index exists before using it',
+							'source'   => 'WordPress.Security.ValidatedSanitizedInput.InputNotValidated',
 							'severity' => 5,
-							'fixable' => false,
-							'type' => 'ERROR',
-							'line' => 3,
-							'column' => 6,
-							'level' => 'ERROR',
+							'fixable'  => false,
+							'type'     => 'ERROR',
+							'line'     => 3,
+							'column'   => 6,
+							'level'    => 'ERROR',
 						),
 				),
 		);
@@ -1254,7 +1230,7 @@ final class PhpcsScanScanCommitTest extends TestCase {
 		return array(
 			'error'   => 0,
 			'warning' => 0,
-			'info'    => 0
+			'info'    => 0,
 		);
 	}
 }

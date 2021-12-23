@@ -4,9 +4,9 @@ declare( strict_types=1 );
 
 namespace Vipgoci\Tests\Unit;
 
-require_once( __DIR__ . '/helper/GitRepoDiffsFetch.php' );
-require_once( __DIR__ . './../../defines.php' );
-require_once( __DIR__ . './../../lint-scan.php' );
+require_once __DIR__ . '/helper/GitRepoDiffsFetch.php';
+require_once __DIR__ . './../../defines.php';
+require_once __DIR__ . './../../lint-scan.php';
 
 use PHPUnit\Framework\TestCase;
 use stdClass;
@@ -16,11 +16,11 @@ use stdClass;
 final class VipgociLintScanTest extends TestCase {
 
 	/**
-	 * @param int $prNumber
+	 * @param int    $prNumber
 	 * @param string $fileName
-	 * @param array $fileScanningResults
-	 * @param array $submitExpected
-	 * @param array $statsExpected
+	 * @param array  $fileScanningResults
+	 * @param array  $submitExpected
+	 * @param array  $statsExpected
 	 *
 	 * @covers       vipgoci_set_file_issues_result
 	 * @dataProvider setFileIssuesResultProvider
@@ -62,7 +62,7 @@ final class VipgociLintScanTest extends TestCase {
 	 * Provider for testVipgociGetPrsModifiedFiles test
 	 */
 	public function vipgociGetPrsModifiedFilesProvider(): array {
-		return [
+		return array(
 			array(
 				array(
 					30 => (object) array( 'base' => (object) array( 'sha' => 'any' ) ),
@@ -93,9 +93,9 @@ final class VipgociLintScanTest extends TestCase {
 									3 => 'src/File4.php',
 								),
 						),
-				)
+				),
 			),
-		];
+		);
 	}
 
 	/**
@@ -121,7 +121,7 @@ final class VipgociLintScanTest extends TestCase {
 		$statsExpected       = array(
 			'error'   => 1,
 			'warning' => 0,
-			'info'    => 0
+			'info'    => 0,
 		);
 		$fileScanningResults = array(
 			15 => array(
@@ -161,7 +161,7 @@ final class VipgociLintScanTest extends TestCase {
 		$statsExpected1x2       = array(
 			'error'   => 2,
 			'warning' => 0,
-			'info'    => 0
+			'info'    => 0,
 		);
 		$fileScanningResults1x2 = array(
 			15 => array(
@@ -206,7 +206,7 @@ final class VipgociLintScanTest extends TestCase {
 		$statsExpected2x1       = array(
 			'error'   => 2,
 			'warning' => 0,
-			'info'    => 0
+			'info'    => 0,
 		);
 		$fileScanningResults2x1 = array(
 			15 => array(
@@ -275,7 +275,7 @@ final class VipgociLintScanTest extends TestCase {
 		$statsExpected2x2       = array(
 			'error'   => 4,
 			'warning' => 0,
-			'info'    => 0
+			'info'    => 0,
 		);
 		$fileScanningResults2x2 = array(
 			15 => array(
@@ -305,17 +305,17 @@ final class VipgociLintScanTest extends TestCase {
 
 		);
 
-		return [
+		return array(
 			// File with single issue in line
 			// PR number, file name, scanning results, expected_submit, expected_stats
-			[ 30, 'MySuccessClass.php', $fileScanningResults, $submitExpected, $statsExpected ],
+			array( 30, 'MySuccessClass.php', $fileScanningResults, $submitExpected, $statsExpected ),
 			// File with 1 line with issues && 2 issues in the same line
-			[ 30, 'MySuccessClass.php', $fileScanningResults1x2, $submitExpected1x2, $statsExpected1x2 ],
+			array( 30, 'MySuccessClass.php', $fileScanningResults1x2, $submitExpected1x2, $statsExpected1x2 ),
 			// File with 2 issues in different lines
-			[ 30, 'MySuccessClass.php', $fileScanningResults2x1, $submitExpected2x1, $statsExpected2x1 ],
+			array( 30, 'MySuccessClass.php', $fileScanningResults2x1, $submitExpected2x1, $statsExpected2x1 ),
 			// File with 2 lines with 2 issues each line
-			[ 30, 'MySuccessClass.php', $fileScanningResults2x2, $submitExpected2x2, $statsExpected2x2 ],
-		];
+			array( 30, 'MySuccessClass.php', $fileScanningResults2x2, $submitExpected2x2, $statsExpected2x2 ),
+		);
 	}
 
 	/**

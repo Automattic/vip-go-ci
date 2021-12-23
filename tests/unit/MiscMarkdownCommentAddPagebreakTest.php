@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
-require_once( __DIR__ . './../../misc.php' );
+require_once __DIR__ . './../../misc.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -24,7 +24,7 @@ final class MiscMarkdownCommentAddPagebreakTest extends TestCase {
 
 		$this->assertSame(
 			'Here is my text. ' . "\n\r" . '***' . "\n\r",
-			$mycomment 
+			$mycomment
 		);
 	}
 }

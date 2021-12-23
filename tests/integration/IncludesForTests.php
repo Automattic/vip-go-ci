@@ -22,19 +22,16 @@ function vipgoci_unittests_get_config_value(
 			VIPGOCI_UNIT_TESTS_INI_DIR_PATH . '/../unittests.ini',
 			true
 		);
-	}
-
-	else {
+	} else {
 		$ini_array = parse_ini_file(
 			VIPGOCI_UNIT_TESTS_INI_DIR_PATH . '/../unittests-secrets.ini',
 			true
 		);
 	}
 
-
 	if ( false === $ini_array ) {
 		return null;
-	}	
+	}
 
 	if ( isset(
 		$ini_array
@@ -48,7 +45,7 @@ function vipgoci_unittests_get_config_value(
 		) ) {
 			return null;
 		}
-			
+
 		return $ini_array
 			[ $section ]
 			[ $key ];
@@ -91,20 +88,17 @@ function vipgoci_unittests_setup_git_repo(
 		return false;
 	}
 
-
 	$res = unlink( $temp_dir );
 
 	if ( false === $res ) {
 		return false;
 	}
 
-
 	$res = mkdir( $temp_dir );
 
 	if ( false === $res ) {
 		return false;
 	}
-
 
 	$cmd = sprintf(
 		'%s clone %s %s 2>&1',
@@ -118,7 +112,7 @@ function vipgoci_unittests_setup_git_repo(
 
 	$res = exec( $cmd, $cmd_output, $cmd_status );
 
-	$cmd_output = implode( PHP_EOL, $cmd_output);
+	$cmd_output = implode( PHP_EOL, $cmd_output );
 
 	if (
 		( null === $cmd_output ) ||
@@ -132,7 +126,6 @@ function vipgoci_unittests_setup_git_repo(
 	unset( $cmd_output );
 	unset( $cmd_status );
 
-
 	$cmd = sprintf(
 		'%s -C %s checkout %s 2>&1',
 		escapeshellcmd( $options['git-path'] ),
@@ -145,7 +138,7 @@ function vipgoci_unittests_setup_git_repo(
 
 	$res = exec( $cmd, $cmd_output, $cmd_status );
 
-	$cmd_output = implode( PHP_EOL, $cmd_output);
+	$cmd_output = implode( PHP_EOL, $cmd_output );
 
 	if (
 		( null === $cmd_output ) ||
@@ -158,7 +151,6 @@ function vipgoci_unittests_setup_git_repo(
 	unset( $cmd );
 	unset( $cmd_output );
 	unset( $cmd_status );
-
 
 	return $temp_dir;
 }
@@ -208,7 +200,7 @@ function vipgoci_unittests_remove_git_repo( $repo_path ) {
 	/*
 	 * Prepare to run the rm -rf command.
 	 */
-	
+
 	$cmd = sprintf(
 		'%s -rf %s',
 		escapeshellcmd( 'rm' ),
@@ -218,18 +210,16 @@ function vipgoci_unittests_remove_git_repo( $repo_path ) {
 	$cmd_output = '';
 	$cmd_status = 0;
 
-	/* 
+	/*
 	 * Run it and check results.
 	 */
 	$res = exec( $cmd, $cmd_output, $cmd_status );
 
 	if ( $cmd_status === 0 ) {
 		return true;
-	}
-
-	else {
+	} else {
 		printf(
-			"Warning: Not able to remove temporary directory successfully; %i, %s",
+			'Warning: Not able to remove temporary directory successfully; %i, %s',
 			$cmd_status,
 			$cmd_output
 		);
@@ -249,7 +239,7 @@ function vipgoci_unittests_options_test(
 		$options
 	);
 
-	foreach(
+	foreach (
 		$options_keys as $option_key
 	) {
 		if ( in_array(
@@ -357,7 +347,7 @@ function vipgoci_unittests_check_irc_api_alert_queue(
 
 	$irc_msg_queue = vipgoci_irc_api_alert_queue( null, true );
 
-	foreach( $irc_msg_queue as $irc_msg_queue_item ) {
+	foreach ( $irc_msg_queue as $irc_msg_queue_item ) {
 		if ( false !== strpos(
 			$irc_msg_queue_item,
 			$str_expected
@@ -371,8 +361,8 @@ function vipgoci_unittests_check_irc_api_alert_queue(
 
 /*
  * Functions to easily indicate and determine if we are running
- * specific unit-tests. This is useful if we need to add or 
- * bypass particular functionality in the main code base 
+ * specific unit-tests. This is useful if we need to add or
+ * bypass particular functionality in the main code base
  * while running a particular unit-test.
  */
 
@@ -392,4 +382,4 @@ function vipgoci_unittests_remove_indication_for_test_id(
 	unset( $GLOBALS[ VIPGOCI_UNIT_TESTS_TEST_ID_KEY ][ $test_id ] );
 }
 
-require_once( __DIR__ . '/../../requires.php' );
+require_once __DIR__ . '/../../requires.php';

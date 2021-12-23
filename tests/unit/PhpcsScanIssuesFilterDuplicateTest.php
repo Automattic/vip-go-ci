@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
-require_once( __DIR__ . './../../misc.php' );
+require_once __DIR__ . './../../misc.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -18,36 +18,36 @@ final class PhpcsScanIssuesFilterDuplicateTest extends TestCase {
 		$issues_filtered = vipgoci_issues_filter_duplicate(
 			array(
 				array(
-					'message' => 'json_encode() is discouraged. Use wp_json_encode() instead.',
-					'source' => 'WordPress.WP.AlternativeFunctions.json_encode_json_encode',
+					'message'  => 'json_encode() is discouraged. Use wp_json_encode() instead.',
+					'source'   => 'WordPress.WP.AlternativeFunctions.json_encode_json_encode',
 					'severity' => 5,
-					'fixable' => false,
-					'type' => 'WARNING',
-					'line' => 7,
-					'column' => 6,
-					'level' => 'WARNING',
+					'fixable'  => false,
+					'type'     => 'WARNING',
+					'line'     => 7,
+					'column'   => 6,
+					'level'    => 'WARNING',
 				),
 
 				array(
-					'message' => 'json_encode() is discouraged. Use wp_json_encode() instead.',
-					'source' => 'WordPress.WP.AlternativeFunctions.json_encode_json_encode',
+					'message'  => 'json_encode() is discouraged. Use wp_json_encode() instead.',
+					'source'   => 'WordPress.WP.AlternativeFunctions.json_encode_json_encode',
 					'severity' => 5,
-					'fixable' => false,
-					'type' => 'WARNING',
-					'line' => 7,
-					'column' => 6,
-					'level' => 'WARNING',
+					'fixable'  => false,
+					'type'     => 'WARNING',
+					'line'     => 7,
+					'column'   => 6,
+					'level'    => 'WARNING',
 				),
 
 				array(
-					'message' => 'json_encode() is discouraged. Use wp_json_encode() instead.',
-					'source' => 'WordPress.WP.AlternativeFunctions.json_encode_json_encode',
+					'message'  => 'json_encode() is discouraged. Use wp_json_encode() instead.',
+					'source'   => 'WordPress.WP.AlternativeFunctions.json_encode_json_encode',
 					'severity' => 5,
-					'fixable' => false,
-					'type' => 'WARNING',
-					'line' => 7,
-					'column' => 6,
-					'level' => 'WARNING',
+					'fixable'  => false,
+					'type'     => 'WARNING',
+					'line'     => 7,
+					'column'   => 6,
+					'level'    => 'WARNING',
 				),
 			)
 		);
@@ -55,15 +55,15 @@ final class PhpcsScanIssuesFilterDuplicateTest extends TestCase {
 		$this->assertSame(
 			array(
 				array(
-					'message' => 'json_encode() is discouraged. Use wp_json_encode() instead.',
-					'source' => 'WordPress.WP.AlternativeFunctions.json_encode_json_encode',
+					'message'  => 'json_encode() is discouraged. Use wp_json_encode() instead.',
+					'source'   => 'WordPress.WP.AlternativeFunctions.json_encode_json_encode',
 					'severity' => 5,
-					'fixable' => false,
-					'type' => 'WARNING',
-					'line' => 7,
-					'column' => 6,
-					'level' => 'WARNING',
-				)
+					'fixable'  => false,
+					'type'     => 'WARNING',
+					'line'     => 7,
+					'column'   => 6,
+					'level'    => 'WARNING',
+				),
 			),
 			$issues_filtered
 		);
@@ -76,49 +76,48 @@ final class PhpcsScanIssuesFilterDuplicateTest extends TestCase {
 		$issues_filtered = vipgoci_issues_filter_duplicate(
 			array(
 				array(
-					'message' => 'json_encode() is discouraged. Use wp_json_encode() instead.',
-					'source' => 'WordPress.WP.AlternativeFunctions.json_encode_json_encode',
+					'message'  => 'json_encode() is discouraged. Use wp_json_encode() instead.',
+					'source'   => 'WordPress.WP.AlternativeFunctions.json_encode_json_encode',
 					'severity' => 5,
-					'fixable' => false,
-					'type' => 'WARNING',
-					'line' => 7,
-					'column' => 6,
-					'level' => 'WARNING',
+					'fixable'  => false,
+					'type'     => 'WARNING',
+					'line'     => 7,
+					'column'   => 6,
+					'level'    => 'WARNING',
 				),
 
 				array(
-					'message' => 'json_encode() is discouraged. Use wp_json_encode() instead.',
-					'source' => 'WordPress.WP.AlternativeFunctions.json_encode_json_encode',
+					'message'  => 'json_encode() is discouraged. Use wp_json_encode() instead.',
+					'source'   => 'WordPress.WP.AlternativeFunctions.json_encode_json_encode',
 					'severity' => 5,
-					'fixable' => false,
-					'type' => 'WARNING',
-					'line' => 7,
-					'column' => 6,
-					'level' => 'WARNING',
+					'fixable'  => false,
+					'type'     => 'WARNING',
+					'line'     => 7,
+					'column'   => 6,
+					'level'    => 'WARNING',
 				),
 
 				array(
-					'message' => 'json_encode() is discouraged. Use wp_json_encode() instead.',
-					'source' => 'WordPress.WP.AlternativeFunctions.json_encode_json_encode',
+					'message'  => 'json_encode() is discouraged. Use wp_json_encode() instead.',
+					'source'   => 'WordPress.WP.AlternativeFunctions.json_encode_json_encode',
 					'severity' => 5,
-					'fixable' => false,
-					'type' => 'WARNING',
-					'line' => 7,
-					'column' => 6,
-					'level' => 'WARNING',
+					'fixable'  => false,
+					'type'     => 'WARNING',
+					'line'     => 7,
+					'column'   => 6,
+					'level'    => 'WARNING',
 				),
 
 				array(
-					'message' => 'json_encode() is discouraged. Use wp_json_encode() instead.',
-					'source' => 'WordPress.WP.AlternativeFunctions.json_encode_json_encode',
+					'message'  => 'json_encode() is discouraged. Use wp_json_encode() instead.',
+					'source'   => 'WordPress.WP.AlternativeFunctions.json_encode_json_encode',
 					'severity' => 5,
-					'fixable' => false,
-					'type' => 'WARNING',
-					'line' => 80,
-					'column' => 6,
-					'level' => 'WARNING',
+					'fixable'  => false,
+					'type'     => 'WARNING',
+					'line'     => 80,
+					'column'   => 6,
+					'level'    => 'WARNING',
 				),
-
 
 			)
 		);
@@ -126,25 +125,25 @@ final class PhpcsScanIssuesFilterDuplicateTest extends TestCase {
 		$this->assertSame(
 			array(
 				array(
-					'message' => 'json_encode() is discouraged. Use wp_json_encode() instead.',
-					'source' => 'WordPress.WP.AlternativeFunctions.json_encode_json_encode',
+					'message'  => 'json_encode() is discouraged. Use wp_json_encode() instead.',
+					'source'   => 'WordPress.WP.AlternativeFunctions.json_encode_json_encode',
 					'severity' => 5,
-					'fixable' => false,
-					'type' => 'WARNING',
-					'line' => 7,
-					'column' => 6,
-					'level' => 'WARNING',
+					'fixable'  => false,
+					'type'     => 'WARNING',
+					'line'     => 7,
+					'column'   => 6,
+					'level'    => 'WARNING',
 				),
 
 				array(
-					'message' => 'json_encode() is discouraged. Use wp_json_encode() instead.',
-					'source' => 'WordPress.WP.AlternativeFunctions.json_encode_json_encode',
+					'message'  => 'json_encode() is discouraged. Use wp_json_encode() instead.',
+					'source'   => 'WordPress.WP.AlternativeFunctions.json_encode_json_encode',
 					'severity' => 5,
-					'fixable' => false,
-					'type' => 'WARNING',
-					'line' => 80,
-					'column' => 6,
-					'level' => 'WARNING',
+					'fixable'  => false,
+					'type'     => 'WARNING',
+					'line'     => 80,
+					'column'   => 6,
+					'level'    => 'WARNING',
 				),
 			),
 			$issues_filtered

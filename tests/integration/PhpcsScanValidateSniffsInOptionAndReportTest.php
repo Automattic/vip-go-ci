@@ -1,6 +1,6 @@
 <?php
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+require_once __DIR__ . '/IncludesForTests.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -32,8 +32,8 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 	);
 
 	var $options_git = array(
-		'repo-owner'	=> null,
-		'repo-name'	=> null,
+		'repo-owner' => null,
+		'repo-name'  => null,
 	);
 
 	var $current_user_info = null;
@@ -54,7 +54,7 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 			$this->options_git
 		);
 
-		$this->options[ 'github-token' ] =
+		$this->options['github-token'] =
 			vipgoci_unittests_get_config_value(
 				'git-secrets',
 				'github-token',
@@ -69,7 +69,7 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 		$this->options['phpcs-sniffs-include'] = array();
 		$this->options['phpcs-sniffs-exclude'] = array();
 
-		foreach(
+		foreach (
 			array(
 				'phpcs-validate-sniffs-and-report-include-valid',
 				'phpcs-validate-sniffs-and-report-include-invalid',
@@ -87,7 +87,7 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 			$this->options['phpcs-validate-sniffs-and-report-include-valid'],
 			$this->options['phpcs-validate-sniffs-and-report-include-invalid']
 		);
-	
+
 		$this->options['phpcs-validate-sniffs-and-report-exclude-valid-and-invalid'] = array_merge(
 			$this->options['phpcs-validate-sniffs-and-report-exclude-valid'],
 			$this->options['phpcs-validate-sniffs-and-report-exclude-invalid']
@@ -114,8 +114,8 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 
 	protected function tearDown(): void {
 		$this->options_phpcs = null;
-		$this->options_git = null;
-		$this->options = null;
+		$this->options_git   = null;
+		$this->options       = null;
 	}
 
 	/**
@@ -163,7 +163,7 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 		 * For each Pull-Request, check
 		 * that it has no comments.
 		 */
-		foreach( $prs_implicated as $pr_item ) {
+		foreach ( $prs_implicated as $pr_item ) {
 			$pr_comments = $this->_getPrGenericComments(
 				$pr_item->number
 			);
@@ -199,7 +199,7 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 			count( $prs_implicated )
 		);
 
-		foreach( $prs_implicated as $pr_item ) {
+		foreach ( $prs_implicated as $pr_item ) {
 			$pr_comments = $this->_getPrGenericComments(
 				$pr_item->number
 			);
@@ -232,7 +232,6 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 				) === false ) {
 					continue;
 				}
-
 
 				vipgoci_unittests_output_suppress();
 
@@ -307,7 +306,7 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 		 * For each Pull-Request, check
 		 * that it has no comments.
 		 */
-		foreach( $prs_implicated as $pr_item ) {
+		foreach ( $prs_implicated as $pr_item ) {
 			$pr_comments = $this->_getPrGenericComments(
 				$pr_item->number
 			);
@@ -342,7 +341,7 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 			count( $prs_implicated )
 		);
 
-		foreach( $prs_implicated as $pr_item ) {
+		foreach ( $prs_implicated as $pr_item ) {
 			$pr_comments = $this->_getPrGenericComments(
 				$pr_item->number
 			);
@@ -404,7 +403,7 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 		 * For each Pull-Request, check
 		 * that it has no comments.
 		 */
-		foreach( $prs_implicated as $pr_item ) {
+		foreach ( $prs_implicated as $pr_item ) {
 			$pr_comments = $this->_getPrGenericComments(
 				$pr_item->number
 			);
@@ -440,7 +439,7 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 			count( $prs_implicated )
 		);
 
-		foreach( $prs_implicated as $pr_item ) {
+		foreach ( $prs_implicated as $pr_item ) {
 			$pr_comments = $this->_getPrGenericComments(
 				$pr_item->number
 			);
@@ -473,7 +472,6 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 				) === false ) {
 					continue;
 				}
-
 
 				vipgoci_unittests_output_suppress();
 
@@ -548,7 +546,7 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 		 * For each Pull-Request, check
 		 * that it has no comments.
 		 */
-		foreach( $prs_implicated as $pr_item ) {
+		foreach ( $prs_implicated as $pr_item ) {
 			$pr_comments = $this->_getPrGenericComments(
 				$pr_item->number
 			);
@@ -583,7 +581,7 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 			count( $prs_implicated )
 		);
 
-		foreach( $prs_implicated as $pr_item ) {
+		foreach ( $prs_implicated as $pr_item ) {
 			$pr_comments = $this->_getPrGenericComments(
 				$pr_item->number
 			);
@@ -609,7 +607,7 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 	) {
 		$pr_comments_ret = array();
 
-		$page = 1;
+		$page     = 1;
 		$per_page = 100;
 
 		do {
@@ -624,19 +622,18 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 				'?page=' . rawurlencode( $page ) . '&' .
 				'per_page=' . rawurlencode( $per_page );
 
+					$pr_comments_raw = json_decode(
+						vipgoci_github_fetch_url(
+							$github_url,
+							$this->options['github-token']
+						)
+					);
 
-	                $pr_comments_raw = json_decode(
-	                        vipgoci_github_fetch_url(
-        	                        $github_url,
-                	                $this->options['github-token']
-                        	)
-	                );
+			foreach ( $pr_comments_raw as $pr_comment ) {
+					$pr_comments_ret[] = $pr_comment;
+			}
 
-	                foreach ( $pr_comments_raw as $pr_comment ) {
-	                        $pr_comments_ret[] = $pr_comment;
-        	        }
-
-	                $page++;
+					$page++;
 		} while ( count( $pr_comments_raw ) >= $per_page );
 
 		return $pr_comments_ret;

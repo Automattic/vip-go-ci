@@ -1,20 +1,20 @@
 <?php
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+require_once __DIR__ . '/IncludesForTests.php';
 
 use PHPUnit\Framework\TestCase;
 
 final class MiscScandirGitRepoTest extends TestCase {
 	var $options_git = array(
-		'git-path'		=> null,
-		'github-repo-url'	=> null,
-		'repo-name'		=> null,
-		'repo-owner'		=> null,
+		'git-path'        => null,
+		'github-repo-url' => null,
+		'repo-name'       => null,
+		'repo-owner'      => null,
 	);
 
 	var $git_repo_tests = array(
-		'commit-test-scandir-repo-test-1'	=> null,
-		'commit-test-scandir-repo-test-2'	=> null,
+		'commit-test-scandir-repo-test-1' => null,
+		'commit-test-scandir-repo-test-2' => null,
 	);
 
 	protected function setUp(): void {
@@ -33,7 +33,7 @@ final class MiscScandirGitRepoTest extends TestCase {
 			$this->git_repo_tests
 		);
 
-		$this->options[ 'github-token' ] =
+		$this->options['github-token'] =
 			vipgoci_unittests_get_config_value(
 				'git-secrets',
 				'github-token',
@@ -51,9 +51,9 @@ final class MiscScandirGitRepoTest extends TestCase {
 			);
 		}
 
-		$this->options_git = null;
+		$this->options_git    = null;
 		$this->git_repo_tests = null;
-		$this->options = null;
+		$this->options        = null;
 	}
 
 	/**
@@ -99,10 +99,10 @@ final class MiscScandirGitRepoTest extends TestCase {
 		$this->assertSame(
 			array(
 				'README.md',
- 				'myfile1.txt',	
+				'myfile1.txt',
 				'myfile2.txt',
 				'myfolder5/myotherfolder6/somefile2.txt',
-				'myfolder5/somefile1.txt'
+				'myfolder5/somefile1.txt',
 			),
 			$ret
 		);
@@ -144,7 +144,7 @@ final class MiscScandirGitRepoTest extends TestCase {
 		$ret = vipgoci_scandir_git_repo(
 			$this->options['local-git-repo'],
 			array(
-				'file_extensions'	=> array( 'md' )
+				'file_extensions' => array( 'md' ),
 			)
 		);
 
@@ -152,7 +152,7 @@ final class MiscScandirGitRepoTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				'README.md'
+				'README.md',
 			),
 			$ret
 		);

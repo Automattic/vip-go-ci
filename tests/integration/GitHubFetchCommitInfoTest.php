@@ -1,19 +1,19 @@
 <?php
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+require_once __DIR__ . '/IncludesForTests.php';
 
 use PHPUnit\Framework\TestCase;
 
 final class GitHubFetchCommitInfoTest extends TestCase {
 	var $options_git_repo_tests = array(
-		'commit-test-repo-fetch-commit-info-1'	=> null,
+		'commit-test-repo-fetch-commit-info-1' => null,
 	);
 
 	var $options_git = array(
-		'git-path'		=> null,
-		'github-repo-url'	=> null,
-		'repo-name'		=> null,
-		'repo-owner'		=> null,
+		'git-path'        => null,
+		'github-repo-url' => null,
+		'repo-name'       => null,
+		'repo-owner'      => null,
 	);
 
 	protected function setUp(): void {
@@ -32,7 +32,7 @@ final class GitHubFetchCommitInfoTest extends TestCase {
 			$this->options_git
 		);
 
-		$this->options[ 'github-token' ] =
+		$this->options['github-token'] =
 			vipgoci_unittests_get_config_value(
 				'git-secrets',
 				'github-token',
@@ -54,8 +54,8 @@ final class GitHubFetchCommitInfoTest extends TestCase {
 		}
 
 		$this->options_git_repo_tests = null;
-		$this->options_git = null;
-		$this->options = null;
+		$this->options_git            = null;
+		$this->options                = null;
 	}
 
 	/**
@@ -114,17 +114,16 @@ final class GitHubFetchCommitInfoTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				'sha'		=> '524acfffa760fd0b8c1de7cf001f8dd348b399d8',
-				'filename'	=> 'test1.txt',
-				'status'	=> 'added',
-				'additions'	=> 1,
-				'deletions'	=> 0,
-				'changes'	=> 1,
-				'patch'		=> '@@ -0,0 +1 @@' . PHP_EOL . '+Test file',
+				'sha'       => '524acfffa760fd0b8c1de7cf001f8dd348b399d8',
+				'filename'  => 'test1.txt',
+				'status'    => 'added',
+				'additions' => 1,
+				'deletions' => 0,
+				'changes'   => 1,
+				'patch'     => '@@ -0,0 +1 @@' . PHP_EOL . '+Test file',
 			),
 			(array) $commit_info->files[0]
 		);
-
 
 		unset( $this->options['commit'] );
 	}

@@ -1,13 +1,13 @@
 <?php
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+require_once __DIR__ . '/IncludesForTests.php';
 
 use PHPUnit\Framework\TestCase;
 
 final class PhpcsScanGetAllStandardsTest extends TestCase {
 	var $options_phpcs = array(
-		'phpcs-path'		=> null,
-		'phpcs-standard'	=> null,
+		'phpcs-path'     => null,
+		'phpcs-standard' => null,
 	);
 
 	protected function setUp(): void {

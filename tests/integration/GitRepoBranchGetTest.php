@@ -1,17 +1,17 @@
 <?php
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+require_once __DIR__ . '/IncludesForTests.php';
 
 use PHPUnit\Framework\TestCase;
 
 final class GitRepoBranchGetTest extends TestCase {
 	var $options_git = array(
-		'git-path'			=> null,
-		'github-repo-url'		=> null,
+		'git-path'        => null,
+		'github-repo-url' => null,
 	);
 
 	var $options_git_repo_tests = array(
-		'commit-test-repo-branch'	=> null,
+		'commit-test-repo-branch' => null,
 	);
 
 
@@ -39,8 +39,8 @@ final class GitRepoBranchGetTest extends TestCase {
 			);
 		}
 
-		$this->options = null;
-		$this->options_git = null;
+		$this->options                = null;
+		$this->options_git            = null;
 		$this->options_git_repo_tests = null;
 	}
 
@@ -50,7 +50,7 @@ final class GitRepoBranchGetTest extends TestCase {
 	public function testBranchGet1() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
-			array( ),
+			array(),
 			$this
 		);
 
@@ -68,7 +68,6 @@ final class GitRepoBranchGetTest extends TestCase {
 				$this->options
 			);
 
-	
 		if ( false === $this->options['local-git-repo'] ) {
 			$this->markTestSkipped(
 				'Could not set up git repository: ' .
@@ -81,7 +80,7 @@ final class GitRepoBranchGetTest extends TestCase {
 		$ret = vipgoci_gitrepo_branch_current_get(
 			$this->options['local-git-repo']
 		);
-		
+
 		$this->assertSame(
 			$this->options['commit-test-repo-branch'],
 			$ret

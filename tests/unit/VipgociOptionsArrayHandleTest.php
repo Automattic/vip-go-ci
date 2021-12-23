@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
-require_once( __DIR__ . './../../options.php' );
+require_once __DIR__ . './../../options.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -15,8 +15,7 @@ final class VipgociOptionsArrayHandleTest extends TestCase {
 	 * @covers ::vipgoci_option_array_handle
 	 */
 	public function testOptionsArrayHandle1() {
-		$options = array(
-		);
+		$options = array();
 
 		vipgoci_option_array_handle(
 			$options,

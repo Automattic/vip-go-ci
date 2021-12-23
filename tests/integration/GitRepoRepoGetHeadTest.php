@@ -1,19 +1,19 @@
 <?php
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+require_once __DIR__ . '/IncludesForTests.php';
 
 use PHPUnit\Framework\TestCase;
 
 final class GitRepoRepoGetHeadTest extends TestCase {
 	var $options_git = array(
-		'git-path'			=> null,
-		'github-repo-url'		=> null,
-		'repo-owner'			=> null,
-		'repo-name'			=> null,
+		'git-path'        => null,
+		'github-repo-url' => null,
+		'repo-owner'      => null,
+		'repo-name'       => null,
 	);
 
 	var $options_git_repo_tests = array(
-		'commit-test-repo-get-head-1'	=> null,
+		'commit-test-repo-get-head-1' => null,
 	);
 
 	protected function setUp(): void {
@@ -30,9 +30,9 @@ final class GitRepoRepoGetHeadTest extends TestCase {
 		$this->options = array_merge(
 			$this->options_git,
 			$this->options_git_repo_tests
-		);	
+		);
 
-		$this->options[ 'github-token' ] =
+		$this->options['github-token'] =
 			vipgoci_unittests_get_config_value(
 				'git-secrets',
 				'github-token',
@@ -62,7 +62,7 @@ final class GitRepoRepoGetHeadTest extends TestCase {
 			return;
 		}
 
-		$this->options['commit'] = 
+		$this->options['commit'] =
 			$this->options['commit-test-repo-get-head-1'];
 
 		vipgoci_unittests_output_suppress();

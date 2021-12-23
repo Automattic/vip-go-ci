@@ -9,7 +9,7 @@ declare( strict_types=1 );
  * @param string $temp_file_name
  * @param string $file_name
  * @param string $commit_id
- * @param int $max_lines
+ * @param int    $max_lines
  *
  * Validates if the file is valid to be scanned by vip-go-ci
  *
@@ -28,8 +28,8 @@ function vipgoci_validate( string $temp_file_name, string $file_name, string $co
 	$validation_result = array( 'total' => 0 );
 
 	if ( false === vipgoci_is_number_of_lines_valid( $temp_file_name, $file_name, $commit_id, $max_lines ) ) {
-		$validation_result['issues'][ VIPGOCI_VALIDATION_MAXIMUM_LINES ] = [ $file_name ];
-		$validation_result['total'] = count( $validation_result['issues'] );
+		$validation_result['issues'][ VIPGOCI_VALIDATION_MAXIMUM_LINES ] = array( $file_name );
+		$validation_result['total']                                      = count( $validation_result['issues'] );
 	}
 
 	return $validation_result;
@@ -39,7 +39,7 @@ function vipgoci_validate( string $temp_file_name, string $file_name, string $co
  * @param string $temp_file_name
  * @param string $file_name
  * @param string $commit_id
- * @param int $max_lines
+ * @param int    $max_lines
  *
  * @return bool
  */
@@ -69,7 +69,11 @@ function vipgoci_is_number_of_lines_valid( string $temp_file_name, string $file_
 
 	vipgoci_log(
 		'Validating number of lines output',
-		array( 'file_name' => $file_name, 'cmd' => $cmd, 'output' => $output )
+		array(
+			'file_name' => $file_name,
+			'cmd'       => $cmd,
+			'output'    => $output,
+		)
 	);
 
 	$is_number_of_lines_valid = vipgoci_verify_number_of_lines_output( $output, $max_lines );
@@ -81,7 +85,7 @@ function vipgoci_is_number_of_lines_valid( string $temp_file_name, string $file_
 
 /**
  * @param array $cache_key
- * @param bool $is_number_of_lines_valid
+ * @param bool  $is_number_of_lines_valid
  *
  * Sets cache for converted is_number_of_lines_valid
  */
@@ -94,7 +98,7 @@ function vipgoci_cache_set_is_number_of_lines_valid( array $cache_key, bool $is_
 
 /**
  * @param string $output
- * @param int $max_lines
+ * @param int    $max_lines
  *
  * @return bool
  */

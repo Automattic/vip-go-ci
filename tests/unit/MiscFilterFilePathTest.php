@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
-require_once( __DIR__ . './../../misc.php' );
+require_once __DIR__ . './../../misc.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -12,8 +12,8 @@ use PHPUnit\Framework\TestCase;
 
 final class MiscFilterFilePathTest extends TestCase {
 	/**
-	  * @covers ::vipgoci_filter_file_path
-	  */
+	 * @covers ::vipgoci_filter_file_path
+	 */
 	public function testFilterFilePath1() {
 		$file_name = 'folder1/file1.txt';
 
@@ -22,8 +22,8 @@ final class MiscFilterFilePathTest extends TestCase {
 				$file_name,
 				array(
 					'file_extensions' => array(
-						'txt'
-					)
+						'txt',
+					),
 				)
 			)
 		);
@@ -33,8 +33,8 @@ final class MiscFilterFilePathTest extends TestCase {
 				$file_name,
 				array(
 					'file_extensions' => array(
-						'ini'
-					)
+						'ini',
+					),
 				)
 			)
 		);
@@ -42,8 +42,8 @@ final class MiscFilterFilePathTest extends TestCase {
 
 
 		/**
-		  * @covers ::vipgoci_filter_file_path
-		  */
+		 * @covers ::vipgoci_filter_file_path
+		 */
 	public function testFilterFilePath2() {
 		$file_name = 'folder1/file1.txt';
 
@@ -52,8 +52,9 @@ final class MiscFilterFilePathTest extends TestCase {
 				$file_name,
 				array(
 					'file_extensions' => array(
-						'txt', 'ini'
-					)
+						'txt',
+						'ini',
+					),
 				)
 			)
 		);
@@ -63,8 +64,9 @@ final class MiscFilterFilePathTest extends TestCase {
 				$file_name,
 				array(
 					'file_extensions' => array(
-						'ini', 'sys'
-					)
+						'ini',
+						'sys',
+					),
 				)
 			)
 		);
@@ -72,8 +74,8 @@ final class MiscFilterFilePathTest extends TestCase {
 
 
 	/**
-	  * @covers ::vipgoci_filter_file_path
-	  */
+	 * @covers ::vipgoci_filter_file_path
+	 */
 	public function testFilterFilePath3() {
 		$file_name = 'folder1/file1.txt';
 
@@ -83,7 +85,7 @@ final class MiscFilterFilePathTest extends TestCase {
 				array(
 					'skip_folders' => array(
 						'folder2',
-					)
+					),
 				)
 			)
 		);
@@ -94,7 +96,7 @@ final class MiscFilterFilePathTest extends TestCase {
 				array(
 					'skip_folders' => array(
 						'folder1',
-					)
+					),
 				)
 			)
 		);
@@ -102,8 +104,8 @@ final class MiscFilterFilePathTest extends TestCase {
 
 
 	/**
-	  * @covers ::vipgoci_filter_file_path
-	  */
+	 * @covers ::vipgoci_filter_file_path
+	 */
 	public function testFilterFilePath4() {
 		$file_name = 'folder1/file1.txt';
 
@@ -111,13 +113,14 @@ final class MiscFilterFilePathTest extends TestCase {
 			vipgoci_filter_file_path(
 				$file_name,
 				array(
-					'skip_folders' => array(
+					'skip_folders'    => array(
 						'folder2',
 					),
 
 					'file_extensions' => array(
-						'txt', 'ini'
-					)
+						'txt',
+						'ini',
+					),
 				)
 			)
 		);
@@ -126,13 +129,13 @@ final class MiscFilterFilePathTest extends TestCase {
 			vipgoci_filter_file_path(
 				$file_name,
 				array(
-					'skip_folders' => array(
+					'skip_folders'    => array(
 						'folder1',
 					),
 
 					'file_extensions' => array(
-						'ini'
-					)
+						'ini',
+					),
 				)
 			)
 		);
@@ -141,13 +144,14 @@ final class MiscFilterFilePathTest extends TestCase {
 			vipgoci_filter_file_path(
 				$file_name,
 				array(
-					'skip_folders' => array(
+					'skip_folders'    => array(
 						'folder1',
 					),
 
 					'file_extensions' => array(
-						'txt', 'ini'
-					)
+						'txt',
+						'ini',
+					),
 				)
 			)
 		);
@@ -155,8 +159,8 @@ final class MiscFilterFilePathTest extends TestCase {
 
 
 	/**
-	  * @covers ::vipgoci_filter_file_path
-	  */
+	 * @covers ::vipgoci_filter_file_path
+	 */
 	public function testFilterFilePath5() {
 		$file_name = 'my/unit-tests/folder1/subfolder/file1.txt';
 
@@ -168,7 +172,7 @@ final class MiscFilterFilePathTest extends TestCase {
 						'folder200',
 						'folder3000',
 						'folder4000/folder5000/folder6000',
-						'SubFolder' // Note: capital 'F'
+						'SubFolder', // Note: capital 'F'
 					),
 				)
 			)

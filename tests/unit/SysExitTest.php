@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
-require_once( __DIR__ . '/helper/IndicateTestId.php' );
-require_once( __DIR__ . '/helper/CheckIrcApiAlertQueue.php' );
+require_once __DIR__ . '/helper/IndicateTestId.php';
+require_once __DIR__ . '/helper/CheckIrcApiAlertQueue.php';
 
-require_once( __DIR__ . './../../defines.php' );
-require_once( __DIR__ . './../../other-web-services.php' );
-require_once( __DIR__ . './../../misc.php' );
+require_once __DIR__ . './../../defines.php';
+require_once __DIR__ . './../../other-web-services.php';
+require_once __DIR__ . './../../misc.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -30,7 +30,7 @@ final class SysExitTest extends TestCase {
 
 	protected function tearDown(): void {
 		/*
-	 	 * We are no longer running the test,
+		  * We are no longer running the test,
 		 * remove the indication.
 		 */
 		vipgoci_unittests_remove_indication_for_test_id( 'SysExitTest' );
@@ -41,7 +41,7 @@ final class SysExitTest extends TestCase {
 	 * with correct exit status, check
 	 * if it prints the expected data, and
 	 * if it logs to the IRC queue.
-	 * 
+	 *
 	 * @covers ::vipgoci_sysexit
 	 */
 	public function testSysExit1() {

@@ -1,21 +1,21 @@
 <?php
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+require_once __DIR__ . '/IncludesForTests.php';
 
 use PHPUnit\Framework\TestCase;
 
 final class ApHashesApiScanCommitTest extends TestCase {
 	var $options_git = array(
-		'repo-owner'			=> null,
-		'repo-name'			=> null,
-		'github-repo-url'		=> null,
-		'git-path'			=> null,
+		'repo-owner'      => null,
+		'repo-name'       => null,
+		'github-repo-url' => null,
+		'git-path'        => null,
 	);
 
 	var $options_auto_approvals = array(
-		'commit-test-hashes-api-scan-commit'	=> null,
+		'commit-test-hashes-api-scan-commit' => null,
 	);
-	
+
 	protected function setUp(): void {
 		vipgoci_unittests_get_config_values(
 			'git',
@@ -33,7 +33,7 @@ final class ApHashesApiScanCommitTest extends TestCase {
 
 		$this->options['hashes-api'] = true;
 
-		$this->options[ 'github-token' ] =
+		$this->options['github-token'] =
 			vipgoci_unittests_get_config_value(
 				'git-secrets',
 				'github-token',
@@ -44,7 +44,7 @@ final class ApHashesApiScanCommitTest extends TestCase {
 			$this->options['github-token'];
 
 		unset( $this->options['github-token'] );
-		
+
 		$this->options['branches-ignore'] = array();
 
 		foreach (
@@ -63,7 +63,7 @@ final class ApHashesApiScanCommitTest extends TestCase {
 					true // Fetch from secrets file
 				);
 		}
-	
+
 		$this->options['commit'] =
 			$this->options['commit-test-hashes-api-scan-commit'];
 
@@ -82,9 +82,9 @@ final class ApHashesApiScanCommitTest extends TestCase {
 			);
 		}
 
-		$this->options = null;
+		$this->options                = null;
 		$this->options_auto_approvals = null;
-		$this->options_git = null;
+		$this->options_git            = null;
 	}
 
 	/**
@@ -93,7 +93,7 @@ final class ApHashesApiScanCommitTest extends TestCase {
 	public function testApHashesApiScanCommitTest1() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
-			array( ),
+			array(),
 			$this
 		);
 
@@ -112,8 +112,8 @@ final class ApHashesApiScanCommitTest extends TestCase {
 			return;
 		}
 
-		$commit_issues_submit = array();
-		$commit_issues_stats = array();
+		$commit_issues_submit    = array();
+		$commit_issues_stats     = array();
 		$auto_approved_files_arr = array();
 
 		vipgoci_ap_hashes_api_scan_commit(

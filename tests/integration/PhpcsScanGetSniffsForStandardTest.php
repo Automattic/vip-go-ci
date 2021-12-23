@@ -1,14 +1,14 @@
 <?php
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+require_once __DIR__ . '/IncludesForTests.php';
 
 use PHPUnit\Framework\TestCase;
 
 final class PhpcsScanGetSniffsForStandardTest extends TestCase {
 	var $options_phpcs = array(
-		'phpcs-path'		=> null,
-		'phpcs-standard'	=> null,
-		'phpcs-sniffs-existing'	=> null,
+		'phpcs-path'            => null,
+		'phpcs-standard'        => null,
+		'phpcs-sniffs-existing' => null,
 	);
 
 	protected function setUp(): void {
@@ -33,7 +33,7 @@ final class PhpcsScanGetSniffsForStandardTest extends TestCase {
 	public function testDoScanTest1() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options_phpcs,
-			array( ),
+			array(),
 			$this
 		);
 
@@ -58,7 +58,7 @@ final class PhpcsScanGetSniffsForStandardTest extends TestCase {
 			$phpcs_sniffs
 		);
 
-		foreach(
+		foreach (
 			$this->options_phpcs['phpcs-sniffs-existing']
 				as $sniff_name
 		) {

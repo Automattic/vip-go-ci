@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
-require_once( __DIR__ . './../../github-api.php' );
+require_once __DIR__ . './../../github-api.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -46,7 +46,6 @@ final class GitHubApiCurlHeadersTest extends TestCase {
 			'Status: 200 OK'
 		);
 
-
 		$actual_results = vipgoci_curl_headers(
 			null,
 			null
@@ -54,10 +53,10 @@ final class GitHubApiCurlHeadersTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				'content-type'	=> array( 'text/plain' ),
-				'date'		=> array( 'Mon, 04 Mar 2019 16:43:35 GMT' ),
-				'location'	=> array( 'https://www.ruv.is/' ),
-				'status'	=> array( '200', 'OK' ),
+				'content-type' => array( 'text/plain' ),
+				'date'         => array( 'Mon, 04 Mar 2019 16:43:35 GMT' ),
+				'location'     => array( 'https://www.ruv.is/' ),
+				'status'       => array( '200', 'OK' ),
 			),
 			$actual_results
 		);
@@ -96,7 +95,6 @@ final class GitHubApiCurlHeadersTest extends TestCase {
 			'Location: https://www.kernel.org/'
 		);
 
-
 		$actual_results = vipgoci_curl_headers(
 			null,
 			null
@@ -104,9 +102,9 @@ final class GitHubApiCurlHeadersTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				'status'	=> array( '205' ),
-				'date'		=> array( 'Mon, 04 Mar 2020 16:43:35 GMT' ),
-				'location'	=> array( 'https://www.kernel.org/' ),
+				'status'   => array( '205' ),
+				'date'     => array( 'Mon, 04 Mar 2020 16:43:35 GMT' ),
+				'location' => array( 'https://www.kernel.org/' ),
 			),
 			$actual_results
 		);

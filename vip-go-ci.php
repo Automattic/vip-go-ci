@@ -8,5 +8,5 @@
  * line above is not printed when vip-go-ci
  * is used as a library.
  */
-require_once( __DIR__ . '/requires.php' );
+require_once __DIR__ . '/requires.php';
 

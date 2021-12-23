@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
-require_once( __DIR__ . './../../options.php' );
+require_once __DIR__ . './../../options.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -41,7 +41,7 @@ final class OptionsSkipFolderHandleTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				'phpcs-skip-folders'	=> array(
+				'phpcs-skip-folders' => array(
 					'var/tmp',
 					'client-mu-plugins/myplugin',
 					'plugins/myplugin',
@@ -49,7 +49,7 @@ final class OptionsSkipFolderHandleTest extends TestCase {
 					'tmp/3',
 				),
 
-				'lint-skip-folders'	=> array(
+				'lint-skip-folders'  => array(
 					'var/tmp2',
 					'client-mu-plugins/otherplugin',
 					'plugins/otherplugin',

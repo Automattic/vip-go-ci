@@ -1,18 +1,18 @@
 <?php
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+require_once __DIR__ . '/IncludesForTests.php';
 
 use PHPUnit\Framework\TestCase;
 
 final class GitHubTeamMembersManyTest extends TestCase {
 	var $options = array(
-		'github-token'	=> null,
-		'team-id'	=> null,
-		'team-slug'	=> null,
+		'github-token' => null,
+		'team-id'      => null,
+		'team-slug'    => null,
 	);
 
 	public function setUp(): void {
-		foreach( $this->options as $option_key => $option_value ) {
+		foreach ( $this->options as $option_key => $option_value ) {
 			$this->options[ $option_key ] =
 				vipgoci_unittests_get_config_value(
 					'git-secrets',
@@ -32,7 +32,7 @@ final class GitHubTeamMembersManyTest extends TestCase {
 	public function testTeamMembersMany1() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
-			array( ),
+			array(),
 			$this
 		);
 
@@ -47,7 +47,6 @@ final class GitHubTeamMembersManyTest extends TestCase {
 
 			return;
 		}
-
 
 		vipgoci_unittests_output_suppress();
 

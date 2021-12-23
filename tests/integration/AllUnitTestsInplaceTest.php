@@ -1,12 +1,12 @@
 <?php
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+require_once __DIR__ . '/IncludesForTests.php';
 
 use PHPUnit\Framework\TestCase;
 
 final class AllUnitTestsInplaceTest extends TestCase {
 	public function testAllUnitTestsInPlace() {
-		$files_arr = scandir("tests/integration");
+		$files_arr = scandir( 'tests/integration' );
 
 		/*
 		 * Filter away any files that
@@ -20,7 +20,7 @@ final class AllUnitTestsInplaceTest extends TestCase {
 		$files_arr = array_filter(
 			$files_arr,
 			function( $file_item ) {
-				switch( $file_item ) {
+				switch ( $file_item ) {
 					case '.':
 					case '..':
 					case 'Skeleton.php':

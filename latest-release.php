@@ -8,15 +8,15 @@
  */
 
 $github_url = 'https://api.github.com/repos/automattic/vip-go-ci/releases';
-$client_id = 'automattic-vip-go-ci-release-checker';
+$client_id  = 'automattic-vip-go-ci-release-checker';
 
 $ch = curl_init();
 
-curl_setopt( $ch, CURLOPT_URL,			$github_url );
-curl_setopt( $ch, CURLOPT_RETURNTRANSFER,	1 );
-curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT,	20 );
-curl_setopt( $ch, CURLOPT_USERAGENT,	$client_id );
-curl_setopt( $ch, CURLOPT_MAXREDIRS,	0 );
+curl_setopt( $ch, CURLOPT_URL, $github_url );
+curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
+curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, 20 );
+curl_setopt( $ch, CURLOPT_USERAGENT, $client_id );
+curl_setopt( $ch, CURLOPT_MAXREDIRS, 0 );
 curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, false );
 
 
@@ -54,7 +54,7 @@ if ( null === $resp_data ) {
 
 if (
 	( ! isset( $resp_data[0]->tag_name ) ) ||
-	( ! preg_match('/^(\d+\.)?(\d+\.)?(\*|\d+)$/', $resp_data[0]->tag_name ) )
+	( ! preg_match( '/^(\d+\.)?(\d+\.)?(\*|\d+)$/', $resp_data[0]->tag_name ) )
 ) {
 	exit( 255 );
 }

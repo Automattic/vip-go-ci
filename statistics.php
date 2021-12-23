@@ -19,7 +19,8 @@ function vipgoci_stats_init( $options, $prs_implicated, &$results ) {
 
 		if ( empty( $results[ VIPGOCI_SKIPPED_FILES ][ $pr_item->number ] ) ) {
 			$results[ VIPGOCI_SKIPPED_FILES ][ $pr_item->number ] = array(
-				'issues' => array(), 'total' => 0
+				'issues' => array(),
+				'total'  => 0,
 			);
 		}
 
@@ -27,7 +28,7 @@ function vipgoci_stats_init( $options, $prs_implicated, &$results ) {
 			array(
 				VIPGOCI_STATS_PHPCS,
 				VIPGOCI_STATS_LINT,
-				VIPGOCI_STATS_HASHES_API
+				VIPGOCI_STATS_HASHES_API,
 			)
 			as $stats_type
 		) {
@@ -44,9 +45,9 @@ function vipgoci_stats_init( $options, $prs_implicated, &$results ) {
 
 			$results['stats'][ $stats_type ]
 				[ $pr_item->number ] = array(
-					'error'		=> 0,
-					'warning'	=> 0,
-					'info'		=> 0,
+					'error'   => 0,
+					'warning' => 0,
+					'info'    => 0,
 				);
 		}
 	}
@@ -66,7 +67,7 @@ function vipgoci_stats_init( $options, $prs_implicated, &$results ) {
  */
 function vipgoci_runtime_measure( $action = null, $type = null ) {
 	static $runtime = array();
-	static $timers = array();
+	static $timers  = array();
 
 	/*
 	 * Check usage.
@@ -89,7 +90,6 @@ function vipgoci_runtime_measure( $action = null, $type = null ) {
 		return $runtime;
 	}
 
-
 	/*
 	 * Being asked to either start
 	 * or stop collecting, act on that.
@@ -99,14 +99,11 @@ function vipgoci_runtime_measure( $action = null, $type = null ) {
 		$runtime[ $type ] = 0;
 	}
 
-
 	if ( VIPGOCI_RUNTIME_START === $action ) {
 		$timers[ $type ] = microtime( true );
 
 		return true;
-	}
-
-	else if ( VIPGOCI_RUNTIME_STOP === $action ) {
+	} elseif ( VIPGOCI_RUNTIME_STOP === $action ) {
 		if ( ! isset( $timers[ $type ] ) ) {
 			return false;
 		}
@@ -162,7 +159,6 @@ function vipgoci_counter_report( $action = null, $type = null, $amount = 1 ) {
 		return $counters;
 	}
 
-
 	/*
 	 * Being asked to start
 	 * collecting, act on that.
@@ -191,7 +187,7 @@ function vipgoci_counter_update_with_issues_found(
 		$results['stats']
 	);
 
-	foreach( $stats_types as $stat_type ) {
+	foreach ( $stats_types as $stat_type ) {
 		/*
 		 * Skip statistics for stat-types skipped
 		 */
@@ -205,26 +201,16 @@ function vipgoci_counter_update_with_issues_found(
 
 		$max_issues_found = 0;
 
-		foreach( $pr_keys as $pr_key ) {
+		foreach ( $pr_keys as $pr_key ) {
 			$issue_types = array_keys(
-				$results['stats'][
-					$stat_type
-				][
-					$pr_key
-				]
+				$results['stats'][ $stat_type ][ $pr_key ]
 			);
 
 			$issues_found = 0;
 
-			foreach( $issue_types as $issue_type ) {
+			foreach ( $issue_types as $issue_type ) {
 				$issues_found +=
-					$results['stats'][
-						$stat_type
-					][
-						$pr_key
-					][
-						$issue_type
-					];
+					$results['stats'][ $stat_type ][ $pr_key ][ $issue_type ];
 			}
 
 			$max_issues_found = max(
@@ -265,7 +251,6 @@ function vipgoci_stats_per_file(
 		$file_name,
 		$options['local-git-repo']
 	);
-
 
 	if ( false === $file_contents ) {
 		return;

@@ -1,6 +1,6 @@
 <?php
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+require_once __DIR__ . '/IncludesForTests.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -29,6 +29,6 @@ final class GitHubFetchUrlTest extends TestCase {
 			isset(
 				$ret->resources->core->remaining
 			)
-		);		
+		);
 	}
 }

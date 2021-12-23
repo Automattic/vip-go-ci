@@ -21,16 +21,15 @@ function vipgoci_ap_file_types(
 	vipgoci_log(
 		'Doing auto-approval scanning based on file-types',
 		array(
-			'repo_owner'	=> $options['repo-owner'],
-			'repo_name'	=> $options['repo-name'],
-			'commit_id'	=> $options['commit'],
-			'autoapprove'	=> $options['autoapprove'],
+			'repo_owner'            => $options['repo-owner'],
+			'repo_name'             => $options['repo-name'],
+			'commit_id'             => $options['commit'],
+			'autoapprove'           => $options['autoapprove'],
 
 			'autoapprove-filetypes' =>
 				$options['autoapprove-filetypes'],
 		)
 	);
-
 
 	$prs_implicated = vipgoci_github_prs_implicated(
 		$options['repo-owner'],
@@ -40,7 +39,6 @@ function vipgoci_ap_file_types(
 		$options['branches-ignore'],
 		$options['skip-draft-prs']
 	);
-
 
 	foreach ( $prs_implicated as $pr_item ) {
 		$pr_diff = vipgoci_git_diffs_fetch(
@@ -72,9 +70,7 @@ function vipgoci_ap_file_types(
 			 * of approved files, do not do anything.
 			 */
 			if ( isset(
-				$auto_approved_files_arr[
-					$pr_diff_file_name
-				]
+				$auto_approved_files_arr[ $pr_diff_file_name ]
 			) ) {
 				continue;
 			}
@@ -93,9 +89,7 @@ function vipgoci_ap_file_types(
 				$options['autoapprove-filetypes'],
 				true
 			) ) {
-				$auto_approved_files_arr[
-					$pr_diff_file_name
-				] = 'autoapprove-filetypes';
+				$auto_approved_files_arr[ $pr_diff_file_name ] = 'autoapprove-filetypes';
 			}
 		}
 	}

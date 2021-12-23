@@ -5,7 +5,7 @@
 
 define( 'VIPGOCI_INCLUDED', true );
 
-require_once( __DIR__ . '/requires.php' );
+require_once __DIR__ . '/requires.php';
 
 
 /*
@@ -39,7 +39,7 @@ $options = getopt(
 vipgoci_options_sensitive_clean(
 	null,
 	array(
-		'github-token'
+		'github-token',
 	)
 );
 
@@ -105,7 +105,7 @@ if (
  * Verify that --build-state is of valid
  * value.
  */
-switch( $options['build-state'] ) {
+switch ( $options['build-state'] ) {
 	case 'pending':
 	case 'failure':
 	case 'success':
@@ -115,7 +115,7 @@ switch( $options['build-state'] ) {
 		vipgoci_sysexit(
 			'Invalid parameter for --build-state, only "pending", "failure", and "success" are valid',
 			array(
-				'build-state'	=> $options['build-state'],
+				'build-state' => $options['build-state'],
 			)
 		);
 }
@@ -129,7 +129,7 @@ vipgoci_log(
 	array(
 		'options' => vipgoci_options_sensitive_clean(
 			$options
-		)
+		),
 	)
 );
 
