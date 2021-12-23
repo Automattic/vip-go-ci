@@ -1,77 +1,80 @@
 <?php
 
-declare( strict_types=1 );
+declare(strict_types=1);
 
-if ( ! defined( 'VIPGOCI_UNIT_TESTING' ) ) {
-	define( 'VIPGOCI_UNIT_TESTING', true );
+if (! defined('VIPGOCI_UNIT_TESTING')) {
+    define('VIPGOCI_UNIT_TESTING', true);
 }
 
-if ( ! defined( 'VIPGOCI_UNIT_TESTS_INI_DIR_PATH' ) ) {
-	define( 'VIPGOCI_UNIT_TESTS_INI_DIR_PATH', dirname( __DIR__ ) );
+if (! defined('VIPGOCI_UNIT_TESTS_INI_DIR_PATH')) {
+    define('VIPGOCI_UNIT_TESTS_INI_DIR_PATH', dirname(__DIR__));
 }
 
-define( 'VIPGOCI_UNIT_TESTS_TEST_ID_KEY', 'vipgoci_unittests_test_ids' );
+define('VIPGOCI_UNIT_TESTS_TEST_ID_KEY', 'vipgoci_unittests_test_ids');
 
 function vipgoci_unittests_get_config_value(
-	$section,
-	$key,
-	$secret_file = false
+    $section,
+    $key,
+    $secret_file = false
 ) {
-	if ( false === $secret_file ) {
-		$ini_array = parse_ini_file(
-			VIPGOCI_UNIT_TESTS_INI_DIR_PATH . '/../unittests.ini',
-			true
-		);
-	}
-
-	else {
-		$ini_array = parse_ini_file(
-			VIPGOCI_UNIT_TESTS_INI_DIR_PATH . '/../unittests-secrets.ini',
-			true
-		);
-	}
+    if (false === $secret_file) {
+        $ini_array = parse_ini_file(
+            VIPGOCI_UNIT_TESTS_INI_DIR_PATH . '/../unittests.ini',
+            true
+        );
+    } else {
+        $ini_array = parse_ini_file(
+            VIPGOCI_UNIT_TESTS_INI_DIR_PATH . '/../unittests-secrets.ini',
+            true
+        );
+    }
 
 
-	if ( false === $ini_array ) {
-		return null;
-	}	
+    if (false === $ini_array) {
+        return null;
+    }
 
-	if ( isset(
-		$ini_array
-			[ $section ]
-			[ $key ]
-	) ) {
-		if ( empty(
-			$ini_array
-				[ $section ]
-				[ $key ]
-		) ) {
-			return null;
-		}
-			
-		return $ini_array
-			[ $section ]
-			[ $key ];
-	}
+    if (
+        isset(
+            $ini_array
+            [ $section ]
+            [ $key ]
+        )
+    ) {
+        if (
+            empty(
+                $ini_array
+                [ $section ]
+                [ $key ]
+            )
+        ) {
+            return null;
+        }
 
-	return null;
+        return $ini_array
+            [ $section ]
+            [ $key ];
+    }
+
+    return null;
 }
 
-function vipgoci_unittests_get_config_values( $section, &$config_arr, $secret_file = false ) {
-	foreach (
-		array_keys( $config_arr ) as $config_key
-	) {
-		$config_arr[ $config_key ] =
-			vipgoci_unittests_get_config_value(
-				$section,
-				$config_key,
-				$secret_file
-			);
+function vipgoci_unittests_get_config_values($section, &$config_arr, $secret_file = false)
+{
+    foreach (
+        array_keys($config_arr) as $config_key
+    ) {
+        $config_arr[ $config_key ] =
+            vipgoci_unittests_get_config_value(
+                $section,
+                $config_key,
+                $secret_file
+            );
 
-		if ( empty( $config_arr[ $config_key ] ) ) {
-			$config_arr[ $config_key ] = null;
-		}
-	}
+        if (empty($config_arr[ $config_key ])) {
+            $config_arr[ $config_key ] = null;
+        }
+    }
 }
 
 
@@ -80,87 +83,87 @@ function vipgoci_unittests_get_config_values( $section, &$config_arr, $secret_fi
  * particular revision.
  */
 function vipgoci_unittests_setup_git_repo(
-	$options
+    $options
 ) {
-	$temp_dir = tempnam(
-		sys_get_temp_dir(),
-		'git-repo-dir-'
-	);
+    $temp_dir = tempnam(
+        sys_get_temp_dir(),
+        'git-repo-dir-'
+    );
 
-	if ( false === $temp_dir ) {
-		return false;
-	}
-
-
-	$res = unlink( $temp_dir );
-
-	if ( false === $res ) {
-		return false;
-	}
+    if (false === $temp_dir) {
+        return false;
+    }
 
 
-	$res = mkdir( $temp_dir );
+    $res = unlink($temp_dir);
 
-	if ( false === $res ) {
-		return false;
-	}
-
-
-	$cmd = sprintf(
-		'%s clone %s %s 2>&1',
-		escapeshellcmd( $options['git-path'] ),
-		escapeshellarg( $options['github-repo-url'] ),
-		escapeshellarg( $temp_dir )
-	);
-
-	$cmd_output = '';
-	$cmd_status = 0;
-
-	$res = exec( $cmd, $cmd_output, $cmd_status );
-
-	$cmd_output = implode( PHP_EOL, $cmd_output);
-
-	if (
-		( null === $cmd_output ) ||
-		( false !== strpos( $cmd_output, 'fatal' ) ) ||
-		( 0 !== $cmd_status )
-	) {
-		return false;
-	}
-
-	unset( $cmd );
-	unset( $cmd_output );
-	unset( $cmd_status );
+    if (false === $res) {
+        return false;
+    }
 
 
-	$cmd = sprintf(
-		'%s -C %s checkout %s 2>&1',
-		escapeshellcmd( $options['git-path'] ),
-		escapeshellarg( $temp_dir ),
-		escapeshellarg( $options['commit'] )
-	);
+    $res = mkdir($temp_dir);
 
-	$cmd_output = '';
-	$cmd_status = 0;
-
-	$res = exec( $cmd, $cmd_output, $cmd_status );
-
-	$cmd_output = implode( PHP_EOL, $cmd_output);
-
-	if (
-		( null === $cmd_output ) ||
-		( false !== strpos( $cmd_output, 'fatal:' ) ) ||
-		( 0 !== $cmd_status )
-	) {
-		return false;
-	}
-
-	unset( $cmd );
-	unset( $cmd_output );
-	unset( $cmd_status );
+    if (false === $res) {
+        return false;
+    }
 
 
-	return $temp_dir;
+    $cmd = sprintf(
+        '%s clone %s %s 2>&1',
+        escapeshellcmd($options['git-path']),
+        escapeshellarg($options['github-repo-url']),
+        escapeshellarg($temp_dir)
+    );
+
+    $cmd_output = '';
+    $cmd_status = 0;
+
+    $res = exec($cmd, $cmd_output, $cmd_status);
+
+    $cmd_output = implode(PHP_EOL, $cmd_output);
+
+    if (
+        ( null === $cmd_output ) ||
+        ( false !== strpos($cmd_output, 'fatal') ) ||
+        ( 0 !== $cmd_status )
+    ) {
+        return false;
+    }
+
+    unset($cmd);
+    unset($cmd_output);
+    unset($cmd_status);
+
+
+    $cmd = sprintf(
+        '%s -C %s checkout %s 2>&1',
+        escapeshellcmd($options['git-path']),
+        escapeshellarg($temp_dir),
+        escapeshellarg($options['commit'])
+    );
+
+    $cmd_output = '';
+    $cmd_status = 0;
+
+    $res = exec($cmd, $cmd_output, $cmd_status);
+
+    $cmd_output = implode(PHP_EOL, $cmd_output);
+
+    if (
+        ( null === $cmd_output ) ||
+        ( false !== strpos($cmd_output, 'fatal:') ) ||
+        ( 0 !== $cmd_status )
+    ) {
+        return false;
+    }
+
+    unset($cmd);
+    unset($cmd_output);
+    unset($cmd_status);
+
+
+    return $temp_dir;
 }
 
 /*
@@ -168,156 +171,163 @@ function vipgoci_unittests_setup_git_repo(
  * created by vipgoci_unittests_setup_git_repo()
  */
 
-function vipgoci_unittests_remove_git_repo( $repo_path ) {
-	$temp_dir = sys_get_temp_dir();
+function vipgoci_unittests_remove_git_repo($repo_path)
+{
+    $temp_dir = sys_get_temp_dir();
 
-	/*
-	 * If not a string, do not do anything.
-	 */
-	if ( ! is_string( $repo_path ) ) {
-		return false;
-	}
+    /*
+     * If not a string, do not do anything.
+     */
+    if (! is_string($repo_path)) {
+        return false;
+    }
 
-	/*
-	 * If this does not look like
-	 * a path to a temporary directory,
-	 * do not do anything.
-	 */
-	if ( false === strstr(
-		$repo_path,
-		$temp_dir
-	) ) {
-		return false;
-	}
+    /*
+     * If this does not look like
+     * a path to a temporary directory,
+     * do not do anything.
+     */
+    if (
+        false === strstr(
+            $repo_path,
+            $temp_dir
+        )
+    ) {
+        return false;
+    }
 
-	/*
-	 * If not a directory, do not do anything.
-	 */
+    /*
+     * If not a directory, do not do anything.
+     */
 
-	if ( ! is_dir( $repo_path ) ) {
-		return false;
-	}
+    if (! is_dir($repo_path)) {
+        return false;
+    }
 
-	/*
-	 * Check if it is really a git-repository.
-	 */
-	if ( ! is_dir( $repo_path . '/.git' ) ) {
-		return false;
-	}
+    /*
+     * Check if it is really a git-repository.
+     */
+    if (! is_dir($repo_path . '/.git')) {
+        return false;
+    }
 
-	/*
-	 * Prepare to run the rm -rf command.
-	 */
-	
-	$cmd = sprintf(
-		'%s -rf %s',
-		escapeshellcmd( 'rm' ),
-		escapeshellarg( $repo_path )
-	);
+    /*
+     * Prepare to run the rm -rf command.
+     */
 
-	$cmd_output = '';
-	$cmd_status = 0;
+    $cmd = sprintf(
+        '%s -rf %s',
+        escapeshellcmd('rm'),
+        escapeshellarg($repo_path)
+    );
 
-	/* 
-	 * Run it and check results.
-	 */
-	$res = exec( $cmd, $cmd_output, $cmd_status );
+    $cmd_output = '';
+    $cmd_status = 0;
 
-	if ( $cmd_status === 0 ) {
-		return true;
-	}
+    /*
+     * Run it and check results.
+     */
+    $res = exec($cmd, $cmd_output, $cmd_status);
 
-	else {
-		printf(
-			"Warning: Not able to remove temporary directory successfully; %i, %s",
-			$cmd_status,
-			$cmd_output
-		);
+    if ($cmd_status === 0) {
+        return true;
+    } else {
+        printf(
+            "Warning: Not able to remove temporary directory successfully; %i, %s",
+            $cmd_status,
+            $cmd_output
+        );
 
-		return false;
-	}
+        return false;
+    }
 }
 
 function vipgoci_unittests_options_test(
-	$options,
-	$options_not_required,
-	&$test_instance
+    $options,
+    $options_not_required,
+    &$test_instance
 ) {
-	$missing_options_str = '';
+    $missing_options_str = '';
 
-	$options_keys = array_keys(
-		$options
-	);
+    $options_keys = array_keys(
+        $options
+    );
 
-	foreach(
-		$options_keys as $option_key
-	) {
-		if ( in_array(
-			$option_key,
-			$options_not_required
-		) ) {
-			continue;
-		}
+    foreach (
+        $options_keys as $option_key
+    ) {
+        if (
+            in_array(
+                $option_key,
+                $options_not_required
+            )
+        ) {
+            continue;
+        }
 
-		if (
-			( '' === $options[ $option_key ] ) ||
-			( null === $options[ $option_key ] )
-		) {
-			if ( '' !== $missing_options_str ) {
-				$missing_options_str .= ', ';
-			}
+        if (
+            ( '' === $options[ $option_key ] ) ||
+            ( null === $options[ $option_key ] )
+        ) {
+            if ('' !== $missing_options_str) {
+                $missing_options_str .= ', ';
+            }
 
-			$missing_options_str .= $option_key;
-		}
-	}
+            $missing_options_str .= $option_key;
+        }
+    }
 
-	if ( '' !== $missing_options_str ) {
-		$test_instance->markTestSkipped(
-			'Skipping test, not configured correctly, as some options are missing (' . $missing_options_str . ')'
-		);
+    if ('' !== $missing_options_str) {
+        $test_instance->markTestSkipped(
+            'Skipping test, not configured correctly, as some options are missing (' . $missing_options_str . ')'
+        );
 
-		return -1;
-	}
+        return -1;
+    }
 
-	return 0;
+    return 0;
 }
 
-function vipgoci_unittests_debug_mode_on() {
-	/*
-	 * Detect if phpunit was started with
-	 * debug-mode on.
-	 */
+function vipgoci_unittests_debug_mode_on()
+{
+    /*
+     * Detect if phpunit was started with
+     * debug-mode on.
+     */
 
-	if (
-		( in_array( '-v', $_SERVER['argv'] ) ) ||
-		( in_array( '-vv', $_SERVER['argv'] ) ) ||
-		( in_array( '-vvv', $_SERVER['argv'] ) ) ||
-		( in_array( '--debug', $_SERVER['argv'] ) )
-	) {
-		return true;
-	}
+    if (
+        ( in_array('-v', $_SERVER['argv']) ) ||
+        ( in_array('-vv', $_SERVER['argv']) ) ||
+        ( in_array('-vvv', $_SERVER['argv']) ) ||
+        ( in_array('--debug', $_SERVER['argv']) )
+    ) {
+        return true;
+    }
 
-	return false;
+    return false;
 }
 
-function vipgoci_unittests_output_suppress() {
-	if ( false === vipgoci_unittests_debug_mode_on() ) {
-		ob_start();
-	}
+function vipgoci_unittests_output_suppress()
+{
+    if (false === vipgoci_unittests_debug_mode_on()) {
+        ob_start();
+    }
 }
 
-function vipgoci_unittests_output_get() {
-	if ( false === vipgoci_unittests_debug_mode_on() ) {
-		return ob_get_flush();
-	}
+function vipgoci_unittests_output_get()
+{
+    if (false === vipgoci_unittests_debug_mode_on()) {
+        return ob_get_flush();
+    }
 
-	return '';
+    return '';
 }
 
-function vipgoci_unittests_output_unsuppress() {
-	if ( false === vipgoci_unittests_debug_mode_on() ) {
-		ob_end_clean();
-	}
+function vipgoci_unittests_output_unsuppress()
+{
+    if (false === vipgoci_unittests_debug_mode_on()) {
+        ob_end_clean();
+    }
 }
 
 /*
@@ -327,20 +337,21 @@ function vipgoci_unittests_output_unsuppress() {
  * Some versions use ' and some use ", deal with
  * that too.
  */
-function vipgoci_unittests_php_syntax_error_compat( $str ) {
-	$str = str_replace(
-		"syntax error, unexpected end of file, expecting ';' or ','",
-		"syntax error, unexpected end of file, expecting ',' or ';'",
-		$str
-	);
+function vipgoci_unittests_php_syntax_error_compat($str)
+{
+    $str = str_replace(
+        "syntax error, unexpected end of file, expecting ';' or ','",
+        "syntax error, unexpected end of file, expecting ',' or ';'",
+        $str
+    );
 
-	$str = str_replace(
-		'syntax error, unexpected end of file, expecting "," or ";"',
-		"syntax error, unexpected end of file, expecting ',' or ';'",
-		$str
-	);
+    $str = str_replace(
+        'syntax error, unexpected end of file, expecting "," or ";"',
+        "syntax error, unexpected end of file, expecting ',' or ';'",
+        $str
+    );
 
-	return $str;
+    return $str;
 }
 
 /*
@@ -351,28 +362,30 @@ function vipgoci_unittests_php_syntax_error_compat( $str ) {
  * @return bool True if something was found, false if not.
  */
 function vipgoci_unittests_check_irc_api_alert_queue(
-	string $str_expected
+    string $str_expected
 ): bool {
-	$found = false;
+    $found = false;
 
-	$irc_msg_queue = vipgoci_irc_api_alert_queue( null, true );
+    $irc_msg_queue = vipgoci_irc_api_alert_queue(null, true);
 
-	foreach( $irc_msg_queue as $irc_msg_queue_item ) {
-		if ( false !== strpos(
-			$irc_msg_queue_item,
-			$str_expected
-		) ) {
-			$found = true;
-		}
-	}
+    foreach ($irc_msg_queue as $irc_msg_queue_item) {
+        if (
+            false !== strpos(
+                $irc_msg_queue_item,
+                $str_expected
+            )
+        ) {
+            $found = true;
+        }
+    }
 
-	return $found;
+    return $found;
 }
 
 /*
  * Functions to easily indicate and determine if we are running
- * specific unit-tests. This is useful if we need to add or 
- * bypass particular functionality in the main code base 
+ * specific unit-tests. This is useful if we need to add or
+ * bypass particular functionality in the main code base
  * while running a particular unit-test.
  */
 
@@ -385,11 +398,11 @@ function vipgoci_unittests_check_irc_api_alert_queue(
  * @return void Does not return a value.
  */
 function vipgoci_unittests_remove_indication_for_test_id(
-	string $test_id
+    string $test_id
 ): void {
-	$GLOBALS[ VIPGOCI_UNIT_TESTS_TEST_ID_KEY ][ $test_id ] = false;
+    $GLOBALS[ VIPGOCI_UNIT_TESTS_TEST_ID_KEY ][ $test_id ] = false;
 
-	unset( $GLOBALS[ VIPGOCI_UNIT_TESTS_TEST_ID_KEY ][ $test_id ] );
+    unset($GLOBALS[ VIPGOCI_UNIT_TESTS_TEST_ID_KEY ][ $test_id ]);
 }
 
-require_once( __DIR__ . '/../../requires.php' );
+require_once(__DIR__ . '/../../requires.php');

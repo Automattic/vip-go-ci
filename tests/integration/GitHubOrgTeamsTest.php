@@ -1,288 +1,294 @@
 <?php
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+require_once(__DIR__ . '/IncludesForTests.php');
 
 use PHPUnit\Framework\TestCase;
 
-final class GitHubOrgTeamsTest extends TestCase {
-	var $options = array(
-		'github-token'	=> null,
-		'org-name'	=> null,
-		'team-slug'	=> null,
-	);
+final class GitHubOrgTeamsTest extends TestCase
+{
+    var $options = array(
+        'github-token'  => null,
+        'org-name'  => null,
+        'team-slug' => null,
+    );
 
-	public function setUp(): void {
-		foreach( $this->options as $option_key => $option_value ) {
-			$this->options[ $option_key ] =
-				vipgoci_unittests_get_config_value(
-					'git-secrets',
-					$option_key,
-					true
-				);
-		}
-	}
+    public function setUp(): void
+    {
+        foreach ($this->options as $option_key => $option_value) {
+            $this->options[ $option_key ] =
+                vipgoci_unittests_get_config_value(
+                    'git-secrets',
+                    $option_key,
+                    true
+                );
+        }
+    }
 
-	public function tearDown(): void {
-		$this->options = null;
-	}
+    public function tearDown(): void
+    {
+        $this->options = null;
+    }
 
-	/**
-	 * @covers ::vipgoci_github_org_teams_get
-	 */
-	public function testGitHubOrgTeamsNoFiltersNoKeys() {
-		$options_test = vipgoci_unittests_options_test(
-			$this->options,
-			array( ),
-			$this
-		);
+    /**
+     * @covers ::vipgoci_github_org_teams_get
+     */
+    public function testGitHubOrgTeamsNoFiltersNoKeys()
+    {
+        $options_test = vipgoci_unittests_options_test(
+            $this->options,
+            array( ),
+            $this
+        );
 
-		if ( -1 === $options_test ) {
-			return;
-		}
+        if (-1 === $options_test) {
+            return;
+        }
 
-		if ( empty( $this->options ) ) {
-			$this->markTestSkipped(
-				'Must set up ' . __FUNCTION__ . '() test'
-			);
+        if (empty($this->options)) {
+            $this->markTestSkipped(
+                'Must set up ' . __FUNCTION__ . '() test'
+            );
 
-			return;
-		}
-
-
-		/*
-		 * Test vipgoci_github_org_teams_get() without any
-		 * filters and without any output sorting.
-		 */
-
-		vipgoci_unittests_output_suppress();
-
-		$teams_res_actual = vipgoci_github_org_teams_get(
-			$this->options['github-token'],
-			$this->options['org-name'],
-			null,
-			null
-		);
-
-		vipgoci_unittests_output_unsuppress();
-
-		$this->assertNotEmpty(
-			$teams_res_actual,
-			'Got no teams from vipgoci_github_org_teams_get()'
-		);
-
-		$this->assertTrue(
-			isset(
-				$teams_res_actual[0]->name
-			)
-		);
-
-		$this->assertTrue(
-			strlen(
-				$teams_res_actual[0]->name
-			) > 0
-		);
-
-		/*
-		 * Test the caching-functionality
-		 */
-
-		vipgoci_unittests_output_suppress();
-
-		$teams_res_actual_cached = vipgoci_github_org_teams_get(
-			$this->options['github-token'],
-			$this->options['org-name'],
-			null,
-			null
-		);
-
-		vipgoci_unittests_output_unsuppress();
-
-		$this->assertSame(
-			$teams_res_actual,
-			$teams_res_actual_cached
-		);
-
-		unset( $teams_res_actual );
-		unset( $teams_res_actual_cached );
-	}
-
-	/**
-	 * @covers ::vipgoci_github_org_teams_get
-	 */
-	public function testGitHubOrgTeamsWithFilters() {
-		$options_test = vipgoci_unittests_options_test(
-			$this->options,
-			array( ),
-			$this
-		);
-
-		if ( -1 === $options_test ) {
-			return;
-		}
-
-		if ( empty( $this->options ) ) {
-			$this->markTestSkipped(
-				'Must set up ' . __FUNCTION__ . '() test'
-			);
-
-			return;
-		}
-
-		/*
-		 * Test vipgoci_github_org_teams_get() with filters but
-		 * without any output sorting.
-		 */
-
-		vipgoci_unittests_output_suppress();
-
-		$teams_res_actual = vipgoci_github_org_teams_get(
-			$this->options['github-token'],
-			$this->options['org-name'],
-			array(
-				'slug' => $this->options['team-slug']
-			),
-			null
-		);
-
-		vipgoci_unittests_output_unsuppress();
+            return;
+        }
 
 
-		$this->assertNotEmpty(
-			$teams_res_actual,
-			'Got no teams from vipgoci_github_org_teams_get()'
-		);
+        /*
+         * Test vipgoci_github_org_teams_get() without any
+         * filters and without any output sorting.
+         */
 
-		$this->assertTrue(
-			isset(
-				$teams_res_actual[0]->name
-			)
-		);
+        vipgoci_unittests_output_suppress();
 
-		$this->assertTrue(
-			strlen(
-				$teams_res_actual[0]->name
-			) > 0
-		);
+        $teams_res_actual = vipgoci_github_org_teams_get(
+            $this->options['github-token'],
+            $this->options['org-name'],
+            null,
+            null
+        );
 
-		/*
-		 * Test again, now the cached version.
-		 */
+        vipgoci_unittests_output_unsuppress();
 
-		vipgoci_unittests_output_suppress();
+        $this->assertNotEmpty(
+            $teams_res_actual,
+            'Got no teams from vipgoci_github_org_teams_get()'
+        );
 
-		$teams_res_actual_cached = vipgoci_github_org_teams_get(
-			$this->options['github-token'],
-			$this->options['org-name'],
-			array(
-				'slug' => $this->options['team-slug']
-			),
-			null
-		);
+        $this->assertTrue(
+            isset(
+                $teams_res_actual[0]->name
+            )
+        );
 
-		vipgoci_unittests_output_unsuppress();
+        $this->assertTrue(
+            strlen(
+                $teams_res_actual[0]->name
+            ) > 0
+        );
 
-		$this->assertSame(
-			$teams_res_actual,
-			$teams_res_actual_cached
-		);
+        /*
+         * Test the caching-functionality
+         */
 
-		unset( $teams_res_actual );
-		unset( $teams_res_actual_cached );
-	}
+        vipgoci_unittests_output_suppress();
 
-	/**
-	 * @covers ::vipgoci_github_org_teams_get
-	 */
-	public function testGitHubOrgTeamsWithKeyes() {
-		$options_test = vipgoci_unittests_options_test(
-			$this->options,
-			array( ),
-			$this
-		);
+        $teams_res_actual_cached = vipgoci_github_org_teams_get(
+            $this->options['github-token'],
+            $this->options['org-name'],
+            null,
+            null
+        );
 
-		if ( -1 === $options_test ) {
-			return;
-		}
+        vipgoci_unittests_output_unsuppress();
 
-		if ( empty( $this->options ) ) {
-			$this->markTestSkipped(
-				'Must set up ' . __FUNCTION__ . '() test'
-			);
+        $this->assertSame(
+            $teams_res_actual,
+            $teams_res_actual_cached
+        );
 
-			return;
-		}
+        unset($teams_res_actual);
+        unset($teams_res_actual_cached);
+    }
 
+    /**
+     * @covers ::vipgoci_github_org_teams_get
+     */
+    public function testGitHubOrgTeamsWithFilters()
+    {
+        $options_test = vipgoci_unittests_options_test(
+            $this->options,
+            array( ),
+            $this
+        );
 
-		/*
-		 * Test vipgoci_github_org_teams_get() without filters but
-		 * with output keyed.
-		 */
-		vipgoci_unittests_output_suppress();
+        if (-1 === $options_test) {
+            return;
+        }
 
-		$teams_res_actual = vipgoci_github_org_teams_get(
-			$this->options['github-token'],
-			$this->options['org-name'],
-			null,
-			'slug'
-		);
-	
-		vipgoci_unittests_output_unsuppress();
+        if (empty($this->options)) {
+            $this->markTestSkipped(
+                'Must set up ' . __FUNCTION__ . '() test'
+            );
 
+            return;
+        }
 
-		$this->assertNotEmpty(
-			$teams_res_actual,
-			'Got no teams from vipgoci_github_org_teams_get()'
-		);
+        /*
+         * Test vipgoci_github_org_teams_get() with filters but
+         * without any output sorting.
+         */
 
-		$teams_res_actual_keys = array_keys(
-			$teams_res_actual
-		);
+        vipgoci_unittests_output_suppress();
 
-		$this->assertTrue(
-			isset(
-				$teams_res_actual[
-					$teams_res_actual_keys[0]
-				][0]->name
-			)
-		);
+        $teams_res_actual = vipgoci_github_org_teams_get(
+            $this->options['github-token'],
+            $this->options['org-name'],
+            array(
+                'slug' => $this->options['team-slug']
+            ),
+            null
+        );
 
-		$this->assertTrue(
-			strlen(
-				$teams_res_actual[
-					$teams_res_actual_keys[0]
-				][0]->name
-			) > 0
-		);
-
-		$this->assertSame(
-			$teams_res_actual_keys[0],
-			$teams_res_actual[
-				$teams_res_actual_keys[0]
-			][0]->slug
-		);
+        vipgoci_unittests_output_unsuppress();
 
 
-		/*
-		 * Test again, now the cached version.
-		 */
+        $this->assertNotEmpty(
+            $teams_res_actual,
+            'Got no teams from vipgoci_github_org_teams_get()'
+        );
 
-		vipgoci_unittests_output_suppress();
+        $this->assertTrue(
+            isset(
+                $teams_res_actual[0]->name
+            )
+        );
 
-		$teams_res_actual_cached = vipgoci_github_org_teams_get(
-			$this->options['github-token'],
-			$this->options['org-name'],
-			null,
-			'slug'
-		);
+        $this->assertTrue(
+            strlen(
+                $teams_res_actual[0]->name
+            ) > 0
+        );
 
-		vipgoci_unittests_output_unsuppress();
+        /*
+         * Test again, now the cached version.
+         */
 
-		$this->assertSame(
-			$teams_res_actual,
-			$teams_res_actual_cached
-		);
+        vipgoci_unittests_output_suppress();
 
-		unset( $teams_res_actual );
-		unset( $teams_res_actual_cached );
-	}
+        $teams_res_actual_cached = vipgoci_github_org_teams_get(
+            $this->options['github-token'],
+            $this->options['org-name'],
+            array(
+                'slug' => $this->options['team-slug']
+            ),
+            null
+        );
+
+        vipgoci_unittests_output_unsuppress();
+
+        $this->assertSame(
+            $teams_res_actual,
+            $teams_res_actual_cached
+        );
+
+        unset($teams_res_actual);
+        unset($teams_res_actual_cached);
+    }
+
+    /**
+     * @covers ::vipgoci_github_org_teams_get
+     */
+    public function testGitHubOrgTeamsWithKeyes()
+    {
+        $options_test = vipgoci_unittests_options_test(
+            $this->options,
+            array( ),
+            $this
+        );
+
+        if (-1 === $options_test) {
+            return;
+        }
+
+        if (empty($this->options)) {
+            $this->markTestSkipped(
+                'Must set up ' . __FUNCTION__ . '() test'
+            );
+
+            return;
+        }
+
+
+        /*
+         * Test vipgoci_github_org_teams_get() without filters but
+         * with output keyed.
+         */
+        vipgoci_unittests_output_suppress();
+
+        $teams_res_actual = vipgoci_github_org_teams_get(
+            $this->options['github-token'],
+            $this->options['org-name'],
+            null,
+            'slug'
+        );
+
+        vipgoci_unittests_output_unsuppress();
+
+
+        $this->assertNotEmpty(
+            $teams_res_actual,
+            'Got no teams from vipgoci_github_org_teams_get()'
+        );
+
+        $teams_res_actual_keys = array_keys(
+            $teams_res_actual
+        );
+
+        $this->assertTrue(
+            isset(
+                $teams_res_actual[
+                    $teams_res_actual_keys[0]
+                ][0]->name
+            )
+        );
+
+        $this->assertTrue(
+            strlen(
+                $teams_res_actual[
+                    $teams_res_actual_keys[0]
+                ][0]->name
+            ) > 0
+        );
+
+        $this->assertSame(
+            $teams_res_actual_keys[0],
+            $teams_res_actual[
+                $teams_res_actual_keys[0]
+            ][0]->slug
+        );
+
+
+        /*
+         * Test again, now the cached version.
+         */
+
+        vipgoci_unittests_output_suppress();
+
+        $teams_res_actual_cached = vipgoci_github_org_teams_get(
+            $this->options['github-token'],
+            $this->options['org-name'],
+            null,
+            'slug'
+        );
+
+        vipgoci_unittests_output_unsuppress();
+
+        $this->assertSame(
+            $teams_res_actual,
+            $teams_res_actual_cached
+        );
+
+        unset($teams_res_actual);
+        unset($teams_res_actual_cached);
+    }
 }

@@ -1,6 +1,6 @@
 <?php
 
-declare( strict_types=1 );
+declare(strict_types=1);
 
 /**
  * Mock functions required to execute tests/OptionsReadRepositoryConfigFileTest.php
@@ -19,12 +19,12 @@ declare( strict_types=1 );
  * @return string
  */
 function vipgoci_gitrepo_fetch_committed_file(
-	$repo_owner,
-	$repo_name,
-	$github_token,
-	$commit_id,
-	$file_name,
-	$local_git_repo
+    $repo_owner,
+    $repo_name,
+    $github_token,
+    $commit_id,
+    $file_name,
+    $local_git_repo
 ): string {
-	return "{\"lint-modified-files-only\":false}\n";
+    return "{\"lint-modified-files-only\":false}\n";
 }

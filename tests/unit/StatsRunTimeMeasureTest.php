@@ -4,80 +4,83 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
-require_once( __DIR__ . './../../defines.php' );
-require_once( __DIR__ . './../../statistics.php' );
+require_once(__DIR__ . './../../defines.php');
+require_once(__DIR__ . './../../statistics.php');
 
 use PHPUnit\Framework\TestCase;
 
 // phpcs:disable PSR1.Files.SideEffects
 
-final class StatsRunTimeMeasureTest extends TestCase {
-	/**
-	 * @covers ::vipgoci_runtime_measure
-	 */
-	function testRuntimeMeasure1() {
-		return $this->assertSame(
-			false,
-			vipgoci_runtime_measure( 'illegalaction', 'mytimer1' )
-		);
-	}
+final class StatsRunTimeMeasureTest extends TestCase
+{
+    /**
+     * @covers ::vipgoci_runtime_measure
+     */
+    function testRuntimeMeasure1()
+    {
+        return $this->assertSame(
+            false,
+            vipgoci_runtime_measure('illegalaction', 'mytimer1')
+        );
+    }
 
-	/**
-	 * @covers ::vipgoci_runtime_measure
-	 */
-	function testRuntimeMeasure2() {
-		return $this->assertSame(
-			false,
-			vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'mytimer2' )
-		);
-	}
+    /**
+     * @covers ::vipgoci_runtime_measure
+     */
+    function testRuntimeMeasure2()
+    {
+        return $this->assertSame(
+            false,
+            vipgoci_runtime_measure(VIPGOCI_RUNTIME_STOP, 'mytimer2')
+        );
+    }
 
-	/**
-	 * @covers ::vipgoci_runtime_measure
-	 */
-	function testRuntimeMeasure3() {
-		$this->assertSame(
-			true,
-			vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'mytimer3' )
-		);
+    /**
+     * @covers ::vipgoci_runtime_measure
+     */
+    function testRuntimeMeasure3()
+    {
+        $this->assertSame(
+            true,
+            vipgoci_runtime_measure(VIPGOCI_RUNTIME_START, 'mytimer3')
+        );
 
-		sleep( 2 );
+        sleep(2);
 
-		$this->assertGreaterThanOrEqual(
-			1,
-			vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'mytimer3' )
-		);
-	
-		$runtime_stats = vipgoci_runtime_measure(
-			VIPGOCI_RUNTIME_DUMP
-		);
+        $this->assertGreaterThanOrEqual(
+            1,
+            vipgoci_runtime_measure(VIPGOCI_RUNTIME_STOP, 'mytimer3')
+        );
 
-		$this->assertGreaterThanOrEqual(
-			1,
-			$runtime_stats[ 'mytimer3' ]
-		);
-	}
+        $runtime_stats = vipgoci_runtime_measure(
+            VIPGOCI_RUNTIME_DUMP
+        );
 
-	/**
-	 * @covers ::vipgoci_runtime_measure
-	 */
-	function testRuntimeMeasure4() {
-		$this->assertSame(
-			true,
-			vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'mytimer4' )
-		);
+        $this->assertGreaterThanOrEqual(
+            1,
+            $runtime_stats[ 'mytimer3' ]
+        );
+    }
 
-		sleep( 2 );
+    /**
+     * @covers ::vipgoci_runtime_measure
+     */
+    function testRuntimeMeasure4()
+    {
+        $this->assertSame(
+            true,
+            vipgoci_runtime_measure(VIPGOCI_RUNTIME_START, 'mytimer4')
+        );
 
-		$runtime_stats = vipgoci_runtime_measure(
-			VIPGOCI_RUNTIME_DUMP
-		);
+        sleep(2);
 
-		$this->assertGreaterThanOrEqual(
-			1,
-			$runtime_stats[ 'mytimer3' ]
-		);
+        $runtime_stats = vipgoci_runtime_measure(
+            VIPGOCI_RUNTIME_DUMP
+        );
 
-	}
+        $this->assertGreaterThanOrEqual(
+            1,
+            $runtime_stats[ 'mytimer3' ]
+        );
+    }
 }
-

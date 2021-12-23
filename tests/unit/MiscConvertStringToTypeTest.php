@@ -4,35 +4,37 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
-require_once( __DIR__ . './../../misc.php' );
+require_once(__DIR__ . './../../misc.php');
 
 use PHPUnit\Framework\TestCase;
 
 // phpcs:disable PSR1.Files.SideEffects
 
-final class MiscConvertStringToTypeTest extends TestCase {
-	/**
-	 * @covers ::vipgoci_convert_string_to_type
-	 */
-	public function testConvert1() {
-		$this->assertSame(
-			true,
-			vipgoci_convert_string_to_type('true')
-		);
+final class MiscConvertStringToTypeTest extends TestCase
+{
+    /**
+     * @covers ::vipgoci_convert_string_to_type
+     */
+    public function testConvert1()
+    {
+        $this->assertSame(
+            true,
+            vipgoci_convert_string_to_type('true')
+        );
 
-		$this->assertSame(
-			false,
-			vipgoci_convert_string_to_type('false')
-		);
+        $this->assertSame(
+            false,
+            vipgoci_convert_string_to_type('false')
+        );
 
-		$this->assertSame(
-			null,
-			vipgoci_convert_string_to_type('null')
-		);
+        $this->assertSame(
+            null,
+            vipgoci_convert_string_to_type('null')
+        );
 
-		$this->assertSame(
-			'somestring',
-			vipgoci_convert_string_to_type('somestring')
-		);
-	}
+        $this->assertSame(
+            'somestring',
+            vipgoci_convert_string_to_type('somestring')
+        );
+    }
 }

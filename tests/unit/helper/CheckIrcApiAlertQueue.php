@@ -8,20 +8,22 @@
  * @return bool True if something was found, false if not.
  */
 function vipgoci_unittests_check_irc_api_alert_queue(
-	string $str_expected
+    string $str_expected
 ): bool {
-	$found = false;
+    $found = false;
 
-	$irc_msg_queue = vipgoci_irc_api_alert_queue( null, true );
+    $irc_msg_queue = vipgoci_irc_api_alert_queue(null, true);
 
-	foreach( $irc_msg_queue as $irc_msg_queue_item ) {
-		if ( false !== strpos(
-				$irc_msg_queue_item,
-				$str_expected
-			) ) {
-			$found = true;
-		}
-	}
+    foreach ($irc_msg_queue as $irc_msg_queue_item) {
+        if (
+            false !== strpos(
+                $irc_msg_queue_item,
+                $str_expected
+            )
+        ) {
+            $found = true;
+        }
+    }
 
-	return $found;
+    return $found;
 }

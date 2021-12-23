@@ -5,12 +5,13 @@
  * Report all errors, and display them.
 */
 
-function vipgoci_set_php_error_reporting() {
-	ini_set( 'error_log', '' );
+function vipgoci_set_php_error_reporting()
+{
+    ini_set('error_log', '');
 
-	error_reporting( E_ALL );
+    error_reporting(E_ALL);
 
-	ini_set( 'display_errors', 'on' );
+    ini_set('display_errors', 'on');
 }
 
 /*
@@ -20,53 +21,53 @@ function vipgoci_set_php_error_reporting() {
  */
 
 function vipgoci_log(
-	$str,
-	$debug_data = array(),
-	$debug_level = 0,
-	$irc = false
+    $str,
+    $debug_data = array(),
+    $debug_level = 0,
+    $irc = false
 ) {
-	global $vipgoci_debug_level;
+    global $vipgoci_debug_level;
 
-	/*
-	 * Determine if to log the message; if
-	 * debug-level of the message is not high
-	 * enough compared to the debug-level specified
-	 * to be the threshold, do not print it, but
-	 * otherwise, do print it,
-	 */
+    /*
+     * Determine if to log the message; if
+     * debug-level of the message is not high
+     * enough compared to the debug-level specified
+     * to be the threshold, do not print it, but
+     * otherwise, do print it,
+     */
 
-	if ( $debug_level > $vipgoci_debug_level ) {
-		return;
-	}
+    if ($debug_level > $vipgoci_debug_level) {
+        return;
+    }
 
-	echo '[ ' . date( 'c' ) . ' -- ' . (int) $debug_level . ' ]  ' .
-		$str .
-		'; ' .
-		print_r(
-			json_encode(
-				$debug_data,
-				JSON_PRETTY_PRINT
-			),
-			true
-		) .
-		PHP_EOL;
+    echo '[ ' . date('c') . ' -- ' . (int) $debug_level . ' ]  ' .
+        $str .
+        '; ' .
+        print_r(
+            json_encode(
+                $debug_data,
+                JSON_PRETTY_PRINT
+            ),
+            true
+        ) .
+        PHP_EOL;
 
-	/*
-	 * Send to IRC API as well if asked
-	 * to do so. Include debugging information as well.
-	 */
-	if ( true === $irc ) {
-		vipgoci_irc_api_alert_queue(
-			$str .
-				'; ' .
-				print_r(
-					json_encode(
-						$debug_data
-					),
-					true
-				)
-		);
-	}
+    /*
+     * Send to IRC API as well if asked
+     * to do so. Include debugging information as well.
+     */
+    if (true === $irc) {
+        vipgoci_irc_api_alert_queue(
+            $str .
+                '; ' .
+                print_r(
+                    json_encode(
+                        $debug_data
+                    ),
+                    true
+                )
+        );
+    }
 }
 
 /**
@@ -82,34 +83,34 @@ function vipgoci_log(
  *                  an integer value when running in unit-test mode.
  */
 function vipgoci_sysexit(
-	string $str,
-	array $debug_data = array(),
-	int $exit_status = VIPGOCI_EXIT_USAGE_ERROR,
-	bool $irc = false
+    string $str,
+    array $debug_data = array(),
+    int $exit_status = VIPGOCI_EXIT_USAGE_ERROR,
+    bool $irc = false
 ) {
-	if ( $exit_status === VIPGOCI_EXIT_USAGE_ERROR ) {
-		$str = 'Usage: ' . $str;
-	}
+    if ($exit_status === VIPGOCI_EXIT_USAGE_ERROR) {
+        $str = 'Usage: ' . $str;
+    }
 
-	vipgoci_log(
-		$str,
-		$debug_data,
-		0,
-		$irc
-	);
+    vipgoci_log(
+        $str,
+        $debug_data,
+        0,
+        $irc
+    );
 
-	/*
-	 * If running SysExitTest.php unit-test, return
-	 * with exit status.
-	 */
-	if (
-		( function_exists( 'vipgoci_unittests_check_indication_for_test_id' )) &&
-		( vipgoci_unittests_check_indication_for_test_id( 'SysExitTest' ) )
-	) {
-		return $exit_status;
-	}
+    /*
+     * If running SysExitTest.php unit-test, return
+     * with exit status.
+     */
+    if (
+        ( function_exists('vipgoci_unittests_check_indication_for_test_id')) &&
+        ( vipgoci_unittests_check_indication_for_test_id('SysExitTest') )
+    ) {
+        return $exit_status;
+    }
 
-	exit( $exit_status );
+    exit($exit_status);
 }
 
 /*
@@ -120,71 +121,71 @@ function vipgoci_sysexit(
  * @codeCoverageIgnore
  */
 function vipgoci_set_maximum_exec_time(
-	int $max_exec_time = 600,
-	string $commit_identifier = ''
-) :void {
-	static $has_been_invoked = false;
+    int $max_exec_time = 600,
+    string $commit_identifier = ''
+): void {
+    static $has_been_invoked = false;
 
-	/*
-	 * Ensure the function is only called
-	 * once per run.
-	 */
-	if ( true === $has_been_invoked ) {
-		vipgoci_log(
-			'Cannot set maximum execution time twice, ignoring'
-		);
+    /*
+     * Ensure the function is only called
+     * once per run.
+     */
+    if (true === $has_been_invoked) {
+        vipgoci_log(
+            'Cannot set maximum execution time twice, ignoring'
+        );
 
-		return;
-	}
+        return;
+    }
 
-	$has_been_invoked = true;
+    $has_been_invoked = true;
 
-	/*
-	 * Enable async signal handlers
-	 */
-	pcntl_async_signals( true );
+    /*
+     * Enable async signal handlers
+     */
+    pcntl_async_signals(true);
 
-	vipgoci_log(
-		'Setting maximum execution time',
-		array(
-			'max_exec_time'	=> $max_exec_time,
-		)
-	);
+    vipgoci_log(
+        'Setting maximum execution time',
+        array(
+            'max_exec_time' => $max_exec_time,
+        )
+    );
 
-	/*
-	 * Set up signal handler.
-	 */
-	vipgoci_log(
-		'Setting up alarm signal handler and setting up alarm',
-	);
+    /*
+     * Set up signal handler.
+     */
+    vipgoci_log(
+        'Setting up alarm signal handler and setting up alarm',
+    );
 
-	/*
-	 * Handle signals for SIGALRM only;
-	 * log and call exit()
-	 */
-	pcntl_signal(
-		SIGALRM,
-		function ( $signo ) use ( $commit_identifier ) {
-			if ( SIGALRM === $signo ) {
-				vipgoci_log(
-					'Maximum execution time reached ' .
-						( empty( $commit_identifier ) ?
-						'' :
-						'(' . $commit_identifier . ').' ),
-					array(),
-					0,
-					true // log to IRC
-				);
-			}
+    /*
+     * Handle signals for SIGALRM only;
+     * log and call exit()
+     */
+    pcntl_signal(
+        SIGALRM,
+        function ($signo) use ($commit_identifier) {
+            if (SIGALRM === $signo) {
+                vipgoci_log(
+                    'Maximum execution time reached ' .
+                        ( empty($commit_identifier) ?
+                        '' :
+                        '(' . $commit_identifier . ').' ),
+                    array(),
+                    0,
+                    true // log to IRC
+                );
+            }
 
-			exit( VIPGOCI_EXIT_EXEC_TIME );
-		}
-	);
+            exit(VIPGOCI_EXIT_EXEC_TIME);
+        }
+    );
 
-	/*
-	 * Send alarm after max-exec-time
-	 */
-	pcntl_alarm( $max_exec_time );
+    /*
+     * Send alarm after max-exec-time
+     */
+    pcntl_alarm($max_exec_time);
 }
 
 /*
@@ -227,72 +228,74 @@ function vipgoci_set_maximum_exec_time(
  *		1 => true,
  *	);
  */
-function vipgoci_find_fields_in_array( $fields_arr, $data_arr ) {
-	$res_arr = array();
+function vipgoci_find_fields_in_array($fields_arr, $data_arr)
+{
+    $res_arr = array();
 
-	for(
-		$data_item_cnt = 0;
-		$data_item_cnt < count( $data_arr );
-		$data_item_cnt++
-	) {
-		$res_arr[ $data_item_cnt ] = 0;
+    for (
+        $data_item_cnt = 0;
+        $data_item_cnt < count($data_arr);
+        $data_item_cnt++
+    ) {
+        $res_arr[ $data_item_cnt ] = 0;
 
-		foreach( $fields_arr as $field_name => $field_values ) {
-			if ( ! array_key_exists( $field_name, $data_arr[ $data_item_cnt ] ) ) {
-				continue;
-			}
+        foreach ($fields_arr as $field_name => $field_values) {
+            if (! array_key_exists($field_name, $data_arr[ $data_item_cnt ])) {
+                continue;
+            }
 
-			foreach( $field_values as $field_value_item ) {
-				if ( $data_arr[ $data_item_cnt ][ $field_name ] === $field_value_item ) {
-					$res_arr[ $data_item_cnt ]++;
+            foreach ($field_values as $field_value_item) {
+                if ($data_arr[ $data_item_cnt ][ $field_name ] === $field_value_item) {
+                    $res_arr[ $data_item_cnt ]++;
 
-					/*
-					 * Once we find a match, stop searching.
-					 * This is to safeguard against any kind of
-					 * multiple matches (which though are nearly
-					 * impossible).
-					 */
-					break;
-				}
-			}
-		}
+                    /*
+                     * Once we find a match, stop searching.
+                     * This is to safeguard against any kind of
+                     * multiple matches (which though are nearly
+                     * impossible).
+                     */
+                    break;
+                }
+            }
+        }
 
-		$res_arr[
-			$data_item_cnt
-		] = (
-			$res_arr[ $data_item_cnt ]
-			===
-			count( array_keys( $fields_arr ) )
-		);
-	}
+        $res_arr[
+            $data_item_cnt
+        ] = (
+            $res_arr[ $data_item_cnt ]
+            ===
+            count(array_keys($fields_arr))
+        );
+    }
 
-	return $res_arr;
+    return $res_arr;
 }
 
 /*
  * Convert a string that contains "true", "false" or
  * "null" to a variable of that type.
  */
-function vipgoci_convert_string_to_type( $str ) {
-	switch( $str ) {
-		case 'true':
-			$ret = true;
-			break;
+function vipgoci_convert_string_to_type($str)
+{
+    switch ($str) {
+        case 'true':
+            $ret = true;
+            break;
 
-		case 'false':
-			$ret = false;
-			break;
+        case 'false':
+            $ret = false;
+            break;
 
-		case 'null':
-			$ret = null;
-			break;
+        case 'null':
+            $ret = null;
+            break;
 
-		default:
-			$ret = $str;
-			break;
-	}
+        default:
+            $ret = $str;
+            break;
+    }
 
-	return $ret;
+    return $ret;
 }
 
 /*
@@ -301,16 +304,16 @@ function vipgoci_convert_string_to_type( $str ) {
  * PHP round() function.
  */
 function vipgoci_round_array_items(
-	array $arr,
-	int $precision = 0,
-	int $mode = PHP_ROUND_HALF_UP
+    array $arr,
+    int $precision = 0,
+    int $mode = PHP_ROUND_HALF_UP
 ): array {
-	return array_map(
-		function( $item ) use ( $precision, $mode ) {
-			return round( $item, $precision, $mode );
-		},
-		$arr
-	);
+    return array_map(
+        function ($item) use ($precision, $mode) {
+            return round($item, $precision, $mode);
+        },
+        $arr
+    );
 }
 
 /*
@@ -327,114 +330,110 @@ function vipgoci_round_array_items(
  */
 
 function vipgoci_patch_changed_lines(
-	string $local_git_repo,
-	string $repo_owner,
-	string $repo_name,
-	string $github_token,
-	string $pr_base_sha,
-	string $commit_id,
-	string $file_name
+    string $local_git_repo,
+    string $repo_owner,
+    string $repo_name,
+    string $github_token,
+    string $pr_base_sha,
+    string $commit_id,
+    string $file_name
 ): ?array {
-	/*
-	 * Fetch patch for all files of the Pull-Request
-	 */
-	$patch_arr = vipgoci_git_diffs_fetch(
-		$local_git_repo,
-		$repo_owner,
-		$repo_name,
-		$github_token,
-		$pr_base_sha,
-		$commit_id,
-		false,
-		false,
-		false
-	);
+    /*
+     * Fetch patch for all files of the Pull-Request
+     */
+    $patch_arr = vipgoci_git_diffs_fetch(
+        $local_git_repo,
+        $repo_owner,
+        $repo_name,
+        $github_token,
+        $pr_base_sha,
+        $commit_id,
+        false,
+        false,
+        false
+    );
 
-	/*
-	 * No such file found, return with error
-	 */
-	if ( ! isset(
-		$patch_arr['files'][ $file_name ]
-	) ) {
-		return null;
-	}
+    /*
+     * No such file found, return with error
+     */
+    if (
+        ! isset(
+            $patch_arr['files'][ $file_name ]
+        )
+    ) {
+        return null;
+    }
 
-	/*
-	 * Get patch for the relevant file
-	 * our caller is interested in
-	 */
+    /*
+     * Get patch for the relevant file
+     * our caller is interested in
+     */
 
-	$lines_arr = explode(
-		"\n",
-		$patch_arr['files'][ $file_name ]
-	);
+    $lines_arr = explode(
+        "\n",
+        $patch_arr['files'][ $file_name ]
+    );
 
-	$lines_changed = array();
+    $lines_changed = array();
 
-	$i = 1;
+    $i = 1;
 
-	foreach ( $lines_arr as $line ) {
-		preg_match_all(
-			"/^@@\s+[-\+]([0-9]+,[0-9]+)\s+[-\+]([0-9]+,[0-9]+)\s+@@/",
-			$line,
-			$matches
-		);
+    foreach ($lines_arr as $line) {
+        preg_match_all(
+            "/^@@\s+[-\+]([0-9]+,[0-9]+)\s+[-\+]([0-9]+,[0-9]+)\s+@@/",
+            $line,
+            $matches
+        );
 
-		if ( ! empty( $matches[0] ) ) {
-			$start_end = explode(
-				',',
-				$matches[2][0]
-			);
-
-
-			$i = $start_end[0];
+        if (! empty($matches[0])) {
+            $start_end = explode(
+                ',',
+                $matches[2][0]
+            );
 
 
-			$lines_changed[] = null;
-		}
+            $i = $start_end[0];
 
-		else if ( empty( $matches[0] ) ) {
-			if ( empty( $line[0] ) ) {
-				// Do nothing
-			}
 
-			else if (
-				( $line[0] == '-' ) ||
-				( $line[0] == '\\' )
-			) {
-				$lines_changed[] = null;
-			}
+            $lines_changed[] = null;
+        } elseif (empty($matches[0])) {
+            if (empty($line[0])) {
+                // Do nothing
+            } elseif (
+                ( $line[0] == '-' ) ||
+                ( $line[0] == '\\' )
+            ) {
+                $lines_changed[] = null;
+            } elseif (
+                ( $line[0] == '+' ) ||
+                ( $line[0] == " " ) ||
+                ( $line[0] == "\t" )
+            ) {
+                $lines_changed[] = $i++;
+            }
+        }
+    }
 
-			else if (
-				( $line[0] == '+' ) ||
-				( $line[0] == " " ) ||
-				( $line[0] == "\t" )
-			) {
-				$lines_changed[] = $i++;
-			}
-		}
-	}
+    /*
+     * In certain edge-cases, line 1 in the patch
+     * will refer to line 0 in the code, which
+     * is not what we want. In these cases, we
+     * simply hard-code line 1 in the patch to match
+     * with line 1 in the code.
+     */
+    if (
+        ( isset($lines_changed[1]) ) &&
+        (
+            ( $lines_changed[1] === null ) ||
+            ( $lines_changed[1] === 0 )
+        )
+        ||
+        ( ! isset($lines_changed[1]) )
+    ) {
+        $lines_changed[1] = 1;
+    }
 
-	/*
-	 * In certain edge-cases, line 1 in the patch
-	 * will refer to line 0 in the code, which
-	 * is not what we want. In these cases, we
-	 * simply hard-code line 1 in the patch to match
-	 * with line 1 in the code.
-	 */
-	if (
-		( isset( $lines_changed[1] ) ) &&
-		(
-			( $lines_changed[1] === null ) ||
-			( $lines_changed[1] === 0 )
-		)
-		||
-		( ! isset( $lines_changed[1] ) )
-	) {
-		$lines_changed[1] = 1;
-	}
-
-	return $lines_changed;
+    return $lines_changed;
 }
 
 
@@ -452,58 +451,57 @@ function vipgoci_patch_changed_lines(
  * we return a copy of the cached data.
  */
 
-function vipgoci_cache( $cache_id_arr, $data = null ) {
-	global $vipgoci_cache_buffer;
+function vipgoci_cache($cache_id_arr, $data = null)
+{
+    global $vipgoci_cache_buffer;
 
-	/*
-	 * Special invocation: Allow for
-	 * the cache to be cleared.
-	 */
-	if (
-		( is_string(
-			$cache_id_arr
-		) )
-		&&
-		(
-			VIPGOCI_CACHE_CLEAR ===
-			$cache_id_arr
-		)
-	) {
-		$vipgoci_cache_buffer = array();
+    /*
+     * Special invocation: Allow for
+     * the cache to be cleared.
+     */
+    if (
+        ( is_string(
+            $cache_id_arr
+        ) )
+        &&
+        (
+            VIPGOCI_CACHE_CLEAR ===
+            $cache_id_arr
+        )
+    ) {
+        $vipgoci_cache_buffer = array();
 
-		return true;
-	}
+        return true;
+    }
 
-	$cache_id = json_encode(
-		$cache_id_arr
-	);
+    $cache_id = json_encode(
+        $cache_id_arr
+    );
 
 
-	if ( null === $data ) {
-		if ( isset( $vipgoci_cache_buffer[ $cache_id ] ) ) {
-			$ret = $vipgoci_cache_buffer[ $cache_id ];
+    if (null === $data) {
+        if (isset($vipgoci_cache_buffer[ $cache_id ])) {
+            $ret = $vipgoci_cache_buffer[ $cache_id ];
 
-			// If an object, copy and return the copy
-			if ( is_object( $ret ) ) {
-				$ret = clone $ret;
-			}
+            // If an object, copy and return the copy
+            if (is_object($ret)) {
+                $ret = clone $ret;
+            }
 
-			return $ret;
-		}
+            return $ret;
+        } else {
+            return false;
+        }
+    }
 
-		else {
-			return false;
-		}
-	}
+    // If an object, copy, save it, and return the copy
+    if (is_object($data)) {
+        $data = clone $data;
+    }
 
-	// If an object, copy, save it, and return the copy
-	if ( is_object( $data ) ) {
-		$data = clone $data;
-	}
+    $vipgoci_cache_buffer[ $cache_id ] = $data;
 
-	$vipgoci_cache_buffer[ $cache_id ] = $data;
-
-	return $data;
+    return $data;
 }
 
 
@@ -514,8 +512,9 @@ function vipgoci_cache( $cache_id_arr, $data = null ) {
  *
  * @codeCoverageIgnore
  */
-function vipgoci_cached_indication_str( $cache_used ) {
-	return $cache_used ? ' (cached)' : '';
+function vipgoci_cached_indication_str($cache_used)
+{
+    return $cache_used ? ' (cached)' : '';
 }
 
 
@@ -525,71 +524,72 @@ function vipgoci_cached_indication_str( $cache_used ) {
  */
 
 function vipgoci_save_temp_file(
-	$file_name_prefix,
-	$file_name_extension = null,
-	$file_contents = ''
+    $file_name_prefix,
+    $file_name_extension = null,
+    $file_contents = ''
 ) {
-	// Determine name for temporary-file
-	$temp_file_name = $temp_file_save_status = tempnam(
-		sys_get_temp_dir(),
-		$file_name_prefix
-	);
+    // Determine name for temporary-file
+    $temp_file_name = $temp_file_save_status = tempnam(
+        sys_get_temp_dir(),
+        $file_name_prefix
+    );
 
-	/*
-	 * If temporary file should have an extension,
-	 * make that happen by renaming the currently existing
-	 * file.
-	 */
+    /*
+     * If temporary file should have an extension,
+     * make that happen by renaming the currently existing
+     * file.
+     */
 
-	if (
-		( null !== $file_name_extension ) &&
-		( false !== $temp_file_name )
-	) {
-		$temp_file_name_old = $temp_file_name;
-		$temp_file_name .= '.' . $file_name_extension;
+    if (
+        ( null !== $file_name_extension ) &&
+        ( false !== $temp_file_name )
+    ) {
+        $temp_file_name_old = $temp_file_name;
+        $temp_file_name .= '.' . $file_name_extension;
 
-		if ( true !== rename(
-			$temp_file_name_old,
-			$temp_file_name
-		) ) {
-			vipgoci_sysexit(
-				'Unable to rename temporary file',
-				array(
-					'temp_file_name_old' => $temp_file_name_old,
-					'temp_file_name_new' => $temp_file_name,
-				),
-				VIPGOCI_EXIT_SYSTEM_PROBLEM
-			);
-		}
+        if (
+            true !== rename(
+                $temp_file_name_old,
+                $temp_file_name
+            )
+        ) {
+            vipgoci_sysexit(
+                'Unable to rename temporary file',
+                array(
+                    'temp_file_name_old' => $temp_file_name_old,
+                    'temp_file_name_new' => $temp_file_name,
+                ),
+                VIPGOCI_EXIT_SYSTEM_PROBLEM
+            );
+        }
 
-		unset( $temp_file_name_old );
-	}
+        unset($temp_file_name_old);
+    }
 
-	if ( false !== $temp_file_name ) {
-		vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'save_temp_file' );
+    if (false !== $temp_file_name) {
+        vipgoci_runtime_measure(VIPGOCI_RUNTIME_START, 'save_temp_file');
 
-		$temp_file_save_status = file_put_contents(
-			$temp_file_name,
-			$file_contents
-		);
+        $temp_file_save_status = file_put_contents(
+            $temp_file_name,
+            $file_contents
+        );
 
-		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'save_temp_file' );
-	}
+        vipgoci_runtime_measure(VIPGOCI_RUNTIME_STOP, 'save_temp_file');
+    }
 
-	// Detect possible errors when saving the temporary file
-	if ( false === $temp_file_save_status ) {
-		vipgoci_sysexit(
-			'Could not save file to disk, got ' .
-			'an error. Exiting...',
+    // Detect possible errors when saving the temporary file
+    if (false === $temp_file_save_status) {
+        vipgoci_sysexit(
+            'Could not save file to disk, got ' .
+            'an error. Exiting...',
+            array(
+                'temp_file_name' => $temp_file_name,
+            ),
+            VIPGOCI_EXIT_SYSTEM_PROBLEM
+        );
+    }
 
-			array(
-				'temp_file_name' => $temp_file_name,
-			),
-			VIPGOCI_EXIT_SYSTEM_PROBLEM
-		);
-	}
-
-	return $temp_file_name;
+    return $temp_file_name;
 }
 
 /*
@@ -597,21 +597,22 @@ function vipgoci_save_temp_file(
  * and return it in lowercase. If it can not be
  * determined, return null.
  */
-function vipgoci_file_extension_get( $file_name ) {
-	$file_extension = pathinfo(
-		$file_name,
-		PATHINFO_EXTENSION
-	);
+function vipgoci_file_extension_get($file_name)
+{
+    $file_extension = pathinfo(
+        $file_name,
+        PATHINFO_EXTENSION
+    );
 
-	if ( empty( $file_extension ) ) {
-		return null;
-	}
+    if (empty($file_extension)) {
+        return null;
+    }
 
-	$file_extension = strtolower(
-		$file_extension
-	);
+    $file_extension = strtolower(
+        $file_extension
+    );
 
-	return $file_extension;
+    return $file_extension;
 }
 
 /*
@@ -620,38 +621,40 @@ function vipgoci_file_extension_get( $file_name ) {
  * intended to be called when preparing messages/comments
  * to be submitted to GitHub.
  */
-function vipgoci_github_transform_to_emojis( $text_string ) {
-	switch( strtolower( $text_string ) ) {
-		case 'warning':
-			return ':warning:';
+function vipgoci_github_transform_to_emojis($text_string)
+{
+    switch (strtolower($text_string)) {
+        case 'warning':
+            return ':warning:';
 
-		case 'error':
-			return ':no_entry_sign:';
+        case 'error':
+            return ':no_entry_sign:';
 
-		case 'info':
-			return ':information_source:';
-	}
+        case 'info':
+            return ':information_source:';
+    }
 
-	return '';
+    return '';
 }
 
 /*
  * Remove any draft Pull-Requests from the array
  * provided.
  */
-function vipgoci_github_pr_remove_drafts( $prs_array ) {
-	$prs_array = array_filter(
-		$prs_array,
-		function( $pr_item ) {
-			if ( (bool) $pr_item->draft === true ) {
-				return false;
-			}
+function vipgoci_github_pr_remove_drafts($prs_array)
+{
+    $prs_array = array_filter(
+        $prs_array,
+        function ($pr_item) {
+            if ((bool) $pr_item->draft === true) {
+                return false;
+            }
 
-			return true;
-		}
-	);
+            return true;
+        }
+    );
 
-	return $prs_array;
+    return $prs_array;
 }
 
 /*
@@ -663,111 +666,110 @@ function vipgoci_github_pr_remove_drafts( $prs_array ) {
  * path to the git-repository root.
  */
 function vipgoci_filter_file_path(
-	$filename,
-	$filter
+    $filename,
+    $filter
 ) {
-	$file_info_extension = vipgoci_file_extension_get(
-		$filename
-	);
+    $file_info_extension = vipgoci_file_extension_get(
+        $filename
+    );
 
-	$file_dirs = pathinfo(
-		$filename,
-		PATHINFO_DIRNAME
-	);
+    $file_dirs = pathinfo(
+        $filename,
+        PATHINFO_DIRNAME
+    );
 
-	/*
-	 * If the file does not have an acceptable
-	 * file-extension, flag it.
-	 */
+    /*
+     * If the file does not have an acceptable
+     * file-extension, flag it.
+     */
 
-	$file_ext_match =
-		( null !== $filter ) &&
-		( isset( $filter['file_extensions'] ) ) &&
-		( ! in_array(
-			$file_info_extension,
-			$filter['file_extensions'],
-			true
-		) );
+    $file_ext_match =
+        ( null !== $filter ) &&
+        ( isset($filter['file_extensions']) ) &&
+        ( ! in_array(
+            $file_info_extension,
+            $filter['file_extensions'],
+            true
+        ) );
 
-	/*
-	 * If path to the file contains any non-acceptable
-	 * directory-names, skip it.
-	 */
+    /*
+     * If path to the file contains any non-acceptable
+     * directory-names, skip it.
+     */
 
-	$file_folders_match = false;
+    $file_folders_match = false;
 
-	if (
-		( null !== $filter ) &&
-		( isset( $filter['skip_folders'] ) )
-	) {
-		/*
-		 * Loop through all skip-folders.
-		 */
-		foreach(
-			$filter['skip_folders'] as $tmp_skip_folder_item
-		) {
-			/*
-			 * Note: All 'skip_folder' options should lack '/' at the
-			 * end and beginning.
-			 *
-			 * $filename we expect to be a relative path.
-			 */
+    if (
+        ( null !== $filter ) &&
+        ( isset($filter['skip_folders']) )
+    ) {
+        /*
+         * Loop through all skip-folders.
+         */
+        foreach (
+            $filter['skip_folders'] as $tmp_skip_folder_item
+        ) {
+            /*
+             * Note: All 'skip_folder' options should lack '/' at the
+             * end and beginning.
+             *
+             * $filename we expect to be a relative path.
+             */
 
-			$file_folders_match = strpos(
-				$filename,
-				$tmp_skip_folder_item . '/'
-			);
+            $file_folders_match = strpos(
+                $filename,
+                $tmp_skip_folder_item . '/'
+            );
 
-			/*
-			 * Check if the file matches any of the folders
-			 * that are to be skipped -- note that we enforce
-			 * that the folder has to be at the root of the
-			 * path to be a match.
-			 */
-			if (
-				( false !== $file_folders_match ) &&
-				( is_numeric( $file_folders_match ) ) &&
-				( 0 === $file_folders_match )
-			) {
-				$file_folders_match = true;
-				break;
-			}
-		}
-	}
+            /*
+             * Check if the file matches any of the folders
+             * that are to be skipped -- note that we enforce
+             * that the folder has to be at the root of the
+             * path to be a match.
+             */
+            if (
+                ( false !== $file_folders_match ) &&
+                ( is_numeric($file_folders_match) ) &&
+                ( 0 === $file_folders_match )
+            ) {
+                $file_folders_match = true;
+                break;
+            }
+        }
+    }
 
-	/*
-	 * Do the actual skipping of file,
-	 * if either of the conditions are fulfiled.
-	 */
+    /*
+     * Do the actual skipping of file,
+     * if either of the conditions are fulfiled.
+     */
 
-	if (
-		( true === $file_ext_match ) ||
-		( true === $file_folders_match )
-	) {
-		vipgoci_log(
-			'Skipping file that does not seem ' .
-				'to be a file matching ' .
-				'filter-criteria',
+    if (
+        ( true === $file_ext_match ) ||
+        ( true === $file_folders_match )
+    ) {
+        vipgoci_log(
+            'Skipping file that does not seem ' .
+                'to be a file matching ' .
+                'filter-criteria',
+            array(
+                'filename' =>
+                    $filename,
 
-			array(
-				'filename' =>
-					$filename,
+                'filter' =>
+                    $filter,
 
-				'filter' =>
-					$filter,
+                'matches' => array(
+                    'file_ext_match' => $file_ext_match,
+                    'file_folders_match' => $file_folders_match,
+                ),
+            ),
+            2
+        );
 
-				'matches' => array(
-					'file_ext_match' => $file_ext_match,
-					'file_folders_match' => $file_folders_match,
-				),
-			),
-			2
-		);
+        return false;
+    }
 
-		return false;
-	}
-
-	return true;
+    return true;
 }
 
 
@@ -779,103 +781,109 @@ function vipgoci_filter_file_path(
  * Note: Do not call with $base_path parameter,
  * that is reserved for internal use only.
  */
-function vipgoci_scandir_git_repo( $path, $filter, $base_path = null ) {
-	$result = array();
+function vipgoci_scandir_git_repo($path, $filter, $base_path = null)
+{
+    $result = array();
 
-	vipgoci_log(
-		'Fetching git-tree using scandir()',
+    vipgoci_log(
+        'Fetching git-tree using scandir()',
+        array(
+            'path' => $path,
+            'filter' => $filter,
+            'base_path' => $base_path,
+        ),
+        2
+    );
 
-		array(
-			'path' => $path,
-			'filter' => $filter,
-			'base_path' => $base_path,
-		),
-		2
-	);
+    /*
+     * If no base path is given,
+     * use $path. This will be used
+     * when making sure we do not
+     * accidentally filter by the filesystem
+     * outside of the git-repository (see below).
+     */
+    if (null === $base_path) {
+        $base_path = $path;
+    }
 
-	/*
-	 * If no base path is given,
-	 * use $path. This will be used
-	 * when making sure we do not
-	 * accidentally filter by the filesystem
-	 * outside of the git-repository (see below).
- 	 */
-	if ( null === $base_path ) {
-		$base_path = $path;
-	}
+    vipgoci_runtime_measure(VIPGOCI_RUNTIME_START, 'git_repo_scandir');
 
-	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'git_repo_scandir' );
+    $cdir = scandir($path);
 
-	$cdir = scandir( $path );
-
-	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'git_repo_scandir' );
-
-
-	foreach ( $cdir as $key => $value ) {
-		if ( in_array(
-			$value,
-			array( '.', '..', '.git' )
-		) ) {
-			// Skip '.' and '..'
-			continue;
-		}
+    vipgoci_runtime_measure(VIPGOCI_RUNTIME_STOP, 'git_repo_scandir');
 
 
-		if ( is_dir(
-			$path . DIRECTORY_SEPARATOR . $value
-		) ) {
-			/*
-			 * A directory, traverse into, get files,
-			 * amend the results
-			 */
-			$tmp_result = vipgoci_scandir_git_repo(
-				$path . DIRECTORY_SEPARATOR . $value,
-				$filter,
-				$base_path
-			);
+    foreach ($cdir as $key => $value) {
+        if (
+            in_array(
+                $value,
+                array( '.', '..', '.git' )
+            )
+        ) {
+            // Skip '.' and '..'
+            continue;
+        }
 
-			foreach ( $tmp_result as $tmp_result_item ) {
-				$result[] = $value .
-					DIRECTORY_SEPARATOR .
-					$tmp_result_item;
-			}
 
-			continue;
-		}
+        if (
+            is_dir(
+                $path . DIRECTORY_SEPARATOR . $value
+            )
+        ) {
+            /*
+             * A directory, traverse into, get files,
+             * amend the results
+             */
+            $tmp_result = vipgoci_scandir_git_repo(
+                $path . DIRECTORY_SEPARATOR . $value,
+                $filter,
+                $base_path
+            );
 
-		/*
-		 * Filter out files not with desired line-ending
-		 * or are located in directories that should be
-		 * ignored.
-		 */
-		if ( null !== $filter ) {
-			/*
-			 * Remove the portion of the path
-			 * that leads to the git repository,
-			 * as we only want to filter by files in the
-			 * git repository it self here. This is to
-			 * make sure "skip_folders" filtering works
-			 * correctly and does not accidentally take into
-			 * consideration the path leading to the git repository.
-			 */
-			$file_path_without_git_repo = substr(
-				$path . DIRECTORY_SEPARATOR . $value,
-				strlen( $base_path ) + 1 // Send in what looks like a relative path
-			);
+            foreach ($tmp_result as $tmp_result_item) {
+                $result[] = $value .
+                    DIRECTORY_SEPARATOR .
+                    $tmp_result_item;
+            }
 
-			if ( false === vipgoci_filter_file_path(
-				$file_path_without_git_repo,
-				$filter
-			) ) {
-				continue;
-			}
-		}
+            continue;
+        }
 
-		// Not a directory, passed filter, save in array
-		$result[] = $value;
-	}
+        /*
+         * Filter out files not with desired line-ending
+         * or are located in directories that should be
+         * ignored.
+         */
+        if (null !== $filter) {
+            /*
+             * Remove the portion of the path
+             * that leads to the git repository,
+             * as we only want to filter by files in the
+             * git repository it self here. This is to
+             * make sure "skip_folders" filtering works
+             * correctly and does not accidentally take into
+             * consideration the path leading to the git repository.
+             */
+            $file_path_without_git_repo = substr(
+                $path . DIRECTORY_SEPARATOR . $value,
+                strlen($base_path) + 1 // Send in what looks like a relative path
+            );
 
-	return $result;
+            if (
+                false === vipgoci_filter_file_path(
+                    $file_path_without_git_repo,
+                    $filter
+                )
+            ) {
+                continue;
+            }
+        }
+
+        // Not a directory, passed filter, save in array
+        $result[] = $value;
+    }
+
+    return $result;
 }
 
 
@@ -886,34 +894,36 @@ function vipgoci_scandir_git_repo( $path, $filter, $base_path = null ) {
  */
 
 function vipgoci_blame_filter_commits(
-	$blame_log,
-	$relevant_commit_ids
+    $blame_log,
+    $relevant_commit_ids
 ) {
 
-	/*
-	 * Loop through each file, get a
-	 * 'git blame' log for the file, so
-	 * so we can filter out issues not
-	 * stemming from commits that are a
-	 * part of the current Pull-Request.
-	 */
+    /*
+     * Loop through each file, get a
+     * 'git blame' log for the file, so
+     * so we can filter out issues not
+     * stemming from commits that are a
+     * part of the current Pull-Request.
+     */
 
-	$blame_log_filtered = array();
+    $blame_log_filtered = array();
 
-	foreach ( $blame_log as $blame_log_item ) {
-		if ( ! in_array(
-			$blame_log_item['commit_id'],
-			$relevant_commit_ids,
-			true
-		) ) {
-			continue;
-		}
+    foreach ($blame_log as $blame_log_item) {
+        if (
+            ! in_array(
+                $blame_log_item['commit_id'],
+                $relevant_commit_ids,
+                true
+            )
+        ) {
+            continue;
+        }
 
-		$blame_log_filtered[] =
-			$blame_log_item;
-	}
+        $blame_log_filtered[] =
+            $blame_log_item;
+    }
 
-	return $blame_log_filtered;
+    return $blame_log_filtered;
 }
 
 
@@ -924,137 +934,138 @@ function vipgoci_blame_filter_commits(
  * comment has already been submitted earlier.
  */
 function vipgoci_github_comment_match(
-	$file_issue_path,
-	$file_issue_line,
-	$file_issue_comment,
-	$comments_made
+    $file_issue_path,
+    $file_issue_line,
+    $file_issue_comment,
+    $comments_made
 ) {
 
-	/*
-	 * Construct an index-key made of file:line.
-	 */
-	$comment_index_key =
-		$file_issue_path .
-		':' .
-		$file_issue_line;
+    /*
+     * Construct an index-key made of file:line.
+     */
+    $comment_index_key =
+        $file_issue_path .
+        ':' .
+        $file_issue_line;
 
 
-	if ( ! isset(
-		$comments_made[
-			$comment_index_key
-		]
-	)) {
-		/*
-		 * No match on index-key within the
-		 * associative array -- the comment has
-		 * not been made, so return false.
-		 */
-		return false;
-	}
+    if (
+        ! isset(
+            $comments_made[
+            $comment_index_key
+            ]
+        )
+    ) {
+        /*
+         * No match on index-key within the
+         * associative array -- the comment has
+         * not been made, so return false.
+         */
+        return false;
+    }
 
 
-	/*
-	 * Some comment matching the file and line-number
-	 * was found -- figure out if it is definately the
-	 * same comment.
-	 */
+    /*
+     * Some comment matching the file and line-number
+     * was found -- figure out if it is definately the
+     * same comment.
+     */
 
-	foreach (
-		$comments_made[ $comment_index_key ] as
-		$comment_made
-	) {
-		/*
-		 * The comment might contain formatting, such
-		 * as "Warning: ..." -- remove all of that.
-		 */
-		$comment_made_body = str_replace(
-			array("**", "Warning", "Error", "Info", ":no_entry_sign:", ":warning:", ":information_source:"),
-			array("", "", "", "", ""),
-			$comment_made->body
-		);
+    foreach (
+        $comments_made[ $comment_index_key ] as $comment_made
+    ) {
+        /*
+         * The comment might contain formatting, such
+         * as "Warning: ..." -- remove all of that.
+         */
+        $comment_made_body = str_replace(
+            array("**", "Warning", "Error", "Info", ":no_entry_sign:", ":warning:", ":information_source:"),
+            array("", "", "", "", ""),
+            $comment_made->body
+        );
 
-		/*
-		 * The comment might include severity level
-		 * -- remove that.
-		 */
-		$comment_made_body = preg_replace(
-			'/\( severity \d{1,2} \)/',
-			'',
-			$comment_made_body
-		);
+        /*
+         * The comment might include severity level
+         * -- remove that.
+         */
+        $comment_made_body = preg_replace(
+            '/\( severity \d{1,2} \)/',
+            '',
+            $comment_made_body
+        );
 
-		/*
-		 * The comment might be prefixed with ': ',
-		 * remove that as well.
-		 */
-		$comment_made_body = ltrim(
-			$comment_made_body,
-			': '
-		);
+        /*
+         * The comment might be prefixed with ': ',
+         * remove that as well.
+         */
+        $comment_made_body = ltrim(
+            $comment_made_body,
+            ': '
+        );
 
-		/*
-		 * The comment might include PHPCS source
-		 * of the error at the end (e.g.
-		 * "... (*WordPress.WP.AlternativeFunctions.json_encode_json_encode*)."
-		 * -- remove the source, the brackets and the ending dot.
-		 */
-		$comment_made_body = preg_replace(
-			'/ \([\*_\.a-zA-Z0-9]+\)\.$/',
-			'',
-			$comment_made_body
-		);
+        /*
+         * The comment might include PHPCS source
+         * of the error at the end (e.g.
+         * "... (*WordPress.WP.AlternativeFunctions.json_encode_json_encode*)."
+         * -- remove the source, the brackets and the ending dot.
+         */
+        $comment_made_body = preg_replace(
+            '/ \([\*_\.a-zA-Z0-9]+\)\.$/',
+            '',
+            $comment_made_body
+        );
 
-		/*
-		 * Transform string to lowercase,
-		 * remove ending '.' just in case if
-		 * not removed earlier.
-		 */
-		$comment_made_body = strtolower(
-			$comment_made_body
-		);
+        /*
+         * Transform string to lowercase,
+         * remove ending '.' just in case if
+         * not removed earlier.
+         */
+        $comment_made_body = strtolower(
+            $comment_made_body
+        );
 
-		$comment_made_body = rtrim(
-			$comment_made_body,
-			'.'
-		);
+        $comment_made_body = rtrim(
+            $comment_made_body,
+            '.'
+        );
 
-		/*
-		 * Transform the string to lowercase,
-		 * and remove potential '.' at the end
-		 * of it.
-		 */
-		$file_issue_comment = strtolower(
-			$file_issue_comment
-		);
+        /*
+         * Transform the string to lowercase,
+         * and remove potential '.' at the end
+         * of it.
+         */
+        $file_issue_comment = strtolower(
+            $file_issue_comment
+        );
 
-		$file_issue_comment = rtrim(
-			$file_issue_comment,
-			'.'
-		);
+        $file_issue_comment = rtrim(
+            $file_issue_comment,
+            '.'
+        );
 
-		/*
-		 * Check if comments match, including
-		 * if we need to HTML-encode our new comment
-		 * (GitHub encodes their comments when
-		 * returning them.
-		 */
-		if (
-			(
-				$comment_made_body ==
-				$file_issue_comment
-			)
-			||
-			(
-				$comment_made_body ==
-				htmlentities( $file_issue_comment )
-			)
-		) {
-			/* Comment found, return true. */
-			return true;
-		}
-	}
+        /*
+         * Check if comments match, including
+         * if we need to HTML-encode our new comment
+         * (GitHub encodes their comments when
+         * returning them.
+         */
+        if (
+            (
+                $comment_made_body ==
+                $file_issue_comment
+            )
+            ||
+            (
+                $comment_made_body ==
+                htmlentities($file_issue_comment)
+            )
+        ) {
+            /* Comment found, return true. */
+            return true;
+        }
+    }
 
-	return false;
+    return false;
 }
 
 
@@ -1064,73 +1075,73 @@ function vipgoci_github_comment_match(
  * that existed prior to the change.
  */
 function vipgoci_issues_filter_irrellevant(
-	$file_name,
-	$file_issues_arr,
-	$file_blame_log,
-	$pr_item_commits,
-	$file_relative_lines
+    $file_name,
+    $file_issues_arr,
+    $file_blame_log,
+    $pr_item_commits,
+    $file_relative_lines
 ) {
-	/*
-	 * Filter out any issues
-	 * that are due to commits outside
-	 * of the Pull-Request
-	 */
+    /*
+     * Filter out any issues
+     * that are due to commits outside
+     * of the Pull-Request
+     */
 
-	$file_blame_log_filtered =
-		vipgoci_blame_filter_commits(
-			$file_blame_log,
-			$pr_item_commits
-		);
+    $file_blame_log_filtered =
+        vipgoci_blame_filter_commits(
+            $file_blame_log,
+            $pr_item_commits
+        );
 
 
-	$file_issues_ret = array();
+    $file_issues_ret = array();
 
-	/*
-	 * Loop through all the issues affecting
-	 * this particular file
-	 */
-	foreach (
-		$file_issues_arr[ $file_name ] as
-			$file_issue_key =>
-			$file_issue_val
-	) {
-		$keep_issue = false;
+    /*
+     * Loop through all the issues affecting
+     * this particular file
+     */
+    foreach (
+        $file_issues_arr[ $file_name ] as $file_issue_key => $file_issue_val
+    ) {
+        $keep_issue = false;
 
-		/*
-		 * Filter out issues outside of the blame log
-		 */
+        /*
+         * Filter out issues outside of the blame log
+         */
 
-		foreach ( $file_blame_log_filtered as $blame_log_item ) {
-			if (
-				$blame_log_item['line_no'] ===
-					$file_issue_val['line']
-			) {
-				$keep_issue = true;
-			}
-		}
+        foreach ($file_blame_log_filtered as $blame_log_item) {
+            if (
+                $blame_log_item['line_no'] ===
+                    $file_issue_val['line']
+            ) {
+                $keep_issue = true;
+            }
+        }
 
-		if ( false === $keep_issue ) {
-			continue;
-		}
+        if (false === $keep_issue) {
+            continue;
+        }
 
-		unset( $keep_issue );
+        unset($keep_issue);
 
-		/*
-		 * Filter out any issues that are outside
-		 * of the current patch
-		 */
+        /*
+         * Filter out any issues that are outside
+         * of the current patch
+         */
 
-		if ( ! isset(
-			$file_relative_lines[ $file_issue_val['line'] ]
-		) ) {
-			continue;
-		}
+        if (
+            ! isset(
+                $file_relative_lines[ $file_issue_val['line'] ]
+            )
+        ) {
+            continue;
+        }
 
-		// Passed all tests, keep this issue
-		$file_issues_ret[] = $file_issue_val;
-	}
+        // Passed all tests, keep this issue
+        $file_issues_ret[] = $file_issue_val;
+    }
 
-	return $file_issues_ret;
+    return $file_issues_ret;
 }
 
 /*
@@ -1139,30 +1150,30 @@ function vipgoci_issues_filter_irrellevant(
  * twice in the same file on the same line are considered
  * a duplicate.
  */
-function vipgoci_issues_filter_duplicate( $file_issues_arr ) {
-	$issues_hashes = array();
-	$file_issues_arr_new = array();
+function vipgoci_issues_filter_duplicate($file_issues_arr)
+{
+    $issues_hashes = array();
+    $file_issues_arr_new = array();
 
-	foreach(
-		$file_issues_arr as
-			$issue_item_key => $issue_item_value
-	) {
-		$issue_item_hash = md5(
-			$issue_item_value['message']
-		)
-		. ':' .
-		$issue_item_value['line'];
+    foreach (
+        $file_issues_arr as $issue_item_key => $issue_item_value
+    ) {
+        $issue_item_hash = md5(
+            $issue_item_value['message']
+        )
+        . ':' .
+        $issue_item_value['line'];
 
-		if ( in_array( $issue_item_hash, $issues_hashes, true ) ) {
-			continue;
-		}
+        if (in_array($issue_item_hash, $issues_hashes, true)) {
+            continue;
+        }
 
-		$issues_hashes[] = $issue_item_hash;
+        $issues_hashes[] = $issue_item_hash;
 
-		$file_issues_arr_new[] = $issue_item_value;
-	}
+        $file_issues_arr_new[] = $issue_item_value;
+    }
 
-	return $file_issues_arr_new;
+    return $file_issues_arr_new;
 }
 
 /*
@@ -1170,67 +1181,65 @@ function vipgoci_issues_filter_duplicate( $file_issues_arr ) {
  * severity of issues -- if configured to do so:
  */
 function vipgoci_results_sort_by_severity(
-	$options,
-	&$results
+    $options,
+    &$results
 ) {
 
-	if ( true !== $options['review-comments-sort'] ) {
-		return;
-	}
+    if (true !== $options['review-comments-sort']) {
+        return;
+    }
 
-	vipgoci_log(
-		'Sorting issues in results according to severity before submission',
-		array(
-		)
-	);
+    vipgoci_log(
+        'Sorting issues in results according to severity before submission',
+        array(
+        )
+    );
 
 
-	foreach(
-		array_keys(
-			$results['issues']
-		) as $pr_number
-	) {
-		$current_pr_results = &$results['issues'][ $pr_number ];
+    foreach (
+        array_keys(
+            $results['issues']
+        ) as $pr_number
+    ) {
+        $current_pr_results = &$results['issues'][ $pr_number ];
 
-		/*
-		 * Temporarily add severity
-		 * column so we can sort using that.
-		 */
-		foreach(
-			array_keys( $current_pr_results ) as
-				$current_pr_result_item_key
-		) {
-			$current_pr_results[ $current_pr_result_item_key ][ 'severity'] =
-				$current_pr_results[ $current_pr_result_item_key ]['issue']['severity'];
-		}
+        /*
+         * Temporarily add severity
+         * column so we can sort using that.
+         */
+        foreach (
+            array_keys($current_pr_results) as $current_pr_result_item_key
+        ) {
+            $current_pr_results[ $current_pr_result_item_key ][ 'severity'] =
+                $current_pr_results[ $current_pr_result_item_key ]['issue']['severity'];
+        }
 
-		/*
-		 * Do the actual sorting.
-		 */
-		$severity_column  = array_column(
-			$current_pr_results,
-			'severity'
-		);
+        /*
+         * Do the actual sorting.
+         */
+        $severity_column  = array_column(
+            $current_pr_results,
+            'severity'
+        );
 
-		array_multisort(
-		        $severity_column,
-		        SORT_DESC,
-		        $current_pr_results
-		);
+        array_multisort(
+            $severity_column,
+            SORT_DESC,
+            $current_pr_results
+        );
 
-		/*
-		 * Remove severity column
-		 * afterwards.
-		 */
-		foreach(
-			array_keys( $current_pr_results ) as
-				$current_pr_result_item_key
-		) {
-			unset(
-				$current_pr_results[ $current_pr_result_item_key ][ 'severity']
-			);
-		}
-	}
+        /*
+         * Remove severity column
+         * afterwards.
+         */
+        foreach (
+            array_keys($current_pr_results) as $current_pr_result_item_key
+        ) {
+            unset(
+                $current_pr_results[ $current_pr_result_item_key ][ 'severity']
+            );
+        }
+    }
 }
 
 
@@ -1243,51 +1252,51 @@ function vipgoci_results_sort_by_severity(
  * not exist.
  */
 function vipgoci_markdown_comment_add_pagebreak(
-	&$comment,
-	$pagebreak_style = '***'
+    &$comment,
+    $pagebreak_style = '***'
 ) {
-	/*
-	 * Get rid of any \n\r strings, and other
-	 * whitespaces from $comment.
-	 */
-	$comment_copy = rtrim( $comment );
-	$comment_copy = rtrim( $comment_copy, " \n\r" );
+    /*
+     * Get rid of any \n\r strings, and other
+     * whitespaces from $comment.
+     */
+    $comment_copy = rtrim($comment);
+    $comment_copy = rtrim($comment_copy, " \n\r");
 
-	/*
-	 * If there is no comment, do not add pagebreak.
-	 */
-	if ( empty( $comment_copy ) ) {
-		return;
-	}
+    /*
+     * If there is no comment, do not add pagebreak.
+     */
+    if (empty($comment_copy)) {
+        return;
+    }
 
-	/*
-	 * Find the last pagebreak in the comment.
-	 */
-	$pagebreak_location = strrpos(
-		$comment_copy,
-		$pagebreak_style
-	);
+    /*
+     * Find the last pagebreak in the comment.
+     */
+    $pagebreak_location = strrpos(
+        $comment_copy,
+        $pagebreak_style
+    );
 
 
-	/*
-	 * If pagebreak is found, and is
-	 * at the end of the comment, bail
-	 * out and do nothing to the comment.
-	 */
+    /*
+     * If pagebreak is found, and is
+     * at the end of the comment, bail
+     * out and do nothing to the comment.
+     */
 
-	if (
-		( false !== $pagebreak_location ) &&
-		(
-			$pagebreak_location +
-			strlen( $pagebreak_style )
-		)
-		===
-		strlen( $comment_copy )
-	) {
-		return;
-	}
+    if (
+        ( false !== $pagebreak_location ) &&
+        (
+            $pagebreak_location +
+            strlen($pagebreak_style)
+        )
+        ===
+        strlen($comment_copy)
+    ) {
+        return;
+    }
 
-	$comment .= $pagebreak_style . "\n\r";
+    $comment .= $pagebreak_style . "\n\r";
 }
 
 
@@ -1295,27 +1304,29 @@ function vipgoci_markdown_comment_add_pagebreak(
  * Sanitize a string, removing any whitespace-characters
  * from the beginning and end, and transform to lowercase.
  */
-function vipgoci_sanitize_string( $str ) {
-	return strtolower( ltrim( rtrim(
-		$str
-	) ) );
+function vipgoci_sanitize_string($str)
+{
+    return strtolower(ltrim(rtrim(
+        $str
+    )));
 }
 
 /*
  * Sanitize path, remove any of the specified prefixes
  * if exist.
  */
-function vipgoci_sanitize_path_prefix( string $path, array $prefixes ): string {
-	foreach( $prefixes as $prefix ) {
-		if ( 0 === strpos( $path, $prefix ) ) {
-			$path = substr(
-				$path,
-				strlen( $prefix )
-			);
+function vipgoci_sanitize_path_prefix(string $path, array $prefixes): string
+{
+    foreach ($prefixes as $prefix) {
+        if (0 === strpos($path, $prefix)) {
+            $path = substr(
+                $path,
+                strlen($prefix)
+            );
 
-			break;
-		}
-	}
+            break;
+        }
+    }
 
-	return $path;
+    return $path;
 }

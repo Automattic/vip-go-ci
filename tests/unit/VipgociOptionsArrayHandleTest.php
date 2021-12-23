@@ -4,112 +4,117 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
-require_once( __DIR__ . './../../options.php' );
+require_once(__DIR__ . './../../options.php');
 
 use PHPUnit\Framework\TestCase;
 
 // phpcs:disable PSR1.Files.SideEffects
 
-final class VipgociOptionsArrayHandleTest extends TestCase {
-	/**
-	 * @covers ::vipgoci_option_array_handle
-	 */
-	public function testOptionsArrayHandle1() {
-		$options = array(
-		);
+final class VipgociOptionsArrayHandleTest extends TestCase
+{
+    /**
+     * @covers ::vipgoci_option_array_handle
+     */
+    public function testOptionsArrayHandle1()
+    {
+        $options = array(
+        );
 
-		vipgoci_option_array_handle(
-			$options,
-			'mytestoption',
-			array( 'myvalue' ),
-			null,
-			','
-		);
+        vipgoci_option_array_handle(
+            $options,
+            'mytestoption',
+            array( 'myvalue' ),
+            null,
+            ','
+        );
 
-		$this->assertSame(
-			array(
-				'myvalue',
-			),
-			$options['mytestoption']
-		);
-	}
+        $this->assertSame(
+            array(
+                'myvalue',
+            ),
+            $options['mytestoption']
+        );
+    }
 
-	/**
-	 * @covers ::vipgoci_option_array_handle
-	 */
-	public function testOptionsArrayHandle2() {
-		$options = array(
-			'mytestoption' => 'myvalue1,myvalue2,myvalue3',
-		);
+    /**
+     * @covers ::vipgoci_option_array_handle
+     */
+    public function testOptionsArrayHandle2()
+    {
+        $options = array(
+            'mytestoption' => 'myvalue1,myvalue2,myvalue3',
+        );
 
-		vipgoci_option_array_handle(
-			$options,
-			'mytestoption',
-			'myvalue',
-			null,
-			','
-		);
+        vipgoci_option_array_handle(
+            $options,
+            'mytestoption',
+            'myvalue',
+            null,
+            ','
+        );
 
-		$this->assertSame(
-			array(
-				'myvalue1',
-				'myvalue2',
-				'myvalue3',
-			),
-			$options['mytestoption']
-		);
-	}
+        $this->assertSame(
+            array(
+                'myvalue1',
+                'myvalue2',
+                'myvalue3',
+            ),
+            $options['mytestoption']
+        );
+    }
 
-	/**
-	 * @covers ::vipgoci_option_array_handle
-	 */
-	public function testOptionsArrayHandle3() {
-		$options = array(
-			'mytestoption' => 'myvalue1,myvalue2,MYVALUE3',
-		);
+    /**
+     * @covers ::vipgoci_option_array_handle
+     */
+    public function testOptionsArrayHandle3()
+    {
+        $options = array(
+            'mytestoption' => 'myvalue1,myvalue2,MYVALUE3',
+        );
 
-		vipgoci_option_array_handle(
-			$options,
-			'mytestoption',
-			'myvalue',
-			null,
-			','
-		);
+        vipgoci_option_array_handle(
+            $options,
+            'mytestoption',
+            'myvalue',
+            null,
+            ','
+        );
 
-		$this->assertSame(
-			array(
-				'myvalue1',
-				'myvalue2',
-				'myvalue3', // should be transformed to lower-case by default
-			),
-			$options['mytestoption']
-		);
-	}
+        $this->assertSame(
+            array(
+                'myvalue1',
+                'myvalue2',
+                'myvalue3', // should be transformed to lower-case by default
+            ),
+            $options['mytestoption']
+        );
+    }
 
-	/**
-	 * @covers ::vipgoci_option_array_handle
-	 */
-	public function testOptionsArrayHandle4() {
-		$options = array(
-			'mytestoption' => 'myvalue1,myvalue2,MYVALUE3',
-		);
+    /**
+     * @covers ::vipgoci_option_array_handle
+     */
+    public function testOptionsArrayHandle4()
+    {
+        $options = array(
+            'mytestoption' => 'myvalue1,myvalue2,MYVALUE3',
+        );
 
-		vipgoci_option_array_handle(
-			$options,
-			'mytestoption',
-			'myvalue',
-			null,
-			',',
-			false // do not strtolower()
-		);
+        vipgoci_option_array_handle(
+            $options,
+            'mytestoption',
+            'myvalue',
+            null,
+            ',',
+            false // do not strtolower()
+        );
 
-		$this->assertSame(
-			array(
-				'myvalue1',
-				'myvalue2',
-				'MYVALUE3',
-			),
-			$options['mytestoption']
-		);
-	}
+        $this->assertSame(
+            array(
+                'myvalue1',
+                'myvalue2',
+                'MYVALUE3',
+            ),
+            $options['mytestoption']
+        );
+    }
 }

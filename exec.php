@@ -5,20 +5,20 @@
  * unit-test.
  */
 if (
-	(
-		( ! defined( 'VIPGOCI_UNIT_TESTING' ) ) ||
-		( false === VIPGOCI_UNIT_TESTING )
-	)
-	&&
-	(
-		( ! defined( 'VIPGOCI_INCLUDED' ) ) ||
-		( false === VIPGOCI_INCLUDED )
-	)
+    (
+        ( ! defined('VIPGOCI_UNIT_TESTING') ) ||
+        ( false === VIPGOCI_UNIT_TESTING )
+    )
+    &&
+    (
+        ( ! defined('VIPGOCI_INCLUDED') ) ||
+        ( false === VIPGOCI_INCLUDED )
+    )
 ) {
-	/*
-	 * 'main()' called
-	 */
-	$ret = vipgoci_run();
+    /*
+     * 'main()' called
+     */
+    $ret = vipgoci_run();
 
-	exit( $ret );
+    exit($ret);
 }

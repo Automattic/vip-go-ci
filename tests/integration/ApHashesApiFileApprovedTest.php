@@ -1,199 +1,205 @@
 <?php
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+require_once(__DIR__ . '/IncludesForTests.php');
 
 use PHPUnit\Framework\TestCase;
 
-final class ApHashesApiFileApprovedTest extends TestCase {
-	var $options_git = array(
-		'repo-owner'			=> null,
-		'repo-name'			=> null,
-		'github-repo-url'		=> null,
-		'git-path'			=> null,
-	);
+final class ApHashesApiFileApprovedTest extends TestCase
+{
+    var $options_git = array(
+        'repo-owner'            => null,
+        'repo-name'         => null,
+        'github-repo-url'       => null,
+        'git-path'          => null,
+    );
 
-	var $options_auto_approvals = array(
-		'commit-test-ap-hashes-file-approved-1'	=> null,
-	);
-	
-	protected function setUp(): void {
-		vipgoci_unittests_get_config_values(
-			'git',
-			$this->options_git
-		);
+    var $options_auto_approvals = array(
+        'commit-test-ap-hashes-file-approved-1' => null,
+    );
 
-		vipgoci_unittests_get_config_values(
-			'auto-approvals',
-			$this->options_auto_approvals
-		);
-		$this->options = array_merge(
-			$this->options_git,
-			$this->options_auto_approvals
-		);
+    protected function setUp(): void
+    {
+        vipgoci_unittests_get_config_values(
+            'git',
+            $this->options_git
+        );
 
-		$this->options[ 'github-token' ] =
-			vipgoci_unittests_get_config_value(
-				'git-secrets',
-				'github-token',
-				true // Fetch from secrets file
-			);
+        vipgoci_unittests_get_config_values(
+            'auto-approvals',
+            $this->options_auto_approvals
+        );
+        $this->options = array_merge(
+            $this->options_git,
+            $this->options_auto_approvals
+        );
 
-		$this->options['token'] =
-			$this->options['github-token'];
+        $this->options[ 'github-token' ] =
+            vipgoci_unittests_get_config_value(
+                'git-secrets',
+                'github-token',
+                true // Fetch from secrets file
+            );
 
-		unset( $this->options['github-token'] );
-		
-		$this->options['branches-ignore'] = array();
+        $this->options['token'] =
+            $this->options['github-token'];
 
-		foreach (
-			array(
-				'hashes-api-url',
-				'hashes-oauth-token',
-				'hashes-oauth-token-secret',
-				'hashes-oauth-consumer-key',
-				'hashes-oauth-consumer-secret',
-			) as $option_secret_key
-		) {
-			$this->options[ $option_secret_key ] =
-				vipgoci_unittests_get_config_value(
-					'auto-approvals-secrets',
-					$option_secret_key,
-					true // Fetch from secrets file
-				);
-		}
-	
-		$this->options['commit'] =
-			$this->options['commit-test-ap-hashes-file-approved-1'];
+        unset($this->options['github-token']);
 
-		$this->options['local-git-repo'] =
-			vipgoci_unittests_setup_git_repo(
-				$this->options
-			);
-	}
+        $this->options['branches-ignore'] = array();
 
-	protected function tearDown(): void {
-		if ( false !== $this->options['local-git-repo'] ) {
-			vipgoci_unittests_remove_git_repo(
-				$this->options['local-git-repo']
-			);
-		}
+        foreach (
+            array(
+                'hashes-api-url',
+                'hashes-oauth-token',
+                'hashes-oauth-token-secret',
+                'hashes-oauth-consumer-key',
+                'hashes-oauth-consumer-secret',
+            ) as $option_secret_key
+        ) {
+            $this->options[ $option_secret_key ] =
+                vipgoci_unittests_get_config_value(
+                    'auto-approvals-secrets',
+                    $option_secret_key,
+                    true // Fetch from secrets file
+                );
+        }
 
-		$this->options = null;
-		$this->options_auto_approvals = null;
-		$this->options_git = null;
-	}
+        $this->options['commit'] =
+            $this->options['commit-test-ap-hashes-file-approved-1'];
 
-	/**
-	 * @covers ::vipgoci_ap_hashes_api_file_approved
-	 */
-	public function testApHashesApiFileApproved1() {
-		$options_test = vipgoci_unittests_options_test(
-			$this->options,
-			array( 'github-token', 'token' ),
-			$this
-		);
+        $this->options['local-git-repo'] =
+            vipgoci_unittests_setup_git_repo(
+                $this->options
+            );
+    }
 
-		if ( -1 === $options_test ) {
-			return;
-		}
+    protected function tearDown(): void
+    {
+        if (false !== $this->options['local-git-repo']) {
+            vipgoci_unittests_remove_git_repo(
+                $this->options['local-git-repo']
+            );
+        }
 
-		vipgoci_unittests_output_suppress();
+        $this->options = null;
+        $this->options_auto_approvals = null;
+        $this->options_git = null;
+    }
 
-		if ( false === $this->options['local-git-repo'] ) {
-			$this->markTestSkipped(
-				'Could not set up git repository: ' .
-				vipgoci_unittests_output_get()
-			);
+    /**
+     * @covers ::vipgoci_ap_hashes_api_file_approved
+     */
+    public function testApHashesApiFileApproved1()
+    {
+        $options_test = vipgoci_unittests_options_test(
+            $this->options,
+            array( 'github-token', 'token' ),
+            $this
+        );
 
-			return;
-		}
+        if (-1 === $options_test) {
+            return;
+        }
 
-		$file_status = vipgoci_ap_hashes_api_file_approved(
-			$this->options,
-			'approved-1.php'
-		);
+        vipgoci_unittests_output_suppress();
 
-		vipgoci_unittests_output_unsuppress();
+        if (false === $this->options['local-git-repo']) {
+            $this->markTestSkipped(
+                'Could not set up git repository: ' .
+                vipgoci_unittests_output_get()
+            );
 
-		$this->assertTrue(
-			$file_status
-		);
-	}
+            return;
+        }
 
-	/**
-	 * @covers ::vipgoci_ap_hashes_api_file_approved
-	 */
-	public function testApHashesApiFileApproved2() {
-		$options_test = vipgoci_unittests_options_test(
-			$this->options,
-			array( 'github-token', 'token' ),
-			$this
-		);
+        $file_status = vipgoci_ap_hashes_api_file_approved(
+            $this->options,
+            'approved-1.php'
+        );
 
-		if ( -1 === $options_test ) {
-			return;
-		}
+        vipgoci_unittests_output_unsuppress();
 
-		vipgoci_unittests_output_suppress();
+        $this->assertTrue(
+            $file_status
+        );
+    }
 
-		if ( false === $this->options['local-git-repo'] ) {
-			$this->markTestSkipped(
-				'Could not set up git repository: ' .
-				vipgoci_unittests_output_get()
-			);
+    /**
+     * @covers ::vipgoci_ap_hashes_api_file_approved
+     */
+    public function testApHashesApiFileApproved2()
+    {
+        $options_test = vipgoci_unittests_options_test(
+            $this->options,
+            array( 'github-token', 'token' ),
+            $this
+        );
 
-			return;
-		}
+        if (-1 === $options_test) {
+            return;
+        }
 
-		$file_status = vipgoci_ap_hashes_api_file_approved(
-			$this->options,
-			'not-approved-1.php'
-		);
+        vipgoci_unittests_output_suppress();
 
-		vipgoci_unittests_output_unsuppress();
+        if (false === $this->options['local-git-repo']) {
+            $this->markTestSkipped(
+                'Could not set up git repository: ' .
+                vipgoci_unittests_output_get()
+            );
 
-		$this->assertFalse(
-			$file_status
-		);
-	}
+            return;
+        }
 
-	/**
-	 * @covers ::vipgoci_ap_hashes_api_file_approved
-	 */
-	public function testApHashesApiFileApproved3() {
-		$options_test = vipgoci_unittests_options_test(
-			$this->options,
-			array( 'github-token', 'token' ),
-			$this
-		);
+        $file_status = vipgoci_ap_hashes_api_file_approved(
+            $this->options,
+            'not-approved-1.php'
+        );
 
-		if ( -1 === $options_test ) {
-			return;
-		}
+        vipgoci_unittests_output_unsuppress();
 
-		vipgoci_unittests_output_suppress();
+        $this->assertFalse(
+            $file_status
+        );
+    }
 
-		if ( false === $this->options['local-git-repo'] ) {
-			$this->markTestSkipped(
-				'Could not set up git repository: ' .
-				vipgoci_unittests_output_get()
-			);
+    /**
+     * @covers ::vipgoci_ap_hashes_api_file_approved
+     */
+    public function testApHashesApiFileApproved3()
+    {
+        $options_test = vipgoci_unittests_options_test(
+            $this->options,
+            array( 'github-token', 'token' ),
+            $this
+        );
 
-			return;
-		}
+        if (-1 === $options_test) {
+            return;
+        }
 
-		// Invalid config
-		$this->options['hashes-api-url'] .= "////";
+        vipgoci_unittests_output_suppress();
 
-		$file_status = vipgoci_ap_hashes_api_file_approved(
-			$this->options,
-			'not-approved-1.php'
-		);
+        if (false === $this->options['local-git-repo']) {
+            $this->markTestSkipped(
+                'Could not set up git repository: ' .
+                vipgoci_unittests_output_get()
+            );
 
-		vipgoci_unittests_output_unsuppress();
+            return;
+        }
 
-		$this->assertNull(
-			$file_status
-		);
-	}
+        // Invalid config
+        $this->options['hashes-api-url'] .= "////";
+
+        $file_status = vipgoci_ap_hashes_api_file_approved(
+            $this->options,
+            'not-approved-1.php'
+        );
+
+        vipgoci_unittests_output_unsuppress();
+
+        $this->assertNull(
+            $file_status
+        );
+    }
 }

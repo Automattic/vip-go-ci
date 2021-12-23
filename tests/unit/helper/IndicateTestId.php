@@ -4,7 +4,7 @@
  * @todo convert this into a test helper
  */
 
-define( 'VIPGOCI_UNIT_TESTS_TEST_ID_KEY', 'vipgoci_unittests_test_ids' );
+define('VIPGOCI_UNIT_TESTS_TEST_ID_KEY', 'vipgoci_unittests_test_ids');
 
 /**
  * Indicate that we are running a particular test.
@@ -13,8 +13,9 @@ define( 'VIPGOCI_UNIT_TESTS_TEST_ID_KEY', 'vipgoci_unittests_test_ids' );
  *
  * @return void Does not return a value.
  */
-function vipgoci_unittests_indicate_test_id( string $test_id ): void {
-	$GLOBALS[ VIPGOCI_UNIT_TESTS_TEST_ID_KEY ][ $test_id ] = true;
+function vipgoci_unittests_indicate_test_id(string $test_id): void
+{
+    $GLOBALS[ VIPGOCI_UNIT_TESTS_TEST_ID_KEY ][ $test_id ] = true;
 }
 
 
@@ -27,16 +28,16 @@ function vipgoci_unittests_indicate_test_id( string $test_id ): void {
  * otherwise.
  */
 function vipgoci_unittests_check_indication_for_test_id(
-	string $test_id
+    string $test_id
 ): bool {
-	if (
-		( ( isset( $GLOBALS[ VIPGOCI_UNIT_TESTS_TEST_ID_KEY ][ $test_id ] ) ) ) &&
-		( true === $GLOBALS[ VIPGOCI_UNIT_TESTS_TEST_ID_KEY ][ $test_id ] )
-	) {
-		return true;
-	}
+    if (
+        ( ( isset($GLOBALS[ VIPGOCI_UNIT_TESTS_TEST_ID_KEY ][ $test_id ]) ) ) &&
+        ( true === $GLOBALS[ VIPGOCI_UNIT_TESTS_TEST_ID_KEY ][ $test_id ] )
+    ) {
+        return true;
+    }
 
-	return false;
+    return false;
 }
 
 /**
@@ -47,9 +48,9 @@ function vipgoci_unittests_check_indication_for_test_id(
  * @return void Does not return a value.
  */
 function vipgoci_unittests_remove_indication_for_test_id(
-	string $test_id
+    string $test_id
 ): void {
-	$GLOBALS[ VIPGOCI_UNIT_TESTS_TEST_ID_KEY ][ $test_id ] = false;
+    $GLOBALS[ VIPGOCI_UNIT_TESTS_TEST_ID_KEY ][ $test_id ] = false;
 
-	unset( $GLOBALS[ VIPGOCI_UNIT_TESTS_TEST_ID_KEY ][ $test_id ] );
+    unset($GLOBALS[ VIPGOCI_UNIT_TESTS_TEST_ID_KEY ][ $test_id ]);
 }
