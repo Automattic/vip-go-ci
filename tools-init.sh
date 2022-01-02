@@ -31,8 +31,8 @@ export PHP_COMPATIBILITY_WP_VER="2.1.0"
 export PHP_COMPATIBILITY_WP_SHA1SUM="ec00f76bd61dba1b388a11bc68e17f7183c6382d"
 
 # https://github.com/phpcompatibility/phpcompatibilityparagonie/releases
-export PHP_COMPATIBILITY_PARAGONIE_VER="1.3.0"
-export PHP_COMPATIBILITY_PARAGONIE_SHA1SUM="0cd2e1a4e90dde004db05e6cdb396c227c62d109"
+export PHP_COMPATIBILITY_PARAGONIE_VER="1.3.1"
+export PHP_COMPATIBILITY_PARAGONIE_SHA1SUM="a51cf3a1af05e6192ce9db6fc90ccb7afd58cb22"
 
 # https://github.com/Automattic/vip-go-svg-sanitizer/releases
 export VIP_GO_SVG_SANITIZER_VER="0.9.7"
