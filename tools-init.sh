@@ -27,8 +27,8 @@ export PHP_COMPATIBILITY_VER="9.3.5"
 export PHP_COMPATIBILITY_SHA1SUM="880d017ff6c3b64fda2c569bc79e589cc405e9b8";
 
 # https://github.com/phpcompatibility/phpcompatibilitywp/releases
-export PHP_COMPATIBILITY_WP_VER="2.1.0"
-export PHP_COMPATIBILITY_WP_SHA1SUM="ec00f76bd61dba1b388a11bc68e17f7183c6382d"
+export PHP_COMPATIBILITY_WP_VER="2.1.3"
+export PHP_COMPATIBILITY_WP_SHA1SUM="671eb42d7a20008e9259755a72c28c94c0d04e9f"
 
 # https://github.com/phpcompatibility/phpcompatibilityparagonie/releases
 export PHP_COMPATIBILITY_PARAGONIE_VER="1.3.1"
