@@ -7,8 +7,8 @@
 #
 
 # https://github.com/squizlabs/PHP_CodeSniffer/releases
-export PHP_CODESNIFFER_VER="3.5.5"
-export PHP_CODESNIFFER_SHA1SUM="0f51879e5caa7147ef47f61f7b3ecdc2d088422a"
+export PHP_CODESNIFFER_VER="3.6.2"
+export PHP_CODESNIFFER_SHA1SUM="e3fe7a4251223db0bff2ec66974346777129952f"
 
 # https://github.com/WordPress/WordPress-Coding-Standards/releases
 export WP_CODING_STANDARDS_VER="2.3.0"
