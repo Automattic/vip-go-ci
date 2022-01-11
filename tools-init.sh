@@ -7,8 +7,8 @@
 #
 
 # https://github.com/squizlabs/PHP_CodeSniffer/releases
-export PHP_CODESNIFFER_VER="3.5.5"
-export PHP_CODESNIFFER_SHA1SUM="0f51879e5caa7147ef47f61f7b3ecdc2d088422a"
+export PHP_CODESNIFFER_VER="3.6.2"
+export PHP_CODESNIFFER_SHA1SUM="e3fe7a4251223db0bff2ec66974346777129952f"
 
 # https://github.com/WordPress/WordPress-Coding-Standards/releases
 export WP_CODING_STANDARDS_VER="2.3.0"
@@ -19,20 +19,20 @@ export VIP_CODING_STANDARDS_VER="2.3.3"
 export VIP_CODING_STANDARDS_SHA1SUM="44c6519c628d450be5330b2706ae9dbb09dbd6be";
 
 # https://github.com/sirbrillig/phpcs-variable-analysis/releases
-export PHPCS_VARIABLE_ANALYSIS_VER="2.11.1"
-export PHPCS_VARIABLE_ANALYSIS_SHA1SUM="ca0bdb933701c42769e383575993fd07fc487e4d"
+export PHPCS_VARIABLE_ANALYSIS_VER="2.11.2"
+export PHPCS_VARIABLE_ANALYSIS_SHA1SUM="bde2f16104bc97966d1ad368ba5aac2fd26d2c7e"
 
 # https://github.com/phpcompatibility/phpcompatibility/releases
 export PHP_COMPATIBILITY_VER="9.3.5"
 export PHP_COMPATIBILITY_SHA1SUM="880d017ff6c3b64fda2c569bc79e589cc405e9b8";
 
 # https://github.com/phpcompatibility/phpcompatibilitywp/releases
-export PHP_COMPATIBILITY_WP_VER="2.1.0"
-export PHP_COMPATIBILITY_WP_SHA1SUM="ec00f76bd61dba1b388a11bc68e17f7183c6382d"
+export PHP_COMPATIBILITY_WP_VER="2.1.3"
+export PHP_COMPATIBILITY_WP_SHA1SUM="671eb42d7a20008e9259755a72c28c94c0d04e9f"
 
 # https://github.com/phpcompatibility/phpcompatibilityparagonie/releases
-export PHP_COMPATIBILITY_PARAGONIE_VER="1.3.0"
-export PHP_COMPATIBILITY_PARAGONIE_SHA1SUM="0cd2e1a4e90dde004db05e6cdb396c227c62d109"
+export PHP_COMPATIBILITY_PARAGONIE_VER="1.3.1"
+export PHP_COMPATIBILITY_PARAGONIE_SHA1SUM="a51cf3a1af05e6192ce9db6fc90ccb7afd58cb22"
 
 # https://github.com/Automattic/vip-go-svg-sanitizer/releases
 export VIP_GO_SVG_SANITIZER_VER="0.9.7"
