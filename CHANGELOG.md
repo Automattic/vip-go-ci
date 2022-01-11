@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-# [1.1.1](https://github.com/Automattic/vip-go-ci/releases/tag/1.1.1) - To be defined
+## [1.1.1](https://github.com/Automattic/vip-go-ci/releases/tag/1.1.1) - 2022-01-11 
 
 ### Updated
 - [#228](https://github.com/Automattic/vip-go-ci/pull/228): Update tools-init.sh for WordPress 5.9 compatibility
