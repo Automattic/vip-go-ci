@@ -1,5 +1,7 @@
 # vip-go-ci
 
+[![CircleCI](https://circleci.com/gh/Automattic/vip-go-ci/tree/main.svg?style=shield)](https://circleci.com/gh/Automattic/vip-go-ci/tree/main)
+
 Continuous integration for VIP Go repositories.
 
 `vip-go-ci` is a PHP command-line program intended to scan commits pushed to pull requests on GitHub. It will call external scanners to perform the actual scans, then collects the issues found, and posts them as comments and reviews to the GitHub pull requests associated with the commits. The aim of `vip-go-ci` is to display issues found in code by scanners in a uniform way, and to automate the analysis of code. It tries to avoid repeating reporting of issues found in earlier scans.
