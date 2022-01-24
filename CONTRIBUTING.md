@@ -14,6 +14,6 @@ Each GitHub issue relating to this repository should have a priority label to ma
 
 * [Critical](https://github.com/Automattic/vip-go-ci/labels/%5BPri%5D%20Critical): A bug currently affecting normal operation or a security problem that needs to be addressed urgently.
 * [High](https://github.com/Automattic/vip-go-ci/labels/%5BPri%5D%20High): An issue that is: a) relevant to current goals of the project, b) a bug that needs to addressed soon to maintain stability, or c) a feature often requested. 
-* [Normal](https://github.com/Automattic/vip-go-ci/labels/%5BPri%5D%20Normal): Most issues belong here, especially non-urgent issues.
+* [Normal](https://github.com/Automattic/vip-go-ci/labels/%5BPri%5D%20Normal): Most issues belong here. These will include features less often requested, new lower priority features, documentation updates, etc.
 * [Low](https://github.com/Automattic/vip-go-ci/labels/%5BPri%5D%20Low): Features that are good to have belong here.
 
