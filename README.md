@@ -49,6 +49,8 @@ Here is an example auto approval by `vip-go-ci`:
 
 Most features are configurable via parameters.
 
+If you have a feature request, please read the [file on contributing](CONTRIBUTING.md).
+
 ## Setting up
 
 ### System requirements
