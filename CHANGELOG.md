@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.2](https://github.com/Automattic/vip-go-ci/releases/tag/1.1.2) - 2022-01-??
+
+### Added
+- [#231](https://github.com/Automattic/vip-go-ci/pull/231): Add CircleCI status badge
+- [#234](https://github.com/Automattic/vip-go-ci/pull/234): Updating README; moving text, add section on contributing
+
 ## [1.1.1](https://github.com/Automattic/vip-go-ci/releases/tag/1.1.1) - 2022-01-11 
 
 ### Updated
