@@ -26,10 +26,10 @@ commands:
       - run: touch ~/project/unittests-secrets.ini
       # Prepare phpunit configuration file
       - run: sed 's/PROJECT_DIR/\/home\/circleci\/project/g' ~/project/phpunit.xml.dist > ~/project/phpunit.xml
-      # Run integration tests
-      - run: ./vendor/bin/phpunit --testsuite=integration-tests -vv
       # Run unit tests
       - run: ./vendor/bin/phpunit --testsuite=unit-tests -vv
+      # Run integration tests
+      - run: ./vendor/bin/phpunit --testsuite=integration-tests -vv
       # Run PHPCS, check for PHP compatibility issues
       - run: ~/vip-go-ci-tools/phpcs/bin/phpcs --runtime-set 'testVersion' '7.4-'  --standard=PHPCompatibility,PHPCompatibilityParagonieRandomCompat,PHPCompatibilityParagonieSodiumCompat --ignore="vendor/*"  ~/project
 
