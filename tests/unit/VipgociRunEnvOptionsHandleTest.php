@@ -8,7 +8,7 @@ require_once( __DIR__ . '/../../main.php' );
 require_once( __DIR__ . '/../../options.php' );
 
 // Needed for vipgoci_unittests_output_suppress() and vipgoci_unittests_output_unsuppress()
-require_once( __DIR__ . '/../integration/IncludesForTests.php' );
+require_once( __DIR__ . '/../integration/IncludesForTestsOutputControl.php' );
 
 use PHPUnit\Framework\TestCase;
 
