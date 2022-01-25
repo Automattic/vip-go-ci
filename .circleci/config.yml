@@ -33,8 +33,7 @@ commands:
       # Run integration tests
       - run: ./vendor/bin/phpunit --testsuite=integration-tests -vv
       # Run PHPCS, check for PHP compatibility issues
-      # FIXME: Disabling for now due to PHP 8 incompatibility
-      #- run: ~/vip-go-ci-tools/phpcs/bin/phpcs --runtime-set 'testVersion' '8.1-'  --standard=PHPCompatibility,PHPCompatibilityParagonieRandomCompat,PHPCompatibilityParagonieSodiumCompat --ignore="vendor/*"  ~/project
+      - run: ~/vip-go-ci-tools/phpcs/bin/phpcs --runtime-set 'testVersion' '8.1-'  --standard=PHPCompatibility,PHPCompatibilityParagonieRandomCompat,PHPCompatibilityParagonieSodiumCompat --ignore="vendor/*"  ~/project
 
 # List of images at: https://circleci.com/developer/images/image/cimg/php#image-tags
 jobs:
