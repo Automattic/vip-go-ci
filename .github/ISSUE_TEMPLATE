@@ -1,3 +1,47 @@
 <!-- ATTENTION: :wave: Just a quick reminder that this is a PUBLIC repository. Please do not include any internal links or sensitive data (like PII, private code, client names, site URLs, etc. If you're not sure if something is safe to share, please just ask! -->
 
 <!-- Also note: This issue tracker is only intended for problems that relate to vip-go-ci it self -- any issues that relate to PHPCS rulesets (for instance) should be filed against the project that houses them. -->
+
+<!-- If you are filing a feature request, please have a look at the document on contributing first: https://github.com/Automattic/vip-go-ci/blob/main/CONTRIBUTING.md -->
+
+<!-- Please use the following template when filing a bug report: -->
+
+# Bug report
+
+## Expected behavior
+
+What is the behavior expected?
+
+## Observed Behavior
+
+What is the behavior observed?
+
+## Reproducing the problem
+
+Steps to reproduce the problem:
+
+1. ...
+2. ...
+3. ...
+
+## System information
+
+Information on the system used, such as operating system, PHP version, etc.
+
+## Additional notes (optional)
+
+Any additional notes, if any
+
+<!-- For feature requests, use the following: -->
+
+# Feature request
+
+## Background of feature request
+
+General information about background to the request
+
+## Description of feature
+
+Describe what the feature should look like
+
+

@@ -1,5 +1,7 @@
 # vip-go-ci
 
+[![CircleCI](https://circleci.com/gh/Automattic/vip-go-ci/tree/main.svg?style=shield)](https://circleci.com/gh/Automattic/vip-go-ci/tree/main)
+
 Continuous integration for VIP Go repositories.
 
 `vip-go-ci` is a PHP command-line program intended to scan commits pushed to pull requests on GitHub. It will call external scanners to perform the actual scans, then collects the issues found, and posts them as comments and reviews to the GitHub pull requests associated with the commits. The aim of `vip-go-ci` is to display issues found in code by scanners in a uniform way, and to automate the analysis of code. It tries to avoid repeating reporting of issues found in earlier scans.
@@ -46,6 +48,8 @@ Here is an example auto approval by `vip-go-ci`:
 * Logging messages to a <a href="#irc-support">IRC gateway</a>.
 
 Most features are configurable via parameters.
+
+If you have a feature request, please read the [file on contributing](CONTRIBUTING.md).
 
 ## Setting up
 
@@ -682,12 +686,12 @@ will be:
 Then run the unit tests using the following command:
 
 ### Unit test suite
-> phpunit --testsuite=integration-tests -vv
+> phpunit --testsuite=unit-tests -vv
 
 By running this command, you will run the tests that do not depend on external calls. 
 
 ### Integration test suite
-> phpunit --testsuite=unit-tests -vv
+> phpunit --testsuite=integration-tests -vv
 
 By using this command, you will run the tests of the test-suite which can be run (depending on tokens and other detail), and get feedback on any errors or warnings. Note that when run, requests will be made to the GitHub API, but using anonymous calls (unless configured as shown below). It can happen that the GitHub API returns with an error indicating that the maximum limit of API requests has been reached; the solution is to wait and re-run or use authenticated calls (see below). 
 
