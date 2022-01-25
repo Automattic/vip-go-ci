@@ -12,6 +12,8 @@ if ( ! defined( 'VIPGOCI_UNIT_TESTS_INI_DIR_PATH' ) ) {
 
 define( 'VIPGOCI_UNIT_TESTS_TEST_ID_KEY', 'vipgoci_unittests_test_ids' );
 
+require_once( __DIR__ . '/IncludesForTestsOutputControl.php' );
+
 function vipgoci_unittests_get_config_value(
 	$section,
 	$key,
@@ -282,44 +284,6 @@ function vipgoci_unittests_options_test(
 	return 0;
 }
 
-function vipgoci_unittests_debug_mode_on() {
-	/*
-	 * Detect if phpunit was started with
-	 * debug-mode on.
-	 */
-
-	if (
-		( in_array( '-v', $_SERVER['argv'] ) ) ||
-		( in_array( '-vv', $_SERVER['argv'] ) ) ||
-		( in_array( '-vvv', $_SERVER['argv'] ) ) ||
-		( in_array( '--debug', $_SERVER['argv'] ) )
-	) {
-		return true;
-	}
-
-	return false;
-}
-
-function vipgoci_unittests_output_suppress() {
-	if ( false === vipgoci_unittests_debug_mode_on() ) {
-		ob_start();
-	}
-}
-
-function vipgoci_unittests_output_get() {
-	if ( false === vipgoci_unittests_debug_mode_on() ) {
-		return ob_get_flush();
-	}
-
-	return '';
-}
-
-function vipgoci_unittests_output_unsuppress() {
-	if ( false === vipgoci_unittests_debug_mode_on() ) {
-		ob_end_clean();
-	}
-}
-
 /*
  * Some versions of PHP reverse the ',' and ';'
  * in output from PHP linting; deal with that here.
@@ -367,29 +331,6 @@ function vipgoci_unittests_check_irc_api_alert_queue(
 	}
 
 	return $found;
-}
-
-/*
- * Functions to easily indicate and determine if we are running
- * specific unit-tests. This is useful if we need to add or 
- * bypass particular functionality in the main code base 
- * while running a particular unit-test.
- */
-
-
-/**
- * Remove indication of running a particular test.
- *
- * @param string $test_id Test ID to use.
- *
- * @return void Does not return a value.
- */
-function vipgoci_unittests_remove_indication_for_test_id(
-	string $test_id
-): void {
-	$GLOBALS[ VIPGOCI_UNIT_TESTS_TEST_ID_KEY ][ $test_id ] = false;
-
-	unset( $GLOBALS[ VIPGOCI_UNIT_TESTS_TEST_ID_KEY ][ $test_id ] );
 }
 
 require_once( __DIR__ . '/../../requires.php' );
