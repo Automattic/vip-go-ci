@@ -2,7 +2,33 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.0.8](https://github.com/Automattic/vip-go-ci/releases/tag/1.0.8) - To be decided
+## [1.1.1](https://github.com/Automattic/vip-go-ci/releases/tag/1.1.1) - 2022-01-11 
+
+### Updated
+- [#228](https://github.com/Automattic/vip-go-ci/pull/228): Update tools-init.sh for WordPress 5.9 compatibility
+
+## [1.1.0](https://github.com/Automattic/vip-go-ci/releases/tag/1.1.0) - 2021-12-13
+
+### Added
+- [https://github.com/Automattic/vip-go-ci/pull/221]: PHP lint altered files only option (``lint-modified-files-only``)
+
+## [1.0.9](https://github.com/Automattic/vip-go-ci/releases/tag/1.0.9) - 2021-11-10
+
+### Added
+- [#209](https://github.com/Automattic/vip-go-ci/pull/209): Add PHPUnit configuration, create suites for unit and integration tests. And split existent tests into those two suites.
+- [#200](https://github.com/Automattic/vip-go-ci/pull/200): Add vipgoci_sysexit() unit test
+
+### Updated
+- [#203](https://github.com/Automattic/vip-go-ci/pull/203): Updating README file
+- [#214](https://github.com/Automattic/vip-go-ci/pull/214): Update VIPCS to ``2.3.3`` version
+
+### Fixed
+- [#204](https://github.com/Automattic/vip-go-ci/pull/204): Replaces constant with variable to build message about limit of lines per file reached
+- [#217](https://github.com/Automattic/vip-go-ci/pull/217): Add skip large files conditions to post PHPCS checks
+- [#208](https://github.com/Automattic/vip-go-ci/pull/208): Add logic to avoid duplicated comments about limit of lines exceeded in the same PR
+- [#218](https://github.com/Automattic/vip-go-ci/pull/218): + Add logic to avoid duplicated comments about limit of lines exceeded in the same PR
+
+## [1.0.8](https://github.com/Automattic/vip-go-ci/releases/tag/1.0.8) - 2021-08-25
 
 ### Added
 - [#186](https://github.com/Automattic/vip-go-ci/pull/186): Skip large files functionality (``skip-large-files`` and ``skip-large-files-limit`` options).

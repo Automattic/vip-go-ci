@@ -61,6 +61,10 @@ function vipgoci_help_print() :void {
 		PHP_EOL .
 		'PHP Linting configuration:' . PHP_EOL .
 		"\t" . '--lint=BOOL                    Whether to do PHP linting. Default is true.' . PHP_EOL .
+		"\t" . '--lint-modified-files-only=BOOL   Whether to limit lint scan to run against only modified or new' . PHP_EOL .
+		"\t" . '                               files in the PR to be scanned. Default is true. It can be ' . PHP_EOL .
+		"\t" . '                               modified via options file ("' . VIPGOCI_OPTIONS_FILE_NAME . '") placed in' . PHP_EOL .
+		"\t" . '                               root of the repository.' . PHP_EOL .
 		"\t" . '--lint-skip-folders=STRING     Specify folders relative to root of the git repository in which' . PHP_EOL .
 		"\t" . '                               files should not be PHP linted. Values are comma separated.' . PHP_EOL .
 		"\t" . '--lint-skip-folders-in-repo-options-file=BOOL   Whether to allow specifying folders that are not' . PHP_EOL .
@@ -257,6 +261,7 @@ function vipgoci_options_recognized() :array {
 		'lint:',
 		'lint-skip-folders:',
 		'lint-skip-folders-in-repo-options-file:',
+		'lint-modified-files-only:',
 		'php-path:',
 
 		/*
@@ -929,6 +934,7 @@ function vipgoci_run_init_options_reviews( array &$options ) :void {
 	 *
 	 * All of the messages will be transformed to lower-case.
 	 */
+
 	vipgoci_option_array_handle(
 		$options,
 		'review-comments-ignore',
@@ -1001,6 +1007,12 @@ function vipgoci_run_init_options_lint( array &$options ) :void {
 	vipgoci_option_bool_handle(
 		$options,
 		'lint',
+		'true'
+	);
+
+	vipgoci_option_bool_handle(
+		$options,
+		'lint-modified-files-only',
 		'true'
 	);
 
@@ -1800,6 +1812,11 @@ function vipgoci_run_init_options_repo_options( array &$options ):void {
 		'review-comments-include-severity' => array(
 			'type'          => 'boolean',
 			'valid_values'  => array( true, false ),
+		),
+
+		'lint-modified-files-only' => array(
+			'type'		=> 'boolean',
+			'valid_values'	=> array( true, false ),
 		),
 
 		'phpcs' => array(
