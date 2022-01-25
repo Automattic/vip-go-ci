@@ -15,13 +15,17 @@ commands:
       - run: sudo apt update
       - run: sudo apt install -y zip unzip gzip tar
       - run: composer require --dev phpunit/phpunit ^9
+      # Ensure we always have access to PHP 7.4; used for PHP linting and PHPCS scanning
+      # This uses a third-party package, should be safe as no secrets are used during this build.
+      - run: sudo add-apt-repository -y ppa:ondrej/php
+      - run: sudo apt install -y php7.4 php7.4-dom php7.4-curl php7.4-mbstring
       # By default, php is not available in /usr/bin, fix that
       - run: sudo ln -s /usr/local/bin/php /usr/bin/php
       # Install all the tools vip-go-ci needs, remove vip-go-ci itself though
       - run: bash ~/project/tools-init.sh
       - run: rm -rf ~/vip-go-ci-tools/vip-go-ci
-      # Change path to vital tools needed
-      - run: sed 's/\/home\/phpunit\//\/home\/circleci\//' < ~/project/unittests.ini.dist > ~/project/unittests.ini
+      # Change path to vital tools needed, ensure we use PHP 7.4 for linting
+      - run: cat unittests.ini.dist | sed 's/\/home\/phpunit\//\/home\/circleci\//' | sed 's/php-path=\/usr\/bin\/php/php-path=\/usr\/bin\/php7.4/g'  > unittests.ini
       # No secrets available for unit-tests
       - run: touch ~/project/unittests-secrets.ini
       # Prepare phpunit configuration file
