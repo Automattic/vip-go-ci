@@ -1,6 +1,8 @@
 <?php
 
-namespace Vipgoci\tests;
+declare(strict_types=1);
+
+namespace Vipgoci\Tests\Integration;
 
 require_once( __DIR__ . '/IncludesForTests.php' );
 
