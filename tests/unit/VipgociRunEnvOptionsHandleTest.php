@@ -7,6 +7,9 @@ namespace Vipgoci\Tests\Unit;
 require_once( __DIR__ . '/../../main.php' );
 require_once( __DIR__ . '/../../options.php' );
 
+// Needed for vipgoci_unittests_output_suppress() and vipgoci_unittests_output_unsuppress()
+require_once( __DIR__ . '/../integration/IncludesForTests.php' );
+
 use PHPUnit\Framework\TestCase;
 
 // phpcs:disable PSR1.Files.SideEffects
