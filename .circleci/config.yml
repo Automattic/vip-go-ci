@@ -23,7 +23,7 @@ commands:
       - run: bash ~/project/tools-init.sh
       - run: rm -rf ~/vip-go-ci-tools/vip-go-ci
       # Change path to vital tools needed, ensure we use PHP 7.4 for linting
-      - run: cat unittests.ini.dist | sed 's/\/home\/phpunit\//\/home\/circleci\//' | sed 's/php-path=\/usr\/bin\/php/php-path=\/usr\/bin\/php7.4/g'  > unittests.ini
+      - run: cat ~/project/unittests.ini.dist | sed 's/\/home\/phpunit\//\/home\/circleci\//' | sed 's/php-path=\/usr\/bin\/php/php-path=\/usr\/bin\/php7.4/g'  > ~/project/unittests.ini
       # No secrets available for unit-tests
       - run: touch ~/project/unittests-secrets.ini
       # Prepare phpunit configuration file
