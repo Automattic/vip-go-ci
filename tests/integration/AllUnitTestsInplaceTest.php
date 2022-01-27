@@ -25,7 +25,10 @@ final class AllUnitTestsInplaceTest extends TestCase {
 					case '..':
 					case 'Skeleton.php':
 					case 'IncludesForTests.php':
+					case 'IncludesForTestsConfig.php':
 					case 'IncludesForTestsOutputControl.php':
+					case 'IncludesForTestsMisc.php':
+					case 'IncludesForTestsRepo.php':
 					case 'GitDiffsFetchUnfilteredTrait.php':
 						/*
 						 * Remove those away from
