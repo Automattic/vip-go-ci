@@ -55,7 +55,7 @@ If you have a feature request, please read the [file on contributing](CONTRIBUTI
 
 ### System requirements
 
-* `vip-go-ci` requires PHP 7.3 or later. PHP 7.4 is preferred.
+* `vip-go-ci` requires PHP 8.0 or later. PHP 8.1 is recommended.
 * Linux is recommended as a platform for `vip-go-ci`.
 * git version 2.10 or later.
 * Working bash shell.
