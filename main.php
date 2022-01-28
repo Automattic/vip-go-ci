@@ -1794,22 +1794,17 @@ function vipgoci_run_init_options_repo_options( array &$options ):void {
 	 * options here.
 	 */
 	$repo_options_read_repo_file_arr = array(
-		'skip-execution'        => array(
+		'autoapprove' => array(
 			'type'          => 'boolean',
 			'valid_values'  => array( true, false ),
 		),
 
-		'skip-draft-prs'        => array(
+		'autoapprove-php-nonfunctional-changes' => array(
 			'type'          => 'boolean',
 			'valid_values'  => array( true, false ),
 		),
 
-		'review-comments-sort'  => array(
-			'type'          => 'boolean',
-			'valid_values'  => array( true, false ),
-		),
-
-		'review-comments-include-severity' => array(
+		'hashes-api' => array(
 			'type'          => 'boolean',
 			'valid_values'  => array( true, false ),
 		),
@@ -1829,11 +1824,6 @@ function vipgoci_run_init_options_repo_options( array &$options ):void {
 			'valid_values'  => array( 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ),
 		),
 
-		'post-generic-pr-support-comments' => array(
-			'type'          => 'boolean',
-			'valid_values'  => array( true, false ),
-		),
-
 		'phpcs-sniffs-include' => array(
 			'type'          => 'array',
 			'append'        => true,
@@ -1846,7 +1836,27 @@ function vipgoci_run_init_options_repo_options( array &$options ):void {
 			'valid_values'  => null,
 		),
 
-		'hashes-api' => array(
+		'post-generic-pr-support-comments' => array(
+			'type'          => 'boolean',
+			'valid_values'  => array( true, false ),
+		),
+
+		'review-comments-include-severity' => array(
+			'type'          => 'boolean',
+			'valid_values'  => array( true, false ),
+		),
+
+		'review-comments-sort'  => array(
+			'type'          => 'boolean',
+			'valid_values'  => array( true, false ),
+		),
+
+		'skip-draft-prs'        => array(
+			'type'          => 'boolean',
+			'valid_values'  => array( true, false ),
+		),
+
+		'skip-execution'        => array(
 			'type'          => 'boolean',
 			'valid_values'  => array( true, false ),
 		),
@@ -1854,16 +1864,6 @@ function vipgoci_run_init_options_repo_options( array &$options ):void {
 		'svg-checks' => array(
 			'type'          => 'boolean',
 			'valid_values'  => array( true, false ),	
-		),
-
-		'autoapprove' => array(
-			'type'          => 'boolean',
-			'valid_values'  => array( true, false ),
-		),
-
-		'autoapprove-php-nonfunctional-changes' => array(
-			'type'          => 'boolean',
-			'valid_values'  => array( true, false ),
 		),
 	);
 
