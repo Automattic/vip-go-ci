@@ -1,6 +1,6 @@
 # vip-go-ci
 
-[![CircleCI](https://circleci.com/gh/Automattic/vip-go-ci/tree/main.svg?style=shield)](https://circleci.com/gh/Automattic/vip-go-ci/tree/main)
+[![Release Date of the Latest Version](https://img.shields.io/github/release-date/Automattic/vip-go-ci.svg?maxAge=1800)](https://github.com/Automattic/vip-go-ci/releases) [![CircleCI](https://circleci.com/gh/Automattic/vip-go-ci/tree/main.svg?style=shield)](https://circleci.com/gh/Automattic/vip-go-ci/tree/main) [![Number of Contributors](https://img.shields.io/github/contributors/Automattic/vip-go-ci.svg?maxAge=3600)](https://github.com/Automattic/vip-go-ci/graphs/contributors)
 
 Continuous integration for VIP Go repositories.
 
