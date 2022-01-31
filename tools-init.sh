@@ -35,8 +35,8 @@ export PHP_COMPATIBILITY_PARAGONIE_VER="1.3.1"
 export PHP_COMPATIBILITY_PARAGONIE_SHA1SUM="a51cf3a1af05e6192ce9db6fc90ccb7afd58cb22"
 
 # https://github.com/Automattic/vip-go-svg-sanitizer/releases
-export VIP_GO_SVG_SANITIZER_VER="0.9.7"
-export VIP_GO_SVG_SANITIZER_SHA1SUM="b65d24bec2d7466efaa12b7a04387b7efdd5cbbc"
+export VIP_GO_SVG_SANITIZER_VER="0.9.8"
+export VIP_GO_SVG_SANITIZER_SHA1SUM="558f16dcff6adc4637c1d0287cc6f95fe9ab2ece"
 
 export TMP_LOCK_FILE="$HOME/.vip-go-ci-tools-init.lck"
 
