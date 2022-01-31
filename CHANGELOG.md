@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.3](https://github.com/Automattic/vip-go-ci/releases/tag/1.1.2) - 2022-01-31
+
+### Added
+- [#239](https://github.com/Automattic/vip-go-ci/pull/239): Define version 1.1.3
+
 ## [1.1.2](https://github.com/Automattic/vip-go-ci/releases/tag/1.1.2) - 2022-01-31
 
 ### Added
