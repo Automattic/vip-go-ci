@@ -25,7 +25,7 @@ function vipgoci_help_print() :void {
 		"\t" . '                               Default is zero' . PHP_EOL .
 		"\t" . '--max-exec-time=NUMBER         Maximum execution time for vip-go-ci, in seconds. Will exit if exceeded.' . PHP_EOL .
 		"\t" . '                               Only lime spent after options are initialized and during scanning is' . PHP_EOL .
-		"\ŧ" . '                               considered as execution time. Time initializing is excluded.' . PHP_EOL .
+		"\t" . '                               considered as execution time. Time initializing is excluded.' . PHP_EOL .
 		"\t" . '--enforce-https-urls=BOOL      Check and enforce that all URLs provided to parameters ' .PHP_EOL .
 		"\t" . '                               that expect a URL are HTTPS and not HTTP. Default is true.' . PHP_EOL .
 		"\t" . '--skip-draft-prs=BOOL          If true, skip scanning of all pull requests that are in draft mode.' . PHP_EOL .
