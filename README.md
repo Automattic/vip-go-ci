@@ -359,8 +359,6 @@ For example:
 
 `vip-go-ci` supports setting maximum execution time. Once the maximum time is exceeded, it will exit with an error code (see [above](#exit-codes)).
 
-Note that only time spent after options are initialized and during scanning is considered as execution time. Time initializing is excluded.
-
 Use the `--max-exec-time` option to set maximum execution time (in seconds):
 
 > ./vip-go-ci.php ... --max-exec-time=600
