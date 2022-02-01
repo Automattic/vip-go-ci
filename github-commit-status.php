@@ -28,7 +28,7 @@ $options_recognized = array(
 );
 
 $options = getopt(
-	null,
+	'',
 	$options_recognized
 );
 
