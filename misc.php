@@ -99,12 +99,15 @@ function vipgoci_sysexit(
 	);
 
 	/*
-	 * If running SysExitTest.php unit-test, return
+	 * If running certain unit-tests, return
 	 * with exit status.
 	 */
 	if (
 		( function_exists( 'vipgoci_unittests_check_indication_for_test_id' )) &&
-		( vipgoci_unittests_check_indication_for_test_id( 'SysExitTest' ) )
+		( 
+			( vipgoci_unittests_check_indication_for_test_id( 'SysExitTest' ) ) ||
+			( vipgoci_unittests_check_indication_for_test_id( 'RunScanSkipExecutionTest' ) )
+		)
 	) {
 		return $exit_status;
 	}
