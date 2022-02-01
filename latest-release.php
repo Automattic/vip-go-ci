@@ -1,6 +1,8 @@
 #!/usr/bin/php
 <?php
 
+declare(strict_types=1);
+
 /*
  * Look for the latest release of vip-go-ci
  * on GitHub, and output the release-number

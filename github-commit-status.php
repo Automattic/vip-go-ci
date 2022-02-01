@@ -1,6 +1,8 @@
 #!/usr/bin/env php
 <?php
 
+declare(strict_types=1);
+
 // phpcs:disable PSR1.Files.SideEffects
 
 define( 'VIPGOCI_INCLUDED', true );
