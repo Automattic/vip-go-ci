@@ -2114,8 +2114,6 @@ function vipgoci_run_scan_max_exec_time(
  * @param array $options Array of options.
  *
  * @return void
- *
- * @codeCoverageIgnore
  */
 function vipgoci_run_scan_skip_execution( array &$options ) :void {
 	/*
@@ -2476,8 +2474,6 @@ function vipgoci_run_scan_reviews_comments_enforce_maximum(
  * @param array $prs_comments_maxed Array of PRs with maximum number of
  *                                  comments reached.
  * @return void
- *
- * @codeCoverageIgnore
  */
 function vipgoci_run_scan_total_comments_max_warning_post(
 	array &$options,
