@@ -2822,7 +2822,7 @@ function vipgoci_run_init_vars() :array {
 	 * Try to read options from command-line parameters.
 	 */
 	$options = getopt(
-		null,
+		'',
 		$options_recognized
 	);
 
