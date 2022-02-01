@@ -45,12 +45,12 @@ final class RunScanTotalCommentsMaxWarningPostTest extends TestCase {
 			$this->options_commit,
 		);
 
-		$this->options['token'] = $this->options['github-token'];
-
 		$this->options['commit'] = $this->options['commit-test-run-scan-total-comments-max-warning-post'];
 		$this->options['pr_number'] = $this->options['pr-test-run-scan-total-comments-max-warning-post'];
 
-		if ( ! empty( $this->options['token'] ) ) {
+		if ( ! empty( $this->options['github-token'] ) ) {
+			$this->options['token'] = $this->options['github-token'];
+
 			vipgoci_unittests_output_suppress();
 
 			$this->current_user_info = vipgoci_github_authenticated_user_get(
@@ -126,7 +126,7 @@ final class RunScanTotalCommentsMaxWarningPostTest extends TestCase {
 	public function testTotalCommentsReachedMax(): void {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
-			array( 'github-token', 'token' ),
+			array( ),
 			$this
 		);
 
@@ -198,7 +198,7 @@ final class RunScanTotalCommentsMaxWarningPostTest extends TestCase {
 	public function testTotalCommentsDidNotReachMax(): void {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
-			array( 'github-token', 'token' ),
+			array( ),
 			$this
 		);
 
