@@ -1763,6 +1763,12 @@ function vipgoci_run_cleanup_send_pixel_api(
 			$counter_report
 		);
 	}
+
+	else {
+		vipgoci_log(
+			'Not sending data to pixel API due to missing configuration options'
+		);
+	}
 }
 
 /**
