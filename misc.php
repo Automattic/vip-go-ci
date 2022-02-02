@@ -108,7 +108,8 @@ function vipgoci_sysexit(
 			( vipgoci_unittests_check_indication_for_test_id( 'SysExitTest' ) ) ||
 			( vipgoci_unittests_check_indication_for_test_id( 'RunScanSkipExecutionTest' ) ) ||
 			( vipgoci_unittests_check_indication_for_test_id( 'MiscSetMaximumExecTimeTest' ) ) ||
-			( vipgoci_unittests_check_indication_for_test_id( 'RunScanMaxExecTimeTest' ) )
+			( vipgoci_unittests_check_indication_for_test_id( 'RunScanMaxExecTimeTest' ) ) ||
+			( vipgoci_unittests_check_indication_for_test_id( 'RunInitGithubTokenOptionTest' ) )
 		)
 	) {
 		return $exit_status;

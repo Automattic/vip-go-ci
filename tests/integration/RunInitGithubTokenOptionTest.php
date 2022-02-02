@@ -1,0 +1,140 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Vipgoci\Tests\Integration;
+
+require_once( __DIR__ . '/IncludesForTests.php' );
+
+require_once( __DIR__ . '/../unit/helper/IndicateTestId.php' );
+
+use PHPUnit\Framework\TestCase;
+
+// phpcs:disable PSR1.Files.SideEffects
+
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
+final class RunInitGithubTokenOptionTest extends TestCase {
+	protected function setUp(): void {
+		$this->options = array();
+
+		$this->options[ 'github-token' ] =
+			vipgoci_unittests_get_config_value(
+				'git-secrets',
+				'github-token',
+				true // Fetch from secrets file
+			);
+
+		$this->options['token'] =
+			$this->options['github-token'];
+
+		// Indicate that this particular test is running.
+		vipgoci_unittests_indicate_test_id( 'RunInitGithubTokenOptionTest' );
+	}
+
+	protected function tearDown(): void {
+		$this->options = null;
+
+		// Remove the indication.
+		vipgoci_unittests_remove_indication_for_test_id( 'RunInitGithubTokenOptionTest' );
+	}
+
+	/**
+	 * @covers ::vipgoci_run_init_github_token_option
+	 */
+	public function testGitHubTokenValid () {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( ),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
+		ob_start();
+
+		// Initialize GitHub token options
+		vipgoci_run_init_github_token_option( $this->options );
+
+		/*
+		 * Get printed data, check if expected string was printed.
+		 */
+		$printed_data = ob_get_contents();
+
+		ob_end_clean();
+
+		if ( true === vipgoci_unittests_debug_mode_on() ) {
+			echo $printed_data;
+		}
+
+		$printed_data_found = strpos(
+			$printed_data,
+			'Got information about token-holder user from GitHub'
+		);
+
+		$this->assertNotFalse( $printed_data_found );
+
+		$cleaned_options = vipgoci_options_sensitive_clean(
+			$this->options
+		);
+
+		$this->assertSame(
+			'***',
+			$cleaned_options['token']
+		);
+	}
+
+	/**
+	 * @covers ::vipgoci_run_init_github_token_option
+	 */
+	public function testGitHubTokenInvalid () {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( ),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
+		// Set token to invalid
+		$this->options['token'] = 'invalid-token-' . time();
+
+		ob_start();
+
+		// Initialize GitHub token options
+		vipgoci_run_init_github_token_option( $this->options );
+
+		/*
+		 * Get printed data, check if expected string was printed.
+		 */
+		$printed_data = ob_get_contents();
+
+		ob_end_clean();
+
+		if ( true === vipgoci_unittests_debug_mode_on() ) {
+			echo $printed_data;
+		}
+
+		$printed_data_found = strpos(
+			$printed_data,
+			'Unable to get information about token-holder user from GitHub'
+		);
+
+		$this->assertNotFalse( $printed_data_found );
+
+		$cleaned_options = vipgoci_options_sensitive_clean(
+			$this->options
+		);
+
+		$this->assertSame(
+			'***',
+			$cleaned_options['token']
+		);
+	}
+}
