@@ -671,6 +671,8 @@ All utilities in `tools-init.sh` follow the same pattern.
 
 To run the tests for `vip-go-ci`, you will need to install `phpunit` and any dependencies needed (this would include `xdebug`).
 
+Note that the test suite sometimes uses the @runTestsInSeparateProcesses and @preserveGlobalState PHPUnit flags to avoid any influence of one test on another.
+
 ### PHPUnit configuration file:
 Run:
 > mv phpunit.xml.dist phpunit.xml
