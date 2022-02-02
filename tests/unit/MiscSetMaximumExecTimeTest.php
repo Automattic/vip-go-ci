@@ -21,6 +21,7 @@ use PHPUnit\Framework\TestCase;
  * not inherited from another test.
  *
  * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
  */
 final class MiscSetMaximumExecTimeTest extends TestCase {
 	protected function setUp(): void {

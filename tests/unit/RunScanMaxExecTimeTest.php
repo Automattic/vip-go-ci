@@ -22,6 +22,7 @@ use PHPUnit\Framework\TestCase;
  * not inherited from another test.
  *
  * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
  */
 final class RunScanMaxExecTimeTest extends TestCase {
 	var $options = array(
