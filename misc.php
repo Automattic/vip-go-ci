@@ -106,7 +106,8 @@ function vipgoci_sysexit(
 		( function_exists( 'vipgoci_unittests_check_indication_for_test_id' )) &&
 		( 
 			( vipgoci_unittests_check_indication_for_test_id( 'SysExitTest' ) ) ||
-			( vipgoci_unittests_check_indication_for_test_id( 'RunScanSkipExecutionTest' ) )
+			( vipgoci_unittests_check_indication_for_test_id( 'RunScanSkipExecutionTest' ) ) ||
+			( vipgoci_unittests_check_indication_for_test_id( 'MiscSetMaximumExecTimeTest' ) )
 		)
 	) {
 		return $exit_status;
@@ -119,8 +120,6 @@ function vipgoci_sysexit(
  * Set up to alarm when maximum execution time of
  * vip-go-ci is reached. Will call exit() when
  * alarm goes off.
- *
- * @codeCoverageIgnore
  */
 function vipgoci_set_maximum_exec_time(
 	int $max_exec_time = 600,
@@ -169,18 +168,16 @@ function vipgoci_set_maximum_exec_time(
 		SIGALRM,
 		function ( $signo ) use ( $commit_identifier ) {
 			if ( SIGALRM === $signo ) {
-				vipgoci_log(
+				vipgoci_sysexit(
 					'Maximum execution time reached ' .
 						( empty( $commit_identifier ) ?
 						'' :
 						'(' . $commit_identifier . ').' ),
 					array(),
-					0,
+					VIPGOCI_EXIT_EXEC_TIME,
 					true // log to IRC
 				);
 			}
-
-			exit( VIPGOCI_EXIT_EXEC_TIME );
 		}
 	);
 
