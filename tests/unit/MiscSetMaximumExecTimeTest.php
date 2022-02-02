@@ -51,7 +51,7 @@ final class MiscSetMaximumExecTimeTest extends TestCase {
 		ob_start();
 
 		// Set alarm in 3 seconds
-		vipgoci_set_maximum_exec_time( 3, '0xabcde' );
+		vipgoci_set_maximum_exec_time( 3, 'MAX_EXEC_ALARM_ABCDE' );
 
 		// Wait for 10 seconds, alarm should trigger meanwhile
 		sleep( 10 );
@@ -64,7 +64,7 @@ final class MiscSetMaximumExecTimeTest extends TestCase {
 		// Check if expected string was printed.
 		$printed_data_found = strpos(
 			$printed_data,
-			'0xabcde'
+			'MAX_EXEC_ALARM_ABCDE'
 		);
 
 		$this->assertTrue(
