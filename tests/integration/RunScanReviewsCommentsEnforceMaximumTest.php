@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 // phpcs:disable PSR1.Files.SideEffects
 
-final class RunScanReviewsCommentsEnforceMaximum extends TestCase {
+final class RunScanReviewsCommentsEnforceMaximumTest extends TestCase {
 	var $options_git = array(
 		'repo-owner'	=> null,
 		'repo-name'	=> null,
@@ -172,21 +172,6 @@ final class RunScanReviewsCommentsEnforceMaximum extends TestCase {
 			array(
 				'issues' => array(
 					$this->options['pr-test-github-pr-results-max'] => array(
-						array(
-							'type'		=> 'phpcs',
-							'file_name'	=> 'bla-9.php',
-							'file_line'	=> 10,
-							'issue'		=> array(
-								'message'	=> 'This comment is 100% valid code; is this commented out code?',
-								'source'	=> 'Squiz.PHP.CommentedOutCode.Found',
-									'severity'	=> 10,
-								'fixable'	=> false,
-								'type'		=> 'WARNING',
-								'line'		=> 10,
-								'column'	=> 1,
-								'level'	=> 'WARNING'
-							),
-						),
 					)
 				),
 
@@ -194,7 +179,7 @@ final class RunScanReviewsCommentsEnforceMaximum extends TestCase {
 					'phpcs'		=> array(
 						$this->options['pr-test-github-pr-results-max'] => array(
 							'error'		=> 0,
-							'warning'	=> 1,
+							'warning'	=> 0,
 							'info'		=> 0,
 						)
 					)
