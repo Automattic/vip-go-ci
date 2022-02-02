@@ -2,16 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Vipgoci\Tests\Unit;
+namespace Vipgoci\Tests\Integration;
 
-require_once( __DIR__ . '/helper/IndicateTestId.php' );
-require_once( __DIR__ . '/../integration/IncludesForTestsOutputControl.php' );
+require_once( __DIR__ . '/IncludesForTests.php' );
 
-require_once( __DIR__ . '/../../defines.php' );
-require_once( __DIR__ . '/../../misc.php' );
-require_once( __DIR__ . '/../../main.php' );
-require_once( __DIR__ . '/../../other-web-services.php' );
-
+require_once( __DIR__ . '/../unit/helper/IndicateTestId.php' );
 
 use PHPUnit\Framework\TestCase;
 
