@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Vipgoci\Tests\Unit;
 
 require_once( __DIR__ . '/helper/IndicateTestId.php' );
+require_once( __DIR__ . '/helper/CheckPcntlSupport.php' );
 
 require_once( __DIR__ . '/../../defines.php' );
 require_once( __DIR__ . '/../../misc.php' );
