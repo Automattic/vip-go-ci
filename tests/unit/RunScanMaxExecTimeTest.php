@@ -55,7 +55,7 @@ final class RunScanMaxExecTimeTest extends TestCase {
 			return;
 		}
 
-		$this->options['max-exec-time'] = 5;
+		$this->options['max-exec-time'] = 8;
 
 		ob_start();
 
@@ -81,8 +81,8 @@ final class RunScanMaxExecTimeTest extends TestCase {
 
 		ob_start();
 
-		// Wait for 10 seconds, alarm should trigger meanwhile
-		sleep( 10 );
+		// Wait for 12 seconds, alarm should trigger meanwhile
+		sleep( 12 );
 
 		// String should have been printed
 		$printed_data = ob_get_contents();
