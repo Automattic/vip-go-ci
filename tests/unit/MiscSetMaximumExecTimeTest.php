@@ -39,6 +39,14 @@ final class MiscSetMaximumExecTimeTest extends TestCase {
 	 * @covers ::vipgoci_set_maximum_exec_time
 	 */
 	public function testSetMaxExecTime1() {
+		if ( ! vipgoci_unittests_pcntl_supported() ) {
+			$this->markTestSkipped(
+				'PCNTL support is missing'
+			);
+
+			return;
+		}
+
 		ob_start();
 
 		// Set alarm in 3 seconds
