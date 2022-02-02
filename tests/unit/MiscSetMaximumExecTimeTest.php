@@ -6,6 +6,7 @@ namespace Vipgoci\Tests\Unit;
 
 require_once( __DIR__ . '/helper/IndicateTestId.php' );
 require_once( __DIR__ . '/helper/CheckPcntlSupport.php' );
+require_once( __DIR__ . '/../integration/IncludesForTestsOutputControl.php' );
 
 require_once( __DIR__ . '/../../defines.php' );
 require_once( __DIR__ . '/../../misc.php' );
@@ -69,6 +70,10 @@ final class MiscSetMaximumExecTimeTest extends TestCase {
 
 		ob_end_clean();
 
+		if ( true === vipgoci_unittests_debug_mode_on() ) {
+			echo $printed_data;
+		}
+
 		// Check if expected string was not printed.
 		$printed_data_found = strpos(
 			$printed_data,
@@ -89,14 +94,18 @@ final class MiscSetMaximumExecTimeTest extends TestCase {
 
 		ob_end_clean();
 
+		if ( true === vipgoci_unittests_debug_mode_on() ) {
+			echo $printed_data;
+		}
+
 		// Check if expected string was printed.
 		$printed_data_found = strpos(
 			$printed_data,
 			'MAX_EXEC_ALARM_ABCDE'
 		);
 
-		$this->assertTrue(
-			$printed_data_found !== false
+		$this->assertNotFalse(
+			$printed_data_found
 		);
 	}
 }

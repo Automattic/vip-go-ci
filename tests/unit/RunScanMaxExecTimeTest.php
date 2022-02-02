@@ -6,6 +6,7 @@ namespace Vipgoci\Tests\Unit;
 
 require_once( __DIR__ . '/helper/IndicateTestId.php' );
 require_once( __DIR__ . '/helper/CheckPcntlSupport.php' );
+require_once( __DIR__ . '/../integration/IncludesForTestsOutputControl.php' );
 
 require_once( __DIR__ . '/../../defines.php' );
 require_once( __DIR__ . '/../../misc.php' );
@@ -77,6 +78,10 @@ final class RunScanMaxExecTimeTest extends TestCase {
 
 		ob_end_clean();
 
+		if ( true === vipgoci_unittests_debug_mode_on() ) {
+			echo $printed_data;
+		}
+
 		// Check if expected string was not printed.
 		$printed_data_found = strpos(
 			$printed_data,
@@ -97,14 +102,18 @@ final class RunScanMaxExecTimeTest extends TestCase {
 
 		ob_end_clean();
 
+		if ( true === vipgoci_unittests_debug_mode_on() ) {
+			echo $printed_data;
+		}
+
 		// Check if expected string was printed.
 		$printed_data_found = strpos(
 			$printed_data,
 			$this->options['commit']
 		);
 
-		$this->assertTrue(
-			$printed_data_found !== false
+		$this->assertNotFalse(
+			$printed_data_found
 		);
 	}
 	/**
@@ -135,6 +144,10 @@ final class RunScanMaxExecTimeTest extends TestCase {
 		$printed_data = ob_get_contents();
 
 		ob_end_clean();
+
+		if ( true === vipgoci_unittests_debug_mode_on() ) {
+			echo $printed_data;
+		}
 
 		// Check if expected string was printed.
 		$printed_data_found = strpos(
