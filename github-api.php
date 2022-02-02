@@ -218,7 +218,8 @@ function vipgoci_github_rate_limits_check(
 				'x-ratelimit-limit' =>
 					$resp_headers['x-ratelimit-limit'][0],
 			),
-			VIPGOCI_EXIT_GITHUB_PROBLEM
+			VIPGOCI_EXIT_GITHUB_PROBLEM,
+			true // Log to IRC
 		);
 	}
 }
