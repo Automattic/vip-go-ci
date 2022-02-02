@@ -1569,6 +1569,12 @@ function vipgoci_run_cleanup_irc( array &$options ) :void {
 			$options['irc-api-room']
 		);
 	}
+
+	else {
+		vipgoci_log(
+			'Did not send alerts to IRC, due to missing configuration parameter'
+		);
+	}
 }
 
 /**
