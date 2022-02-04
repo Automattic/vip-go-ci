@@ -7,6 +7,7 @@ namespace Vipgoci\Tests\Unit;
 require_once( __DIR__ . '/../../main.php' );
 require_once( __DIR__ . '/../../options.php' );
 require_once( __DIR__ . '/../../misc.php' );
+require_once( __DIR__ . '/../../defines.php' );
 
 use PHPUnit\Framework\TestCase;
 
@@ -25,7 +26,7 @@ final class VipgociRunInitOptionsSkipLargeFilesTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_run_init_options_skip_large_files
 	 */
-	public function testRunInitOptionsSkipLargeFilesDefault() {
+	public function testRunInitOptionsSkipLargeFilesDefault() :void {
 		vipgoci_run_init_options_skip_large_files(
 			$this->options
 		);
@@ -42,7 +43,7 @@ final class VipgociRunInitOptionsSkipLargeFilesTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_run_init_options_skip_large_files
 	 */
-	public function testRunInitOptionsSkipLargeFilesCustom() {
+	public function testRunInitOptionsSkipLargeFilesCustom() :void {
 		$this->options['skip-large-files'] = 'false';
 		$this->options['skip-large-files-limit'] = '30000';
 

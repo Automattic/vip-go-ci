@@ -61,7 +61,7 @@ final class VipgociRunInitOptionsRepoOptionsTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_run_init_options_repo_options
 	 */
-	public function testRunInitOptionsRepoOptionsDisabled() {
+	public function testRunInitOptionsRepoOptionsDisabled() :void {
 		$this->options['local-git-repo'] = vipgoci_unittests_setup_git_repo(
 			$this->options
 		);
@@ -110,7 +110,7 @@ final class VipgociRunInitOptionsRepoOptionsTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_run_init_options_repo_options
 	 */
-	public function testRunInitOptionsRepoOptionsEnabledAndAllowed() {
+	public function testRunInitOptionsRepoOptionsEnabledAndAllowed() :void {
 		$this->options['commit'] = $this->options['commit-test-options-read-repo-file-with-file-2'];
 
 		$this->options['local-git-repo'] = vipgoci_unittests_setup_git_repo(
@@ -157,7 +157,7 @@ final class VipgociRunInitOptionsRepoOptionsTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_run_init_options_repo_options
 	 */
-	public function testRunInitOptionsRepoOptionsEnabledAndNotAllowed() {
+	public function testRunInitOptionsRepoOptionsEnabledAndNotAllowed() :void {
 		$this->options['commit'] = $this->options['commit-test-options-read-repo-file-with-file-2'];
 
 		$this->options['local-git-repo'] = vipgoci_unittests_setup_git_repo(

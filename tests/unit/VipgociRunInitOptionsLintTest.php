@@ -29,7 +29,7 @@ final class VipgociRunInitOptionsLintTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_run_init_options_lint
 	 */
-	public function testRunInitOptionsLintDefault() {
+	public function testRunInitOptionsLintDefault() :void {
 		vipgoci_run_init_options_lint(
 			$this->options
 		);
@@ -48,7 +48,7 @@ final class VipgociRunInitOptionsLintTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_run_init_options_lint
 	 */
-	public function testRunInitOptionsLintCustom() {
+	public function testRunInitOptionsLintCustom() :void {
 		$this->options['lint'] = 'false';
 		$this->options['lint-modified-files-only'] = 'false';
 		$this->options['lint-skip-folders-in-repo-options-file'] = 'true';

@@ -2,7 +2,13 @@
 
 declare( strict_types=1 );
 
-function vipgoci_unittests_debug_mode_on() {
+/**
+ * Check if debug mode is on, returns true if so,
+ * else return false.
+ *
+ * @return bool
+ */
+function vipgoci_unittests_debug_mode_on() :bool {
 	/*
 	 * Detect if phpunit was started with
 	 * debug-mode on.
@@ -20,13 +26,24 @@ function vipgoci_unittests_debug_mode_on() {
 	return false;
 }
 
-function vipgoci_unittests_output_suppress() {
+/**
+ * Start suppressing output if in debug mode.
+ * 
+ * @return void
+ */
+function vipgoci_unittests_output_suppress() :void {
 	if ( false === vipgoci_unittests_debug_mode_on() ) {
 		ob_start();
 	}
 }
 
-function vipgoci_unittests_output_get() {
+/**
+ * Get and return output if in debug mode. Else
+ * return empty string.
+ * 
+ * @return string
+ */
+function vipgoci_unittests_output_get() :string {
 	if ( false === vipgoci_unittests_debug_mode_on() ) {
 		return ob_get_flush();
 	}
@@ -34,9 +51,13 @@ function vipgoci_unittests_output_get() {
 	return '';
 }
 
-function vipgoci_unittests_output_unsuppress() {
+/**
+ * Stop suppressing output if in debug mode.
+ * 
+ * @return void
+ */
+function vipgoci_unittests_output_unsuppress() :void {
 	if ( false === vipgoci_unittests_debug_mode_on() ) {
 		ob_end_clean();
 	}
 }
-

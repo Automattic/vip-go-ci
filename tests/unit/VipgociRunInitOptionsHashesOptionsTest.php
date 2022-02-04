@@ -24,7 +24,7 @@ final class VipgociRunInitOptionsHashesOptionsTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_run_init_options_hashes_options
 	 */
-	public function testRunInitOptionsHashesOptionsDefault() {
+	public function testRunInitOptionsHashesOptionsDefault() :void {
 		$this->options = array(
 			'hashes-api'          => null,
 			'hashes-api-url'      => 'https://api.test.local/v1/api',
@@ -56,7 +56,7 @@ final class VipgociRunInitOptionsHashesOptionsTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_run_init_options_hashes_options
 	 */
-	public function testRunInitOptionsHashesOptionsCustom() {
+	public function testRunInitOptionsHashesOptionsCustom() :void {
 		$this->options = array(
 			'hashes-api'          => 'true',
 			'hashes-api-url'      => 'https://api.test.local/v1/api',

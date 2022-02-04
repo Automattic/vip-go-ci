@@ -2,11 +2,20 @@
 
 declare( strict_types=1 );
 
+/**
+ * Get configuration value from an INI config file, 
+ *
+ * @param string $section     Section of the configuration file selected.
+ * @param string $key         Fetch value for this key.
+ * @param bool   $secret_file Use secret file rather than the public one.
+ *
+ * @return null|string
+ */
 function vipgoci_unittests_get_config_value(
-	$section,
-	$key,
-	$secret_file = false
-) {
+	string $section,
+	string $key,
+	bool $secret_file = false
+) :?string {
 	if ( false === $secret_file ) {
 		$ini_array = parse_ini_file(
 			VIPGOCI_UNIT_TESTS_INI_DIR_PATH . '/../unittests.ini',
@@ -47,7 +56,20 @@ function vipgoci_unittests_get_config_value(
 	return null;
 }
 
-function vipgoci_unittests_get_config_values( $section, &$config_arr, $secret_file = false ) {
+/**
+ * Get configuration values from an INI config file, 
+ *
+ * @param string $section     Section of the configuration file selected.
+ * @param string $config_arr  Fetch value for these keys.
+ * @param bool   $secret_file Use secret file rather than the public one.
+ *
+ * @return void 
+ */
+function vipgoci_unittests_get_config_values(
+	string $section,
+	array &$config_arr,
+	bool $secret_file = false
+) :void {
 	foreach (
 		array_keys( $config_arr ) as $config_key
 	) {
@@ -64,11 +86,20 @@ function vipgoci_unittests_get_config_values( $section, &$config_arr, $secret_fi
 	}
 }
 
+/**
+ * Test if all options required for test are in place.
+ *
+ * @param array $options              Array of options.
+ * @param array $options_not_required Array of options not required.
+ * @param class $test_instance        Instance of test class.
+ *
+ * @return int
+ */
 function vipgoci_unittests_options_test(
-	$options,
-	$options_not_required,
-	&$test_instance
-) {
+	array $options,
+	array $options_not_required,
+	class &$test_instance
+) :int {
 	$missing_options_str = '';
 
 	$options_keys = array_keys(

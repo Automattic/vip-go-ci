@@ -25,7 +25,7 @@ final class VipgociRunInitOptionsSetSupportLevelLabelTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_run_init_options_set_support_level_label
 	 */
-	public function testRunInitOptionsSetSupportLevelLabelDefault() {
+	public function testRunInitOptionsSetSupportLevelLabelDefault() :void {
 		$this->options = array(
 			'set-support-level-label'         => null,
 			'set-support-level-label-prefix'  => '',
@@ -49,7 +49,7 @@ final class VipgociRunInitOptionsSetSupportLevelLabelTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_run_init_options_set_support_level_label
 	 */
-	public function testRunInitOptionsSetSupportLevelLabelCustom() {
+	public function testRunInitOptionsSetSupportLevelLabelCustom() :void {
 		$this->options = array(
 			'set-support-level-label'         => 'true',
 			'set-support-level-label-prefix'  => '  testing123  ',

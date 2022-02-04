@@ -6,13 +6,20 @@ namespace Vipgoci\Tests\Unit;
 
 require_once( __DIR__ . '/../../main.php' );
 require_once( __DIR__ . '/../../misc.php' );
+require_once( __DIR__ . '/../../defines.php' );
 
 use PHPUnit\Framework\TestCase;
 
 // phpcs:disable PSR1.Files.SideEffects
 
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class VipgociRunScanLogSkippedFilesTest extends TestCase {
 	protected function setUp() :void {
+		require_once( __DIR__ . '/helper/IrcApiAlertQueue.php' );
+
 		$this->options = array(
 			'repo-owner' => 'test-repo',
 			'repo-name'  => 'test-name',
@@ -53,7 +60,7 @@ final class VipgociRunScanLogSkippedFilesTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_run_scan_log_skipped_files
 	 */
-	public function testRunScanLogSkippedFilesNoFound() {
+	public function testRunScanLogSkippedFilesNoFound() :void {
 		ob_start();
 
 		vipgoci_run_scan_log_skipped_files(
@@ -76,7 +83,7 @@ final class VipgociRunScanLogSkippedFilesTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_run_scan_log_skipped_files
 	 */
-	public function testRunScanLogSkippedFilesFound() {
+	public function testRunScanLogSkippedFilesFound() :void {
 		// Add issues found.
 		$this->results[VIPGOCI_SKIPPED_FILES][40]['issues'][VIPGOCI_VALIDATION_MAXIMUM_LINES] = array(
 			'test.txt'

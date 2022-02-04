@@ -8,15 +8,27 @@ require_once( __DIR__ . '/helper/IndicateTestId.php' );
 require_once( __DIR__ . '/helper/CheckIrcApiAlertQueue.php' );
 
 require_once( __DIR__ . './../../defines.php' );
-require_once( __DIR__ . './../../other-web-services.php' );
 require_once( __DIR__ . './../../misc.php' );
 
 use PHPUnit\Framework\TestCase;
 
 // phpcs:disable PSR1.Files.SideEffects
 
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class SysExitTest extends TestCase {
 	protected function setUp(): void {
+		/*
+		 * Ensure this file is required on execution
+		 * of the test itself. This test is run in separate
+		 * process so other tests are unaffected 
+		 * by this require. This is needed to ensure function
+		 * declarations are not attempted multiple times.
+		 */
+		require_once( __DIR__ . '/../../other-web-services.php' );
+
 		/*
 		 * Indicate that this particular test is running,
 		 * needed so that vipgoci_sysexit() can return

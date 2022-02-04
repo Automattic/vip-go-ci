@@ -2,12 +2,16 @@
 
 declare( strict_types=1 );
 
-/*
+/**
  * Clone a git-repository and check out a
  * particular revision.
+ *
+ * @param array Array of options.
+ *
+ * @return string|bool
  */
 function vipgoci_unittests_setup_git_repo(
-	$options
+	array $options
 ) {
 	$temp_dir = tempnam(
 		sys_get_temp_dir(),
@@ -90,12 +94,15 @@ function vipgoci_unittests_setup_git_repo(
 	return $temp_dir;
 }
 
-/*
+/**
  * Remove temporary git-repository folder
  * created by vipgoci_unittests_setup_git_repo()
+ *
+ * @param string $repo_path Path to repository.
+ *
+ * @return bool
  */
-
-function vipgoci_unittests_remove_git_repo( $repo_path ) {
+function vipgoci_unittests_remove_git_repo( string $repo_path ) :bool {
 	$temp_dir = sys_get_temp_dir();
 
 	/*

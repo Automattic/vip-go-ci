@@ -22,7 +22,7 @@ final class VipgociRunInitOptionsReviewsTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_run_init_options_reviews
 	 */
-	public function testRunInitOptionsReviewsDefault() {
+	public function testRunInitOptionsReviewsDefault() :void {
 		vipgoci_run_init_options_reviews(
 			$this->options
 		);
@@ -45,7 +45,7 @@ final class VipgociRunInitOptionsReviewsTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_run_init_options_reviews
 	 */
-	public function testRunInitOptionsReviewsCustom() {
+	public function testRunInitOptionsReviewsCustom() :void {
 		$this->options = array(
 			'review-comments-sort'              => 'true',
 			'review-comments-include-severity'  => 'true',

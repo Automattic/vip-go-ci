@@ -29,7 +29,7 @@ final class VipgociRunInitOptionsPhpcsTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_run_init_options_phpcs
 	 */
-	public function testRunInitOptionsPhpcsDefaults() {
+	public function testRunInitOptionsPhpcsDefaults() :void {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array(),
@@ -81,7 +81,7 @@ final class VipgociRunInitOptionsPhpcsTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_run_init_options_phpcs
 	 */
-	public function testRunInitOptionsPhpcsCustom() {
+	public function testRunInitOptionsPhpcsCustom() :void {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array(),

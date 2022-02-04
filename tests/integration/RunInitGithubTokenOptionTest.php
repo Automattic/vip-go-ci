@@ -44,7 +44,7 @@ final class RunInitGithubTokenOptionTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_run_init_github_token_option
 	 */
-	public function testGitHubTokenValid () {
+	public function testGitHubTokenValid() :void {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( ),
@@ -91,7 +91,7 @@ final class RunInitGithubTokenOptionTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_run_init_github_token_option
 	 */
-	public function testGitHubTokenInvalid () {
+	public function testGitHubTokenInvalid () :void {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( ),

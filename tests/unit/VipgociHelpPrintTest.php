@@ -15,7 +15,7 @@ final class VipgociHelpPrintTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_help_print
 	 */
-	public function testHelpPrint() {
+	public function testHelpPrint() :void {
 		/*
 		 * Call function and get output
 		 * in variable.

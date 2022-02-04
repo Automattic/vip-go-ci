@@ -42,7 +42,7 @@ final class RunScanSkipExecutionTest extends TestCase {
 	 *
 	 * @covers ::vipgoci_run_scan_skip_execution
 	 */
-	public function testRunScanSkipExecution() {
+	public function testRunScanSkipExecution() :void {
 		$this->options['skip-execution'] = true;
 
 		ob_start();
@@ -63,8 +63,8 @@ final class RunScanSkipExecutionTest extends TestCase {
 			'Skipping scanning entirely, as determined by configuration;'
 		);
 
-		$this->assertTrue(
-			$printed_data_found !== false
+		$this->assertNotFalse(
+			$printed_data_found
 		);
 	}
 
@@ -74,7 +74,7 @@ final class RunScanSkipExecutionTest extends TestCase {
 	 *
 	 * @covers ::vipgoci_run_scan_skip_execution
 	 */
-	public function testRunScanDoesNotSkipExecution() {
+	public function testRunScanDoesNotSkipExecution() :void {
 		$this->options['skip-execution'] = false;
 
 		ob_start();

@@ -24,7 +24,7 @@ final class VipgociRunInitOptionsAutoapproveTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_run_init_options_autoapprove
 	 */
-	public function testRunInitOptionsAutoapproveDefault() {
+	public function testRunInitOptionsAutoapproveDefault() :void {
 		$this->options = array(
 			'autoapprove'                           => null,
 			'autoapprove-php-nonfunctional-changes' => null,
@@ -50,7 +50,7 @@ final class VipgociRunInitOptionsAutoapproveTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_run_init_options_autoapprove
 	 */
-	public function testRunInitOptionsAutoapproveCustom() {
+	public function testRunInitOptionsAutoapproveCustom() :void {
 		$this->options = array(
 			'autoapprove'                           => 'true',
 			'autoapprove-php-nonfunctional-changes' => 'true',

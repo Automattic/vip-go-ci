@@ -30,7 +30,7 @@ final class VipgociRunInitOptionsSvgTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_run_init_options_svg
 	 */
-	public function testRunInitOptionsSvgDefault() {
+	public function testRunInitOptionsSvgDefault() :void {
 		vipgoci_run_init_options_svg(
 			$this->options
 		);
@@ -47,7 +47,7 @@ final class VipgociRunInitOptionsSvgTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_run_init_options_svg
 	 */
-	public function testRunInitOptionsSvgCustom() {
+	public function testRunInitOptionsSvgCustom() :void {
 		if ( empty( $this->svg_scanner_path ) ) {
 			$this->markTestSkipped(
 				'Skipping test, not configured correctly, as some options are missing (svg-scanner-path)'

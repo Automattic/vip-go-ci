@@ -104,7 +104,7 @@ final class RunScanReviewsCommentsEnforceMaximumTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_run_scan_reviews_comments_enforce_maximum
 	 */
-	public function testRunScanReviewsCommentsEnforceMaximum1() {
+	public function testRunScanReviewsCommentsEnforceMaximum1() :void {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( ),
@@ -140,7 +140,7 @@ final class RunScanReviewsCommentsEnforceMaximumTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_run_scan_reviews_comments_enforce_maximum
 	 */
-	public function testRunScanReviewsCommentsEnforceMaximum2() {
+	public function testRunScanReviewsCommentsEnforceMaximum2() :void {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( ),

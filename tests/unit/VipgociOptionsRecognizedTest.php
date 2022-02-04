@@ -14,7 +14,7 @@ final class VipgociOptionsRecognizedTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_options_recognized
 	 */
-	public function testOptionsRecognized() {
+	public function testOptionsRecognized() :void {
 		$options_recognized_arr = vipgoci_options_recognized();
 
 		$this->assertNotCount(

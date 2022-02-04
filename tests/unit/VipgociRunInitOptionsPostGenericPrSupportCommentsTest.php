@@ -31,7 +31,7 @@ final class VipgociRunInitOptionsPostGenericPrSupportCommentsTest extends TestCa
 	/**
 	 * @covers ::vipgoci_run_init_options_post_generic_pr_support_comments
 	 */
-	public function testRunInitOptionsPostGenericPrSupportCommentsDefault() {
+	public function testRunInitOptionsPostGenericPrSupportCommentsDefault() :void {
 		vipgoci_run_init_options_post_generic_pr_support_comments(
 			$this->options
 		);
@@ -52,7 +52,7 @@ final class VipgociRunInitOptionsPostGenericPrSupportCommentsTest extends TestCa
 	/**
 	 * @covers ::vipgoci_run_init_options_post_generic_pr_support_comments
 	 */
-	public function testRunInitOptionsPostGenericPrSupportCommentsCustom() {
+	public function testRunInitOptionsPostGenericPrSupportCommentsCustom() :void {
 		$this->options['post-generic-pr-support-comments'] = 'true';
 
 		vipgoci_run_init_options_post_generic_pr_support_comments(

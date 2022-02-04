@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Vipgoci\Tests\Unit;
 
 require_once( __DIR__ . '/../../main.php' );
+require_once( __DIR__ . '/../../misc.php' );
+
 require_once( __DIR__ . '/../../options.php' );
 
 // Needed for vipgoci_unittests_output_suppress() and vipgoci_unittests_output_unsuppress()
@@ -43,7 +45,7 @@ final class VipgociRunEnvOptionsHandleTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_run_env_options_handle
 	 */
-	public function testRunEnvOptionsHandle() {
+	public function testRunEnvOptionsHandle() :void {
 		vipgoci_unittests_output_suppress();
 
 		vipgoci_run_env_options_handle(

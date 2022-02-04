@@ -11,7 +11,6 @@ require_once( __DIR__ . '/../integration/IncludesForTestsOutputControl.php' );
 require_once( __DIR__ . '/../../defines.php' );
 require_once( __DIR__ . '/../../misc.php' );
 require_once( __DIR__ . '/../../main.php' );
-require_once( __DIR__ . '/../../other-web-services.php' );
 
 use PHPUnit\Framework\TestCase;
 
@@ -39,6 +38,15 @@ final class RunScanMaxExecTimeTest extends TestCase {
 		 * instead of exiting. See the function itself.
 		 */
 		vipgoci_unittests_indicate_test_id( 'RunScanMaxExecTimeTest' );
+
+		/*
+		 * Ensure this file is required on execution
+		 * of the test itself. This test is run in separate
+		 * process so other tests are unaffected 
+		 * by this require. This is needed to ensure function
+		 * declarations are not attempted multiple times.
+		 */
+		require_once( __DIR__ . '/../../other-web-services.php' );
 	}
 
 	protected function tearDown(): void {
@@ -55,7 +63,7 @@ final class RunScanMaxExecTimeTest extends TestCase {
 	 * 
 	 * @covers ::vipgoci_run_scan_max_exec_time
 	 */
-	public function testRunScanMaxExecTimeLargerThanZero() {
+	public function testRunScanMaxExecTimeLargerThanZero() :void {
 		if ( ! vipgoci_unittests_pcntl_supported() ) {
 			$this->markTestSkipped(
 				'PCNTL support is missing'
@@ -122,7 +130,7 @@ final class RunScanMaxExecTimeTest extends TestCase {
 	 * 
 	 * @covers ::vipgoci_run_scan_max_exec_time
 	 */
-	public function testRunScanMaxExecTimeIsZero() {
+	public function testRunScanMaxExecTimeIsZero() :void {
 		if ( ! vipgoci_unittests_pcntl_supported() ) {
 			$this->markTestSkipped(
 				'PCNTL support is missing'

@@ -14,7 +14,7 @@ final class VipgociRunCleanupPhpcsTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_run_cleanup_phpcs
 	 */
-	public function testRunCleanupPhpcs() {
+	public function testRunCleanupPhpcs() :void {
 		$tmp_file_name = tempnam(
 			sys_get_temp_dir(),
 			'vipgoci_' . __FUNCTION__

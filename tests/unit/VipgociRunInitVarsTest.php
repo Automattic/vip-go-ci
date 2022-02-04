@@ -14,7 +14,7 @@ final class VipgociRunInitVarsTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_run_init_vars
 	 */
-	public function testRunInitVars() {
+	public function testRunInitVars() :void {
 		list(
 			$startup_time,
 			$results,

@@ -25,7 +25,7 @@ final class VipgociRunInitOptionsPixelApiTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_run_init_options_pixel_api
 	 */
-	public function testRunInitOptionsPixelApiDefault() {
+	public function testRunInitOptionsPixelApiDefault() :void {
 		vipgoci_run_init_options_pixel_api(
 			$this->options
 		);
@@ -41,7 +41,7 @@ final class VipgociRunInitOptionsPixelApiTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_run_init_options_pixel_api
 	 */
-	public function testRunInitOptionsPixelApiCustom() {
+	public function testRunInitOptionsPixelApiCustom() :void {
 		$this->options = array(
 			'pixel-api-url'         => 'https://api.test.local/v1/api  ',
 			'pixel-api-groupprefix' => '  _prefix1  '

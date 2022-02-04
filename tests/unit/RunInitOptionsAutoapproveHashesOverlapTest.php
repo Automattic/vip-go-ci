@@ -73,7 +73,7 @@ final class RunInitOptionsAutoapproveHashesOverlapTest extends TestCase {
 	 *
 	 * @covers ::vipgoci_run_init_options_autoapprove_hashes_overlap
 	 */
-	public function testAutoapproveNotOverLap() {
+	public function testAutoapproveNotOverLap() :void {
 		$this->options['autoapprove'] = true;
 
 		ob_start();

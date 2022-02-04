@@ -25,7 +25,7 @@ final class VipgociRunInitOptionsRepoMetaApiTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_run_init_options_repo_meta_api
 	 */
-	public function testRunInitOptionsRepoMetaApiDefault() {
+	public function testRunInitOptionsRepoMetaApiDefault() :void {
 		vipgoci_run_init_options_repo_meta_api(
 			$this->options
 		);
@@ -43,7 +43,7 @@ final class VipgociRunInitOptionsRepoMetaApiTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_run_init_options_repo_meta_api
 	 */
-	public function testRunInitOptionsRepoMetaApiCustom() {
+	public function testRunInitOptionsRepoMetaApiCustom() :void {
 		$this->options = array(
 			'repo-meta-api-base-url'     => 'https://api.test.local/v1/api  ',
 			'repo-meta-api-user-id'      => '3500',

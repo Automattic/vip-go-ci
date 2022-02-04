@@ -26,7 +26,7 @@ final class VipgociRunInitOptionsMaxExecTimeTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_run_init_options_max_exec_time
 	 */
-	public function testRunInitOptionsMaxExecTime() {
+	public function testRunInitOptionsMaxExecTime() :void {
 		vipgoci_run_init_options_max_exec_time(
 			$this->options
 		);

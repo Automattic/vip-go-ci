@@ -2,14 +2,18 @@
 
 declare( strict_types=1 );
 
-/*
+/**
  * Some versions of PHP reverse the ',' and ';'
  * in output from PHP linting; deal with that here.
  *
  * Some versions use ' and some use ", deal with
  * that too.
+ *
+ * @param string $str String to work with.
+ *
+ * @return string
  */
-function vipgoci_unittests_php_syntax_error_compat( $str ) {
+function vipgoci_unittests_php_syntax_error_compat( string $str ) :string {
 	$str = str_replace(
 		"syntax error, unexpected end of file, expecting ';' or ','",
 		"syntax error, unexpected end of file, expecting ',' or ';'",
@@ -25,7 +29,7 @@ function vipgoci_unittests_php_syntax_error_compat( $str ) {
 	return $str;
 }
 
-/*
+/**
  * Check for expected data in IRC queue.
  *
  * @param string $str_expected String to look for in the IRC queue.

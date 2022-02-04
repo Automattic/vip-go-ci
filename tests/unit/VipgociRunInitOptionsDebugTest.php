@@ -33,7 +33,7 @@ final class VipgociRunInitOptionsDebugTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_run_init_options_debug
 	 */
-	public function testRunInitOptionsDebugDefault() {
+	public function testRunInitOptionsDebugDefault() :void {
 		vipgoci_run_init_options_debug(
 			$this->options
 		);

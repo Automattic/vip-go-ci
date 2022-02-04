@@ -13,7 +13,6 @@ use PHPUnit\Framework\TestCase;
 // phpcs:disable PSR1.Files.SideEffects
 
 /**
- *
  * Test the vipgoci_run_cleanup_irc() function.
  *
  * Should not call a HTTP endpoint as no data

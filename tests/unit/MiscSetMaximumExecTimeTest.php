@@ -10,7 +10,6 @@ require_once( __DIR__ . '/../integration/IncludesForTestsOutputControl.php' );
 
 require_once( __DIR__ . '/../../defines.php' );
 require_once( __DIR__ . '/../../misc.php' );
-require_once( __DIR__ . '/../../other-web-services.php' );
 
 use PHPUnit\Framework\TestCase;
 
@@ -32,6 +31,15 @@ final class MiscSetMaximumExecTimeTest extends TestCase {
 		 * instead of exiting. See the function itself.
 		 */
 		vipgoci_unittests_indicate_test_id( 'MiscSetMaximumExecTimeTest' );
+
+		/*
+		 * Ensure this file is required on execution
+		 * of the test itself. This test is run in separate
+		 * process so other tests are unaffected 
+		 * by this require. This is needed to ensure function
+		 * declarations are not attempted multiple times.
+		 */
+		require_once( __DIR__ . '/../../other-web-services.php' );
 	}
 
 	protected function tearDown(): void {
@@ -48,7 +56,7 @@ final class MiscSetMaximumExecTimeTest extends TestCase {
 	 * 
 	 * @covers ::vipgoci_set_maximum_exec_time
 	 */
-	public function testSetMaxExecTime1() {
+	public function testSetMaxExecTime1() :void {
 		if ( ! vipgoci_unittests_pcntl_supported() ) {
 			$this->markTestSkipped(
 				'PCNTL support is missing'
