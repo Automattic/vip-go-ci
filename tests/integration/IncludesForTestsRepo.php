@@ -6,7 +6,7 @@ declare( strict_types=1 );
  * Clone a git-repository and check out a
  * particular revision.
  *
- * @param array Array of options.
+ * @param array $options Array of options.
  *
  * @return string|bool
  */
