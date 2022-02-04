@@ -57,7 +57,7 @@ function vipgoci_unittests_get_config_value(
 }
 
 /**
- * Get configuration values from an INI config file, 
+ * Get configuration values from an INI config file,
  *
  * @param string $section     Section of the configuration file selected.
  * @param array  $config_arr  Fetch value for these keys.
