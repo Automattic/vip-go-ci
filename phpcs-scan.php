@@ -356,17 +356,24 @@ function vipgoci_phpcs_scan_output_dump( $output_file, $data ) {
 	}
 }
 
-/*
+/**
  * Scan a particular commit which should live within
  * a particular repository on GitHub, and use the specified
  * access-token to gain access.
+ *
+ * @param array $options              Options array for the program.
+ * @param array $commit_issues_submit Results for PHP linting (reference).
+ * @param array $commit_issues_stats  Result statistics, focussed on PHP linting (reference).
+ * @param array $commit_skipped_files Information about skipped files (reference).
+ *
+ * @return void 
  */
 function vipgoci_phpcs_scan_commit(
-	$options,
-	&$commit_issues_submit,
-	&$commit_issues_stats,
-	&$commit_skipped_files
-) {
+	array $options,
+	array &$commit_issues_submit,
+	array &$commit_issues_stats,
+	array &$commit_skipped_files
+) :void {
 	$repo_owner = $options['repo-owner'];
 	$repo_name  = $options['repo-name'];
 	$commit_id  = $options['commit'];
