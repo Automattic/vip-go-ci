@@ -859,8 +859,7 @@ function vipgoci_run_init_options_hashes_options(
 /**
  * Sanity-checks for hashes-to-hashes options.
  *
- * @param array $options                Array of options.
- * @param array $hashes_oauth_arguments OAuth 1.0a options for hashes-to-hashes API.
+ * @param array $options Array of options.
  *
  * @return void
  */
@@ -1413,7 +1412,7 @@ function vipgoci_run_init_options_output( array &$options ) :void {
 	if ( is_dir( $options['output'] ) ) {
 		vipgoci_sysexit(
 			'The file specified in --output argument is invalid, ' .
-		'should not be a directory',
+			'should not be a directory',
 			array(
 				'output' => print_r( $options['output'], true ),
 			),
@@ -2300,7 +2299,8 @@ function vipgoci_run_scan_check_latest_commit(
  * from members of the specified team(s),
  * by pull request.
  *
- * @param array $options Array of options.
+ * @param array $options        Array of options.
+ * @param array $prs_implicated Pull requests implicated.
  *
  * @return array Events related to dismissed reviews.
  *
@@ -2513,10 +2513,10 @@ function vipgoci_run_scan_total_comments_max_warning_post(
  * Run scan, call more specialized functions
  * that do the actual work.
  *
- * @param array $options        Array of options.
- * @param array $results        Results array.
- * @param array $prs_implicated Pull requests implicated.
- * @param int   $startup_time   Start up time, in UNIX seconds.
+ * @param array      $options        Array of options.
+ * @param array      $results        Results array.
+ * @param array|null $prs_implicated Pull requests implicated.
+ * @param int        $startup_time   Start up time, in UNIX seconds.
  *
  * @return void
  *
@@ -2525,7 +2525,7 @@ function vipgoci_run_scan_total_comments_max_warning_post(
 function vipgoci_run_scan(
 	array &$options,
 	array &$results,
-	&$prs_implicated,
+	?array &$prs_implicated,
 	int $startup_time
 ) :void {
 	/*
