@@ -678,10 +678,12 @@ function vipgoci_auto_approval_scan_commit(
  *
  * @param array $options Array of options.
  * @param array $results Array of results from scanning.
+ *
+ * @return void
  */
 function vipgoci_auto_approval_process(
-	&$options,
-	&$results
+	array &$options,
+	array &$results
 ) :void {
 	if ( false === $options['autoapprove'] ) {
 		vipgoci_log(
