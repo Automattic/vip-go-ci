@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
-// Note: required_once() calls should be in setUp()
+// Note: require_once() calls should be in setUp()
 
 use PHPUnit\Framework\TestCase;
 
