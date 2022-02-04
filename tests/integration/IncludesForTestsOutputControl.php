@@ -4,7 +4,7 @@ declare( strict_types=1 );
 
 /**
  * Check if debug mode is on, returns true if so,
- * else return false.
+ * else returns false.
  *
  * @return bool
  */
