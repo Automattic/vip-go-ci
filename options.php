@@ -455,17 +455,21 @@ function vipgoci_options_read_repo_skip_files(
 	}
 }
 
-/*
+/**
  * Read options from environmental variables
  * as specified on the command-line. Does not overwrite
  * options already specified on the command-line even if
  * the environment specifies them.
+ *
+ * @param array $options            Array of options.
+ * @param array $options_recognized Array of recognized options by the program. 
+ *
+ * @return void
  */
 function vipgoci_options_read_env(
-	&$options,
-	$options_recognized
-) {
-
+	array &$options,
+	array $options_recognized
+) :void {
 	if ( ! isset( $options['env-options'] ) ) {
 		return;
 	}
