@@ -104,7 +104,7 @@ final class VipgociRunInitOptionsRepoOptionsTest extends TestCase {
 			$this->options['repo-options-allowed']
 		);
 
-		vipgoci_unittests_remove_git_repo( $this->options );
+		vipgoci_unittests_remove_git_repo( $this->options['local-git-repo'] );
 	}
 
 	/**
@@ -151,7 +151,7 @@ final class VipgociRunInitOptionsRepoOptionsTest extends TestCase {
 			$this->options['repo-options-allowed']
 		);
 
-		vipgoci_unittests_remove_git_repo( $this->options );
+		vipgoci_unittests_remove_git_repo( $this->options['local-git-repo'] );
 	}
 
 	/**
@@ -198,6 +198,6 @@ final class VipgociRunInitOptionsRepoOptionsTest extends TestCase {
 			$this->options['repo-options-allowed']
 		);
 
-		vipgoci_unittests_remove_git_repo( $this->options );
+		vipgoci_unittests_remove_git_repo( $this->options['local-git-repo'] );
 	}
 }
