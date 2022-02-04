@@ -24,7 +24,7 @@ use PHPUnit\Framework\TestCase;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class RunScanMaxExecTimeTest extends TestCase {
+final class MainRunScanMaxExecTimeTest extends TestCase {
 	var $options = array(
 		'repo-owner'    => 'test-owner',
 		'repo-name'     => 'test-repo',
@@ -37,7 +37,7 @@ final class RunScanMaxExecTimeTest extends TestCase {
 		 * needed so that vipgoci_sysexit() can return
 		 * instead of exiting. See the function itself.
 		 */
-		vipgoci_unittests_indicate_test_id( 'RunScanMaxExecTimeTest' );
+		vipgoci_unittests_indicate_test_id( 'MainRunScanMaxExecTimeTest' );
 
 		/*
 		 * Ensure this file is required on execution
@@ -54,7 +54,7 @@ final class RunScanMaxExecTimeTest extends TestCase {
 	 	 * We are no longer running the test,
 		 * remove the indication.
 		 */
-		vipgoci_unittests_remove_indication_for_test_id( 'RunScanMaxExecTimeTest' );
+		vipgoci_unittests_remove_indication_for_test_id( 'MainRunScanMaxExecTimeTest' );
 	}
 
 	/**

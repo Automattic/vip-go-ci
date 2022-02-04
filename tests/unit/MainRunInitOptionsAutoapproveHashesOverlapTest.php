@@ -15,12 +15,12 @@ use PHPUnit\Framework\TestCase;
 
 // phpcs:disable PSR1.Files.SideEffects
 
-final class RunInitOptionsAutoapproveHashesOverlapTest extends TestCase {
+final class MainRunInitOptionsAutoapproveHashesOverlapTest extends TestCase {
 	protected function setUp(): void {
 		/*
 		 * Indicate that this particular test is running.
 		 */
-		vipgoci_unittests_indicate_test_id( 'RunInitOptionsAutoapproveHashesOverlapTest' );
+		vipgoci_unittests_indicate_test_id( 'MainRunInitOptionsAutoapproveHashesOverlapTest' );
 
 		$this->options = array(
 			'hashes-api-url' => 'https://127.0.0.1:1234',
@@ -31,7 +31,7 @@ final class RunInitOptionsAutoapproveHashesOverlapTest extends TestCase {
 		/*
 	 	 * We are no longer running the test.
 		 */
-		vipgoci_unittests_remove_indication_for_test_id( 'RunInitOptionsAutoapproveHashesOverlapTest' );
+		vipgoci_unittests_remove_indication_for_test_id( 'MainRunInitOptionsAutoapproveHashesOverlapTest' );
 
 		unset( $this->options );
 	}

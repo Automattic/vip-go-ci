@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 // phpcs:disable PSR1.Files.SideEffects
 
-final class RunScanTotalCommentsMaxWarningPostTest extends TestCase {
+final class MainRunScanTotalCommentsMaxWarningPostTest extends TestCase {
 	var $options_git = array(
 		'repo-owner' => null,
 		'repo-name'  => null,

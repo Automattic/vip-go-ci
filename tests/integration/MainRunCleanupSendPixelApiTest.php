@@ -21,7 +21,7 @@ use PHPUnit\Framework\TestCase;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class RunCleanupSendPixelApiTest extends TestCase {
+final class MainRunCleanupSendPixelApiTest extends TestCase {
 	protected function setUp(): void {
 		$this->options = array(
 			'pixel-api-groupprefix'  => 'mystatistics',

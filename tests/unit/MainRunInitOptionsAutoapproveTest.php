@@ -12,7 +12,7 @@ use PHPUnit\Framework\TestCase;
 
 // phpcs:disable PSR1.Files.SideEffects
 
-final class VipgociRunInitOptionsAutoapproveTest extends TestCase {
+final class MainRunInitOptionsAutoapproveTest extends TestCase {
 	protected function setUp() :void {
 		$this->options = array();
 	}

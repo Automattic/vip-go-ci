@@ -13,7 +13,7 @@ use PHPUnit\Framework\TestCase;
 
 // phpcs:disable PSR1.Files.SideEffects
 
-final class VipgociRunInitOptionsSkipLargeFilesTest extends TestCase {
+final class MainRunInitOptionsSkipLargeFilesTest extends TestCase {
 	protected function setUp() :void {
 		$this->options = array(
 		);

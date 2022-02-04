@@ -1,9 +1,5 @@
 <?php
 
-/**
- * @todo convert this into a test helper
- */
-
 define( 'VIPGOCI_UNIT_TESTS_TEST_ID_KEY', 'vipgoci_unittests_test_ids' );
 
 /**

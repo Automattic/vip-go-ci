@@ -12,7 +12,7 @@ use PHPUnit\Framework\TestCase;
 
 // phpcs:disable PSR1.Files.SideEffects
 
-final class VipgociRunInitOptionsMaxExecTimeTest extends TestCase {
+final class MainRunInitOptionsMaxExecTimeTest extends TestCase {
 	protected function setUp() :void {
 		$this->options = array(
 			'max-exec-time' => 100,

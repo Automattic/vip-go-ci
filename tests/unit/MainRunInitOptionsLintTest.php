@@ -12,7 +12,7 @@ use PHPUnit\Framework\TestCase;
 
 // phpcs:disable PSR1.Files.SideEffects
 
-final class VipgociRunInitOptionsLintTest extends TestCase {
+final class MainRunInitOptionsLintTest extends TestCase {
 	protected function setUp() :void {
 		$this->options = array(
 			'lint'                                   => null,

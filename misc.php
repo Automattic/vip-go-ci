@@ -105,12 +105,12 @@ function vipgoci_sysexit(
 	if (
 		( function_exists( 'vipgoci_unittests_check_indication_for_test_id' )) &&
 		( 
-			( vipgoci_unittests_check_indication_for_test_id( 'SysExitTest' ) ) ||
-			( vipgoci_unittests_check_indication_for_test_id( 'RunScanSkipExecutionTest' ) ) ||
+			( vipgoci_unittests_check_indication_for_test_id( 'MiscSysExitTest' ) ) ||
 			( vipgoci_unittests_check_indication_for_test_id( 'MiscSetMaximumExecTimeTest' ) ) ||
-			( vipgoci_unittests_check_indication_for_test_id( 'RunScanMaxExecTimeTest' ) ) ||
-			( vipgoci_unittests_check_indication_for_test_id( 'RunInitGithubTokenOptionTest' ) ) ||
-			( vipgoci_unittests_check_indication_for_test_id( 'RunInitOptionsAutoapproveHashesOverlapTest' ) )
+			( vipgoci_unittests_check_indication_for_test_id( 'MainRunScanSkipExecutionTest' ) ) ||
+			( vipgoci_unittests_check_indication_for_test_id( 'MainRunScanMaxExecTimeTest' ) ) ||
+			( vipgoci_unittests_check_indication_for_test_id( 'MainRunInitGithubTokenOptionTest' ) ) ||
+			( vipgoci_unittests_check_indication_for_test_id( 'MainRunInitOptionsAutoapproveHashesOverlapTest' ) )
 		)
 	) {
 		return $exit_status;

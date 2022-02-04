@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 
 // phpcs:disable PSR1.Files.SideEffects
 
-final class VipgociRunInitOptionsPhpcsTest extends TestCase {
+final class MainRunInitOptionsPhpcsTest extends TestCase {
 	protected function setUp() :void {
 		$this->phpcs_path = vipgoci_unittests_get_config_value(
 			'phpcs-scan',

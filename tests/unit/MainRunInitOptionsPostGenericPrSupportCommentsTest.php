@@ -12,7 +12,7 @@ use PHPUnit\Framework\TestCase;
 
 // phpcs:disable PSR1.Files.SideEffects
 
-final class VipgociRunInitOptionsPostGenericPrSupportCommentsTest extends TestCase {
+final class MainRunInitOptionsPostGenericPrSupportCommentsTest extends TestCase {
 	protected function setUp() :void {
 		$this->options = array(
 			'post-generic-pr-support-comments'                      => null,

@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 // phpcs:disable PSR1.Files.SideEffects
 
-final class VipgociRunInitVarsTest extends TestCase {
+final class MainRunInitVarsTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_run_init_vars
 	 */

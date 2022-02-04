@@ -14,14 +14,14 @@ use PHPUnit\Framework\TestCase;
 
 // phpcs:disable PSR1.Files.SideEffects
 
-final class RunScanSkipExecutionTest extends TestCase {
+final class MainRunScanSkipExecutionTest extends TestCase {
 	protected function setUp(): void {
 		/*
 		 * Indicate that this particular test is running,
 		 * needed so that vipgoci_sysexit() can return
 		 * instead of exiting. See the function itself.
 		 */
-		vipgoci_unittests_indicate_test_id( 'RunScanSkipExecutionTest' );
+		vipgoci_unittests_indicate_test_id( 'MainRunScanSkipExecutionTest' );
 
 		$this->options = array();
 	}
@@ -31,7 +31,7 @@ final class RunScanSkipExecutionTest extends TestCase {
 	 	 * We are no longer running the test,
 		 * remove the indication.
 		 */
-		vipgoci_unittests_remove_indication_for_test_id( 'RunScanSkipExecutionTest' );
+		vipgoci_unittests_remove_indication_for_test_id( 'MainRunScanSkipExecutionTest' );
 
 		unset( $this->options );
 	}

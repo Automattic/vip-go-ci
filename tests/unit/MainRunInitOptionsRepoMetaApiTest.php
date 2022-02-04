@@ -12,7 +12,7 @@ use PHPUnit\Framework\TestCase;
 
 // phpcs:disable PSR1.Files.SideEffects
 
-final class VipgociRunInitOptionsRepoMetaApiTest extends TestCase {
+final class MainRunInitOptionsRepoMetaApiTest extends TestCase {
 	protected function setUp() :void {
 		$this->options = array(
 		);

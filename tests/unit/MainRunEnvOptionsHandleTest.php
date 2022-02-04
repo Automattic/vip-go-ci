@@ -16,7 +16,7 @@ use PHPUnit\Framework\TestCase;
 
 // phpcs:disable PSR1.Files.SideEffects
 
-final class VipgociRunEnvOptionsHandleTest extends TestCase {
+final class MainRunEnvOptionsHandleTest extends TestCase {
 	protected function setUp() :void {
 		$this->options = array(
 			'env-options' => 'repo-owner=REPO_OWNER,repo-name=REPO_NAME',

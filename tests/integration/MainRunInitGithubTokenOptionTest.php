@@ -16,7 +16,7 @@ use PHPUnit\Framework\TestCase;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class RunInitGithubTokenOptionTest extends TestCase {
+final class MainRunInitGithubTokenOptionTest extends TestCase {
 	protected function setUp(): void {
 		$this->options = array();
 
@@ -31,14 +31,14 @@ final class RunInitGithubTokenOptionTest extends TestCase {
 			$this->options['github-token'];
 
 		// Indicate that this particular test is running.
-		vipgoci_unittests_indicate_test_id( 'RunInitGithubTokenOptionTest' );
+		vipgoci_unittests_indicate_test_id( 'MainRunInitGithubTokenOptionTest' );
 	}
 
 	protected function tearDown(): void {
 		$this->options = null;
 
 		// Remove the indication.
-		vipgoci_unittests_remove_indication_for_test_id( 'RunInitGithubTokenOptionTest' );
+		vipgoci_unittests_remove_indication_for_test_id( 'MainRunInitGithubTokenOptionTest' );
 	}
 
 	/**

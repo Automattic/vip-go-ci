@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 
 // phpcs:disable PSR1.Files.SideEffects
 
-final class VipgociRunInitOptionsDebugTest extends TestCase {
+final class MainRunInitOptionsDebugTest extends TestCase {
 	protected function setUp() :void {
 		$this->options = array(
 			'debug-level' => '1',

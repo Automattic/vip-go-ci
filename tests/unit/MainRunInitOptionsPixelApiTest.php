@@ -12,7 +12,7 @@ use PHPUnit\Framework\TestCase;
 
 // phpcs:disable PSR1.Files.SideEffects
 
-final class VipgociRunInitOptionsPixelApiTest extends TestCase {
+final class MainRunInitOptionsPixelApiTest extends TestCase {
 	protected function setUp() :void {
 		$this->options = array(
 		);

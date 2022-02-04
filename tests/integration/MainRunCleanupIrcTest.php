@@ -21,7 +21,7 @@ use PHPUnit\Framework\TestCase;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class RunCleanupIrcTest extends TestCase {
+final class MainRunCleanupIrcTest extends TestCase {
 	protected function setUp(): void {
 		$this->options = array(
 			'irc-api-token' => '1234',

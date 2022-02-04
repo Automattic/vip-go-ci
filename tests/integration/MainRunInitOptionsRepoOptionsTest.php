@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 // phpcs:disable PSR1.Files.SideEffects
 
-final class VipgociRunInitOptionsRepoOptionsTest extends TestCase {
+final class MainRunInitOptionsRepoOptionsTest extends TestCase {
 	var $options_git = array(
 		'git-path'        => null,
 		'github-repo-url' => null,

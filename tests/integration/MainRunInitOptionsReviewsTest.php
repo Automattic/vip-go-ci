@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 // phpcs:disable PSR1.Files.SideEffects
 
-final class VipgociRunInitOptionsReviewsTest extends TestCase {
+final class MainRunInitOptionsReviewsTest extends TestCase {
 	protected function setUp() :void {
 		$this->options = array();
 	}

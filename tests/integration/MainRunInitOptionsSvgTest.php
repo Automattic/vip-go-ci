@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 // phpcs:disable PSR1.Files.SideEffects
 
-final class VipgociRunInitOptionsSvgTest extends TestCase {
+final class MainRunInitOptionsSvgTest extends TestCase {
 	protected function setUp() :void {
 		$this->svg_scanner_path = vipgoci_unittests_get_config_value(
 			'svg-scan',

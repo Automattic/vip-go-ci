@@ -35,7 +35,7 @@ final class MiscSysExitTest extends TestCase {
 		 * with exit status instead of exiting. See the
 		 * function itself.
 		 */
-		vipgoci_unittests_indicate_test_id( 'SysExitTest' );
+		vipgoci_unittests_indicate_test_id( 'MiscSysExitTest' );
 
 		vipgoci_irc_api_alert_queue( null, true ); // Empty IRC queue
 	}
@@ -45,7 +45,7 @@ final class MiscSysExitTest extends TestCase {
 	 	 * We are no longer running the test,
 		 * remove the indication.
 		 */
-		vipgoci_unittests_remove_indication_for_test_id( 'SysExitTest' );
+		vipgoci_unittests_remove_indication_for_test_id( 'MiscSysExitTest' );
 	}
 
 	/**
