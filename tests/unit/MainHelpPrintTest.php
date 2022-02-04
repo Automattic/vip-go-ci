@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 
 // phpcs:disable PSR1.Files.SideEffects
 
-final class VipgociHelpPrintTest extends TestCase {
+final class MainHelpPrintTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_help_print
 	 */

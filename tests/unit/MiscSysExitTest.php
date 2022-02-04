@@ -18,7 +18,7 @@ use PHPUnit\Framework\TestCase;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class SysExitTest extends TestCase {
+final class MiscSysExitTest extends TestCase {
 	protected function setUp(): void {
 		/*
 		 * Ensure this file is required on execution

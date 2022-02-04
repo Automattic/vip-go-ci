@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 
 // phpcs:disable PSR1.Files.SideEffects
 
-final class VipgociExitStatusTest extends TestCase {
+final class MainExitStatusTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_exit_status
 	 */

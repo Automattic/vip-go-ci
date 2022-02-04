@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 // phpcs:disable PSR1.Files.SideEffects
 
-final class VipgociRunCleanupPhpcsTest extends TestCase {
+final class MainRunCleanupPhpcsTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_run_cleanup_phpcs
 	 */
