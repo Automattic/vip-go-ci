@@ -89,16 +89,16 @@ function vipgoci_unittests_get_config_values(
 /**
  * Test if all options required for test are in place.
  *
- * @param array $options              Array of options.
- * @param array $options_not_required Array of options not required.
- * @param class $test_instance        Instance of test class.
+ * @param array  $options              Array of options.
+ * @param array  $options_not_required Array of options not required.
+ * @param object $test_instance        Instance of test class.
  *
  * @return int
  */
 function vipgoci_unittests_options_test(
 	array $options,
 	array $options_not_required,
-	class &$test_instance
+	object &$test_instance
 ) :int {
 	$missing_options_str = '';
 
