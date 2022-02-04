@@ -2801,6 +2801,15 @@ function vipgoci_run_checks() :void {
 			VIPGOCI_EXIT_SYSTEM_PROBLEM
 		);
 	}
+
+	vipgoci_log(
+		'Minimum system and enviromental requirements passed',
+		array(
+			'uid'         => posix_getuid(),
+			'php_version' => phpversion(),
+			'git_version' => vipgoci_git_version(),
+		)
+	);
 }
 
 /**
