@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.0](https://github.com/Automattic/vip-go-ci/releases/tag/1.2.0) - 2022-02-??
+
+### Updated
+- [#207](https://github.com/Automattic/vip-go-ci/pull/207): Break vipgoci_run() into multiple functions
+- [#205](https://github.com/Automattic/vip-go-ci/pull/205): Use new GitHub Teams API
+- [#236](https://github.com/Automattic/vip-go-ci/pull/236): Adding PHP 8.1 support
+
 ## [1.1.3](https://github.com/Automattic/vip-go-ci/releases/tag/1.1.3) - 2022-01-31
 
 ### Added
