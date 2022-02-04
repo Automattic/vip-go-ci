@@ -11,6 +11,10 @@ use PHPUnit\Framework\TestCase;
 
 // phpcs:disable PSR1.Files.SideEffects
 
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class A00StatsCountersTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_counter_report
