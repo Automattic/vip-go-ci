@@ -194,13 +194,18 @@ function vipgoci_http_resp_sunset_header_check(
  * Detect if we exceeded the GitHub rate-limits,
  * and if so, exit with error.
  *
+ * @param string $github_url   GitHub URL used.
+ * @param array  $resp_headers HTTP response headers.
+ *
+ * @return void
+ *
  * @codeCoverageIgnore
  */
 
 function vipgoci_github_rate_limits_check(
-	$github_url,
-	$resp_headers
-) {
+	string $github_url,
+	array $resp_headers
+) :void {
 	if (
 		( isset( $resp_headers['x-ratelimit-remaining'][0] ) ) &&
 		( $resp_headers['x-ratelimit-remaining'][0] <= 1 )
