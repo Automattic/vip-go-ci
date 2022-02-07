@@ -104,7 +104,7 @@ function vipgoci_sysexit(
 	 */
 	if (
 		( function_exists( 'vipgoci_unittests_check_indication_for_test_id' )) &&
-		( 
+		(
 			( vipgoci_unittests_check_indication_for_test_id( 'MiscSysExitTest' ) ) ||
 			( vipgoci_unittests_check_indication_for_test_id( 'MiscSetMaximumExecTimeTest' ) ) ||
 			( vipgoci_unittests_check_indication_for_test_id( 'MainRunScanSkipExecutionTest' ) ) ||
@@ -119,7 +119,7 @@ function vipgoci_sysexit(
 	exit( $exit_status );
 }
 
-/*
+/**
  * Set up to alarm when maximum execution time of
  * vip-go-ci is reached. Will call exit() when
  * alarm goes off.
@@ -165,7 +165,7 @@ function vipgoci_set_maximum_exec_time(
 
 	/*
 	 * Handle signals for SIGALRM only;
-	 * log and call exit()
+	 * log and call exit().
 	 */
 	pcntl_signal(
 		SIGALRM,
@@ -178,7 +178,7 @@ function vipgoci_set_maximum_exec_time(
 						'(' . $commit_identifier . ').' ),
 					array(),
 					VIPGOCI_EXIT_EXEC_TIME,
-					true // log to IRC
+					true // log to IRC.
 				);
 			}
 		}
