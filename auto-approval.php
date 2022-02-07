@@ -705,7 +705,7 @@ function vipgoci_auto_approval_process(
 	 * register which can be auto-approved.
 	 */
 
-	if ( ! empty( $options[ 'autoapprove-filetypes' ] ) ) {
+	if ( ! empty( $options['autoapprove-filetypes'] ) ) {
 		vipgoci_ap_file_types(
 			$options,
 			$auto_approved_files_arr
