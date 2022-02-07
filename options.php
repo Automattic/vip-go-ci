@@ -462,7 +462,7 @@ function vipgoci_options_read_repo_skip_files(
  * the environment specifies them.
  *
  * @param array $options            Array of options.
- * @param array $options_recognized Array of recognized options by the program. 
+ * @param array $options_recognized Array of recognized options by the program.
  *
  * @return void
  */
