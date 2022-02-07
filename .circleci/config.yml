@@ -35,13 +35,6 @@ commands:
 
 # List of images at: https://circleci.com/docs/2.0/circleci-images/
 jobs:
-  testphp73:
-    docker:
-      - image: circleci/php:7.3.26-cli
-    steps:
-      - build-cmd
-
-
   testphp74:
     docker:
        - image: circleci/php:7.4.14-cli
@@ -58,6 +51,5 @@ jobs:
 workflows:
   vipgocitests:
     jobs:
-     - testphp73
      - testphp74
      - testphp80
