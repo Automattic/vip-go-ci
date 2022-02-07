@@ -4,22 +4,41 @@ declare( strict_types=1 );
 
 namespace Vipgoci\Tests\Integration;
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+require_once __DIR__ . '/IncludesForTests.php';
 
 use PHPUnit\Framework\TestCase;
 
-// phpcs:disable PSR1.Files.SideEffects
-
+/**
+ * Test vipgoci_run_scan_reviews_comments_enforce_maximum function.
+ *
+ * @package Automattic/vip-go-ci
+ *
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class MainRunScanReviewsCommentsEnforceMaximumTest extends TestCase {
-	var $options_git = array(
-		'repo-owner'	=> null,
-		'repo-name'	=> null,
+	/**
+	 * Git options array.
+	 *
+	 * @var $options_git
+	 */
+	private array $options_git = array(
+		'repo-owner' => null,
+		'repo-name'  => null,
 	);
 
-	var $options_git_repo_tests = array(
-		'pr-test-github-pr-results-max'	=> null,
+	/**
+	 * Git test options array.
+	 *
+	 * @var $options_git_repo_tests
+	 */
+	private array $options_git_repo_tests = array(
+		'pr-test-github-pr-results-max' => null,
 	);
 
+	/**
+	 * Set up all variables, etc.
+	 */
 	protected function setUp(): void {
 		vipgoci_unittests_get_config_values(
 			'git',
@@ -40,74 +59,79 @@ final class MainRunScanReviewsCommentsEnforceMaximumTest extends TestCase {
 			vipgoci_unittests_get_config_value(
 				'git-secrets',
 				'github-token',
-				true // Fetch from secrets file
+				true // Fetch from secrets file.
 			);
 
 		$this->results = array(
-			'issues'	=> array(
-				$this->options['pr-test-github-pr-results-max']	=> array(
+			'issues' => array(
+				$this->options['pr-test-github-pr-results-max'] => array(
 					array(
-						'type'		=> 'phpcs',
-						'file_name'	=> 'bla-8.php',
-						'file_line'	=> 9,
-						'issue'		=> array(
-							'message'	=> 'This comment is 36% valid code; is this commented out code?',
-							'source'	=> 'Squiz.PHP.CommentedOutCode.Found',
-							'severity'	=> 1,
-							'fixable'	=> false,
-							'type'		=> 'WARNING',
-							'line'		=> 9,
-							'column'	=> 1,
-							'level'	=> 'WARNING'
+						'type'      => 'phpcs',
+						'file_name' => 'bla-8.php',
+						'file_line' => 9,
+						'issue'     => array(
+							'message'  => 'This comment is 36% valid code; is this commented out code?',
+							'source'   => 'Squiz.PHP.CommentedOutCode.Found',
+							'severity' => 1,
+							'fixable'  => false,
+							'type'     => 'WARNING',
+							'line'     => 9,
+							'column'   => 1,
+							'level'    => 'WARNING',
 						),
 					),
 
 					array(
-						'type'		=> 'phpcs',
-						'file_name'	=> 'bla-9.php',
-						'file_line'	=> 10,
-						'issue'		=> array(
-							'message'	=> 'This comment is 100% valid code; is this commented out code?',
-							'source'	=> 'Squiz.PHP.CommentedOutCode.Found',
-							'severity'	=> 10,
-							'fixable'	=> false,
-							'type'		=> 'WARNING',
-							'line'		=> 10,
-							'column'	=> 1,
-							'level'	=> 'WARNING'
+						'type'      => 'phpcs',
+						'file_name' => 'bla-9.php',
+						'file_line' => 10,
+						'issue'     => array(
+							'message'  => 'This comment is 100% valid code; is this commented out code?',
+							'source'   => 'Squiz.PHP.CommentedOutCode.Found',
+							'severity' => 10,
+							'fixable'  => false,
+							'type'     => 'WARNING',
+							'line'     => 10,
+							'column'   => 1,
+							'level'    => 'WARNING',
 						),
 					),
-				)
+				),
 			),
 
-			'stats'		=> array(
-				'phpcs'		=> array(
+			'stats'  => array(
+				'phpcs' => array(
 					$this->options['pr-test-github-pr-results-max'] => array(
-						'error'		=> 0,
-						'warning'	=> 2,
-						'info'		=> 0,
-					)
-				)
+						'error'   => 0,
+						'warning' => 2,
+						'info'    => 0,
+					),
+				),
 			),
 		);
 
 		$this->results_orig = $this->results;
 	}
 
+	/**
+	 * Clean up all variables, etc.
+	 */
 	protected function tearDown(): void {
-		$this->options = null;
-		$this->options_git = null;
-		$this->options_git_repo_tests = null;
-		$this->results = null;
+		unset( $this->options );
+		unset( $this->options_git );
+		unset( $this->options_git_repo_tests );
+		unset( $this->results );
 	}
 
 	/**
+	 * Test function, check if comments are not enforced.
+	 *
 	 * @covers ::vipgoci_run_scan_reviews_comments_enforce_maximum
 	 */
 	public function testRunScanReviewsCommentsEnforceMaximum1() :void {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
-			array( ),
+			array(),
 			$this
 		);
 
@@ -126,8 +150,7 @@ final class MainRunScanReviewsCommentsEnforceMaximumTest extends TestCase {
 		);
 
 		$this->assertSame(
-			array(
-			),
+			array(),
 			$prs_comments_maxed
 		);
 
@@ -138,12 +161,14 @@ final class MainRunScanReviewsCommentsEnforceMaximumTest extends TestCase {
 	}
 
 	/**
+	 * Test function, check if comments are enforced.
+	 *
 	 * @covers ::vipgoci_run_scan_reviews_comments_enforce_maximum
 	 */
 	public function testRunScanReviewsCommentsEnforceMaximum2() :void {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
-			array( ),
+			array(),
 			$this
 		);
 
@@ -163,7 +188,7 @@ final class MainRunScanReviewsCommentsEnforceMaximumTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				$this->options['pr-test-github-pr-results-max'] => true
+				$this->options['pr-test-github-pr-results-max'] => true,
 			),
 			$prs_comments_maxed
 		);
@@ -171,19 +196,17 @@ final class MainRunScanReviewsCommentsEnforceMaximumTest extends TestCase {
 		$this->assertSame(
 			array(
 				'issues' => array(
-					$this->options['pr-test-github-pr-results-max'] => array(
-					)
+					$this->options['pr-test-github-pr-results-max'] => array(),
 				),
-
-				'stats'		=> array(
-					'phpcs'		=> array(
+				'stats'  => array(
+					'phpcs' => array(
 						$this->options['pr-test-github-pr-results-max'] => array(
-							'error'		=> 0,
-							'warning'	=> 0,
-							'info'		=> 0,
-						)
-					)
-				)
+							'error'   => 0,
+							'warning' => 0,
+							'info'    => 0,
+						),
+					),
+				),
 			),
 			$this->results
 		);
