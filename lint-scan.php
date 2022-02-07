@@ -194,7 +194,7 @@ function vipgoci_lint_parse_results(
  * @param array $commit_issues_stats  Result statistics, focussed on PHP linting (reference).
  * @param array $commit_skipped_files Information about skipped files (reference).
  *
- * @return void 
+ * @return void
  */
 function vipgoci_lint_scan_commit(
 	array $options,
@@ -202,18 +202,18 @@ function vipgoci_lint_scan_commit(
 	array &$commit_issues_stats,
 	array &$commit_skipped_files
 ) :void {
-	$repo_owner = $options['repo-owner'];
-	$repo_name  = $options['repo-name'];
-	$commit_id  = $options['commit'];
+	$repo_owner   = $options['repo-owner'];
+	$repo_name    = $options['repo-name'];
+	$commit_id    = $options['commit'];
 	$github_token = $options['token'];
 
 	if ( false === $options['lint'] ) {
 		vipgoci_log(
 			'Will not lint PHP files, not configured to do so',
 			array(
-				'repo_owner'	=> $repo_owner,
-				'repo_name'	=> $repo_name,
-				'commit_id'	=> $commit_id,
+				'repo_owner' => $repo_owner,
+				'repo_name'  => $repo_name,
+				'commit_id'  => $commit_id,
 			)
 		);
 	}
