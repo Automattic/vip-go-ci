@@ -3,7 +3,7 @@
 declare( strict_types=1 );
 
 /**
- * Get configuration value from an INI config file, 
+ * Get configuration value from an INI config file.
  *
  * @param string $section     Section of the configuration file selected.
  * @param string $key         Fetch value for this key.
@@ -21,19 +21,16 @@ function vipgoci_unittests_get_config_value(
 			VIPGOCI_UNIT_TESTS_INI_DIR_PATH . '/../unittests.ini',
 			true
 		);
-	}
-
-	else {
+	} else {
 		$ini_array = parse_ini_file(
 			VIPGOCI_UNIT_TESTS_INI_DIR_PATH . '/../unittests-secrets.ini',
 			true
 		);
 	}
 
-
 	if ( false === $ini_array ) {
 		return null;
-	}	
+	}
 
 	if ( isset(
 		$ini_array
@@ -47,7 +44,7 @@ function vipgoci_unittests_get_config_value(
 		) ) {
 			return null;
 		}
-			
+
 		return $ini_array
 			[ $section ]
 			[ $key ];
@@ -63,7 +60,7 @@ function vipgoci_unittests_get_config_value(
  * @param array  $config_arr  Fetch values for these keys.
  * @param bool   $secret_file Use secret file rather than the public one.
  *
- * @return void 
+ * @return void
  */
 function vipgoci_unittests_get_config_values(
 	string $section,
@@ -106,12 +103,13 @@ function vipgoci_unittests_options_test(
 		$options
 	);
 
-	foreach(
+	foreach (
 		$options_keys as $option_key
 	) {
 		if ( in_array(
 			$option_key,
-			$options_not_required
+			$options_not_required,
+			true
 		) ) {
 			continue;
 		}
