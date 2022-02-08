@@ -703,7 +703,7 @@ function vipgoci_results_filter_comments_to_max(
  * Standardize message string so that filtering of
  * ignorable messages becomes more reliable.
  *
- * @param string $message
+ * @param string $message Message to standardize.
  *
  * @returns string
  */
@@ -711,8 +711,9 @@ function vipgci_results_standardize_ignorable_message(
 	string $message
 ) :string {
 	$message = strtolower( $message );
-	$message = rtrim( $message, '.,' );
+
 	$message = trim( $message );
+	$message = rtrim( $message, "\n\r\t\v\x00 .," );
 
 	return $message;
 }
