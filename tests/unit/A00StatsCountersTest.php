@@ -12,6 +12,9 @@ use PHPUnit\Framework\TestCase;
 // phpcs:disable PSR1.Files.SideEffects
 
 /**
+ *
+ * Test counter functionality.
+ *
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
