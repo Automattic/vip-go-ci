@@ -931,8 +931,6 @@ function vipgoci_run_init_options_reviews( array &$options ) :void {
 	/*
 	 * Process --review-comments-ignore -- expected
 	 * to be an array (items separated by "|||").
-	 *
-	 * All of the messages will be transformed to lower-case.
 	 */
 
 	vipgoci_option_array_handle(
@@ -941,6 +939,12 @@ function vipgoci_run_init_options_reviews( array &$options ) :void {
 		array(),
 		array(),
 		'|||'
+	);
+
+	// Transform to lower case, remove leading and ending whitespacing, and "." or "," at the end.
+	$options['review-comments-ignore'] = array_map(
+		'vipgci_results_standardize_ignorable_message',
+		$options['review-comments-ignore']
 	);
 
 	/*

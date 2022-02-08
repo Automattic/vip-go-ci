@@ -65,7 +65,7 @@ final class MainRunInitOptionsReviewsTest extends TestCase {
 			'review-comments-include-severity'  => 'true',
 			'review-comments-max'               => '50',
 			'review-comments-total-max'         => '100',
-			'review-comments-ignore'            => 'comment1|||comment2',
+			'review-comments-ignore'            => '  comment1.|||CoMMENt2  ',
 			'dismiss-stale-reviews'             => 'true',
 			'dismissed-reviews-repost-comments' => 'false',
 		);
