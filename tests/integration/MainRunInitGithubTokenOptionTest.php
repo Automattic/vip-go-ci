@@ -4,27 +4,30 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+require_once __DIR__ . '/IncludesForTests.php';
 
-require_once( __DIR__ . '/../unit/helper/IndicateTestId.php' );
+require_once __DIR__ . '/../unit/helper/IndicateTestId.php';
 
 use PHPUnit\Framework\TestCase;
 
-// phpcs:disable PSR1.Files.SideEffects
-
 /**
+ * Tests if GitHub token related options are processed correctly.
+ *
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
 final class MainRunInitGithubTokenOptionTest extends TestCase {
+	/**
+	 * Set up variables and indication.
+	 */
 	protected function setUp(): void {
 		$this->options = array();
 
-		$this->options[ 'github-token' ] =
+		$this->options['github-token'] =
 			vipgoci_unittests_get_config_value(
 				'git-secrets',
 				'github-token',
-				true // Fetch from secrets file
+				true // Fetch from secrets file.
 			);
 
 		$this->options['token'] =
@@ -34,6 +37,9 @@ final class MainRunInitGithubTokenOptionTest extends TestCase {
 		vipgoci_unittests_indicate_test_id( 'MainRunInitGithubTokenOptionTest' );
 	}
 
+	/**
+	 * Clear variables and indication.
+	 */
 	protected function tearDown(): void {
 		$this->options = null;
 
@@ -42,12 +48,14 @@ final class MainRunInitGithubTokenOptionTest extends TestCase {
 	}
 
 	/**
+	 * Uses valid GitHub token to test if options are correctly processed.
+	 *
 	 * @covers ::vipgoci_run_init_github_token_option
 	 */
 	public function testGitHubTokenValid() :void {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
-			array( ),
+			array(),
 			$this
 		);
 
@@ -57,7 +65,7 @@ final class MainRunInitGithubTokenOptionTest extends TestCase {
 
 		ob_start();
 
-		// Initialize GitHub token options
+		// Initialize GitHub token options.
 		vipgoci_run_init_github_token_option( $this->options );
 
 		/*
@@ -89,12 +97,14 @@ final class MainRunInitGithubTokenOptionTest extends TestCase {
 	}
 
 	/**
+	 * Uses invalid GitHub token to test if options are correctly processed.
+	 *
 	 * @covers ::vipgoci_run_init_github_token_option
 	 */
-	public function testGitHubTokenInvalid () :void {
+	public function testGitHubTokenInvalid() :void {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
-			array( ),
+			array(),
 			$this
 		);
 
@@ -102,12 +112,12 @@ final class MainRunInitGithubTokenOptionTest extends TestCase {
 			return;
 		}
 
-		// Set token to invalid
+		// Set token to invalid.
 		$this->options['token'] = 'invalid-token-' . time();
 
 		ob_start();
 
-		// Initialize GitHub token options
+		// Initialize GitHub token options.
 		vipgoci_run_init_github_token_option( $this->options );
 
 		/*
