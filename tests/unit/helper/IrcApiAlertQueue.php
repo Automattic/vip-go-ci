@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * Provide vipgoci_irc_api_alert_queue(), but does nothing.
  *
  * @param string|null $message Message string.
