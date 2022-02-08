@@ -805,6 +805,11 @@ function vipgoci_run_init_options_hashes_options(
 	 */
 	vipgoci_option_url_handle( $options, 'hashes-api-url', null );
 
+	$options['hashes-api-url'] = trim(
+		$options['hashes-api-url'],
+		'/'
+	);
+
 	/*
 	 * Sanity check: Can only use --hashes-api=true with a URL
 	 * configured.
