@@ -1412,26 +1412,23 @@ function vipgoci_run_init_options_output( array &$options ) :void {
 	}
 
 	/*
-	 * Check if can write to file specified in --output.
+	 * Try writing empty string to it.
 	 */
-	if ( ! is_writable( $options['output'] ) ) {
-		vipgoci_sysexit(
-			'Unable to write to file in --output.',
-			array(
-				'output' => $options['output'],
-			),
-			VIPGOCI_EXIT_USAGE_ERROR
-		);
-	}
-
-	/*
-	 * Try writing empty string to it
-	 */
-	@file_put_contents( // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+	$res = @file_put_contents( // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
 		$options['output'],
 		'',
 		FILE_APPEND
 	);
+
+	if ( false === $res ) {
+		vipgoci_sysexit(
+			'Unable to write to file specified in --output.',
+			array(
+				'output' => print_r( $options['output'], true ),
+			),
+			VIPGOCI_EXIT_USAGE_ERROR
+		);
+	}
 
 	/*
 	 * File should exist by now.
