@@ -2,13 +2,36 @@
 
 namespace Vipgoci\Tests\Integration;
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+require_once __DIR__ . '/IncludesForTests.php';
 
 use PHPUnit\Framework\TestCase;
 
-// phpcs:disable PSR1.Files.SideEffects
-
+/**
+ * Test vipgoci_run_init_options_phpcs function.
+ *
+ * @package Automattic/vip-go-ci
+ *
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class MainRunInitOptionsPhpcsTest extends TestCase {
+	/**
+	 * Path to PHPCS script.
+	 *
+	 * @var $phpcs_path
+	 */
+	private string $phpcs_path = '';
+
+	/**
+	 * Options array.
+	 *
+	 * @var $options
+	 */
+	private array $options = array();
+
+	/**
+	 * Set up all variables, etc.
+	 */
 	protected function setUp() :void {
 		$this->phpcs_path = vipgoci_unittests_get_config_value(
 			'phpcs-scan',
@@ -17,16 +40,21 @@ final class MainRunInitOptionsPhpcsTest extends TestCase {
 		);
 
 		$this->options = array(
-			'phpcs-path' => $this->phpcs_path, 
+			'phpcs-path' => $this->phpcs_path,
 		);
 	}
 
+	/**
+	 * Clean up all variables, etc.
+	 */
 	protected function tearDown() :void {
 		unset( $this->phpcs_path );
 		unset( $this->options );
 	}
 
 	/**
+	 * Test function. Check if PHPCS defaults are initialized.
+	 *
 	 * @covers ::vipgoci_run_init_options_phpcs
 	 */
 	public function testRunInitOptionsPhpcsDefaults() :void {
@@ -79,6 +107,8 @@ final class MainRunInitOptionsPhpcsTest extends TestCase {
 	}
 
 	/**
+	 * Test function. Check if PHPCS cutomizations are initialized.
+	 *
 	 * @covers ::vipgoci_run_init_options_phpcs
 	 */
 	public function testRunInitOptionsPhpcsCustom() :void {
@@ -108,7 +138,6 @@ final class MainRunInitOptionsPhpcsTest extends TestCase {
 			'phpcs-severity'                          => 5,
 		);
 
-
 		vipgoci_run_init_options_phpcs(
 			$this->options
 		);
@@ -119,14 +148,14 @@ final class MainRunInitOptionsPhpcsTest extends TestCase {
 				'phpcs-skip-folders-in-repo-options-file' => true,
 				'phpcs-skip-scanning-via-labels-allowed'  => true,
 				'phpcs-path'                              => $this->phpcs_path,
-				'phpcs-standard'                          => array('WordPress', 'myStandard1'),
-				'phpcs-sniffs-include'                    => array('Sniff1', 'Sniff2'),
-				'phpcs-sniffs-exclude'                    => array('Sniff3', 'Sniff4'),
+				'phpcs-standard'                          => array( 'WordPress', 'myStandard1' ),
+				'phpcs-sniffs-include'                    => array( 'Sniff1', 'Sniff2' ),
+				'phpcs-sniffs-exclude'                    => array( 'Sniff3', 'Sniff4' ),
 				'phpcs-runtime-set'                       => array(
 					array( 'key1', 'value1' ),
-					array( 'key2', 'value2' )
+					array( 'key2', 'value2' ),
 				),
-				'phpcs-skip-folders'                      => array('myfolder1', 'myfolder2'),
+				'phpcs-skip-folders'                      => array( 'myfolder1', 'myfolder2' ),
 				'phpcs-severity'                          => 5,
 				'phpcs-standard-file'                     => false,
 			),
