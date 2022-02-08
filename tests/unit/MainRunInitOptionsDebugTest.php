@@ -4,14 +4,21 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
-require_once( __DIR__ . '/../../main.php' );
-require_once( __DIR__ . '/../../options.php' );
+require_once __DIR__ . '/../../main.php';
+require_once __DIR__ . '/../../options.php';
 
 use PHPUnit\Framework\TestCase;
 
-// phpcs:disable PSR1.Files.SideEffects
-
+/**
+ * Test if debug level is correctly set.
+ *
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class MainRunInitOptionsDebugTest extends TestCase {
+	/**
+	 * Set up variables.
+	 */
 	protected function setUp() :void {
 		$this->options = array(
 			'debug-level' => '1',
@@ -22,6 +29,9 @@ final class MainRunInitOptionsDebugTest extends TestCase {
 		$vipgoci_debug_level = -1;
 	}
 
+	/**
+	 * Clear variables.
+	 */
 	protected function tearDown() :void {
 		global $vipgoci_debug_level;
 
@@ -31,6 +41,8 @@ final class MainRunInitOptionsDebugTest extends TestCase {
 	}
 
 	/**
+	 * Test if debug level is set correctly.
+	 *
 	 * @covers ::vipgoci_run_init_options_debug
 	 */
 	public function testRunInitOptionsDebugDefault() :void {
@@ -40,7 +52,7 @@ final class MainRunInitOptionsDebugTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				'debug-level'         => 1,
+				'debug-level' => 1,
 			),
 			$this->options
 		);
