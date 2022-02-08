@@ -9,8 +9,6 @@ use PHPUnit\Framework\TestCase;
 /**
  * Test vipgoci_run_init_options_phpcs function.
  *
- * @package Automattic/vip-go-ci
- *
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
@@ -30,7 +28,7 @@ final class MainRunInitOptionsPhpcsTest extends TestCase {
 	private array $options = array();
 
 	/**
-	 * Set up all variables, etc.
+	 * Set up all variables.
 	 */
 	protected function setUp() :void {
 		$this->phpcs_path = vipgoci_unittests_get_config_value(
@@ -45,7 +43,7 @@ final class MainRunInitOptionsPhpcsTest extends TestCase {
 	}
 
 	/**
-	 * Clean up all variables, etc.
+	 * Clear all variables.
 	 */
 	protected function tearDown() :void {
 		unset( $this->phpcs_path );
@@ -107,7 +105,7 @@ final class MainRunInitOptionsPhpcsTest extends TestCase {
 	}
 
 	/**
-	 * Test function. Check if PHPCS cutomizations are initialized.
+	 * Test function. Check if PHPCS customizations are initialized.
 	 *
 	 * @covers ::vipgoci_run_init_options_phpcs
 	 */
