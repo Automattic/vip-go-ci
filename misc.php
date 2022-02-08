@@ -123,6 +123,11 @@ function vipgoci_sysexit(
  * Set up to alarm when maximum execution time of
  * vip-go-ci is reached. Will call exit() when
  * alarm goes off.
+ *
+ * @param int    $max_exec_time     Maximum execution time in seconds.
+ * @param string $commit_identifier Identifier for the commit.
+ *
+ * @return void
  */
 function vipgoci_set_maximum_exec_time(
 	int $max_exec_time = 600,
