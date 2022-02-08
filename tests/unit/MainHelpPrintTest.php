@@ -4,15 +4,21 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
-require_once( __DIR__ . '/../../main.php' );
-require_once( __DIR__ . '/../../defines.php' );
+require_once __DIR__ . '/../../main.php';
+require_once __DIR__ . '/../../defines.php';
 
 use PHPUnit\Framework\TestCase;
 
-// phpcs:disable PSR1.Files.SideEffects
-
+/**
+ * Check if help message is printed.
+ *
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class MainHelpPrintTest extends TestCase {
 	/**
+	 * Checks if help message is printed.
+	 *
 	 * @covers ::vipgoci_help_print
 	 */
 	public function testHelpPrint() :void {
@@ -37,13 +43,9 @@ final class MainHelpPrintTest extends TestCase {
 
 		if ( false === $tmp_pos ) {
 			$tmp_pos = false;
-		}
-
-		else if ( 0 > $tmp_pos ) {
+		} elseif ( 0 > $tmp_pos ) {
 			$tmp_pos = false;
-		}
-
-		else if ( 0 < $tmp_pos ) {
+		} elseif ( 0 < $tmp_pos ) {
 			$tmp_pos = true;
 		}
 
