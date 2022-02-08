@@ -13,7 +13,7 @@ use PHPUnit\Framework\TestCase;
  * @preserveGlobalState disabled
  */
 final class Skeleton extends TestCase {
-	/*
+	/**
 	 * Short description of the function.
 	 */
 	protected function setUp() :void {
