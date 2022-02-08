@@ -74,7 +74,7 @@ final class MainRunInitOptionsHashesOptionsTest extends TestCase {
 	public function testRunInitOptionsHashesOptionsCustom() :void {
 		$this->options = array(
 			'hashes-api'          => 'true',
-			'hashes-api-url'      => 'https://api.test.local/v1/api',
+			'hashes-api-url'      => 'https://api.test.local/v1/api/',
 			'hashes-oauth-param1' => ' value1  ',
 			'hashes-oauth-param2' => '  value2 ',
 		);
