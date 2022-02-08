@@ -4,14 +4,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
-require_once( __DIR__ . '/../../main.php' );
+require_once __DIR__ . '/../../main.php';
 
 use PHPUnit\Framework\TestCase;
 
-// phpcs:disable PSR1.Files.SideEffects
-
+/**
+ * Check if PHPCS cleanup is correctly performed.
+ */
 final class MainRunCleanupPhpcsTest extends TestCase {
 	/**
+	 * Check if PHPCS cleanup is correctly performed.
+	 *
 	 * @covers ::vipgoci_run_cleanup_phpcs
 	 */
 	public function testRunCleanupPhpcs() :void {
@@ -24,7 +27,7 @@ final class MainRunCleanupPhpcsTest extends TestCase {
 			'phpcs-standard-file' => false,
 			'phpcs-standard'      => array(
 				$tmp_file_name,
-			)
+			),
 		);
 
 		$this->assertTrue(
