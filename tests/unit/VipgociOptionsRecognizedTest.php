@@ -4,14 +4,21 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
-require_once( __DIR__ . '/../../main.php' );
+require_once __DIR__ . '/../../main.php';
 
 use PHPUnit\Framework\TestCase;
 
-// phpcs:disable PSR1.Files.SideEffects
-
+/**
+ * Check if expected options are defined.
+ *
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class VipgociOptionsRecognizedTest extends TestCase {
 	/**
+	 * Check if expected options are returned by the
+	 * function that defines them.
+	 *
 	 * @covers ::vipgoci_options_recognized
 	 */
 	public function testOptionsRecognized() :void {
