@@ -1958,10 +1958,15 @@ function vipgoci_run_init_options(
 	// Validate args.
 	if (
 		( ! isset( $options['repo-owner'] ) ) ||
+		( empty( $options['repo-owner'] ) ) ||
 		( ! isset( $options['repo-name'] ) ) ||
+		( empty( $options['repo-name'] ) ) ||
 		( ! isset( $options['commit'] ) ) ||
+		( empty( $options['commit'] ) ) ||
 		( ! isset( $options['token'] ) ) ||
+		( empty( $options['token'] ) ) ||
 		( ! isset( $options['local-git-repo'] ) ) ||
+		( empty( $options['local-git-repo'] ) ) ||
 		( isset( $options['help'] ) )
 	) {
 		vipgoci_help_print();
