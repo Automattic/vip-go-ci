@@ -4,14 +4,21 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
-require_once( __DIR__ . '/../../main.php' );
+require_once __DIR__ . '/../../main.php';
+require_once __DIR__ . '/../../defines.php';
 
 use PHPUnit\Framework\TestCase;
 
-// phpcs:disable PSR1.Files.SideEffects
-
+/**
+ * Test if default variables are set correctly.
+ *
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class MainRunInitVarsTest extends TestCase {
 	/**
+	 * Test if default variables are set correctly.
+	 *
 	 * @covers ::vipgoci_run_init_vars
 	 */
 	public function testRunInitVars() :void {
@@ -49,7 +56,7 @@ final class MainRunInitVarsTest extends TestCase {
 		unset( $options );
 
 		$this->assertTrue(
-			in_array( 'help', $options_recognized ),
+			in_array( 'help', $options_recognized, true ),
 			'\'help\' not found in $options_recognized variable'
 		);
 
