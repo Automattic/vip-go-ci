@@ -8,8 +8,6 @@ namespace Vipgoci\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
 
-// phpcs:disable PSR1.Files.SideEffects
-
 /**
  * Comment to describe the test.
  *
