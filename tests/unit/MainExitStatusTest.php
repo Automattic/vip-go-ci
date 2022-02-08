@@ -4,15 +4,21 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
-require_once( __DIR__ . './../../defines.php' );
-require_once( __DIR__ . './../../main.php' );
+require_once __DIR__ . './../../defines.php';
+require_once __DIR__ . './../../main.php';
 
 use PHPUnit\Framework\TestCase;
 
-// phpcs:disable PSR1.Files.SideEffects
-
+/**
+ * Test if exit status is correctly determined.
+ *
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class MainExitStatusTest extends TestCase {
 	/**
+	 * Test if exit status is correctly determined.
+	 *
 	 * @covers ::vipgoci_exit_status
 	 */
 	public function testExitStatus1() {
@@ -22,10 +28,10 @@ final class MainExitStatusTest extends TestCase {
 					'lint' => array(
 						25 => array(
 							'error' => 0,
-						)
-					)
-				)
-			)
+						),
+					),
+				),
+			),
 		);
 
 		$this->assertSame(
@@ -35,6 +41,8 @@ final class MainExitStatusTest extends TestCase {
 	}
 
 	/**
+	 * Test if exit status is correctly determined.
+	 *
 	 * @covers ::vipgoci_exit_status
 	 */
 	public function testExitStatus2() {
@@ -43,11 +51,11 @@ final class MainExitStatusTest extends TestCase {
 				'stats' => array(
 					'lint' => array(
 						25 => array(
-							'error' => 30
-						)
-					)
-				)
-			)
+							'error' => 30,
+						),
+					),
+				),
+			),
 		);
 
 		$this->assertSame(
@@ -57,6 +65,8 @@ final class MainExitStatusTest extends TestCase {
 	}
 
 	/**
+	 * Test if exit status is correctly determined.
+	 *
 	 * @covers ::vipgoci_exit_status
 	 */
 	public function testExitStatusWillReturn250WhenSkippedFilesIsFound() {
@@ -64,9 +74,9 @@ final class MainExitStatusTest extends TestCase {
 			array(
 				'stats'         => array(),
 				'skipped-files' => array(
-					25 => array( 'total' => 1 )
-				)
-			)
+					25 => array( 'total' => 1 ),
+				),
+			),
 		);
 
 		$this->assertSame(
