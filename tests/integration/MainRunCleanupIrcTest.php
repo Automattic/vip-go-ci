@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+require_once __DIR__ . '/IncludesForTests.php';
 
-require_once( __DIR__ . '/../unit/helper/IndicateTestId.php' );
+require_once __DIR__ . '/../unit/helper/IndicateTestId.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -22,6 +22,9 @@ use PHPUnit\Framework\TestCase;
  * @preserveGlobalState disabled
  */
 final class MainRunCleanupIrcTest extends TestCase {
+	/**
+	 * Set up all variables.
+	 */
 	protected function setUp(): void {
 		$this->options = array(
 			'irc-api-token' => '1234',
@@ -30,6 +33,9 @@ final class MainRunCleanupIrcTest extends TestCase {
 		);
 	}
 
+	/**
+	 * Clear variables.
+	 */
 	protected function tearDown(): void {
 		unset( $this->options );
 	}
@@ -86,7 +92,7 @@ final class MainRunCleanupIrcTest extends TestCase {
 	 * Check if error message is printed, indicating
 	 * IRC queue clearance was not attempted.
 	 *
-	 * irc-api-url option is missing from $this->options which
+	 * Option irc-api-url option is missing from $this->options which
 	 * should lead to failure.
 	 *
 	 * @covers ::vipgoci_run_cleanup_irc
