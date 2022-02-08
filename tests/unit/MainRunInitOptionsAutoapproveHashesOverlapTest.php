@@ -24,9 +24,6 @@ final class MainRunInitOptionsAutoapproveHashesOverlapTest extends TestCase {
 	 * Set up variables and indication.
 	 */
 	protected function setUp(): void {
-		/*
-		 * Indicate that this particular test is running.
-		 */
 		vipgoci_unittests_indicate_test_id( 'MainRunInitOptionsAutoapproveHashesOverlapTest' );
 
 		$this->options = array(
@@ -38,9 +35,6 @@ final class MainRunInitOptionsAutoapproveHashesOverlapTest extends TestCase {
 	 * Clear variables and remove indication.
 	 */
 	protected function tearDown(): void {
-		/*
-		 * We are no longer running the test.
-		 */
 		vipgoci_unittests_remove_indication_for_test_id( 'MainRunInitOptionsAutoapproveHashesOverlapTest' );
 
 		unset( $this->options );
