@@ -35,7 +35,7 @@ function vipgoci_help_print() :void {
 		"\t" . '--max-exec-time=NUMBER         Maximum execution time for vip-go-ci, in seconds. Will exit if exceeded.' . PHP_EOL .
 		"\t" . '                               Only lime spent after options are initialized and during scanning is' . PHP_EOL .
 		"\t" . '                               considered as execution time. Time initializing is excluded.' . PHP_EOL .
-		"\t" . '--enforce-https-urls=BOOL      Check and enforce that all URLs provided to parameters ' . PHP_EOL .
+		"\t" . '--enforce-https-urls=BOOL      Check and enforce that all URLs provided to parameters' . PHP_EOL .
 		"\t" . '                               that expect a URL are HTTPS and not HTTP. Default is true.' . PHP_EOL .
 		"\t" . '--skip-draft-prs=BOOL          If true, skip scanning of all pull requests that are in draft mode.' . PHP_EOL .
 		"\t" . '                               Default is false.' . PHP_EOL .
@@ -57,6 +57,7 @@ function vipgoci_help_print() :void {
 		"\t" . '                               respectively. This is useful for environments, such as' . PHP_EOL .
 		"\t" . '                               TeamCity or GitHub Actions, where vital configuration.' . PHP_EOL .
 		"\t" . '                               are specified via environmental variables.' . PHP_EOL .
+		"\t" . '                               --enforce-https-urls parameter is not configurable via environment.' . PHP_EOL .
 		"\t" . '--repo-options=BOOL            Whether to allow configuring of certain configuration parameters' . PHP_EOL .
 		"\t" . '                               via options file ("' . VIPGOCI_OPTIONS_FILE_NAME . '") placed in' . PHP_EOL .
 		"\t" . '                               root of the repository.' . PHP_EOL .
@@ -1924,6 +1925,17 @@ function vipgoci_run_init_options(
 	vipgoci_option_bool_handle( $options, 'enforce-https-urls', 'true' );
 
 	/*
+	 * This variable is not to be configurable on the command-line,
+	 * only via options-file.
+	 */
+	$options['skip-execution'] = false;
+
+	/*
+	 * Read options from environment, if configured to do so.
+	 */
+	vipgoci_run_env_options_handle( $options, $options_recognized );
+
+	/*
 	 * Handle boolean parameters not handled by specialized functions.
 	 */
 	vipgoci_option_bool_handle( $options, 'skip-draft-prs', 'false' );
@@ -1947,17 +1959,6 @@ function vipgoci_run_init_options(
 		'branches-ignore',
 		array()
 	);
-
-	/*
-	 * This variable is not to be configurable on the command-line,
-	 * only via options-file.
-	 */
-	$options['skip-execution'] = false;
-
-	/*
-	 * Read options from environment, if configured to do so.
-	 */
-	vipgoci_run_env_options_handle( $options, $options_recognized );
 
 	// Validate args.
 	if (
