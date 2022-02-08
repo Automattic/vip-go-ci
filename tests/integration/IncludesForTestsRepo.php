@@ -22,20 +22,17 @@ function vipgoci_unittests_setup_git_repo(
 		return false;
 	}
 
-
 	$res = unlink( $temp_dir );
 
 	if ( false === $res ) {
 		return false;
 	}
 
-
 	$res = mkdir( $temp_dir );
 
 	if ( false === $res ) {
 		return false;
 	}
-
 
 	$cmd = sprintf(
 		'%s clone %s %s 2>&1',
@@ -49,7 +46,7 @@ function vipgoci_unittests_setup_git_repo(
 
 	$res = exec( $cmd, $cmd_output, $cmd_status );
 
-	$cmd_output = implode( PHP_EOL, $cmd_output);
+	$cmd_output = implode( PHP_EOL, $cmd_output );
 
 	if (
 		( null === $cmd_output ) ||
@@ -63,7 +60,6 @@ function vipgoci_unittests_setup_git_repo(
 	unset( $cmd_output );
 	unset( $cmd_status );
 
-
 	$cmd = sprintf(
 		'%s -C %s checkout %s 2>&1',
 		escapeshellcmd( $options['git-path'] ),
@@ -76,7 +72,7 @@ function vipgoci_unittests_setup_git_repo(
 
 	$res = exec( $cmd, $cmd_output, $cmd_status );
 
-	$cmd_output = implode( PHP_EOL, $cmd_output);
+	$cmd_output = implode( PHP_EOL, $cmd_output );
 
 	if (
 		( null === $cmd_output ) ||
@@ -89,7 +85,6 @@ function vipgoci_unittests_setup_git_repo(
 	unset( $cmd );
 	unset( $cmd_output );
 	unset( $cmd_status );
-
 
 	return $temp_dir;
 }
@@ -142,7 +137,7 @@ function vipgoci_unittests_remove_git_repo( string $repo_path ) :bool {
 	/*
 	 * Prepare to run the rm -rf command.
 	 */
-	
+
 	$cmd = sprintf(
 		'%s -rf %s',
 		escapeshellcmd( 'rm' ),
@@ -152,18 +147,16 @@ function vipgoci_unittests_remove_git_repo( string $repo_path ) :bool {
 	$cmd_output = '';
 	$cmd_status = 0;
 
-	/* 
+	/*
 	 * Run it and check results.
 	 */
 	$res = exec( $cmd, $cmd_output, $cmd_status );
 
-	if ( $cmd_status === 0 ) {
+	if ( 0 === $cmd_status ) {
 		return true;
-	}
-
-	else {
+	} else {
 		printf(
-			"Warning: Not able to remove temporary directory successfully; %i, %s",
+			'Warning: Not able to remove temporary directory successfully; %i, %s',
 			$cmd_status,
 			$cmd_output
 		);
