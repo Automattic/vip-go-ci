@@ -4,16 +4,14 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
-require_once( __DIR__ . '/helper/IndicateTestId.php' );
-require_once( __DIR__ . '/helper/CheckPcntlSupport.php' );
-require_once( __DIR__ . '/../integration/IncludesForTestsOutputControl.php' );
+require_once __DIR__ . '/helper/IndicateTestId.php';
+require_once __DIR__ . '/helper/CheckPcntlSupport.php';
+require_once __DIR__ . '/../integration/IncludesForTestsOutputControl.php';
 
-require_once( __DIR__ . '/../../defines.php' );
-require_once( __DIR__ . '/../../misc.php' );
+require_once __DIR__ . '/../../defines.php';
+require_once __DIR__ . '/../../misc.php';
 
 use PHPUnit\Framework\TestCase;
-
-// phpcs:disable PSR1.Files.SideEffects
 
 /**
  * Run tests in separate process to ensure
@@ -24,6 +22,9 @@ use PHPUnit\Framework\TestCase;
  * @preserveGlobalState disabled
  */
 final class MiscSetMaximumExecTimeTest extends TestCase {
+	/**
+	 * Require file and set indication.
+	 */
 	protected function setUp(): void {
 		/*
 		 * Indicate that this particular test is running,
@@ -35,25 +36,24 @@ final class MiscSetMaximumExecTimeTest extends TestCase {
 		/*
 		 * Ensure this file is required on execution
 		 * of the test itself. This test is run in separate
-		 * process so other tests are unaffected 
+		 * process so other tests are unaffected
 		 * by this require. This is needed to ensure function
 		 * declarations are not attempted multiple times.
 		 */
-		require_once( __DIR__ . '/../../other-web-services.php' );
+		require_once __DIR__ . '/../../other-web-services.php';
 	}
 
+	/**
+	 * Remove indication.
+	 */
 	protected function tearDown(): void {
-		/*
-	 	 * We are no longer running the test,
-		 * remove the indication.
-		 */
 		vipgoci_unittests_remove_indication_for_test_id( 'MiscSetMaximumExecTimeTest' );
 	}
 
 	/**
 	 * Check if a particular string was outputted
 	 * indicating that alarm was raised.
-	 * 
+	 *
 	 * @covers ::vipgoci_set_maximum_exec_time
 	 */
 	public function testSetMaxExecTime1() :void {
@@ -67,13 +67,13 @@ final class MiscSetMaximumExecTimeTest extends TestCase {
 
 		ob_start();
 
-		// Set alarm in 8 seconds
+		// Set alarm in 8 seconds.
 		vipgoci_set_maximum_exec_time( 8, 'MAX_EXEC_ALARM_ABCDE' );
 
-		// Wait for 2 seconds, alarm should not trigger meanwhile
-		sleep(2);
+		// Wait for 2 seconds, alarm should not trigger meanwhile.
+		sleep( 2 );
 
-		// String should not have been printed
+		// String should not have been printed.
 		$printed_data = ob_get_contents();
 
 		ob_end_clean();
@@ -94,10 +94,10 @@ final class MiscSetMaximumExecTimeTest extends TestCase {
 
 		ob_start();
 
-		// Now wait for 10 seconds, alarm should trigger meanwhile
-		sleep(10);
+		// Now wait for 10 seconds, alarm should trigger meanwhile.
+		sleep( 10 );
 
-		// String should have been printed
+		// String should have been printed.
 		$printed_data = ob_get_contents();
 
 		ob_end_clean();
