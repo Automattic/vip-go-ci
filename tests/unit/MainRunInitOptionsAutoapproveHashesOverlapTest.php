@@ -4,18 +4,25 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
-require_once( __DIR__ . '/helper/IndicateTestId.php' );
+require_once __DIR__ . '/helper/IndicateTestId.php';
 
-require_once( __DIR__ . '/../../defines.php' );
-require_once( __DIR__ . '/../../misc.php' );
-require_once( __DIR__ . '/../../main.php' );
+require_once __DIR__ . '/../../defines.php';
+require_once __DIR__ . '/../../misc.php';
+require_once __DIR__ . '/../../main.php';
 
 
 use PHPUnit\Framework\TestCase;
 
-// phpcs:disable PSR1.Files.SideEffects
-
+/**
+ * Check if overlapping hashes options lead to error.
+ *
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class MainRunInitOptionsAutoapproveHashesOverlapTest extends TestCase {
+	/**
+	 * Set up variables and indication.
+	 */
 	protected function setUp(): void {
 		/*
 		 * Indicate that this particular test is running.
@@ -27,9 +34,12 @@ final class MainRunInitOptionsAutoapproveHashesOverlapTest extends TestCase {
 		);
 	}
 
+	/**
+	 * Clear variables and remove indication.
+	 */
 	protected function tearDown(): void {
 		/*
-	 	 * We are no longer running the test.
+		 * We are no longer running the test.
 		 */
 		vipgoci_unittests_remove_indication_for_test_id( 'MainRunInitOptionsAutoapproveHashesOverlapTest' );
 
