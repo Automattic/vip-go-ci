@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+require_once __DIR__ . '/IncludesForTests.php';
 
-require_once( __DIR__ . '/../unit/helper/IndicateTestId.php' );
+require_once __DIR__ . '/../unit/helper/IndicateTestId.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -22,10 +22,27 @@ use PHPUnit\Framework\TestCase;
  * @preserveGlobalState disabled
  */
 final class MainRunCleanupSendPixelApiTest extends TestCase {
+	/**
+	 * Options array.
+	 *
+	 * @var $options
+	 */
+	private array $options = array();
+
+	/**
+	 * Counter report array.
+	 *
+	 * @var $counter_report
+	 */
+	private array $counter_report = array();
+
+	/**
+	 * Set up all variables.
+	 */
 	protected function setUp(): void {
 		$this->options = array(
-			'pixel-api-groupprefix'  => 'mystatistics',
-			'repo-name'              => 'test-repo',
+			'pixel-api-groupprefix' => 'mystatistics',
+			'repo-name'             => 'test-repo',
 		);
 
 		$this->counter_report = array(
@@ -33,6 +50,9 @@ final class MainRunCleanupSendPixelApiTest extends TestCase {
 		);
 	}
 
+	/**
+	 * Clean up all variables.
+	 */
 	protected function tearDown(): void {
 		unset( $this->options );
 		unset( $this->counter_report );
@@ -94,7 +114,7 @@ final class MainRunCleanupSendPixelApiTest extends TestCase {
 	 * @covers ::vipgoci_run_cleanup_send_pixel_api
 	 */
 	public function testSendPixelApiFailure() :void {
-		// Skip option, leads to sending stats is not attempted
+		// Skip option, leads to sending stats is not attempted.
 		unset( $this->options['pixel-api-url'] );
 
 		ob_start();
