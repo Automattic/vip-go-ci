@@ -4,30 +4,47 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+require_once __DIR__ . '/IncludesForTests.php';
 
 use PHPUnit\Framework\TestCase;
 
-// phpcs:disable PSR1.Files.SideEffects
-
+/**
+ * Check if options regarding repository are set up correctly.
+ *
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class MainRunInitOptionsRepoOptionsTest extends TestCase {
-	var $options_git = array(
+	/**
+	 * Git options array.
+	 *
+	 * @var $options_git
+	 */
+	private array $options_git = array(
 		'git-path'        => null,
 		'github-repo-url' => null,
 		'repo-name'       => null,
 		'repo-owner'      => null,
 	);
 
-	var $options_options = array(
+	/**
+	 * Options for repositories.
+	 *
+	 * @var $options_options
+	 */
+	private array $options_options = array(
 		'commit-test-options-read-repo-file-with-file-2' => null,
 	);
 
+	/**
+	 * Set up variables.
+	 */
 	protected function setUp() :void {
 		vipgoci_unittests_get_config_values(
 			'git',
 			$this->options_git
 		);
-		
+
 		vipgoci_unittests_get_config_values(
 			'options',
 			$this->options_options
@@ -37,12 +54,12 @@ final class MainRunInitOptionsRepoOptionsTest extends TestCase {
 			$this->options_git,
 			$this->options_options
 		);
-	
+
 		$this->options['github-token'] =
 			vipgoci_unittests_get_config_value(
 				'git-secrets',
 				'github-token',
-				true // Fetch from secrets file
+				true // Fetch from secrets file.
 			);
 
 		$this->options['token'] =
@@ -52,6 +69,9 @@ final class MainRunInitOptionsRepoOptionsTest extends TestCase {
 			$this->options['commit-test-options-read-repo-file-with-file-2'];
 	}
 
+	/**
+	 * Clear variables.
+	 */
 	protected function tearDown() :void {
 		unset( $this->options );
 		unset( $this->options_options );
@@ -59,6 +79,8 @@ final class MainRunInitOptionsRepoOptionsTest extends TestCase {
 	}
 
 	/**
+	 * Check if options regarding repository are set up correctly.
+	 *
 	 * @covers ::vipgoci_run_init_options_repo_options
 	 */
 	public function testRunInitOptionsRepoOptionsDisabled() :void {
@@ -75,13 +97,13 @@ final class MainRunInitOptionsRepoOptionsTest extends TestCase {
 			return;
 		}
 
-		// Options parameters processed by vipgoci_run_init_options_repo_options()
-		$this->options['repo-options'] = 'false';
+		// Options parameters processed by vipgoci_run_init_options_repo_options().
+		$this->options['repo-options']         = 'false';
 		$this->options['repo-options-allowed'] = 'post-generic-pr-support-comments,skip-draft-prs';
 
-		// Processed by the function, neither should be changed
+		// Processed by the function, neither should be changed.
 		$this->options['post-generic-pr-support-comments'] = false;
-		$this->options['skip-draft-prs'] = false;
+		$this->options['skip-draft-prs']                   = false;
 
 		vipgoci_unittests_output_suppress();
 
@@ -108,6 +130,8 @@ final class MainRunInitOptionsRepoOptionsTest extends TestCase {
 	}
 
 	/**
+	 * Test if options regarding repositories are processed correctly.
+	 *
 	 * @covers ::vipgoci_run_init_options_repo_options
 	 */
 	public function testRunInitOptionsRepoOptionsEnabledAndAllowed() :void {
@@ -126,13 +150,13 @@ final class MainRunInitOptionsRepoOptionsTest extends TestCase {
 			return;
 		}
 
-		// Options parameters processed by vipgoci_run_init_options_repo_options()
-		$this->options['repo-options'] = 'true';
+		// Options parameters processed by vipgoci_run_init_options_repo_options().
+		$this->options['repo-options']         = 'true';
 		$this->options['repo-options-allowed'] = 'post-generic-pr-support-comments,skip-draft-prs';
 
-		// Processed by the function, one should be changed, other not
+		// Processed by the function, one should be changed, other not.
 		$this->options['post-generic-pr-support-comments'] = false;
-		$this->options['skip-draft-prs'] = false;
+		$this->options['skip-draft-prs']                   = false;
 
 		vipgoci_run_init_options_repo_options( $this->options );
 
@@ -155,6 +179,8 @@ final class MainRunInitOptionsRepoOptionsTest extends TestCase {
 	}
 
 	/**
+	 * Test if options regarding repositories are processed correctly.
+	 *
 	 * @covers ::vipgoci_run_init_options_repo_options
 	 */
 	public function testRunInitOptionsRepoOptionsEnabledAndNotAllowed() :void {
@@ -173,13 +199,13 @@ final class MainRunInitOptionsRepoOptionsTest extends TestCase {
 			return;
 		}
 
-		// Options parameters processed by vipgoci_run_init_options_repo_options()
-		$this->options['repo-options'] = 'true';
+		// Options parameters processed by vipgoci_run_init_options_repo_options().
+		$this->options['repo-options']         = 'true';
 		$this->options['repo-options-allowed'] = 'skip-draft-prs';
 
-		// Processed by the function, neither should be changed
+		// Processed by the function, neither should be changed.
 		$this->options['post-generic-pr-support-comments'] = false;
-		$this->options['skip-draft-prs'] = true;
+		$this->options['skip-draft-prs']                   = true;
 
 		vipgoci_run_init_options_repo_options( $this->options );
 
