@@ -7,7 +7,6 @@ use PHPUnit\Framework\TestCase;
 final class VipgociOptionsTeamsTest extends TestCase {
 	var $options = array(
 		'github-token'	=> null,
-		'team-id'	=> null,
 		'team-slug'	=> null,
 		'org-name'	=> null,
 	);
@@ -57,7 +56,6 @@ final class VipgociOptionsTeamsTest extends TestCase {
 
 
 		$this->options['my-team-option'] = array(
-			$this->options['team-id'],
 			$this->options['team-slug']
 		);
 
@@ -78,11 +76,10 @@ final class VipgociOptionsTeamsTest extends TestCase {
 		$this->assertTrue(
 			count(
 				$this->options['my-team-option']
-			) > 0
+			) > 0,
+			'No teams were found, at least one should be found'
 		);
-
 	}
-
 
 	/**
 	 * @covers ::vipgoci_option_teams_handle

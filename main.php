@@ -182,6 +182,7 @@ function vipgoci_help_print() :void {
 		"\t" . '                                                      excluded. Note that this parameter' . PHP_EOL .
 		"\t" . '                                                      only works in conjunction with' . PHP_EOL .
 		"\t" . '                                                      --dismissed-reviews-repost-comments .' . PHP_EOL .
+		"\t" . '                                                      The parameter expects a team slug, not ID.' . PHP_EOL .
 		"\t" . '--informational-msg=STRING     Message to append to GitHub reviews and generic comments. Useful to' . PHP_EOL .
 		"\t" . '                               explain what the bot does. Can contain HTML or Markdown.' . PHP_EOL .
 		PHP_EOL .
@@ -2292,6 +2293,7 @@ function vipgoci_run_scan_fetch_prs_reviews(
 	 */
 	$team_members_ids_arr = vipgoci_github_team_members_many_get(
 		$options['token'],
+		$options['repo-owner'],
 		$options['dismissed-reviews-exclude-reviews-from-team']
 	);
 

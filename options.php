@@ -998,19 +998,21 @@ function vipgoci_option_url_handle(
 	}
 }
 
-/*
- * Handle parameter that we expect to contain teams,
- * either as an ID (numeric) or a string (slug).
+/**
+ * Handle parameter that we expect to contain team slugs.
  *
- * Will check if the teams are valid, removing invalid ones,
- * transforming strings into IDs, and reconstruct the option
- * afterwards.
+ * Will check if the teams are valid, removing invalid ones
+ * and reconstructing the option afterwards.
+ *
+ * @param array  $options     Options array.
+ * @param string $option_name Option name to process.
+ *
+ * @return void Nothing is returned.
  */
-
 function vipgoci_option_teams_handle(
-	&$options,
-	$option_name
-) {
+	array &$options,
+	string $option_name
+): void {
 	if (
 		( ! isset( $options[ $option_name ] ) ) ||
 		( ! is_array( $options[ $option_name ] ) )
@@ -1037,55 +1039,38 @@ function vipgoci_option_teams_handle(
 
 	foreach(
 		$options[ $option_name ] as
-			$team_id_key =>	$team_id_value
+			$team_slug_key => $team_slug_value
 	) {
-		$team_id_value_original = $team_id_value;
+		$team_slug_value_original = $team_slug_value;
 
 		/*
-		 * If a string, transform team_id_value into integer ID
-		 * for team.
+		 * If the team slug provided by user is valid,
+		 * it should be in list of slugs returned by API.
+		 * Ensure this is the case.
 		 */
-		if (
-			( ! is_numeric( $team_id_value ) ) &&
-			( ! empty( $teams_info[ $team_id_value ] ) )
-		) {
-			$team_id_value = $teams_info[ $team_id_value ][0]->id;
+		if ( ! empty( $teams_info[ $team_slug_value ] ) ) {
+			$team_slug_value = $teams_info[ $team_slug_value ][0]->slug;
 		}
-
-		/*
-		 * If $team_id_value is a numeric,
-		 * the team exists, so put in
-		 * the integer-value in the options.
-		 */
-		if ( is_numeric( $team_id_value ) ) {
-			$options
-				[ $option_name ]
-				[ $team_id_key ] = (int) $team_id_value;
-		}
-
-		/*
-		 * Something failed; we might have
-		 * failed to transform $team_id_value into
-		 * a numeric representation (ID) and/or
-		 * it may have been invalid, so remove
-		 * it from the options array.
-		 */
 
 		else {
+			/*
+			 * Something failed; slug may have been invalid so
+			 * remove it from the options array.
+			 */
 			vipgoci_log(
-				'Invalid team ID found in ' .
+				'Invalid team slug found in ' .
 				'--' . $option_name .
 				' parameter; ignoring it.',
 				array(
-					'team_id' => $team_id_value,
-					'team_id_original' => $team_id_value_original,
+					'team_slug'          => $team_slug_value,
+					'team_slug_original' => $team_slug_value_original,
 				)
 			);
 
 			unset(
 				$options
 					[ $option_name ]
-					[ $team_id_key ]
+					[ $team_slug_key ]
 			);
 		}
 	}
@@ -1096,10 +1081,17 @@ function vipgoci_option_teams_handle(
 			$options[ $option_name ]
 		) );
 
+	vipgoci_log(
+		'Team information verified via GitHub API',
+		array(
+			'team_info' => $options[ $option_name ],
+		),
+	);
+
 	unset( $teams_info );
-	unset( $team_id_key );
-	unset( $team_id_value );
-	unset( $team_id_value_original );
+	unset( $team_slug_key );
+	unset( $team_slug_value );
+	unset( $team_slug_value_original );
 }
 
 
