@@ -2824,8 +2824,8 @@ function vipgoci_github_pr_review_submit(
 			)
 		);
 
-		$validation_message = get_validation_message_prefix( VIPGOCI_VALIDATION_MAXIMUM_LINES, $skip_large_files_limit );
-		$results[VIPGOCI_SKIPPED_FILES][ $pr_number ] = vipgo_skip_file_check_previous_pr_comments( $results[VIPGOCI_SKIPPED_FILES][ $pr_number ], $pr_reviews_commented, $validation_message );
+		$validation_message = vipgoci_skip_file_get_validation_message_prefix( VIPGOCI_VALIDATION_MAXIMUM_LINES, $skip_large_files_limit );
+		$results[VIPGOCI_SKIPPED_FILES][ $pr_number ] = vipgoci_skip_file_check_previous_pr_comments( $results[VIPGOCI_SKIPPED_FILES][ $pr_number ], $pr_reviews_commented, $validation_message );
 
 		/**
 		 * Format skipped files message if the validation has issues

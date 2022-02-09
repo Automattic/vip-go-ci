@@ -245,13 +245,13 @@ Note that the above file(s) were not analyzed due to their length.';
 	}
 
 	/**
-	 * @covers ::vipgo_skip_file_check_previous_pr_comments
+	 * @covers ::vipgoci_skip_file_check_previous_pr_comments
 	 */
 	public function testVipgociVerifySkipFileMessageDuplication(): void {
 		$comments_mock = $this->getSkippedFilesCommentsMock();
 		$results_mock  = $this->getResultsMock();
 
-		$result = vipgo_skip_file_check_previous_pr_comments(
+		$result = vipgoci_skip_file_check_previous_pr_comments(
 			$results_mock[15],
 			$comments_mock,
 			$this->validationMessagePrefix
@@ -273,12 +273,12 @@ Note that the above file(s) were not analyzed due to their length.';
 	}
 
 	/**
-	 * @covers ::vipgo_skip_file_check_previous_pr_comments
+	 * @covers ::vipgoci_skip_file_check_previous_pr_comments
 	 * @dataProvider vipgociVerifySkipFileMessageDuplicationWillReturnOfCommentsOreIssuesResultsAreZeroProvider
 	 */
 	public function testVipgociVerifySkipFileMessageDuplicationWillReturnOfCommentsOreIssuesResultsAreZero( array $skipped_files_result, array $comments ): void {
 
-		$result = vipgo_skip_file_check_previous_pr_comments(
+		$result = vipgoci_skip_file_check_previous_pr_comments(
 			$skipped_files_result,
 			$comments,
 			$this->validationMessagePrefix

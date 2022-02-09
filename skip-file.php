@@ -76,7 +76,7 @@ function vipgoci_get_skipped_files_message( array $skipped, string $validation_m
  *
  * @return string
  */
-function get_validation_message_prefix( string $issue_type, int $skip_files_lines_limit ): string {
+function vipgoci_skip_file_get_validation_message_prefix( string $issue_type, int $skip_files_lines_limit ): string {
 	return sprintf(
 		VIPGOCI_VALIDATION[ $issue_type ] . ':%s - ',
 		$skip_files_lines_limit,
@@ -114,7 +114,7 @@ function vipgoci_get_skipped_files_issue_message(
  *
  * @return array $pr_issues_result
  */
-function vipgo_skip_file_check_previous_pr_comments( array $pr_issues_results, array $comments, string $validation_message ): array {
+function vipgoci_skip_file_check_previous_pr_comments( array $pr_issues_results, array $comments, string $validation_message ): array {
 	/**
 	 * If there is no previous comments in this PR, return
 	 */
