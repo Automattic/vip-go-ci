@@ -24,7 +24,7 @@ final class ResultsStandardizeIgnorableMessageTest extends TestCase {
 	/**
 	 * Test standardizing function in different ways.
 	 *
-	 * @covers ::vipgci_results_standardize_ignorable_message
+	 * @covers ::vipgoci_results_standardize_ignorable_message
 	 */
 	public function testStandardizeMessage1() :void {
 		$review_comments_input = array(
@@ -42,7 +42,7 @@ final class ResultsStandardizeIgnorableMessageTest extends TestCase {
 		);
 
 		$review_comments_observed = array_map(
-			'vipgci_results_standardize_ignorable_message',
+			'vipgoci_results_standardize_ignorable_message',
 			$review_comments_input
 		);
 

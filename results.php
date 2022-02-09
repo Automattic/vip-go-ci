@@ -707,7 +707,7 @@ function vipgoci_results_filter_comments_to_max(
  *
  * @returns string
  */
-function vipgci_results_standardize_ignorable_message(
+function vipgoci_results_standardize_ignorable_message(
 	string $message
 ) :string {
 	$message = strtolower( $message );
@@ -750,7 +750,7 @@ function vipgoci_results_filter_ignorable(
 				$pr_issue
 		) {
 			if ( in_array(
-				vipgci_results_standardize_ignorable_message(
+				vipgoci_results_standardize_ignorable_message(
 					$pr_issue['issue']['message']
 				),
 				$options['review-comments-ignore'],

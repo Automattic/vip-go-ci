@@ -944,7 +944,7 @@ function vipgoci_run_init_options_reviews( array &$options ) :void {
 
 	// Transform to lower case, remove leading and ending whitespacing, and "." or "," at the end.
 	$options['review-comments-ignore'] = array_map(
-		'vipgci_results_standardize_ignorable_message',
+		'vipgoci_results_standardize_ignorable_message',
 		$options['review-comments-ignore']
 	);
 

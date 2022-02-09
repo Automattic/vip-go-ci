@@ -38,7 +38,7 @@ final class ResultsFilterIgnorableTest extends TestCase {
 		);
 		
 		$options['review-comments-ignore'] = array_map(
-			'vipgci_results_standardize_ignorable_message',
+			'vipgoci_results_standardize_ignorable_message',
 			$options['review-comments-ignore']
 		);
 
