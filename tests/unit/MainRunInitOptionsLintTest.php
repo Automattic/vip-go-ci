@@ -27,6 +27,7 @@ final class MainRunInitOptionsLintTest extends TestCase {
 			'lint-modified-files-only'               => null,
 			'lint-skip-folders-in-repo-options-file' => null,
 			'lint-skip-folders'                      => '/folder1/folder2/,folder3/folder4',
+			'lint-php-path'                          => null,
 		);
 	}
 
@@ -54,6 +55,7 @@ final class MainRunInitOptionsLintTest extends TestCase {
 				'lint-modified-files-only'               => true,
 				'lint-skip-folders-in-repo-options-file' => false,
 				'lint-skip-folders'                      => array( 'folder1/folder2', 'folder3/folder4' ),
+				'lint-php-path'                          => 'php',
 			),
 			$this->options
 		);
@@ -69,6 +71,7 @@ final class MainRunInitOptionsLintTest extends TestCase {
 		$this->options['lint']                                   = 'false';
 		$this->options['lint-modified-files-only']               = 'false';
 		$this->options['lint-skip-folders-in-repo-options-file'] = 'true';
+		$this->options['lint-php-path']                          = null;
 
 		vipgoci_run_init_options_lint(
 			$this->options
@@ -80,6 +83,7 @@ final class MainRunInitOptionsLintTest extends TestCase {
 				'lint-modified-files-only'               => false,
 				'lint-skip-folders-in-repo-options-file' => true,
 				'lint-skip-folders'                      => array( 'folder1/folder2', 'folder3/folder4' ),
+				'lint-php-path'                          => 'php',
 			),
 			$this->options
 		);

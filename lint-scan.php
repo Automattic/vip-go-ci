@@ -344,7 +344,7 @@ function vipgoci_lint_scan_commit(
 		);
 
 		$file_issues_arr_raw = vipgoci_lint_do_scan_file(
-			$options['php-path'],
+			$options['lint-php-path'],
 			$temp_file_name
 		);
 

@@ -83,7 +83,7 @@ function vipgoci_help_print() :void {
 		"\t" . '                                                to be PHP Linted in a file in root of repository' . PHP_EOL .
 		"\t" . '                                                (.vipgoci_lint_skip_folders). Folders should be' . PHP_EOL .
 		"\t" . '                                                separated by newlines.' . PHP_EOL .
-		"\t" . '--php-path=FILE                Full path to PHP. If not specified the default in $PATH will be' . PHP_EOL .
+		"\t" . '--lint-php-path=FILE           Full path to PHP. If not specified the default in $PATH will be' . PHP_EOL .
 		"\t" . '                               used instead.' . PHP_EOL .
 		PHP_EOL .
 		'PHPCS configuration:' . PHP_EOL .
@@ -276,7 +276,7 @@ function vipgoci_options_recognized() :array {
 		'lint-skip-folders:',
 		'lint-skip-folders-in-repo-options-file:',
 		'lint-modified-files-only:',
-		'php-path:',
+		'lint-php-path:',
 
 		/*
 		 * PHPCS configuration
@@ -1034,6 +1034,16 @@ function vipgoci_run_init_options_lint( array &$options ) :void {
 	vipgoci_option_skip_folder_handle(
 		$options,
 		'lint-skip-folders'
+	);
+
+	/*
+	 * Process --lint-php-path -- expected to be a file,
+	 * default value is 'php' (then relies on $PATH)
+	 */
+	vipgoci_option_file_handle(
+		$options,
+		'lint-php-path',
+		'php'
 	);
 }
 
@@ -1940,16 +1950,6 @@ function vipgoci_run_init_options(
 	 * Handle boolean parameters not handled by specialized functions.
 	 */
 	vipgoci_option_bool_handle( $options, 'skip-draft-prs', 'false' );
-
-	/*
-	 * Process --php-path -- expected to be a file,
-	 * default value is 'php' (then relies on $PATH)
-	 */
-	vipgoci_option_file_handle(
-		$options,
-		'php-path',
-		'php'
-	);
 
 	/*
 	 * Process the --branches-ignore parameter,

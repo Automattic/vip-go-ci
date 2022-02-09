@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
 
 final class A09LintLintScanCommitTest extends TestCase {
 	var $options_lint_scan = array(
-		'php-path'                       => null,
+		'lint-php-path'                  => null,
 		'commit-test-lint-scan-commit-1' => null,
 		'commit-test-lint-scan-commit-2' => null,
 		'commit-test-lint-scan-commit-3' => null,
