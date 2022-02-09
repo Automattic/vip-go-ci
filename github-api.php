@@ -194,13 +194,18 @@ function vipgoci_http_resp_sunset_header_check(
  * Detect if we exceeded the GitHub rate-limits,
  * and if so, exit with error.
  *
+ * @param string $github_url   GitHub URL used.
+ * @param array  $resp_headers HTTP response headers.
+ *
+ * @return void
+ *
  * @codeCoverageIgnore
  */
 
 function vipgoci_github_rate_limits_check(
-	$github_url,
-	$resp_headers
-) {
+	string $github_url,
+	array $resp_headers
+) :void {
 	if (
 		( isset( $resp_headers['x-ratelimit-remaining'][0] ) ) &&
 		( $resp_headers['x-ratelimit-remaining'][0] <= 1 )
@@ -218,7 +223,8 @@ function vipgoci_github_rate_limits_check(
 				'x-ratelimit-limit' =>
 					$resp_headers['x-ratelimit-limit'][0],
 			),
-			VIPGOCI_EXIT_GITHUB_PROBLEM
+			VIPGOCI_EXIT_GITHUB_PROBLEM,
+			true // Log to IRC.
 		);
 	}
 }
@@ -2818,8 +2824,8 @@ function vipgoci_github_pr_review_submit(
 			)
 		);
 
-		$validation_message = get_validation_message_prefix( VIPGOCI_VALIDATION_MAXIMUM_LINES, $skip_large_files_limit );
-		$results[VIPGOCI_SKIPPED_FILES][ $pr_number ] = vipgo_skip_file_check_previous_pr_comments( $results[VIPGOCI_SKIPPED_FILES][ $pr_number ], $pr_reviews_commented, $validation_message );
+		$validation_message = vipgoci_skip_file_get_validation_message_prefix( VIPGOCI_VALIDATION_MAXIMUM_LINES, $skip_large_files_limit );
+		$results[VIPGOCI_SKIPPED_FILES][ $pr_number ] = vipgoci_skip_file_check_previous_pr_comments( $results[VIPGOCI_SKIPPED_FILES][ $pr_number ], $pr_reviews_commented, $validation_message );
 
 		/**
 		 * Format skipped files message if the validation has issues

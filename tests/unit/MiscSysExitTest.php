@@ -4,36 +4,37 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
-require_once( __DIR__ . '/helper/IndicateTestId.php' );
-require_once( __DIR__ . '/helper/CheckIrcApiAlertQueue.php' );
+require_once __DIR__ . '/helper/IndicateTestId.php';
+require_once __DIR__ . '/helper/CheckIrcApiAlertQueue.php';
 
-require_once( __DIR__ . './../../defines.php' );
-require_once( __DIR__ . './../../other-web-services.php' );
-require_once( __DIR__ . './../../misc.php' );
+require_once __DIR__ . './../../defines.php';
+require_once __DIR__ . './../../misc.php';
 
 use PHPUnit\Framework\TestCase;
 
-// phpcs:disable PSR1.Files.SideEffects
-
-final class SysExitTest extends TestCase {
+/**
+ * Test if vipgoci_sysexit() function works correctly.
+ *
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
+final class MiscSysExitTest extends TestCase {
+	/**
+	 * Require file, clear IRC queue, and set up indication.
+	 */
 	protected function setUp(): void {
-		/*
-		 * Indicate that this particular test is running,
-		 * needed so that vipgoci_sysexit() can return
-		 * with exit status instead of exiting. See the
-		 * function itself.
-		 */
-		vipgoci_unittests_indicate_test_id( 'SysExitTest' );
+		require_once __DIR__ . '/../../other-web-services.php';
 
-		vipgoci_irc_api_alert_queue( null, true ); // Empty IRC queue
+		vipgoci_unittests_indicate_test_id( 'MiscSysExitTest' );
+
+		vipgoci_irc_api_alert_queue( null, true ); // Empty IRC queue.
 	}
 
+	/**
+	 * Remove indication.
+	 */
 	protected function tearDown(): void {
-		/*
-	 	 * We are no longer running the test,
-		 * remove the indication.
-		 */
-		vipgoci_unittests_remove_indication_for_test_id( 'SysExitTest' );
+		vipgoci_unittests_remove_indication_for_test_id( 'MiscSysExitTest' );
 	}
 
 	/**
@@ -41,7 +42,7 @@ final class SysExitTest extends TestCase {
 	 * with correct exit status, check
 	 * if it prints the expected data, and
 	 * if it logs to the IRC queue.
-	 * 
+	 *
 	 * @covers ::vipgoci_sysexit
 	 */
 	public function testSysExit1() {
@@ -78,7 +79,7 @@ final class SysExitTest extends TestCase {
 		);
 
 		$this->assertTrue(
-			$printed_data_found !== false
+			false !== $printed_data_found
 		);
 
 		$printed_data_found = strpos(
@@ -87,7 +88,7 @@ final class SysExitTest extends TestCase {
 		);
 
 		$this->assertTrue(
-			$printed_data_found !== false
+			false !== $printed_data_found
 		);
 
 		/*

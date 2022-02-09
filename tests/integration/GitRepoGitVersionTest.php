@@ -4,7 +4,7 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 
 use PHPUnit\Framework\TestCase;
 
-final class GitVersionTest extends TestCase {
+final class GitRepoGitVersionTest extends TestCase {
 	/**
 	 * Get git version, ensure the returned value
 	 * is as expected.
