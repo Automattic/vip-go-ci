@@ -1214,6 +1214,11 @@ function vipgoci_phpcs_get_sniffs_for_standard(
 function vipgoci_phpcs_validate_sniffs_in_options_and_report(
 	&$options
 ) {
+	// If PHPCS scanning is disabled, do not do anything.
+	if ( false === $options['phpcs'] ) {
+		return;
+	}
+
 	vipgoci_log(
 		'Validating sniffs provided in options',
 		array(
@@ -1460,6 +1465,11 @@ function vipgoci_phpcs_validate_sniffs_in_options_and_report(
 function vipgoci_phpcs_possibly_use_new_standard_file(
 	&$options
 ) {
+	// If PHPCS scanning is disabled, do not do anything.
+	if ( false === $options['phpcs'] ) {
+		return;
+	}
+
 	/*
 	 * Switch to new standard: Write new standard
 	 * to a temporary file, then switch to using that.
