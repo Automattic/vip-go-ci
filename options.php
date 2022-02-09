@@ -1045,10 +1045,10 @@ function vipgoci_option_teams_handle(
 
 		/*
 		 * If the team slug provided by user is valid,
-		 * it should be in list of slugs returned by API. 
+		 * it should be in list of slugs returned by API.
 		 * Ensure this is the case.
 		 */
-		if ( ! empty( $teams_info[ $team_slug_value ] ) )  {
+		if ( ! empty( $teams_info[ $team_slug_value ] ) ) {
 			$team_slug_value = $teams_info[ $team_slug_value ][0]->slug;
 		}
 

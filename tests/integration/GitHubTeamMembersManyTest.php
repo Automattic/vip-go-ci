@@ -6,9 +6,9 @@ use PHPUnit\Framework\TestCase;
 
 final class GitHubTeamMembersManyTest extends TestCase {
 	var $options = array(
-		'github-token'  => null,
-		'team-slug'     => null,
-		'org-name'      => null,
+		'github-token' => null,
+		'team-slug'    => null,
+		'org-name'     => null,
 	);
 
 	public function setUp(): void {
