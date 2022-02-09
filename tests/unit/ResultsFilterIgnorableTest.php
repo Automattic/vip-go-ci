@@ -1,11 +1,30 @@
 <?php
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+declare(strict_types=1);
+
+namespace Vipgoci\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
 
-final class MiscResultsFilterIgnorableTest extends TestCase {
+/**
+ * Test function that filters out ignorable messages.
+ *
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
+final class ResultsFilterIgnorableTest extends TestCase {
 	/**
+	 * Require files.
+	 */
+	protected function setUp() :void {
+		require_once __DIR__ . '/../../results.php';
+		require_once __DIR__ . '/../../misc.php';
+		require_once __DIR__ . '/../integration/IncludesForTestsOutputControl.php';
+	}
+
+	/**
+	 * Test the function in different ways.
+	 *
 	 * @covers ::vipgoci_results_filter_ignorable
 	 */
 	public function testFilterIgnorable1() {
@@ -17,9 +36,9 @@ final class MiscResultsFilterIgnorableTest extends TestCase {
 				'Test 300'
 			)
 		);
-
+		
 		$options['review-comments-ignore'] = array_map(
-			'strtolower',
+			'vipgoci_results_standardize_ignorable_message',
 			$options['review-comments-ignore']
 		);
 

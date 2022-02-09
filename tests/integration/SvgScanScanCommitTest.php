@@ -64,6 +64,8 @@ final class SvgScanScanCommitTest extends TestCase {
 
 		$this->options['branches-ignore'] = array();
 
+		$this->options['phpcs'] = true;
+
 		$this->options['svg-checks'] = true;
 
 		$this->options['lint-skip-folders'] = array();

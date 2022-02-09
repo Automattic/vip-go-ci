@@ -1,6 +1,6 @@
 # vip-go-ci
 
-[![CircleCI](https://circleci.com/gh/Automattic/vip-go-ci/tree/main.svg?style=shield)](https://circleci.com/gh/Automattic/vip-go-ci/tree/main)
+[![Release Date of the Latest Version](https://img.shields.io/github/release-date/Automattic/vip-go-ci.svg?maxAge=1800)](https://github.com/Automattic/vip-go-ci/releases) [![CircleCI](https://circleci.com/gh/Automattic/vip-go-ci/tree/main.svg?style=shield)](https://circleci.com/gh/Automattic/vip-go-ci/tree/main) [![Number of Contributors](https://img.shields.io/github/contributors/Automattic/vip-go-ci.svg?maxAge=3600)](https://github.com/Automattic/vip-go-ci/graphs/contributors)
 
 Continuous integration for VIP Go repositories.
 
@@ -294,6 +294,7 @@ Alternatively, if you do not wish to run TeamCity in a Docker-instance, you can 
 `vip-go-ci.php` exits with different UNIX exit codes depending on what problems were found and if any system issues were encountered:
 
 * Code `0`: Normal, no errors were found in the code scanned and no fatal system errors were encountered. There could have been warnings found in the code, though.
+* Code `220`: Internal error in `vip-go-ci`.
 * Code `230`: Commit specified is not associated with any pull request.
 * Code `249`: Scanning exceeded maximum time allowed.
 * Code `250`: Scanning was completed, but some errors were found in the code.
@@ -669,6 +670,8 @@ All utilities in `tools-init.sh` follow the same pattern.
 ## Tests
 
 To run the tests for `vip-go-ci`, you will need to install `phpunit` and any dependencies needed (this would include `xdebug`).
+
+Note that the test suite sometimes uses the @runTestsInSeparateProcesses and @preserveGlobalState PHPUnit flags to avoid any influence of one test on another.
 
 ### PHPUnit configuration file:
 Run:

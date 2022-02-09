@@ -105,6 +105,9 @@ commit-test-submodule-list-get-1=f2008d8519d998d9e38f5688aaa2c5322179a266
 commit-test-submodule-list-get-2=dd18779e980f0302ab4acf7e871d2062d86b5f58
 pr-test-github-pr-results-max=28
 
+commit-test-run-scan-total-comments-max-warning-post=82b587df233dc1f264f792fe8ee9265118dc68b7
+pr-test-run-scan-total-comments-max-warning-post=44
+
 [labels]
 labels-pr-to-modify=12
 
