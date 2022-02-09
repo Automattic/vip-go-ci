@@ -122,7 +122,7 @@ function vipgoci_skip_file_check_previous_pr_comments( array $pr_issues_results,
 		return $pr_issues_results;
 	}
 
-	$skipped_files = vipgo_get_skipped_files_from_pr_comments( $comments, $validation_message );
+	$skipped_files = vipgoci_get_skipped_files_from_pr_comments( $comments, $validation_message );
 
 	$result = [ 'issues' => [ VIPGOCI_VALIDATION_MAXIMUM_LINES => array() ], 'total' => 0 ];
 
@@ -151,11 +151,11 @@ function vipgoci_skip_file_check_previous_pr_comments( array $pr_issues_results,
  *
  * @return array
  */
-function vipgo_get_skipped_files_from_pr_comments( array $comments, string $validation_message ): array {
+function vipgoci_get_skipped_files_from_pr_comments( array $comments, string $validation_message ): array {
 	$skipped_files = array();
 
 	foreach ( $comments as $comment ) {
-		$files         = vipgo_get_skipped_files_from_comment( $comment, $validation_message );
+		$files         = vipgoci_get_skipped_files_from_comment( $comment, $validation_message );
 		$skipped_files = array_merge( $skipped_files, $files );
 	}
 
@@ -168,7 +168,7 @@ function vipgo_get_skipped_files_from_pr_comments( array $comments, string $vali
  *
  * @return string[]
  */
-function vipgo_get_skipped_files_from_comment( stdClass $comment, string $validation_message_prefix ): array {
+function vipgoci_get_skipped_files_from_comment( stdClass $comment, string $validation_message_prefix ): array {
 	/**
 	 * Checks if the comment contains skipped-files
 	 * if it is not, ignore
@@ -177,7 +177,7 @@ function vipgo_get_skipped_files_from_comment( stdClass $comment, string $valida
 		return array();
 	}
 
-	$skipped_files_comment = vipgo_get_skipped_files_message_from_comment( $comment->body, $validation_message_prefix );
+	$skipped_files_comment = vipgoci_get_skipped_files_message_from_comment( $comment->body, $validation_message_prefix );
 
 	if ( '' === $skipped_files_comment ) {
 		return array();
@@ -197,7 +197,7 @@ function vipgo_get_skipped_files_from_comment( stdClass $comment, string $valida
  *
  * @return string
  */
-function vipgo_get_skipped_files_message_from_comment( string $comment, string $validation_message_prefix ): string {
+function vipgoci_get_skipped_files_message_from_comment( string $comment, string $validation_message_prefix ): string {
 
 	if ( false === $prefix_pos = strpos( $comment, $validation_message_prefix ) ) {
 		return '';
