@@ -37,6 +37,8 @@ final class PhpcsScanDoScanTest extends TestCase {
 			',',
 			$this->options_phpcs['phpcs-sniffs-exclude']
 		);
+
+		$this->options_phpcs['phpcs'] = true;
 	}
 
 	protected function tearDown(): void {

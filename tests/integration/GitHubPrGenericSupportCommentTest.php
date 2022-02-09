@@ -4,6 +4,10 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class GitHubPrGenericSupportCommentTest extends TestCase {
 	var $options_git = array(
 		'repo-owner'	=> null,

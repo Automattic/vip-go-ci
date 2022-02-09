@@ -498,11 +498,6 @@ function vipgoci_autoapproval_do_approve(
 /*
  * Process auto-approval(s) of the Pull-Request(s)
  * involved with the commit specified.
- *
- * This function will attempt to auto-approve
- * Pull-Request(s) that only alter files with specific
- * file-type endings. If the PR only alters these kinds
- * of files, the function will auto-approve them, and else not.
  */
 
 function vipgoci_auto_approval_scan_commit(
@@ -671,5 +666,104 @@ function vipgoci_auto_approval_scan_commit(
 	gc_collect_cycles();
 
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'auto_approve_commit' );
+}
+
+/**
+ * Perform auto-approvals.
+ *
+ * Will first ask all 'auto-approval modules'
+ * to do their scanning, collecting all files that
+ * can be auto-approved, and then actually do the
+ * auto-approval if possible.
+ *
+ * @param array $options Array of options.
+ * @param array $results Array of results from scanning.
+ *
+ * @return void
+ */
+function vipgoci_auto_approval_process(
+	array &$options,
+	array &$results
+) :void {
+	if ( false === $options['autoapprove'] ) {
+		vipgoci_log(
+			'Not performing auto-approvals, as not configured to do so',
+			array(
+				'autoapprove' => $options['autoapprove'],
+			)
+		);
+
+		return;
+	}
+
+	// Start with empty array of approved files.
+	$auto_approved_files_arr = array();
+
+	/*
+	 * If to auto-approve based on file-types,
+	 * scan through the files in the PR, and
+	 * register which can be auto-approved.
+	 */
+
+	if ( ! empty( $options['autoapprove-filetypes'] ) ) {
+		vipgoci_ap_file_types(
+			$options,
+			$auto_approved_files_arr
+		);
+	}
+
+	/*
+	 * Check if any of the files changed
+	 * contain any non-functional changes --
+	 * i.e., only whitespacing changes and
+	 * commenting changes -- and if so,
+	 * approve those files.
+	 */
+	if ( true === $options['autoapprove-php-nonfunctional-changes'] ) {
+		vipgoci_ap_nonfunctional_changes(
+			$options,
+			$auto_approved_files_arr
+		);
+	}
+
+	/*
+	 * Do scanning of all altered files, using
+	 * the hashes-to-hashes database API, collecting
+	 * which files can be auto-approved.
+	 */
+
+	if ( true === $options['hashes-api'] ) {
+		vipgoci_ap_hashes_api_scan_commit(
+			$options,
+			$results['issues'],
+			$results['stats'][ VIPGOCI_STATS_HASHES_API ],
+			$auto_approved_files_arr
+		);
+	}
+
+	// If set to true, any SVG files without issues is auto-approved.
+	if ( true === $options['svg-checks'] ) {
+		vipgoci_ap_svg_files(
+			$options,
+			$auto_approved_files_arr
+		);
+	}
+
+	// Actually perform auto-approvals (if possible).
+	vipgoci_auto_approval_scan_commit(
+		$options,
+		$auto_approved_files_arr,
+		$results
+	);
+
+	/*
+	 * Remove issues from $results for files
+	 * that are approved in hashes-to-hashes API.
+	 */
+	vipgoci_results_approved_files_comments_remove(
+		$options,
+		$results,
+		$auto_approved_files_arr
+	);
 }
 

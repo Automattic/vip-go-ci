@@ -6,8 +6,9 @@ use PHPUnit\Framework\TestCase;
 
 final class GitHubTeamMembersTest extends TestCase {
 	var $options = array(
-		'github-token'	=> null,
-		'team-id' => null,
+		'github-token' => null,
+		'team-slug'    => null,
+		'org-name'     => null,
 	);
 
 	public function setUp(): void {
@@ -56,7 +57,8 @@ final class GitHubTeamMembersTest extends TestCase {
 
 		$team_members_res1_actual = vipgoci_github_team_members_get(
 			$this->options['github-token'],
-			$this->options['team-id'],
+			$this->options['org-name'],
+			$this->options['team-slug'],
 			null
 		);
 
@@ -88,7 +90,8 @@ final class GitHubTeamMembersTest extends TestCase {
 
 		$team_members_res1_actual_cached = vipgoci_github_team_members_get(
 			$this->options['github-token'],
-			$this->options['team-id'],
+			$this->options['org-name'],
+			$this->options['team-slug'],
 			null
 		);
 
@@ -133,7 +136,8 @@ final class GitHubTeamMembersTest extends TestCase {
 
 		$team_members_res2_actual = vipgoci_github_team_members_get(
 			$this->options['github-token'],
-			$this->options['team-id'],
+			$this->options['org-name'],
+			$this->options['team-slug'],
 			'id'
 		);
 
@@ -162,7 +166,8 @@ final class GitHubTeamMembersTest extends TestCase {
 
 		$team_members_res2_actual_cached = vipgoci_github_team_members_get(
 			$this->options['github-token'],
-			$this->options['team-id'],
+			$this->options['org-name'],
+			$this->options['team-slug'],
 			'id'
 		);
 

@@ -8,9 +8,10 @@ final class PhpcsScanPossiblyUseNewStandardFileTest extends TestCase {
 	protected function setUp(): void {
 		$this->original_standard = array( 'WordPress-VIP-Go' );
 
-		$this->options = array();
-		$this->options['phpcs-standard'] = $this->original_standard;
-		$this->options['phpcs-standard-file'] = false;
+		$this->options                         = array();
+		$this->options['phpcs']                = true;
+		$this->options['phpcs-standard']       = $this->original_standard;
+		$this->options['phpcs-standard-file']  = false;
 		$this->options['phpcs-sniffs-include'] = array();
 	}
 

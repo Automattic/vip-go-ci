@@ -1,12 +1,21 @@
 <?php
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+require_once __DIR__ . '/IncludesForTests.php';
 
 use PHPUnit\Framework\TestCase;
 
+/**
+ * Check if all tests are correctly named.
+ *
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class AllUnitTestsInplaceTest extends TestCase {
+	/**
+	 * Check all tests.
+	 */
 	public function testAllUnitTestsInPlace() {
-		$files_arr = scandir("tests/integration");
+		$files_arr = scandir( 'tests/integration' );
 
 		/*
 		 * Filter away any files that
@@ -20,11 +29,15 @@ final class AllUnitTestsInplaceTest extends TestCase {
 		$files_arr = array_filter(
 			$files_arr,
 			function( $file_item ) {
-				switch( $file_item ) {
+				switch ( $file_item ) {
 					case '.':
 					case '..':
 					case 'Skeleton.php':
 					case 'IncludesForTests.php':
+					case 'IncludesForTestsConfig.php':
+					case 'IncludesForTestsOutputControl.php':
+					case 'IncludesForTestsMisc.php':
+					case 'IncludesForTestsRepo.php':
 					case 'GitDiffsFetchUnfilteredTrait.php':
 						/*
 						 * Remove those away from
@@ -32,7 +45,6 @@ final class AllUnitTestsInplaceTest extends TestCase {
 						 * supporting files.
 						 */
 						return false;
-						break;
 				}
 
 				$file_item_end = strpos(

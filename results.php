@@ -699,6 +699,25 @@ function vipgoci_results_filter_comments_to_max(
 	return;
 }
 
+/**
+ * Standardize message string so that filtering of
+ * ignorable messages becomes more reliable.
+ *
+ * @param string $message Message to standardize.
+ *
+ * @returns string
+ */
+function vipgoci_results_standardize_ignorable_message(
+	string $message
+) :string {
+	$message = strtolower( $message );
+
+	$message = trim( $message );
+	$message = rtrim( $message, "\n\r\t\v\x00 .," );
+
+	return $message;
+}
+
 /*
  * Filter away issues that we should ignore from the set
  * of results, according to --review-comments-ignore argument.
@@ -731,7 +750,7 @@ function vipgoci_results_filter_ignorable(
 				$pr_issue
 		) {
 			if ( in_array(
-				strtolower(
+				vipgoci_results_standardize_ignorable_message(
 					$pr_issue['issue']['message']
 				),
 				$options['review-comments-ignore'],

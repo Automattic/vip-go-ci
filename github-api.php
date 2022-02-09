@@ -194,13 +194,18 @@ function vipgoci_http_resp_sunset_header_check(
  * Detect if we exceeded the GitHub rate-limits,
  * and if so, exit with error.
  *
+ * @param string $github_url   GitHub URL used.
+ * @param array  $resp_headers HTTP response headers.
+ *
+ * @return void
+ *
  * @codeCoverageIgnore
  */
 
 function vipgoci_github_rate_limits_check(
-	$github_url,
-	$resp_headers
-) {
+	string $github_url,
+	array $resp_headers
+) :void {
 	if (
 		( isset( $resp_headers['x-ratelimit-remaining'][0] ) ) &&
 		( $resp_headers['x-ratelimit-remaining'][0] <= 1 )
@@ -218,7 +223,8 @@ function vipgoci_github_rate_limits_check(
 				'x-ratelimit-limit' =>
 					$resp_headers['x-ratelimit-limit'][0],
 			),
-			VIPGOCI_EXIT_GITHUB_PROBLEM
+			VIPGOCI_EXIT_GITHUB_PROBLEM,
+			true // Log to IRC.
 		);
 	}
 }
@@ -2818,8 +2824,8 @@ function vipgoci_github_pr_review_submit(
 			)
 		);
 
-		$validation_message = get_validation_message_prefix( VIPGOCI_VALIDATION_MAXIMUM_LINES, $skip_large_files_limit );
-		$results[VIPGOCI_SKIPPED_FILES][ $pr_number ] = vipgo_skip_file_check_previous_pr_comments( $results[VIPGOCI_SKIPPED_FILES][ $pr_number ], $pr_reviews_commented, $validation_message );
+		$validation_message = vipgoci_skip_file_get_validation_message_prefix( VIPGOCI_VALIDATION_MAXIMUM_LINES, $skip_large_files_limit );
+		$results[VIPGOCI_SKIPPED_FILES][ $pr_number ] = vipgoci_skip_file_check_previous_pr_comments( $results[VIPGOCI_SKIPPED_FILES][ $pr_number ], $pr_reviews_commented, $validation_message );
 
 		/**
 		 * Format skipped files message if the validation has issues
@@ -3914,16 +3920,27 @@ function vipgoci_github_pr_review_events_get(
 }
 
 
-/*
+/**
  * Get members for a team.
+ *
+ * @param string      $github_token       GitHub token to use to make GitHub API requests.
+ * @param string      $org_slug           Organization slug for the organization that the team belongs to.
+ * @param string      $team_slug          Slug of team to get members for.
+ * @param string|null $return_values_only If specified, returns value of a particular field only from results.
+ *
+ * @return array Array with results.
  */
 function vipgoci_github_team_members_get(
-	$github_token,
-	$team_id,
+	string $github_token,
+	string $org_slug,
+	string $team_slug,
 	$return_values_only = null
-) {
+): array {
 	$cached_id = array(
-		__FUNCTION__, $github_token, $team_id
+		__FUNCTION__,
+		$github_token,
+		$org_slug,
+		$team_slug,
 	);
 
 	$cached_data = vipgoci_cache( $cached_id );
@@ -3932,7 +3949,8 @@ function vipgoci_github_team_members_get(
 		'Getting members for organization team' .
 		vipgoci_cached_indication_str( $cached_data ),
 		array(
-			'team_id' => $team_id,
+			'org_slug'           => $org_slug,
+			'team_slug'          => $team_slug,
 			'return_values_only' => $return_values_only,
 		)
 	);
@@ -3946,8 +3964,10 @@ function vipgoci_github_team_members_get(
 		do {
 			$github_url =
 				VIPGOCI_GITHUB_BASE_URL . '/' .
+				'orgs/' .
+				rawurlencode( $org_slug ) . '/' .
 				'teams/' .
-				rawurlencode( $team_id ) . '/' .
+				rawurlencode( $team_slug ) . '/' .
 				'members?' .
 				'page=' . rawurlencode( $page ) . '&' .
 				'per_page=' . rawurlencode( $per_page );
@@ -3998,58 +4018,74 @@ function vipgoci_github_team_members_get(
 }
 
 
-/*
- * Get team members for one or more teams,
+/**
+ * Get team member IDs for one or more teams,
  * return members as a merged array.
  *
- * @codeCoverageIgnore
+ * @param string $github_token   GitHub token to use to make GitHub API requests.
+ * @param string $org_slug       Organization slug for the organization that the team belongs to.
+ * @param array  $team_slugs_arr Array of team slugs to get team members for.
+ *
+ * @return array Array with team member IDs.
  */
 function vipgoci_github_team_members_many_get(
-	$github_token,
-	$team_ids_arr = array()
-) {
+	string $github_token,
+	string $org_slug,
+	array $team_slugs_arr = array()
+): array {
 	vipgoci_log(
 		'Getting members of teams specified by caller',
 		array(
-			'teams_ids' => $team_ids_arr,
+			'org_slug'    => $org_slug,
+			'teams_slugs' => $team_slugs_arr,
 		)
 	);
 
-	$team_members_ids_arr = array();
+	$team_members_slugs_arr = array();
 
-	foreach( $team_ids_arr as $team_id_item ) {
-		$team_id_members = vipgoci_github_team_members_get(
+	foreach ( $team_slugs_arr as $team_slug_item ) {
+		$team_slug_members = vipgoci_github_team_members_get(
 			$github_token,
-			$team_id_item,
+			$org_slug,
+			$team_slug_item,
 			'id'
 		);
 
-		$team_members_ids_arr = array_merge(
-			$team_members_ids_arr,
-			$team_id_members
+		$team_members_slugs_arr = array_merge(
+			$team_members_slugs_arr,
+			$team_slug_members
 		);
 	}
 
-	$team_members_ids_arr = array_unique(
-		$team_members_ids_arr
+	$team_members_slugs_arr = array_unique(
+		$team_members_slugs_arr
 	);
 
-	return $team_members_ids_arr;
+	return $team_members_slugs_arr;
 }
 
 
-/*
+/**
  * Get organization teams available to the calling
  * user from the GitHub API.
+ *
+ * @param string $github_token GitHub token to use to make GitHub API requests.
+ * @param string $org_slug     Organization slug which to get teams for.
+ * @param mixed  $filter       If specified, will apply filter to results.
+ * @param mixed  $keyed_by     If specified, will key results according to this parameter.
+ *
+ * @return array Array of teams.
  */
 function vipgoci_github_org_teams_get(
-	$github_token,
-	$org_id,
+	string $github_token,
+	string $org_slug,
 	$filter = null,
 	$keyed_by = null
-) {
+): array {
 	$cached_id = array(
-		__FUNCTION__, $github_token, $org_id
+		__FUNCTION__,
+		$github_token,
+		$org_slug,
 	);
 
 	$cached_data = vipgoci_cache( $cached_id );
@@ -4058,8 +4094,8 @@ function vipgoci_github_org_teams_get(
 		'Getting organization teams from GitHub API' .
 		vipgoci_cached_indication_str( $cached_data ),
 		array(
-			'org_id' => $org_id,
-			'filter' => $filter,
+			'org_slug' => $org_slug,
+			'filter'   => $filter,
 			'keyed_by' => $keyed_by,
 		)
 	);
@@ -4074,7 +4110,7 @@ function vipgoci_github_org_teams_get(
 			$github_url =
 				VIPGOCI_GITHUB_BASE_URL . '/' .
 				'orgs/' .
-				rawurlencode( $org_id ) . '/' .
+				rawurlencode( $org_slug ) . '/' .
 				'teams?' .
 				'page=' . rawurlencode( $page ) . '&' .
 				'per_page=' . rawurlencode( $per_page );
