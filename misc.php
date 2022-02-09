@@ -73,14 +73,19 @@ function vipgoci_log(
  * Exit program, using vipgoci_log() to print a
  * message before doing so.
  *
- * @codeCoverageIgnore
+ * @param string $str         Log message to print before exiting.
+ * @param array  $debug_data  Debug data to print along with log message.
+ * @param int    $exit_status Exit status of program to use.
+ * @param bool   $irc         Whether to send log message to IRC or not.
+ *
+ * @return void|int Does not return when running normally, will return
+ *                  an integer value when running in unit-test mode.
  */
-
 function vipgoci_sysexit(
-	$str,
-	$debug_data = array(),
-	$exit_status = VIPGOCI_EXIT_USAGE_ERROR,
-	$irc = false
+	string $str,
+	array $debug_data = array(),
+	int $exit_status = VIPGOCI_EXIT_USAGE_ERROR,
+	bool $irc = false
 ) {
 	if ( $exit_status === VIPGOCI_EXIT_USAGE_ERROR ) {
 		$str = 'Usage: ' . $str;
@@ -93,15 +98,36 @@ function vipgoci_sysexit(
 		$irc
 	);
 
+	/*
+	 * If running certain unit-tests, return
+	 * with exit status.
+	 */
+	if (
+		( function_exists( 'vipgoci_unittests_check_indication_for_test_id' )) &&
+		(
+			( vipgoci_unittests_check_indication_for_test_id( 'MiscSysExitTest' ) ) ||
+			( vipgoci_unittests_check_indication_for_test_id( 'MiscSetMaximumExecTimeTest' ) ) ||
+			( vipgoci_unittests_check_indication_for_test_id( 'MainRunScanSkipExecutionTest' ) ) ||
+			( vipgoci_unittests_check_indication_for_test_id( 'MainRunScanMaxExecTimeTest' ) ) ||
+			( vipgoci_unittests_check_indication_for_test_id( 'MainRunInitGithubTokenOptionTest' ) ) ||
+			( vipgoci_unittests_check_indication_for_test_id( 'MainRunInitOptionsAutoapproveHashesOverlapTest' ) )
+		)
+	) {
+		return $exit_status;
+	}
+
 	exit( $exit_status );
 }
 
-/*
+/**
  * Set up to alarm when maximum execution time of
  * vip-go-ci is reached. Will call exit() when
  * alarm goes off.
  *
- * @codeCoverageIgnore
+ * @param int    $max_exec_time     Maximum execution time in seconds.
+ * @param string $commit_identifier Identifier for the commit.
+ *
+ * @return void
  */
 function vipgoci_set_maximum_exec_time(
 	int $max_exec_time = 600,
@@ -144,24 +170,22 @@ function vipgoci_set_maximum_exec_time(
 
 	/*
 	 * Handle signals for SIGALRM only;
-	 * log and call exit()
+	 * log and call exit().
 	 */
 	pcntl_signal(
 		SIGALRM,
 		function ( $signo ) use ( $commit_identifier ) {
 			if ( SIGALRM === $signo ) {
-				vipgoci_log(
+				vipgoci_sysexit(
 					'Maximum execution time reached ' .
 						( empty( $commit_identifier ) ?
 						'' :
 						'(' . $commit_identifier . ').' ),
 					array(),
-					0,
-					true // log to IRC
+					VIPGOCI_EXIT_EXEC_TIME,
+					true // log to IRC.
 				);
 			}
-
-			exit( VIPGOCI_EXIT_EXEC_TIME );
 		}
 	);
 

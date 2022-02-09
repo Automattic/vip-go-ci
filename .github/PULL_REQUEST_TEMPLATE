@@ -1,16 +1,44 @@
 <!-- ATTENTION: :wave: Just a quick reminder that this is a PUBLIC repository. Please do not include any internal links or sensitive data (like PII, private code, client names, site URLs, etc. If you're not sure if something is safe to share, please just ask! -->
+
+<!-- Please have a look at the document on contributing before submitting a pull request: https://github.com/Automattic/vip-go-ci/blob/main/CONTRIBUTING.md -->
+
 <!--
-Pull-Requests should have a TODO included. Here is a draft:
+
+Pull-Requests should have a TODO included. Here are three drafts. Please select the one that applies to the contents of your pull request.
+
+***
+
+Draft for a patch:
+
+TODO:
+- [ ] Add/update unit-tests (if needed)
+- [ ] Check automated unit-tests
+- [ ] Add or update `PHPDoc` comments for new or updated functions (main code only; for VIP)
+- [ ] Changelog entry (for VIP)
+
+***
+
+Draft for a feature pull request:
 
 TODO:
 - [ ] Specify a parameter to make [feature] configurable
 - [ ] Implement [new feature / logic]
 - [ ] Add/update unit-tests
+- [ ] Add or update `PHPDoc` comments for new or updated functions (main code only)
 - [ ] Update README
 - [ ] Changelog entry
 - [ ] Public documentation changes
-- [ ] Run full-unit tests 
 - [ ] Check automated unit-tests
+
+***
+
+Draft for a changelog pull request:
+
+TODO:
+- [ ] Define version number in CHANGELOG.md, add release date and update links
+- [ ] Add same version number in defines.php
+- [ ] Assign a milestone corresponding to the version number to this PR and PRs that will form the release
+- [ ] Run full-unit tests 
 - [ ] Manual testing
   - [ ] Pull request with PHP linting issues
   - [ ] Pull request with PHPCS issues
@@ -18,4 +46,5 @@ TODO:
   - [ ] Pull request without PHPCS issues, is auto-approved
   - [ ] Pull request with SVG issues
   - [ ] Pull request with large file to be skipped
+
 -->

@@ -356,31 +356,48 @@ function vipgoci_phpcs_scan_output_dump( $output_file, $data ) {
 	}
 }
 
-/*
+/**
  * Scan a particular commit which should live within
  * a particular repository on GitHub, and use the specified
  * access-token to gain access.
+ *
+ * @param array $options              Options array for the program.
+ * @param array $commit_issues_submit Results for PHP linting (reference).
+ * @param array $commit_issues_stats  Result statistics, focussed on PHP linting (reference).
+ * @param array $commit_skipped_files Information about skipped files (reference).
+ *
+ * @return void
  */
 function vipgoci_phpcs_scan_commit(
-	$options,
-	&$commit_issues_submit,
-	&$commit_issues_stats,
-	&$commit_skipped_files
-) {
-	$repo_owner = $options['repo-owner'];
-	$repo_name  = $options['repo-name'];
-	$commit_id  = $options['commit'];
+	array $options,
+	array &$commit_issues_submit,
+	array &$commit_issues_stats,
+	array &$commit_skipped_files
+) :void {
+	$repo_owner   = $options['repo-owner'];
+	$repo_name    = $options['repo-name'];
+	$commit_id    = $options['commit'];
 	$github_token = $options['token'];
+
+	if ( false === $options['phpcs'] ) {
+		vipgoci_log(
+			'Will not PHPCS scan files, not configured to do so',
+			array(
+				'repo_owner' => $repo_owner,
+				'repo_name'  => $repo_name,
+				'commit_id'  => $commit_id,
+			)
+		);
+	}
 
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'phpcs_scan_commit' );
 
 	vipgoci_log(
 		'About to PHPCS-scan repository',
-
 		array(
 			'repo_owner' => $repo_owner,
-			'repo_name' => $repo_name,
-			'commit_id' => $commit_id,
+			'repo_name'  => $repo_name,
+			'commit_id'  => $commit_id,
 		)
 	);
 
@@ -872,6 +889,17 @@ function vipgoci_phpcs_scan_commit(
 				$_tmp => $file_name
 			) {
 
+			if (
+				isset( $commit_skipped_files[ $pr_item->number ][ 'issues' ][ VIPGOCI_VALIDATION_MAXIMUM_LINES ] )
+				&& true === in_array(
+					$file_name,
+					$commit_skipped_files[ $pr_item->number ][ 'issues' ][ VIPGOCI_VALIDATION_MAXIMUM_LINES ],
+					true
+				)
+			) {
+				continue;
+			}
+
 			/*
 			 * Get blame log for file
 			 */
@@ -1186,6 +1214,11 @@ function vipgoci_phpcs_get_sniffs_for_standard(
 function vipgoci_phpcs_validate_sniffs_in_options_and_report(
 	&$options
 ) {
+	// If PHPCS scanning is disabled, do not do anything.
+	if ( false === $options['phpcs'] ) {
+		return;
+	}
+
 	vipgoci_log(
 		'Validating sniffs provided in options',
 		array(
@@ -1432,6 +1465,11 @@ function vipgoci_phpcs_validate_sniffs_in_options_and_report(
 function vipgoci_phpcs_possibly_use_new_standard_file(
 	&$options
 ) {
+	// If PHPCS scanning is disabled, do not do anything.
+	if ( false === $options['phpcs'] ) {
+		return;
+	}
+
 	/*
 	 * Switch to new standard: Write new standard
 	 * to a temporary file, then switch to using that.

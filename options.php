@@ -455,17 +455,21 @@ function vipgoci_options_read_repo_skip_files(
 	}
 }
 
-/*
+/**
  * Read options from environmental variables
  * as specified on the command-line. Does not overwrite
  * options already specified on the command-line even if
  * the environment specifies them.
+ *
+ * @param array $options            Array of options.
+ * @param array $options_recognized Array of recognized options by the program.
+ *
+ * @return void
  */
 function vipgoci_options_read_env(
-	&$options,
-	$options_recognized
-) {
-
+	array &$options,
+	array $options_recognized
+) :void {
 	if ( ! isset( $options['env-options'] ) ) {
 		return;
 	}
@@ -473,7 +477,7 @@ function vipgoci_options_read_env(
 	vipgoci_log(
 		'Attempting to read configuration from environmental variables',
 		array(
-			'env-options' => $options['env-options'],
+			'env-options'        => $options['env-options'],
 			'options-recognized' => $options_recognized,
 		)
 	);
@@ -973,8 +977,15 @@ function vipgoci_option_url_handle(
 		}
 	}
 
+	/*
+	 * Ensure the URL is HTTPS if we are to check this
+	 * and if the option value is a string. This is so
+	 * that null can be passed.
+	 */
 	if (
+		( isset( $options['enforce-https-urls'] ) ) &&
 		( true === $options['enforce-https-urls'] ) &&
+		( is_string( $options[ $option_name ] ) ) &&
 		( 0 !== strpos( $options[ $option_name ], 'https://' ) )
 	) {
 		vipgoci_sysexit(
@@ -1069,6 +1080,13 @@ function vipgoci_option_teams_handle(
 		array_values( array_unique(
 			$options[ $option_name ]
 		) );
+
+	vipgoci_log(
+		'Team information verified via GitHub API',
+		array(
+			'team_info' => $options[ $option_name ],
+		),
+	);
 
 	unset( $teams_info );
 	unset( $team_slug_key );

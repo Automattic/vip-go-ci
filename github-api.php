@@ -194,13 +194,18 @@ function vipgoci_http_resp_sunset_header_check(
  * Detect if we exceeded the GitHub rate-limits,
  * and if so, exit with error.
  *
+ * @param string $github_url   GitHub URL used.
+ * @param array  $resp_headers HTTP response headers.
+ *
+ * @return void
+ *
  * @codeCoverageIgnore
  */
 
 function vipgoci_github_rate_limits_check(
-	$github_url,
-	$resp_headers
-) {
+	string $github_url,
+	array $resp_headers
+) :void {
 	if (
 		( isset( $resp_headers['x-ratelimit-remaining'][0] ) ) &&
 		( $resp_headers['x-ratelimit-remaining'][0] <= 1 )
@@ -218,7 +223,8 @@ function vipgoci_github_rate_limits_check(
 				'x-ratelimit-limit' =>
 					$resp_headers['x-ratelimit-limit'][0],
 			),
-			VIPGOCI_EXIT_GITHUB_PROBLEM
+			VIPGOCI_EXIT_GITHUB_PROBLEM,
+			true // Log to IRC.
 		);
 	}
 }
@@ -2501,7 +2507,8 @@ function vipgoci_github_pr_review_submit(
 	$results,
 	$informational_msg,
 	$github_review_comments_max,
-	$github_review_comments_include_severity
+	$github_review_comments_include_severity,
+	int $skip_large_files_limit
 ) {
 
 	$stats_types_to_process = array(
@@ -2559,7 +2566,6 @@ function vipgoci_github_pr_review_submit(
 			'event'		=> '',
 			'comments'	=> array(),
 		);
-
 
 		/*
 		 * For each issue reported, format
@@ -2805,16 +2811,33 @@ function vipgoci_github_pr_review_submit(
 		}
 
 		/**
-		 * Format skipped files message if it validation has issues
+		 * Check if there're previous existent comments about the same files
 		 */
-		if ( ! empty( $results[ VIPGOCI_SKIPPED_FILES ][ $pr_number ]['issues'] ) ) {
+		$pr_reviews_commented = vipgoci_github_pr_reviews_get(
+			$repo_owner,
+			$repo_name,
+			$pr_number,
+			$github_token,
+			array(
+				'login' => 'myself',
+				'state' => array( 'COMMENTED', 'CHANGES_REQUESTED' )
+			)
+		);
+
+		$validation_message = vipgoci_skip_file_get_validation_message_prefix( VIPGOCI_VALIDATION_MAXIMUM_LINES, $skip_large_files_limit );
+		$results[VIPGOCI_SKIPPED_FILES][ $pr_number ] = vipgoci_skip_file_check_previous_pr_comments( $results[VIPGOCI_SKIPPED_FILES][ $pr_number ], $pr_reviews_commented, $validation_message );
+
+		/**
+		 * Format skipped files message if the validation has issues
+		 */
+		if ( 0 < $results[ VIPGOCI_SKIPPED_FILES ][ $pr_number ]['total'] ) {
 			vipgoci_markdown_comment_add_pagebreak(
 				$github_postfields['body']
 			);
 
 			$github_postfields[ 'body' ] .= vipgoci_get_skipped_files_message(
 				$results[ VIPGOCI_SKIPPED_FILES ][ $pr_number ],
-				$pr_number
+				$validation_message
 			);
 		}
 
