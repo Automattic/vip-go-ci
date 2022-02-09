@@ -73,6 +73,8 @@ function vipgoci_help_print() :void {
 		PHP_EOL .
 		'PHP Linting configuration:' . PHP_EOL .
 		"\t" . '--lint=BOOL                    Whether to do PHP linting. Default is true.' . PHP_EOL .
+		"\t" . '--lint-php-path=FILE           Full path to PHP. If not specified the default in $PATH will be' . PHP_EOL .
+		"\t" . '                               used instead.' . PHP_EOL .
 		"\t" . '--lint-modified-files-only=BOOL   Whether to limit lint scan to run against only modified or new' . PHP_EOL .
 		"\t" . '                               files in the PR to be scanned. Default is true. It can be ' . PHP_EOL .
 		"\t" . '                               modified via options file ("' . VIPGOCI_OPTIONS_FILE_NAME . '") placed in' . PHP_EOL .
@@ -83,8 +85,6 @@ function vipgoci_help_print() :void {
 		"\t" . '                                                to be PHP Linted in a file in root of repository' . PHP_EOL .
 		"\t" . '                                                (.vipgoci_lint_skip_folders). Folders should be' . PHP_EOL .
 		"\t" . '                                                separated by newlines.' . PHP_EOL .
-		"\t" . '--lint-php-path=FILE           Full path to PHP. If not specified the default in $PATH will be' . PHP_EOL .
-		"\t" . '                               used instead.' . PHP_EOL .
 		PHP_EOL .
 		'PHPCS configuration:' . PHP_EOL .
 		"\t" . '--phpcs=BOOL                   Whether to run PHPCS. Default is true.' . PHP_EOL .
