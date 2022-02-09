@@ -2574,41 +2574,47 @@ function vipgoci_run_scan(
 	 */
 	vipgoci_support_level_label_set( $options );
 
-	/*
-	 * Verify that sniffs specified on command line
-	 * or via options file are valid. Will remove any
-	 * invalid sniffs from the options on the fly and
-	 * post a message to users about the invalid sniffs.
-	 */
-	vipgoci_phpcs_validate_sniffs_in_options_and_report(
-		$options
-	);
+	if ( true === $options['phpcs'] ) {
+		/*
+		 * Verify that sniffs specified on command line
+		 * or via options file are valid. Will remove any
+		 * invalid sniffs from the options on the fly and
+		 * post a message to users about the invalid sniffs.
+		 */
+		vipgoci_phpcs_validate_sniffs_in_options_and_report(
+			$options
+		);
 
-	/*
-	 * Set to use new PHPCS standard if needed.
-	 */
-	vipgoci_phpcs_possibly_use_new_standard_file( $options );
+		/*
+		 * Set to use new PHPCS standard if needed.
+		 */
+		vipgoci_phpcs_possibly_use_new_standard_file( $options );
+	}
 
 	/*
 	 * Now run all checks requested and store the
 	 * results in an array.
 	 */
 
-	// Start with linting.
-	vipgoci_lint_scan_commit(
-		$options,
-		$results['issues'],
-		$results['stats'][ VIPGOCI_STATS_LINT ],
-		$results[ VIPGOCI_SKIPPED_FILES ]
-	);
+	// Start with linting if configured to do so.
+	if ( true === $options['lint'] ) {
+		vipgoci_lint_scan_commit(
+			$options,
+			$results['issues'],
+			$results['stats'][ VIPGOCI_STATS_LINT ],
+			$results[ VIPGOCI_SKIPPED_FILES ]
+		);
+	}
 
-	// Next PHPCS scan.
-	vipgoci_phpcs_scan_commit(
-		$options,
-		$results['issues'],
-		$results['stats'][ VIPGOCI_STATS_PHPCS ],
-		$results[ VIPGOCI_SKIPPED_FILES ]
-	);
+	// Next PHPCS scan if configured to do so.
+	if ( true === $options['phpcs'] ) {
+		vipgoci_phpcs_scan_commit(
+			$options,
+			$results['issues'],
+			$results['stats'][ VIPGOCI_STATS_PHPCS ],
+			$results[ VIPGOCI_SKIPPED_FILES ]
+		);
+	}
 
 	/*
 	 * If to do auto-approvals, then do so now.
