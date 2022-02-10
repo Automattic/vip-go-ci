@@ -7,6 +7,7 @@
  */
 function vipgoci_svg_do_scan_with_scanner(
 	$svg_scanner_path,
+	$svg_php_path,
 	$temp_file_name
 ) {
 	/*
@@ -14,7 +15,7 @@ function vipgoci_svg_do_scan_with_scanner(
 	 */
 	$cmd = sprintf(
 		'%s %s %s',
-		escapeshellcmd( 'php' ),
+		escapeshellcmd( $svg_php_path ),
 		escapeshellcmd( $svg_scanner_path ),
 		escapeshellarg( $temp_file_name )
 	);
@@ -203,7 +204,6 @@ function vipgoci_svg_scan_single_file(
 	 * We only process SVG files.
 	 */
 	if ( 'svg' !== $file_extension ) {
-
 		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'svg_scan_single_file' );
 
 		vipgoci_log(
@@ -260,6 +260,7 @@ function vipgoci_svg_scan_single_file(
 
 	$results = vipgoci_svg_do_scan_with_scanner(
 		$options['svg-scanner-path'],
+		$options['svg-php-path'],
 		$temp_file_name
 	);
 
