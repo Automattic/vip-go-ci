@@ -1,11 +1,17 @@
 <?php
+/**
+ * PHP linting logic for vip-go-ci.
+ *
+ * @package Automattic/vip-go-ci
+ */
 
-/*
+declare(strict_types=1);
+
+/**
  * Execute PHP linter, get results and
  * return them to caller as an array of
  * lines.
  */
-
 function vipgoci_lint_do_scan_file(
 	$php_path,
 	$temp_file_name
@@ -106,11 +112,10 @@ function vipgoci_lint_do_scan_file(
 }
 
 
-/*
+/**
  * Parse array of results, extract the problems
  * and return as a well-structed array.
  */
-
 function vipgoci_lint_parse_results(
 	$file_name,
 	$temp_file_name,
@@ -340,6 +345,7 @@ function vipgoci_lint_scan_commit(
 				'commit_id'      => $commit_id,
 				'filename'       => $filename,
 				'temp_file_name' => $temp_file_name,
+				'lint-php-path'  => $options['lint-php-path'], 
 			)
 		);
 
