@@ -45,6 +45,7 @@ final class PhpcsScanGetSniffsForStandardTest extends TestCase {
 
 		$phpcs_sniffs = vipgoci_phpcs_get_sniffs_for_standard(
 			$this->options_phpcs['phpcs-path'],
+			$this->options_phpcs['phpcs-php-path'],
 			$this->options_phpcs['phpcs-standard']
 		);
 
