@@ -83,7 +83,7 @@ final class MainRunInitOptionsLintTest extends TestCase {
 				'lint-modified-files-only'               => false,
 				'lint-skip-folders-in-repo-options-file' => true,
 				'lint-skip-folders'                      => array( 'folder1/folder2', 'folder3/folder4' ),
-				'lint-php-path'                          => 'php',
+				'lint-php-path'                          => null,
 			),
 			$this->options
 		);
