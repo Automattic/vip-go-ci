@@ -1,4 +1,11 @@
 <?php
+/**
+ * PHP linting logic for vip-go-ci.
+ *
+ * @package Automattic/vip-go-ci
+ */
+
+declare(strict_types=1);
 
 /*
  * Use SVG scanner to scan for any issues
