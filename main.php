@@ -88,6 +88,8 @@ function vipgoci_help_print() :void {
 		PHP_EOL .
 		'PHPCS configuration:' . PHP_EOL .
 		"\t" . '--phpcs=BOOL                   Whether to run PHPCS. Default is true.' . PHP_EOL .
+		"\t" . '--phpcs-php-path=FILE          Full path to PHP used to run PHPCS. If not specified the default in' . PHP_EOL .
+		"\t" . '                               $PATH will be used instead.' . PHP_EOL .
 		"\t" . '--phpcs-path=FILE              Full path to PHPCS script.' . PHP_EOL .
 		"\t" . '--phpcs-standard=STRING        Specify which PHPCS standard(s) to use. Separate by commas.' . PHP_EOL .
 		"\t" . '                               If nothing is specified, the \'WordPress\' standard is used.' . PHP_EOL .
@@ -118,6 +120,8 @@ function vipgoci_help_print() :void {
 		"\t" . '                               files and problem checking of these files. Note that if' . PHP_EOL .
 		"\t" . '                               auto-approvals are turned off globally, no auto-approval' . PHP_EOL .
 		"\t" . '                               is performed for SVG files.' . PHP_EOL .
+		"\t" . '--svg-php-path=FILE            Full path to PHP used to run SVG scanner. If not specified the default in' . PHP_EOL .
+		"\t" . '                               $PATH will be used instead.' . PHP_EOL .
 		"\t" . '--svg-scanner-path=FILE        Path to SVG scanning tool. Should return similar output' . PHP_EOL .
 		"\t" . '                               as PHPCS.' . PHP_EOL .
 		PHP_EOL .
@@ -282,6 +286,7 @@ function vipgoci_options_recognized() :array {
 		 * PHPCS configuration
 		 */
 		'phpcs:',
+		'phpcs-php-path:',
 		'phpcs-path:',
 		'phpcs-standard:',
 		'phpcs-severity:',
@@ -297,6 +302,7 @@ function vipgoci_options_recognized() :array {
 		 * SVG scanning configuration
 		 */
 		'svg-checks:',
+		'svg-php-path:',
 		'svg-scanner-path:',
 
 		/*
@@ -511,6 +517,21 @@ function vipgoci_run_init_options_phpcs( array &$options ) :void {
 	$options['phpcs-standard-file'] = false;
 
 	/*
+	 * Process --phpcs-php-path if to do PHPCS scan --
+	 * expected to be a file, default value is 'php'
+	 * (then relies on $PATH).
+	 */
+	if ( true === $options['phpcs'] ) {
+		vipgoci_option_file_handle(
+			$options,
+			'phpcs-php-path',
+			'php'
+		);
+	} else {
+		$options['phpcs-php-path'] = null;
+	}
+
+	/*
 	 * Check --phpcs-path if to do PHPCS
 	 * scanning, otherwise set to null.
 	 */
@@ -644,6 +665,21 @@ function vipgoci_run_init_options_svg( array &$options ) :void {
 	 * to be a boolean, the latter a file-path.
 	 */
 	vipgoci_option_bool_handle( $options, 'svg-checks', 'false' );
+	
+	/*
+	 * Process --svg-php-path if to do SVG scan --
+	 * expected to be a file, default value is 'php'
+	 * (then relies on $PATH).
+	 */
+	if ( true === $options['svg-checks'] ) {
+		vipgoci_option_file_handle(
+			$options,
+			'svg-php-path',
+			'php'
+		);
+	} else {
+		$options['svg-php-path'] = null;
+	}
 
 	/*
 	 * If --svg-checks is set to true,
@@ -1037,14 +1073,19 @@ function vipgoci_run_init_options_lint( array &$options ) :void {
 	);
 
 	/*
-	 * Process --lint-php-path -- expected to be a file,
-	 * default value is 'php' (then relies on $PATH)
+	 * Process --lint-php-path if to do PHP linting --
+	 * expected to be a file, default value is 'php'
+	 * (then relies on $PATH).
 	 */
-	vipgoci_option_file_handle(
-		$options,
-		'lint-php-path',
-		'php'
-	);
+	if ( true === $options['lint'] ) {
+		vipgoci_option_file_handle(
+			$options,
+			'lint-php-path',
+			'php'
+		);
+	} else {
+		$options['lint-php-path'] = null;
+	}
 }
 
 /**
