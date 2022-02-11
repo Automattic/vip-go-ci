@@ -15,15 +15,19 @@ commands:
       - run: sudo apt update
       - run: sudo apt install -y zip unzip gzip tar
       - run: composer require --dev phpunit/phpunit ^9
-      # Ensure we always have access to PHP 7.4; used for PHP linting and PHPCS scanning
-      # This uses a third-party package, should be safe as no secrets are used during this build.
+      # Ensure we always have access to PHP 7.4, PHP 8.0 and PHP 8.1.
+      # Different versions are used for PHP linting, PHPCS scanning and SVG scanning.
+      # Note: This uses a third-party package, should be safe as no secrets are used during this build.
       - run: sudo add-apt-repository -y ppa:ondrej/php
-      - run: sudo apt install -y php7.4 php7.4-dom php7.4-curl php7.4-mbstring
+      - run: sudo apt install -y php7.4 php7.4-dom php7.4-curl php7.4-mbstring 
+      - run: sudo apt install -y php8.0 php8.0-dom php8.0-curl php8.0-mbstring
+      - run: sudo apt install -y php8.1 php8.1-dom php8.1-curl php8.1-mbstring
       # Install all the tools vip-go-ci needs, remove vip-go-ci itself though
       - run: bash ~/project/tools-init.sh
       - run: rm -rf ~/vip-go-ci-tools/vip-go-ci
-      # Change path to vital tools needed, ensure we use PHP 7.4 for linting
-      - run: cat ~/project/unittests.ini.dist | sed 's/\/home\/phpunit\//\/home\/circleci\//' | sed 's/lint-php-path=\/usr\/bin\/php/lint-php-path=\/usr\/bin\/php7.4/g'  > ~/project/unittests.ini
+      # Change paths to vital tools needed, ensure we use different
+      # PHP versions for different types of scanning.
+      - run: cat ~/project/unittests.ini.dist | sed 's/\/home\/phpunit\//\/home\/circleci\//' | sed 's/lint-php-path=\/usr\/bin\/php/lint-php-path=\/usr\/bin\/php8.0/g' | sed 's/phpcs-php-path=\/usr\/bin\/php/phpcs-php-path=\/usr\/bin\/php7.4/g' | sed 's/svg-php-path=\/usr\/bin\/php/svg-php-path=\/usr\/bin\/php8.1/g'  > ~/project/unittests.ini
       # No secrets available for unit-tests
       - run: touch ~/project/unittests-secrets.ini
       # Prepare phpunit configuration file
@@ -39,12 +43,6 @@ commands:
 
 # List of images at: https://circleci.com/developer/images/image/cimg/php#image-tags
 jobs:
-  testphp74:
-    docker:
-       - image: cimg/php:7.4.26
-    steps:
-       - build-cmd
-
   testphp80:
     docker:
        - image: cimg/php:8.0.15
@@ -60,6 +58,5 @@ jobs:
 workflows:
   vipgocitests:
     jobs:
-     - testphp74
      - testphp80
      - testphp81
