@@ -22,7 +22,7 @@ final class VipgociLintScanTest extends TestCase {
 	 * @param array $submitExpected
 	 * @param array $statsExpected
 	 *
-	 * @covers       vipgoci_set_file_issues_result
+	 * @covers       vipgoci_lint_set_file_issues_result
 	 * @dataProvider setFileIssuesResultProvider
 	 */
 	public function testSetFileIssuesResult(
@@ -35,14 +35,14 @@ final class VipgociLintScanTest extends TestCase {
 		$commitIssuesStats  = $this->getStatsMock();
 		$commitIssuesSubmit = $this->getSubmitMock();
 
-		vipgoci_set_file_issues_result( $commitIssuesSubmit[ $prNumber ], $commitIssuesStats[30]['error'], $fileName, $fileScanningResults );
+		vipgoci_lint_set_file_issues_result( $commitIssuesSubmit[ $prNumber ], $commitIssuesStats[30]['error'], $fileName, $fileScanningResults );
 
 		$this->assertSame( $statsExpected, $commitIssuesStats[30] );
 		$this->assertSame( $submitExpected, $commitIssuesSubmit[30] );
 	}
 
 	/**
-	 * @covers       vipgoci_get_prs_modified_files
+	 * @covers       vipgoci_lint_get_prs_modified_files
 	 * @dataProvider vipgociGetPrsModifiedFilesProvider
 	 */
 	public function testVipgociGetPrsModifiedFiles( array $prsImplicated, array $expected ): void {
@@ -53,7 +53,7 @@ final class VipgociLintScanTest extends TestCase {
 		$options['commit']             = 'any';
 		$options['phpcs-skip-folders'] = 'any';
 
-		$actual = vipgoci_get_prs_modified_files( $options, $prsImplicated );
+		$actual = vipgoci_lint_get_prs_modified_files( $options, $prsImplicated );
 		$this->assertSame( $expected, $actual );
 	}
 
