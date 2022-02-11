@@ -13,8 +13,9 @@ final class SvgScanScanSingleFileTest extends TestCase {
 	);
 
 	var $options_svg_scan = array(
-		'svg-scanner-path'				=> null,
-		'commit-test-svg-scan-single-file-test-1'	=> null,
+		'svg-php-path'                            => null,
+		'svg-scanner-path'                        => null,
+		'commit-test-svg-scan-single-file-test-1' => null,
 	);
 
 	protected function setUp(): void {
