@@ -6,9 +6,10 @@ use PHPUnit\Framework\TestCase;
 
 final class PhpcsScanGetSniffsForStandardTest extends TestCase {
 	var $options_phpcs = array(
-		'phpcs-path'		=> null,
-		'phpcs-standard'	=> null,
-		'phpcs-sniffs-existing'	=> null,
+		'phpcs-path'            => null,
+		'phpcs-php-path'        => null,
+		'phpcs-standard'        => null,
+		'phpcs-sniffs-existing' => null,
 	);
 
 	protected function setUp(): void {
