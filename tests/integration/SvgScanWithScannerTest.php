@@ -16,10 +16,20 @@ final class SvgScanWithScannerTest extends TestCase {
 		if ( ! file_exists( $this->svg_scanner_path ) ) {
 			$this->svg_scanner_path = null;
 		}
+
+		$this->svg_php_path = vipgoci_unittests_get_config_value(
+			'svg-scan',
+			'svg-php-path'
+		);
+
+		if ( ! file_exists( $this->svg_php_path ) ) {
+			$this->svg_php_path = null;
+		}
 	}
 
 	protected function tearDown(): void {
 		$this->svg_scanner_path = null;
+		$this->svg_php_path = null;
 	}
 
 	/**
@@ -29,6 +39,14 @@ final class SvgScanWithScannerTest extends TestCase {
 		if ( empty( $this->svg_scanner_path ) ) {
 			$this->markTestSkipped(
 				'Must set up SVG scanner.'
+			);
+
+			return;
+		}
+
+		if ( empty( $this->svg_php_path ) ) {
+			$this->markTestSkipped(
+				'Must set up path to PHP used to run SVG scanner.'
 			);
 
 			return;
@@ -56,6 +74,7 @@ final class SvgScanWithScannerTest extends TestCase {
 
 		$scanner_results_json = vipgoci_svg_do_scan_with_scanner(
 			$this->svg_scanner_path,
+			$this->svg_php_path,
 			$temp_file_name
 		);
 
@@ -116,6 +135,7 @@ final class SvgScanWithScannerTest extends TestCase {
 
 		$scanner_results_json = vipgoci_svg_do_scan_with_scanner(
 			$this->svg_scanner_path,
+			$this->svg_php_path,
 			$temp_file_name
 		);
 
