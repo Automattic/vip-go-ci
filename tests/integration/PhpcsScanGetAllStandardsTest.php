@@ -7,6 +7,7 @@ use PHPUnit\Framework\TestCase;
 final class PhpcsScanGetAllStandardsTest extends TestCase {
 	var $options_phpcs = array(
 		'phpcs-path'		=> null,
+		'phpcs-php-path'	=> null,
 		'phpcs-standard'	=> null,
 	);
 
@@ -26,7 +27,8 @@ final class PhpcsScanGetAllStandardsTest extends TestCase {
 	 */
 	public function testGetAllStandardsTest1() {
 		$all_standards = vipgoci_phpcs_get_all_standards(
-			$this->options_phpcs['phpcs-path']
+			$this->options_phpcs['phpcs-path'],
+			$this->options_phpcs['phpcs-php-path']
 		);
 
 		$this->assertNotEmpty(
