@@ -303,7 +303,7 @@ Alternatively, if you do not wish to run TeamCity in a Docker-instance, you can 
 * Code `252`: A fatal problem with GitHub was encountered leading to an exit.
 * Code `253`: A problem with usage options was detected, leading to an exit.
 
-## Other features
+## Features overview
 
 `vip-go-ci` has support for various features not documented above, such as dismissing stale reviews, setting specific options via the repository being scanned and more. These features are configurable via the command-line or the environment, and are documented below.
 
