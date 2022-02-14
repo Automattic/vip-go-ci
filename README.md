@@ -703,7 +703,7 @@ Start with preparing the `unittests.ini` file:
 
 > cp unittests.ini.dist unittests.ini
 
-Alter any options in the file as needed to match the setup of your system.
+Alter any options in the file as needed to match the setup of your system. Note that in some cases, you may have to use different PHP versions for PHPCS or the SVG scanner, than `vip-go-ci` itself.
 
 Note that some tests will require a GitHub token to submit POST/PUT requests to GitHub in order to complete, need access to the hashes-to-hashes database, or to a repo-meta API. 
 
