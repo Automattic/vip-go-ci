@@ -366,15 +366,11 @@ By default, `vip-go-ci` will PHP lint any files modified by the current pull req
 
 To use a different PHP interpreter than the system default to perform PHP linting, use the `--lint-php-path` option. This should point to a PHP binary.
 
-To change to PHP linting _all PHP files_ in the current branch, set `--lint-modified-files-only` to `false`.
-
-The following PHP linting related options can be configured via repository config-file:
+The following PHP linting related options can be configured via repository config-file or normal options:
 
 #### Option `--lint-modified-files-only`
 
-The `lint-modified-files-only` option specifies whether `vip-go-ci` should scan all the PHP files in the repository (including already merged files) or files modified by the PR only. Due to performance concerns, the lint-modified-files-only option is enabled by default.
-
-It can be modified through the `.vipgoci_options` configuration file (see [here](#configuration-via-repository-config-file)). 
+The `lint-modified-files-only` option specifies whether `vip-go-ci` should PHP lint only the PHP files modified, or all the PHP files in the base branch. See [here](#configuration-via-repository-config-file) on modifying this option via configuration file. 
 
 For example:
 
