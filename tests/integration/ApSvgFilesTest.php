@@ -13,6 +13,7 @@ final class ApSvgFilesTest extends TestCase {
 	);
 
 	var $options_svg_scan = array(
+		'svg-php-path'			=> null,
 		'svg-scanner-path'		=> null,
 	);
 

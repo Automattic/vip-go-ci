@@ -23,6 +23,13 @@ final class MainRunInitOptionsSvgTest extends TestCase {
 	private string $svg_scanner_path = '';
 
 	/**
+	 * PHP path for SVG scanning.
+	 *
+	 * @var $svg_php_path
+	 */
+	private string $svg_php_path = '';
+
+	/**
 	 * Options array.
 	 *
 	 * @var $options
@@ -39,6 +46,12 @@ final class MainRunInitOptionsSvgTest extends TestCase {
 			false
 		);
 
+		$this->svg_php_path = vipgoci_unittests_get_config_value(
+			'svg-scan',
+			'svg-php-path',
+			false
+		);
+
 		$this->options = array();
 	}
 
@@ -47,6 +60,7 @@ final class MainRunInitOptionsSvgTest extends TestCase {
 	 */
 	protected function tearDown() :void {
 		unset( $this->svg_scanner_path );
+		unset( $this->svg_php_path );
 		unset( $this->options );
 	}
 
@@ -63,6 +77,7 @@ final class MainRunInitOptionsSvgTest extends TestCase {
 		$this->assertSame(
 			array(
 				'svg-checks'       => false,
+				'svg-php-path'     => null,
 				'svg-scanner-path' => null,
 			),
 			$this->options
@@ -84,6 +99,7 @@ final class MainRunInitOptionsSvgTest extends TestCase {
 		}
 
 		$this->options['svg-checks']       = 'true';
+		$this->options['svg-php-path']     = $this->svg_php_path;
 		$this->options['svg-scanner-path'] = $this->svg_scanner_path;
 
 		vipgoci_run_init_options_svg(
@@ -93,6 +109,7 @@ final class MainRunInitOptionsSvgTest extends TestCase {
 		$this->assertSame(
 			array(
 				'svg-checks'       => true,
+				'svg-php-path'     => $this->svg_php_path,
 				'svg-scanner-path' => $this->svg_scanner_path,
 			),
 			$this->options

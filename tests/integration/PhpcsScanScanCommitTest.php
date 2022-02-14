@@ -7,6 +7,7 @@ use PHPUnit\Framework\TestCase;
 final class PhpcsScanScanCommitTest extends TestCase {
 	var $options_phpcs = array(
 		'phpcs-path'                      => null,
+		'phpcs-php-path'                  => null,
 		'phpcs-standard'                  => null,
 		'phpcs-severity'                  => null,
 		'phpcs-runtime-set'               => null,
@@ -37,6 +38,11 @@ final class PhpcsScanScanCommitTest extends TestCase {
 
 		$this->options_phpcs['phpcs-sniffs-exclude'] = array();
 
+		vipgoci_option_phpcs_runtime_set(
+			$this->options_phpcs,
+			'phpcs-runtime-set'
+		);
+
 		$this->options = array_merge(
 			$this->options_git_repo,
 			$this->options_phpcs
@@ -65,6 +71,8 @@ final class PhpcsScanScanCommitTest extends TestCase {
 		$this->options['phpcs'] = true;
 
 		$this->options['phpcs-skip-folders'] = array();
+
+		$this->options['phpcs-severity'] = (int) $this->options['phpcs-severity'];
 
 		$this->options['skip-draft-prs'] = false;
 

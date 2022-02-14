@@ -12,6 +12,7 @@ commit-id-2=c4a3fe05f67f329cdf884392df29e55f5b8d4498
 
 [phpcs-scan]
 phpcs-path=/home/phpunit/vip-go-ci-tools/phpcs/bin/phpcs
+phpcs-php-path=/usr/bin/php
 phpcs-standard=WordPress-VIP-Go
 phpcs-severity=1
 phpcs-runtime_set=
@@ -33,11 +34,12 @@ phpcs-validate-sniffs-and-report-exclude-invalid=MyInvalidSniff.SniffName
 phpcs-validate-sniffs-and-report-exclude-valid=WordPressVIPMinimum.Functions.StripTags,WordPress.PHP.IniSet
 
 [svg-scan]
+svg-php-path=/usr/bin/php
 svg-scanner-path=/home/phpunit/vip-go-ci-tools/vip-go-svg-sanitizer/svg-scanner.php
 commit-test-svg-scan-single-file-test-1=935bcf78887d54228c7d705a196de4b72947fd42
 
 [lint-scan]
-php-path=/usr/bin/php
+lint-php-path=/usr/bin/php
 commit-test-lint-scan-commit-1=6968d452099d2b43fd85953076b34a5b2e2d707f
 commit-test-lint-scan-commit-2=20fee28020873cb7fdfadf1cfa101f94026bc75e
 commit-test-lint-scan-commit-3=dd60c66a7c1e27fc78c400f0c5160c9a80c4bd49

@@ -7,6 +7,7 @@ use PHPUnit\Framework\TestCase;
 final class PhpcsScanSingleFileTest extends TestCase {
 	var $options_phpcs = array(
 		'phpcs-path'                      => null,
+		'phpcs-php-path'                  => null,
 		'phpcs-standard'                  => null,
 		'phpcs-severity'                  => null,
 		'phpcs-runtime-set'               => null,
@@ -55,6 +56,13 @@ final class PhpcsScanSingleFileTest extends TestCase {
 		$this->options['lint-skip-folders'] = array();
 
 		$this->options['phpcs-skip-folders'] = array();
+
+		$this->options['phpcs-severity'] = (int) $this->options['phpcs-severity'];
+
+		vipgoci_option_phpcs_runtime_set(
+			$this->options,
+			'phpcs-runtime-set'
+		);
 
 		$this->options['skip-large-files'] = true;
 

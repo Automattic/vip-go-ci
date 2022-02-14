@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
 
 final class LintLintDoScanTest extends TestCase {
 	var $options_php = array(
-		'php-path'	=> null,
+		'lint-php-path' => null,
 	);
 
 	protected function setUp(): void {
@@ -48,7 +48,7 @@ final class LintLintDoScanTest extends TestCase {
 		vipgoci_unittests_output_suppress();
 
 		$ret = vipgoci_lint_do_scan_file(
-			$this->options_php['php-path'],
+			$this->options_php['lint-php-path'],
 			$php_file_path
 		);
 
@@ -90,7 +90,7 @@ final class LintLintDoScanTest extends TestCase {
 		vipgoci_unittests_output_suppress();
 
 		$ret = vipgoci_lint_do_scan_file(
-			$this->options_php['php-path'],
+			$this->options_php['lint-php-path'],
 			$php_file_path
 		);
 
