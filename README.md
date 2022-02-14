@@ -56,6 +56,7 @@ If you have a feature request, please read the [file on contributing](CONTRIBUTI
 ### System requirements
 
 * `vip-go-ci` requires PHP 8.0 or later. PHP 8.1 is recommended.
+  * The utlities, PHPCS, SVG scanner and PHP Lint, can run using different PHP versions than `vip-go-ci` itself. See individual sections below on this.
 * Linux is recommended as a platform for `vip-go-ci`.
 * git version 2.10 or later.
 * Working bash shell.
@@ -373,6 +374,12 @@ To have a message posted, simply run `vip-go-ci` with a `--informational-msg` pa
 
 The message will be included in any generic pull request comments or pull request reviews submitted.
 
+### PHP Linting configuration
+
+By default, `vip-go-ci` will PHP lint any files modified by the current pull request. PHP linting is performed by running `php -l`. This can be changed to linting _all files_ in the current branch by setting `--lint-modified-files-only` to `false`.
+
+To use a different PHP interpreter than the system default to run , use `--lint-php-path`. This should point to a PHP binary.
+
 ### PHPCS configuration
 
 Support for checking for issues in PHP files by using [PHPCS](https://github.com/squizlabs/PHP_CodeSniffer/) scanning is supported. The behaviour of PHPCS scanning can be configured using several options.
@@ -383,9 +390,9 @@ An example of how PHPCS can be used:
 
 With these settings, PHPCS is turned on, is expected to be found in the path shown above, should use two PHPCS standards (`WordPress-VIP-Go` and `PHPCompatibilityWP`), while excluding one particular PHPCS sniff and specifically include another one. When executing PHPCS, one runtime option should be set (`testVersion 7.4-`) and severity level should be `1`. Also, users can ask to skip scanning particular pull requests by setting a label named `skip-phpcs-scan`.
 
-Any number of PHPCS standards can be specified, and any number of runtime settings as well. Also, see section above about configuring options via repository file.
+Any number of PHPCS standards can be specified, and any number of runtime settings as well. Also, see section above about configuring options via repository file. Should any of the PHPCS sniffs included or excluded be invalid, this is reported in the relevant pull requests.
 
-Should any of the PHPCS sniffs included or excluded be invalid, this is reported in the relevant pull requests.
+To use a different PHP interpreter than the system default to run PHPCS, use `--phpcs-php-path`. This should point to a PHP binary.
 
 The following PHPCS-related options can be configured via repository config-file:
 
@@ -428,6 +435,8 @@ To make use of this feature, the `--svg-checks` and `--svg-scanner-path` options
 > ./vip-go-ci.php --svg-checks=true --svg-scanner-path="$HOME/vip-go-ci-tools/vip-go-svg-sanitizer/svg-scanner.php"
 
 With these options, SVG scanning is turned on and a scanner at a particular path location is to be used. 
+
+To use a different PHP interpreter than the system default to run the SVG scanner, use `--svg-php-path`. This should point to a PHP binary.
 
 The following SVG-related options can be configured via repository config-file:
 
