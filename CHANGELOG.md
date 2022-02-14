@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 - [#205](https://github.com/Automattic/vip-go-ci/pull/205): Use new GitHub Teams API
 - [#236](https://github.com/Automattic/vip-go-ci/pull/236): Adding PHP 8.1 support and related changes
 - [#242](https://github.com/Automattic/vip-go-ci/pull/242): Adding version number to TODO in PULL_REQUEST_TEMPLATE
+- [#245](https://github.com/Automattic/vip-go-ci/pull/245): Different TODO items for test suites in PULL_REQUEST_TEMPLATE file
 
 ## [1.1.3](https://github.com/Automattic/vip-go-ci/releases/tag/1.1.3) - 2022-01-31
 
