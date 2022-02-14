@@ -681,35 +681,35 @@ All utilities in `tools-init.sh` follow the same pattern.
 
 To run the tests for `vip-go-ci`, you will need to install `phpunit` and any dependencies needed (this would include `xdebug`).
 
-Note that the test suite sometimes uses the @runTestsInSeparateProcesses and @preserveGlobalState PHPUnit flags to avoid any influence of one test on another.
+Note that the test suite uses the @runTestsInSeparateProcesses and @preserveGlobalState PHPUnit flags to avoid any influence of one test on another.
 
-### PHPUnit configuration file:
-Run:
+### Setting up test suite
+
+To be able run the test suite, a few steps will need to be taken.
+
+1) run the following command:
 > mv phpunit.xml.dist phpunit.xml
 
-Replace the string ``PROJECT_DIR`` with your local project directory. E.g.:
+2) replace the string `PROJECT_DIR` in `phpunit.xml` with your local project directory.
+
+For example:
 > <directory>PROJECT_DIR/tests/integration</directory>
 will be:
-> <directory>~/Projects/tests/integration</directory>
+> <directory>~/Projects/vip-go-ci/tests/integration</directory>
 
-Then run the unit tests using the following command:
+3) This step is only needed if you intend to run the integration tests. 
 
-### Unit test suite
-> phpunit --testsuite=unit-tests -vv
+Start with preparing the `unittests.ini` file:
 
-By running this command, you will run the tests that do not depend on external calls. 
-
-### Integration test suite
-> phpunit --testsuite=integration-tests -vv
-
-By using this command, you will run the tests of the test-suite which can be run (depending on tokens and other detail), and get feedback on any errors or warnings. Note that when run, requests will be made to the GitHub API, but using anonymous calls (unless configured as shown below). It can happen that the GitHub API returns with an error indicating that the maximum limit of API requests has been reached; the solution is to wait and re-run or use authenticated calls (see below). 
-
-`vip-go-ci` ships with a default `unittests.ini.dist` file which includes configuration details needed for the unit tests to run. This includes repository to use for testing, pull request IDs and more.
-
-Run:
 > cp unittests.ini.dist unittests.ini
 
-Note that by default, some tests will be skipped, as these will require a GitHub token to write to GitHub in order to complete, need access to the hashes-to-hashes database, or to a repo-meta API. To enable the testing of these, you need to set up a `unittests-secrets.ini` file in the root of the repository. It should include the following fields:
+Alter any options in the file as needed to match the setup of your system.
+
+Note that some tests will require a GitHub token to submit POST/PUT requests to GitHub in order to complete, need access to the hashes-to-hashes database, or to a repo-meta API. 
+
+To skip these tests, simply place an empty `unittests-secrets.ini` file in the root directory of `vip-go-ci` and skip the rest of this section. 
+
+To enable the testing of these, you need to set up a `unittests-secrets.ini` file in the root directory of `vip-go-ci`. This file should include the following fields:
 
 ```
 [auto-approvals-secrets]
@@ -734,7 +734,25 @@ support-level=                  ; Name of support level given by meta API
 support-level-field-name=       ; Support level field name in meta API
 ```
 
-This file is not included, and needs to be configured manually. When that is complete, the tests can be re-run.
+This file is not included, and needs to be configured manually.
+
+### Unit test suite
+
+The unit test suite can be run using the following command:
+
+> phpunit --testsuite=unit-tests -vv
+
+By running this command, you will run the tests that do not depend on external calls. 
+
+### Integration test suite
+
+The integration tests can be run using the following command:
+
+> phpunit --testsuite=integration-tests -vv
+
+Integration tests will execute the scanning utilities — PHPCS, SVG scanner and PHP Lint — and so paths to these, and a PHP interpreter, need to be configured. See the `unittests.ini` file.
+
+By using this command, you will run the tests of the test-suite which can be run (depending on tokens and other detail), and get feedback on any errors or warnings. Note that when run, requests will be made to the GitHub API, but using anonymous calls (unless configured as shown above). It can happen that the GitHub API returns with an error indicating that the maximum limit of API requests has been reached; the solution is to wait and re-run or use authenticated calls (see above). 
 
 ## Setting GitHub Build Status
 
