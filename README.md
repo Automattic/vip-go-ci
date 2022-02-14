@@ -56,7 +56,7 @@ If you have a feature request, please read the [file on contributing](CONTRIBUTI
 ### System requirements
 
 * `vip-go-ci` requires PHP 8.0 or later. PHP 8.1 is recommended.
-  * The utlities, PHPCS, SVG scanner and PHP Lint, can run using different PHP versions than `vip-go-ci` itself. See individual sections below on this.
+  * The PHP-based utlities — PHPCS, SVG scanner and PHP Lint — can run using different PHP versions than `vip-go-ci` itself. See individual sections below on this.
 * Linux is recommended as a platform for `vip-go-ci`.
 * git version 2.10 or later.
 * Working bash shell.
@@ -288,20 +288,6 @@ docker-compose up -d --scale agent=3
 ```
 
 Alternatively, if you do not wish to run TeamCity in a Docker-instance, you can download it and set it up manually.
-
-
-##  Exit codes
-
-`vip-go-ci.php` exits with different UNIX exit codes depending on what problems were found and if any system issues were encountered:
-
-* Code `0`: Normal, no errors were found in the code scanned and no fatal system errors were encountered. There could have been warnings found in the code, though.
-* Code `220`: Internal error in `vip-go-ci`.
-* Code `230`: Commit specified is not associated with any pull request.
-* Code `249`: Scanning exceeded maximum time allowed.
-* Code `250`: Scanning was completed, but some errors were found in the code.
-* Code `251`: Exiting due to a system problem.
-* Code `252`: A fatal problem with GitHub was encountered leading to an exit.
-* Code `253`: A problem with usage options was detected, leading to an exit.
 
 ## Features overview
 
@@ -681,6 +667,19 @@ export WP_CODING_STANDARDS_SHA1SUM="d35ec268531453cbf2078c57356e38c5f8936e87";
 ```
 
 All utilities in `tools-init.sh` follow the same pattern.
+
+##  Exit codes
+
+`vip-go-ci.php` exits with different UNIX exit codes depending on what problems were found and if any system issues were encountered:
+
+* Code `0`: Normal, no errors were found in the code scanned and no fatal system errors were encountered. There could have been warnings found in the code, though.
+* Code `220`: Internal error in `vip-go-ci`.
+* Code `230`: Commit specified is not associated with any pull request.
+* Code `249`: Scanning exceeded maximum time allowed.
+* Code `250`: Scanning was completed, but some errors were found in the code.
+* Code `251`: Exiting due to a system problem.
+* Code `252`: A fatal problem with GitHub was encountered leading to an exit.
+* Code `253`: A problem with usage options was detected, leading to an exit.
 
 ## Tests
 
