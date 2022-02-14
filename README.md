@@ -290,7 +290,7 @@ docker-compose up -d --scale agent=3
 Alternatively, if you do not wish to run TeamCity in a Docker-instance, you can download it and set it up manually.
 
 
-###  Exit codes
+##  Exit codes
 
 `vip-go-ci.php` exits with different UNIX exit codes depending on what problems were found and if any system issues were encountered:
 
@@ -376,9 +376,23 @@ The message will be included in any generic pull request comments or pull reques
 
 ### PHP Linting configuration
 
-By default, `vip-go-ci` will PHP lint any files modified by the current pull request. PHP linting is performed by running `php -l`. This can be changed to linting _all files_ in the current branch by setting `--lint-modified-files-only` to `false`.
+By default, `vip-go-ci` will PHP lint any files modified by the current pull request. PHP linting is performed by running `php -l`. 
 
-To use a different PHP interpreter than the system default to run , use `--lint-php-path`. This should point to a PHP binary.
+To use a different PHP interpreter than the system default to perform PHP linting, use the `--lint-php-path` option. This should point to a PHP binary.
+
+To change to PHP linting _all PHP files_ in the current branch, set `--lint-modified-files-only` to `false`.
+
+The following PHP linting related options can be configured via repository config-file:
+
+#### Options `--lint-modified-files-only`
+
+The `lint-modified-files-only` option specifies whether `vip-go-ci` should scan all the PHP files in the repository (including already merged files) or files modified by the PR only. Due to performance concerns, the lint-modified-files-only option is enabled by default.
+
+It can be modified through the `.vipgoci_options` configuration file (see [here](#configuration-via-repository-config-file)). 
+
+For example:
+
+> {"lint-modified-files-only":false}
 
 ### PHPCS configuration
 
@@ -418,15 +432,7 @@ The `phpcs-sniffs-include` is configured in the same way as the `phpcs-sniffs-ex
 
 Please note that should any of the PHPCS sniffs specified be invalid, a warning will be posted on any pull request scanned. The warning will be removed during next scan and not posted again if the issue is fixed.
 
-#### Options `--lint-modified-files-only`
-
-The ``lint-modified-files-only`` option specifies whether the ``vip-go-ci`` bot should scan all the PHP files in the repository (including already merged files) or files modified by the PR only.
-
-Due to performance concerns, the lint-modified-files-only option is enabled by default. It can be disabled through the ``.vipgoci_options`` configuration file. To disable the ``lint-modified-files-only`` option, ensure the ``.vipgoci_options`` configuration file is created in the git-repository and define the option as false. See the example below:
-
-> {"lint-modified-files-only":false}
-
-### SVG scanning
+### SVG scanning configuration
 
 `vip-go-ci` supports scanning SVG files for dangerous tags. The scanning is accomplished by a [SVG scanner](https://github.com/Automattic/vip-go-svg-sanitizer), while `vip-go-ci` takes care of posting the issues found.
 
