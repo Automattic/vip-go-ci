@@ -384,7 +384,7 @@ To change to PHP linting _all PHP files_ in the current branch, set `--lint-modi
 
 The following PHP linting related options can be configured via repository config-file:
 
-#### Options `--lint-modified-files-only`
+#### Option `--lint-modified-files-only`
 
 The `lint-modified-files-only` option specifies whether `vip-go-ci` should scan all the PHP files in the repository (including already merged files) or files modified by the PR only. Due to performance concerns, the lint-modified-files-only option is enabled by default.
 
