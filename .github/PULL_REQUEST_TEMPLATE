@@ -38,7 +38,8 @@ TODO:
 - [ ] Define version number in CHANGELOG.md, add release date and update links
 - [ ] Add same version number in defines.php
 - [ ] Assign a milestone corresponding to the version number to this PR and PRs that will form the release
-- [ ] Run full-unit tests 
+- [ ] Run unit-test suite
+- [ ] Run integration-test suite with secrets
 - [ ] Manual testing
   - [ ] Pull request with PHP linting issues
   - [ ] Pull request with PHPCS issues
