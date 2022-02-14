@@ -6,6 +6,8 @@
  * @package Automattic/vip-go-ci
  */
 
+declare(strict_types=1);
+
 if (
 	(
 		( ! defined( 'VIPGOCI_UNIT_TESTING' ) ) ||
