@@ -1,9 +1,11 @@
 <?php
-
-/*
+/**
  * Call vipgoci_run() when not running a
  * unit-test.
+ *
+ * @package Automattic/vip-go-ci
  */
+
 if (
 	(
 		( ! defined( 'VIPGOCI_UNIT_TESTING' ) ) ||
