@@ -29,6 +29,7 @@ function vipgoci_help_print() :void {
 		PHP_EOL .
 		'General configuration:' . PHP_EOL .
 		"\t" . '--help                         Displays this message' . PHP_EOL .
+		"\t" . '--version                      Displays version number and exits.' . PHP_EOL .
 		"\t" . '--debug-level=NUMBER           Specify minimum debug-level of messages to print' . PHP_EOL .
 		"\t" . '                                -- higher number indicates more detailed debugging-messages.' . PHP_EOL .
 		"\t" . '                               Default is zero' . PHP_EOL .
@@ -249,6 +250,7 @@ function vipgoci_options_recognized() :array {
 		 * General configuration.
 		 */
 		'help',
+		'version',
 		'debug-level:',
 		'max-exec-time:',
 		'enforce-https-urls:',
@@ -2721,7 +2723,7 @@ function vipgoci_run_scan(
 
 	// Construct scan details message.
 	$scan_details_msg = vipgoci_report_create_scan_details(
-		$options,
+		vipgoci_options_sensitive_clean( $options ),
 		$results
 	);
 
@@ -2890,9 +2892,6 @@ function vipgoci_run_init_vars() :array {
  * @codeCoverageIgnore
  */
 function vipgoci_run() :int {
-	// Do basic system check before continuing.
-	vipgoci_run_checks();
-
 	/*
 	 * Assign a few variables.
 	 */
@@ -2903,6 +2902,15 @@ function vipgoci_run() :int {
 		$options_recognized,
 		$prs_implicated
 	) = vipgoci_run_init_vars();
+
+	if ( isset( $options['version'] ) ) {
+		// Version number requested; print and exit.
+		echo VIPGOCI_VERSION . PHP_EOL;
+		exit(0);
+	} 
+
+	// Do basic system check before continuing.
+	vipgoci_run_checks();
 
 	// Clear the internal cache before doing anything.
 	vipgoci_cache( VIPGOCI_CACHE_CLEAR );
