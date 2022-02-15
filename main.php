@@ -667,7 +667,7 @@ function vipgoci_run_init_options_svg( array &$options ) :void {
 	 * to be a boolean, the latter a file-path.
 	 */
 	vipgoci_option_bool_handle( $options, 'svg-checks', 'false' );
-	
+
 	/*
 	 * Process --svg-php-path if to do SVG scan --
 	 * expected to be a file, default value is 'php'
@@ -2906,8 +2906,9 @@ function vipgoci_run() :int {
 	if ( isset( $options['version'] ) ) {
 		// Version number requested; print and exit.
 		echo VIPGOCI_VERSION . PHP_EOL;
-		exit(0);
-	} 
+
+		exit( 0 );
+	}
 
 	// Do basic system check before continuing.
 	vipgoci_run_checks();
