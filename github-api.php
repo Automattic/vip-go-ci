@@ -1917,7 +1917,7 @@ function vipgoci_github_pr_generic_comment_submit_results(
 
 		unset( $tmp_postfields_body );
 
-		/* 
+		/*
 		 * Append scan details
 		 * message if we have that.
 		 */
