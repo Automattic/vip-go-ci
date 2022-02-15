@@ -22,6 +22,7 @@ use PHPUnit\Framework\TestCase;
 final class SvgScanScanCommitTest extends TestCase {
 	var $options_svg = array(
 		'svg-scanner-path'                        => null,
+		'svg-php-path'                            => null,
 		'commit-test-svg-scan-single-file-test-1' => null, // Re-use commit from SvgScanScanSingleFileTest
 	);
 

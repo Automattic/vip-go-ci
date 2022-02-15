@@ -99,6 +99,7 @@ final class MainRunInitOptionsPhpcsTest extends TestCase {
 				'phpcs-skip-folders'                      => array(),
 				'phpcs-severity'                          => 1,
 				'phpcs-standard-file'                     => false,
+				'phpcs-php-path'                          => null,
 			),
 			$this->options
 		);
@@ -156,6 +157,7 @@ final class MainRunInitOptionsPhpcsTest extends TestCase {
 				'phpcs-skip-folders'                      => array( 'myfolder1', 'myfolder2' ),
 				'phpcs-severity'                          => 5,
 				'phpcs-standard-file'                     => false,
+				'phpcs-php-path'                          => 'php',
 			),
 			$this->options
 		);

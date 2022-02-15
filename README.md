@@ -55,7 +55,8 @@ If you have a feature request, please read the [file on contributing](CONTRIBUTI
 
 ### System requirements
 
-* `vip-go-ci` requires PHP 7.3 or later. PHP 7.4 is preferred.
+* `vip-go-ci` requires PHP 8.0 or later. PHP 8.1 is recommended.
+  * The PHP-based utlities — PHPCS, SVG scanner and PHP Lint — can be run using different PHP versions than `vip-go-ci` itself. See individual sections below on this.
 * Linux is recommended as a platform for `vip-go-ci`.
 * git version 2.10 or later.
 * Working bash shell.
@@ -96,7 +97,7 @@ While running, `vip-go-ci` will output log of its actions. Here is an example --
         "branches-ignore": [],
         "autoapprove": true,
         "autoapprove-filetypes": [ "css", "txt", "pdf ],
-        "php-path": "php",
+        "lint-php-path": "php",
         "debug-level": 0,
         "dry-run": false
     }
@@ -288,21 +289,7 @@ docker-compose up -d --scale agent=3
 
 Alternatively, if you do not wish to run TeamCity in a Docker-instance, you can download it and set it up manually.
 
-
-###  Exit codes
-
-`vip-go-ci.php` exits with different UNIX exit codes depending on what problems were found and if any system issues were encountered:
-
-* Code `0`: Normal, no errors were found in the code scanned and no fatal system errors were encountered. There could have been warnings found in the code, though.
-* Code `220`: Internal error in `vip-go-ci`.
-* Code `230`: Commit specified is not associated with any pull request.
-* Code `249`: Scanning exceeded maximum time allowed.
-* Code `250`: Scanning was completed, but some errors were found in the code.
-* Code `251`: Exiting due to a system problem.
-* Code `252`: A fatal problem with GitHub was encountered leading to an exit.
-* Code `253`: A problem with usage options was detected, leading to an exit.
-
-## Other features
+## Features overview
 
 `vip-go-ci` has support for various features not documented above, such as dismissing stale reviews, setting specific options via the repository being scanned and more. These features are configurable via the command-line or the environment, and are documented below.
 
@@ -373,6 +360,22 @@ To have a message posted, simply run `vip-go-ci` with a `--informational-msg` pa
 
 The message will be included in any generic pull request comments or pull request reviews submitted.
 
+### PHP Linting configuration
+
+By default, `vip-go-ci` will PHP lint any files modified by the current pull request. PHP linting is performed by running `php -l`. 
+
+To use a different PHP interpreter than the system default to perform PHP linting, use the `--lint-php-path` option. This should point to a PHP binary.
+
+The following PHP linting related options can be configured via repository config-file or normal options:
+
+#### Option `--lint-modified-files-only`
+
+The `lint-modified-files-only` option specifies whether `vip-go-ci` should PHP lint only the PHP files modified, or all the PHP files in the base branch. See [here](#configuration-via-repository-config-file) on modifying this option via configuration file. 
+
+For example:
+
+> {"lint-modified-files-only":false}
+
 ### PHPCS configuration
 
 Support for checking for issues in PHP files by using [PHPCS](https://github.com/squizlabs/PHP_CodeSniffer/) scanning is supported. The behaviour of PHPCS scanning can be configured using several options.
@@ -383,9 +386,9 @@ An example of how PHPCS can be used:
 
 With these settings, PHPCS is turned on, is expected to be found in the path shown above, should use two PHPCS standards (`WordPress-VIP-Go` and `PHPCompatibilityWP`), while excluding one particular PHPCS sniff and specifically include another one. When executing PHPCS, one runtime option should be set (`testVersion 7.4-`) and severity level should be `1`. Also, users can ask to skip scanning particular pull requests by setting a label named `skip-phpcs-scan`.
 
-Any number of PHPCS standards can be specified, and any number of runtime settings as well. Also, see section above about configuring options via repository file.
+Any number of PHPCS standards can be specified, and any number of runtime settings as well. Also, see section above about configuring options via repository file. Should any of the PHPCS sniffs included or excluded be invalid, this is reported in the relevant pull requests.
 
-Should any of the PHPCS sniffs included or excluded be invalid, this is reported in the relevant pull requests.
+To use a different PHP interpreter than the system default to run PHPCS, use `--phpcs-php-path`. This should point to a PHP binary.
 
 The following PHPCS-related options can be configured via repository config-file:
 
@@ -411,15 +414,7 @@ The `phpcs-sniffs-include` is configured in the same way as the `phpcs-sniffs-ex
 
 Please note that should any of the PHPCS sniffs specified be invalid, a warning will be posted on any pull request scanned. The warning will be removed during next scan and not posted again if the issue is fixed.
 
-#### Options `--lint-modified-files-only`
-
-The ``lint-modified-files-only`` option specifies whether the ``vip-go-ci`` bot should scan all the PHP files in the repository (including already merged files) or files modified by the PR only.
-
-Due to performance concerns, the lint-modified-files-only option is enabled by default. It can be disabled through the ``.vipgoci_options`` configuration file. To disable the ``lint-modified-files-only`` option, ensure the ``.vipgoci_options`` configuration file is created in the git-repository and define the option as false. See the example below:
-
-> {"lint-modified-files-only":false}
-
-### SVG scanning
+### SVG scanning configuration
 
 `vip-go-ci` supports scanning SVG files for dangerous tags. The scanning is accomplished by a [SVG scanner](https://github.com/Automattic/vip-go-svg-sanitizer), while `vip-go-ci` takes care of posting the issues found.
 
@@ -428,6 +423,8 @@ To make use of this feature, the `--svg-checks` and `--svg-scanner-path` options
 > ./vip-go-ci.php --svg-checks=true --svg-scanner-path="$HOME/vip-go-ci-tools/vip-go-svg-sanitizer/svg-scanner.php"
 
 With these options, SVG scanning is turned on and a scanner at a particular path location is to be used. 
+
+To use a different PHP interpreter than the system default to run the SVG scanner, use `--svg-php-path`. This should point to a PHP binary.
 
 The following SVG-related options can be configured via repository config-file:
 
@@ -667,39 +664,52 @@ export WP_CODING_STANDARDS_SHA1SUM="d35ec268531453cbf2078c57356e38c5f8936e87";
 
 All utilities in `tools-init.sh` follow the same pattern.
 
+##  Exit codes
+
+`vip-go-ci.php` exits with different UNIX exit codes depending on what problems were found and if any system issues were encountered:
+
+* Code `0`: Normal, no errors were found in the code scanned and no fatal system errors were encountered. There could have been warnings found in the code, though.
+* Code `220`: Internal error in `vip-go-ci`.
+* Code `230`: Commit specified is not associated with any pull request.
+* Code `249`: Scanning exceeded maximum time allowed.
+* Code `250`: Scanning was completed, but some errors were found in the code.
+* Code `251`: Exiting due to a system problem.
+* Code `252`: A fatal problem with GitHub was encountered leading to an exit.
+* Code `253`: A problem with usage options was detected, leading to an exit.
+
 ## Tests
 
 To run the tests for `vip-go-ci`, you will need to install `phpunit` and any dependencies needed (this would include `xdebug`).
 
-Note that the test suite sometimes uses the @runTestsInSeparateProcesses and @preserveGlobalState PHPUnit flags to avoid any influence of one test on another.
+Note that the test suite uses the @runTestsInSeparateProcesses and @preserveGlobalState PHPUnit flags to avoid any influence of one test on another.
 
-### PHPUnit configuration file:
-Run:
+### Setting up test suite
+
+To be able run the test suite, a few steps will need to be taken.
+
+1) run the following command:
 > mv phpunit.xml.dist phpunit.xml
 
-Replace the string ``PROJECT_DIR`` with your local project directory. E.g.:
+2) replace the string `PROJECT_DIR` in `phpunit.xml` with your local project directory.
+
+For example:
 > <directory>PROJECT_DIR/tests/integration</directory>
 will be:
-> <directory>~/Projects/tests/integration</directory>
+> <directory>~/Projects/vip-go-ci/tests/integration</directory>
 
-Then run the unit tests using the following command:
+3) This step is only needed if you intend to run the integration tests. 
 
-### Unit test suite
-> phpunit --testsuite=unit-tests -vv
+Start with preparing the `unittests.ini` file:
 
-By running this command, you will run the tests that do not depend on external calls. 
-
-### Integration test suite
-> phpunit --testsuite=integration-tests -vv
-
-By using this command, you will run the tests of the test-suite which can be run (depending on tokens and other detail), and get feedback on any errors or warnings. Note that when run, requests will be made to the GitHub API, but using anonymous calls (unless configured as shown below). It can happen that the GitHub API returns with an error indicating that the maximum limit of API requests has been reached; the solution is to wait and re-run or use authenticated calls (see below). 
-
-`vip-go-ci` ships with a default `unittests.ini.dist` file which includes configuration details needed for the unit tests to run. This includes repository to use for testing, pull request IDs and more.
-
-Run:
 > cp unittests.ini.dist unittests.ini
 
-Note that by default, some tests will be skipped, as these will require a GitHub token to write to GitHub in order to complete, need access to the hashes-to-hashes database, or to a repo-meta API. To enable the testing of these, you need to set up a `unittests-secrets.ini` file in the root of the repository. It should include the following fields:
+Alter any options in the file as needed to match the setup of your system. Note that in some cases, you may have to use different PHP versions for PHPCS or the SVG scanner, than `vip-go-ci` itself.
+
+Note that some tests will require a GitHub token to submit POST/PUT requests to GitHub in order to complete, need access to the hashes-to-hashes database, or to a repo-meta API. 
+
+To skip these tests, simply place an empty `unittests-secrets.ini` file in the root directory of `vip-go-ci` and skip the rest of this section. 
+
+To enable the testing of these, you need to set up a `unittests-secrets.ini` file in the root directory of `vip-go-ci`. This file should include the following fields:
 
 ```
 [auto-approvals-secrets]
@@ -724,7 +734,25 @@ support-level=                  ; Name of support level given by meta API
 support-level-field-name=       ; Support level field name in meta API
 ```
 
-This file is not included, and needs to be configured manually. When that is complete, the tests can be re-run.
+This file is not included, and needs to be configured manually.
+
+### Unit test suite
+
+The unit test suite can be run using the following command:
+
+> phpunit --testsuite=unit-tests -vv
+
+By running this command, you will run the tests that do not depend on external calls. 
+
+### Integration test suite
+
+The integration tests can be run using the following command:
+
+> phpunit --testsuite=integration-tests -vv
+
+Integration tests will execute the scanning utilities — PHPCS, SVG scanner and PHP Lint — and so paths to these, and a PHP interpreter, need to be configured. See the `unittests.ini` file.
+
+By using this command, you will run the tests of the test-suite which can be run (depending on tokens and other detail), and get feedback on any errors or warnings. Note that when run, requests will be made to the GitHub API, but using anonymous calls (unless configured as shown above). It can happen that the GitHub API returns with an error indicating that the maximum limit of API requests has been reached; the solution is to wait and re-run or use authenticated calls (see above). 
 
 ## Setting GitHub Build Status
 

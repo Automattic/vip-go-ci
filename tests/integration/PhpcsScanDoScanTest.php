@@ -7,6 +7,7 @@ use PHPUnit\Framework\TestCase;
 final class PhpcsScanDoScanTest extends TestCase {
 	var $options_phpcs = array(
 		'phpcs-path'		=> null,
+		'phpcs-php-path'	=> null,
 		'phpcs-standard'	=> null,
 		'phpcs-severity'	=> null,
 		'phpcs-runtime-set'	=> null,
@@ -39,6 +40,11 @@ final class PhpcsScanDoScanTest extends TestCase {
 		);
 
 		$this->options_phpcs['phpcs'] = true;
+
+		vipgoci_option_phpcs_runtime_set(
+			$this->options_phpcs,
+			'phpcs-runtime-set'
+		);
 	}
 
 	protected function tearDown(): void {
@@ -83,6 +89,7 @@ final class PhpcsScanDoScanTest extends TestCase {
 		$phpcs_res = vipgoci_phpcs_do_scan(
 			$temp_file_path,
 			$this->options_phpcs['phpcs-path'],
+			$this->options_phpcs['phpcs-php-path'],
 			$this->options_phpcs['phpcs-standard'],
 			$this->options_phpcs['phpcs-sniffs-exclude'],
 			$this->options_phpcs['phpcs-severity'],
@@ -145,6 +152,7 @@ final class PhpcsScanDoScanTest extends TestCase {
 				$this->options_phpcs['phpcs-sniffs-include'],
 				vipgoci_phpcs_get_sniffs_for_standard(
 					$this->options_phpcs['phpcs-path'],
+					$this->options_phpcs['phpcs-php-path'],
 					$this->options_phpcs['phpcs-standard']
 				)
 			)
@@ -173,6 +181,7 @@ final class PhpcsScanDoScanTest extends TestCase {
 		$phpcs_res = vipgoci_phpcs_do_scan(
 			$temp_file_path,
 			$this->options_phpcs['phpcs-path'],
+			$this->options_phpcs['phpcs-php-path'],
 			$this->options_phpcs['phpcs-standard'],
 			$this->options_phpcs['phpcs-sniffs-exclude'],
 			$this->options_phpcs['phpcs-severity'],
@@ -228,6 +237,7 @@ final class PhpcsScanDoScanTest extends TestCase {
 		$phpcs_res = vipgoci_phpcs_do_scan(
 			$temp_file_path,
 			$this->options_phpcs['phpcs-path'],
+			$this->options_phpcs['phpcs-php-path'],
 			$this->options_phpcs['phpcs-standard'],
 			$this->options_phpcs['phpcs-sniffs-exclude'],
 			$this->options_phpcs['phpcs-severity'],
@@ -302,6 +312,7 @@ final class PhpcsScanDoScanTest extends TestCase {
 		$phpcs_res = vipgoci_phpcs_do_scan(
 			$temp_file_path,
 			$this->options_phpcs['phpcs-path'],
+			$this->options_phpcs['phpcs-php-path'],
 			$this->options_phpcs['phpcs-standard'],
 			$this->options_phpcs['phpcs-sniffs-exclude'],
 			$this->options_phpcs['phpcs-severity'],
