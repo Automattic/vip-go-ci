@@ -57,13 +57,11 @@ function vipgoci_report_create_scan_details_list(
  * based on $options and $results.
  *
  * @param array $options Options needed.
- * @param array $results Scanning results.
  *
  * @return string Detail message.
  */
 function vipgoci_report_create_scan_details(
-	array $options,
-	array $results
+	array $options
 ) :string {
 	$details  = '<details>' . PHP_EOL;
 	$details .= '<hr />' . PHP_EOL;

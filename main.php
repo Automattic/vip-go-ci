@@ -2723,8 +2723,7 @@ function vipgoci_run_scan(
 
 	// Construct scan details message.
 	$scan_details_msg = vipgoci_report_create_scan_details(
-		vipgoci_options_sensitive_clean( $options ),
-		$results
+		vipgoci_options_sensitive_clean( $options )
 	);
 
 	/*
