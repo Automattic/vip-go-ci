@@ -1746,7 +1746,8 @@ function vipgoci_github_pr_generic_comment_submit_results(
 	$github_token,
 	$commit_id,
 	$results,
-	$informational_msg
+	$informational_msg,
+	$scan_details_msg
 ) {
 	$stats_types_to_process = array(
 		VIPGOCI_STATS_LINT,
@@ -1915,6 +1916,14 @@ function vipgoci_github_pr_generic_comment_submit_results(
 			$github_postfields['body'];
 
 		unset( $tmp_postfields_body );
+
+		/* 
+		 * Append scan details
+		 * message if we have that.
+		 */
+		if ( ! empty( $scan_details_msg ) ) {
+			$github_postfields['body'] .= $scan_details_msg;
+		}
 
 		vipgoci_github_post_url(
 			$github_url,
@@ -2506,6 +2515,7 @@ function vipgoci_github_pr_review_submit(
 	$commit_id,
 	$results,
 	$informational_msg,
+	$scan_details_msg,
 	$github_review_comments_max,
 	$github_review_comments_include_severity,
 	int $skip_large_files_limit
@@ -2858,6 +2868,13 @@ function vipgoci_github_pr_review_submit(
 			$github_postfields['body'] .= $informational_msg;
 		}
 
+		/*
+		 * Append scan details
+		 * message if we have that.
+		 */
+		if ( ! empty( $scan_details_msg ) ) {
+			$github_postfields['body'] .= $scan_details_msg;
+		}
 
 		/*
 		 * Only submit a specific number of comments in one go.
