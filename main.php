@@ -2719,6 +2719,12 @@ function vipgoci_run_scan(
 		$results
 	);
 
+	// Construct scan details message.
+	$scan_details_msg = vipgoci_report_create_scan_details(
+		$options,
+		$results
+	);
+
 	/*
 	 * Submit any remaining issues to GitHub
 	 */
@@ -2728,7 +2734,8 @@ function vipgoci_run_scan(
 		$options['token'],
 		$options['commit'],
 		$results,
-		$options['informational-msg']
+		$options['informational-msg'],
+		$scan_details_msg
 	);
 
 	vipgoci_github_pr_review_submit(
@@ -2738,6 +2745,7 @@ function vipgoci_run_scan(
 		$options['commit'],
 		$results,
 		$options['informational-msg'],
+		$scan_details_msg,
 		$options['review-comments-max'],
 		$options['review-comments-include-severity'],
 		$options['skip-large-files-limit']
