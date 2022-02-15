@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
 - [#242](https://github.com/Automattic/vip-go-ci/pull/242): Adding version number to TODO in PULL_REQUEST_TEMPLATE
 - [#245](https://github.com/Automattic/vip-go-ci/pull/245): Different TODO items for test suites in PULL_REQUEST_TEMPLATE file
 - [#246](https://github.com/Automattic/vip-go-ci/pull/246): Improve reporting to users
+- [#247](https://github.com/Automattic/vip-go-ci/pull/247): Apply WP CS for a few files
 
 ## [1.1.3](https://github.com/Automattic/vip-go-ci/releases/tag/1.1.3) - 2022-01-31
 
