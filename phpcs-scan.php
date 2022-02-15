@@ -8,6 +8,49 @@
 declare(strict_types=1);
 
 /**
+ * Get PHPCS version number.
+ *
+ * @param string $phpcs_path     Path to PHPCS scanner.
+ * @param string $phpcs_php_path Path to PHP to use to execute PHPCS scanner.
+ *
+ * @return string|null PHPCS version number, null on failure.
+ */
+function vipgoci_phpcs_get_version(
+	string $phpcs_path,
+	string $phpcs_php_path
+) :string|null {
+	$cmd = sprintf(
+		'%s %s %s',
+		escapeshellcmd( $phpcs_php_path ),
+		escapeshellcmd( $phpcs_path ),
+		escapeshellarg( '--version' )
+	);
+
+	$phpcs_output = vipgoci_runtime_measure_shell_exec(
+		$cmd,
+		'phpcs_cli'
+	);
+
+	$phpcs_output = str_replace(
+		array( 'PHP_CodeSniffer ', 'version ' ),
+		array( '', '' ),
+		$phpcs_output
+	);
+
+	$phpcs_output_arr = explode(
+		' ',
+		$phpcs_output
+	);
+
+	// If something went wrong, return null.
+	if ( empty( $phpcs_output_arr[0] ) ) {
+		return null;
+	}
+
+	return $phpcs_output_arr[0];
+}
+
+/**
  * Run PHPCS for the file specified, using the
  * appropriate standards. Return the results.
  *
