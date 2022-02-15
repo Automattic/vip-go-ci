@@ -10,6 +10,7 @@ function vipgoci_options_read_repo_file(
 	$repo_options_file_name,
 	$options_overwritable
 ) {
+	$options['repo-options-set'] = array();
 
 	if ( false === $options[ 'repo-options' ] ) {
 		vipgoci_log(
@@ -290,6 +291,8 @@ function vipgoci_options_read_repo_file(
 		'Set, overwrote or appended the following options',
 		$options_read
 	);
+
+	$options['repo-options-set'] = $options_read;
 
 	return true;
 }
@@ -867,6 +870,16 @@ function vipgoci_option_array_handle(
 			$array_separator,
 			$options[ $option_name ]
 		);
+
+		/*
+		 * Check for special case when an empty string is provided.
+		 */
+		if (
+			( 1 === count( $options[ $option_name ] ) ) &&
+			( '' === $options[ $option_name ][0] )
+		) {
+			$options[ $option_name ] = $default_value;
+		}
 
 		if ( ! empty( $forbidden_value ) ) {
 			if ( in_array(
