@@ -535,38 +535,6 @@ function vipgoci_scandir_git_repo( $path, $filter, $base_path = null ) {
 }
 
 /*
- * In case of some issues being reported in duplicate
- * by PHPCS, remove those. Only issues reported
- * twice in the same file on the same line are considered
- * a duplicate.
- */
-function vipgoci_issues_filter_duplicate( $file_issues_arr ) {
-	$issues_hashes = array();
-	$file_issues_arr_new = array();
-
-	foreach(
-		$file_issues_arr as
-			$issue_item_key => $issue_item_value
-	) {
-		$issue_item_hash = md5(
-			$issue_item_value['message']
-		)
-		. ':' .
-		$issue_item_value['line'];
-
-		if ( in_array( $issue_item_hash, $issues_hashes, true ) ) {
-			continue;
-		}
-
-		$issues_hashes[] = $issue_item_hash;
-
-		$file_issues_arr_new[] = $issue_item_value;
-	}
-
-	return $file_issues_arr_new;
-}
-
-/*
  * Sort results to be submitted to GitHub according to
  * severity of issues -- if configured to do so:
  */
