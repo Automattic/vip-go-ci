@@ -20,11 +20,17 @@ declare(strict_types=1);
  * If the data being cached is an object, we make a copy of it,
  * and then store it. When the cached data is being retrieved,
  * we return a copy of the cached data.
+ *
+ * @param array|string $cache_id_arr Cache ID to use when caching data, or ask for data. Special string used to clear cache.
+ * @param mixed        $data         Data to cache, null if asking for data.
+ *
+ * @return mixed Newly or previously cached data on success, false when no data
+ *               is available, true on successful caching.
  */
 function vipgoci_cache(
-	$cache_id_arr,
-	$data = null
-) {
+	array|string $cache_id_arr,
+	mixed $data = null
+) :mixed {
 	global $vipgoci_cache_buffer;
 
 	/*
@@ -50,40 +56,49 @@ function vipgoci_cache(
 		$cache_id_arr
 	);
 
-
 	if ( null === $data ) {
+		// Asking for data from cache, find and return if it exists.
 		if ( isset( $vipgoci_cache_buffer[ $cache_id ] ) ) {
 			$ret = $vipgoci_cache_buffer[ $cache_id ];
 
-			// If an object, copy and return the copy
+			// If an object, copy and return the copy.
 			if ( is_object( $ret ) ) {
 				$ret = clone $ret;
 			}
 
 			return $ret;
-		}
-
-		else {
+		} else {
 			return false;
 		}
+	} else {
+		/*
+		 * Asking to save data in cache; save it and return the data.
+		 */
+
+		// If an object, copy, save it, and return the copy.
+		if ( is_object( $data ) ) {
+			$data = clone $data;
+		}
+
+		$vipgoci_cache_buffer[ $cache_id ] = $data;
+
+		return $data;
 	}
-
-	// If an object, copy, save it, and return the copy
-	if ( is_object( $data ) ) {
-		$data = clone $data;
-	}
-
-	$vipgoci_cache_buffer[ $cache_id ] = $data;
-
-	return $data;
 }
 
 /**
  * Support function for other functions
  * that use the internal cache and need to indicate
  * that information from the cache was used.
+ *
+ * @param mixed $cache_used If this evaluates to true, will return string
+ *                          indicating that cache was used, else empty string. 
+ *
+ * @return string Indication of cache usage.
  */
-function vipgoci_cached_indication_str( $cache_used ) {
+function vipgoci_cached_indication_str(
+	mixed $cache_used
+) :string {
 	return $cache_used ? ' (cached)' : '';
 }
 
