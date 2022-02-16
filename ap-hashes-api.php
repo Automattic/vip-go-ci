@@ -15,12 +15,12 @@ declare(strict_types=1);
  * @param array  $options   Options needed.
  * @param string $file_path Path to file.
  *
- * @return boolean|null Either true or false when able to ask DB, else null.
+ * @return bool|null Either true or false when able to ask DB, else null.
  */
 function vipgoci_ap_hashes_api_file_approved(
 	array $options,
 	string $file_path
-) :boolean|null {
+) :bool|null {
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'hashes_api_scan_file' );
 
 	/*
