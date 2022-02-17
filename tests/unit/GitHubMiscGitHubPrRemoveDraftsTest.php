@@ -8,9 +8,7 @@ require_once( __DIR__ . './../../github-misc.php' );
 
 use PHPUnit\Framework\TestCase;
 
-// phpcs:disable PSR1.Files.SideEffects
-
-final class MiscGitHubPrRemoveDraftsTest extends TestCase {
+final class GitHubMiscGitHubPrRemoveDraftsTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_github_pr_remove_drafts
 	 */
