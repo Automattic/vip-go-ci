@@ -382,7 +382,7 @@ Note that the above file(s) were not analyzed due to their length.';
 	 */
 	public function testGetLargeFilesMessageFromPRComment(): void {
 		$skippedFileCommentMock = $this->getSkippedSingleFileCommentMock();
-		$result                 = vipgoci_get_skipped_files_message_from_comment( $skippedFileCommentMock->body, $this->validationMessagePrefix );
+		$result                 = vipgoci_get_skipped_files_message_from_comment( $skippedFileCommentMock, $this->validationMessagePrefix );
 		$expected               = 'file-10.php';
 
 		$this->assertSame(
@@ -468,9 +468,8 @@ Note that the above file(s) were not analyzed due to their length.';
 	/**
 	 * @return stdClass
 	 */
-	private function getSkippedSingleFileCommentMock(): stdClass {
-		$mock       = $this->createMock( 'stdClass' );
-		$mock->body = '
+	private function getSkippedSingleFileCommentMock(): string {
+		$mock = '
 **skipped-files**
 
 Maximum number of lines exceeded (15000):
@@ -488,9 +487,8 @@ This bot provides automated PHP linting and [PHPCS scanning](https://docs.wpvip.
 	/**
 	 * @return mixed
 	 */
-	private function getSkippedFilesCommentMock(): stdClass {
-		$mock       = $this->createMock( 'stdClass' );
-		$mock->body =
+	private function getSkippedFilesCommentMock(): string {
+		$mock =
 			'**hashes-api**-scanning skipped
 ***
 
@@ -512,9 +510,8 @@ Note that the above file(s) were not analyzed due to their length.';
 	/**
 	 * @return mixed
 	 */
-	private function getCommentMock(): stdClass {
-		$commentMock       = $this->createMock( 'stdClass' );
-		$commentMock->body =
+	private function getCommentMock(): string {
+		$commentMock =
 			'**hashes-api**';
 
 		return $commentMock;
