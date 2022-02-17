@@ -746,7 +746,7 @@ function vipgoci_phpcs_scan_commit(
 		/*
 		 * Remove any duplicate issues.
 		 */
-		$file_issues_arr_master = vipgoci_issues_filter_duplicate(
+		$file_issues_arr_master = vipgoci_results_filter_duplicate(
 			$file_issues_arr_master
 		);
 
@@ -965,7 +965,7 @@ function vipgoci_phpcs_scan_commit(
 			 * the Pull-Request).
 			 */
 
-			$file_issues_arr_filtered = vipgoci_issues_filter_irrellevant(
+			$file_issues_arr_filtered = vipgoci_results_filter_irrellevant(
 				$file_name,
 				$files_issues_arr,
 				$file_blame_log,
