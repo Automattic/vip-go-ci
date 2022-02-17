@@ -18,6 +18,8 @@ declare(strict_types=1);
  * @param bool   $irc         If to log to IRC.
  *
  * @return void
+ *
+ * @codeCoverageIgnore
  */
 function vipgoci_log(
 	string $str,
