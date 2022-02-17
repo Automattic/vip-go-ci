@@ -8,9 +8,7 @@ require_once( __DIR__ . './../../github-misc.php' );
 
 use PHPUnit\Framework\TestCase;
 
-// phpcs:disable PSR1.Files.SideEffects
-
-final class PhpcsScanIssuesFilterIrrellevantTest extends TestCase {
+final class GitHubMiscIssuesFilterIrrellevantTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_issues_filter_irrellevant
 	 */
