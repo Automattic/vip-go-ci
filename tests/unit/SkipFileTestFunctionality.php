@@ -10,9 +10,7 @@ require_once( __DIR__ . './../../skip-file.php' );
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
-// phpcs:disable PSR1.Files.SideEffects
-
-final class VipgociSkipFileTest extends TestCase {
+final class SkipFileTestFunctionality extends TestCase {
 
 	public $validationMessagePrefix = 'Maximum number of lines exceeded (15000):' . PHP_EOL . ' - ';
 
