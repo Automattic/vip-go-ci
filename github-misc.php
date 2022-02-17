@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Misc functions relating to GitHub API, but
  * not do not submit directly to it.
@@ -20,6 +19,17 @@ declare(strict_types=1);
  * raw committed line. Some keys might point
  * to empty values, in which case there is no
  * relation between the two.
+ *
+ * @param string $local_git_repo Path to local git repository.
+ * @param string $repo_owner     Owner of GitHub repository.
+ * @param string $repo_name      Name of GitHub repository.
+ * @param string $github_token   GitHub access token to use.
+ * @param string $pr_base_sha    Commit-ID of base of pull request.
+ * @param string $commit_id      Commit-ID of current commit.
+ * @param string $file_name      File name.
+ *
+ * @return array Array, keys representing lines in patch,
+ *               values line-number in raw committed file.
  */
 function vipgoci_patch_changed_lines(
 	string $local_git_repo,
@@ -58,7 +68,6 @@ function vipgoci_patch_changed_lines(
 	 * Get patch for the relevant file
 	 * our caller is interested in
 	 */
-
 	$lines_arr = explode(
 		"\n",
 		$patch_arr['files'][ $file_name ]
@@ -70,7 +79,7 @@ function vipgoci_patch_changed_lines(
 
 	foreach ( $lines_arr as $line ) {
 		preg_match_all(
-			"/^@@\s+[-\+]([0-9]+,[0-9]+)\s+[-\+]([0-9]+,[0-9]+)\s+@@/",
+			'/^@@\s+[-\+]([0-9]+,[0-9]+)\s+[-\+]([0-9]+,[0-9]+)\s+@@/',
 			$line,
 			$matches
 		);
@@ -81,29 +90,22 @@ function vipgoci_patch_changed_lines(
 				$matches[2][0]
 			);
 
-
 			$i = $start_end[0];
 
-
 			$lines_changed[] = null;
-		}
-
-		else if ( empty( $matches[0] ) ) {
+		} elseif ( empty( $matches[0] ) ) {
 			if ( empty( $line[0] ) ) {
-				// Do nothing
-			}
-
-			else if (
-				( $line[0] == '-' ) ||
-				( $line[0] == '\\' )
+				// Do nothing.
+				continue;
+			} elseif (
+				( '-' === $line[0] ) ||
+				( '\\' === $line[0] )
 			) {
 				$lines_changed[] = null;
-			}
-
-			else if (
-				( $line[0] == '+' ) ||
-				( $line[0] == " " ) ||
-				( $line[0] == "\t" )
+			} elseif (
+				( '+' === $line[0] ) ||
+				( ' ' === $line[0] ) ||
+				( "\t" === $line[0] )
 			) {
 				$lines_changed[] = $i++;
 			}
@@ -120,8 +122,8 @@ function vipgoci_patch_changed_lines(
 	if (
 		( isset( $lines_changed[1] ) ) &&
 		(
-			( $lines_changed[1] === null ) ||
-			( $lines_changed[1] === 0 )
+			( null === $lines_changed[1] ) ||
+			( 0 === $lines_changed[1] )
 		)
 		||
 		( ! isset( $lines_changed[1] ) )
@@ -132,15 +134,21 @@ function vipgoci_patch_changed_lines(
 	return $lines_changed;
 }
 
-/*
- * Remove any draft Pull-Requests from the array
+/**
+ * Remove any draft pull requests from the array
  * provided.
+ *
+ * @param array $prs_array Array to process.
+ *
+ * @return array Processed array, without draft pull requests.
  */
-function vipgoci_github_pr_remove_drafts( $prs_array ) {
+function vipgoci_github_pr_remove_drafts(
+	array $prs_array
+) :array {
 	$prs_array = array_filter(
 		$prs_array,
 		function( $pr_item ) {
-			if ( (bool) $pr_item->draft === true ) {
+			if ( true === (bool) $pr_item->draft ) {
 				return false;
 			}
 
@@ -151,17 +159,20 @@ function vipgoci_github_pr_remove_drafts( $prs_array ) {
 	return $prs_array;
 }
 
-/*
+/**
  * Go through the given blame-log, and
  * return only the items from the log that
  * are found in $relevant_commit_ids.
+ *
+ * @param array $blame_log           Array with blame log.
+ * @param array $relevant_commit_ids Array with relevant commit IDs.
+ *
+ * @return array Items from blame log found in $relevant_commit_ids.
  */
-
 function vipgoci_blame_filter_commits(
 	$blame_log,
 	$relevant_commit_ids
 ) {
-
 	/*
 	 * Loop through each file, get a
 	 * 'git blame' log for the file, so
@@ -181,26 +192,31 @@ function vipgoci_blame_filter_commits(
 			continue;
 		}
 
-		$blame_log_filtered[] =
-			$blame_log_item;
+		$blame_log_filtered[] = $blame_log_item;
 	}
 
 	return $blame_log_filtered;
 }
 
-/*
+/**
  * Check if the specified comment exists
  * within an array of other comments --
  * this is used to understand if the specific
  * comment has already been submitted earlier.
+ *
+ * @param string $file_issue_path    Path to file.
+ * @param int    $file_issue_line    Line number in file.
+ * @param string $file_issue_comment Comment to look for.
+ * @param array  $comments_made      Array of comments to search in.
+ *
+ * @return bool True if comment exists, false if not.
  */
 function vipgoci_github_comment_match(
-	$file_issue_path,
-	$file_issue_line,
-	$file_issue_comment,
-	$comments_made
+	string $file_issue_path,
+	int $file_issue_line,
+	string $file_issue_comment,
+	array $comments_made
 ) {
-
 	/*
 	 * Construct an index-key made of file:line.
 	 */
@@ -209,12 +225,9 @@ function vipgoci_github_comment_match(
 		':' .
 		$file_issue_line;
 
-
 	if ( ! isset(
-		$comments_made[
-			$comment_index_key
-		]
-	)) {
+		$comments_made[ $comment_index_key ]
+	) ) {
 		/*
 		 * No match on index-key within the
 		 * associative array -- the comment has
@@ -223,13 +236,11 @@ function vipgoci_github_comment_match(
 		return false;
 	}
 
-
 	/*
 	 * Some comment matching the file and line-number
 	 * was found -- figure out if it is definately the
 	 * same comment.
 	 */
-
 	foreach (
 		$comments_made[ $comment_index_key ] as
 		$comment_made
@@ -239,8 +250,8 @@ function vipgoci_github_comment_match(
 		 * as "Warning: ..." -- remove all of that.
 		 */
 		$comment_made_body = str_replace(
-			array("**", "Warning", "Error", "Info", ":no_entry_sign:", ":warning:", ":information_source:"),
-			array("", "", "", "", ""),
+			array( '**', 'Warning', 'Error', 'Info', ':no_entry_sign:', ':warning:', ':information_source:' ),
+			array( '', '', '', '', '' ),
 			$comment_made->body
 		);
 
@@ -311,13 +322,13 @@ function vipgoci_github_comment_match(
 		 */
 		if (
 			(
-				$comment_made_body ==
+				$comment_made_body ===
 				$file_issue_comment
 			)
 			||
 			(
-				$comment_made_body ==
-				htmlentities( $file_issue_comment )
+				htmlentities( $file_issue_comment ) ===
+				$comment_made_body
 			)
 		) {
 			/* Comment found, return true. */
@@ -328,18 +339,26 @@ function vipgoci_github_comment_match(
 	return false;
 }
 
-/*
+/**
  * Filter out any issues in the code that were not
  * touched up on by the changed lines -- i.e., any issues
  * that existed prior to the change.
+ *
+ * @param string $file_name           Name of file being processed.
+ * @param array  $file_issues_arr     List of issues in file.
+ * @param array  $file_blame_log      Git blame log for file.
+ * @param array  $pr_item_commits     List of commits.
+ * @param array  $file_relative_lines Relative line numbers for file and commit.
+ *
+ * @return array Only lines altered in the file.
  */
 function vipgoci_issues_filter_irrellevant(
-	$file_name,
-	$file_issues_arr,
-	$file_blame_log,
-	$pr_item_commits,
-	$file_relative_lines
-) {
+	string $file_name,
+	array $file_issues_arr,
+	array $file_blame_log,
+	array $pr_item_commits,
+	array $file_relative_lines
+) :array {
 	/*
 	 * Filter out any issues
 	 * that are due to commits outside
@@ -351,7 +370,6 @@ function vipgoci_issues_filter_irrellevant(
 			$file_blame_log,
 			$pr_item_commits
 		);
-
 
 	$file_issues_ret = array();
 
@@ -396,24 +414,30 @@ function vipgoci_issues_filter_irrellevant(
 			continue;
 		}
 
-		// Passed all tests, keep this issue
+		// Passed all tests, keep this issue.
 		$file_issues_ret[] = $file_issue_val;
 	}
 
 	return $file_issues_ret;
 }
 
-/*
+/**
  * In case of some issues being reported in duplicate
  * by PHPCS, remove those. Only issues reported
  * twice in the same file on the same line are considered
  * a duplicate.
+ *
+ * @param array $file_issues_arr Issues to process.
+ *
+ * @return array Processed issues, without duplicates.
  */
-function vipgoci_issues_filter_duplicate( $file_issues_arr ) {
-	$issues_hashes = array();
+function vipgoci_issues_filter_duplicate(
+	array $file_issues_arr
+) :array {
+	$issues_hashes       = array();
 	$file_issues_arr_new = array();
 
-	foreach(
+	foreach (
 		$file_issues_arr as
 			$issue_item_key => $issue_item_value
 	) {
@@ -435,14 +459,18 @@ function vipgoci_issues_filter_duplicate( $file_issues_arr ) {
 	return $file_issues_arr_new;
 }
 
-/*
+/**
  * Return ASCII-art for GitHub, which will then
  * be turned into something more fancy. This is
  * intended to be called when preparing messages/comments
  * to be submitted to GitHub.
+ *
+ * @param string $text_string String to transform.
+ *
+ * @return string Transformed string, or empty string if invalid type of string is provided.
  */
 function vipgoci_github_transform_to_emojis( $text_string ) {
-	switch( strtolower( $text_string ) ) {
+	switch ( strtolower( $text_string ) ) {
 		case 'warning':
 			return ':warning:';
 
@@ -456,18 +484,23 @@ function vipgoci_github_transform_to_emojis( $text_string ) {
 	return '';
 }
 
-/*
+/**
  * Add pagebreak to a Markdown-style comment
  * string -- but only if a pagebreak is not
  * already the latest addition to the comment.
  * If whitespacing is present just after the
  * pagebreak, ignore it and act as if it does
  * not exist.
+ *
+ * @param string $comment Comment to add pagebreak to.
+ * @param string $pagebreak_style Style of pagebreak.
+ *
+ * @return void
  */
 function vipgoci_markdown_comment_add_pagebreak(
-	&$comment,
-	$pagebreak_style = '***'
-) {
+	string &$comment,
+	string $pagebreak_style = '***'
+) :void {
 	/*
 	 * Get rid of any \n\r strings, and other
 	 * whitespaces from $comment.
@@ -489,7 +522,6 @@ function vipgoci_markdown_comment_add_pagebreak(
 		$comment_copy,
 		$pagebreak_style
 	);
-
 
 	/*
 	 * If pagebreak is found, and is
