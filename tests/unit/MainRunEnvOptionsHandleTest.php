@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Vipgoci\Tests\Unit;
 
 require_once __DIR__ . '/../../main.php';
-require_once __DIR__ . '/../../misc.php';
+require_once __DIR__ . '/../../log.php';
 
 require_once __DIR__ . '/../../options.php';
 

@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 
 // phpcs:disable PSR1.Files.SideEffects
 
-final class ReviewCommentsSortBySeverityTest extends TestCase {
+final class ResultsCommentsSortBySeverityTest extends TestCase {
 	protected function setUp(): void {
 		$this->results = array(
 			'issues' => array(

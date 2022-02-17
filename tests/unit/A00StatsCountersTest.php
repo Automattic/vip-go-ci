@@ -35,7 +35,9 @@ final class A00StatsCountersTest extends TestCase {
 		$this->assertSame(
 			array(),
 			vipgoci_counter_report(
-				VIPGOCI_COUNTERS_DUMP
+				VIPGOCI_COUNTERS_DUMP,
+				null,
+				null
 			)
 		);
 	}

@@ -1,4 +1,11 @@
 <?php
+/**
+ * Auto-approval functionality.
+ *
+ * @package Automattic/vip-go-ci
+ */
+
+declare(strict_types=1);
 
 /**
  * Pull-Request is not approved,
@@ -10,17 +17,26 @@
  * covered by tests of vipgoci_auto_approval_scan_commit().
  *
  * @codeCoverageIgnore
+ *
+ * @param array       $options                 Options needed.
+ * @param array       $results                 Results of scanning.
+ * @param object      $pr_item                 Pull request item.
+ * @param object|bool $pr_label                Pull request label found, false when none is found.
+ * @param array       $auto_approved_files_arr Array of auto-approved files.
+ * @param array       $files_seen              Files processed during auto-approval.
+ * @param array       $pr_files_changed        Files changed by pull request.
+ *
+ * @return void
  */
-
 function vipgoci_auto_approval_non_approval(
-	$options,
-	&$results,
-	$pr_item,
-	$pr_label,
-	&$auto_approved_files_arr,
-	$files_seen,
-	$pr_files_changed
-) {
+	array $options,
+	array &$results,
+	object $pr_item,
+	object|bool $pr_label,
+	array &$auto_approved_files_arr,
+	array $files_seen,
+	array $pr_files_changed
+) :void {
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'vipgoci_auto_approval_non_approval' );
 
 	vipgoci_counter_report(
@@ -29,44 +45,31 @@ function vipgoci_auto_approval_non_approval(
 		1
 	);
 
+	$tmp_github_url =
+		VIPGOCI_GITHUB_WEB_BASE_URL . '/' .
+		rawurlencode( $options['repo-owner'] ) . '/' .
+		rawurlencode( $options['repo-name'] ) . '/' .
+		'pull/' . (int) $pr_item->number;
+
 	vipgoci_log(
 		'Will not auto-approve Pull-Request #' .
 			(int) $pr_item->number . ' ' .
 			'as it contains ' .
 			'files which are not ' .
 			'automatically approvable' .
-			' -- PR URL: ' .
-			VIPGOCI_GITHUB_WEB_BASE_URL . '/' .
-			rawurlencode( $options['repo-owner'] ) .
-			'/' .
-			rawurlencode( $options['repo-name'] ) .
-			'/pull/' .
-			(int) $pr_item->number . ' ',
-
+			' -- PR URL: ' . $tmp_github_url,
 		array(
-			'repo_owner' =>
-				$options['repo-owner'],
-
-			'repo_name' =>
-				$options['repo-name'],
-
-			'pr_number' =>
-				$pr_item->number,
-
-			'autoapprove-filetypes' =>
-				$options['autoapprove-filetypes'],
-
-			'auto_approved_files_arr' =>
-				$auto_approved_files_arr,
-
-			'files_seen' => $files_seen,
-
-			'pr_files_changed' => $pr_files_changed,
+			'repo_owner'              => $options['repo-owner'],
+			'repo_name'               => $options['repo-name'],
+			'pr_number'               => $pr_item->number,
+			'autoapprove-filetypes'   => $options['autoapprove-filetypes'],
+			'auto_approved_files_arr' => $auto_approved_files_arr,
+			'files_seen'              => $files_seen,
+			'pr_files_changed'        => $pr_files_changed,
 		),
 		0,
-		true // Send to IRC
+		true // Send to IRC.
 	);
-
 
 	if ( false === $pr_label ) {
 		vipgoci_log(
@@ -75,14 +78,12 @@ function vipgoci_auto_approval_non_approval(
 				'exist',
 			array(
 				'repo_owner' => $options['repo-owner'],
-				'repo_name' => $options['repo-name'],
-				'pr_number' => $pr_item->number,
+				'repo_name'  => $options['repo-name'],
+				'pr_number'  => $pr_item->number,
 				'label_name' => $options['autoapprove-label'],
 			)
 		);
-	}
-
-	else {
+	} else {
 		/*
 		 * Remove auto-approve label
 		 */
@@ -100,12 +101,10 @@ function vipgoci_auto_approval_non_approval(
 	 * adding comment for each about it
 	 * being approved in the hashes-to-hashes API.
 	 */
-	foreach(
+	foreach (
 		$auto_approved_files_arr as
-			$approved_file =>
-			$approved_file_system
+			$approved_file => $approved_file_system
 	) {
-
 		/*
 		 * Make sure that the file was
 		 * really altered in the Pull-Request;
@@ -122,9 +121,9 @@ function vipgoci_auto_approval_non_approval(
 				'database to results for file, as it ' .
 				'was not altered by the Pull-Request',
 				array(
-					'pr_number'		=> $pr_item->number,
-					'file_name'		=> $approved_file,
-					'pr_files_changed'	=> $pr_files_changed,
+					'pr_number'        => $pr_item->number,
+					'file_name'        => $approved_file,
+					'pr_files_changed' => $pr_files_changed,
 				)
 			);
 
@@ -132,8 +131,8 @@ function vipgoci_auto_approval_non_approval(
 		}
 
 		if (
-			$approved_file_system !==
-				'autoapprove-hashes-to-hashes'
+			'autoapprove-hashes-to-hashes' !==
+				$approved_file_system
 		) {
 			/*
 			 * If not autoapproved by hashes-to-hashes,
@@ -143,42 +142,24 @@ function vipgoci_auto_approval_non_approval(
 			continue;
 		}
 
-		$results[
-			'issues'
-		][
-			(int) $pr_item->number
-		]
-		[] = array(
-			'type'		=> VIPGOCI_STATS_HASHES_API,
-			'file_name'	=> $approved_file,
-			'file_line'	=> 1,
-			'issue' => array(
-				'message'=> VIPGOCI_FILE_IS_APPROVED_MSG,
+		$results['issues'][ (int) $pr_item->number ][] = array(
+			'type'      => VIPGOCI_STATS_HASHES_API,
+			'file_name' => $approved_file,
+			'file_line' => 1,
+			'issue'     => array(
+				'message'  => VIPGOCI_FILE_IS_APPROVED_MSG,
+				'source'   => 'VipgociInternal.Info.ApprovedHashesToHashesAPI',
+				'severity' => 1,
+				'fixable'  => false,
+				'type'     => 'INFO',
+				'line'     => 1,
+				'column'   => 1,
+				'level'    => 'INFO',
+			),
+		);
 
-				'source'
-					=> 'VipgociInternal.Info.' .
-					'ApprovedHashesToHashesAPI',
-
-				'severity'	=> 1,
-				'fixable'	=> false,
-				'type'		=> 'INFO',
-				'line'		=> 1,
-				'column'	=> 1,
-					'level'		=>'INFO'
-				)
-			);
-
-		$results[
-			'stats'
-		][
-			VIPGOCI_STATS_HASHES_API
-		][
-			(int) $pr_item->number
-		][
-			'info'
-		]++;
+		$results['stats'][ VIPGOCI_STATS_HASHES_API ][ (int) $pr_item->number ]['info']++;
 	}
-
 
 	/*
 	 * Remove any 'file is approved in ...' comments,
@@ -188,7 +169,7 @@ function vipgoci_auto_approval_non_approval(
 		'Removing any comments indicating a file is approved ' .
 			'for files that are not approved anymore',
 		array(
-			'pr_number'	=> $pr_item->number,
+			'pr_number' => $pr_item->number,
 		)
 	);
 
@@ -200,14 +181,12 @@ function vipgoci_auto_approval_non_approval(
 		)
 	);
 
-	foreach( $pr_comments as $pr_comment_item ) {
+	foreach ( $pr_comments as $pr_comment_item ) {
 		/*
 		 * Skip approved files.
 		 */
 		if ( isset(
-			$auto_approved_files_arr[
-				$pr_comment_item->path
-			]
+			$auto_approved_files_arr[ $pr_comment_item->path ]
 		) ) {
 			continue;
 		}
@@ -227,18 +206,16 @@ function vipgoci_auto_approval_non_approval(
 		}
 	}
 
-
 	/*
 	 * Get any approving reviews for the Pull-Request
 	 * submitted by us. Then dismiss them.
 	 */
-
 	vipgoci_log(
 		'Dismissing any approving reviews for ' .
 			'the Pull-Request, as it is not ' .
 			'approved anymore',
 		array(
-			'pr_number'	=> $pr_item->number,
+			'pr_number' => $pr_item->number,
 		)
 	);
 
@@ -251,14 +228,13 @@ function vipgoci_auto_approval_non_approval(
 			'login' => 'myself',
 			'state' => array( 'APPROVED' ),
 		),
-		true // bypass caching
+		true // Bypass caching.
 	);
 
 	/*
 	 * Dismiss any approving reviews.
 	 */
-
-	foreach( $pr_item_reviews as $pr_item_review ) {
+	foreach ( $pr_item_reviews as $pr_item_review ) {
 		vipgoci_github_pr_review_dismiss(
 			$options['repo-owner'],
 			$options['repo-name'],
@@ -282,14 +258,22 @@ function vipgoci_auto_approval_non_approval(
  * covered by tests of vipgoci_auto_approval_scan_commit().
  *
  * @codeCoverageIgnore
+ *
+ * @param array       $options                 Options needed.
+ * @param object      $pr_item                 Pull request item.
+ * @param object|bool $pr_label                Pull request label found, false when none is found.
+ * @param array       $auto_approved_files_arr Array of auto-approved files.
+ * @param array       $files_seen              Files processed during auto-approval.
+ *
+ * @return void
  */
 function vipgoci_autoapproval_do_approve(
-	$options,
-	$pr_item,
-	$pr_label,
-	&$auto_approved_files_arr,
-	$files_seen
-) {
+	array $options,
+	object $pr_item,
+	object|bool $pr_label,
+	array &$auto_approved_files_arr,
+	array $files_seen
+) :void {
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'vipgoci_autoapproval_do_approve' );
 
 	$pr_item_approval_reviews =
@@ -299,8 +283,8 @@ function vipgoci_autoapproval_do_approve(
 			$pr_item->number,
 			$options['token'],
 			array(
-				'login'	=> 'myself',
-				'state'	=> array( 'APPROVED' )
+				'login' => 'myself',
+				'state' => array( 'APPROVED' ),
 			),
 			true
 		);
@@ -312,45 +296,31 @@ function vipgoci_autoapproval_do_approve(
 			1
 		);
 
+		$tmp_github_url =
+			VIPGOCI_GITHUB_WEB_BASE_URL . '/' .
+			rawurlencode( $options['repo-owner'] ) . '/' .
+			rawurlencode( $options['repo-name'] ) . '/' .
+			'pull/' . (int) $pr_item->number;
+
 		vipgoci_log(
 			'Will auto-approve Pull-Request #' .
 				(int) $pr_item->number . ' ' .
 				'as it alters or creates ' .
 				'only files that can be ' .
 				'automatically approved' .
-				' -- PR URL: ' .
-				VIPGOCI_GITHUB_WEB_BASE_URL . '/' .
-				rawurlencode( $options['repo-owner'] ) .
-				'/' .
-				rawurlencode( $options['repo-name'] ) .
-				'/pull/' .
-				(int) $pr_item->number . ' ',
-
+				' -- PR URL: ' . $tmp_github_url,
 			array(
-				'repo_owner'
-					=> $options['repo-owner'],
-
-				'repo_name'
-					=> $options['repo-name'],
-
-				'pr_number'
-					=> (int) $pr_item->number,
-
-				'commit_id'
-					=> $options['commit'],
-
-				'autoapprove-filetypes' =>
-					$options['autoapprove-filetypes'],
-
-				'auto_approved_files_arr' =>
-					$auto_approved_files_arr,
-
-				'files_seen' => $files_seen,
+				'repo_owner'              => $options['repo-owner'],
+				'repo_name'               => $options['repo-name'],
+				'pr_number'               => (int) $pr_item->number,
+				'commit_id'               => $options['commit'],
+				'autoapprove-filetypes'   => $options['autoapprove-filetypes'],
+				'auto_approved_files_arr' => $auto_approved_files_arr,
+				'files_seen'              => $files_seen,
 			),
 			0,
-			true // Send to IRC
+			true // Send to IRC.
 		);
-
 
 		/*
 		 * Actually approve, if not in dry-mode.
@@ -384,40 +354,24 @@ function vipgoci_autoapproval_do_approve(
 				) .
 				').'
 		);
-	}
-
-	else {
+	} else {
 		vipgoci_log(
 			'Will not actually approve Pull-Request #' .
 				(int) $pr_item->number .
 				', as it is already approved by us',
 			array(
-				'repo_owner' =>
-					$options['repo-owner'],
-
-				'repo_name' =>
-					$options['repo-name'],
-
-				'pr_number' =>
-					$pr_item->number,
-
-				'commit_id'
-					=> $options['commit'],
-
-				'autoapprove-filetypes' =>
-					$options['autoapprove-filetypes'],
-
-				'auto_approved_files_arr' =>
-					$auto_approved_files_arr,
-
-				'files_seen' =>
-					$files_seen,
+				'repo_owner'              => $options['repo-owner'],
+				'repo_name'               => $options['repo-name'],
+				'pr_number'               => $pr_item->number,
+				'commit_id'               => $options['commit'],
+				'autoapprove-filetypes'   => $options['autoapprove-filetypes'],
+				'auto_approved_files_arr' => $auto_approved_files_arr,
+				'files_seen'              => $files_seen,
 			),
 			0,
 			true
 		);
 	}
-
 
 	/*
 	 * Add label to Pull-Request, but
@@ -433,21 +387,15 @@ function vipgoci_autoapproval_do_approve(
 			$pr_item->number,
 			$options['autoapprove-label']
 		);
-	}
-
-	else {
+	} else {
 		vipgoci_log(
 			'Will not add label to issue, ' .
 				'as it already exists',
 			array(
-				'repo_owner' =>
-					$options['repo-owner'],
-				'repo_name' =>
-					$options['repo-name'],
-				'pr_number' =>
-					$pr_item->number,
-				'label_name' =>
-					$options['autoapprove-label'],
+				'repo_owner' => $options['repo-owner'],
+				'repo_name'  => $options['repo-name'],
+				'pr_number'  => $pr_item->number,
+				'label_name' => $options['autoapprove-label'],
 			)
 		);
 	}
@@ -464,7 +412,7 @@ function vipgoci_autoapproval_do_approve(
 			'is approved as the whole ' .
 			'Pull-Request is approved',
 		array(
-			'pr_number'	=> $pr_item->number,
+			'pr_number' => $pr_item->number,
 		)
 	);
 
@@ -476,7 +424,7 @@ function vipgoci_autoapproval_do_approve(
 		)
 	);
 
-	foreach( $pr_comments as $pr_comment_item ) {
+	foreach ( $pr_comments as $pr_comment_item ) {
 		/*
 		 * If we find the 'approved in hashes-to-hashes ...'
 		 * message, we can safely remove the comment.
@@ -495,31 +443,33 @@ function vipgoci_autoapproval_do_approve(
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'vipgoci_autoapproval_do_approve' );
 }
 
-/*
+/**
  * Process auto-approval(s) of the Pull-Request(s)
  * involved with the commit specified.
+ *
+ * @param array $options                 Array of options.
+ * @param array $auto_approved_files_arr Array of auto-approved files.
+ * @param array $results                 Results of scanning.
+ *
+ * @return void
  */
-
 function vipgoci_auto_approval_scan_commit(
-	$options,
-	&$auto_approved_files_arr,
-	&$results
-) {
+	array $options,
+	array &$auto_approved_files_arr,
+	array &$results
+) :void {
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'auto_approve_commit' );
 
 	vipgoci_log(
 		'Doing auto-approval',
 		array(
-			'repo_owner'	=> $options['repo-owner'],
-			'repo_name'	=> $options['repo-name'],
-			'commit_id'	=> $options['commit'],
-			'autoapprove'	=> $options['autoapprove'],
-
-			'autoapproved_files_arr' =>
-				$auto_approved_files_arr,
+			'repo_owner'             => $options['repo-owner'],
+			'repo_name'              => $options['repo-name'],
+			'commit_id'              => $options['commit'],
+			'autoapprove'            => $options['autoapprove'],
+			'autoapproved_files_arr' => $auto_approved_files_arr,
 		)
 	);
-
 
 	$prs_implicated = vipgoci_github_prs_implicated(
 		$options['repo-owner'],
@@ -530,7 +480,6 @@ function vipgoci_auto_approval_scan_commit(
 		$options['skip-draft-prs']
 	);
 
-
 	foreach ( $prs_implicated as $pr_item ) {
 		$pr_diff = vipgoci_git_diffs_fetch(
 			$options['local-git-repo'],
@@ -539,13 +488,12 @@ function vipgoci_auto_approval_scan_commit(
 			$options['token'],
 			$pr_item->base->sha,
 			$options['commit'],
-			true, // include renamed files
-			true, // include removed files
-			true  // include permission changes
+			true, // Include renamed files.
+			true, // Include removed files.
+			true  // Include permission changes.
 		);
 
-
-		$did_foreach = false;
+		$did_foreach      = false;
 		$can_auto_approve = true;
 
 		$files_seen = array();
@@ -555,13 +503,11 @@ function vipgoci_auto_approval_scan_commit(
 		 * altered by the Pull-Request, look for
 		 * files that can be auto-approved.
 		 */
-		foreach( $pr_diff['files'] as
+		foreach ( $pr_diff['files'] as
 			$pr_diff_file_name => $pr_diff_contents
 		) {
-
-			$did_foreach = true;
+			$did_foreach  = true;
 			$files_seen[] = $pr_diff_file_name;
-
 
 			/*
 			 * Is file in array of files
@@ -569,15 +515,12 @@ function vipgoci_auto_approval_scan_commit(
 			 * If not, we cannot auto-approve.
 			 */
 			if ( ! isset(
-				$auto_approved_files_arr[
-					$pr_diff_file_name
-				]
+				$auto_approved_files_arr[ $pr_diff_file_name ]
 			) ) {
 				$can_auto_approve = false;
 				break;
 			}
 		}
-
 
 		/*
 		 * Get label associated, but
@@ -592,33 +535,28 @@ function vipgoci_auto_approval_scan_commit(
 			true
 		);
 
-		if ( false == $did_foreach ) {
+		if ( false === $did_foreach ) {
+			$tmp_github_url =
+				VIPGOCI_GITHUB_WEB_BASE_URL . '/' .
+				rawurlencode( $options['repo-owner'] ) . '/' .
+				rawurlencode( $options['repo-name'] ) . '/' .
+				'pull/' . (int) $pr_item->number;
+
 			vipgoci_log(
 				'No action taken with Pull-Request #' .
 					(int) $pr_item->number . ' ' .
 					'since no files were found' .
-					' -- PR URL: ' .
-					VIPGOCI_GITHUB_WEB_BASE_URL . '/' .
-					rawurlencode( $options['repo-owner'] ) .
-					'/' .
-					rawurlencode( $options['repo-name'] ) .
-					'/pull/' .
-					(int) $pr_item->number . ' ',
-
+					' -- PR URL: ' . $tmp_github_url,
 				array(
-					'auto_approved_files_arr' =>
-						$auto_approved_files_arr,
-
-					'files_seen' => $files_seen,
-					'pr_number' => (int) $pr_item->number,
-					'pr_diff' => $pr_diff,
+					'auto_approved_files_arr' => $auto_approved_files_arr,
+					'files_seen'              => $files_seen,
+					'pr_number'               => (int) $pr_item->number,
+					'pr_diff'                 => $pr_diff,
 				),
 				0,
 				true
 			);
-		}
-
-		else if (
+		} elseif (
 			( true === $did_foreach ) &&
 			( false === $can_auto_approve )
 		) {
@@ -631,9 +569,7 @@ function vipgoci_auto_approval_scan_commit(
 				$files_seen,
 				array_keys( $pr_diff['files'] )
 			);
-		}
-
-		else if (
+		} elseif (
 			( true === $did_foreach ) &&
 			( true === $can_auto_approve )
 		) {
@@ -662,6 +598,7 @@ function vipgoci_auto_approval_scan_commit(
 	unset( $files_seen );
 	unset( $did_foreach );
 	unset( $can_auto_approve );
+	unset( $tmp_github_url );
 
 	gc_collect_cycles();
 

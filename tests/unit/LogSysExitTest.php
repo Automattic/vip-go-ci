@@ -8,7 +8,7 @@ require_once __DIR__ . '/helper/IndicateTestId.php';
 require_once __DIR__ . '/helper/CheckIrcApiAlertQueue.php';
 
 require_once __DIR__ . './../../defines.php';
-require_once __DIR__ . './../../misc.php';
+require_once __DIR__ . './../../log.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -18,14 +18,14 @@ use PHPUnit\Framework\TestCase;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class MiscSysExitTest extends TestCase {
+final class LogSysExitTest extends TestCase {
 	/**
 	 * Require file, clear IRC queue, and set up indication.
 	 */
 	protected function setUp(): void {
 		require_once __DIR__ . '/../../other-web-services.php';
 
-		vipgoci_unittests_indicate_test_id( 'MiscSysExitTest' );
+		vipgoci_unittests_indicate_test_id( 'LogSysExitTest' );
 
 		vipgoci_irc_api_alert_queue( null, true ); // Empty IRC queue.
 	}
@@ -34,7 +34,7 @@ final class MiscSysExitTest extends TestCase {
 	 * Remove indication.
 	 */
 	protected function tearDown(): void {
-		vipgoci_unittests_remove_indication_for_test_id( 'MiscSysExitTest' );
+		vipgoci_unittests_remove_indication_for_test_id( 'LogSysExitTest' );
 	}
 
 	/**

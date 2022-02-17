@@ -4,7 +4,7 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 
 use PHPUnit\Framework\TestCase;
 
-final class MiscPatchChangedLinesTest extends TestCase {
+final class GitHubMiscPatchChangedLinesTest extends TestCase {
 	var $options_git = array(
 		'git-path'		=> null,
 		'github-repo-url'	=> null,

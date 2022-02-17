@@ -9,6 +9,7 @@ require_once __DIR__ . '/helper/CheckPcntlSupport.php';
 require_once __DIR__ . '/../integration/IncludesForTestsOutputControl.php';
 
 require_once __DIR__ . '/../../defines.php';
+require_once __DIR__ . '/../../log.php';
 require_once __DIR__ . '/../../misc.php';
 require_once __DIR__ . '/../../main.php';
 
