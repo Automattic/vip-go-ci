@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 // phpcs:disable PSR1.Files.SideEffects
 
-final class MiscCachedIndicationStrTest extends TestCase {
+final class CacheCachedIndicationStrTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_cached_indication_str
 	 */

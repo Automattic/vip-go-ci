@@ -9,9 +9,7 @@ require_once( __DIR__ . './../../cache.php' );
 
 use PHPUnit\Framework\TestCase;
 
-// phpcs:disable PSR1.Files.SideEffects
-
-final class MiscCacheTest extends TestCase {
+final class CacheVipgociCacheTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_cache
 	 */
