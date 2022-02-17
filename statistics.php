@@ -1,13 +1,29 @@
 <?php
-
-/*
- * Initialize statistics array
+/**
+ * Statistics functions for vip-go-ci.
+ *
+ * @package Automattic/vip-go-ci
  */
-function vipgoci_stats_init( $options, $prs_implicated, &$results ) {
+
+declare(strict_types=1);
+
+/**
+ * Initialize statistics array
+ *
+ * @param array $options        Options array.
+ * @param array $prs_implicated Pull requests implicated by current commit.
+ * @param array $results        Results of scanning array.
+ *
+ * @return void
+ */
+function vipgoci_stats_init(
+	array $options,
+	array $prs_implicated,
+	array &$results
+) :void {
 	/*
 	 * Init stats
 	 */
-
 	foreach ( $prs_implicated as $pr_item ) {
 		/*
 		 * Initialize array for stats and
@@ -19,7 +35,8 @@ function vipgoci_stats_init( $options, $prs_implicated, &$results ) {
 
 		if ( empty( $results[ VIPGOCI_SKIPPED_FILES ][ $pr_item->number ] ) ) {
 			$results[ VIPGOCI_SKIPPED_FILES ][ $pr_item->number ] = array(
-				'issues' => array(), 'total' => 0
+				'issues' => array(),
+				'total'  => 0,
 			);
 		}
 
@@ -27,7 +44,7 @@ function vipgoci_stats_init( $options, $prs_implicated, &$results ) {
 			array(
 				VIPGOCI_STATS_PHPCS,
 				VIPGOCI_STATS_LINT,
-				VIPGOCI_STATS_HASHES_API
+				VIPGOCI_STATS_HASHES_API,
 			)
 			as $stats_type
 		) {
@@ -44,15 +61,15 @@ function vipgoci_stats_init( $options, $prs_implicated, &$results ) {
 
 			$results['stats'][ $stats_type ]
 				[ $pr_item->number ] = array(
-					'error'		=> 0,
-					'warning'	=> 0,
-					'info'		=> 0,
+					'error'   => 0,
+					'warning' => 0,
+					'info'    => 0,
 				);
 		}
 	}
 }
 
-/*
+/**
  * A simple function to keep record of how
  * much a time a particular action takes to execute.
  * Allows multiple records to be kept at the same time.
@@ -63,10 +80,19 @@ function vipgoci_stats_init( $options, $prs_implicated, &$results ) {
  * and 'dump' which will return with an associative
  * array of all measurements collected henceforth.
  *
+ * @param array|null $action Start or stop measuring, or dump measurements.
+ * @param array|null $type   Measurement category.
+ *
+ * @return bool|array|int|float Boolean false on error, true when starting
+ *                         measurement, int/float with time measured on stop,
+ *                         array on dump.
  */
-function vipgoci_runtime_measure( $action = null, $type = null ) {
+function vipgoci_runtime_measure(
+	string|null $action = null,
+	string|null $type = null
+) :bool|array|int|float {
 	static $runtime = array();
-	static $timers = array();
+	static $timers  = array();
 
 	/*
 	 * Check usage.
@@ -79,7 +105,7 @@ function vipgoci_runtime_measure( $action = null, $type = null ) {
 		return false;
 	}
 
-	// Dump all runtimes we have
+	// Dump all runtimes we have.
 	if ( VIPGOCI_RUNTIME_DUMP === $action ) {
 		/*
 		 * Sort by value and maintain index association
@@ -88,7 +114,6 @@ function vipgoci_runtime_measure( $action = null, $type = null ) {
 
 		return $runtime;
 	}
-
 
 	/*
 	 * Being asked to either start
@@ -99,14 +124,11 @@ function vipgoci_runtime_measure( $action = null, $type = null ) {
 		$runtime[ $type ] = 0;
 	}
 
-
 	if ( VIPGOCI_RUNTIME_START === $action ) {
 		$timers[ $type ] = microtime( true );
 
 		return true;
-	}
-
-	else if ( VIPGOCI_RUNTIME_STOP === $action ) {
+	} elseif ( VIPGOCI_RUNTIME_STOP === $action ) {
 		if ( ! isset( $timers[ $type ] ) ) {
 			return false;
 		}
@@ -121,11 +143,15 @@ function vipgoci_runtime_measure( $action = null, $type = null ) {
 	}
 }
 
-/*
+/**
  * A simple function to keep record of how
  * much time executing a particular command takes.
+ *
+ * @param string $cmd                  Shell command to execute.
+ * @param string $runtime_measure_type Type of measurement to use.
+ *
+ * @return string Output of command.
  */
-
 function vipgoci_runtime_measure_shell_exec(
 	string $cmd,
 	string $runtime_measure_type = null
@@ -139,12 +165,22 @@ function vipgoci_runtime_measure_shell_exec(
 	return $shell_exec_output;
 }
 
-/*
- * Keep a counter for stuff we do. For instance,
- * number of GitHub API requests.
+/**
+ * Keep a counter of actions taken.
+ * For instance, this can be used to keep
+ * track of number of GitHub API requests.
+ *
+ * @param string|null $action Either increase counter or dump statistics.
+ * @param string|null $type   Type of statistics.
+ * @param int         $amount How much to increment.
+ *
+ * @return bool|array Boolean false on invalid action, boolean true on success, array when dumping statistics.
  */
-
-function vipgoci_counter_report( $action = null, $type = null, $amount = 1 ) {
+function vipgoci_counter_report(
+	string|null $action = null,
+	string|null $type = null,
+	int $amount = 1
+) :bool|array {
 	static $counters = array();
 
 	/*
@@ -157,17 +193,15 @@ function vipgoci_counter_report( $action = null, $type = null, $amount = 1 ) {
 		return false;
 	}
 
-	// Dump all runtimes we have
+	// Dump all runtimes we have.
 	if ( VIPGOCI_COUNTERS_DUMP === $action ) {
 		return $counters;
 	}
-
 
 	/*
 	 * Being asked to start
 	 * collecting, act on that.
 	 */
-
 	if ( VIPGOCI_COUNTERS_DO === $action ) {
 		if ( ! isset( $counters[ $type ] ) ) {
 			$counters[ $type ] = 0;
@@ -179,19 +213,22 @@ function vipgoci_counter_report( $action = null, $type = null, $amount = 1 ) {
 	}
 }
 
-
-/*
+/**
  * Record statistics on number of linting and PHPCS
  * issues found in results.
+ *
+ * @param array $results Results of scanning.
+ *
+ * @return void
  */
 function vipgoci_counter_update_with_issues_found(
-	$results
-) {
+	array $results
+) :void {
 	$stats_types = array_keys(
 		$results['stats']
 	);
 
-	foreach( $stats_types as $stat_type ) {
+	foreach ( $stats_types as $stat_type ) {
 		/*
 		 * Skip statistics for stat-types skipped
 		 */
@@ -205,26 +242,16 @@ function vipgoci_counter_update_with_issues_found(
 
 		$max_issues_found = 0;
 
-		foreach( $pr_keys as $pr_key ) {
+		foreach ( $pr_keys as $pr_key ) {
 			$issue_types = array_keys(
-				$results['stats'][
-					$stat_type
-				][
-					$pr_key
-				]
+				$results['stats'][ $stat_type ][ $pr_key ]
 			);
 
 			$issues_found = 0;
 
-			foreach( $issue_types as $issue_type ) {
+			foreach ( $issue_types as $issue_type ) {
 				$issues_found +=
-					$results['stats'][
-						$stat_type
-					][
-						$pr_key
-					][
-						$issue_type
-					];
+					$results['stats'][ $stat_type ][ $pr_key ][ $issue_type ];
 			}
 
 			$max_issues_found = max(
@@ -247,16 +274,21 @@ function vipgoci_counter_update_with_issues_found(
 	}
 }
 
-/*
+/**
  * Keep statistics on number of files and lines
  * either scanned or linted.
+ *
+ * @param array  $options   Options needed.
+ * @param string $file_name File to update statistics for.
+ * @param string $stat_type Statistics type.
+ *
+ * @return void
  */
-
 function vipgoci_stats_per_file(
-	$options,
-	$file_name,
-	$stat_type
-) {
+	array $options,
+	string $file_name,
+	string $stat_type
+) :void {
 	$file_contents = vipgoci_gitrepo_fetch_committed_file(
 		$options['repo-owner'],
 		$options['repo-name'],
@@ -265,7 +297,6 @@ function vipgoci_stats_per_file(
 		$file_name,
 		$options['local-git-repo']
 	);
-
 
 	if ( false === $file_contents ) {
 		return;
