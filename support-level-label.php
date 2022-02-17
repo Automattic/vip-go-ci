@@ -1,19 +1,38 @@
 <?php
+/**
+ * Support-level label functionality.
+ *
+ * @package Automattic/vip-go-ci
+ */
 
-/*
+declare(strict_types=1);
+
+/**
  * Fetch meta-data for repository from
  * repo-meta API, cache the results in memory.
+ *
+ * @param string $repo_meta_api_base_url      URL to repo-meta API.
+ * @param string $repo_meta_api_user_id       User ID for repo-meta API.
+ * @param string $repo_meta_api_access_token  Access token for repo-meta API.
+ * @param string $repo_owner                  Repository owner.
+ * @param string $repo_name                   Repository name.
+ *
+ * @return null|array Results as array on success, null on failure.
  */
 function vipgoci_repo_meta_api_data_fetch(
-	$repo_meta_api_base_url,
-	$repo_meta_api_user_id,
-	$repo_meta_api_access_token,
-	$repo_owner,
-	$repo_name
+	string $repo_meta_api_base_url,
+	string $repo_meta_api_user_id,
+	string $repo_meta_api_access_token,
+	string $repo_owner,
+	string $repo_name
 ) {
 	$cached_id = array(
-		__FUNCTION__, $repo_meta_api_base_url, $repo_meta_api_user_id,
-		$repo_meta_api_access_token, $repo_owner, $repo_name
+		__FUNCTION__,
+		$repo_meta_api_base_url,
+		$repo_meta_api_user_id,
+		$repo_meta_api_access_token,
+		$repo_owner,
+		$repo_name,
 	);
 
 	$cached_data = vipgoci_cache( $cached_id );
@@ -21,12 +40,11 @@ function vipgoci_repo_meta_api_data_fetch(
 	vipgoci_log(
 		'Fetching repository meta-data from repo-meta API' .
 			vipgoci_cached_indication_str( $cached_data ),
-
 		array(
-			'repo_meta_api_base_url'	=> $repo_meta_api_base_url,
-			'repo_meta_api_user_id'		=> $repo_meta_api_user_id,
-			'repo_owner'			=> $repo_owner,
-			'repo_name'			=> $repo_name,
+			'repo_meta_api_base_url' => $repo_meta_api_base_url,
+			'repo_meta_api_user_id'  => $repo_meta_api_user_id,
+			'repo_owner'             => $repo_owner,
+			'repo_name'              => $repo_name,
 		)
 	);
 
@@ -37,7 +55,7 @@ function vipgoci_repo_meta_api_data_fetch(
 	$curl_retries = 0;
 
 	do {
-		$resp_data = false;
+		$resp_data        = false;
 		$resp_data_parsed = null;
 
 		$endpoint_url =
@@ -51,9 +69,9 @@ function vipgoci_repo_meta_api_data_fetch(
 
 		$ch = curl_init();
 
-		curl_setopt( $ch, CURLOPT_URL,			$endpoint_url );
-		curl_setopt( $ch, CURLOPT_RETURNTRANSFER,	1 );
-		curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT,	20 );
+		curl_setopt( $ch, CURLOPT_URL, $endpoint_url );
+		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
+		curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, 20 );
 
 		curl_setopt(
 			$ch,
@@ -61,8 +79,7 @@ function vipgoci_repo_meta_api_data_fetch(
 			VIPGOCI_CLIENT_ID
 		);
 
-		$endpoint_send_headers = array(
-		);
+		$endpoint_send_headers = array();
 
 		if ( ! empty( $repo_meta_api_user_id ) ) {
 			$endpoint_send_headers[] =
@@ -117,26 +134,26 @@ function vipgoci_repo_meta_api_data_fetch(
 			( false === $resp_data ) ||
 			( null === $resp_data_parsed ) ||
 			(
-				( isset($resp_data_parsed['status'] ) ) &&
+				( isset( $resp_data_parsed['status'] ) ) &&
 				( 'error' === $resp_data_parsed['status'] )
 			)
 		) {
 			vipgoci_log(
 				'Failed fetching or parsing data...',
 				array(
-					'resp_data'		=> $resp_data,
-					'resp_data_parsed'	=> $resp_data_parsed,
-					'curl_error'		=> curl_error( $ch ),
-					'http_status'		=> (
-						isset($resp_headers['status']) ?
+					'resp_data'        => $resp_data,
+					'resp_data_parsed' => $resp_data_parsed,
+					'curl_error'       => curl_error( $ch ),
+					'http_status'      => (
+						isset( $resp_headers['status'] ) ?
 						$resp_headers['status'] :
 						null
-					)
+					),
 				)
 			);
 
 			/*
-			 * For the while() below
+			 * For the while() loop below.
 			 */
 			if ( ! isset( $resp_data_parsed['status'] ) ) {
 				$resp_data = false;
@@ -158,21 +175,24 @@ function vipgoci_repo_meta_api_data_fetch(
 	return $resp_data_parsed;
 }
 
-/*
+/**
  * Fetch data from repo-meta API, then try
  * to match fields and their values with
  * the data. The fields and values are those
  * found in a particular $option parameter
  * specified as an argument here ($option_name).
  *
- * If there is a match, return true. Otherwise,
- * return false.
+ * @param array  $options         Options needed.
+ * @param string $option_name     Option name.
+ * @param mixed  $option_no_match Variable to update when there is a match.
+ *
+ * @return bool Return true on match, otherwise return false.
  */
 function vipgoci_repo_meta_api_data_match(
-	$options,
-	$option_name,
-	&$option_no_match
-) {
+	array $options,
+	string $option_name,
+	mixed &$option_no_match
+) :bool {
 	if (
 		( empty( $option_name ) ) ||
 		( empty( $options['repo-meta-api-base-url'] ) ) ||
@@ -196,19 +216,16 @@ function vipgoci_repo_meta_api_data_match(
 		);
 
 		return false;
-	}
-
-	else {
+	} else {
 		vipgoci_log(
 			'Attempting to match repo-meta API field-value to a criteria',
 			array(
-				'option_name'			=> $option_name,
-				'repo_meta_match'		=> $options[ $option_name ],
-				'repo_meta_api_base_url'	=> $options['repo-meta-api-base-url'],
+				'option_name'            => $option_name,
+				'repo_meta_match'        => $options[ $option_name ],
+				'repo_meta_api_base_url' => $options['repo-meta-api-base-url'],
 			)
 		);
 	}
-
 
 	$repo_meta_data = vipgoci_repo_meta_api_data_fetch(
 		$options['repo-meta-api-base-url'],
@@ -233,7 +250,7 @@ function vipgoci_repo_meta_api_data_match(
 	 * option array -- bail out once we
 	 * find a match.
 	 */
-	foreach(
+	foreach (
 		array_keys( $options[ $option_name ] ) as
 			$option_name_key_no
 	) {
@@ -249,11 +266,11 @@ function vipgoci_repo_meta_api_data_match(
 		 */
 		$ret_val = false;
 
-		foreach(
+		foreach (
 			$found_fields as
 				$found_field_item_key => $found_field_item_value
 		) {
-			if ( $found_field_item_value === true ) {
+			if ( true === $found_field_item_value ) {
 				$ret_val = true;
 			}
 		}
@@ -267,25 +284,31 @@ function vipgoci_repo_meta_api_data_match(
 	vipgoci_log(
 		'Repo-meta API matching returning',
 		array(
-			'found_fields_in_repo_meta_data'	=> $found_fields,
-			'repo_meta_data_item_cnt'		=> count( $repo_meta_data['data'] ),
-			'ret_val'				=> $ret_val,
-			'option_no_match'			=> $option_no_match,
+			'found_fields_in_repo_meta_data' => $found_fields,
+			'repo_meta_data_item_cnt'        => count( $repo_meta_data['data'] ),
+			'ret_val'                        => $ret_val,
+			'option_no_match'                => $option_no_match,
 		)
 	);
 
 	return $ret_val;
 }
 
-/*
+/**
  * Attach support level label to
  * Pull-Requests, if configured to
  * do so. Will fetch information
  * about support-level from an API.
+ *
+ * @param array $options Options needed.
+ *
+ * @return bool Boolean true when label is set
+ *              or is already set, false when
+ *              should not be set or on failure.
  */
 function vipgoci_support_level_label_set(
-	$options
-) {
+	array $options
+) :bool {
 
 	if ( true !== $options['set-support-level-label'] ) {
 		vipgoci_log(
@@ -294,7 +317,7 @@ function vipgoci_support_level_label_set(
 				'to do so',
 			array(
 				'set_support_level_label'
-					=> $options['set-support-level-label']
+					=> $options['set-support-level-label'],
 			)
 		);
 
@@ -304,10 +327,10 @@ function vipgoci_support_level_label_set(
 	vipgoci_log(
 		'Attaching support-level label to Pull-Requests implicated by commit',
 		array(
-			'repo_owner'			=> $options['repo-owner'],
-			'repo_name'			=> $options['repo-name'],
-			'commit'			=> $options['commit'],
-			'repo_meta_api_base_url'	=>
+			'repo_owner'             => $options['repo-owner'],
+			'repo_name'              => $options['repo-name'],
+			'commit'                 => $options['commit'],
+			'repo_meta_api_base_url' =>
 				( ! empty( $options['repo-meta-api-base-url'] ) ?
 				$options['repo-meta-api-base-url'] : '' ),
 		),
@@ -356,9 +379,7 @@ function vipgoci_support_level_label_set(
 
 	if ( ! empty( $options['set-support-level-label-prefix'] ) ) {
 		$support_label_prefix = $options['set-support-level-label-prefix'];
-	}
-
-	else {
+	} else {
 		$support_label_prefix = '[Support Level]';
 	}
 
@@ -370,9 +391,7 @@ function vipgoci_support_level_label_set(
 		) )
 		&&
 		( ! empty(
-			$repo_meta_data['data'][0][
-				$options['set-support-level-field']
-			]
+			$repo_meta_data['data'][0][ $options['set-support-level-field'] ]
 		) )
 	) {
 		/*
@@ -383,11 +402,11 @@ function vipgoci_support_level_label_set(
 		$support_label_from_api =
 			$support_label_prefix .
 			' ' .
-			ucfirst( strtolower(
-				$repo_meta_data['data'][0][
-					$options['set-support-level-field']
-				]
-			) );
+			ucfirst(
+				strtolower(
+					$repo_meta_data['data'][0][ $options['set-support-level-field'] ]
+				)
+			);
 	}
 
 	$support_level_response = (
@@ -405,25 +424,23 @@ function vipgoci_support_level_label_set(
 			'Found no valid support level in repo-meta API, so not ' .
 				'attaching any label (nor removing)',
 			array(
-				'repo_owner'			=> $options['repo-owner'],
-				'repo_name'			=> $options['repo-name'],
-				'repo_meta_api_base_url'	=> $options['repo-meta-api-base-url'],
-				'support_level_response'	=> $support_level_response,
+				'repo_owner'             => $options['repo-owner'],
+				'repo_name'              => $options['repo-name'],
+				'repo_meta_api_base_url' => $options['repo-meta-api-base-url'],
+				'support_level_response' => $support_level_response,
 			)
 		);
 
 		return false;
-	}
-
-	else {
+	} else {
 		vipgoci_log(
 			'Found valid support level in API, making alterations as needed',
 			array(
-				'repo_owner'			=> $options['repo-owner'],
-				'repo_name'			=> $options['repo-name'],
-				'repo_meta_api_base_url'	=> $options['repo-meta-api-base-url'],
-				'support_level_response'	=> $support_level_response,
-				'support_label_from_api'	=> $support_label_from_api,
+				'repo_owner'             => $options['repo-owner'],
+				'repo_name'              => $options['repo-name'],
+				'repo_meta_api_base_url' => $options['repo-meta-api-base-url'],
+				'support_level_response' => $support_level_response,
+				'support_label_from_api' => $support_label_from_api,
 			)
 		);
 	}
@@ -463,7 +480,6 @@ function vipgoci_support_level_label_set(
 				$pr_item->number
 			);
 
-
 		/*
 		 * If no found, substitute boolean for empty array.
 		 */
@@ -477,7 +493,7 @@ function vipgoci_support_level_label_set(
 		 * label, remove if not the same as is supposed
 		 * to be set.
 		 */
-		foreach(
+		foreach (
 			$pr_item_labels as $pr_item_label
 		) {
 			if ( strpos(
@@ -516,28 +532,26 @@ function vipgoci_support_level_label_set(
 			);
 		}
 
-		/*
-		 * Add support label if found in API but
-		 * not if correct one is associated on
-		 * GitHub already.
-		 */
-		if ( $pr_correct_support_label_found === true ) {
+		if ( true === $pr_correct_support_label_found ) {
+			/*
+			 * Add support label if found in API but
+			 * not if correct one is associated on
+			 * GitHub already.
+			 */
 			vipgoci_log(
 				'Correct support label already attached to Pull-Request, skipping',
 				array(
-					'repo_owner'			=> $options['repo-owner'],
-					'repo_name'			=> $options['repo-name'],
-					'support_label_from_api'	=> $support_label_from_api,
+					'repo_owner'             => $options['repo-owner'],
+					'repo_name'              => $options['repo-name'],
+					'support_label_from_api' => $support_label_from_api,
 				)
 			);
-		}
-
-		/*
-		 * A support label was found in API and
-		 * a correct one was not associated on
-		 * GitHub already, so add one.
-		 */
-		else if ( $pr_correct_support_label_found === false ) {
+		} elseif ( false === $pr_correct_support_label_found ) {
+			/*
+			 * A support label was found in API and
+			 * a correct one was not associated on
+			 * GitHub already, so add one.
+			 */
 			vipgoci_github_label_add_to_pr(
 				$options['repo-owner'],
 				$options['repo-name'],
