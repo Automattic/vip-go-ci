@@ -5,6 +5,8 @@
  * @package Automattic/vip-go-ci
  */
 
+declare(strict_types=1);
+
 /**
  * Log information to the console.
  * Will include timestamp, and any debug-data
@@ -37,7 +39,7 @@ function vipgoci_log(
 		return;
 	}
 
-	echo '[ ' . date( 'c' ) . ' -- ' . (int) $debug_level . ' ]  ' .
+	echo '[ ' . gmdate( 'c' ) . ' GMT -- ' . (int) $debug_level . ' ]  ' .
 		$str .
 		'; ' .
 		print_r(
@@ -85,7 +87,7 @@ function vipgoci_sysexit(
 	int $exit_status = VIPGOCI_EXIT_USAGE_ERROR,
 	bool $irc = false
 ) {
-	if ( $exit_status === VIPGOCI_EXIT_USAGE_ERROR ) {
+	if ( VIPGOCI_EXIT_USAGE_ERROR === $exit_status ) {
 		$str = 'Usage: ' . $str;
 	}
 
@@ -101,7 +103,7 @@ function vipgoci_sysexit(
 	 * with exit status.
 	 */
 	if (
-		( function_exists( 'vipgoci_unittests_check_indication_for_test_id' )) &&
+		( function_exists( 'vipgoci_unittests_check_indication_for_test_id' ) ) &&
 		(
 			( vipgoci_unittests_check_indication_for_test_id( 'MiscSysExitTest' ) ) ||
 			( vipgoci_unittests_check_indication_for_test_id( 'MiscSetMaximumExecTimeTest' ) ) ||
