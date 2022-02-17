@@ -92,7 +92,7 @@ function vipgoci_cache(
  * that information from the cache was used.
  *
  * @param mixed $cache_used If this evaluates to true, will return string
- *                          indicating that cache was used, else empty string. 
+ *                          indicating that cache was used, else empty string.
  *
  * @return string Indication of cache usage.
  */
