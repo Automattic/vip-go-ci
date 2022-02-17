@@ -245,7 +245,7 @@ function vipgoci_results_remove_existing_github_comments(
 			 */
 			if (
 				// Only do check if everything above is looking good.
-				vipgoci_github_comment_match(
+				vipgoci_results_comment_match(
 					$tobe_submitted_cmt['file_name'],
 					$tobe_submitted_cmt['file_line'],
 					$tobe_submitted_cmt['issue']['message'],
@@ -801,7 +801,7 @@ function vipgoci_results_sort_by_severity(
  *
  * @return bool True if comment exists, false if not.
  */
-function vipgoci_github_comment_match(
+function vipgoci_results_comment_match(
 	string $file_issue_path,
 	int $file_issue_line,
 	string $file_issue_comment,
