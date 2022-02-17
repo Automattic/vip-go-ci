@@ -8,7 +8,7 @@ require_once( __DIR__ . './../../misc.php' );
 
 use PHPUnit\Framework\TestCase;
 
-final class GitHubMiscIssuesFilterDuplicateTest extends TestCase {
+final class ResultsIssuesFilterDuplicateTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_issues_filter_duplicate
 	 */
