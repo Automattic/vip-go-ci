@@ -1,7 +1,7 @@
 <?php
 /**
  * Main functions for the program.
-
+ *
  * @package Automattic/vip-go-ci
  * @author Automattic inc.
  * @copyright 2017-2022 Automattic inc.

@@ -1,6 +1,13 @@
 <?php
+/**
+ * Auto-approve SVG files without issues.
+ *
+ * @package Automattic/vip-go-ci
+ */
 
-/*
+declare(strict_types=1);
+
+/**
  * Process any SVG files that may be part of the PRs.
  *
  * Should there be any SVG files in the PRs, these
@@ -9,24 +16,25 @@
  * are any such issues, these have to be looked into
  * manually, but if not, theses kind of files should be
  * safe to be deployed.
+ *
+ * @param array $options                 Options needed.
+ * @param array $auto_approved_files_arr Auto approved files array.
  */
-
 function vipgoci_ap_svg_files(
-		$options,
-		&$auto_approved_files_arr
-	) {
+	array $options,
+	array &$auto_approved_files_arr
+) :void {
 
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'ap_svg_files' );
 
 	vipgoci_log(
 		'Doing auto-approval scanning for SVG files',
 		array(
-			'repo_owner'	=> $options['repo-owner'],
-			'repo_name'	=> $options['repo-name'],
-			'commit_id'	=> $options['commit'],
+			'repo_owner' => $options['repo-owner'],
+			'repo_name'  => $options['repo-name'],
+			'commit_id'  => $options['commit'],
 		)
 	);
-
 
 	$prs_implicated = vipgoci_github_prs_implicated(
 		$options['repo-owner'],
@@ -37,7 +45,6 @@ function vipgoci_ap_svg_files(
 		$options['skip-draft-prs']
 	);
 
-
 	foreach ( $prs_implicated as $pr_item ) {
 		$pr_diff = vipgoci_git_diffs_fetch(
 			$options['local-git-repo'],
@@ -46,11 +53,10 @@ function vipgoci_ap_svg_files(
 			$options['token'],
 			$pr_item->base->sha,
 			$options['commit'],
-			true, // include renamed files
-			true, // include removed files
-			true // include permission changes
+			true, // Include renamed files.
+			true, // Include removed files.
+			true // Include permission changes.
 		);
-
 
 		foreach ( $pr_diff['files'] as
 			$pr_diff_file_name => $pr_diff_contents
@@ -75,9 +81,7 @@ function vipgoci_ap_svg_files(
 			 * of approved files, do not do anything.
 			 */
 			if ( isset(
-				$auto_approved_files_arr[
-					$pr_diff_file_name
-				]
+				$auto_approved_files_arr[ $pr_diff_file_name ]
 			) ) {
 				continue;
 			}
@@ -100,9 +104,8 @@ function vipgoci_ap_svg_files(
 					)
 				);
 
-				$auto_approved_files_arr[
-					$pr_diff_file_name
-				] = 'ap-svg-files';
+				$auto_approved_files_arr[ $pr_diff_file_name ]
+					= 'ap-svg-files';
 			}
 
 			/*
@@ -136,24 +139,14 @@ function vipgoci_ap_svg_files(
 				vipgoci_log(
 					'Not adding SVG file to list of ' .
 						'approved files as a failure occurred',
-
 					array(
-						'file_name' =>
-							$pr_diff_file_name,
-						'file_issues_arr_master' =>
-							$file_issues_arr_master,
+						'file_name'              => $pr_diff_file_name,
+						'file_issues_arr_master' => $file_issues_arr_master,
 					),
 					0,
-					true // log to IRC
+					true // Log to IRC.
 				);
-			}
-
-
-			/*
-			 * If no issues were found, we
-			 * can approve this file.
-			 */
-			else if (
+			} elseif (
 				( 0 ===
 					$file_issues_arr_master['totals']['errors']
 				)
@@ -162,6 +155,11 @@ function vipgoci_ap_svg_files(
 					$file_issues_arr_master['totals']['warnings']
 				)
 			) {
+				/*
+				 * As no issues were found, we
+				 * can approve this file.
+				 */
+
 				vipgoci_log(
 					'Adding SVG file to list of approved ' .
 						'files, as no PHPCS-issues ' .
@@ -172,21 +170,16 @@ function vipgoci_ap_svg_files(
 					)
 				);
 
-				$auto_approved_files_arr[
-					$pr_diff_file_name
-				] = 'ap-svg-files';
-			}
-
-			else {
+				$auto_approved_files_arr[ $pr_diff_file_name ]
+					= 'ap-svg-files';
+			} else {
 				vipgoci_log(
 					'Not adding SVG file to list of ' .
 						'approved files as issues ' .
 						'were found',
 					array(
-						'file_name' =>
-							$pr_diff_file_name,
-						'file_issues_arr_master' =>
-							$file_issues_arr_master,
+						'file_name'              => $pr_diff_file_name,
+						'file_issues_arr_master' => $file_issues_arr_master,
 					)
 				);
 			}

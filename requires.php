@@ -15,11 +15,14 @@ require_once __DIR__ . '/ap-nonfunctional-changes.php';
 require_once __DIR__ . '/ap-hashes-api.php';
 require_once __DIR__ . '/ap-svg-files.php';
 require_once __DIR__ . '/auto-approval.php';
+require_once __DIR__ . '/cache.php';
 require_once __DIR__ . '/defines.php';
 require_once __DIR__ . '/file-validation.php';
 require_once __DIR__ . '/github-api.php';
+require_once __DIR__ . '/github-misc.php';
 require_once __DIR__ . '/git-repo.php';
 require_once __DIR__ . '/lint-scan.php';
+require_once __DIR__ . '/log.php';
 require_once __DIR__ . '/main.php';
 require_once __DIR__ . '/misc.php';
 require_once __DIR__ . '/options.php';
@@ -36,4 +39,3 @@ require_once __DIR__ . '/svg-scan.php';
 
 // Require file that executes vipgoci_run().
 require_once __DIR__ . '/exec.php';
-

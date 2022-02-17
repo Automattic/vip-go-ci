@@ -4,15 +4,13 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
-require_once( __DIR__ . './../../misc.php' );
+require_once __DIR__ . '/../../results.php';
 
 use PHPUnit\Framework\TestCase;
 
-// phpcs:disable PSR1.Files.SideEffects
-
-final class PhpcsScanIssuesFilterIrrellevantTest extends TestCase {
+final class ResultsFilterIrrellevantTest extends TestCase {
 	/**
-	 * @covers ::vipgoci_issues_filter_irrellevant
+	 * @covers ::vipgoci_results_filter_irrellevant
 	 */
 	public function testDoScanIssuesFilter1() {
 		$file_name = 'bla-10.php';
@@ -36,7 +34,7 @@ final class PhpcsScanIssuesFilterIrrellevantTest extends TestCase {
 			true
 		);
 
-		$issues_filtered = vipgoci_issues_filter_irrellevant(
+		$issues_filtered = vipgoci_results_filter_irrellevant(
 			$file_name,
 			$file_issues_arr,
 			$file_blame_log,
