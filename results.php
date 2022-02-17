@@ -718,14 +718,19 @@ function vipgoci_results_filter_ignorable(
 	);
 }
 
-/*
+/**
  * Sort results to be submitted to GitHub according to
- * severity of issues -- if configured to do so:
+ * severity of issues -- if configured to do so.
+ *
+ * @param array $options Options needed.
+ * @param array $results Results of scanning.
+ *
+ * return @void
  */
 function vipgoci_results_sort_by_severity(
-	$options,
-	&$results
-) {
+	array $options,
+	array &$results
+) :void {
 
 	if ( true !== $options['review-comments-sort'] ) {
 		return;
@@ -733,12 +738,9 @@ function vipgoci_results_sort_by_severity(
 
 	vipgoci_log(
 		'Sorting issues in results according to severity before submission',
-		array(
-		)
 	);
 
-
-	foreach(
+	foreach (
 		array_keys(
 			$results['issues']
 		) as $pr_number
@@ -749,38 +751,38 @@ function vipgoci_results_sort_by_severity(
 		 * Temporarily add severity
 		 * column so we can sort using that.
 		 */
-		foreach(
+		foreach (
 			array_keys( $current_pr_results ) as
 				$current_pr_result_item_key
 		) {
-			$current_pr_results[ $current_pr_result_item_key ][ 'severity'] =
+			$current_pr_results[ $current_pr_result_item_key ]['severity'] =
 				$current_pr_results[ $current_pr_result_item_key ]['issue']['severity'];
 		}
 
 		/*
 		 * Do the actual sorting.
 		 */
-		$severity_column  = array_column(
+		$severity_column = array_column(
 			$current_pr_results,
 			'severity'
 		);
 
 		array_multisort(
-		        $severity_column,
-		        SORT_DESC,
-		        $current_pr_results
+			$severity_column,
+			SORT_DESC,
+			$current_pr_results
 		);
 
 		/*
 		 * Remove severity column
 		 * afterwards.
 		 */
-		foreach(
+		foreach (
 			array_keys( $current_pr_results ) as
 				$current_pr_result_item_key
 		) {
 			unset(
-				$current_pr_results[ $current_pr_result_item_key ][ 'severity']
+				$current_pr_results[ $current_pr_result_item_key ]['severity']
 			);
 		}
 	}
