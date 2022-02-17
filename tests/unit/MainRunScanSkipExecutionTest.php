@@ -8,7 +8,7 @@ require_once __DIR__ . '/helper/IndicateTestId.php';
 
 require_once __DIR__ . './../../defines.php';
 require_once __DIR__ . './../../main.php';
-require_once __DIR__ . './../../misc.php';
+require_once __DIR__ . './../../log.php';
 
 use PHPUnit\Framework\TestCase;
 
