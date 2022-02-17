@@ -8,12 +8,12 @@ require_once( __DIR__ . './../../misc.php' );
 
 use PHPUnit\Framework\TestCase;
 
-final class ResultsIssuesFilterDuplicateTest extends TestCase {
+final class ResultsFilterDuplicateTest extends TestCase {
 	/**
-	 * @covers ::vipgoci_issues_filter_duplicate
+	 * @covers ::vipgoci_results_filter_duplicate
 	 */
 	public function testFilterDuplicate1() {
-		$issues_filtered = vipgoci_issues_filter_duplicate(
+		$issues_filtered = vipgoci_results_filter_duplicate(
 			array(
 				array(
 					'message' => 'json_encode() is discouraged. Use wp_json_encode() instead.',
@@ -68,10 +68,10 @@ final class ResultsIssuesFilterDuplicateTest extends TestCase {
 	}
 
 	/**
-	 * @covers ::vipgoci_issues_filter_duplicate
+	 * @covers ::vipgoci_results_filter_duplicate
 	 */
 	public function testFilterDuplicate2() {
-		$issues_filtered = vipgoci_issues_filter_duplicate(
+		$issues_filtered = vipgoci_results_filter_duplicate(
 			array(
 				array(
 					'message' => 'json_encode() is discouraged. Use wp_json_encode() instead.',

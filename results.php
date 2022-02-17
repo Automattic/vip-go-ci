@@ -942,7 +942,7 @@ function vipgoci_results_comment_match(
  *
  * @return array Only lines altered in the file.
  */
-function vipgoci_issues_filter_irrellevant(
+function vipgoci_results_filter_irrellevant(
 	string $file_name,
 	array $file_issues_arr,
 	array $file_blame_log,
@@ -1021,7 +1021,7 @@ function vipgoci_issues_filter_irrellevant(
  *
  * @return array Processed issues, without duplicates.
  */
-function vipgoci_issues_filter_duplicate(
+function vipgoci_results_filter_duplicate(
 	array $file_issues_arr
 ) :array {
 	$issues_hashes       = array();

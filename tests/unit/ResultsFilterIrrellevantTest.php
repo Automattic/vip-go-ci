@@ -8,9 +8,9 @@ require_once( __DIR__ . './../../github-misc.php' );
 
 use PHPUnit\Framework\TestCase;
 
-final class GitHubMiscIssuesFilterIrrellevantTest extends TestCase {
+final class ResultsFilterIrrellevantTest extends TestCase {
 	/**
-	 * @covers ::vipgoci_issues_filter_irrellevant
+	 * @covers ::vipgoci_results_filter_irrellevant
 	 */
 	public function testDoScanIssuesFilter1() {
 		$file_name = 'bla-10.php';
@@ -34,7 +34,7 @@ final class GitHubMiscIssuesFilterIrrellevantTest extends TestCase {
 			true
 		);
 
-		$issues_filtered = vipgoci_issues_filter_irrellevant(
+		$issues_filtered = vipgoci_results_filter_irrellevant(
 			$file_name,
 			$file_issues_arr,
 			$file_blame_log,
