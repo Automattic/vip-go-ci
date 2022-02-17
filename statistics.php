@@ -172,14 +172,14 @@ function vipgoci_runtime_measure_shell_exec(
  *
  * @param string|null $action Either increase counter or dump statistics.
  * @param string|null $type   Type of statistics.
- * @param int         $amount How much to increment.
+ * @param int|null    $amount How much to increment.
  *
  * @return bool|array Boolean false on invalid action, boolean true on success, array when dumping statistics.
  */
 function vipgoci_counter_report(
 	string|null $action = null,
 	string|null $type = null,
-	int $amount = 1
+	int|null $amount = 1
 ) :bool|array {
 	static $counters = array();
 

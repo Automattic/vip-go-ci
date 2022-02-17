@@ -12,7 +12,7 @@ declare(strict_types=1);
  * repo-meta API, cache the results in memory.
  *
  * @param string $repo_meta_api_base_url      URL to repo-meta API.
- * @param string $repo_meta_api_user_id       User ID for repo-meta API.
+ * @param int|string $repo_meta_api_user_id   User ID for repo-meta API.
  * @param string $repo_meta_api_access_token  Access token for repo-meta API.
  * @param string $repo_owner                  Repository owner.
  * @param string $repo_name                   Repository name.
@@ -21,7 +21,7 @@ declare(strict_types=1);
  */
 function vipgoci_repo_meta_api_data_fetch(
 	string $repo_meta_api_base_url,
-	string $repo_meta_api_user_id,
+	int|string $repo_meta_api_user_id,
 	string $repo_meta_api_access_token,
 	string $repo_owner,
 	string $repo_name
