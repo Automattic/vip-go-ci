@@ -17,7 +17,7 @@ require_once __DIR__ . '/lint-scan.php';
 require_once __DIR__ . '/log.php';
 require_once __DIR__ . '/main.php';
 require_once __DIR__ . '/misc.php';
-require_once __DIR__ . '/options.php' ;
+require_once __DIR__ . '/options.php';
 require_once __DIR__ . '/other-web-services.php';
 require_once __DIR__ . '/phpcs-scan.php';
 require_once __DIR__ . '/results.php';
