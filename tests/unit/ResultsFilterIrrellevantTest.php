@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
-require_once( __DIR__ . './../../github-misc.php' );
+require_once __DIR__ . '/../../results.php';
 
 use PHPUnit\Framework\TestCase;
 
