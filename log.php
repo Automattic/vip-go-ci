@@ -105,7 +105,7 @@ function vipgoci_sysexit(
 	if (
 		( function_exists( 'vipgoci_unittests_check_indication_for_test_id' ) ) &&
 		(
-			( vipgoci_unittests_check_indication_for_test_id( 'MiscSysExitTest' ) ) ||
+			( vipgoci_unittests_check_indication_for_test_id( 'LogSysExitTest' ) ) ||
 			( vipgoci_unittests_check_indication_for_test_id( 'MiscSetMaximumExecTimeTest' ) ) ||
 			( vipgoci_unittests_check_indication_for_test_id( 'MainRunScanSkipExecutionTest' ) ) ||
 			( vipgoci_unittests_check_indication_for_test_id( 'MainRunScanMaxExecTimeTest' ) ) ||
