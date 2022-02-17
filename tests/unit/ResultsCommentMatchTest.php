@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 // phpcs:disable PSR1.Files.SideEffects
 
-final class MiscGitHubCommentMatchTest extends TestCase {
+final class ResultsCommentMatchTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_results_comment_match
 	 */
