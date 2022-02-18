@@ -1,7 +1,8 @@
 <?php
 /**
  * Misc functions relating to GitHub API, but
- * not do not submit directly to it.
+ * not do not submit directly to it nor directly
+ * process raw HTTP results.
  *
  * @package Automattic/vip-go-ci
  */
@@ -282,5 +283,39 @@ function vipgoci_markdown_comment_add_pagebreak(
 	}
 
 	$comment .= $pagebreak_style . "\n\r";
+}
+
+/*
+ * Make sure to wait in between requests to
+ * GitHub. Only waits if it is really needed.
+ *
+ * This function should only be called just before
+ * sending a request to GitHub -- that is the most
+ * effective usage.
+ *
+ * See here for background:
+ * https://developer.github.com/v3/guides/best-practices-for-integrators/#dealing-with-abuse-rate-limits
+ *
+ * @codeCoverageIgnore
+ */
+
+function vipgoci_github_wait() {
+	static $last_request_time = null;
+
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'github_forced_wait' );
+
+	if ( null !== $last_request_time ) {
+		/*
+		 * Only sleep if less than one second
+		 * has elapsed from last request.
+		 */
+		if ( ( time() - $last_request_time ) < 1 ) {
+			sleep( 1 );
+		}
+	}
+
+	$last_request_time = time();
+
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'github_forced_wait' );
 }
 
