@@ -187,16 +187,26 @@ function vipgoci_report_create_scan_details(
  * issues found within $results. Selectively report
  * issues that we are supposed to report on, ignore
  * others. Attempts to format the comment to GitHub.
+ *
+ * @param string $repo_owner        Repository owner.
+ * @param string $repo_name         Repository name.
+ * @param string $github_token      GitHub token to use to make GitHub API requests.
+ * @param string $commit_id         Commit-ID of current commit.
+ * @param array  $results           Results of scanning.
+ * @param string $informational_msg Informational message for end-users.
+ * @param string $scan_details_msg  Details of scan message for end-users.
+ *
+ * @return void
  */
 function vipgoci_report_submit_pr_generic_comment_from_results(
-	$repo_owner,
-	$repo_name,
-	$github_token,
-	$commit_id,
-	$results,
-	$informational_msg,
-	$scan_details_msg
-) {
+	string $repo_owner,
+	string $repo_name,
+	string $github_token,
+	string $commit_id,
+	array $results,
+	string $informational_msg,
+	string $scan_details_msg
+) :void {
 	$stats_types_to_process = array(
 		VIPGOCI_STATS_LINT,
 	);
@@ -224,7 +234,7 @@ function vipgoci_report_submit_pr_generic_comment_from_results(
 			rawurlencode( $repo_owner ) . '/' .
 			rawurlencode( $repo_name ) . '/' .
 			'issues/' .
-			rawurlencode( $pr_number ) . '/' .
+			rawurlencode( (string) $pr_number ) . '/' .
 			'comments';
 
 		$github_postfields = array(
@@ -375,20 +385,32 @@ function vipgoci_report_submit_pr_generic_comment_from_results(
 /**
  * Submit a review on GitHub for a particular commit,
  * and pull-request using the access-token provided.
+ *
+ * @param string $repo_owner                               Repository owner.
+ * @param string $repo_name                                Repository name.
+ * @param string $github_token                             GitHub token to use to make GitHub API requests.
+ * @param string $commit_id                                Commit-ID of current commit.
+ * @param array  $results                                  Results of scanning.
+ * @param string $informational_msg                        Informational message for end-users.
+ * @param string $scan_details_msg                         Details of scan message for end-users.
+ * @param int    $github_review_comments_max               How many comments to submit in each GitHub review.
+ * @param bool   $github_review_comments_include_severity  If to include severity in GitHub review comments.
+ * @param int    $skip_large_files_limit                   The maximum number of lines of files we scan.
+ *
+ * @return void
  */
 function vipgoci_report_submit_pr_review_from_results(
-	$repo_owner,
-	$repo_name,
-	$github_token,
-	$commit_id,
-	$results,
-	$informational_msg,
-	$scan_details_msg,
-	$github_review_comments_max,
-	$github_review_comments_include_severity,
+	string $repo_owner,
+	string $repo_name,
+	string $github_token,
+	string $commit_id,
+	array $results,
+	string $informational_msg,
+	string $scan_details_msg,
+	int $github_review_comments_max,
+	bool $github_review_comments_include_severity,
 	int $skip_large_files_limit
-) {
-
+) :void {
 	$stats_types_to_process = array(
 		VIPGOCI_STATS_PHPCS,
 		VIPGOCI_STATS_HASHES_API,
@@ -433,7 +455,7 @@ function vipgoci_report_submit_pr_review_from_results(
 			rawurlencode( $repo_owner ) . '/' .
 			rawurlencode( $repo_name ) . '/' .
 			'pulls/' .
-			rawurlencode( $pr_number ) . '/' .
+			rawurlencode( (string) $pr_number ) . '/' .
 			'reviews';
 
 		$github_postfields = array(
@@ -696,8 +718,16 @@ function vipgoci_report_submit_pr_review_from_results(
 			)
 		);
 
-		$validation_message                             = vipgoci_skip_file_get_validation_message_prefix( VIPGOCI_VALIDATION_MAXIMUM_LINES, $skip_large_files_limit );
-		$results[ VIPGOCI_SKIPPED_FILES ][ $pr_number ] = vipgoci_skip_file_check_previous_pr_comments( $results[ VIPGOCI_SKIPPED_FILES ][ $pr_number ], $pr_reviews_commented, $validation_message );
+		$validation_message = vipgoci_skip_file_get_validation_message_prefix(
+			VIPGOCI_VALIDATION_MAXIMUM_LINES,
+			$skip_large_files_limit
+		);
+
+		$results[ VIPGOCI_SKIPPED_FILES ][ $pr_number ] = vipgoci_skip_file_check_previous_pr_comments(
+			$results[ VIPGOCI_SKIPPED_FILES ][ $pr_number ],
+			$pr_reviews_commented,
+			$validation_message
+		);
 
 		/**
 		 * Format skipped files message if the validation has issues
@@ -809,7 +839,9 @@ function vipgoci_report_submit_pr_review_from_results(
 
 			// Set a new post-body for future posting.
 			$github_postfields['body'] = 'Previous scan continued.';
-		} while ( count( $github_postfields['comments'] ) > 0 );
+
+			$tmp_comments_cnt = count( $github_postfields['comments'] );
+		} while ( $tmp_comments_cnt > 0 );
 
 		unset( $github_post_res_tmp );
 		unset( $y );
@@ -838,11 +870,16 @@ function vipgoci_report_submit_pr_review_from_results(
  * options given, but only if the same generic
  * comment has not been posted before. Uses a
  * comment given by one of the options.
+ *
+ * @param array $options        Options array for the program.
+ * @param array $prs_implicated Pull requests implicated by current commit.
+ *
+ * @return void
  */
 function vipgoci_github_pr_generic_support_comment_submit(
-	$options,
-	$prs_implicated
-) {
+	array $options,
+	array $prs_implicated
+) :void {
 
 	$log_debugmsg =
 		array(
