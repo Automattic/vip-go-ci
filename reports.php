@@ -213,7 +213,7 @@ function vipgoci_report_submit_pr_generic_comment_from_results(
 	);
 
 	foreach (
-		// The $results['issues'] array is keyed by Pull-Request number
+		// The $results['issues'] array is keyed by pull request number.
 		array_keys(
 			$results['issues']
 		) as $pr_number
@@ -244,7 +244,7 @@ function vipgoci_report_submit_pr_generic_comment_from_results(
 				$stats_types_to_process,
 				true
 			) ) {
-				// Not an issue we process, ignore
+				// Not an issue we process, ignore.
 				continue;
 			}
 
@@ -268,7 +268,7 @@ function vipgoci_report_submit_pr_generic_comment_from_results(
 			$github_postfields['body'] .=
 				'**' .
 
-				// First in: level (error, warning)
+				// First in: level (error, warning).
 				ucfirst(
 					strtolower(
 						$commit_issue['issue']['level']
@@ -279,7 +279,7 @@ function vipgoci_report_submit_pr_generic_comment_from_results(
 
 				': ' .
 
-				// Then the message
+				// Then the message.
 				str_replace(
 					'\'',
 					'`',
@@ -288,7 +288,7 @@ function vipgoci_report_submit_pr_generic_comment_from_results(
 
 				"\n\r\n\r" .
 
-				// And finally a URL to the issue is
+				// And finally an URL to the issue.
 				VIPGOCI_GITHUB_WEB_BASE_URL . '/' .
 					$repo_owner . '/' .
 					$repo_name . '/' .
@@ -300,11 +300,10 @@ function vipgoci_report_submit_pr_generic_comment_from_results(
 				"\n\r";
 		}
 
-		if ( $github_postfields['body'] === '' ) {
+		if ( '' === $github_postfields['body'] ) {
 			/*
 			 * No issues? Nothing to report to GitHub.
 			 */
-
 			continue;
 		}
 
@@ -422,7 +421,7 @@ function vipgoci_report_submit_pr_review_from_results(
 	}
 
 	foreach (
-		// The $results array is keyed by Pull-Request number
+		// The $results array is keyed by pull request number.
 		array_keys(
 			$results['issues']
 		) as $pr_number
@@ -461,7 +460,7 @@ function vipgoci_report_submit_pr_review_from_results(
 				$stats_types_to_process,
 				true
 			) ) {
-				// Not an issue we process, ignore
+				// Not an issue we process, ignore.
 				continue;
 			}
 
@@ -472,14 +471,14 @@ function vipgoci_report_submit_pr_review_from_results(
 			$github_postfields['comments'][] = array(
 				'body'     =>
 
-					// Add nice label
+					// Add nice label.
 					vipgoci_github_transform_to_emojis(
 						$commit_issue['issue']['level']
 					) . ' ' .
 
 					'**' .
 
-					// Level -- error, warning
+					// Level -- error, warning.
 					ucfirst(
 						strtolower(
 							$commit_issue['issue']['level']
@@ -499,7 +498,7 @@ function vipgoci_report_submit_pr_review_from_results(
 
 					'**: ' .
 
-					// Then the message it self
+					// Then the message it self.
 					htmlentities(
 						rtrim(
 							$commit_issue['issue']['message'],
@@ -563,7 +562,7 @@ function vipgoci_report_submit_pr_review_from_results(
 
 		/*
 		 * If there are no issues to report to GitHub,
-		 * do not continue processing the Pull-Request.
+		 * do not continue processing the pull request.
 		 * Our exit signal will indicate if anything is wrong.
 		 */
 		if (
@@ -611,7 +610,7 @@ function vipgoci_report_submit_pr_review_from_results(
 					'**' . $stats_type . '**' .
 						"-scanning skipped\n\r";
 
-				// Skipped
+				// Skipped.
 				continue;
 			}
 
@@ -638,7 +637,7 @@ function vipgoci_report_submit_pr_review_from_results(
 			}
 
 			if ( true === $found_stats_to_ignore ) {
-				// Skipped
+				// Skipped.
 				continue;
 			}
 
@@ -753,7 +752,7 @@ function vipgoci_report_submit_pr_review_from_results(
 			count( $github_postfields['comments'] ) >
 				$github_review_comments_max
 		) {
-			// Append a comment that there will be more reviews
+			// Append a comment that there will be more reviews.
 			$github_postfields['body'] .=
 				"\n\r" .
 				'Posting will continue in further review(s)';
@@ -790,7 +789,7 @@ function vipgoci_report_submit_pr_review_from_results(
 				);
 			}
 
-			// Actually send a request to GitHub
+			// Actually send a request to GitHub.
 			$github_post_res_tmp = vipgoci_github_post_url(
 				$github_url,
 				$github_postfields_tmp,
@@ -831,12 +830,10 @@ function vipgoci_report_submit_pr_review_from_results(
 			);
 		}
 	}
-
-	return;
 }
 
-/*
- * Post generic comment to each Pull-Request
+/**
+ * Post generic comment to each pull request
  * that has target branch that matches the
  * options given, but only if the same generic
  * comment has not been posted before. Uses a
@@ -874,7 +871,7 @@ function vipgoci_github_pr_generic_support_comment_submit(
 		( empty( $options['post-generic-pr-support-comments-branches'] ) )
 	) {
 		vipgoci_log(
-			'Not posting support-comments on Pull-Requests, as ' .
+			'Not posting support-comments on pull requests, as ' .
 				'either not configured to do so, or ' .
 				'incorrectly configured',
 			$log_debugmsg
@@ -883,7 +880,7 @@ function vipgoci_github_pr_generic_support_comment_submit(
 		return;
 	} else {
 		vipgoci_log(
-			'Posting support-comments on Pull-Requests',
+			'Posting support-comments on pull requests',
 			$log_debugmsg
 		);
 	}
@@ -983,7 +980,7 @@ function vipgoci_github_pr_generic_support_comment_submit(
 
 		/*
 		 * When configured to do so, do not post support comments when a special label
-		 * has been added to the Pull-Request.
+		 * has been added to the pull request.
 		 */
 
 		if ( ! empty( $options['post-generic-pr-support-comments-skip-if-label-exists'][ $option_key_no_match ] ) ) {
@@ -1042,7 +1039,7 @@ function vipgoci_github_pr_generic_support_comment_submit(
 
 		if ( true === $comment_exists_already ) {
 			vipgoci_log(
-				'Not submitting support-comment to Pull-Request as it already exists',
+				'Not submitting support-comment to pull request as it already exists',
 				array(
 					'pr_number' => $pr_item->number,
 				)
