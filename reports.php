@@ -201,18 +201,16 @@ function vipgoci_report_submit_pr_generic_comment_from_results(
 		VIPGOCI_STATS_LINT,
 	);
 
-
 	vipgoci_log(
 		'About to ' .
 		'submit generic PR comment to GitHub about issues',
 		array(
 			'repo_owner' => $repo_owner,
-			'repo_name' => $repo_name,
-			'commit_id' => $commit_id,
-			'results' => $results,
+			'repo_name'  => $repo_name,
+			'commit_id'  => $commit_id,
+			'results'    => $results,
 		)
 	);
-
 
 	foreach (
 		// The $results['issues'] array is keyed by Pull-Request number
@@ -229,11 +227,9 @@ function vipgoci_report_submit_pr_generic_comment_from_results(
 			rawurlencode( $pr_number ) . '/' .
 			'comments';
 
-
 		$github_postfields = array(
-			'body' => ''
+			'body' => '',
 		);
-
 
 		$tmp_linebreak = false;
 
@@ -252,23 +248,19 @@ function vipgoci_report_submit_pr_generic_comment_from_results(
 				continue;
 			}
 
-
 			/*
 			 * Put in linebreaks
 			 */
 
 			if ( false === $tmp_linebreak ) {
 				$tmp_linebreak = true;
-			}
-
-			else {
+			} else {
 				$github_postfields['body'] .= "\n\r";
 
 				vipgoci_markdown_comment_add_pagebreak(
 					$github_postfields['body']
 				);
 			}
-
 
 			/*
 			 * Construct comment -- (start or continue)
@@ -277,9 +269,11 @@ function vipgoci_report_submit_pr_generic_comment_from_results(
 				'**' .
 
 				// First in: level (error, warning)
-				ucfirst( strtolower(
-					$commit_issue['issue']['level']
-				) ) .
+				ucfirst(
+					strtolower(
+						$commit_issue['issue']['level']
+					)
+				) .
 
 				'**' .
 
@@ -306,7 +300,6 @@ function vipgoci_report_submit_pr_generic_comment_from_results(
 				"\n\r";
 		}
 
-
 		if ( $github_postfields['body'] === '' ) {
 			/*
 			 * No issues? Nothing to report to GitHub.
@@ -314,7 +307,6 @@ function vipgoci_report_submit_pr_generic_comment_from_results(
 
 			continue;
 		}
-
 
 		/*
 		 * There are issues, report them.
@@ -327,14 +319,14 @@ function vipgoci_report_submit_pr_generic_comment_from_results(
 			'**' . VIPGOCI_SYNTAX_ERROR_STR . '**' .
 			"\n\r\n\r" .
 
-			"Scan performed on the code at commit " . $commit_id .
-				" ([view code](" .
+			'Scan performed on the code at commit ' . $commit_id .
+				' ([view code](' .
 				VIPGOCI_GITHUB_WEB_BASE_URL . '/' .
-				rawurlencode( $repo_owner ) . "/" .
-				rawurlencode( $repo_name ) . "/" .
-				"tree/" .
+				rawurlencode( $repo_owner ) . '/' .
+				rawurlencode( $repo_name ) . '/' .
+				'tree/' .
 				rawurlencode( $commit_id ) .
-				"))." .
+				')).' .
 				"\n\r";
 
 		vipgoci_markdown_comment_add_pagebreak(
@@ -407,12 +399,11 @@ function vipgoci_report_submit_pr_review_from_results(
 		'About to submit comment(s) to GitHub about issue(s)',
 		array(
 			'repo_owner' => $repo_owner,
-			'repo_name' => $repo_name,
-			'commit_id' => $commit_id,
-			'results' => $results,
+			'repo_name'  => $repo_name,
+			'commit_id'  => $commit_id,
+			'results'    => $results,
 		)
 	);
-
 
 	/*
 	 * Reverse results before starting processing,
@@ -446,12 +437,11 @@ function vipgoci_report_submit_pr_review_from_results(
 			rawurlencode( $pr_number ) . '/' .
 			'reviews';
 
-
 		$github_postfields = array(
-			'commit_id'	=> $commit_id,
-			'body'		=> '',
-			'event'		=> '',
-			'comments'	=> array(),
+			'commit_id' => $commit_id,
+			'body'      => '',
+			'event'     => '',
+			'comments'  => array(),
 		);
 
 		/*
@@ -480,20 +470,21 @@ function vipgoci_report_submit_pr_review_from_results(
 			 */
 
 			$github_postfields['comments'][] = array(
-				'body'		=>
+				'body'     =>
 
 					// Add nice label
 					vipgoci_github_transform_to_emojis(
 						$commit_issue['issue']['level']
 					) . ' ' .
 
-
 					'**' .
 
 					// Level -- error, warning
-					ucfirst( strtolower(
-						$commit_issue['issue']['level']
-						)) .
+					ucfirst(
+						strtolower(
+							$commit_issue['issue']['level']
+						)
+					) .
 
 					(
 						true === $github_review_comments_include_severity ?
@@ -516,18 +507,16 @@ function vipgoci_report_submit_pr_review_from_results(
 						)
 					)
 
-
 					. ' (*' .
 					htmlentities(
 						$commit_issue['issue']['source']
 					)
 					. '*).',
 
-				'position'	=> $commit_issue['file_line'],
-				'path'		=> $commit_issue['file_name']
+				'position' => $commit_issue['file_line'],
+				'path'     => $commit_issue['file_name'],
 			);
 		}
-
 
 		/*
 		 * Figure out what to report to GitHub.
@@ -541,9 +530,9 @@ function vipgoci_report_submit_pr_review_from_results(
 
 		$github_postfields['event'] = 'COMMENT';
 
-		$github_errors = false;
+		$github_errors   = false;
 		$github_warnings = false;
-		$github_info = false;
+		$github_info     = false;
 
 		foreach (
 			$stats_types_to_process as
@@ -554,7 +543,7 @@ function vipgoci_report_submit_pr_review_from_results(
 					[ $stats_type ][ $pr_number ]['error']
 			) ) {
 				$github_postfields['event'] = 'REQUEST_CHANGES';
-				$github_errors = true;
+				$github_errors              = true;
 			}
 
 			if ( ! empty(
@@ -588,7 +577,6 @@ function vipgoci_report_submit_pr_review_from_results(
 
 		unset( $github_errors );
 		unset( $github_warnings );
-
 
 		/*
 		 * Compose the number of warnings/errors for the
@@ -627,7 +615,6 @@ function vipgoci_report_submit_pr_review_from_results(
 				continue;
 			}
 
-
 			/*
 			 * If the current stat-type has no items
 			 * to report, do not print out anything for
@@ -636,7 +623,7 @@ function vipgoci_report_submit_pr_review_from_results(
 
 			$found_stats_to_ignore = true;
 
-			foreach(
+			foreach (
 				$results
 					['stats']
 					[ strtolower( $stats_type ) ]
@@ -656,7 +643,6 @@ function vipgoci_report_submit_pr_review_from_results(
 			}
 
 			unset( $found_stats_to_ignore );
-
 
 			$github_postfields['body'] .=
 				'**' . $stats_type . '**' .
@@ -707,12 +693,12 @@ function vipgoci_report_submit_pr_review_from_results(
 			$github_token,
 			array(
 				'login' => 'myself',
-				'state' => array( 'COMMENTED', 'CHANGES_REQUESTED' )
+				'state' => array( 'COMMENTED', 'CHANGES_REQUESTED' ),
 			)
 		);
 
-		$validation_message = vipgoci_skip_file_get_validation_message_prefix( VIPGOCI_VALIDATION_MAXIMUM_LINES, $skip_large_files_limit );
-		$results[VIPGOCI_SKIPPED_FILES][ $pr_number ] = vipgoci_skip_file_check_previous_pr_comments( $results[VIPGOCI_SKIPPED_FILES][ $pr_number ], $pr_reviews_commented, $validation_message );
+		$validation_message                             = vipgoci_skip_file_get_validation_message_prefix( VIPGOCI_VALIDATION_MAXIMUM_LINES, $skip_large_files_limit );
+		$results[ VIPGOCI_SKIPPED_FILES ][ $pr_number ] = vipgoci_skip_file_check_previous_pr_comments( $results[ VIPGOCI_SKIPPED_FILES ][ $pr_number ], $pr_reviews_commented, $validation_message );
 
 		/**
 		 * Format skipped files message if the validation has issues
@@ -722,7 +708,7 @@ function vipgoci_report_submit_pr_review_from_results(
 				$github_postfields['body']
 			);
 
-			$github_postfields[ 'body' ] .= vipgoci_get_skipped_files_message(
+			$github_postfields['body'] .= vipgoci_get_skipped_files_message(
 				$results[ VIPGOCI_SKIPPED_FILES ][ $pr_number ],
 				$validation_message
 			);
@@ -740,7 +726,6 @@ function vipgoci_report_submit_pr_review_from_results(
 			vipgoci_markdown_comment_add_pagebreak(
 				$github_postfields['body']
 			);
-
 
 			$github_postfields['body'] .= $informational_msg;
 		}
@@ -773,7 +758,6 @@ function vipgoci_report_submit_pr_review_from_results(
 				"\n\r" .
 				'Posting will continue in further review(s)';
 		}
-
 
 		do {
 			/*
@@ -865,16 +849,16 @@ function vipgoci_github_pr_generic_support_comment_submit(
 
 	$log_debugmsg =
 		array(
-			'post-generic-pr-support-comments' =>
+			'post-generic-pr-support-comments'           =>
 				$options['post-generic-pr-support-comments'],
 
 			'post-generic-pr-support-comments-on-drafts' =>
 				$options['post-generic-pr-support-comments-on-drafts'],
 
-			'post-generic-pr-support-comments-string' =>
+			'post-generic-pr-support-comments-string'    =>
 				$options['post-generic-pr-support-comments-string'],
 
-			'post-generic-pr-support-comments-branches' =>
+			'post-generic-pr-support-comments-branches'  =>
 				$options['post-generic-pr-support-comments-branches'],
 
 			'post-generic-pr-support-comments-repo-meta-match' =>
@@ -897,9 +881,7 @@ function vipgoci_github_pr_generic_support_comment_submit(
 		);
 
 		return;
-	}
-
-	else {
+	} else {
 		vipgoci_log(
 			'Posting support-comments on Pull-Requests',
 			$log_debugmsg
@@ -923,15 +905,12 @@ function vipgoci_github_pr_generic_support_comment_submit(
 		if ( true !== $repo_meta_api_data_match ) {
 			vipgoci_log(
 				'Not posting generic support comment, as repo-meta API field-value did not match given criteria',
-				array(
-				)
+				array()
 			);
 
 			return;
 		}
-	}
-
-	else {
+	} else {
 		/*
 		 * If matching is not configured, we post
 		 * first message we can find.
@@ -944,8 +923,7 @@ function vipgoci_github_pr_generic_support_comment_submit(
 		$option_key_no_match = $tmp_generic_support_msgs_keys[0];
 	}
 
-
-	foreach(
+	foreach (
 		$prs_implicated as $pr_item
 	) {
 		/*
@@ -968,10 +946,10 @@ function vipgoci_github_pr_generic_support_comment_submit(
 			vipgoci_log(
 				'Not posting support-comment to PR, not in list of target branches',
 				array(
-					'repo-owner'	=> $options['repo-owner'],
-					'repo-name'	=> $options['repo-name'],
-					'pr_number'	=> $pr_item->number,
-					'pr_base_ref'	=> $pr_item->base->ref,
+					'repo-owner'  => $options['repo-owner'],
+					'repo-name'   => $options['repo-name'],
+					'pr_number'   => $pr_item->number,
+					'pr_base_ref' => $pr_item->base->ref,
 					'post-generic-pr-support-comments-branches' =>
 						$options['post-generic-pr-support-comments-branches'][ $option_key_no_match ],
 				)
@@ -991,14 +969,14 @@ function vipgoci_github_pr_generic_support_comment_submit(
 			vipgoci_log(
 				'Not posting support-comment to PR, is draft',
 				array(
-					'repo-owner'	=> $options['repo-owner'],
-					'repo-name'	=> $options['repo-name'],
-					'pr_number'	=> $pr_item->number,
-					'pr_base_ref'	=> $pr_item->base->ref,
+					'repo-owner'  => $options['repo-owner'],
+					'repo-name'   => $options['repo-name'],
+					'pr_number'   => $pr_item->number,
+					'pr_base_ref' => $pr_item->base->ref,
 					'post-generic-pr-support-comments-on-drafts' =>
 						$options['post-generic-pr-support-comments-on-drafts'][ $option_key_no_match ],
 				)
-		);
+			);
 
 			continue;
 		}
@@ -1008,25 +986,25 @@ function vipgoci_github_pr_generic_support_comment_submit(
 		 * has been added to the Pull-Request.
 		 */
 
-		if ( ! empty( $options[ 'post-generic-pr-support-comments-skip-if-label-exists' ][ $option_key_no_match ] ) ) {			
+		if ( ! empty( $options['post-generic-pr-support-comments-skip-if-label-exists'][ $option_key_no_match ] ) ) {
 			$pr_label_support_comment_skip = vipgoci_github_pr_labels_get(
 				$options['repo-owner'],
 				$options['repo-name'],
 				$options['token'],
 				$pr_item->number,
-				$options[ 'post-generic-pr-support-comments-skip-if-label-exists' ][ $option_key_no_match ]
+				$options['post-generic-pr-support-comments-skip-if-label-exists'][ $option_key_no_match ]
 			);
 
 			if ( false !== $pr_label_support_comment_skip ) {
 				vipgoci_log(
 					'Not posting support comment to PR, label exists',
 					array(
-						'repo-owner'	=> $options['repo-owner'],
-						'repo-name'	=> $options['repo-name'],
-						'pr_number'	=> $pr_item->number,
-						'pr_base_ref'	=> $pr_item->base->ref,
+						'repo-owner'  => $options['repo-owner'],
+						'repo-name'   => $options['repo-name'],
+						'pr_number'   => $pr_item->number,
+						'pr_base_ref' => $pr_item->base->ref,
 						'post-generic-pr-support-comments-skip-if-label-exists' =>
-							$options[ 'post-generic-pr-support-comments-skip-if-label-exists' ][ $option_key_no_match ]
+							$options['post-generic-pr-support-comments-skip-if-label-exists'][ $option_key_no_match ],
 					)
 				);
 
@@ -1049,7 +1027,7 @@ function vipgoci_github_pr_generic_support_comment_submit(
 
 		$comment_exists_already = false;
 
-		foreach(
+		foreach (
 			$existing_comments as
 				$existing_comment_item
 		) {
@@ -1066,7 +1044,7 @@ function vipgoci_github_pr_generic_support_comment_submit(
 			vipgoci_log(
 				'Not submitting support-comment to Pull-Request as it already exists',
 				array(
-					'pr_number'	=> $pr_item->number,
+					'pr_number' => $pr_item->number,
 				)
 			);
 
