@@ -2729,7 +2729,7 @@ function vipgoci_run_scan(
 	/*
 	 * Submit any remaining issues to GitHub
 	 */
-	vipgoci_github_pr_generic_comment_submit_results(
+	vipgoci_report_submit_pr_generic_comment_from_results(
 		$options['repo-owner'],
 		$options['repo-name'],
 		$options['token'],
@@ -2739,7 +2739,7 @@ function vipgoci_run_scan(
 		$scan_details_msg
 	);
 
-	vipgoci_github_pr_review_submit(
+	vipgoci_report_submit_pr_review_from_results(
 		$options['repo-owner'],
 		$options['repo-name'],
 		$options['token'],
