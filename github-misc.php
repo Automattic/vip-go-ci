@@ -285,7 +285,7 @@ function vipgoci_markdown_comment_add_pagebreak(
 	$comment .= $pagebreak_style . "\n\r";
 }
 
-/*
+/**
  * Make sure to wait in between requests to
  * GitHub. Only waits if it is really needed.
  *
@@ -298,7 +298,6 @@ function vipgoci_markdown_comment_add_pagebreak(
  *
  * @codeCoverageIgnore
  */
-
 function vipgoci_github_wait() {
 	static $last_request_time = null;
 
