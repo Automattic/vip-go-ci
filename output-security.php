@@ -26,8 +26,8 @@ function vipgoci_output_sanitize_version_number(
 }
 
 /**
- * Encode string so it does not contain
- * HTML tags and is escaped properly.
+ * HTML encode input string so it is safe
+ * to use in HTML code.
  *
  * @param string $text_string String to escape.
  *
@@ -36,8 +36,6 @@ function vipgoci_output_sanitize_version_number(
 function vipgoci_output_html_escape(
 	string $text_string
 ) :string {
-	$text_string = strip_tags( $text_string );
-
 	return filter_var(
 		$text_string,
 		FILTER_SANITIZE_FULL_SPECIAL_CHARS
