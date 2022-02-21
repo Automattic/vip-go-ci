@@ -295,8 +295,6 @@ function vipgoci_markdown_comment_add_pagebreak(
  *
  * See here for background:
  * https://developer.github.com/v3/guides/best-practices-for-integrators/#dealing-with-abuse-rate-limits
- *
- * @codeCoverageIgnore
  */
 function vipgoci_github_wait() {
 	static $last_request_time = null;
@@ -305,11 +303,14 @@ function vipgoci_github_wait() {
 
 	if ( null !== $last_request_time ) {
 		/*
-		 * Only sleep if less than one second
+		 * Only sleep if less than specified time
 		 * has elapsed from last request.
 		 */
-		if ( ( time() - $last_request_time ) < 1 ) {
-			sleep( 1 );
+		if (
+			( time() - $last_request_time ) <
+			VIPGOCI_GITHUB_WAIT_TIME_SECONDS
+		) {
+			sleep( VIPGOCI_GITHUB_WAIT_TIME_SECONDS );
 		}
 	}
 
