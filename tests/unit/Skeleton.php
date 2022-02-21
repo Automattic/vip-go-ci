@@ -23,7 +23,7 @@ final class Skeleton extends TestCase {
 	 * All files should be required here. See README.md.
 	 */
 	protected function setUp() :void {
-		require_once __DIR__ . './../../FILE-TO-BE-TESTED';
+		require_once __DIR__ . '/../../FILE-TO-BE-TESTED';
 	}
 
 	/**
