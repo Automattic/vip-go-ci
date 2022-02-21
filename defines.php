@@ -134,6 +134,11 @@ define( 'VIPGOCI_COUNTERS_DO', 'do' );
 define( 'VIPGOCI_CACHE_CLEAR', '--VIPGOCI-CACHE-CLEAR-0x321--' );
 
 /*
+ * Define for vipgoci_github_wait() function.
+ */
+define( 'VIPGOCI_GITHUB_WAIT_TIME_SECONDS', 2 );
+
+/*
  * Defines for files.
  */
 define( 'VIPGOCI_OPTIONS_FILE_NAME', '.vipgoci_options' );
