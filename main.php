@@ -2015,8 +2015,7 @@ function vipgoci_run_init_options(
 		( ! isset( $options['token'] ) ) ||
 		( empty( $options['token'] ) ) ||
 		( ! isset( $options['local-git-repo'] ) ) ||
-		( empty( $options['local-git-repo'] ) ) ||
-		( isset( $options['help'] ) )
+		( empty( $options['local-git-repo'] ) )
 	) {
 		vipgoci_help_print();
 		exit( VIPGOCI_EXIT_USAGE_ERROR );
@@ -2902,9 +2901,19 @@ function vipgoci_run() :int {
 		$prs_implicated
 	) = vipgoci_run_init_vars();
 
+	/*
+	 * Check if these option parameters are
+	 * present before continuing; if so, perform
+	 * the actions appropriate and then exit.
+	 */
 	if ( isset( $options['version'] ) ) {
 		// Version number requested; print and exit.
 		echo VIPGOCI_VERSION . PHP_EOL;
+
+		exit( 0 );
+	} elseif ( isset( $options['help'] ) ) {
+		// Print help message and exit.
+		vipgoci_help_print();
 
 		exit( 0 );
 	}
