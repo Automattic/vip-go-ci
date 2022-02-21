@@ -178,7 +178,7 @@ final class OptionsReadRepoFileTest extends TestCase {
 			1, // Options file should change this to 1
 			$this->options['phpcs-severity']
 		);
-	
+
 		$this->assertSame(
 			array( 'phpcs-severity' => 1 ),
 			$this->options['repo-options-set']
@@ -233,7 +233,7 @@ final class OptionsReadRepoFileTest extends TestCase {
 			-100, // Should remain unchanged, feature is turned off.
 			$this->options['phpcs-severity']
 		);
-		
+
 		$this->assertSame(
 			array(),
 			$this->options['repo-options-set']
@@ -292,7 +292,7 @@ final class OptionsReadRepoFileTest extends TestCase {
 			-100, // Should remain unchanged, as checks failed
 			$this->options['phpcs-severity']
 		);
-		
+
 		$this->assertSame(
 			array(),
 			$this->options['repo-options-set']
@@ -636,7 +636,7 @@ final class OptionsReadRepoFileTest extends TestCase {
 			$this->options['repo-options-set']
 		);
 	}
-	
+
 	/**
 	 * @covers ::vipgoci_options_read_repo_file
 	 *
@@ -690,7 +690,7 @@ final class OptionsReadRepoFileTest extends TestCase {
 			),
 			$this->options['phpcs-sniffs-exclude']
 		);
-	
+
 		$this->assertSame(
 			array(
 				'phpcs-sniffs-exclude' => array(
@@ -701,7 +701,7 @@ final class OptionsReadRepoFileTest extends TestCase {
 			$this->options['repo-options-set']
 		);
 	}
-	
+
 	/**
 	 * @covers ::vipgoci_options_read_repo_file
 	 *
