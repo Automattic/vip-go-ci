@@ -873,6 +873,7 @@ function vipgoci_option_array_handle(
 
 		/*
 		 * Check for special case when an empty string is provided.
+		 * Treat as if parameter was not provided.
 		 */
 		if (
 			( 1 === count( $options[ $option_name ] ) ) &&
