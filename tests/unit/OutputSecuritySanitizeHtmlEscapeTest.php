@@ -30,7 +30,7 @@ final class OutputSecuritySanitizeHtmlEscapeTest extends TestCase {
 	/**
 	 * Test if the function really HTML encodes input string.
 	 *
-	 * @covers ::vipgoci_output_sanitize_version_number
+	 * @covers ::vipgoci_output_html_escape
 	 */
 	public function testSanitizeVersionNumber(): void {
 		$encoded_output = vipgoci_output_html_escape(
