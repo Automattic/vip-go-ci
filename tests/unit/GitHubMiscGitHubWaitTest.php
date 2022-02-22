@@ -46,15 +46,15 @@ final class GitHubMiscGitHubWaitTest extends TestCase {
 			$time_spent = $time_end - $time_start;
 
 			if ( 0 === $i ) {
-				// If first run, should return instantly.
+				// If first run, should return instantly. Allow for some variation.
 				$this->assertTrue(
-					( ( $time_spent >= 0 ) && ( $time_spent <= 1 ) ),
+					( ( $time_spent >= 0 ) && ( $time_spent <= 2 ) ),
 					'vipgoci_github_wait() returned earlier or later than expected'
 				);
 			} else {
-				// On later runs, should wait for a bit.
+				// On later runs, should wait for a bit. Allow for some variation.
 				$this->assertTrue(
-					( ( $time_spent >= 1 ) && ( $time_spent <= VIPGOCI_GITHUB_WAIT_TIME_SECONDS ) ),
+					( ( $time_spent >= 1 ) && ( $time_spent <= ( VIPGOCI_GITHUB_WAIT_TIME_SECONDS + 1 ) ) ),
 					'vipgoci_github_wait() returned earlier or later than expected'
 				);
 			}
