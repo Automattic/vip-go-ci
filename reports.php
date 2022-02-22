@@ -12,11 +12,11 @@ declare(strict_types=1);
  * allow various options to ease the generation and
  * to make it more generic.
  *
- * @param string $left                 String to the left of each entry.
- * @param string $right                String to the right of each entry.
- * @param array  $data                 Data to process.
- * @param string $when_data_empty      When $data is empty, return this string.
- * @param string $when_key_values      String to use as separator between key and value.
+ * @param string         $left            String to the left of each entry.
+ * @param string         $right           String to the right of each entry.
+ * @param array|bool|int $data            Data to process.
+ * @param string         $when_data_empty When $data is empty, return this string.
+ * @param string         $when_key_values String to use as separator between key and value.
  *
  * @return string HTML for list.
  *
@@ -57,7 +57,7 @@ function vipgoci_report_create_scan_details_list(
 	 */
 	$return_string = '';
 
-	foreach( $data as $arr_item_key => $arr_item_value ) {
+	foreach ( $data as $arr_item_key => $arr_item_value ) {
 		if ( is_array( $arr_item_value ) ) {
 			$arr_item_value = join( ', ', $arr_item_value );
 		}
@@ -140,7 +140,6 @@ function vipgoci_report_create_scan_details_software_versions(
 
 	$details .= '</ul>' . PHP_EOL;
 
-
 	$details .= '<h4>Options file (<code>' . vipgoci_output_html_escape( VIPGOCI_OPTIONS_FILE_NAME ) . '</code>)</h4>' . PHP_EOL;
 
 	$details .= '<p>Options file enabled: ' . PHP_EOL;
@@ -148,7 +147,7 @@ function vipgoci_report_create_scan_details_software_versions(
 	$details .= vipgoci_report_create_scan_details_list(
 		'<code>',
 		'</code>',
-		$options_copy[ 'repo-options' ],
+		$options_copy['repo-options'],
 		'None'
 	);
 
@@ -204,7 +203,7 @@ function vipgoci_report_create_scan_details_php_lint_options(
 			'lint-modified-files-only' => 'Lint modified files only',
 		) as $key => $value
 	) {
-		if ( ( $options_copy['lint'] === false ) && ( 'lint' !== $key ) ) {
+		if ( ( false === $options_copy['lint'] ) && ( 'lint' !== $key ) ) {
 			continue;
 		}
 
@@ -259,7 +258,7 @@ function vipgoci_report_create_scan_details_phpcs_configuration(
 	$details .= vipgoci_report_create_scan_details_list(
 		'<code>',
 		'</code>',
-		$options_copy[ 'phpcs' ],
+		$options_copy['phpcs'],
 		'None'
 	);
 
@@ -271,7 +270,7 @@ function vipgoci_report_create_scan_details_phpcs_configuration(
 		$details .= vipgoci_report_create_scan_details_list(
 			'<code>',
 			'</code>',
-			$options_copy[ 'phpcs-severity' ],
+			$options_copy['phpcs-severity'],
 			'None'
 		);
 
@@ -291,11 +290,11 @@ function vipgoci_report_create_scan_details_phpcs_configuration(
 
 		foreach (
 			array(
-				'phpcs-standard'       => 'Standard(s) used',
-				'phpcs-runtime-set-tmp'=> 'Runtime set',
-				'phpcs-sniffs-include' => 'Custom sniffs included',
-				'phpcs-sniffs-exclude' => 'Custom sniffs excluded',
-				'phpcs-skip-folders'   => 'Directories not PHPCS scanned',
+				'phpcs-standard'        => 'Standard(s) used',
+				'phpcs-runtime-set-tmp' => 'Runtime set',
+				'phpcs-sniffs-include'  => 'Custom sniffs included',
+				'phpcs-sniffs-exclude'  => 'Custom sniffs excluded',
+				'phpcs-skip-folders'    => 'Directories not PHPCS scanned',
 			) as $key => $value
 		) {
 			$details .= '<p>' . vipgoci_output_html_escape( $value ) . ':</p>' . PHP_EOL;
@@ -333,7 +332,7 @@ function vipgoci_report_create_scan_details_svg_configuration(
 	$details .= vipgoci_report_create_scan_details_list(
 		'<code>',
 		'</code>',
-		$options_copy[ 'svg-checks' ],
+		$options_copy['svg-checks'],
 		'None'
 	);
 
@@ -369,7 +368,7 @@ function vipgoci_report_create_scan_details_auto_approve_configuration(
 			continue;
 		}
 
-		$details .= '<p>'. vipgoci_output_html_escape( $value ) . ':' . PHP_EOL;
+		$details .= '<p>' . vipgoci_output_html_escape( $value ) . ':' . PHP_EOL;
 
 		$details .= vipgoci_report_create_scan_details_list(
 			'<code>',
@@ -388,7 +387,7 @@ function vipgoci_report_create_scan_details_auto_approve_configuration(
 		$details .= vipgoci_report_create_scan_details_list(
 			'<li><code>',
 			'</code></li>',
-			$options_copy[ 'autoapprove-filetypes' ],
+			$options_copy['autoapprove-filetypes'],
 			'<li>None</li>',
 			''
 		);
@@ -444,7 +443,7 @@ function vipgoci_report_create_scan_details(
 }
 
 /**
- * Record if GitHub results have been submitted to a 
+ * Record if GitHub results have been submitted to a
  * pull request. Recording once that it has been done
  * will ensure it stays like that even if set to false later.
  * Will return the current state when called with $feedback_submitted
@@ -466,7 +465,7 @@ function vipgoci_report_results_to_github_were_submitted(
 ) {
 	static $data_has_been_submitted = array();
 
-	switch( $feedback_submitted ) {
+	switch ( $feedback_submitted ) {
 		case true:
 			$data_has_been_submitted[ $repo_owner ][ $repo_name ][ $pr_number ] = true;
 			break;
@@ -487,13 +486,13 @@ function vipgoci_report_results_to_github_were_submitted(
  * Checks if any results have been submitted, and if not,
  * submits a message about no issues having been found.
  *
- * @param string    $repo_owner         Repository owner.
- * @param string    $repo_name          Repository name.
- * @param string    $github_token       GitHub access token to use.
- * @param string    $commit_id          Commit-ID of current commit.
- * @param array     $prs_implicated     Pull requests implicated.
- * @param string    $informational_msg  Informational message for end-users.
- * @param string    $scan_details_msg   Details of scan message for end-users.
+ * @param string $repo_owner        Repository owner.
+ * @param string $repo_name         Repository name.
+ * @param string $github_token      GitHub access token to use.
+ * @param string $commit_id         Commit-ID of current commit.
+ * @param array  $prs_implicated    Pull requests implicated.
+ * @param string $informational_msg Informational message for end-users.
+ * @param string $scan_details_msg  Details of scan message for end-users.
  *
  * @return void
  */
@@ -543,7 +542,7 @@ function vipgoci_report_maybe_no_issues_found(
 			$no_issues_msg = VIPGOCI_NO_ISSUES_FOUND_MSG_AND_EXISTING_REVIEWS;
 		}
 
-		$no_issues_msg .= ' (commit-ID: ' . $commit_id .')'; 
+		$no_issues_msg .= ' (commit-ID: ' . $commit_id . ')';
 
 		/*
 		 * If we have informational message, append it.
