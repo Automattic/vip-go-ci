@@ -31,6 +31,9 @@ final class ReportCreateScanDetailsSoftwareVersions extends TestCase {
 		$this->options = array();
 	}
 
+	/**
+	 * Clean up options variable.
+	 */
 	protected function tearDown() :void {
 		unset( $this->options );
 	}
@@ -41,9 +44,9 @@ final class ReportCreateScanDetailsSoftwareVersions extends TestCase {
 	 * @covers ::vipgoci_report_create_scan_details_software_versions
 	 */
 	public function testCreateDetails1(): void {
-		$this->options['lint']          = false;
-		$this->options['phpcs']         = false;
-		$this->options['repo-options']  = false;
+		$this->options['lint']         = false;
+		$this->options['phpcs']        = false;
+		$this->options['repo-options'] = false;
 
 		$actual_output = vipgoci_report_create_scan_details_software_versions(
 			$this->options
@@ -94,7 +97,7 @@ final class ReportCreateScanDetailsSoftwareVersions extends TestCase {
 		$this->assertNotFalse(
 			strpos(
 				$actual_output,
-				'<p>Options file enabled: ' . PHP_EOL  . '<code>false</code></p>'
+				'<p>Options file enabled: ' . PHP_EOL . '<code>false</code></p>'
 			)
 		);
 	}
@@ -111,7 +114,10 @@ final class ReportCreateScanDetailsSoftwareVersions extends TestCase {
 		$this->options['phpcs-path']           = '/usr/bin/phpcs';
 		$this->options['phpcs-php-path']       = '/usr/bin/php';
 		$this->options['repo-options']         = true;
-		$this->options['repo-options-set']     = array( 'a' => 1, 'b' => 2 );
+		$this->options['repo-options-set']     = array(
+			'a' => 1,
+			'b' => 2,
+		);
 		$this->options['repo-options-allowed'] = array( 'opt1', 'opt2' );
 
 		$actual_output = vipgoci_report_create_scan_details_software_versions(
@@ -170,7 +176,7 @@ final class ReportCreateScanDetailsSoftwareVersions extends TestCase {
 		$this->assertNotFalse(
 			strpos(
 				$actual_output,
-				'<p>Options file enabled: ' . PHP_EOL  . '<code>true</code></p>'
+				'<p>Options file enabled: ' . PHP_EOL . '<code>true</code></p>'
 			)
 		);
 

@@ -31,6 +31,9 @@ final class ReportCreateScanDetailsPhpLintOptions extends TestCase {
 		$this->options = array();
 	}
 
+	/**
+	 * Clean up options variable.
+	 */
 	protected function tearDown() :void {
 		unset( $this->options );
 	}
