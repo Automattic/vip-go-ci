@@ -2598,6 +2598,8 @@ function vipgoci_run_scan(
 			VIPGOCI_REVIEW_COMMENTS_TOTAL_MAX,
 			VIPGOCI_PHPCS_INVALID_SNIFFS,
 			VIPGOCI_PHPCS_DUPLICATE_SNIFFS,
+			VIPGOCI_NO_ISSUES_FOUND_MSG_AND_NO_REVIEWS,
+			VIPGOCI_NO_ISSUES_FOUND_MSG_AND_EXISTING_REVIEWS
 		)
 	);
 
@@ -2606,7 +2608,7 @@ function vipgoci_run_scan(
 	 * on the pull request(s) with some helpful information.
 	 * Comment is set via option.
 	 */
-	vipgoci_github_pr_generic_support_comment_submit(
+	vipgoci_report_submit_pr_generic_support_comment(
 		$options,
 		$prs_implicated
 	);
@@ -2769,6 +2771,16 @@ function vipgoci_run_scan(
 	vipgoci_run_scan_total_comments_max_warning_post(
 		$options,
 		$prs_comments_maxed
+	);
+
+	vipgoci_report_maybe_no_issues_found(
+		$options['repo-owner'],
+		$options['repo-name'],
+		$options['token'],
+		$options['commit'],
+		$prs_implicated,
+		$options['informational-msg'],
+		$scan_details_msg
 	);
 
 	/*
