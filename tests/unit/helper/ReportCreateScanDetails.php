@@ -41,11 +41,11 @@ function vipgoci_phpcs_get_version(
  *
  * @param array $options Options needed.
  *
- * @return void
+ * @return array
  */
 function vipgoci_options_sensitive_clean(
 	array $options
-) :void {
+) :array {
 	return $options;
 }
 
