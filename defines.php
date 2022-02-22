@@ -84,6 +84,16 @@ define(
 					'<br />'
 );
 
+define(
+	'VIPGOCI_NO_ISSUES_FOUND_MSG_AND_NO_REVIEWS',
+	'No issues were found to report when scanning latest commit'
+);
+
+define(
+	'VIPGOCI_NO_ISSUES_FOUND_MSG_AND_EXISTING_REVIEWS',
+	'Scanning latest commit did not yield any new issues. Please have a look at older feedback still existing'
+);
+
 /*
  * Define exit-codes
  */
