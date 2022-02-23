@@ -10,8 +10,20 @@ All notable changes to this project will be documented in this file.
 - [#236](https://github.com/Automattic/vip-go-ci/pull/236): Adding PHP 8.1 support and related changes
 - [#242](https://github.com/Automattic/vip-go-ci/pull/242): Adding version number to TODO in PULL_REQUEST_TEMPLATE
 - [#245](https://github.com/Automattic/vip-go-ci/pull/245): Different TODO items for test suites in PULL_REQUEST_TEMPLATE file
-- [#246](https://github.com/Automattic/vip-go-ci/pull/246): Improve reporting to users
 - [#247](https://github.com/Automattic/vip-go-ci/pull/247): Apply WP CS for a few files
+
+### Added
+- [#246](https://github.com/Automattic/vip-go-ci/pull/246): Improve reporting to users
+
+### Resolved issues
+- [#238](https://github.com/Automattic/vip-go-ci/issue/238): Extra GitHub review posted when there are skipped files 
+- [#40](https://github.com/Automattic/vip-go-ci/issue/40): Leave a comment if no issues found
+- [#142](https://github.com/Automattic/vip-go-ci/issue/142): Move functions and functionality between files
+- [#145](https://github.com/Automattic/vip-go-ci/issue/145): In GitHub reviews, report which options were altered
+- [#144](https://github.com/Automattic/vip-go-ci/issue/144): Print folders that were not scanned
+- [#232](https://github.com/Automattic/vip-go-ci/issue/232): Report additional information in reviews 
+- [#192](https://github.com/Automattic/vip-go-ci/issue/192): Break vipgoci_run() into multiple functions
+- [#128](https://github.com/Automattic/vip-go-ci/issue/128): Use new GitHub'sTeams API endpoints 
 
 ## [1.1.3](https://github.com/Automattic/vip-go-ci/releases/tag/1.1.3) - 2022-01-31
 
