@@ -290,7 +290,7 @@ function vipgoci_get_skipped_files_message_from_comment(
 		$message_end_pos - $message_start_pos
 	);
 
-	if ( false === $message ) {
+	if ( '' === $message ) {
 		$message = '';
 	}
 
