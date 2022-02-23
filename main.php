@@ -153,6 +153,8 @@ function vipgoci_help_print() :void {
 		"\t" . '                               All required for hashes-to-hashes requests.' . PHP_EOL .
 		PHP_EOL .
 		'GitHub reviews & generic comments configuration:' . PHP_EOL .
+		"\t" . '--report-no-issues-found=BOOL  Post message indicating no issues were found during scanning.' . PHP_EOL .
+		"\t" . '                               Enabled by default.' . PHP_EOL .
 		"\t" . '--review-comments-sort=BOOL    Sort issues found according to severity, from high' . PHP_EOL .
 		"\t" . '                               to low, before submitting to GitHub. Not sorted by default.' . PHP_EOL .
 		"\t" . '--review-comments-max=NUMBER   Maximum number of inline comments to submit' . PHP_EOL .
@@ -190,6 +192,8 @@ function vipgoci_help_print() :void {
 		"\t" . '                                                      The parameter expects a team slug, not ID.' . PHP_EOL .
 		"\t" . '--informational-msg=STRING     Message to append to GitHub reviews and generic comments. Useful to' . PHP_EOL .
 		"\t" . '                               explain what the bot does. Can contain HTML or Markdown.' . PHP_EOL .
+		"\t" . '--scan-details-msg-include=BOOL If to include additional detail about the scan, versions of' . PHP_EOL .
+		"\t" . '                                software used, options altered and so forth. Enabled by default.' . PHP_EOL .
 		PHP_EOL .
 		'Generic support comments configuration:' . PHP_EOL .
 		"\t" . '--post-generic-pr-support-comments=BOOL            Whether to post generic comment to pull requests' . PHP_EOL .
@@ -328,6 +332,7 @@ function vipgoci_options_recognized() :array {
 		/*
 		 * GitHub reviews & generic comments configuration
 		 */
+		'report-no-issues-found:',
 		'review-comments-sort:',
 		'review-comments-max:',
 		'review-comments-total-max:',
@@ -337,6 +342,7 @@ function vipgoci_options_recognized() :array {
 		'dismissed-reviews-repost-comments:',
 		'dismissed-reviews-exclude-reviews-from-team:',
 		'informational-msg:',
+		'scan-details-msg-include:',
 
 		/*
 		 * Generic support comments configuration
@@ -930,6 +936,15 @@ function vipgoci_run_init_options_autoapprove_hashes_overlap(
  */
 function vipgoci_run_init_options_reviews( array &$options ) :void {
 	/*
+	 * Process --report-no-issues-found
+	 */
+	vipgoci_option_bool_handle(
+		$options,
+		'report-no-issues-found',
+		'true'
+	);
+
+	/*
 	 * Process --review-comments-sort -- determines if to sort review comments by severity.
 	 * Also process --review-comments-include-severity -- will include severity in comments.
 	 */
@@ -1016,7 +1031,17 @@ function vipgoci_run_init_options_reviews( array &$options ) :void {
 		$options,
 		'dismissed-reviews-exclude-reviews-from-team'
 	);
+
+	/*
+	 * Process --scan-details-msg-include
+	 */
+	vipgoci_option_bool_handle(
+		$options,
+		'scan-details-msg-include',
+		'true'
+	);
 }
+
 
 /**
  * Set options relating to skipping large files.
@@ -2722,10 +2747,14 @@ function vipgoci_run_scan(
 		$results
 	);
 
-	// Construct scan details message.
-	$scan_details_msg = vipgoci_report_create_scan_details(
-		vipgoci_options_sensitive_clean( $options )
-	);
+	if ( true === $options['scan-details-msg-include'] ) {
+		// Construct scan details message.
+		$scan_details_msg = vipgoci_report_create_scan_details(
+			vipgoci_options_sensitive_clean( $options )
+		);
+	} else {
+		$scan_details_msg = '';
+	}
 
 	/*
 	 * Submit any remaining issues to GitHub
@@ -2773,15 +2802,21 @@ function vipgoci_run_scan(
 		$prs_comments_maxed
 	);
 
-	vipgoci_report_maybe_no_issues_found(
-		$options['repo-owner'],
-		$options['repo-name'],
-		$options['token'],
-		$options['commit'],
-		$prs_implicated,
-		$options['informational-msg'],
-		$scan_details_msg
-	);
+	/*
+	 * If no issues found and configured to do so,
+	 * report this to the pull requests implicated.
+	 */
+	if ( true === $options['report-no-issues-found'] ) {
+		vipgoci_report_maybe_no_issues_found(
+			$options['repo-owner'],
+			$options['repo-name'],
+			$options['token'],
+			$options['commit'],
+			$prs_implicated,
+			$options['informational-msg'],
+			$scan_details_msg
+		);
+	}
 
 	/*
 	 * Log to IRC when files are skipped.
