@@ -25,6 +25,16 @@ final class SupportLevelLabelMetaApiDataFetchTest extends TestCase {
 		);
 
 		$this->options = $this->options_meta_api_secrets;
+
+		// This can be an empty string, set to empty if null.
+		if ( null === $this->options['repo-meta-api-user-id'] ) {
+			$this->options['repo-meta-api-user-id'] = '';
+		}
+
+		// This can be an empty string, set to empty if null.
+		if ( null === $this->options['repo-meta-api-access-token'] ) {
+			$this->options['repo-meta-api-access-token'] = '';
+		}
 	}
 
 	protected function tearDown(): void {

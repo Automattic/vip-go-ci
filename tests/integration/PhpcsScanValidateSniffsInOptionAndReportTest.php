@@ -9,6 +9,9 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 		'phpcs-path'
 			=> null,
 
+		'phpcs-php-path'
+			=> null,
+
 		'phpcs-standard'
 			=> null,
 
@@ -65,6 +68,8 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 			$this->options['github-token'];
 
 		$this->options['branches-ignore'] = array();
+
+		$this->options['phpcs'] = true;
 
 		$this->options['phpcs-sniffs-include'] = array();
 		$this->options['phpcs-sniffs-exclude'] = array();
