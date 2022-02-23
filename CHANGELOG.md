@@ -23,7 +23,7 @@ All notable changes to this project will be documented in this file.
 - [#144](https://github.com/Automattic/vip-go-ci/issue/144): Print folders that were not scanned
 - [#232](https://github.com/Automattic/vip-go-ci/issue/232): Report additional information in reviews 
 - [#192](https://github.com/Automattic/vip-go-ci/issue/192): Break vipgoci_run() into multiple functions
-- [#128](https://github.com/Automattic/vip-go-ci/issue/128): Use new GitHub'sTeams API endpoints 
+- [#128](https://github.com/Automattic/vip-go-ci/issue/128): Use new GitHub's Teams API endpoints 
 
 ## [1.1.3](https://github.com/Automattic/vip-go-ci/releases/tag/1.1.3) - 2022-01-31
 
