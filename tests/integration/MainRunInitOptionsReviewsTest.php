@@ -41,6 +41,7 @@ final class MainRunInitOptionsReviewsTest extends TestCase {
 
 		$this->assertSame(
 			array(
+				'report-no-issues-found'            => true,
 				'review-comments-sort'              => false,
 				'review-comments-include-severity'  => false,
 				'review-comments-max'               => 10,
@@ -49,6 +50,7 @@ final class MainRunInitOptionsReviewsTest extends TestCase {
 				'dismiss-stale-reviews'             => false,
 				'dismissed-reviews-repost-comments' => true,
 				'dismissed-reviews-exclude-reviews-from-team' => array(),
+				'scan-details-msg-include'          => true,
 			),
 			$this->options
 		);
@@ -61,6 +63,7 @@ final class MainRunInitOptionsReviewsTest extends TestCase {
 	 */
 	public function testRunInitOptionsReviewsCustom() :void {
 		$this->options = array(
+			'report-no-issues-found'            => 'true',
 			'review-comments-sort'              => 'true',
 			'review-comments-include-severity'  => 'true',
 			'review-comments-max'               => '50',
@@ -68,6 +71,7 @@ final class MainRunInitOptionsReviewsTest extends TestCase {
 			'review-comments-ignore'            => '  comment1.|||CoMMENt2  ',
 			'dismiss-stale-reviews'             => 'true',
 			'dismissed-reviews-repost-comments' => 'false',
+			'scan-details-msg-include'          => 'true',
 		);
 
 		vipgoci_run_init_options_reviews(
@@ -76,6 +80,7 @@ final class MainRunInitOptionsReviewsTest extends TestCase {
 
 		$this->assertSame(
 			array(
+				'report-no-issues-found'            => true,
 				'review-comments-sort'              => true,
 				'review-comments-include-severity'  => true,
 				'review-comments-max'               => 50,
@@ -83,6 +88,7 @@ final class MainRunInitOptionsReviewsTest extends TestCase {
 				'review-comments-ignore'            => array( 'comment1', 'comment2' ),
 				'dismiss-stale-reviews'             => true,
 				'dismissed-reviews-repost-comments' => false,
+				'scan-details-msg-include'          => true,
 				'dismissed-reviews-exclude-reviews-from-team' => array(),
 			),
 			$this->options

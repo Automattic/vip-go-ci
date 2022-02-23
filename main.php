@@ -29,6 +29,7 @@ function vipgoci_help_print() :void {
 		PHP_EOL .
 		'General configuration:' . PHP_EOL .
 		"\t" . '--help                         Displays this message' . PHP_EOL .
+		"\t" . '--version                      Displays version number and exits.' . PHP_EOL .
 		"\t" . '--debug-level=NUMBER           Specify minimum debug-level of messages to print' . PHP_EOL .
 		"\t" . '                                -- higher number indicates more detailed debugging-messages.' . PHP_EOL .
 		"\t" . '                               Default is zero' . PHP_EOL .
@@ -152,6 +153,8 @@ function vipgoci_help_print() :void {
 		"\t" . '                               All required for hashes-to-hashes requests.' . PHP_EOL .
 		PHP_EOL .
 		'GitHub reviews & generic comments configuration:' . PHP_EOL .
+		"\t" . '--report-no-issues-found=BOOL  Post message indicating no issues were found during scanning.' . PHP_EOL .
+		"\t" . '                               Enabled by default.' . PHP_EOL .
 		"\t" . '--review-comments-sort=BOOL    Sort issues found according to severity, from high' . PHP_EOL .
 		"\t" . '                               to low, before submitting to GitHub. Not sorted by default.' . PHP_EOL .
 		"\t" . '--review-comments-max=NUMBER   Maximum number of inline comments to submit' . PHP_EOL .
@@ -189,6 +192,8 @@ function vipgoci_help_print() :void {
 		"\t" . '                                                      The parameter expects a team slug, not ID.' . PHP_EOL .
 		"\t" . '--informational-msg=STRING     Message to append to GitHub reviews and generic comments. Useful to' . PHP_EOL .
 		"\t" . '                               explain what the bot does. Can contain HTML or Markdown.' . PHP_EOL .
+		"\t" . '--scan-details-msg-include=BOOL If to include additional detail about the scan, versions of' . PHP_EOL .
+		"\t" . '                                software used, options altered and so forth. Enabled by default.' . PHP_EOL .
 		PHP_EOL .
 		'Generic support comments configuration:' . PHP_EOL .
 		"\t" . '--post-generic-pr-support-comments=BOOL            Whether to post generic comment to pull requests' . PHP_EOL .
@@ -249,6 +254,7 @@ function vipgoci_options_recognized() :array {
 		 * General configuration.
 		 */
 		'help',
+		'version',
 		'debug-level:',
 		'max-exec-time:',
 		'enforce-https-urls:',
@@ -326,6 +332,7 @@ function vipgoci_options_recognized() :array {
 		/*
 		 * GitHub reviews & generic comments configuration
 		 */
+		'report-no-issues-found:',
 		'review-comments-sort:',
 		'review-comments-max:',
 		'review-comments-total-max:',
@@ -335,6 +342,7 @@ function vipgoci_options_recognized() :array {
 		'dismissed-reviews-repost-comments:',
 		'dismissed-reviews-exclude-reviews-from-team:',
 		'informational-msg:',
+		'scan-details-msg-include:',
 
 		/*
 		 * Generic support comments configuration
@@ -665,7 +673,7 @@ function vipgoci_run_init_options_svg( array &$options ) :void {
 	 * to be a boolean, the latter a file-path.
 	 */
 	vipgoci_option_bool_handle( $options, 'svg-checks', 'false' );
-	
+
 	/*
 	 * Process --svg-php-path if to do SVG scan --
 	 * expected to be a file, default value is 'php'
@@ -928,6 +936,15 @@ function vipgoci_run_init_options_autoapprove_hashes_overlap(
  */
 function vipgoci_run_init_options_reviews( array &$options ) :void {
 	/*
+	 * Process --report-no-issues-found
+	 */
+	vipgoci_option_bool_handle(
+		$options,
+		'report-no-issues-found',
+		'true'
+	);
+
+	/*
 	 * Process --review-comments-sort -- determines if to sort review comments by severity.
 	 * Also process --review-comments-include-severity -- will include severity in comments.
 	 */
@@ -1014,7 +1031,17 @@ function vipgoci_run_init_options_reviews( array &$options ) :void {
 		$options,
 		'dismissed-reviews-exclude-reviews-from-team'
 	);
+
+	/*
+	 * Process --scan-details-msg-include
+	 */
+	vipgoci_option_bool_handle(
+		$options,
+		'scan-details-msg-include',
+		'true'
+	);
 }
+
 
 /**
  * Set options relating to skipping large files.
@@ -1882,12 +1909,22 @@ function vipgoci_run_init_options_repo_options( array &$options ):void {
 			'valid_values' => array( true, false ),
 		),
 
+		'report-no-issues-found'                => array(
+			'type'         => 'boolean',
+			'valid_values' => array( true, false ),
+		),
+
 		'review-comments-include-severity'      => array(
 			'type'         => 'boolean',
 			'valid_values' => array( true, false ),
 		),
 
 		'review-comments-sort'                  => array(
+			'type'         => 'boolean',
+			'valid_values' => array( true, false ),
+		),
+
+		'scan-details-msg-include'              => array(
 			'type'         => 'boolean',
 			'valid_values' => array( true, false ),
 		),
@@ -2013,8 +2050,7 @@ function vipgoci_run_init_options(
 		( ! isset( $options['token'] ) ) ||
 		( empty( $options['token'] ) ) ||
 		( ! isset( $options['local-git-repo'] ) ) ||
-		( empty( $options['local-git-repo'] ) ) ||
-		( isset( $options['help'] ) )
+		( empty( $options['local-git-repo'] ) )
 	) {
 		vipgoci_help_print();
 		exit( VIPGOCI_EXIT_USAGE_ERROR );
@@ -2597,6 +2633,8 @@ function vipgoci_run_scan(
 			VIPGOCI_REVIEW_COMMENTS_TOTAL_MAX,
 			VIPGOCI_PHPCS_INVALID_SNIFFS,
 			VIPGOCI_PHPCS_DUPLICATE_SNIFFS,
+			VIPGOCI_NO_ISSUES_FOUND_MSG_AND_NO_REVIEWS,
+			VIPGOCI_NO_ISSUES_FOUND_MSG_AND_EXISTING_REVIEWS,
 		)
 	);
 
@@ -2605,7 +2643,7 @@ function vipgoci_run_scan(
 	 * on the pull request(s) with some helpful information.
 	 * Comment is set via option.
 	 */
-	vipgoci_github_pr_generic_support_comment_submit(
+	vipgoci_report_submit_pr_generic_support_comment(
 		$options,
 		$prs_implicated
 	);
@@ -2719,25 +2757,36 @@ function vipgoci_run_scan(
 		$results
 	);
 
+	if ( true === $options['scan-details-msg-include'] ) {
+		// Construct scan details message.
+		$scan_details_msg = vipgoci_report_create_scan_details(
+			vipgoci_options_sensitive_clean( $options )
+		);
+	} else {
+		$scan_details_msg = '';
+	}
+
 	/*
 	 * Submit any remaining issues to GitHub
 	 */
-	vipgoci_github_pr_generic_comment_submit_results(
-		$options['repo-owner'],
-		$options['repo-name'],
-		$options['token'],
-		$options['commit'],
-		$results,
-		$options['informational-msg']
-	);
-
-	vipgoci_github_pr_review_submit(
+	vipgoci_report_submit_pr_generic_comment_from_results(
 		$options['repo-owner'],
 		$options['repo-name'],
 		$options['token'],
 		$options['commit'],
 		$results,
 		$options['informational-msg'],
+		$scan_details_msg
+	);
+
+	vipgoci_report_submit_pr_review_from_results(
+		$options['repo-owner'],
+		$options['repo-name'],
+		$options['token'],
+		$options['commit'],
+		$results,
+		$options['informational-msg'],
+		$scan_details_msg,
 		$options['review-comments-max'],
 		$options['review-comments-include-severity'],
 		$options['skip-large-files-limit']
@@ -2762,6 +2811,22 @@ function vipgoci_run_scan(
 		$options,
 		$prs_comments_maxed
 	);
+
+	/*
+	 * If no issues found and configured to do so,
+	 * report this to the pull requests implicated.
+	 */
+	if ( true === $options['report-no-issues-found'] ) {
+		vipgoci_report_maybe_no_issues_found(
+			$options['repo-owner'],
+			$options['repo-name'],
+			$options['token'],
+			$options['commit'],
+			$prs_implicated,
+			$options['informational-msg'],
+			$scan_details_msg
+		);
+	}
 
 	/*
 	 * Log to IRC when files are skipped.
@@ -2882,9 +2947,6 @@ function vipgoci_run_init_vars() :array {
  * @codeCoverageIgnore
  */
 function vipgoci_run() :int {
-	// Do basic system check before continuing.
-	vipgoci_run_checks();
-
 	/*
 	 * Assign a few variables.
 	 */
@@ -2895,6 +2957,26 @@ function vipgoci_run() :int {
 		$options_recognized,
 		$prs_implicated
 	) = vipgoci_run_init_vars();
+
+	/*
+	 * Check if these option parameters are
+	 * present before continuing; if so, perform
+	 * the actions appropriate and then exit.
+	 */
+	if ( isset( $options['version'] ) ) {
+		// Version number requested; print and exit.
+		echo VIPGOCI_VERSION . PHP_EOL;
+
+		exit( 0 );
+	} elseif ( isset( $options['help'] ) ) {
+		// Print help message and exit.
+		vipgoci_help_print();
+
+		exit( 0 );
+	}
+
+	// Do basic system check before continuing.
+	vipgoci_run_checks();
 
 	// Clear the internal cache before doing anything.
 	vipgoci_cache( VIPGOCI_CACHE_CLEAR );
