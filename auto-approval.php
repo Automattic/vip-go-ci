@@ -354,6 +354,14 @@ function vipgoci_autoapproval_do_approve(
 				) .
 				').'
 		);
+
+		// Record that we submitted feedback to GitHub.
+		vipgoci_report_feedback_to_github_was_submitted(
+			$options['repo-owner'],
+			$options['repo-name'],
+			$pr_item->number,
+			true
+		);
 	} else {
 		vipgoci_log(
 			'Will not actually approve Pull-Request #' .
