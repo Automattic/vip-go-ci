@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.0](https://github.com/Automattic/vip-go-ci/releases/tag/1.2.0) - 2022-02-??
+
+### Updated
+- [#207](https://github.com/Automattic/vip-go-ci/pull/207): Break vipgoci_run() into multiple functions
+- [#205](https://github.com/Automattic/vip-go-ci/pull/205): Use new GitHub Teams API
+- [#236](https://github.com/Automattic/vip-go-ci/pull/236): Adding PHP 8.1 support and related changes
+- [#242](https://github.com/Automattic/vip-go-ci/pull/242): Adding version number to TODO in PULL_REQUEST_TEMPLATE
+- [#245](https://github.com/Automattic/vip-go-ci/pull/245): Different TODO items for test suites in PULL_REQUEST_TEMPLATE file
+- [#247](https://github.com/Automattic/vip-go-ci/pull/247): Apply WP CS for a few files
+- [#249](https://github.com/Automattic/vip-go-ci/pull/249): Update string function usage for PHP 8
+- [#250](https://github.com/Automattic/vip-go-ci/pull/250): Record that feedback was submitted on auto-approval, rename function
+- [#251](https://github.com/Automattic/vip-go-ci/pull/251): Fix PHPCS and support-level related tests
+
+### Added
+- [#246](https://github.com/Automattic/vip-go-ci/pull/246): Improve reporting to users
+
+### Resolved issues
+- [#238](https://github.com/Automattic/vip-go-ci/issues/238): Extra GitHub review posted when there are skipped files 
+- [#40](https://github.com/Automattic/vip-go-ci/issues/40): Leave a comment if no issues found
+- [#142](https://github.com/Automattic/vip-go-ci/issues/142): Move functions and functionality between files
+- [#145](https://github.com/Automattic/vip-go-ci/issues/145): In GitHub reviews, report which options were altered
+- [#144](https://github.com/Automattic/vip-go-ci/issues/144): Print folders that were not scanned
+- [#232](https://github.com/Automattic/vip-go-ci/issues/232): Report additional information in reviews 
+- [#192](https://github.com/Automattic/vip-go-ci/issues/192): Break vipgoci_run() into multiple functions
+- [#128](https://github.com/Automattic/vip-go-ci/issues/128): Use new GitHub's Teams API endpoints 
+
 ## [1.1.3](https://github.com/Automattic/vip-go-ci/releases/tag/1.1.3) - 2022-01-31
 
 ### Added
