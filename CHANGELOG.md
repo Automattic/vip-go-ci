@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file.
 - [#247](https://github.com/Automattic/vip-go-ci/pull/247): Apply WP CS for a few files
 - [#249](https://github.com/Automattic/vip-go-ci/pull/249): Update string function usage for PHP 8
 - [#250](https://github.com/Automattic/vip-go-ci/pull/250): Record that feedback was submitted on auto-approval, rename function
+- [#251](https://github.com/Automattic/vip-go-ci/pull/251): Fix PHPCS and support-level related tests
 
 ### Added
 - [#246](https://github.com/Automattic/vip-go-ci/pull/246): Improve reporting to users
