@@ -1909,12 +1909,22 @@ function vipgoci_run_init_options_repo_options( array &$options ):void {
 			'valid_values' => array( true, false ),
 		),
 
+		'report-no-issues-found'                => array(
+			'type'         => 'boolean',
+			'valid_values' => array( true, false ),
+		),
+
 		'review-comments-include-severity'      => array(
 			'type'         => 'boolean',
 			'valid_values' => array( true, false ),
 		),
 
 		'review-comments-sort'                  => array(
+			'type'         => 'boolean',
+			'valid_values' => array( true, false ),
+		),
+
+		'scan-details-msg-include'              => array(
 			'type'         => 'boolean',
 			'valid_values' => array( true, false ),
 		),
