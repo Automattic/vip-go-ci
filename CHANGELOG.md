@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
 - [#242](https://github.com/Automattic/vip-go-ci/pull/242): Adding version number to TODO in PULL_REQUEST_TEMPLATE
 - [#245](https://github.com/Automattic/vip-go-ci/pull/245): Different TODO items for test suites in PULL_REQUEST_TEMPLATE file
 - [#247](https://github.com/Automattic/vip-go-ci/pull/247): Apply WP CS for a few files
+- [#249](https://github.com/Automattic/vip-go-ci/pull/249): Update string function usage for PHP 8
 
 ### Added
 - [#246](https://github.com/Automattic/vip-go-ci/pull/246): Improve reporting to users
