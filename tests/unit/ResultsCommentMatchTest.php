@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
-require_once( __DIR__ . './../../misc.php' );
+require_once __DIR__ . '/../../results.php';
 
 use PHPUnit\Framework\TestCase;
 
 // phpcs:disable PSR1.Files.SideEffects
 
-final class MiscGitHubCommentMatchTest extends TestCase {
+final class ResultsCommentMatchTest extends TestCase {
 	/**
-	 * @covers ::vipgoci_github_comment_match
+	 * @covers ::vipgoci_results_comment_match
 	 */
 	public function testCommentMatch1() {
 		$prs_comments = array(
@@ -56,7 +56,7 @@ final class MiscGitHubCommentMatchTest extends TestCase {
 
 
 		$this->assertTrue(
-			vipgoci_github_comment_match(
+			vipgoci_results_comment_match(
 				'bla-8.php',
 				3,
 				'Extension \'mysql_\' is deprecated since PHP 5.5 and removed since PHP 7.0; Use mysqli instead',
@@ -65,7 +65,7 @@ final class MiscGitHubCommentMatchTest extends TestCase {
 		);
 
 		$this->assertTrue(
-			vipgoci_github_comment_match(
+			vipgoci_results_comment_match(
 				'bla-8.php',
 				3,
 				'Any HTML passed to `innerHTML` gets executed. Consider using `.textContent` or make sure that used variables are properly escaped',
@@ -74,7 +74,7 @@ final class MiscGitHubCommentMatchTest extends TestCase {
 		);
 
 		$this->assertFalse(
-			vipgoci_github_comment_match(
+			vipgoci_results_comment_match(
 				'bla-8.php',
 				3,
 				'The extension \'mysql_\' is deprecated since PHP 5.5 and removed since PHP 7.0; Use mysqli instead',
@@ -83,7 +83,7 @@ final class MiscGitHubCommentMatchTest extends TestCase {
 		);
 
 		$this->assertFalse(
-			vipgoci_github_comment_match(
+			vipgoci_results_comment_match(
 				'bla-8.php',
 				4,
 				'Extension \'mysql_\' is deprecated since PHP 5.5 and removed since PHP 7.0; Use mysqli instead',
@@ -92,7 +92,7 @@ final class MiscGitHubCommentMatchTest extends TestCase {
 		);
 
 		$this->assertFalse(
-			vipgoci_github_comment_match(
+			vipgoci_results_comment_match(
 				'bla-8.php',
 				4,
 				'Any HTML passed to `innerHTML` gets executed. Consider using `.textContent` or make sure that used variables are properly escaped',
@@ -102,7 +102,7 @@ final class MiscGitHubCommentMatchTest extends TestCase {
 
 
 		$this->assertFalse(
-			vipgoci_github_comment_match(
+			vipgoci_results_comment_match(
 				'bla-9.php',
 				3,
 				'Extension \'mysql_\' is deprecated since PHP 5.5 and removed since PHP 7.0; Use mysqli instead',
@@ -115,7 +115,7 @@ final class MiscGitHubCommentMatchTest extends TestCase {
 		 * Test with severity level
 		 */
 		$this->assertTrue(
-			vipgoci_github_comment_match(
+			vipgoci_results_comment_match(
 				'bla-11.php',
 				5,
 				'Extension \'mysql_\' is deprecated since PHP 5.5 and removed since PHP 7.0; Use mysqli instead',
@@ -124,7 +124,7 @@ final class MiscGitHubCommentMatchTest extends TestCase {
 		);
 
 		$this->assertFalse(
-			vipgoci_github_comment_match(
+			vipgoci_results_comment_match(
 				'bla-11.php',
 				5,
 				'Extension \'mysql_\' is deprecated since PHP 300 and removed since PHP 700; Use mysqli instead',

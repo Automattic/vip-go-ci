@@ -360,6 +360,20 @@ To have a message posted, simply run `vip-go-ci` with a `--informational-msg` pa
 
 The message will be included in any generic pull request comments or pull request reviews submitted.
 
+### Scan details message
+
+If to include additional detail about the scan, versions of software used, options altered and so forth. 
+
+The option can be used in this way:
+
+> ./vip-go-ci.php --scan-details-msg-include=false
+
+This option can be configured via repository-config file as well:
+
+```
+{"scan-details-msg-include":true}
+```
+
 ### PHP Linting configuration
 
 By default, `vip-go-ci` will PHP lint any files modified by the current pull request. PHP linting is performed by running `php -l`. 
@@ -537,6 +551,20 @@ This feature can be disabled by setting the `--skip-large-files` parameter to `f
 
 Review comments posted can be configured and number of them limited.
 
+#### Report no issues found
+
+If to post message indicating no issues were found during scanning.
+
+The option can be used in this way:
+
+> ./vip-go-ci.php --report-no-issues-found=false
+
+This option can be configured via repository-config file as well:
+
+```
+{"report-no-issues-found":true}
+```
+
 #### Sorting review comments
 
 One can sort the review comments posted according to severity of the issue found. This applies to any issue, PHPCS, SVG, etc. This is disabled by default.
@@ -681,7 +709,7 @@ All utilities in `tools-init.sh` follow the same pattern.
 
 To run the tests for `vip-go-ci`, you will need to install `phpunit` and any dependencies needed (this would include `xdebug`).
 
-Note that the test suite uses the @runTestsInSeparateProcesses and @preserveGlobalState PHPUnit flags to avoid any influence of one test on another.
+Note that the test suite uses the `@runTestsInSeparateProcesses` and `@preserveGlobalState` PHPUnit flags to avoid any influence of one test on another. Further, tests should include all required files in `setUp()` function to avoid the same function being defined multiple times across multiple tests during the same run. Combining the usage of `@runTestsInSeparateProcesses` and the inclusion of required files in `setUp()` means each test is independent of other tests, which enables functions to be defined for each test easily.
 
 ### Setting up test suite
 

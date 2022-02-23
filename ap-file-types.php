@@ -1,6 +1,13 @@
 <?php
+/**
+ * Auto-approve based on file-types.
+ *
+ * @package Automattic/vip-go-ci
+ */
 
-/*
+declare(strict_types=1);
+
+/**
  * Process all files in the PRs
  * involved with the commit specified.
  *
@@ -9,28 +16,26 @@
  * fit the criteria of having certain file-endings.
  * The allowable file-endings are specifiable
  * via the command-line.
+ *
+ * @param array $options                 Options needed.
+ * @param array $auto_approved_files_arr Array of auto-approved files.
  */
-
 function vipgoci_ap_file_types(
-		$options,
-		&$auto_approved_files_arr
-	) {
-
+	array $options,
+	array &$auto_approved_files_arr
+) :void {
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'ap_file_types' );
 
 	vipgoci_log(
 		'Doing auto-approval scanning based on file-types',
 		array(
-			'repo_owner'	=> $options['repo-owner'],
-			'repo_name'	=> $options['repo-name'],
-			'commit_id'	=> $options['commit'],
-			'autoapprove'	=> $options['autoapprove'],
-
-			'autoapprove-filetypes' =>
-				$options['autoapprove-filetypes'],
+			'repo_owner'            => $options['repo-owner'],
+			'repo_name'             => $options['repo-name'],
+			'commit_id'             => $options['commit'],
+			'autoapprove'           => $options['autoapprove'],
+			'autoapprove-filetypes' => $options['autoapprove-filetypes'],
 		)
 	);
-
 
 	$prs_implicated = vipgoci_github_prs_implicated(
 		$options['repo-owner'],
@@ -41,7 +46,6 @@ function vipgoci_ap_file_types(
 		$options['skip-draft-prs']
 	);
 
-
 	foreach ( $prs_implicated as $pr_item ) {
 		$pr_diff = vipgoci_git_diffs_fetch(
 			$options['local-git-repo'],
@@ -50,9 +54,9 @@ function vipgoci_ap_file_types(
 			$options['token'],
 			$pr_item->base->sha,
 			$options['commit'],
-			true, // renamed files included
-			true, // removed files included
-			true, // permission changes included
+			true, // Renamed files included.
+			true, // Removed files included.
+			true, // Permission changes included.
 			null
 		);
 
@@ -72,9 +76,7 @@ function vipgoci_ap_file_types(
 			 * of approved files, do not do anything.
 			 */
 			if ( isset(
-				$auto_approved_files_arr[
-					$pr_diff_file_name
-				]
+				$auto_approved_files_arr[ $pr_diff_file_name ]
 			) ) {
 				continue;
 			}
@@ -93,15 +95,14 @@ function vipgoci_ap_file_types(
 				$options['autoapprove-filetypes'],
 				true
 			) ) {
-				$auto_approved_files_arr[
-					$pr_diff_file_name
-				] = 'autoapprove-filetypes';
+				$auto_approved_files_arr[ $pr_diff_file_name ]
+					= 'autoapprove-filetypes';
 			}
 		}
 	}
 
 	/*
-	 * Reduce memory-usage as possible
+	 * Reduce memory-usage as possible.
 	 */
 	unset( $prs_implicated );
 	unset( $pr_diff );

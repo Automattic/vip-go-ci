@@ -34,14 +34,37 @@ final class PhpcsScanPossiblyUseNewStandardFileTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_phpcs_possibly_use_new_standard_file
 	 */
-	public function testDoNotUseNewstandardFileTest() {
-		$this->assertEmpty(
-			$this->options['phpcs-sniffs-include']
-		);
+	public function testPhpcsDisabledTest() {
+		$this->options['phpcs'] = false;
+
+		vipgoci_unittests_output_suppress();
 
 		vipgoci_phpcs_possibly_use_new_standard_file(
 			$this->options
 		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		$this->assertFalse(
+			$this->options['phpcs-standard-file']
+		);
+
+		$this->assertFalse(
+			isset( $this->options['phpcs-standard-original'] )
+		);
+	}
+
+	/**
+	 * @covers ::vipgoci_phpcs_possibly_use_new_standard_file
+	 */
+	public function testDoNotUseNewstandardFileTest() {
+		vipgoci_unittests_output_suppress();
+
+		vipgoci_phpcs_possibly_use_new_standard_file(
+			$this->options
+		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertFalse(
 			$this->options['phpcs-standard-file']
@@ -50,6 +73,10 @@ final class PhpcsScanPossiblyUseNewStandardFileTest extends TestCase {
 		$this->assertSame(
 			$this->original_standard,
 			$this->options['phpcs-standard']
+		);
+
+		$this->assertFalse(
+			isset( $this->options['phpcs-standard-original'] )
 		);
 	}
 
@@ -61,9 +88,13 @@ final class PhpcsScanPossiblyUseNewStandardFileTest extends TestCase {
 			'WordPress.DB.RestrictedFunctions'
 		);
 
+		vipgoci_unittests_output_suppress();
+
 		vipgoci_phpcs_possibly_use_new_standard_file(
 			$this->options
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertTrue(
 			$this->options['phpcs-standard-file']
@@ -78,6 +109,15 @@ final class PhpcsScanPossiblyUseNewStandardFileTest extends TestCase {
 			file_exists(
 				$this->options['phpcs-standard'][0]
 			)
+		);
+
+		$this->assertIsArray(
+			$this->options['phpcs-standard-original']
+		);
+
+		$this->assertGreaterThanOrEqual(
+			1,
+			count( $this->options['phpcs-standard-original'] )
 		);
 	}
 }

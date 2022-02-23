@@ -4,18 +4,16 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
-require_once( __DIR__ . './../../misc.php' );
+require_once __DIR__ . '/../../results.php';
 
 use PHPUnit\Framework\TestCase;
 
-// phpcs:disable PSR1.Files.SideEffects
-
-final class PhpcsScanIssuesFilterDuplicateTest extends TestCase {
+final class ResultsFilterDuplicateTest extends TestCase {
 	/**
-	 * @covers ::vipgoci_issues_filter_duplicate
+	 * @covers ::vipgoci_results_filter_duplicate
 	 */
 	public function testFilterDuplicate1() {
-		$issues_filtered = vipgoci_issues_filter_duplicate(
+		$issues_filtered = vipgoci_results_filter_duplicate(
 			array(
 				array(
 					'message' => 'json_encode() is discouraged. Use wp_json_encode() instead.',
@@ -70,10 +68,10 @@ final class PhpcsScanIssuesFilterDuplicateTest extends TestCase {
 	}
 
 	/**
-	 * @covers ::vipgoci_issues_filter_duplicate
+	 * @covers ::vipgoci_results_filter_duplicate
 	 */
 	public function testFilterDuplicate2() {
-		$issues_filtered = vipgoci_issues_filter_duplicate(
+		$issues_filtered = vipgoci_results_filter_duplicate(
 			array(
 				array(
 					'message' => 'json_encode() is discouraged. Use wp_json_encode() instead.',

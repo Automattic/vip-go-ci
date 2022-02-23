@@ -1,4 +1,6 @@
 <?php
 /**
- * @todo: add with autoload
+ * Autoload for PHPUnit tests.
+ *
+ * @package Automattic/vip-go-ci
  */

@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
-require_once( __DIR__ . './../../misc.php' );
+require_once( __DIR__ . './../../cache.php' );
 
 use PHPUnit\Framework\TestCase;
 
 // phpcs:disable PSR1.Files.SideEffects
 
-final class MiscCachedIndicationStrTest extends TestCase {
+final class CacheCachedIndicationStrTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_cached_indication_str
 	 */

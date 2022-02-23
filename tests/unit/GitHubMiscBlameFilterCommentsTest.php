@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 // phpcs:disable PSR1.Files.SideEffects
 
-final class MiscBlameFilterCommentsTest extends TestCase {
+final class GitHubMiscBlameFilterCommentsTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_blame_filter_commits
 	 */

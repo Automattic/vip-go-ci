@@ -8,9 +8,7 @@ require_once( __DIR__ . './../../misc.php' );
 
 use PHPUnit\Framework\TestCase;
 
-// phpcs:disable PSR1.Files.SideEffects
-
-final class MiscMarkdownCommentAddPagebreakTest extends TestCase {
+final class GitHubMiscMarkdownCommentAddPagebreakTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_markdown_comment_add_pagebreak
 	 */
