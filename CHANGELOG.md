@@ -16,14 +16,14 @@ All notable changes to this project will be documented in this file.
 - [#246](https://github.com/Automattic/vip-go-ci/pull/246): Improve reporting to users
 
 ### Resolved issues
-- [#238](https://github.com/Automattic/vip-go-ci/issue/238): Extra GitHub review posted when there are skipped files 
-- [#40](https://github.com/Automattic/vip-go-ci/issue/40): Leave a comment if no issues found
-- [#142](https://github.com/Automattic/vip-go-ci/issue/142): Move functions and functionality between files
-- [#145](https://github.com/Automattic/vip-go-ci/issue/145): In GitHub reviews, report which options were altered
-- [#144](https://github.com/Automattic/vip-go-ci/issue/144): Print folders that were not scanned
-- [#232](https://github.com/Automattic/vip-go-ci/issue/232): Report additional information in reviews 
-- [#192](https://github.com/Automattic/vip-go-ci/issue/192): Break vipgoci_run() into multiple functions
-- [#128](https://github.com/Automattic/vip-go-ci/issue/128): Use new GitHub's Teams API endpoints 
+- [#238](https://github.com/Automattic/vip-go-ci/issues/238): Extra GitHub review posted when there are skipped files 
+- [#40](https://github.com/Automattic/vip-go-ci/issues/40): Leave a comment if no issues found
+- [#142](https://github.com/Automattic/vip-go-ci/issues/142): Move functions and functionality between files
+- [#145](https://github.com/Automattic/vip-go-ci/issues/145): In GitHub reviews, report which options were altered
+- [#144](https://github.com/Automattic/vip-go-ci/issues/144): Print folders that were not scanned
+- [#232](https://github.com/Automattic/vip-go-ci/issues/232): Report additional information in reviews 
+- [#192](https://github.com/Automattic/vip-go-ci/issues/192): Break vipgoci_run() into multiple functions
+- [#128](https://github.com/Automattic/vip-go-ci/issues/128): Use new GitHub's Teams API endpoints 
 
 ## [1.1.3](https://github.com/Automattic/vip-go-ci/releases/tag/1.1.3) - 2022-01-31
 
