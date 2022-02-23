@@ -457,7 +457,7 @@ function vipgoci_report_create_scan_details(
  *
  * @return bool True if feedback has been submitted at any time, else false.
  */
-function vipgoci_report_results_to_github_were_submitted(
+function vipgoci_report_feedback_to_github_was_submitted(
 	string $repo_owner,
 	string $repo_name,
 	int $pr_number,
@@ -516,7 +516,7 @@ function vipgoci_report_maybe_no_issues_found(
 	);
 
 	foreach ( $prs_implicated as $pr_item ) {
-		if ( true === vipgoci_report_results_to_github_were_submitted(
+		if ( true === vipgoci_report_feedback_to_github_was_submitted(
 			$repo_owner,
 			$repo_name,
 			$pr_item->number
@@ -780,7 +780,7 @@ function vipgoci_report_submit_pr_generic_comment_from_results(
 			$github_token
 		);
 
-		vipgoci_report_results_to_github_were_submitted(
+		vipgoci_report_feedback_to_github_was_submitted(
 			$repo_owner,
 			$repo_name,
 			$pr_number,
@@ -1238,7 +1238,7 @@ function vipgoci_report_submit_pr_review_from_results(
 				$github_token
 			);
 
-			vipgoci_report_results_to_github_were_submitted(
+			vipgoci_report_feedback_to_github_was_submitted(
 				$repo_owner,
 				$repo_name,
 				$pr_number,

@@ -1,6 +1,6 @@
 <?php
 /**
- * Test vipgoci_report_results_to_github_were_submitted() function.
+ * Test vipgoci_report_feedback_to_github_was_submitted() function.
  *
  * @package Automattic/vip-go-ci
  */
@@ -26,14 +26,14 @@ final class ReportResultsToGithubWereSubmittedTest extends TestCase {
 	}
 
 	/**
-	 * Call vipgoci_report_results_to_github_were_submitted() in different ways,
+	 * Call vipgoci_report_feedback_to_github_was_submitted() in different ways,
 	 * test if it behaves as it should do.
 	 *
-	 * @covers ::vipgoci_report_results_to_github_were_submitted
+	 * @covers ::vipgoci_report_feedback_to_github_was_submitted
 	 */
 	public function testReportResultsToGitHubSubmitted(): void {
 		$this->assertFalse(
-			vipgoci_report_results_to_github_were_submitted(
+			vipgoci_report_feedback_to_github_was_submitted(
 				'test-owner',
 				'test-name',
 				1,
@@ -42,7 +42,7 @@ final class ReportResultsToGithubWereSubmittedTest extends TestCase {
 		);
 
 		$this->assertFalse(
-			vipgoci_report_results_to_github_were_submitted(
+			vipgoci_report_feedback_to_github_was_submitted(
 				'test-owner',
 				'test-name',
 				1
@@ -50,7 +50,7 @@ final class ReportResultsToGithubWereSubmittedTest extends TestCase {
 		);
 
 		$this->assertFalse(
-			vipgoci_report_results_to_github_were_submitted(
+			vipgoci_report_feedback_to_github_was_submitted(
 				'test-owner',
 				'test-name',
 				2,
@@ -59,7 +59,7 @@ final class ReportResultsToGithubWereSubmittedTest extends TestCase {
 		);
 
 		$this->assertFalse(
-			vipgoci_report_results_to_github_were_submitted(
+			vipgoci_report_feedback_to_github_was_submitted(
 				'test-owner',
 				'test-name',
 				2
@@ -67,7 +67,7 @@ final class ReportResultsToGithubWereSubmittedTest extends TestCase {
 		);
 
 		$this->assertTrue(
-			vipgoci_report_results_to_github_were_submitted(
+			vipgoci_report_feedback_to_github_was_submitted(
 				'test-owner',
 				'test-name',
 				1,
@@ -76,7 +76,7 @@ final class ReportResultsToGithubWereSubmittedTest extends TestCase {
 		);
 
 		$this->assertTrue(
-			vipgoci_report_results_to_github_were_submitted(
+			vipgoci_report_feedback_to_github_was_submitted(
 				'test-owner',
 				'test-name',
 				1
@@ -85,7 +85,7 @@ final class ReportResultsToGithubWereSubmittedTest extends TestCase {
 
 		// Set PR number 1 again to false; should have no effect.
 		$this->assertTrue(
-			vipgoci_report_results_to_github_were_submitted(
+			vipgoci_report_feedback_to_github_was_submitted(
 				'test-owner',
 				'test-name',
 				1,
@@ -95,7 +95,7 @@ final class ReportResultsToGithubWereSubmittedTest extends TestCase {
 
 		// Test PR number 1 again.
 		$this->assertTrue(
-			vipgoci_report_results_to_github_were_submitted(
+			vipgoci_report_feedback_to_github_was_submitted(
 				'test-owner',
 				'test-name',
 				1
@@ -104,7 +104,7 @@ final class ReportResultsToGithubWereSubmittedTest extends TestCase {
 
 		// Set to false before; should be false.
 		$this->assertFalse(
-			vipgoci_report_results_to_github_were_submitted(
+			vipgoci_report_feedback_to_github_was_submitted(
 				'test-owner',
 				'test-name',
 				2
@@ -113,7 +113,7 @@ final class ReportResultsToGithubWereSubmittedTest extends TestCase {
 
 		// Never set before; should be false.
 		$this->assertFalse(
-			vipgoci_report_results_to_github_were_submitted(
+			vipgoci_report_feedback_to_github_was_submitted(
 				'test-owner',
 				'test-name',
 				3
