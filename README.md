@@ -360,6 +360,20 @@ To have a message posted, simply run `vip-go-ci` with a `--informational-msg` pa
 
 The message will be included in any generic pull request comments or pull request reviews submitted.
 
+### Scan details message
+
+If to include additional detail about the scan, versions of software used, options altered and so forth. 
+
+The option can be used in this way:
+
+> ./vip-go-ci.php --scan-details-msg-include=false
+
+This option can be configured via repository-config file as well:
+
+```
+{"scan-details-msg-include":true}
+```
+
 ### PHP Linting configuration
 
 By default, `vip-go-ci` will PHP lint any files modified by the current pull request. PHP linting is performed by running `php -l`. 
@@ -536,6 +550,20 @@ This feature can be disabled by setting the `--skip-large-files` parameter to `f
 ### Configuring review comments 
 
 Review comments posted can be configured and number of them limited.
+
+#### Report no issues found
+
+If to post message indicating no issues were found during scanning.
+
+The option can be used in this way:
+
+> ./vip-go-ci.php --report-no-issues-found=false
+
+This option can be configured via repository-config file as well:
+
+```
+{"report-no-issues-found":true}
+```
 
 #### Sorting review comments
 
