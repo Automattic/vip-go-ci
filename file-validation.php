@@ -64,7 +64,7 @@ function vipgoci_is_number_of_lines_valid( string $temp_file_name, string $file_
 	vipgoci_log( 'Validating number of lines', array( 'file_name' => $file_name ) );
 
 	$output = vipgoci_sanitize_string(
-		vipgoci_runtime_measure_shell_exec( $cmd, 'file_validation' )
+		vipgoci_runtime_measure_shell_exec_with_retry( $cmd, 'file_validation' )
 	);
 
 	vipgoci_log(

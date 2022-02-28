@@ -25,7 +25,7 @@ function vipgoci_git_version(): ?string {
 	);
 
 	/* Actually execute */
-	$git_version_results = vipgoci_runtime_measure_shell_exec(
+	$git_version_results = vipgoci_runtime_measure_shell_exec_with_retry(
 		$git_version_cmd,
 		'git_cli'
 	);
@@ -117,7 +117,7 @@ function vipgoci_gitrepo_get_head( $local_git_repo ) {
 	);
 
 	/* Actually execute */
-	$result = vipgoci_runtime_measure_shell_exec(
+	$result = vipgoci_runtime_measure_shell_exec_with_retry(
 		$cmd,
 		'git_cli'
 	);
@@ -151,7 +151,7 @@ function vipgoci_gitrepo_branch_current_get( $local_git_repo ) {
 	);
 
 	/* Actually execute */
-	$results = vipgoci_runtime_measure_shell_exec(
+	$results = vipgoci_runtime_measure_shell_exec_with_retry(
 		$cmd,
 		'git_cli'
 	);
@@ -374,7 +374,7 @@ function vipgoci_gitrepo_blame_for_file(
 	);
 
 	/* Actually execute */
-	$result = vipgoci_runtime_measure_shell_exec(
+	$result = vipgoci_runtime_measure_shell_exec_with_retry(
 		$cmd,
 		'git_cli'
 	);
@@ -551,7 +551,7 @@ function vipgoci_gitrepo_get_file_at_commit(
 	);
 
 	/* Actually execute */
-	$result = vipgoci_runtime_measure_shell_exec(
+	$result = vipgoci_runtime_measure_shell_exec_with_retry(
 		$cmd,
 		'git_cli'
 	);
@@ -585,7 +585,7 @@ function vipgoci_gitrepo_submodules_setup( $local_git_repo ) {
 	);
 
 	/* Actually execute */
-	$result = vipgoci_runtime_measure_shell_exec(
+	$result = vipgoci_runtime_measure_shell_exec_with_retry(
 		$cmd,
 		'git_cli'
 	);
@@ -621,7 +621,7 @@ function vipgoci_gitrepo_submodules_list( $local_git_repo ) {
 	);
 
 	/* Actually execute */
-	$result = vipgoci_runtime_measure_shell_exec(
+	$result = vipgoci_runtime_measure_shell_exec_with_retry(
 		$cmd,
 		'git_cli'
 	);
@@ -857,7 +857,7 @@ function vipgoci_gitrepo_diffs_fetch_unfiltered(
 	);
 
 	/* Actually execute */
-	$git_diff_results = vipgoci_runtime_measure_shell_exec(
+	$git_diff_results = vipgoci_runtime_measure_shell_exec_with_retry(
 		$git_diff_cmd,
 		'git_cli'
 	);

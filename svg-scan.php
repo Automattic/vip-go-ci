@@ -44,7 +44,7 @@ function vipgoci_svg_do_scan_with_scanner(
 	);
 
 	/* Actually execute */
-	$result = vipgoci_runtime_measure_shell_exec(
+	$result = vipgoci_runtime_measure_shell_exec_with_retry(
 		$cmd,
 		'svg_scanner_cli'
 	);

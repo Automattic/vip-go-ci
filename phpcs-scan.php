@@ -26,7 +26,7 @@ function vipgoci_phpcs_get_version(
 		escapeshellarg( '--version' )
 	);
 
-	$phpcs_output = vipgoci_runtime_measure_shell_exec(
+	$phpcs_output = vipgoci_runtime_measure_shell_exec_with_retry(
 		$cmd,
 		'phpcs_cli'
 	);
@@ -163,7 +163,7 @@ function vipgoci_phpcs_do_scan(
 	);
 
 	/* Actually execute */
-	$result = vipgoci_runtime_measure_shell_exec(
+	$result = vipgoci_runtime_measure_shell_exec_with_retry(
 		$cmd,
 		'phpcs_cli'
 	);
@@ -1106,7 +1106,7 @@ function vipgoci_phpcs_get_all_standards(
 	);
 
 	/* Actually execute */
-	$result = vipgoci_runtime_measure_shell_exec(
+	$result = vipgoci_runtime_measure_shell_exec_with_retry(
 		$cmd,
 		'phpcs_cli'
 	);
@@ -1185,7 +1185,7 @@ function vipgoci_phpcs_get_sniffs_for_standard(
 	);
 
 	/* Actually execute */
-	$result = vipgoci_runtime_measure_shell_exec(
+	$result = vipgoci_runtime_measure_shell_exec_with_retry(
 		$cmd,
 		'phpcs_cli'
 	);
