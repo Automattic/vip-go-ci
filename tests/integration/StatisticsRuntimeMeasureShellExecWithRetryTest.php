@@ -55,9 +55,9 @@ final class StatisticsRuntimeMeasureShellExecWithRetryTest extends TestCase {
 			VIPGOCI_RUNTIME_DUMP
 		);
 
-		$this->assertGreaterThanOrEqual(
-			1,
-			$runtime_stats['mytimer10']
+		$this->assertTrue(
+			( 1 <= $runtime_stats['mytimer10'] ) &&
+			( 10 > $runtime_stats['mytimer10'] )
 		);
 	}
 
@@ -117,6 +117,11 @@ final class StatisticsRuntimeMeasureShellExecWithRetryTest extends TestCase {
 			$return
 		);
 
+		/*
+		 * Ensure all files that should have been
+		 * created by helper script were really created.
+		 * If not, it indicates that retries were not attempted.
+		 */
 		$this->assertSame(
 			'0',
 			file_get_contents( $path_to_temp_for_cli . DIRECTORY_SEPARATOR . '0' )
