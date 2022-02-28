@@ -162,11 +162,11 @@ function vipgoci_phpcs_do_scan(
 		0
 	);
 
-	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'phpcs_cli' );
-
-	$result = shell_exec( $cmd );
-
-	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'phpcs_cli' );
+	/* Actually execute */
+	$result = vipgoci_runtime_measure_shell_exec(
+		$cmd,
+		'phpcs_cli'
+	);
 
 	/* Remove linebreak PHPCS possibly adds */
 	$result = rtrim( $result, "\n" );
@@ -1105,11 +1105,11 @@ function vipgoci_phpcs_get_all_standards(
 		0
 	);
 
-	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'phpcs_cli' );
-
-	$result = shell_exec( $cmd );
-
-	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'phpcs_cli' );
+	/* Actually execute */
+	$result = vipgoci_runtime_measure_shell_exec(
+		$cmd,
+		'phpcs_cli'
+	);
 
 	$result = str_replace(
 		array( 'The installed coding standards are', ' and ', ' ' ),
@@ -1184,11 +1184,11 @@ function vipgoci_phpcs_get_sniffs_for_standard(
 		0
 	);
 
-	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'phpcs_cli' );
-
-	$result = shell_exec( $cmd );
-
-	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'phpcs_cli' );
+	/* Actually execute */
+	$result = vipgoci_runtime_measure_shell_exec(
+		$cmd,
+		'phpcs_cli'
+	);
 
 	$sniffs_arr = explode(
 		"\n",
