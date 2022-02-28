@@ -117,11 +117,10 @@ function vipgoci_gitrepo_get_head( $local_git_repo ) {
 	);
 
 	/* Actually execute */
-	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'git_cli' );
-
-	$result = shell_exec( $cmd );
-
-	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'git_cli' );
+	$result = vipgoci_runtime_measure_shell_exec(
+		$cmd,
+		'git_cli'
+	);
 
 	/*
 	 * Trim any whitespace characters away
@@ -152,11 +151,10 @@ function vipgoci_gitrepo_branch_current_get( $local_git_repo ) {
 	);
 
 	/* Actually execute */
-	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'git_cli' );
-
-	$results = shell_exec( $cmd );
-
-	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'git_cli' );
+	$results = vipgoci_runtime_measure_shell_exec(
+		$cmd,
+		'git_cli'
+	);
 
 	/*
 	 * Split results into array
@@ -375,13 +373,11 @@ function vipgoci_gitrepo_blame_for_file(
 		escapeshellarg( $file_name )
 	);
 
-
 	/* Actually execute */
-	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'git_cli' );
-
-	$result = shell_exec( $cmd );
-
-	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'git_cli' );
+	$result = vipgoci_runtime_measure_shell_exec(
+		$cmd,
+		'git_cli'
+	);
 
 	/*
 	 * Process the output from git,
@@ -555,11 +551,10 @@ function vipgoci_gitrepo_get_file_at_commit(
 	);
 
 	/* Actually execute */
-	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'git_cli' );
-
-	$result = shell_exec( $cmd );
-
-	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'git_cli' );
+	$result = vipgoci_runtime_measure_shell_exec(
+		$cmd,
+		'git_cli'
+	);
 
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'git_repo_get_file_at_commit' );
 
@@ -590,11 +585,10 @@ function vipgoci_gitrepo_submodules_setup( $local_git_repo ) {
 	);
 
 	/* Actually execute */
-	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'git_cli' );
-
-	$result = shell_exec( $cmd );
-
-	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'git_cli' );
+	$result = vipgoci_runtime_measure_shell_exec(
+		$cmd,
+		'git_cli'
+	);
 
 	return $result;
 }
@@ -627,11 +621,10 @@ function vipgoci_gitrepo_submodules_list( $local_git_repo ) {
 	);
 
 	/* Actually execute */
-	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'git_cli' );
-
-	$result = shell_exec( $cmd );
-
-	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'git_cli' );
+	$result = vipgoci_runtime_measure_shell_exec(
+		$cmd,
+		'git_cli'
+	);
 
 	$result = explode(
 		"\n",
