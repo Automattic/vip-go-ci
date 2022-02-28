@@ -2,7 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.2.0](https://github.com/Automattic/vip-go-ci/releases/tag/1.2.0) - 2022-02-??
+## [1.2.1](https://github.com/Automattic/vip-go-ci/releases/tag/1.2.1) - 2022-03-??
+
+### Added
+- [#253](https://github.com/Automattic/vip-go-ci/pull/253): Extend vipgoci_runtime_measure_shell_exec() with retry capabilities, and rename function 
+
+### Updated
+- [#252](https://github.com/Automattic/vip-go-ci/pull/252): Improve output escaping
+
+## [1.2.0](https://github.com/Automattic/vip-go-ci/releases/tag/1.2.0) - 2022-02-23
 
 ### Updated
 - [#207](https://github.com/Automattic/vip-go-ci/pull/207): Break vipgoci_run() into multiple functions
