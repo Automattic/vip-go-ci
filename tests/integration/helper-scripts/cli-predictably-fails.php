@@ -9,6 +9,12 @@
 
 declare(strict_types=1);
 
+/*
+ * Do not display errors. If set to on, PHPUnit
+ * tests will fail when this script fails.
+ */
+ini_set('display_errors', 'off');
+
 if ( empty( $argv[1] ) ) {
 	echo 'Incorrect usage' . PHP_EOL;
 	exit( 10 );
