@@ -240,7 +240,7 @@ function vipgoci_auto_approval_non_approval(
 			$options['repo-name'],
 			(int) $pr_item->number,
 			(int) $pr_item_review->id,
-			vipgoci_output_html_escape('Dismissing obsolete review; not approved any longer'),
+			vipgoci_output_html_escape( 'Dismissing obsolete review; not approved any longer' ),
 			$options['token']
 		);
 	}
