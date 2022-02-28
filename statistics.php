@@ -150,7 +150,7 @@ function vipgoci_runtime_measure(
  *
  * @param string $cmd                  Shell command to execute.
  * @param string $runtime_measure_type Type of measurement to use.
- * @param int    $exec_retry_max            Number of times to retry execution of command.
+ * @param int    $exec_retry_max       Number of times to retry execution of command.
  *
  * @return string Output of command.
  */
