@@ -162,29 +162,25 @@ function vipgoci_runtime_measure_shell_exec_with_retry(
 	$exec_retry_cnt = 0;
 
 	do {
-		if ( 0 === $exec_retry_cnt ) {
-			$tmp_log_msg = 'Executing command...';
-			$log_irc     = false;
-		} else {
+		if ( 0 < $exec_retry_cnt ) {
 			/*
-			 * If retrying, sleep once second just in
+			 * If retrying, sleep one second just in
 			 * case there is something temporary causing
 			 * execution to fail.
 			 */
 			sleep( 1 );
-
-			$tmp_log_msg = 'Retrying execution of command...';
-			$log_irc     = true;
 		}
 
 		vipgoci_log(
-			$tmp_log_msg,
+			( 0 === $exec_retry_cnt ) ?
+				'Executing command...' :
+				'Retrying execution of command...',
 			array(
 				'cmd'            => $cmd,
 				'exec_retry_cnt' => $exec_retry_cnt,
 			),
-			2,
-			$log_irc
+			( 0 === $exec_retry_cnt ) ? 2 : 0,
+			( 0 === $exec_retry_cnt ) ? false : true
 		);
 
 		vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, $runtime_measure_type );
@@ -197,6 +193,22 @@ function vipgoci_runtime_measure_shell_exec_with_retry(
 		( $exec_retry_max > 0 ) &&
 		( ++$exec_retry_cnt <= $exec_retry_max )
 	);
+
+	/*
+	 * Log if we retried executing command.
+	 */
+	if ( 0 < $exec_retry_cnt ) {
+		vipgoci_log(
+			( null === $shell_exec_output ) ?
+				'Failed to execute command' : 'Retried executing command with success',
+			array(
+				'cmd'            => $cmd,
+				'exec_retry_cnt' => $exec_retry_cnt,
+			),
+			0,
+			true
+		);
+	}
 
 	return $shell_exec_output;
 }
