@@ -43,9 +43,9 @@ final class StatisticsRuntimeMeasureShellExecWithRetryTest extends TestCase {
 			'sleep 1 ; echo -n "test_string"',
 			'mytimer10'
 		);
-	
+
 		vipgoci_unittests_output_unsuppress();
-	
+
 		$this->assertSame(
 			'test_string',
 			$return
