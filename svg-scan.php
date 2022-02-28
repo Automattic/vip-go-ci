@@ -138,7 +138,7 @@ function vipgoci_svg_look_for_specific_tokens(
 
 			$results['files'][ $temp_file_name ]['messages'][] =
 				array(
-					'message' => 'Found forbidden tag in SVG file: \'' . $disallowed_token . '\'',
+					'message' => vipgoci_output_html_escape( 'Found forbidden tag in SVG file: \'' . $disallowed_token . '\'' ),
 					'line'    => $line_no,
 					'level'   => 'ERROR',
 				);

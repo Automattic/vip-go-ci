@@ -147,7 +147,7 @@ function vipgoci_auto_approval_non_approval(
 			'file_name' => $approved_file,
 			'file_line' => 1,
 			'issue'     => array(
-				'message'  => VIPGOCI_FILE_IS_APPROVED_MSG,
+				'message'  => vipgoci_output_html_escape( VIPGOCI_FILE_IS_APPROVED_MSG ),
 				'source'   => 'VipgociInternal.Info.ApprovedHashesToHashesAPI',
 				'severity' => 1,
 				'fixable'  => false,
@@ -240,7 +240,7 @@ function vipgoci_auto_approval_non_approval(
 			$options['repo-name'],
 			(int) $pr_item->number,
 			(int) $pr_item_review->id,
-			'Dismissing obsolete review; not approved any longer',
+			vipgoci_output_html_escape('Dismissing obsolete review; not approved any longer'),
 			$options['token']
 		);
 	}

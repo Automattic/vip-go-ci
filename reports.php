@@ -544,6 +544,8 @@ function vipgoci_report_maybe_no_issues_found(
 
 		$no_issues_msg .= ' (commit-ID: ' . $commit_id . ')';
 
+		$no_issues_msg = vipgoci_output_html_escape( $no_issues_msg );
+
 		/*
 		 * If we have informational message, append it.
 		 */
@@ -1276,7 +1278,7 @@ function vipgoci_report_submit_pr_review_from_results(
 				$repo_name,
 				$github_token,
 				$pr_number,
-				VIPGOCI_GITHUB_ERROR_STR,
+				vipgoci_output_html_escape( VIPGOCI_GITHUB_ERROR_STR ),
 				$commit_id
 			);
 		}
