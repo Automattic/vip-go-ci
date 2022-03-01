@@ -39,7 +39,7 @@ final class StatisticsRuntimeMeasureShellExecWithRetryTest extends TestCase {
 	public function testShellExecRuntimeMeasure() :void {
 		vipgoci_unittests_output_suppress();
 
-		$return = vipgoci_runtime_measure_shell_exec_with_retry(
+		$output = vipgoci_runtime_measure_shell_exec_with_retry(
 			'sleep 1 ; echo -n "test_string"',
 			'mytimer10'
 		);
@@ -48,7 +48,7 @@ final class StatisticsRuntimeMeasureShellExecWithRetryTest extends TestCase {
 
 		$this->assertSame(
 			'test_string',
-			$return
+			$output
 		);
 
 		$runtime_stats = vipgoci_runtime_measure(
@@ -104,7 +104,7 @@ final class StatisticsRuntimeMeasureShellExecWithRetryTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
-		$return = vipgoci_runtime_measure_shell_exec_with_retry(
+		$output = vipgoci_runtime_measure_shell_exec_with_retry(
 			escapeshellcmd( 'php ' ) . escapeshellcmd( $path_to_cli ) . ' ' . escapeshellarg( $path_to_temp_for_cli ) . ' 2>/dev/null',
 			'mytimer20',
 			2 // Retry twice (three times in total).
@@ -114,7 +114,7 @@ final class StatisticsRuntimeMeasureShellExecWithRetryTest extends TestCase {
 
 		$this->assertSame(
 			'Success' . PHP_EOL,
-			$return
+			$output
 		);
 
 		/*
