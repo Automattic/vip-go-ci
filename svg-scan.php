@@ -279,10 +279,12 @@ function vipgoci_svg_scan_single_file(
 		$temp_file_name
 	);
 
-	$results = json_decode(
-		$results,
-		true
-	);
+	if ( null !== $results ) {
+		$results = json_decode(
+			$results,
+			true
+		);
+	}
 
 	if ( null === $results ) {
 		vipgoci_log(
