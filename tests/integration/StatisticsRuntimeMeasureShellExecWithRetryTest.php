@@ -102,10 +102,16 @@ final class StatisticsRuntimeMeasureShellExecWithRetryTest extends TestCase {
 			mkdir( $path_to_temp_for_cli )
 		);
 
+		$this->assertNotFalse(
+			chmod( $path_to_temp_for_cli, 0700 )
+		);
+
 		vipgoci_unittests_output_suppress();
 
 		$output = vipgoci_runtime_measure_shell_exec_with_retry(
-			escapeshellcmd( 'php ' ) . escapeshellcmd( $path_to_cli ) . ' ' . escapeshellarg( $path_to_temp_for_cli ) . ' 2>/dev/null',
+			escapeshellcmd( 'php' ) . ' ' .
+				escapeshellcmd( $path_to_cli ) . ' ' .
+				escapeshellarg( $path_to_temp_for_cli ) . ' 2>/dev/null',
 			'mytimer20',
 			2 // Retry twice (three times in total).
 		);
@@ -121,6 +127,7 @@ final class StatisticsRuntimeMeasureShellExecWithRetryTest extends TestCase {
 		 * Ensure all files that should have been
 		 * created by helper script were really created.
 		 * If not, it indicates that retries were not attempted.
+		 * Remove these files afterwards.
 		 */
 		$this->assertSame(
 			'0',
