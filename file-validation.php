@@ -51,12 +51,12 @@ function vipgoci_is_number_of_lines_valid( string $temp_file_name, string $file_
 
 	$cache_key                = vipgoci_cache_get_is_number_of_lines_valid_key( $file_name, $commit_id );
 	$is_number_of_lines_valid = vipgoci_cache_get_is_number_of_lines_valid( $cache_key );
-	
+
 	vipgoci_log(
 		'Validating number of lines' .
 			vipgoci_cached_indication_str( $is_number_of_lines_valid ),
 		array(
-			'file_name' => $file_name
+			'file_name' => $file_name,
 		)
 	);
 
@@ -84,14 +84,14 @@ function vipgoci_is_number_of_lines_valid( string $temp_file_name, string $file_
 		array(
 			'file_name' => $file_name,
 			'cmd'       => $cmd,
-			'output'    => $output
+			'output'    => $output,
 		),
 		( null === $output ) ? 0 : 2
 	);
 
 	if ( null === $output ) {
 		return true;
-	} 
+	}
 
 	$output = vipgoci_sanitize_string(
 		$output
@@ -105,7 +105,7 @@ function vipgoci_is_number_of_lines_valid( string $temp_file_name, string $file_
 		'Validated number of lines',
 		array(
 			'file_name' => $file_name,
-			'output'    => $output
+			'output'    => $output,
 		)
 	);
 

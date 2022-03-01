@@ -959,7 +959,7 @@ function vipgoci_gitrepo_diffs_fetch_unfiltered(
 				'output' => $git_diff_results,
 			),
 		);
-	
+
 		return null;
 	}
 
