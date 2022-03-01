@@ -51,6 +51,15 @@ function vipgoci_is_number_of_lines_valid( string $temp_file_name, string $file_
 
 	$cache_key                = vipgoci_cache_get_is_number_of_lines_valid_key( $file_name, $commit_id );
 	$is_number_of_lines_valid = vipgoci_cache_get_is_number_of_lines_valid( $cache_key );
+	
+	vipgoci_log(
+		'Validating number of lines' .
+			vipgoci_cached_indication_str( $is_number_of_lines_valid ),
+		array(
+			'file_name' => $file_name
+		)
+	);
+
 	if ( ! is_null( $is_number_of_lines_valid ) ) {
 		return $is_number_of_lines_valid;
 	}
@@ -61,20 +70,44 @@ function vipgoci_is_number_of_lines_valid( string $temp_file_name, string $file_
 	 * the bot won't scan it
 	 */
 	$cmd = sprintf( 'wc -l %s | awk \'{print $1;}\' 2>&1', escapeshellcmd( $temp_file_name ) );
-	vipgoci_log( 'Validating number of lines', array( 'file_name' => $file_name ) );
 
-	$output = vipgoci_sanitize_string(
-		vipgoci_runtime_measure_shell_exec_with_retry( $cmd, 'file_validation' )
+
+	$output = vipgoci_runtime_measure_shell_exec_with_retry(
+		$cmd,
+		'file_validation'
 	);
 
 	vipgoci_log(
-		'Validating number of lines output',
-		array( 'file_name' => $file_name, 'cmd' => $cmd, 'output' => $output )
+		( null === $output ) ?
+			'Unable to validate number of lines, unable to execute utility' :
+			'Ran utility to validate number of lines',
+		array(
+			'file_name' => $file_name,
+			'cmd'       => $cmd,
+			'output'    => $output
+		),
+		( null === $output ) ? 0 : 2
+	);
+
+	if ( null === $output ) {
+		return true;
+	} 
+
+	$output = vipgoci_sanitize_string(
+		$output
 	);
 
 	$is_number_of_lines_valid = vipgoci_verify_number_of_lines_output( $output, $max_lines );
 
 	vipgoci_cache_set_is_number_of_lines_valid( $cache_key, $is_number_of_lines_valid );
+
+	vipgoci_log(
+		'Validated number of lines',
+		array(
+			'file_name' => $file_name,
+			'output'    => $output
+		)
+	);
 
 	return $is_number_of_lines_valid;
 }
