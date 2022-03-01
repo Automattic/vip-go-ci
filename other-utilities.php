@@ -29,6 +29,16 @@ function vipgoci_util_php_interpreter_get_version(
 		'php_cli'
 	);
 
+	if ( null === $php_output ) {
+		vipgoci_sysexit(
+			'Unable to get PHP version due to error',
+			array(
+				'cmd'    => $php_cmd,
+				'output' => $php_output,
+			),
+		);
+	}
+
 	$php_output = str_replace(
 		'PHP ',
 		'',
