@@ -32,12 +32,12 @@ for ( $i = 0; $i < 2; $i++ ) {
 	// If file does not exist, create it.
 	if ( false === $file_contents ) {
 		file_put_contents( $file_name, (int) $i );
-		non_existant_function_500();
+		non_existent_function_500();
 	}
 }
 
 /*
- * On third run with same $argv[1], print string
+ * On third and later runs with same $argv[1], print string
  * and exit with status 0.
  */
 echo 'Success' . PHP_EOL;
