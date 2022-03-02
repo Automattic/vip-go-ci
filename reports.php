@@ -110,13 +110,26 @@ function vipgoci_report_create_scan_details_software_versions(
 	}
 
 	if ( true === $options_copy['lint'] ) {
-		$php_linting_version = vipgoci_util_php_interpreter_get_version(
-			$options_copy['lint-php-path']
-		);
+		$details .= '<li>PHP runtime for linting: ' . PHP_EOL;
+		$details .= '<ul>' . PHP_EOL;
 
-		if ( ! empty( $php_linting_version ) ) {
-			$details .= '<li>PHP runtime version for PHP linting: <code>' . vipgoci_output_sanitize_version_number( $php_linting_version ) . '</code></li>' . PHP_EOL;
+		foreach ( $options_copy['lint-php-versions'] as $lint_php_version ) {
+			$php_interpreter_version = vipgoci_util_php_interpreter_get_version(
+				$options_copy['lint-php-version-paths'][ $lint_php_version ]
+			);
+
+			if ( ! empty( $php_interpreter_version ) ) {
+				$details .= '<li>PHP ' .
+					vipgoci_output_sanitize_version_number( $lint_php_version ) .
+					': <code>' .
+					vipgoci_output_sanitize_version_number( $php_interpreter_version ) .
+					'</code></li>' .
+					PHP_EOL;
+			}
 		}
+
+		$details .= '</ul>';
+		$details .= '</li>';
 	}
 
 	if ( true === $options_copy['phpcs'] ) {
