@@ -21,7 +21,7 @@ final class LintSetFileIssuesResultTest extends TestCase {
 	 * @param array $submitExpected
 	 * @param array $statsExpected
 	 *
-	 * @covers       vipgoci_lint_set_file_issues_result
+	 * @covers       ::vipgoci_lint_set_file_issues_result
 	 * @dataProvider setFileIssuesResultProvider
 	 */
 	public function testSetFileIssuesResult(
@@ -41,7 +41,7 @@ final class LintSetFileIssuesResultTest extends TestCase {
 	}
 
 	/**
-	 * @covers       vipgoci_lint_get_prs_modified_files
+	 * @covers       ::vipgoci_lint_get_prs_modified_files
 	 * @dataProvider vipgociGetPrsModifiedFilesProvider
 	 */
 	public function testVipgociGetPrsModifiedFiles( array $prsImplicated, array $expected ): void {
