@@ -33,10 +33,20 @@ function vipgoci_util_php_interpreter_get_version(
 		escapeshellarg( '-v' )
 	);
 
-	$php_output = vipgoci_runtime_measure_shell_exec(
+	$php_output = vipgoci_runtime_measure_shell_exec_with_retry(
 		$php_cmd,
 		'php_cli'
 	);
+
+	if ( null === $php_output ) {
+		vipgoci_sysexit(
+			'Unable to get PHP version due to error',
+			array(
+				'cmd'    => $php_cmd,
+				'output' => $php_output,
+			),
+		);
+	}
 
 	$php_output = str_replace(
 		'PHP ',

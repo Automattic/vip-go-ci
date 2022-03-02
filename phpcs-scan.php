@@ -26,10 +26,20 @@ function vipgoci_phpcs_get_version(
 		escapeshellarg( '--version' )
 	);
 
-	$phpcs_output = vipgoci_runtime_measure_shell_exec(
+	$phpcs_output = vipgoci_runtime_measure_shell_exec_with_retry(
 		$cmd,
 		'phpcs_cli'
 	);
+
+	if ( null === $phpcs_output ) {
+		vipgoci_sysexit(
+			'Unable to run PHPCS due to error',
+			array(
+				'cmd'    => $cmd,
+				'output' => $phpcs_output,
+			),
+		);
+	}
 
 	$phpcs_output = str_replace(
 		array( 'PHP_CodeSniffer ', 'version ' ),
@@ -162,14 +172,16 @@ function vipgoci_phpcs_do_scan(
 		0
 	);
 
-	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'phpcs_cli' );
+	/* Actually execute */
+	$result = vipgoci_runtime_measure_shell_exec_with_retry(
+		$cmd,
+		'phpcs_cli'
+	);
 
-	$result = shell_exec( $cmd );
-
-	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'phpcs_cli' );
-
-	/* Remove linebreak PHPCS possibly adds */
-	$result = rtrim( $result, "\n" );
+	if ( null !== $result ) {
+		/* Remove linebreak PHPCS possibly adds */
+		$result = rtrim( $result, "\n" );
+	}
 
 	return $result;
 }
@@ -1105,11 +1117,21 @@ function vipgoci_phpcs_get_all_standards(
 		0
 	);
 
-	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'phpcs_cli' );
+	/* Actually execute */
+	$result = vipgoci_runtime_measure_shell_exec_with_retry(
+		$cmd,
+		'phpcs_cli'
+	);
 
-	$result = shell_exec( $cmd );
-
-	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'phpcs_cli' );
+	if ( null === $result ) {
+		vipgoci_sysexit(
+			'Unable to run PHPCS due to error',
+			array(
+				'cmd'    => $cmd,
+				'output' => $result,
+			),
+		);
+	}
 
 	$result = str_replace(
 		array( 'The installed coding standards are', ' and ', ' ' ),
@@ -1184,11 +1206,21 @@ function vipgoci_phpcs_get_sniffs_for_standard(
 		0
 	);
 
-	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'phpcs_cli' );
+	/* Actually execute */
+	$result = vipgoci_runtime_measure_shell_exec_with_retry(
+		$cmd,
+		'phpcs_cli'
+	);
 
-	$result = shell_exec( $cmd );
-
-	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'phpcs_cli' );
+	if ( null === $result ) {
+		vipgoci_sysexit(
+			'Unable to run PHPCS due to error',
+			array(
+				'cmd'    => $cmd,
+				'output' => $result,
+			),
+		);
+	}
 
 	$sniffs_arr = explode(
 		"\n",
