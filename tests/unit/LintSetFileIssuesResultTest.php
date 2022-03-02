@@ -13,8 +13,7 @@ use stdClass;
 
 // phpcs:disable PSR1.Files.SideEffects
 
-final class VipgociLintScanTest extends TestCase {
-
+final class LintSetFileIssuesResultTest extends TestCase {
 	/**
 	 * @param int $prNumber
 	 * @param string $fileName
