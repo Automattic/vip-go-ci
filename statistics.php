@@ -144,23 +144,71 @@ function vipgoci_runtime_measure(
 }
 
 /**
- * A simple function to keep record of how
- * much time executing a particular command takes.
+ * A simple function to keep record of how much time
+ * executing a particular command takes. Attemps to
+ * run command again a few times if execution fails.
  *
  * @param string $cmd                  Shell command to execute.
  * @param string $runtime_measure_type Type of measurement to use.
+ * @param int    $exec_retry_max       Number of times to retry execution of command.
  *
  * @return string Output of command.
  */
-function vipgoci_runtime_measure_shell_exec(
+function vipgoci_runtime_measure_shell_exec_with_retry(
 	string $cmd,
-	string $runtime_measure_type = null
+	string $runtime_measure_type,
+	int $exec_retry_max = 2
 ): ?string {
-	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, $runtime_measure_type );
+	$exec_retry_cnt = 0;
 
-	$shell_exec_output = shell_exec( $cmd );
+	do {
+		if ( 0 < $exec_retry_cnt ) {
+			/*
+			 * If retrying, sleep one second just in
+			 * case there is something temporary causing
+			 * execution to fail.
+			 */
+			sleep( 1 );
+		}
 
-	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, $runtime_measure_type );
+		vipgoci_log(
+			( 0 === $exec_retry_cnt ) ?
+				'Executing command...' :
+				'Retrying execution of command...',
+			array(
+				'cmd'            => $cmd,
+				'exec_retry_cnt' => $exec_retry_cnt,
+			),
+			( 0 === $exec_retry_cnt ) ? 2 : 0,
+			( 0 === $exec_retry_cnt ) ? false : true
+		);
+
+		vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, $runtime_measure_type );
+
+		$shell_exec_output = @shell_exec( $cmd ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+
+		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, $runtime_measure_type );
+	} while (
+		( null === $shell_exec_output ) &&
+		( $exec_retry_max > 0 ) &&
+		( ++$exec_retry_cnt <= $exec_retry_max )
+	);
+
+	/*
+	 * Log if we retried executing command.
+	 */
+	if ( 0 < $exec_retry_cnt ) {
+		vipgoci_log(
+			( null === $shell_exec_output ) ?
+				'Failed to execute command' : 'Retried executing command with success',
+			array(
+				'cmd'            => $cmd,
+				'exec_retry_cnt' => $exec_retry_cnt,
+			),
+			0,
+			true
+		);
+	}
 
 	return $shell_exec_output;
 }

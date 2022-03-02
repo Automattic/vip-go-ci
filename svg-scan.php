@@ -43,11 +43,11 @@ function vipgoci_svg_do_scan_with_scanner(
 		2
 	);
 
-	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'svg_scanner_cli' );
-
-	$result = shell_exec( $cmd );
-
-	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'svg_scanner_cli' );
+	/* Actually execute */
+	$result = vipgoci_runtime_measure_shell_exec_with_retry(
+		$cmd,
+		'svg_scanner_cli'
+	);
 
 	return $result;
 }
@@ -279,10 +279,12 @@ function vipgoci_svg_scan_single_file(
 		$temp_file_name
 	);
 
-	$results = json_decode(
-		$results,
-		true
-	);
+	if ( null !== $results ) {
+		$results = json_decode(
+			$results,
+			true
+		);
+	}
 
 	if ( null === $results ) {
 		vipgoci_log(
