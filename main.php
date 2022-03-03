@@ -74,8 +74,10 @@ function vipgoci_help_print() :void {
 		PHP_EOL .
 		'PHP Linting configuration:' . PHP_EOL .
 		"\t" . '--lint=BOOL                    Whether to do PHP linting. Default is true.' . PHP_EOL .
-		"\t" . '--lint-php-path=FILE           Full path to PHP used to lint. If not specified the default in' . PHP_EOL .
-		"\t" . '                               $PATH will be used instead.' . PHP_EOL .
+		"\t" . '--lint-php-version-paths=ARRAY Array of paths to different PHP interpreter versions, comma' . PHP_EOL .
+		"\t" . '                               separated. Version and path separated by colon. Used for linting.' . PHP_EOL .
+		"\t" . '                               E.g.: --lint-php-version-paths=7.4:/usr/bin/php7.4,8.1:/usr/bin/php8.1' . PHP_EOL .
+		"\t" . '--lint-php-versions=ARRAY      Array of PHP versions to lint with during run. Comma separated values.' . PHP_EOL .
 		"\t" . '--lint-modified-files-only=BOOL   Whether to limit lint scan to run against only modified or new' . PHP_EOL .
 		"\t" . '                               files in the PR to be scanned. Default is true. It can be ' . PHP_EOL .
 		"\t" . '                               modified via options file ("' . VIPGOCI_OPTIONS_FILE_NAME . '") placed in' . PHP_EOL .
@@ -1101,9 +1103,8 @@ function vipgoci_run_init_options_lint( array &$options ) :void {
 	);
 
 	/*
-	 * Process --lint-php-path if to do PHP linting --
-	 * expected to be a file, default value is 'php'
-	 * (then relies on $PATH).
+	 * Process --lint-php-versions and --lint-php-version-paths
+	 * if to do PHP linting.
 	 */
 	if ( false === $options['lint'] ) {
 		$options['lint-php-versions']      = null;
@@ -2770,6 +2771,7 @@ function vipgoci_run_scan(
 			VIPGOCI_PHPCS_DUPLICATE_SNIFFS,
 			VIPGOCI_NO_ISSUES_FOUND_MSG_AND_NO_REVIEWS,
 			VIPGOCI_NO_ISSUES_FOUND_MSG_AND_EXISTING_REVIEWS,
+			VIPGOCI_LINT_FAILED_MSG_START,
 		)
 	);
 
