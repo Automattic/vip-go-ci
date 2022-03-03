@@ -97,7 +97,14 @@ While running, `vip-go-ci` will output log of its actions. Here is an example --
         "branches-ignore": [],
         "autoapprove": true,
         "autoapprove-filetypes": [ "css", "txt", "pdf ],
-        "lint-php-path": "php",
+        "lint-php-versions": [
+            "7.4",
+            "8.1"
+        ],
+        "lint-php-version-paths": {
+            "7.4": "\/usr\/bin\/php7.4",
+            "8.1": "\/usr\/bin\/php8.1"
+        },
         "debug-level": 0,
         "dry-run": false
     }
