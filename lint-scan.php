@@ -285,7 +285,7 @@ function vipgoci_lint_scan_multiple_files_merge_results_by_php_version(
 				$file_issue_item
 		) {
 			$file_issue_item['item']['message'] =
-			' Linting with PHP ' .
+			'Linting with PHP ' .
 				join(
 					', ',
 					$file_issue_item['versions']
