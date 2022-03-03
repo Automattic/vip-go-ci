@@ -94,6 +94,17 @@ define(
 	'Scanning latest commit did not yield any new issues. Please have a look at older feedback still existing'
 );
 
+define(
+	'VIPGOCI_LINT_FAILED_MSG_START',
+	'Unable to PHP lint one or more files due to error running PHP linter: '
+);
+
+define(
+	'VIPGOCI_LINT_FAILED_MSG_END',
+	'The error may be temporary. If the error persists, please contact a human'
+);
+
+
 /*
  * Define exit-codes
  */
