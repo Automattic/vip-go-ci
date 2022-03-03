@@ -15,12 +15,12 @@ declare(strict_types=1);
  * @param string $php_path       Path to PHP.
  * @param string $temp_file_name Path to file to PHP lint.
  *
- * @return array Array with results of PHP linting.
+ * @return array|null Array with results of PHP linting on success, null on failure.
  */
 function vipgoci_lint_do_scan_file(
 	string $php_path,
 	string $temp_file_name
-) :array {
+) :array|null {
 	/*
 	 * Prepare command to use, make sure
 	 * to grab all the output, also
@@ -46,11 +46,22 @@ function vipgoci_lint_do_scan_file(
 	 * measure how long time it took.
 	 */
 
-	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'php_lint_cli' );
+	$file_issues_str = vipgoci_runtime_measure_shell_exec_with_retry(
+		$cmd,
+		'php_lint_cli'
+	);
 
-	exec( $cmd, $file_issues_arr );
+	/*
+	 * Detect failure.
+	 */
+	if ( null === $file_issues_str ) {
+		return null;
+	}
 
-	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'php_lint_cli' );
+	$file_issues_arr = explode(
+		PHP_EOL,
+		$file_issues_str
+	);
 
 	/*
 	 * Some PHP versions output empty lines
@@ -280,7 +291,9 @@ function vipgoci_lint_scan_multiple_files_merge_results_by_php_version(
 					$file_issue_item['versions']
 				)
 				. ' turned up: ' .
-				$file_issue_item['item']['message'];
+				'<code>' .
+				vipgoci_output_html_escape( $file_issue_item['item']['message'] ) .
+				'</code>';
 
 			$file_issues_arr[ $line_no ][] =
 				$file_issue_item['item'];
@@ -313,6 +326,10 @@ function vipgoci_lint_scan_multiple_files(
 	/*
 	 * Lint every PHP file existing in the commit.
 	 */
+
+	// To keep account of files that could not be PHP linted.
+	$files_failed_linting = array();
+
 	foreach ( $files_to_be_scanned as $filename ) {
 		$file_contents = vipgoci_gitrepo_fetch_committed_file(
 			$options['repo-owner'],
@@ -393,26 +410,48 @@ function vipgoci_lint_scan_multiple_files(
 
 			/*
 			 * Process the results, get them in an array format.
+			 * Skip in case of an error.
 			 */
-			$temp_linting_results_arr = vipgoci_lint_parse_results(
-				$filename,
-				$temp_file_name,
-				$temp_linting_results_arr_raw
-			);
+			if ( null !== $temp_linting_results_arr_raw ) {
+				$temp_linting_results_arr = vipgoci_lint_parse_results(
+					$filename,
+					$temp_file_name,
+					$temp_linting_results_arr_raw
+				);
+			} else {
+				$temp_linting_results_arr = null;
+
+				// Avoid duplicate entries.
+				if ( false === in_array(
+					$filename,
+					$files_failed_linting,
+					true
+				) ) {
+					$files_failed_linting[] = $filename;
+				}
+			}
 
 			vipgoci_log(
-				'Linting issues details',
+				( null === $temp_linting_results_arr_raw ) ?
+					'Failed PHP linting file' : 'Linting issues details',
 				array(
 					'repo_owner'          => $options['repo-owner'],
 					'repo_name'           => $options['repo-name'],
 					'commit_id'           => $options['commit'],
 					'filename'            => $filename,
+					'php-version'         => $tmp_lint_version_number,
+					'php-path'            => $options['lint-php-version-paths'][ $tmp_lint_version_number ],
 					'temp_file_name'      => $temp_file_name,
 					'file_issues_arr'     => $temp_linting_results_arr,
 					'file_issues_arr_raw' => $temp_linting_results_arr_raw,
 				),
-				2
+				( null === $temp_linting_results_arr_raw ) ? 0 : 2,
+				( null === $temp_linting_results_arr_raw ) ? true : false
 			);
+
+			if ( null === $temp_linting_results_arr_raw ) {
+				continue; // Skip due to failure.
+			}
 
 			vipgoci_lint_scan_multiple_files_process_intermediate_results(
 				$current_file_intermediary_results,
@@ -443,6 +482,36 @@ function vipgoci_lint_scan_multiple_files(
 	}
 
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'lint_scan_single_file' );
+
+	/*
+	 * Send generic message to each pull request
+	 * on GitHub when there were problems linting
+	 * notifying users about the problems and which
+	 * files were not linted.
+	 */
+	if ( ! empty( $files_failed_linting ) ) {
+		$files_failed_linting_message =
+			VIPGOCI_LINT_FAILED_MSG_START . PHP_EOL;
+
+		foreach ( $files_failed_linting as $failed_file_name ) {
+			$files_failed_linting_message .=
+				'* ' . $failed_file_name . PHP_EOL;
+		}
+
+		$files_failed_linting_message .=
+			PHP_EOL . VIPGOCI_LINT_FAILED_MSG_END;
+
+		foreach ( $prs_implicated as $pr_item ) {
+			vipgoci_github_pr_comments_generic_submit(
+				$options['repo-owner'],
+				$options['repo-name'],
+				$options['token'],
+				$pr_item->number,
+				$files_failed_linting_message,
+				$options['commit']
+			);
+		}
+	}
 
 	return $scanning_results;
 }
