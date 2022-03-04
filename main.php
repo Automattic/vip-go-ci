@@ -1115,7 +1115,8 @@ function vipgoci_run_init_options_lint( array &$options ) :void {
 			'lint-php-versions',
 			array(),
 			array(),
-			','
+			',',
+			false
 		);
 
 		if ( empty( $options['lint-php-versions'] ) ) {
@@ -1129,7 +1130,8 @@ function vipgoci_run_init_options_lint( array &$options ) :void {
 			'lint-php-version-paths',
 			array(),
 			array(),
-			','
+			',',
+			false
 		);
 
 		if ( empty( $options['lint-php-version-paths'] ) ) {
@@ -1204,6 +1206,15 @@ function vipgoci_run_init_options_lint( array &$options ) :void {
 			$tmp_lint_php_interpreter_version = vipgoci_util_php_interpreter_get_version(
 				$tmp_version_to_path_arr[1]
 			);
+
+			if ( null === $tmp_lint_php_interpreter_version ) {
+				vipgoci_sysexit(
+					'Unable to get PHP interpreter when parsing option --lint-php-version-paths',
+					array(
+						'lint-php-interpreter-path' => $tmp_version_to_path_arr[1],
+					)
+				);
+			}
 
 			if ( 0 !== strpos(
 				$tmp_lint_php_interpreter_version,
