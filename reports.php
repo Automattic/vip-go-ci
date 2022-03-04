@@ -625,8 +625,7 @@ function vipgoci_report_submit_pr_generic_comment_from_results(
 	);
 
 	vipgoci_log(
-		'About to ' .
-		'submit generic PR comment to GitHub about issues',
+		'About to submit generic PR comment to GitHub about issues',
 		array(
 			'repo_owner' => $repo_owner,
 			'repo_name'  => $repo_name,
@@ -756,20 +755,6 @@ function vipgoci_report_submit_pr_generic_comment_from_results(
 		);
 
 		/*
-		 * If we have informational URL, append that
-		 * and a generic message.
-		 */
-		if ( ! empty( $informational_msg ) ) {
-			$tmp_postfields_body .=
-				$informational_msg .
-				"\n\r";
-
-			vipgoci_markdown_comment_add_pagebreak(
-				$tmp_postfields_body
-			);
-		}
-
-		/*
 		 * Splice the two messages together,
 		 * remove temporary variable.
 		 */
@@ -778,6 +763,20 @@ function vipgoci_report_submit_pr_generic_comment_from_results(
 			$github_postfields['body'];
 
 		unset( $tmp_postfields_body );
+
+		vipgoci_markdown_comment_add_pagebreak(
+			$github_postfields['body']
+		);
+
+		/*
+		 * If we have informational URL, append that
+		 * and a generic message.
+		 */
+		if ( ! empty( $informational_msg ) ) {
+			$github_postfields['body'] .=
+				$informational_msg .
+				"\n\r";
+		}
 
 		/*
 		 * Append scan details
@@ -837,7 +836,7 @@ function vipgoci_report_submit_pr_review_from_results(
 	);
 
 	vipgoci_log(
-		'About to submit comment(s) to GitHub about issue(s)',
+		'About to submit review and comment(s) to GitHub about issue(s)',
 		array(
 			'repo_owner' => $repo_owner,
 			'repo_name'  => $repo_name,
@@ -1530,3 +1529,48 @@ function vipgoci_report_submit_pr_generic_support_comment(
 	}
 }
 
+/**
+ * Submit generic comment to GitHub that scanning of certain files
+ * failed.
+ *
+ * @param array  $options        Options array for the program.
+ * @param array  $prs_implicated Pull requests implicated.
+ * @param array  $files_failed   Files that could not be scanned.
+ * @param string $message_start  Start of message to be submitted.
+ * @param string $message_end    End of message to be submitted.
+ *
+ * @return void
+ *
+ * @codeCoverageIgnore
+ */
+function vipgoci_report_submit_scanning_files_failed(
+	array $options,
+	array $prs_implicated,
+	array $files_failed,
+	string $message_start,
+	string $message_end
+) :void {
+	$files_failed_linting_message =
+		$message_start . PHP_EOL;
+
+	foreach ( $files_failed as $failed_file_name ) {
+		$files_failed_linting_message .=
+			'* ' .
+			vipgoci_output_html_escape( $failed_file_name ) .
+			PHP_EOL;
+	}
+
+	$files_failed_linting_message .=
+		PHP_EOL . $message_end;
+
+	foreach ( $prs_implicated as $pr_item ) {
+		vipgoci_github_pr_comments_generic_submit(
+			$options['repo-owner'],
+			$options['repo-name'],
+			$options['token'],
+			$pr_item->number,
+			$files_failed_linting_message,
+			$options['commit']
+		);
+	}
+}
