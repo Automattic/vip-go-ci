@@ -19,7 +19,10 @@ function vipgoci_unittests_php_syntax_error_compat(
 	bool $entity_decode = false
 ) :string {
 	if ( true === $entity_decode ) {
-		$str = html_entity_decode( $str );
+		$str = html_entity_decode(
+			$str,
+			ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401 // PHP 8.1 default.
+		);
 	}
 
 	$str = str_replace(
