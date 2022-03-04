@@ -621,18 +621,6 @@ function vipgoci_lint_scan_commit(
 		)
 	);
 
-	// Ask for information about the commit.
-	$commit_info = vipgoci_github_fetch_commit_info(
-		$repo_owner,
-		$repo_name,
-		$commit_id,
-		$github_token,
-		array(
-			'file_extensions' => array( 'php' ),
-			'status'          => array( 'added', 'modified' ),
-		)
-	);
-
 	$prs_implicated = vipgoci_github_prs_implicated(
 		$repo_owner,
 		$repo_name,
