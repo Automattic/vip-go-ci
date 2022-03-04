@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - [#253](https://github.com/Automattic/vip-go-ci/pull/253): Extend vipgoci_runtime_measure_shell_exec() with retry capabilities, and rename function 
+- [#255](https://github.com/Automattic/vip-go-ci/pull/255): PHP lint using multiple PHP versions
 
 ### Updated
 - [#252](https://github.com/Automattic/vip-go-ci/pull/252): Improve output escaping
