@@ -9,7 +9,10 @@
 declare(strict_types=1);
 
 /**
- * Helper function that does nothing.
+ * Helper function that does not call PHP interpreter
+ * but returns version number. Will return different
+ * version depending on which interpreter path was
+ * used.
  *
  * @param string $php_path Path to PHP.
  *
@@ -18,7 +21,17 @@ declare(strict_types=1);
 function vipgoci_util_php_interpreter_get_version(
 	string $php_path
 ) :string {
-	return '7.4.3';
+	if ( str_contains( $php_path, 'php7.3' ) ) {
+		return '7.3.1';
+	} elseif ( str_contains( $php_path, 'php7.4' ) ) {
+		return '7.4.2';
+	} elseif ( str_contains( $php_path, 'php8.0' ) ) {
+		return '8.0.3';
+	} elseif ( str_contains( $php_path, 'php8.1' ) ) {
+		return '8.1.4';
+	}
+
+	return '7.4.20';
 }
 
 /**
