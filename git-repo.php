@@ -25,10 +25,20 @@ function vipgoci_git_version(): ?string {
 	);
 
 	/* Actually execute */
-	$git_version_results = vipgoci_runtime_measure_shell_exec(
+	$git_version_results = vipgoci_runtime_measure_shell_exec_with_retry(
 		$git_version_cmd,
 		'git_cli'
 	);
+
+	if ( null === $git_version_results ) {
+		vipgoci_sysexit(
+			'Unable to run git due to error',
+			array(
+				'cmd'    => $git_version_cmd,
+				'output' => $git_version_results,
+			),
+		);
+	}
 
 	$git_version_results = str_replace(
 		array( 'git', 'version', ' ', PHP_EOL ),
@@ -117,11 +127,20 @@ function vipgoci_gitrepo_get_head( $local_git_repo ) {
 	);
 
 	/* Actually execute */
-	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'git_cli' );
+	$result = vipgoci_runtime_measure_shell_exec_with_retry(
+		$cmd,
+		'git_cli'
+	);
 
-	$result = shell_exec( $cmd );
-
-	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'git_cli' );
+	if ( null === $result ) {
+		vipgoci_sysexit(
+			'Unable to run git due to error',
+			array(
+				'cmd'    => $cmd,
+				'output' => $result,
+			),
+		);
+	}
 
 	/*
 	 * Trim any whitespace characters away
@@ -152,11 +171,20 @@ function vipgoci_gitrepo_branch_current_get( $local_git_repo ) {
 	);
 
 	/* Actually execute */
-	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'git_cli' );
+	$results = vipgoci_runtime_measure_shell_exec_with_retry(
+		$cmd,
+		'git_cli'
+	);
 
-	$results = shell_exec( $cmd );
-
-	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'git_cli' );
+	if ( null === $results ) {
+		vipgoci_sysexit(
+			'Unable to run git due to error',
+			array(
+				'cmd'    => $cmd,
+				'output' => $results,
+			),
+		);
+	}
 
 	/*
 	 * Split results into array
@@ -375,13 +403,21 @@ function vipgoci_gitrepo_blame_for_file(
 		escapeshellarg( $file_name )
 	);
 
-
 	/* Actually execute */
-	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'git_cli' );
+	$result = vipgoci_runtime_measure_shell_exec_with_retry(
+		$cmd,
+		'git_cli'
+	);
 
-	$result = shell_exec( $cmd );
-
-	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'git_cli' );
+	if ( null === $result ) {
+		vipgoci_sysexit(
+			'Unable to run git due to error',
+			array(
+				'cmd'    => $cmd,
+				'output' => $result,
+			),
+		);
+	}
 
 	/*
 	 * Process the output from git,
@@ -555,11 +591,20 @@ function vipgoci_gitrepo_get_file_at_commit(
 	);
 
 	/* Actually execute */
-	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'git_cli' );
+	$result = vipgoci_runtime_measure_shell_exec_with_retry(
+		$cmd,
+		'git_cli'
+	);
 
-	$result = shell_exec( $cmd );
-
-	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'git_cli' );
+	if ( null === $result ) {
+		vipgoci_sysexit(
+			'Unable to run git due to error',
+			array(
+				'cmd'    => $cmd,
+				'output' => $result,
+			),
+		);
+	}
 
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'git_repo_get_file_at_commit' );
 
@@ -590,11 +635,20 @@ function vipgoci_gitrepo_submodules_setup( $local_git_repo ) {
 	);
 
 	/* Actually execute */
-	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'git_cli' );
+	$result = vipgoci_runtime_measure_shell_exec_with_retry(
+		$cmd,
+		'git_cli'
+	);
 
-	$result = shell_exec( $cmd );
-
-	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'git_cli' );
+	if ( null === $result ) {
+		vipgoci_sysexit(
+			'Unable to run git due to error',
+			array(
+				'cmd'    => $cmd,
+				'output' => $result,
+			),
+		);
+	}
 
 	return $result;
 }
@@ -627,11 +681,20 @@ function vipgoci_gitrepo_submodules_list( $local_git_repo ) {
 	);
 
 	/* Actually execute */
-	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'git_cli' );
+	$result = vipgoci_runtime_measure_shell_exec_with_retry(
+		$cmd,
+		'git_cli'
+	);
 
-	$result = shell_exec( $cmd );
-
-	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'git_cli' );
+	if ( null === $result ) {
+		vipgoci_sysexit(
+			'Unable to run git due to error',
+			array(
+				'cmd'    => $cmd,
+				'output' => $result,
+			),
+		);
+	}
 
 	$result = explode(
 		"\n",
@@ -864,20 +927,39 @@ function vipgoci_gitrepo_diffs_fetch_unfiltered(
 	);
 
 	/* Actually execute */
-	$git_diff_results = vipgoci_runtime_measure_shell_exec(
+	$git_diff_results = vipgoci_runtime_measure_shell_exec_with_retry(
 		$git_diff_cmd,
 		'git_cli'
 	);
+
+	if ( null === $git_diff_results ) {
+		vipgoci_log(
+			'Unable to run git due to error',
+			array(
+				'cmd'    => $git_diff_cmd,
+				'output' => $git_diff_results,
+			),
+		);
+
+		return null;
+	}
 
 	/*
 	 * Check if there are any problems,
 	 * return with error if there are any.
 	 */
-
 	if ( strpos(
 		$git_diff_results,
 		'fatal: '
 	) === 0 ) {
+		vipgoci_log(
+			'Unexpected problem while running git',
+			array(
+				'cmd'    => $git_diff_cmd,
+				'output' => $git_diff_results,
+			),
+		);
+
 		return null;
 	}
 
