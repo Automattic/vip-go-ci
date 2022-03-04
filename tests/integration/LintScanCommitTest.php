@@ -24,11 +24,14 @@ final class LintScanCommitTest extends TestCase {
 	 * @var $options_lint_scan
 	 */
 	private array $options_lint_scan = array(
-		'lint-php-path'                  => null,
 		'commit-test-lint-scan-commit-1' => null,
 		'commit-test-lint-scan-commit-2' => null,
 		'commit-test-lint-scan-commit-3' => null,
 		'commit-test-lint-scan-commit-4' => null,
+		'lint-php1-path'                 => null,
+		'lint-php1-version'              => null,
+		'lint-php2-path'                 => null,
+		'lint-php2-version'              => null,
 	);
 
 	/**
@@ -91,6 +94,23 @@ final class LintScanCommitTest extends TestCase {
 		$this->options['skip-large-files-limit'] = 3;
 
 		$this->options['lint-modified-files-only'] = false;
+
+		$this->options['lint-php-versions'] = array(
+			$this->options['lint-php1-version'],
+			$this->options['lint-php2-version'],
+		);
+
+		$this->options['lint-php-version-paths'] = array(
+			$this->options['lint-php1-version'] => $this->options['lint-php1-path'],
+			$this->options['lint-php2-version'] => $this->options['lint-php2-path'],
+		);
+
+		unset(
+			$this->options['lint-php1-path'],
+			$this->options['lint-php1-version'],
+			$this->options['lint-php2-path'],
+			$this->options['lint-php2-version']
+		);
 
 		global $vipgoci_debug_level;
 		$vipgoci_debug_level = 2;
@@ -195,10 +215,13 @@ final class LintScanCommitTest extends TestCase {
 		 * Some versions of PHP reverse the ',' and ';'
 		 * in the string below; deal with that.
 		 */
-		$issues_submit[ $pr_item->number ][0]['issue']['message'] =
-			vipgoci_unittests_php_syntax_error_compat(
-				$issues_submit[ $pr_item->number ][0]['issue']['message']
-			);
+		for ( $i = 0; $i < 2; $i++ ) {
+			$issues_submit[ $pr_item->number ][ $i ]['issue']['message'] =
+				vipgoci_unittests_php_syntax_error_compat(
+					$issues_submit[ $pr_item->number ][ $i ]['issue']['message'],
+					true
+				);
+		}
 
 		$this->assertSame(
 			array(
@@ -208,7 +231,17 @@ final class LintScanCommitTest extends TestCase {
 						'file_name' => 'lint-scan-commit-test-2.php',
 						'file_line' => 4,
 						'issue'     => array(
-							'message'  => "syntax error, unexpected end of file, expecting ',' or ';'",
+							'message'  => 'Linting with PHP ' . $this->options['lint-php-versions'][0] . " turned up: <code>syntax error, unexpected end of file, expecting ',' or ';'</code>",
+							'level'    => 'ERROR',
+							'severity' => 5,
+						),
+					),
+					array(
+						'type'      => 'lint',
+						'file_name' => 'lint-scan-commit-test-2.php',
+						'file_line' => 4,
+						'issue'     => array(
+							'message'  => 'Linting with PHP ' . $this->options['lint-php-versions'][1] . " turned up: <code>syntax error, unexpected end of file, expecting ',' or ';'</code>",
 							'level'    => 'ERROR',
 							'severity' => 5,
 						),
@@ -221,7 +254,7 @@ final class LintScanCommitTest extends TestCase {
 		$this->assertSame(
 			array(
 				$pr_item->number => array(
-					'error' => 1,
+					'error' => 2,
 				),
 			),
 			$issues_stat
@@ -320,15 +353,13 @@ final class LintScanCommitTest extends TestCase {
 		 * Some versions of PHP reverse the ',' and ';'
 		 * in the string below; deal with that.
 		 */
-		$issues_submit[ $pr_item->number ][0]['issue']['message'] =
-			vipgoci_unittests_php_syntax_error_compat(
-				$issues_submit[ $pr_item->number ][0]['issue']['message']
-			);
-
-		$issues_submit[ $pr_item->number ][1]['issue']['message'] =
-			vipgoci_unittests_php_syntax_error_compat(
-				$issues_submit[ $pr_item->number ][1]['issue']['message']
-			);
+		for ( $i = 0; $i < 4; $i++ ) {
+			$issues_submit[ $pr_item->number ][ $i ]['issue']['message'] =
+				vipgoci_unittests_php_syntax_error_compat(
+					$issues_submit[ $pr_item->number ][ $i ]['issue']['message'],
+					true
+				);
+		}
 
 		$this->assertSame(
 			array(
@@ -338,7 +369,17 @@ final class LintScanCommitTest extends TestCase {
 						'file_name' => 'tests1/myfile1.php',
 						'file_line' => 4,
 						'issue'     => array(
-							'message'  => "syntax error, unexpected end of file, expecting ',' or ';'",
+							'message'  => 'Linting with PHP ' . $this->options['lint-php-versions'][0] . " turned up: <code>syntax error, unexpected end of file, expecting ',' or ';'</code>",
+							'level'    => 'ERROR',
+							'severity' => 5,
+						),
+					),
+					array(
+						'type'      => 'lint',
+						'file_name' => 'tests1/myfile1.php',
+						'file_line' => 4,
+						'issue'     => array(
+							'message'  => 'Linting with PHP ' . $this->options['lint-php-versions'][1] . " turned up: <code>syntax error, unexpected end of file, expecting ',' or ';'</code>",
 							'level'    => 'ERROR',
 							'severity' => 5,
 						),
@@ -348,7 +389,17 @@ final class LintScanCommitTest extends TestCase {
 						'file_name' => 'tests2/myfile1.php',
 						'file_line' => 4,
 						'issue'     => array(
-							'message'  => "syntax error, unexpected end of file, expecting ',' or ';'",
+							'message'  => 'Linting with PHP ' . $this->options['lint-php-versions'][0] . " turned up: <code>syntax error, unexpected end of file, expecting ',' or ';'</code>",
+							'level'    => 'ERROR',
+							'severity' => 5,
+						),
+					),
+					array(
+						'type'      => 'lint',
+						'file_name' => 'tests2/myfile1.php',
+						'file_line' => 4,
+						'issue'     => array(
+							'message'  => 'Linting with PHP ' . $this->options['lint-php-versions'][1] . " turned up: <code>syntax error, unexpected end of file, expecting ',' or ';'</code>",
 							'level'    => 'ERROR',
 							'severity' => 5,
 						),
@@ -367,7 +418,7 @@ final class LintScanCommitTest extends TestCase {
 		$this->assertSame(
 			array(
 				$pr_item->number => array(
-					'error' => 2,
+					'error' => 4,
 				),
 			),
 			$issues_stat
@@ -764,9 +815,13 @@ final class LintScanCommitTest extends TestCase {
 		 * Some versions of PHP reverse the ',' and ';'
 		 * in the string below; deal with that.
 		 */
-		$issues_submit[ $pr_item->number ][0]['issue']['message'] = vipgoci_unittests_php_syntax_error_compat(
-			$issues_submit[ $pr_item->number ][0]['issue']['message']
-		);
+
+		for ( $i = 0; $i < 2; $i++ ) {
+			$issues_submit[ $pr_item->number ][ $i ]['issue']['message'] = vipgoci_unittests_php_syntax_error_compat(
+				$issues_submit[ $pr_item->number ][ $i ]['issue']['message'],
+				true
+			);
+		}
 
 		$this->assertSame(
 			array(
@@ -776,7 +831,17 @@ final class LintScanCommitTest extends TestCase {
 						'file_name' => 'lint-scan-commit-test-2.php',
 						'file_line' => 4,
 						'issue'     => array(
-							'message'  => "syntax error, unexpected end of file, expecting ',' or ';'",
+							'message'  => 'Linting with PHP ' . $this->options['lint-php-versions'][0] . " turned up: <code>syntax error, unexpected end of file, expecting ',' or ';'</code>",
+							'level'    => 'ERROR',
+							'severity' => 5,
+						),
+					),
+					array(
+						'type'      => 'lint',
+						'file_name' => 'lint-scan-commit-test-2.php',
+						'file_line' => 4,
+						'issue'     => array(
+							'message'  => 'Linting with PHP ' . $this->options['lint-php-versions'][1] . " turned up: <code>syntax error, unexpected end of file, expecting ',' or ';'</code>",
 							'level'    => 'ERROR',
 							'severity' => 5,
 						),
@@ -787,7 +852,11 @@ final class LintScanCommitTest extends TestCase {
 		);
 
 		$this->assertSame(
-			array( $pr_item->number => array( 'error' => 1 ) ),
+			array(
+				$pr_item->number => array(
+					'error' => 2,
+				),
+			),
 			$issues_stat
 		);
 
