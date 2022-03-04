@@ -318,7 +318,7 @@ function vipgoci_lint_scan_multiple_files(
 	array $prs_implicated,
 	array &$commit_skipped_files,
 	array $files_to_be_scanned
-) {
+) :array {
 	$scanning_results = array();
 
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'lint_scan_single_file' );
@@ -490,27 +490,13 @@ function vipgoci_lint_scan_multiple_files(
 	 * files were not linted.
 	 */
 	if ( ! empty( $files_failed_linting ) ) {
-		$files_failed_linting_message =
-			VIPGOCI_LINT_FAILED_MSG_START . PHP_EOL;
-
-		foreach ( $files_failed_linting as $failed_file_name ) {
-			$files_failed_linting_message .=
-				'* ' . $failed_file_name . PHP_EOL;
-		}
-
-		$files_failed_linting_message .=
-			PHP_EOL . VIPGOCI_LINT_FAILED_MSG_END;
-
-		foreach ( $prs_implicated as $pr_item ) {
-			vipgoci_github_pr_comments_generic_submit(
-				$options['repo-owner'],
-				$options['repo-name'],
-				$options['token'],
-				$pr_item->number,
-				$files_failed_linting_message,
-				$options['commit']
-			);
-		}
+		vipgoci_report_submit_scanning_files_failed(
+			$options,
+			$prs_implicated,
+			$files_failed_linting,
+			VIPGOCI_LINT_FAILED_MSG_START,
+			VIPGOCI_LINT_FAILED_MSG_END
+		);
 	}
 
 	return $scanning_results;
