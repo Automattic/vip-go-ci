@@ -116,7 +116,6 @@ final class ReportCreateScanDetailsSoftwareVersionsTest extends TestCase {
 			'8.1' => '/usr/bin/php8.1',
 		);
 		$this->options['lint-php-versions']      = array( '7.4', '8.1' );
-		$this->options['lint-php-path']          = '/usr/bin/php';
 		$this->options['phpcs']                  = true;
 		$this->options['phpcs-path']             = '/usr/bin/phpcs';
 		$this->options['phpcs-php-path']         = '/usr/bin/php7.3';
