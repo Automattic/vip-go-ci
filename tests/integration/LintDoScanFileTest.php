@@ -24,7 +24,7 @@ final class LintDoScanFileTest extends TestCase {
 	 * @var $options_php
 	 */
 	private array $options_php = array(
-		'lint-php-path' => null,
+		'lint-php1-path' => null,
 	);
 
 	/**
@@ -51,7 +51,7 @@ final class LintDoScanFileTest extends TestCase {
 	}
 
 	/**
-	 * Test PHP linting when there are no issues.
+	 * Try to PHP lint, but there are errors with running the linter.
 	 *
 	 * @covers ::vipgoci_lint_do_scan_file
 	 */
@@ -67,35 +67,27 @@ final class LintDoScanFileTest extends TestCase {
 		}
 
 		$php_file_path = vipgoci_save_temp_file(
-			'test-lint-do-scan-1',
+			'vipgoci-lint-do-scan-test-1',
 			'php',
-			'<?php ' . PHP_EOL . 'echo "foo";' . PHP_EOL
-		);
-
-		$php_file_name = pathinfo(
-			$php_file_path,
-			PATHINFO_FILENAME
+			'<?php ' . PHP_EOL . 'echo "foo"' . PHP_EOL
 		);
 
 		vipgoci_unittests_output_suppress();
 
 		$ret = vipgoci_lint_do_scan_file(
-			$this->options_php['lint-php-path'],
+			'/non-existing-path/not-a-directory/does-not-exist/not-php-abc-537890133',
 			$php_file_path
 		);
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertSame(
-			array(
-				'No syntax errors detected in ' . $php_file_path,
-			),
-			$ret
-		);
+		unlink( $php_file_path );
+
+		$this->assertNull( $ret );
 	}
 
 	/**
-	 * Test PHP linting when there are issues.
+	 * Test PHP linting when there are no issues.
 	 *
 	 * @covers ::vipgoci_lint_do_scan_file
 	 */
@@ -111,22 +103,60 @@ final class LintDoScanFileTest extends TestCase {
 		}
 
 		$php_file_path = vipgoci_save_temp_file(
-			'test-lint-do-scan-2',
+			'vipgoci-lint-do-scan-test-2',
 			'php',
-			'<?php ' . PHP_EOL . 'echo "foo"' . PHP_EOL
-		);
-
-		$php_file_name = pathinfo(
-			$php_file_path,
-			PATHINFO_FILENAME
+			'<?php ' . PHP_EOL . 'echo "foo";' . PHP_EOL
 		);
 
 		vipgoci_unittests_output_suppress();
 
 		$ret = vipgoci_lint_do_scan_file(
-			$this->options_php['lint-php-path'],
+			$this->options_php['lint-php1-path'],
 			$php_file_path
 		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		unlink( $php_file_path );
+
+		$this->assertSame(
+			array(
+				'No syntax errors detected in ' . $php_file_path,
+			),
+			$ret
+		);
+	}
+
+	/**
+	 * Test PHP linting when there are issues.
+	 *
+	 * @covers ::vipgoci_lint_do_scan_file
+	 */
+	public function testLintDoScan3() {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options_php,
+			array(),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
+		$php_file_path = vipgoci_save_temp_file(
+			'test-lint-do-scan-test-3',
+			'php',
+			'<?php ' . PHP_EOL . 'echo "foo"' . PHP_EOL
+		);
+
+		vipgoci_unittests_output_suppress();
+
+		$ret = vipgoci_lint_do_scan_file(
+			$this->options_php['lint-php1-path'],
+			$php_file_path
+		);
+
+		unlink( $php_file_path );
 
 		vipgoci_unittests_output_unsuppress();
 
