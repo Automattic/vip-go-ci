@@ -26,7 +26,7 @@ final class OtherUtilitiesPhpInterpreterGetVersionTest extends TestCase {
 	 * @var $options_lint
 	 */
 	private array $options_lint = array(
-		'lint-php-path' => null,
+		'lint-php1-path' => null,
 	);
 
 	/**
@@ -66,7 +66,7 @@ final class OtherUtilitiesPhpInterpreterGetVersionTest extends TestCase {
 		}
 
 		$php_version = vipgoci_util_php_interpreter_get_version(
-			$this->options_lint['lint-php-path'],
+			$this->options_lint['lint-php1-path'],
 		);
 
 		/*
