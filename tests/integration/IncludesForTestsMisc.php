@@ -9,20 +9,31 @@ declare( strict_types=1 );
  * Some versions use ' and some use ", deal with
  * that too.
  *
- * @param string $str String to work with.
+ * @param string $str           String to work with.
+ * @param bool   $entity_decode If to decode HTML entities first.
  *
  * @return string
  */
-function vipgoci_unittests_php_syntax_error_compat( string $str ) :string {
-	$str = str_replace(
-		"syntax error, unexpected end of file, expecting ';' or ','",
-		"syntax error, unexpected end of file, expecting ',' or ';'",
-		$str
-	);
+function vipgoci_unittests_php_syntax_error_compat(
+	string $str,
+	bool $entity_decode = false
+) :string {
+	if ( true === $entity_decode ) {
+		$str = html_entity_decode(
+			$str,
+			ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401 // PHP 8.1 default.
+		);
+	}
 
 	$str = str_replace(
-		'syntax error, unexpected end of file, expecting "," or ";"',
-		"syntax error, unexpected end of file, expecting ',' or ';'",
+		array(
+			"syntax error, unexpected end of file, expecting ';' or ','",
+			'syntax error, unexpected end of file, expecting "," or ";"',
+		),
+		array(
+			"syntax error, unexpected end of file, expecting ',' or ';'",
+			"syntax error, unexpected end of file, expecting ',' or ';'",
+		),
 		$str
 	);
 

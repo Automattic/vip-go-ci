@@ -18,7 +18,7 @@ use PHPUnit\Framework\TestCase;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class ReportCreateScanDetailsSoftwareVersions extends TestCase {
+final class ReportCreateScanDetailsSoftwareVersionsTest extends TestCase {
 	/**
 	 * Setup function. Require files, etc.
 	 */
@@ -108,17 +108,23 @@ final class ReportCreateScanDetailsSoftwareVersions extends TestCase {
 	 * @covers ::vipgoci_report_create_scan_details_software_versions
 	 */
 	public function testCreateDetails2(): void {
-		$this->options['lint']                 = true;
-		$this->options['lint-php-path']        = '/usr/bin/php';
-		$this->options['phpcs']                = true;
-		$this->options['phpcs-path']           = '/usr/bin/phpcs';
-		$this->options['phpcs-php-path']       = '/usr/bin/php';
-		$this->options['repo-options']         = true;
-		$this->options['repo-options-set']     = array(
+		$this->options['lint']                   = true;
+		$this->options['lint-php-version-paths'] = array(
+			'7.3' => '/usr/bin/php7.3',
+			'7.4' => '/usr/bin/php7.4',
+			'8.0' => '/usr/bin/php8.0',
+			'8.1' => '/usr/bin/php8.1',
+		);
+		$this->options['lint-php-versions']      = array( '7.4', '8.1' );
+		$this->options['phpcs']                  = true;
+		$this->options['phpcs-path']             = '/usr/bin/phpcs';
+		$this->options['phpcs-php-path']         = '/usr/bin/php7.3';
+		$this->options['repo-options']           = true;
+		$this->options['repo-options-set']       = array(
 			'a' => 1,
 			'b' => 2,
 		);
-		$this->options['repo-options-allowed'] = array( 'opt1', 'opt2' );
+		$this->options['repo-options-allowed']   = array( 'opt1', 'opt2' );
 
 		$actual_output = vipgoci_report_create_scan_details_software_versions(
 			$this->options
@@ -127,7 +133,7 @@ final class ReportCreateScanDetailsSoftwareVersions extends TestCase {
 		$this->assertNotFalse(
 			strpos(
 				$actual_output,
-				'<li>PHP runtime version for PHPCS: <code>7.4.3</code></li>'
+				'<li>PHP runtime version for PHPCS: <code>7.3.1</code></li>'
 			)
 		);
 
@@ -155,14 +161,35 @@ final class ReportCreateScanDetailsSoftwareVersions extends TestCase {
 		$this->assertNotFalse(
 			strpos(
 				$actual_output,
-				'<li>PHP runtime version for PHP linting: <code>7.4.3</code></li>'
+				'<li>PHP runtime for linting:'
 			)
 		);
 
 		$this->assertNotFalse(
 			strpos(
 				$actual_output,
-				'<li>PHP runtime version for PHPCS: <code>7.4.3</code></li>'
+				'<li>PHP 7.4: <code>7.4.2</code></li>'
+			)
+		);
+
+		$this->assertFalse(
+			strpos(
+				$actual_output,
+				'PHP 8.0'
+			)
+		);
+
+		$this->assertNotFalse(
+			strpos(
+				$actual_output,
+				'<li>PHP 8.1: <code>8.1.4</code></li>'
+			)
+		);
+
+		$this->assertNotFalse(
+			strpos(
+				$actual_output,
+				'<li>PHP runtime version for PHPCS: <code>7.3.1</code></li>'
 			)
 		);
 

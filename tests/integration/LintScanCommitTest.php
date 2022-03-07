@@ -1,26 +1,59 @@
 <?php
+/**
+ * Test vipgoci_lint_scan_commit() function.
+ *
+ * @package Automattic/vip-go-ci
+ */
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+declare(strict_types=1);
+
+namespace Vipgoci\Tests\Integration;
 
 use PHPUnit\Framework\TestCase;
 
-final class A09LintLintScanCommitTest extends TestCase {
-	var $options_lint_scan = array(
-		'lint-php-path'                  => null,
+/**
+ * Class that implements the testing.
+ *
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
+final class LintScanCommitTest extends TestCase {
+	/**
+	 * Variable for PHP linting.
+	 *
+	 * @var $options_lint_scan
+	 */
+	private array $options_lint_scan = array(
 		'commit-test-lint-scan-commit-1' => null,
 		'commit-test-lint-scan-commit-2' => null,
 		'commit-test-lint-scan-commit-3' => null,
 		'commit-test-lint-scan-commit-4' => null,
+		'lint-php1-path'                 => null,
+		'lint-php1-version'              => null,
+		'lint-php2-path'                 => null,
+		'lint-php2-version'              => null,
 	);
 
-	var $options_git = array(
+	/**
+	 * Variable for git setup.
+	 *
+	 * @var $options_git
+	 */
+	private array $options_git = array(
 		'git-path'        => null,
 		'github-repo-url' => null,
 		'repo-name'       => null,
 		'repo-owner'      => null,
 	);
 
+	/**
+	 * Setup function. Require files, etc.
+	 *
+	 * @return void
+	 */
 	protected function setUp(): void {
+		require_once __DIR__ . '/IncludesForTests.php';
+
 		vipgoci_unittests_get_config_values(
 			'lint-scan',
 			$this->options_lint_scan
@@ -40,7 +73,7 @@ final class A09LintLintScanCommitTest extends TestCase {
 			vipgoci_unittests_get_config_value(
 				'git-secrets',
 				'github-token',
-				true // Fetch from secrets file
+				true // Fetch from secrets file.
 			);
 
 		$this->options['token'] =
@@ -62,10 +95,32 @@ final class A09LintLintScanCommitTest extends TestCase {
 
 		$this->options['lint-modified-files-only'] = false;
 
+		$this->options['lint-php-versions'] = array(
+			$this->options['lint-php1-version'],
+			$this->options['lint-php2-version'],
+		);
+
+		$this->options['lint-php-version-paths'] = array(
+			$this->options['lint-php1-version'] => $this->options['lint-php1-path'],
+			$this->options['lint-php2-version'] => $this->options['lint-php2-path'],
+		);
+
+		unset(
+			$this->options['lint-php1-path'],
+			$this->options['lint-php1-version'],
+			$this->options['lint-php2-path'],
+			$this->options['lint-php2-version']
+		);
+
 		global $vipgoci_debug_level;
 		$vipgoci_debug_level = 2;
 	}
 
+	/**
+	 * Tear down function. Remove variables and temporary repository.
+	 *
+	 * @return void
+	 */
 	protected function tearDown(): void {
 		if ( false !== $this->options['local-git-repo'] ) {
 			vipgoci_unittests_remove_git_repo(
@@ -73,15 +128,19 @@ final class A09LintLintScanCommitTest extends TestCase {
 			);
 		}
 
-		$this->options_lint_scan = null;
-		$this->options_git       = null;
-		$this->options           = null;
+		unset( $this->options_lint_scan );
+		unset( $this->options_git );
+		unset( $this->options );
 	}
 
 	/**
+	 * PHP lint file with syntax errors.
+	 *
+	 * @return void
+	 *
 	 * @covers ::vipgoci_lint_scan_commit
 	 */
-	public function testLintDoScan1() {
+	public function testLintDoScan1() :void {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
@@ -156,10 +215,13 @@ final class A09LintLintScanCommitTest extends TestCase {
 		 * Some versions of PHP reverse the ',' and ';'
 		 * in the string below; deal with that.
 		 */
-		$issues_submit[ $pr_item->number ][0]['issue']['message'] =
-			vipgoci_unittests_php_syntax_error_compat(
-				$issues_submit[ $pr_item->number ][0]['issue']['message']
-			);
+		for ( $i = 0; $i < 2; $i++ ) {
+			$issues_submit[ $pr_item->number ][ $i ]['issue']['message'] =
+				vipgoci_unittests_php_syntax_error_compat(
+					$issues_submit[ $pr_item->number ][ $i ]['issue']['message'],
+					true
+				);
+		}
 
 		$this->assertSame(
 			array(
@@ -169,12 +231,22 @@ final class A09LintLintScanCommitTest extends TestCase {
 						'file_name' => 'lint-scan-commit-test-2.php',
 						'file_line' => 4,
 						'issue'     => array(
-							'message'  => "syntax error, unexpected end of file, expecting ',' or ';'",
+							'message'  => 'Linting with PHP ' . $this->options['lint-php-versions'][0] . " turned up: <code>syntax error, unexpected end of file, expecting ',' or ';'</code>",
 							'level'    => 'ERROR',
 							'severity' => 5,
-						)
-					)
-				)
+						),
+					),
+					array(
+						'type'      => 'lint',
+						'file_name' => 'lint-scan-commit-test-2.php',
+						'file_line' => 4,
+						'issue'     => array(
+							'message'  => 'Linting with PHP ' . $this->options['lint-php-versions'][1] . " turned up: <code>syntax error, unexpected end of file, expecting ',' or ';'</code>",
+							'level'    => 'ERROR',
+							'severity' => 5,
+						),
+					),
+				),
 			),
 			$issues_submit
 		);
@@ -182,8 +254,8 @@ final class A09LintLintScanCommitTest extends TestCase {
 		$this->assertSame(
 			array(
 				$pr_item->number => array(
-					'error' => 1,
-				)
+					'error' => 2,
+				),
 			),
 			$issues_stat
 		);
@@ -193,9 +265,13 @@ final class A09LintLintScanCommitTest extends TestCase {
 
 
 	/**
+	 * PHP lint files, two files have syntax errors.
+	 *
+	 * @return void
+	 *
 	 * @covers ::vipgoci_lint_scan_commit
 	 */
-	public function testLintDoScan2() {
+	public function testLintDoScan2() :void {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
@@ -277,16 +353,13 @@ final class A09LintLintScanCommitTest extends TestCase {
 		 * Some versions of PHP reverse the ',' and ';'
 		 * in the string below; deal with that.
 		 */
-		$issues_submit[ $pr_item->number ][0]['issue']['message'] =
-			vipgoci_unittests_php_syntax_error_compat(
-				$issues_submit[ $pr_item->number ][0]['issue']['message']
-			);
-
-		$issues_submit[ $pr_item->number ][1]['issue']['message'] =
-			vipgoci_unittests_php_syntax_error_compat(
-				$issues_submit[ $pr_item->number ][1]['issue']['message']
-			);
-
+		for ( $i = 0; $i < 4; $i++ ) {
+			$issues_submit[ $pr_item->number ][ $i ]['issue']['message'] =
+				vipgoci_unittests_php_syntax_error_compat(
+					$issues_submit[ $pr_item->number ][ $i ]['issue']['message'],
+					true
+				);
+		}
 
 		$this->assertSame(
 			array(
@@ -296,27 +369,48 @@ final class A09LintLintScanCommitTest extends TestCase {
 						'file_name' => 'tests1/myfile1.php',
 						'file_line' => 4,
 						'issue'     => array(
-							'message'  => "syntax error, unexpected end of file, expecting ',' or ';'",
+							'message'  => 'Linting with PHP ' . $this->options['lint-php-versions'][0] . " turned up: <code>syntax error, unexpected end of file, expecting ',' or ';'</code>",
 							'level'    => 'ERROR',
 							'severity' => 5,
-						)
+						),
+					),
+					array(
+						'type'      => 'lint',
+						'file_name' => 'tests1/myfile1.php',
+						'file_line' => 4,
+						'issue'     => array(
+							'message'  => 'Linting with PHP ' . $this->options['lint-php-versions'][1] . " turned up: <code>syntax error, unexpected end of file, expecting ',' or ';'</code>",
+							'level'    => 'ERROR',
+							'severity' => 5,
+						),
 					),
 					array(
 						'type'      => 'lint',
 						'file_name' => 'tests2/myfile1.php',
 						'file_line' => 4,
 						'issue'     => array(
-							'message'  => "syntax error, unexpected end of file, expecting ',' or ';'",
+							'message'  => 'Linting with PHP ' . $this->options['lint-php-versions'][0] . " turned up: <code>syntax error, unexpected end of file, expecting ',' or ';'</code>",
 							'level'    => 'ERROR',
 							'severity' => 5,
-						)
+						),
 					),
+					array(
+						'type'      => 'lint',
+						'file_name' => 'tests2/myfile1.php',
+						'file_line' => 4,
+						'issue'     => array(
+							'message'  => 'Linting with PHP ' . $this->options['lint-php-versions'][1] . " turned up: <code>syntax error, unexpected end of file, expecting ',' or ';'</code>",
+							'level'    => 'ERROR',
+							'severity' => 5,
+						),
+					),
+
 					/*
 					 * Note: tests3/myfile1.php should be skipped,
 					 * according to --lint-skip-folders option
 					 * set above.
 					 */
-				)
+				),
 			),
 			$issues_submit
 		);
@@ -324,8 +418,8 @@ final class A09LintLintScanCommitTest extends TestCase {
 		$this->assertSame(
 			array(
 				$pr_item->number => array(
-					'error' => 2,
-				)
+					'error' => 4,
+				),
 			),
 			$issues_stat
 		);
@@ -334,6 +428,11 @@ final class A09LintLintScanCommitTest extends TestCase {
 	}
 
 	/**
+	 * PHP lint files when there are large files to be skipped
+	 * and the feature is enabled.
+	 *
+	 * @return void
+	 *
 	 * @covers ::vipgoci_lint_scan_commit
 	 */
 	public function testLintWillSkipLargeFileWhenOptionIsOn(): void {
@@ -412,10 +511,10 @@ final class A09LintLintScanCommitTest extends TestCase {
 		$expected_issues_skipped = array(
 			39 => array(
 				'issues' => array(
-					'max-lines' => array( 'test1/myfile-1.php' )
+					'max-lines' => array( 'test1/myfile-1.php' ),
 				),
-				'total'  => 1
-			)
+				'total'  => 1,
+			),
 		);
 
 		$this->assertSame(
@@ -427,9 +526,11 @@ final class A09LintLintScanCommitTest extends TestCase {
 	}
 
 	/**
+	 * PHP lint when skipping large files is disabled.
+	 *
 	 * @covers ::vipgoci_lint_scan_commit
 	 */
-	public function testLintShouldScanAllFilesWhenSkipLargeFilesOptionIsOff() {
+	public function testLintShouldScanAllFilesWhenSkipLargeFilesOptionIsOff() :void {
 
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
@@ -502,8 +603,8 @@ final class A09LintLintScanCommitTest extends TestCase {
 		$expected_issues_skipped = array(
 			43 => array(
 				'issues' => array(),
-				'total'  => 0
-			)
+				'total'  => 0,
+			),
 		);
 
 		$this->assertSame(
@@ -515,6 +616,9 @@ final class A09LintLintScanCommitTest extends TestCase {
 	}
 
 	/**
+	 * PHP lint when skipping large files is enabled and
+	 * the limit is set to a custom value.
+	 *
 	 * @covers ::vipgoci_lint_scan_commit
 	 */
 	public function testLintShouldValidateAndSkipLargeFileWhenSkipLargeFilesAndLimitOptionsAreOn(): void {
@@ -595,11 +699,11 @@ final class A09LintLintScanCommitTest extends TestCase {
 			43 => array(
 				'issues' => array(
 					'max-lines' => array(
-						0 => 'tests1/myfile1.php'
-					)
+						0 => 'tests1/myfile1.php',
+					),
 				),
-				'total'  => 1
-			)
+				'total'  => 1,
+			),
 		);
 
 		$this->assertSame(
@@ -611,31 +715,41 @@ final class A09LintLintScanCommitTest extends TestCase {
 	}
 
 	/**
+	 * Returns custom array used in tests.
+	 *
 	 * @return array
 	 */
 	private function getDefaultSkippedFilesDueIssuesMock(): array {
 		return array(
 			'issues' => array(),
-			'total'  => 0
+			'total'  => 0,
 		);
 	}
 
 	/**
+	 * PHP lint with the lint-modified-files-only option on.
+	 *
+	 * @return void
+	 *
 	 * @covers ::vipgoci_lint_scan_commit
-	 * With the lint-modified-files-only option on
 	 */
 	public function testLintDoScan3(): void {
-		$options_test = $this->options['github-token'] =
-			vipgoci_unittests_get_config_value(
-				'git-secrets',
-				'github-token',
-				true // Fetch from secrets file
-			);
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( 'github-token', 'token' ),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
 		if ( empty( $this->options['github-token'] ) ) {
 			$this->options['github-token'] = '';
 		}
 
 		$this->options['token'] = $this->options['github-token'];
+
 		if ( - 1 === $options_test ) {
 			return;
 		}
@@ -644,10 +758,12 @@ final class A09LintLintScanCommitTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
-		$this->options['local-git-repo']           = vipgoci_unittests_setup_git_repo(
+		$this->options['local-git-repo'] = vipgoci_unittests_setup_git_repo(
 			$this->options
 		);
+
 		$this->options['lint-modified-files-only'] = true;
+
 		if ( false === $this->options['local-git-repo'] ) {
 			$this->markTestSkipped(
 				'Could not set up git repository: ' .
@@ -699,9 +815,13 @@ final class A09LintLintScanCommitTest extends TestCase {
 		 * Some versions of PHP reverse the ',' and ';'
 		 * in the string below; deal with that.
 		 */
-		$issues_submit[ $pr_item->number ][0]['issue']['message'] = vipgoci_unittests_php_syntax_error_compat(
-			$issues_submit[ $pr_item->number ][0]['issue']['message']
-		);
+
+		for ( $i = 0; $i < 2; $i++ ) {
+			$issues_submit[ $pr_item->number ][ $i ]['issue']['message'] = vipgoci_unittests_php_syntax_error_compat(
+				$issues_submit[ $pr_item->number ][ $i ]['issue']['message'],
+				true
+			);
+		}
 
 		$this->assertSame(
 			array(
@@ -711,18 +831,32 @@ final class A09LintLintScanCommitTest extends TestCase {
 						'file_name' => 'lint-scan-commit-test-2.php',
 						'file_line' => 4,
 						'issue'     => array(
-							'message'  => "syntax error, unexpected end of file, expecting ',' or ';'",
+							'message'  => 'Linting with PHP ' . $this->options['lint-php-versions'][0] . " turned up: <code>syntax error, unexpected end of file, expecting ',' or ';'</code>",
 							'level'    => 'ERROR',
 							'severity' => 5,
-						)
-					)
-				)
+						),
+					),
+					array(
+						'type'      => 'lint',
+						'file_name' => 'lint-scan-commit-test-2.php',
+						'file_line' => 4,
+						'issue'     => array(
+							'message'  => 'Linting with PHP ' . $this->options['lint-php-versions'][1] . " turned up: <code>syntax error, unexpected end of file, expecting ',' or ';'</code>",
+							'level'    => 'ERROR',
+							'severity' => 5,
+						),
+					),
+				),
 			),
 			$issues_submit
 		);
 
 		$this->assertSame(
-			array( $pr_item->number => array( 'error' => 1 ) ),
+			array(
+				$pr_item->number => array(
+					'error' => 2,
+				),
+			),
 			$issues_stat
 		);
 

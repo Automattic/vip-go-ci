@@ -18,7 +18,7 @@ use PHPUnit\Framework\TestCase;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class ReportCreateScanDetailsPhpLintOptions extends TestCase {
+final class ReportCreateScanDetailsPhpLintOptionsTest extends TestCase {
 	/**
 	 * Setup function. Require files, etc.
 	 */
