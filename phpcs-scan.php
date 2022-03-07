@@ -108,7 +108,7 @@ function vipgoci_phpcs_do_scan(
 	 * Feed PHPCS the temporary file specified by our caller.
 	 */
 	$cmd = sprintf(
-		'%s %s --severity=%s --report=%s',
+		'%s -d memory_limit=500M %s --severity=%s --report=%s',
 		escapeshellcmd( $phpcs_php_path ),
 		escapeshellcmd( $phpcs_path ),
 		escapeshellarg( (string) $phpcs_severity ),
