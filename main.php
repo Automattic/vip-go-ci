@@ -74,8 +74,10 @@ function vipgoci_help_print() :void {
 		PHP_EOL .
 		'PHP Linting configuration:' . PHP_EOL .
 		"\t" . '--lint=BOOL                    Whether to do PHP linting. Default is true.' . PHP_EOL .
-		"\t" . '--lint-php-path=FILE           Full path to PHP used to lint. If not specified the default in' . PHP_EOL .
-		"\t" . '                               $PATH will be used instead.' . PHP_EOL .
+		"\t" . '--lint-php-version-paths=ARRAY Array of paths to different PHP interpreter versions, comma' . PHP_EOL .
+		"\t" . '                               separated. Version and path separated by colon. Used for linting.' . PHP_EOL .
+		"\t" . '                               E.g.: --lint-php-version-paths=7.4:/usr/bin/php7.4,8.1:/usr/bin/php8.1' . PHP_EOL .
+		"\t" . '--lint-php-versions=ARRAY      Array of PHP versions to lint with during run. Comma separated values.' . PHP_EOL .
 		"\t" . '--lint-modified-files-only=BOOL   Whether to limit lint scan to run against only modified or new' . PHP_EOL .
 		"\t" . '                               files in the PR to be scanned. Default is true. It can be ' . PHP_EOL .
 		"\t" . '                               modified via options file ("' . VIPGOCI_OPTIONS_FILE_NAME . '") placed in' . PHP_EOL .
@@ -286,7 +288,8 @@ function vipgoci_options_recognized() :array {
 		'lint-skip-folders:',
 		'lint-skip-folders-in-repo-options-file:',
 		'lint-modified-files-only:',
-		'lint-php-path:',
+		'lint-php-version-paths:',
+		'lint-php-versions:',
 
 		/*
 		 * PHPCS configuration
@@ -1100,18 +1103,162 @@ function vipgoci_run_init_options_lint( array &$options ) :void {
 	);
 
 	/*
-	 * Process --lint-php-path if to do PHP linting --
-	 * expected to be a file, default value is 'php'
-	 * (then relies on $PATH).
+	 * Process --lint-php-versions and --lint-php-version-paths
+	 * if to do PHP linting.
 	 */
-	if ( true === $options['lint'] ) {
-		vipgoci_option_file_handle(
-			$options,
-			'lint-php-path',
-			'php'
-		);
+	if ( false === $options['lint'] ) {
+		$options['lint-php-versions']      = null;
+		$options['lint-php-version-paths'] = null;
 	} else {
-		$options['lint-php-path'] = null;
+		vipgoci_option_array_handle(
+			$options,
+			'lint-php-versions',
+			array(),
+			array(),
+			',',
+			false
+		);
+
+		if ( empty( $options['lint-php-versions'] ) ) {
+			vipgoci_sysexit(
+				'--lint-php-versions is empty and --lint option is set to true. Must define at least one PHP version for linting'
+			);
+		}
+
+		vipgoci_option_array_handle(
+			$options,
+			'lint-php-version-paths',
+			array(),
+			array(),
+			',',
+			false
+		);
+
+		if ( empty( $options['lint-php-version-paths'] ) ) {
+			vipgoci_sysexit(
+				'--lint-php-version-paths is empty and --lint option is set to true. Must define at least one path to PHP interpreter'
+			);
+		}
+
+		/*
+		 * Verify --lint-php-version-paths option.
+		 */
+		$tmp_new_lint_php_version_paths = array();
+
+		$tmp_php_paths_versions_seen = array();
+
+		foreach (
+			$options['lint-php-version-paths'] as
+				$tmp_php_version_path
+		) {
+			$tmp_version_to_path_arr = explode(
+				':',
+				$tmp_php_version_path
+			);
+
+			if ( 2 !== count( $tmp_version_to_path_arr ) ) {
+				vipgoci_sysexit(
+					'Invalid formatting of option --lint-php-version-paths',
+					array(
+						'lint-php-version-path-invalid' => $tmp_php_version_path,
+					)
+				);
+			}
+
+			if ( false === is_numeric( $tmp_version_to_path_arr[0] ) ) {
+				vipgoci_sysexit(
+					'Invalid formatting of option --lint-php-version-paths; version must be numeric',
+					array(
+						'lint-php-version-path-invalid' => $tmp_version_to_path_arr[0],
+					)
+				);
+			}
+
+			if ( false === is_file( $tmp_version_to_path_arr[1] ) ) {
+				vipgoci_sysexit(
+					'Option --lint-php-version-paths points to a non-existing file',
+					array(
+						'php-version-key'   => $tmp_version_to_path_arr[0],
+						'path-not-existing' => $tmp_version_to_path_arr[1],
+					)
+				);
+			}
+
+			if ( true === in_array(
+				$tmp_version_to_path_arr[0],
+				$tmp_php_paths_versions_seen,
+				true
+			) ) {
+				vipgoci_sysexit(
+					'Option --lint-php-version-paths contains duplicate PHP version key',
+					array(
+						'lint-php-version-duplicate' => $tmp_version_to_path_arr[0],
+					)
+				);
+			} else {
+				$tmp_php_paths_versions_seen[] = $tmp_version_to_path_arr[0];
+			}
+
+			/*
+			 * Check if the PHP interpreter specified is actually
+			 * of correct version (version X.Y only, not X.Y.Z.).
+			 */
+			$tmp_lint_php_interpreter_version = vipgoci_util_php_interpreter_get_version(
+				$tmp_version_to_path_arr[1]
+			);
+
+			if ( null === $tmp_lint_php_interpreter_version ) {
+				vipgoci_sysexit(
+					'Unable to get PHP interpreter when parsing option --lint-php-version-paths',
+					array(
+						'lint-php-interpreter-path' => $tmp_version_to_path_arr[1],
+					)
+				);
+			}
+
+			if ( 0 !== strpos(
+				$tmp_lint_php_interpreter_version,
+				$tmp_version_to_path_arr[0]
+			) ) {
+				vipgoci_sysexit(
+					'Option --lint-php-version-paths refers to PHP interpreter that is not of the version specified',
+					array(
+						'version-defined'            => $tmp_version_to_path_arr[0],
+						'actual-interpreter-version' => $tmp_lint_php_interpreter_version,
+					)
+				);
+			}
+
+			$tmp_new_lint_php_version_paths[ $tmp_version_to_path_arr[0] ] =
+				$tmp_version_to_path_arr[1];
+		}
+
+		$options['lint-php-version-paths'] = $tmp_new_lint_php_version_paths;
+		unset( $tmp_new_lint_php_version_paths );
+		unset( $tmp_version_to_path_arr );
+
+		/*
+		 * Verify --lint-php-versions option.
+		 */
+		foreach (
+			$options['lint-php-versions'] as
+				$tmp_lint_php_version
+		) {
+			if ( ! isset(
+				$options['lint-php-version-paths'][ $tmp_lint_php_version ]
+			) ) {
+				vipgoci_sysexit(
+					'Option --lint-php-versions refers to PHP version not defined in --lint-php-version-paths',
+					array(
+						'version-not-defined' => $tmp_lint_php_version,
+						'versions-defined'    => array_keys( $options['lint-php-version-paths'] ),
+					)
+				);
+			}
+		}
+
+		unset( $tmp_lint_php_version );
+		unset( $tmp_lint_php_interpreter_version );
 	}
 }
 
@@ -2635,6 +2782,7 @@ function vipgoci_run_scan(
 			VIPGOCI_PHPCS_DUPLICATE_SNIFFS,
 			VIPGOCI_NO_ISSUES_FOUND_MSG_AND_NO_REVIEWS,
 			VIPGOCI_NO_ISSUES_FOUND_MSG_AND_EXISTING_REVIEWS,
+			VIPGOCI_LINT_FAILED_MSG_START,
 		)
 	);
 

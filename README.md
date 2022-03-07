@@ -8,7 +8,7 @@ Continuous integration for VIP Go repositories.
 
 Currently, a number of types of scanners are supported:
 
-* PHP linting. Uses built in PHP linter (`php -l`). Intended to find syntax errors.
+* PHP linting. Uses built in PHP linter (`php -l`). Intended to find syntax errors, can lint using multiple PHP versions.
 * [PHPCS](https://github.com/squizlabs/PHP_CodeSniffer/). Intended to find operational issues, etc.
 * [SVG scanner](https://github.com/Automattic/vip-go-svg-sanitizer). Intended to find suspicious elements, attributes or external references.
 
@@ -97,7 +97,14 @@ While running, `vip-go-ci` will output log of its actions. Here is an example --
         "branches-ignore": [],
         "autoapprove": true,
         "autoapprove-filetypes": [ "css", "txt", "pdf ],
-        "lint-php-path": "php",
+        "lint-php-versions": [
+            "7.4",
+            "8.1"
+        ],
+        "lint-php-version-paths": {
+            "7.4": "\/usr\/bin\/php7.4",
+            "8.1": "\/usr\/bin\/php8.1"
+        },
         "debug-level": 0,
         "dry-run": false
     }
@@ -378,7 +385,9 @@ This option can be configured via repository-config file as well:
 
 By default, `vip-go-ci` will PHP lint any files modified by the current pull request. PHP linting is performed by running `php -l`. 
 
-To use a different PHP interpreter than the system default to perform PHP linting, use the `--lint-php-path` option. This should point to a PHP binary.
+`vip-go-ci` can lint PHP files using one or more PHP versions during the same run. These must be specified using the `--lint-php-version-paths` and `--lint-php-versions` options. 
+
+The `--lint-php-version-paths` option should specify all PHP versions that may be used and a PHP interpreter path. For example: `--lint-php-version-paths=7.4:/usr/bin/php7.4,8.1:/usr/bin/php8.1`. `--lint-php-versions` should specify the PHP versions to lint with during the run: `--lint-php-versions=7.4`.
 
 The following PHP linting related options can be configured via repository config-file or normal options:
 

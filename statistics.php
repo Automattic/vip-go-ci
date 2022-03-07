@@ -187,6 +187,18 @@ function vipgoci_runtime_measure_shell_exec_with_retry(
 
 		$shell_exec_output = @shell_exec( $cmd ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
 
+		/*
+		 * Detect if shell returns with a file not found error.
+		 * In those cases, set to null to avoid problems later.
+		 */
+		if (
+			( null !== $shell_exec_output ) &&
+			( 0 === strpos( $shell_exec_output, 'sh: 1' ) ) &&
+			( false !== strrpos( $shell_exec_output, ': not found' ) )
+		) {
+			$shell_exec_output = null;
+		}
+
 		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, $runtime_measure_type );
 	} while (
 		( null === $shell_exec_output ) &&
