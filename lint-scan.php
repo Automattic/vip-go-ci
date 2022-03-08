@@ -191,6 +191,18 @@ function vipgoci_lint_parse_results(
 			 */
 			$pos3 = strpos( $message, ' in ' . $temp_file_name );
 
+			if ( false === $pos3 ) {
+				vipgoci_sysexit(
+					'Temporary file name not found in PHPCS output, cannot continue',
+					array(
+						'file_name'      => $file_name,
+						'temp_file_name' => $temp_file_name,
+					),
+					VIPGOCI_EXIT_SYSTEM_PROBLEM,
+					true // Log to IRC.
+				);
+			}
+
 			$message = substr( $message, 0, $pos3 );
 			$message = ltrim( rtrim( $message ) );
 
