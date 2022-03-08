@@ -8,7 +8,7 @@
 declare(strict_types=1);
 
 /**
- * pull request is not approved,
+ * Pull request is not approved,
  * remove label if needed, leave messages
  * on files that are approved, dismiss
  * any previously approving PRs.
