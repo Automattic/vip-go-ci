@@ -110,7 +110,7 @@ final class MainRunScanLogSkippedFilesTest extends TestCase {
 		$this->assertNotFalse(
 			strpos(
 				$printed_output,
-				'Too large file(s) was/were detected during analysis:'
+				'"Too large file(s) was\/were detected during analysis:'
 			),
 			'No message was logged about too large files'
 		);

@@ -75,7 +75,7 @@ final class LogSysExitTest extends TestCase {
 		 */
 		$printed_data_found = strpos(
 			$printed_data,
-			'Usage: Missing parameter;'
+			'"Usage: Missing parameter";'
 		);
 
 		$this->assertTrue(
