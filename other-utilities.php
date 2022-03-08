@@ -66,6 +66,15 @@ function vipgoci_util_php_interpreter_get_version(
 
 	$php_version_str = trim( $php_output_arr[0] );
 
+	vipgoci_log(
+		'Determined PHP version',
+		array(
+			'php-path'    => $php_path,
+			'php-version' => $php_version_str,
+		),
+		2
+	);
+
 	vipgoci_cache( $cache_id, $php_version_str );
 
 	return $php_version_str;
