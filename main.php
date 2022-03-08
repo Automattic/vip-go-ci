@@ -2758,7 +2758,7 @@ function vipgoci_run_scan(
 		'Starting scanning PRs; ' . $prs_urls,
 		array(
 			'repo-owner' => $options['repo-owner'],
-			'repo-name' =>  $options['repo-name'],
+			'repo-name'  => $options['repo-name'],
 		),
 		0,
 		true // Log to IRC.
@@ -3122,7 +3122,7 @@ function vipgoci_run_init_vars() :array {
  */
 function vipgoci_run() :int {
 	// Set memory limit to 400MB.
-	ini_set( 'memory_limit', '400M' );
+	ini_set( 'memory_limit', '400M' ); // phpcs:ignore WordPress.PHP.IniSet.memory_limit_Blacklisted
 
 	/*
 	 * Assign a few variables.
