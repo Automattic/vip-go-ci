@@ -366,17 +366,6 @@ function vipgoci_ap_hashes_api_scan_commit(
 		}
 	}
 
-	/*
-	 * Reduce memory-usage as possible
-	 */
-	unset( $prs_implicated );
-	unset( $pr_item );
-	unset( $pr_diff );
-	unset( $pr_diff_contents );
-	unset( $approval_status );
-
-	gc_collect_cycles();
-
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'hashes_api_scan' );
 }
 

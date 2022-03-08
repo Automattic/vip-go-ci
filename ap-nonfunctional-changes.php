@@ -225,19 +225,6 @@ function vipgoci_ap_nonfunctional_changes(
 		}
 	}
 
-	/*
-	 * Reduce memory-usage as possible
-	 */
-	unset( $prs_implicated );
-	unset( $pr_diff );
-	unset( $pr_item );
-	unset( $pr_diff_file_extension );
-	unset( $pr_diff_file_name );
-	unset( $tmp_file_old );
-	unset( $tmp_file_new );
-
-	gc_collect_cycles();
-
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'ap_nonfunctional_changes' );
 }
 

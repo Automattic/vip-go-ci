@@ -2748,6 +2748,23 @@ function vipgoci_run_scan(
 	// Find PRs relating to the commit we are processing.
 	$prs_implicated = vipgoci_run_scan_find_prs( $options );
 
+	// Log to IRC URLs to PRs implicated.
+	$prs_urls = vipgoci_github_prs_urls_get(
+		$options['repo-owner'],
+		$options['repo-name'],
+		$prs_implicated
+	);
+
+	vipgoci_log(
+		'Starting scanning PRs; ' . $prs_urls,
+		array(
+			'repo-owner' => $options['repo-owner'],
+			'repo-name' =>  $options['repo-name'],
+		),
+		0,
+		true // Log to IRC.
+	);
+
 	// Check that each PR has the commit specified as the latest one.
 	vipgoci_run_scan_check_latest_commit(
 		$options,
@@ -2834,6 +2851,9 @@ function vipgoci_run_scan(
 			$results['stats'][ VIPGOCI_STATS_LINT ],
 			$results[ VIPGOCI_SKIPPED_FILES ]
 		);
+
+		// Reduce memory usage as possible.
+		gc_collect_cycles();
 	}
 
 	// Next PHPCS scan if configured to do so.
@@ -2844,6 +2864,8 @@ function vipgoci_run_scan(
 			$results['stats'][ VIPGOCI_STATS_PHPCS ],
 			$results[ VIPGOCI_SKIPPED_FILES ]
 		);
+
+		gc_collect_cycles();
 	}
 
 	/*
@@ -2858,6 +2880,8 @@ function vipgoci_run_scan(
 		$options,
 		$results
 	);
+
+	gc_collect_cycles();
 
 	/*
 	 * Remove comments from $results that have
@@ -2914,6 +2938,8 @@ function vipgoci_run_scan(
 	} else {
 		$scan_details_msg = '';
 	}
+
+	gc_collect_cycles();
 
 	/*
 	 * Submit any remaining issues to GitHub
@@ -3096,6 +3122,9 @@ function vipgoci_run_init_vars() :array {
  * @codeCoverageIgnore
  */
 function vipgoci_run() :int {
+	// Set memory limit to 400MB.
+	ini_set( 'memory_limit', '400M' );
+
 	/*
 	 * Assign a few variables.
 	 */
@@ -3148,6 +3177,9 @@ function vipgoci_run() :int {
 
 	// Process options parameters.
 	vipgoci_run_init_options( $options, $options_recognized );
+
+	// Reduce memory usage as possible.
+	gc_collect_cycles();
 
 	// Run scans.
 	vipgoci_run_scan( $options, $results, $prs_implicated, $startup_time );
