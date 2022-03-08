@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.2](https://github.com/Automattic/vip-go-ci/releases/tag/1.2.2) - 2022-03-08
+
+### Added
+- [#258](https://github.com/Automattic/vip-go-ci/pull/258): Update logging & memory management, retry certain HTTP requests, catch out of memory situations 
+
 ## [1.2.1](https://github.com/Automattic/vip-go-ci/releases/tag/1.2.1) - 2022-03-07
 
 ### Added
