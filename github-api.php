@@ -858,7 +858,8 @@ function vipgoci_github_fetch_url(
 		vipgoci_sysexit(
 			'Gave up retrying request to GitHub, cannot continue',
 			array(),
-			VIPGOCI_EXIT_GITHUB_PROBLEM
+			VIPGOCI_EXIT_GITHUB_PROBLEM,
+			true // Log to IRC.
 		);
 	} elseif (
 		( false === $fatal_error_on_failure ) &&
