@@ -1748,24 +1748,6 @@ function vipgoci_run_init_options_irc( array &$options ) :void {
 		)
 	);
 
-	/*
-	 * In case of exiting before we
-	 * empty the IRC queue, do it on shutdown.
-	 */
-	if (
-		( ! empty( $options['irc-api-url'] ) ) &&
-		( ! empty( $options['irc-api-token'] ) ) &&
-		( ! empty( $options['irc-api-bot'] ) ) &&
-		( ! empty( $options['irc-api-room'] ) )
-	) {
-		register_shutdown_function(
-			'vipgoci_irc_api_alerts_send',
-			$options['irc-api-url'],
-			$options['irc-api-token'],
-			$options['irc-api-bot'],
-			$options['irc-api-room']
-		);
-	}
 }
 
 /**
@@ -1800,6 +1782,11 @@ function vipgoci_run_cleanup_irc( array &$options ) :void {
 			'Did not send alerts to IRC, due to missing configuration parameter'
 		);
 	}
+
+	/*
+	 * Note: vipgoci_irc_api_alerts_send() is called
+	 * from shutdown function.
+	 */
 }
 
 /**
@@ -2298,6 +2285,11 @@ function vipgoci_run_init_options(
 	 * options.
 	 */
 	vipgoci_options_read_repo_skip_files( $options );
+
+	/*
+	 * Register shutdown function.
+	 */
+	register_shutdown_function( 'vipgoci_shutdown_function', $options );
 }
 
 /**
@@ -2812,6 +2804,7 @@ function vipgoci_run_scan(
 			VIPGOCI_NO_ISSUES_FOUND_MSG_AND_EXISTING_REVIEWS,
 			VIPGOCI_LINT_FAILED_MSG_START,
 			VIPGOCI_PHPCS_SCAN_FAILED_MSG_START,
+			VIPGOCI_OUT_OF_MEMORY_ERROR,
 		)
 	);
 
@@ -3266,5 +3259,83 @@ function vipgoci_run() :int {
 	return vipgoci_exit_status(
 		$results
 	);
+}
+
+/**
+ * Shutdown function. Handle out of memory
+ * situations, clear IRC queue.
+ *
+ * @param array $options Options array for the program.
+ *
+ * @return void
+ */
+function vipgoci_shutdown_function(
+	array $options
+) :void {
+	/*
+	 * Get last PHP error, if any.
+	 */
+	$error_last = error_get_last();
+
+	if (
+		( null !== $error_last ) &&
+		( E_ERROR === $error_last['type'] ) &&
+		( str_contains( $error_last['message'], 'Allowed memory size' ) )
+	) {
+		vipgoci_log(
+			'Ran out of memory during execution, exiting',
+			array(
+				'repo-owner' => $options['repo-owner'],
+				'repo-name'  => $options['repo-name'],
+				'commit-id'  => $options['commit'],
+			),
+			0,
+			true // Log to IRC.
+		);
+
+		/*
+		 * Post generic message indicating
+		 * resource constraints issue to each
+		 * pull request implicated.
+		 */
+		$prs_implicated = vipgoci_github_prs_implicated(
+			$options['repo-owner'],
+			$options['repo-name'],
+			$options['commit'],
+			$options['token'],
+			$options['branches-ignore'],
+			$options['skip-draft-prs'],
+			false
+		);
+
+		foreach ( $prs_implicated as $pr_item ) {
+			vipgoci_github_pr_comments_generic_submit(
+				$options['repo-owner'],
+				$options['repo-name'],
+				$options['token'],
+				$pr_item->number,
+				VIPGOCI_OUT_OF_MEMORY_ERROR,
+				$options['commit']
+			);
+		}
+	}
+
+	/*
+	 * In case of exiting before we
+	 * empty the IRC queue, do it on shutdown.
+	 */
+	if (
+		( ! empty( $options['irc-api-url'] ) ) &&
+		( ! empty( $options['irc-api-token'] ) ) &&
+		( ! empty( $options['irc-api-bot'] ) ) &&
+		( ! empty( $options['irc-api-room'] ) )
+	) {
+		vipgoci_irc_api_alerts_send(
+			$options['irc-api-url'],
+			$options['irc-api-token'],
+			$options['irc-api-bot'],
+			$options['irc-api-room']
+		);
+	}
 }
 
