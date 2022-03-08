@@ -74,6 +74,15 @@ function vipgoci_phpcs_get_version(
 
 	$phpcs_version_str = $phpcs_output_arr[0];
 
+	vipgoci_log(
+		'PHPCS version retrieved',
+		array(
+			'phpcs-path'    => $phpcs_path,
+			'phpcs-version' => $phpcs_output,
+		),
+		2
+	);
+
 	vipgoci_cache( $cache_id, $phpcs_version_str );
 
 	return $phpcs_version_str;
@@ -196,11 +205,6 @@ function vipgoci_phpcs_do_scan(
 		$cmd,
 		'phpcs_cli'
 	);
-
-	if ( null !== $result ) {
-		/* Remove linebreak PHPCS possibly adds */
-		$result = rtrim( $result, "\n" );
-	}
 
 	return $result;
 }
@@ -367,6 +371,12 @@ function vipgoci_phpcs_scan_single_file(
 	);
 
 	if ( null !== $file_issues_str ) {
+		/* Remove linebreak PHPCS possibly adds */
+		$file_issues_str = rtrim(
+			$file_issues_str,
+			"\n"
+		);
+
 		$file_issues_arr_master = json_decode(
 			$file_issues_str,
 			true
@@ -1080,28 +1090,12 @@ function vipgoci_phpcs_scan_commit(
 				$commit_issues_stats[ $pr_item->number ][ strtolower( $file_issue_val_item['level'] ) ]++;
 			}
 		}
-
-		unset( $pr_item_commits );
-		unset( $file_blame_log );
-		unset( $file_changed_lines );
-		unset( $file_relative_lines );
-		unset( $file_issues_arr_filtered );
-
-		gc_collect_cycles();
 	}
 
-	/*
-	 * Clean up a bit
-	 */
 	vipgoci_log(
-		'Cleaning up after PHPCS-scanning...',
+		'PHPCS-scanning complete',
 		array()
 	);
-
-	unset( $prs_implicated );
-	unset( $pr_item_files_changed );
-
-	gc_collect_cycles();
 
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'phpcs_scan_commit' );
 }
