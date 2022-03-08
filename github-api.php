@@ -804,21 +804,18 @@ function vipgoci_github_fetch_url(
 				'Sending request to GitHub failed, will ' .
 					'retry in a bit... ',
 				array(
-					'github_url'    => $github_url,
-					'curl_retries'  => $curl_retries,
-
-					'curl_errno'    => curl_errno(
+					'github_url'          => $github_url,
+					'curl_retries'        => $curl_retries,
+					'curl_errno'          => curl_errno(
 						$ch
 					),
-
-					'curl_errormsg' => curl_strerror(
+					'curl_errormsg'       => curl_strerror(
 						curl_errno( $ch )
 					),
-					'http_status'   =>
+					'http_status'         =>
 						isset( $resp_headers['status'] ) ?
 						$resp_headers['status'] : null,
-					'http_response' =>
-						$resp_data,
+					'http_response'       => $resp_data,
 					'x-github-request-id' =>
 						isset( $resp_headers['x-github-request-id'] ) ?
 						$resp_headers['x-github-request-id'] : null,
