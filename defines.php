@@ -85,6 +85,11 @@ define(
 );
 
 define(
+	'VIPGOCI_OUT_OF_MEMORY_ERROR',
+	'Unable to analyze the pull request due to resource constraints. The pull request may be too large to process. Please try submitting a smaller pull request'
+);
+
+define(
 	'VIPGOCI_NO_ISSUES_FOUND_MSG_AND_NO_REVIEWS',
 	'No issues were found to report when scanning latest commit'
 );
