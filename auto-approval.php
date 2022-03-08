@@ -415,7 +415,7 @@ function vipgoci_autoapproval_do_approve(
 		'Removing any previously submitted comments ' .
 			'indicating that a particular file ' .
 			'is approved as the whole ' .
-			'Pull-Request is approved',
+			'pull request is approved',
 		array(
 			'pr_number' => $pr_item->number,
 		)
