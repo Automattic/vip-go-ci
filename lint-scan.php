@@ -630,6 +630,17 @@ function vipgoci_lint_scan_commit(
 		$options['skip-draft-prs']
 	);
 
+	vipgoci_log(
+		( false === $options['lint-modified-files-only'] ) ?
+			'PHP lint scanning all PHP files' :
+			'PHP lint scanning modified files only',
+		array(
+			'repo_owner' => $repo_owner,
+			'repo_name'  => $repo_name,
+			'commit_id'  => $commit_id,
+		)
+	);
+
 	if ( true === $options['lint-modified-files-only'] ) {
 		// Fetch list of files that exist in the commit.
 		$modified_files = vipgoci_lint_get_prs_modified_files(
@@ -697,6 +708,11 @@ function vipgoci_lint_scan_commit(
 			);
 		}
 	}
+
+	vipgoci_log(
+		'PHP linting complete',
+		array()
+	);
 
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'lint_scan_commit' );
 }
