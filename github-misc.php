@@ -42,7 +42,7 @@ function vipgoci_patch_changed_lines(
 	string $file_name
 ): ?array {
 	/*
-	 * Fetch patch for all files of the Pull-Request
+	 * Fetch patch for all files of the pull request
 	 */
 	$patch_arr = vipgoci_git_diffs_fetch(
 		$local_git_repo,
@@ -179,7 +179,7 @@ function vipgoci_blame_filter_commits(
 	 * 'git blame' log for the file, so
 	 * so we can filter out issues not
 	 * stemming from commits that are a
-	 * part of the current Pull-Request.
+	 * part of the current pull request.
 	 */
 
 	$blame_log_filtered = array();
