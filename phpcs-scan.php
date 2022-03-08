@@ -50,6 +50,7 @@ function vipgoci_phpcs_get_version(
 				'cmd'    => $cmd,
 				'output' => $phpcs_output,
 			),
+			VIPGOCI_EXIT_SYSTEM_PROBLEM
 		);
 	}
 
@@ -1153,6 +1154,7 @@ function vipgoci_phpcs_get_all_standards(
 				'cmd'    => $cmd,
 				'output' => $result,
 			),
+			VIPGOCI_EXIT_SYSTEM_PROBLEM
 		);
 	}
 
@@ -1242,6 +1244,7 @@ function vipgoci_phpcs_get_sniffs_for_standard(
 				'cmd'    => $cmd,
 				'output' => $result,
 			),
+			VIPGOCI_EXIT_SYSTEM_PROBLEM
 		);
 	}
 

@@ -45,6 +45,7 @@ function vipgoci_util_php_interpreter_get_version(
 				'cmd'    => $php_cmd,
 				'output' => $php_output,
 			),
+			VIPGOCI_EXIT_SYSTEM_PROBLEM
 		);
 	}
 
