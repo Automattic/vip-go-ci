@@ -67,8 +67,7 @@ function vipgoci_auto_approval_non_approval(
 			'files_seen'              => $files_seen,
 			'pr_files_changed'        => $pr_files_changed,
 		),
-		0,
-		true // Send to IRC.
+		0
 	);
 
 	if ( false === $pr_label ) {
@@ -318,8 +317,7 @@ function vipgoci_autoapproval_do_approve(
 				'auto_approved_files_arr' => $auto_approved_files_arr,
 				'files_seen'              => $files_seen,
 			),
-			0,
-			true // Send to IRC.
+			0
 		);
 
 		/*
@@ -376,8 +374,7 @@ function vipgoci_autoapproval_do_approve(
 				'auto_approved_files_arr' => $auto_approved_files_arr,
 				'files_seen'              => $files_seen,
 			),
-			0,
-			true
+			0
 		);
 	}
 
@@ -469,7 +466,7 @@ function vipgoci_auto_approval_scan_commit(
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'auto_approve_commit' );
 
 	vipgoci_log(
-		'Doing auto-approval',
+		'Performing auto-approval',
 		array(
 			'repo_owner'             => $options['repo-owner'],
 			'repo_name'              => $options['repo-name'],
@@ -561,8 +558,7 @@ function vipgoci_auto_approval_scan_commit(
 					'pr_number'               => (int) $pr_item->number,
 					'pr_diff'                 => $pr_diff,
 				),
-				0,
-				true
+				0
 			);
 		} elseif (
 			( true === $did_foreach ) &&
@@ -592,23 +588,6 @@ function vipgoci_auto_approval_scan_commit(
 
 		unset( $files_seen );
 	}
-
-	/*
-	 * Reduce memory-usage as possible
-	 */
-
-	unset( $pr_diff );
-	unset( $pr_diff_file_name );
-	unset( $pr_diff_contents );
-	unset( $pr_item );
-	unset( $pr_label );
-	unset( $prs_implicated );
-	unset( $files_seen );
-	unset( $did_foreach );
-	unset( $can_auto_approve );
-	unset( $tmp_github_url );
-
-	gc_collect_cycles();
 
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'auto_approve_commit' );
 }
@@ -709,6 +688,11 @@ function vipgoci_auto_approval_process(
 		$options,
 		$results,
 		$auto_approved_files_arr
+	);
+
+	vipgoci_log(
+		'Auto-approval process complete',
+		array()
 	);
 }
 
