@@ -79,7 +79,7 @@ function vipgoci_phpcs_get_version(
 		'PHPCS version retrieved',
 		array(
 			'phpcs-path'    => $phpcs_path,
-			'phpcs-version' => $phpcs_output,
+			'phpcs-version' => $phpcs_version_str,
 		),
 		2
 	);
