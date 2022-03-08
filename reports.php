@@ -151,6 +151,16 @@ function vipgoci_report_create_scan_details_software_versions(
 		}
 	}
 
+	if ( true === $options_copy['svg-checks'] ) {
+		$svg_php_version = vipgoci_util_php_interpreter_get_version(
+			$options_copy['svg-php-path']
+		);
+
+		if ( ! empty( $svg_php_version ) ) {
+			$details .= '<li>PHP runtime version for SVG scanner: <code>' . vipgoci_output_sanitize_version_number( $svg_php_version ) . '</code></li>' . PHP_EOL;
+		}
+	}
+
 	$details .= '</ul>' . PHP_EOL;
 
 	$details .= '<h4>Options file (<code>' . vipgoci_output_html_escape( VIPGOCI_OPTIONS_FILE_NAME ) . '</code>)</h4>' . PHP_EOL;

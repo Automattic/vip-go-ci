@@ -47,6 +47,7 @@ final class ReportCreateScanDetailsSoftwareVersionsTest extends TestCase {
 		$this->options['lint']         = false;
 		$this->options['phpcs']        = false;
 		$this->options['repo-options'] = false;
+		$this->options['svg-checks']   = false;
 
 		$actual_output = vipgoci_report_create_scan_details_software_versions(
 			$this->options
@@ -94,6 +95,13 @@ final class ReportCreateScanDetailsSoftwareVersionsTest extends TestCase {
 			)
 		);
 
+		$this->assertFalse(
+			strpos(
+				$actual_output,
+				'SVG scanner'
+			)
+		);
+
 		$this->assertNotFalse(
 			strpos(
 				$actual_output,
@@ -119,6 +127,8 @@ final class ReportCreateScanDetailsSoftwareVersionsTest extends TestCase {
 		$this->options['phpcs']                  = true;
 		$this->options['phpcs-path']             = '/usr/bin/phpcs';
 		$this->options['phpcs-php-path']         = '/usr/bin/php7.3';
+		$this->options['svg-checks']             = true;
+		$this->options['svg-php-path']           = '/usr/bin/php8.0';
 		$this->options['repo-options']           = true;
 		$this->options['repo-options-set']       = array(
 			'a' => 1,
@@ -197,6 +207,13 @@ final class ReportCreateScanDetailsSoftwareVersionsTest extends TestCase {
 			strpos(
 				$actual_output,
 				'<li>PHPCS version: <code>3.5.5</code></li>'
+			)
+		);
+
+		$this->assertNotFalse(
+			strpos(
+				$actual_output,
+				'<li>PHP runtime version for SVG scanner: <code>8.0.3</code></li>'
 			)
 		);
 
