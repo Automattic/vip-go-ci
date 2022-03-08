@@ -1436,6 +1436,15 @@ function vipgoci_github_pr_reviews_comments_get(
 				'page=' . rawurlencode( $page ) . '&' .
 				'per_page=' . rawurlencode( $per_page );
 
+			/*
+			 * Fetch results from GitHub, but do not stop
+			 * execution on failure. This is because in some edge
+			 * cases the GitHub API consistently cannot process these
+			 * kinds of requests, returning HTTP 500 errors, probably
+			 * due to a bug in the API. We want to continue processing
+			 * despite this and return partial results, as it will not
+			 * have a great impact on the final output. 
+			 */
 			$prs_comments_tmp = vipgoci_github_fetch_url(
 				$github_url,
 				$github_token,
@@ -1455,6 +1464,7 @@ function vipgoci_github_pr_reviews_comments_get(
 				);
 
 				$page++;
+				$prs_comments_tmp = array();
 
 				continue;
 			}
