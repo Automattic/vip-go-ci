@@ -2750,9 +2750,8 @@ function vipgoci_run_scan(
 
 	// Log to IRC URLs to PRs implicated.
 	$prs_urls = vipgoci_github_prs_urls_get(
-		$options['repo-owner'],
-		$options['repo-name'],
-		$prs_implicated
+		$prs_implicated,
+		' -- '
 	);
 
 	vipgoci_log(
