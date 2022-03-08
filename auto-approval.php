@@ -8,7 +8,7 @@
 declare(strict_types=1);
 
 /**
- * Pull-Request is not approved,
+ * pull request is not approved,
  * remove label if needed, leave messages
  * on files that are approved, dismiss
  * any previously approving PRs.
@@ -52,7 +52,7 @@ function vipgoci_auto_approval_non_approval(
 		'pull/' . (int) $pr_item->number;
 
 	vipgoci_log(
-		'Will not auto-approve Pull-Request #' .
+		'Will not auto-approve pull request #' .
 			(int) $pr_item->number . ' ' .
 			'as it contains ' .
 			'files which are not ' .
@@ -106,7 +106,7 @@ function vipgoci_auto_approval_non_approval(
 	) {
 		/*
 		 * Make sure that the file was
-		 * really altered in the Pull-Request;
+		 * really altered in the pull request;
 		 * this is to avoid any errors when
 		 * submitting inline comments.
 		 */
@@ -118,7 +118,7 @@ function vipgoci_auto_approval_non_approval(
 			vipgoci_log(
 				'Not adding auto-approved in hashes-api ' .
 				'database to results for file, as it ' .
-				'was not altered by the Pull-Request',
+				'was not altered by the pull request',
 				array(
 					'pr_number'        => $pr_item->number,
 					'file_name'        => $approved_file,
@@ -206,12 +206,12 @@ function vipgoci_auto_approval_non_approval(
 	}
 
 	/*
-	 * Get any approving reviews for the Pull-Request
+	 * Get any approving reviews for the pull request
 	 * submitted by us. Then dismiss them.
 	 */
 	vipgoci_log(
 		'Dismissing any approving reviews for ' .
-			'the Pull-Request, as it is not ' .
+			'the pull request, as it is not ' .
 			'approved anymore',
 		array(
 			'pr_number' => $pr_item->number,
@@ -248,7 +248,7 @@ function vipgoci_auto_approval_non_approval(
 }
 
 /**
- * Approve a particular Pull-Request,
+ * Approve a particular pull request,
  * alter label for the PR if needed,
  * remove old comments, and log everything
  * we do.
@@ -302,7 +302,7 @@ function vipgoci_autoapproval_do_approve(
 			'pull/' . (int) $pr_item->number;
 
 		vipgoci_log(
-			'Will auto-approve Pull-Request #' .
+			'Will auto-approve pull request #' .
 				(int) $pr_item->number . ' ' .
 				'as it alters or creates ' .
 				'only files that can be ' .
@@ -322,7 +322,7 @@ function vipgoci_autoapproval_do_approve(
 
 		/*
 		 * Actually approve, if not in dry-mode.
-		 * Also add a label to the Pull-Request
+		 * Also add a label to the pull request
 		 * if applicable.
 		 */
 		vipgoci_github_approve_pr(
@@ -331,7 +331,7 @@ function vipgoci_autoapproval_do_approve(
 			$options['token'],
 			$pr_item->number,
 			$options['commit'],
-			'Auto-approved Pull-Request #' .
+			'Auto-approved pull request #' .
 				(int) $pr_item->number . ' as it ' .
 				'contains only auto-approvable files' .
 				' -- either pre-approved files' .
@@ -362,7 +362,7 @@ function vipgoci_autoapproval_do_approve(
 		);
 	} else {
 		vipgoci_log(
-			'Will not actually approve Pull-Request #' .
+			'Will not actually approve pull request #' .
 				(int) $pr_item->number .
 				', as it is already approved by us',
 			array(
@@ -379,7 +379,7 @@ function vipgoci_autoapproval_do_approve(
 	}
 
 	/*
-	 * Add label to Pull-Request, but
+	 * Add label to pull request, but
 	 * only if it is not associated already.
 	 * If it is already associated, just log
 	 * that fact.
@@ -449,7 +449,7 @@ function vipgoci_autoapproval_do_approve(
 }
 
 /**
- * Process auto-approval(s) of the Pull-Request(s)
+ * Process auto-approval(s) of the pull request(s)
  * involved with the commit specified.
  *
  * @param array $options                 Array of options.
@@ -505,7 +505,7 @@ function vipgoci_auto_approval_scan_commit(
 
 		/*
 		 * Loop through all files that are
-		 * altered by the Pull-Request, look for
+		 * altered by the pull request, look for
 		 * files that can be auto-approved.
 		 */
 		foreach ( $pr_diff['files'] as
@@ -548,7 +548,7 @@ function vipgoci_auto_approval_scan_commit(
 				'pull/' . (int) $pr_item->number;
 
 			vipgoci_log(
-				'No action taken with Pull-Request #' .
+				'No action taken with pull request #' .
 					(int) $pr_item->number . ' ' .
 					'since no files were found' .
 					' -- PR URL: ' . $tmp_github_url,
