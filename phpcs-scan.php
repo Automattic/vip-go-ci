@@ -50,6 +50,7 @@ function vipgoci_phpcs_get_version(
 				'cmd'    => $cmd,
 				'output' => $phpcs_output,
 			),
+			VIPGOCI_EXIT_SYSTEM_PROBLEM
 		);
 	}
 
@@ -73,6 +74,15 @@ function vipgoci_phpcs_get_version(
 	}
 
 	$phpcs_version_str = $phpcs_output_arr[0];
+
+	vipgoci_log(
+		'PHPCS version retrieved',
+		array(
+			'phpcs-path'    => $phpcs_path,
+			'phpcs-version' => $phpcs_version_str,
+		),
+		2
+	);
 
 	vipgoci_cache( $cache_id, $phpcs_version_str );
 
@@ -108,7 +118,7 @@ function vipgoci_phpcs_do_scan(
 	 * Feed PHPCS the temporary file specified by our caller.
 	 */
 	$cmd = sprintf(
-		'%s -d memory_limit=500M %s --severity=%s --report=%s',
+		'%s -d memory_limit=500M -d max_execution_time=300 %s --severity=%s --report=%s',
 		escapeshellcmd( $phpcs_php_path ),
 		escapeshellcmd( $phpcs_path ),
 		escapeshellarg( (string) $phpcs_severity ),
@@ -196,11 +206,6 @@ function vipgoci_phpcs_do_scan(
 		$cmd,
 		'phpcs_cli'
 	);
-
-	if ( null !== $result ) {
-		/* Remove linebreak PHPCS possibly adds */
-		$result = rtrim( $result, "\n" );
-	}
 
 	return $result;
 }
@@ -367,6 +372,12 @@ function vipgoci_phpcs_scan_single_file(
 	);
 
 	if ( null !== $file_issues_str ) {
+		/* Remove linebreak PHPCS possibly adds */
+		$file_issues_str = rtrim(
+			$file_issues_str,
+			"\n"
+		);
+
 		$file_issues_arr_master = json_decode(
 			$file_issues_str,
 			true
@@ -502,7 +513,7 @@ function vipgoci_phpcs_scan_commit(
 		)
 	);
 
-	// Fetch list of all Pull-Requests which the commit is a part of.
+	// Fetch list of all pull requests which the commit is a part of.
 	$prs_implicated = vipgoci_github_prs_implicated(
 		$repo_owner,
 		$repo_name,
@@ -514,11 +525,11 @@ function vipgoci_phpcs_scan_commit(
 
 	/*
 	 * Get list of all files affected by
-	 * each Pull-Request implicated by the commit.
+	 * each pull request implicated by the commit.
 	 */
 
 	vipgoci_log(
-		'Fetching list of all files affected by each Pull-Request ' .
+		'Fetching list of all files affected by each pull request ' .
 			'implicated by the commit',
 		array(
 			'repo_owner' => $repo_owner,
@@ -540,7 +551,7 @@ function vipgoci_phpcs_scan_commit(
 
 		/*
 		 * Get list of all files changed
-		 * in this Pull-Request.
+		 * in this pull request.
 		 */
 
 		$pr_item_files_tmp = vipgoci_git_diffs_fetch(
@@ -590,14 +601,14 @@ function vipgoci_phpcs_scan_commit(
 	$files_issues_arr = array();
 
 	/*
-	 * Loop through each altered file in all the Pull-Requests,
+	 * Loop through each altered file in all the pull requests,
 	 * use PHPCS to scan for issues, save the issues; they will
 	 * be processed in the next step.
 	 */
 
 	vipgoci_log(
 		'About to PHPCS-scan all files affected by any of the ' .
-			'Pull-Requests',
+			'pull requests',
 		array(
 			'repo_owner'               => $repo_owner,
 			'repo_name'                => $repo_name,
@@ -874,11 +885,11 @@ function vipgoci_phpcs_scan_commit(
 	}
 
 	/*
-	 * Loop through each Pull-Request implicated,
+	 * Loop through each pull request implicated,
 	 * get comments made on GitHub already,
 	 * then filter out any PHPCS-issues irrelevant
 	 * as they are not due to any commit that is part
-	 * of the Pull-Request, and skip any PHPCS-issue
+	 * of the pull request, and skip any PHPCS-issue
 	 * already reported. Report the rest, if any.
 	 */
 
@@ -894,7 +905,7 @@ function vipgoci_phpcs_scan_commit(
 	foreach ( $prs_implicated as $pr_item ) {
 		vipgoci_log(
 			'Preparing to process PHPCS scanned files in ' .
-				'Pull-Request, to construct results ' .
+				'pull request, to construct results ' .
 				'to be submitted',
 			array(
 				'repo_owner'    => $repo_owner,
@@ -907,8 +918,8 @@ function vipgoci_phpcs_scan_commit(
 
 		/*
 		 * Check if user requested to turn off PHPCS
-		 * scanning for the Pull-Request by adding a label
-		 * to the Pull-Request, and if so, skip scanning.
+		 * scanning for the pull request by adding a label
+		 * to the pull request, and if so, skip scanning.
 		 * Make sure to indicate so in the statistics.
 		 *
 		 * This is only done if allowed via option.
@@ -928,7 +939,7 @@ function vipgoci_phpcs_scan_commit(
 
 			if ( ! empty( $pr_label_skip_phpcs ) ) {
 				vipgoci_log(
-					'Label on Pull-Request indicated to ' .
+					'Label on pull request indicated to ' .
 						'skip PHPCS-scanning; ' .
 						'scanning will be skipped',
 					array(
@@ -960,7 +971,7 @@ function vipgoci_phpcs_scan_commit(
 
 		/*
 		 * Get all commits related to the current
-		 * Pull-Request.
+		 * pull request.
 		 */
 		$pr_item_commits = vipgoci_github_prs_commits_list(
 			$repo_owner,
@@ -974,7 +985,7 @@ function vipgoci_phpcs_scan_commit(
 		 * 'git blame' log for the file, then
 		 * filter out issues stemming
 		 * from commits that are not a
-		 * part of the current Pull-Request.
+		 * part of the current pull request.
 		 */
 
 		foreach (
@@ -1046,7 +1057,7 @@ function vipgoci_phpcs_scan_commit(
 			 * the ones that the are not found
 			 * in the blame-log (meaning that
 			 * they are due to commits outside of
-			 * the Pull-Request).
+			 * the pull request).
 			 */
 
 			$file_issues_arr_filtered = vipgoci_results_filter_irrellevant(
@@ -1080,28 +1091,12 @@ function vipgoci_phpcs_scan_commit(
 				$commit_issues_stats[ $pr_item->number ][ strtolower( $file_issue_val_item['level'] ) ]++;
 			}
 		}
-
-		unset( $pr_item_commits );
-		unset( $file_blame_log );
-		unset( $file_changed_lines );
-		unset( $file_relative_lines );
-		unset( $file_issues_arr_filtered );
-
-		gc_collect_cycles();
 	}
 
-	/*
-	 * Clean up a bit
-	 */
 	vipgoci_log(
-		'Cleaning up after PHPCS-scanning...',
+		'PHPCS-scanning complete',
 		array()
 	);
-
-	unset( $prs_implicated );
-	unset( $pr_item_files_changed );
-
-	gc_collect_cycles();
 
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'phpcs_scan_commit' );
 }
@@ -1159,6 +1154,7 @@ function vipgoci_phpcs_get_all_standards(
 				'cmd'    => $cmd,
 				'output' => $result,
 			),
+			VIPGOCI_EXIT_SYSTEM_PROBLEM
 		);
 	}
 
@@ -1248,6 +1244,7 @@ function vipgoci_phpcs_get_sniffs_for_standard(
 				'cmd'    => $cmd,
 				'output' => $result,
 			),
+			VIPGOCI_EXIT_SYSTEM_PROBLEM
 		);
 	}
 
@@ -1520,7 +1517,7 @@ function vipgoci_phpcs_validate_sniffs_in_options_and_report(
 		( ! empty( $phpcs_sniffs_excluded_and_included ) )
 	) {
 		/*
-		 * Post generic message with error for each Pull-Request
+		 * Post generic message with error for each pull request
 		 * implicated.
 		 */
 

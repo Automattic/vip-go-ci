@@ -101,17 +101,6 @@ function vipgoci_ap_file_types(
 		}
 	}
 
-	/*
-	 * Reduce memory-usage as possible.
-	 */
-	unset( $prs_implicated );
-	unset( $pr_diff );
-	unset( $pr_item );
-	unset( $pr_diff_file_extension );
-	unset( $pr_diff_file_name );
-
-	gc_collect_cycles();
-
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'ap_file_types' );
 }
 

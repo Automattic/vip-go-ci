@@ -109,13 +109,13 @@ While running, `vip-go-ci` will output log of its actions. Here is an example --
         "dry-run": false
     }
 }
-[ 2018-04-16T14:10:05+00:00 -- 0 ]  Fetching all open Pull-Requests from GitHub; {
+[ 2018-04-16T14:10:05+00:00 -- 0 ]  Fetching all open pull requests from GitHub; {
     "repo_owner": "mygithubuser",
     "repo_name": "testing123",
     "commit_id": "f978c17f8f648e5ce10aa16694c74a5544b1670e",
     "branches_ignore": []
 }
-[ 2018-04-16T14:10:14+00:00 -- 0 ]  Fetching information about all commits made to Pull-Request #17 from GitHub; {
+[ 2018-04-16T14:10:14+00:00 -- 0 ]  Fetching information about all commits made to pull request #17 from GitHub; {
     "repo_owner": "mygithubuser",
     "repo_name": "testing123",
     "pr_number": 17
@@ -146,7 +146,7 @@ While running, `vip-go-ci` will output log of its actions. Here is an example --
     "filename": "bla-2.php",
     "local_git_repo": "\/tmp\/git-testing123"
 }
-[ 2018-04-16T14:10:51+00:00 -- 0 ]  About to PHPCS-scan all files affected by any of the Pull-Requests; {
+[ 2018-04-16T14:10:51+00:00 -- 0 ]  About to PHPCS-scan all files affected by any of the pull requests; {
     "repo_owner": "mygithubuser",
     "repo_name": "testing123",
     "commit_id": "f978c17f8f648e5ce10aa16694c74a5544b1670e"

@@ -66,7 +66,7 @@ final class MainRunScanSkipExecutionTest extends TestCase {
 		 */
 		$printed_data_found = strpos(
 			$printed_data,
-			'Skipping scanning entirely, as determined by configuration;'
+			'"Skipping scanning entirely, as determined by configuration";'
 		);
 
 		$this->assertNotFalse(

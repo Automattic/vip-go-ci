@@ -37,6 +37,7 @@ function vipgoci_git_version(): ?string {
 				'cmd'    => $git_version_cmd,
 				'output' => $git_version_results,
 			),
+			VIPGOCI_EXIT_SYSTEM_PROBLEM
 		);
 	}
 
@@ -139,6 +140,7 @@ function vipgoci_gitrepo_get_head( $local_git_repo ) {
 				'cmd'    => $cmd,
 				'output' => $result,
 			),
+			VIPGOCI_EXIT_SYSTEM_PROBLEM
 		);
 	}
 
@@ -183,6 +185,7 @@ function vipgoci_gitrepo_branch_current_get( $local_git_repo ) {
 				'cmd'    => $cmd,
 				'output' => $results,
 			),
+			VIPGOCI_EXIT_SYSTEM_PROBLEM
 		);
 	}
 
@@ -416,6 +419,7 @@ function vipgoci_gitrepo_blame_for_file(
 				'cmd'    => $cmd,
 				'output' => $result,
 			),
+			VIPGOCI_EXIT_SYSTEM_PROBLEM
 		);
 	}
 
@@ -603,6 +607,7 @@ function vipgoci_gitrepo_get_file_at_commit(
 				'cmd'    => $cmd,
 				'output' => $result,
 			),
+			VIPGOCI_EXIT_SYSTEM_PROBLEM
 		);
 	}
 
@@ -647,6 +652,7 @@ function vipgoci_gitrepo_submodules_setup( $local_git_repo ) {
 				'cmd'    => $cmd,
 				'output' => $result,
 			),
+			VIPGOCI_EXIT_SYSTEM_PROBLEM
 		);
 	}
 
@@ -693,6 +699,7 @@ function vipgoci_gitrepo_submodules_list( $local_git_repo ) {
 				'cmd'    => $cmd,
 				'output' => $result,
 			),
+			VIPGOCI_EXIT_SYSTEM_PROBLEM
 		);
 	}
 
@@ -1400,7 +1407,7 @@ function vipgoci_git_diffs_fetch(
 		 * This can happen for example:
 		 * - When only part of the repository was fetched
 		 * - When the commit-ID refers to a repository 
-		 *   outside of this one, for example when a Pull-Request
+		 *   outside of this one, for example when a pull request
 		 *   refers to a forked repository.
 		 * - When there is an I/O error with the local filesystem.
 		 * - Previously, we had a problem with local git repo and

@@ -296,7 +296,7 @@ function vipgoci_repo_meta_api_data_match(
 
 /**
  * Attach support level label to
- * Pull-Requests, if configured to
+ * pull requests, if configured to
  * do so. Will fetch information
  * about support-level from an API.
  *
@@ -312,7 +312,7 @@ function vipgoci_support_level_label_set(
 
 	if ( true !== $options['set-support-level-label'] ) {
 		vipgoci_log(
-			'Not attaching support label to Pull-Requests ' .
+			'Not attaching support label to pull requests ' .
 				'implicated by commit, as not configured ' .
 				'to do so',
 			array(
@@ -325,7 +325,7 @@ function vipgoci_support_level_label_set(
 	}
 
 	vipgoci_log(
-		'Attaching support-level label to Pull-Requests implicated by commit',
+		'Attaching support-level label to pull requests implicated by commit',
 		array(
 			'repo_owner'             => $options['repo-owner'],
 			'repo_name'              => $options['repo-name'],
@@ -446,7 +446,7 @@ function vipgoci_support_level_label_set(
 	}
 
 	/*
-	 * Get Pull-Requests associated with the
+	 * Get pull requests associated with the
 	 * commit and repository.
 	 */
 	$prs_implicated = vipgoci_github_prs_implicated(
@@ -459,7 +459,7 @@ function vipgoci_support_level_label_set(
 	);
 
 	/*
-	 * Loop through each Pull-Request,
+	 * Loop through each pull request,
 	 * remove any invalid support levels
 	 * and add a correct one.
 	 *
@@ -489,7 +489,7 @@ function vipgoci_support_level_label_set(
 
 		/*
 		 * Loop through each label found for
-		 * Pull-Request, figure out if is support
+		 * pull request, figure out if is support
 		 * label, remove if not the same as is supposed
 		 * to be set.
 		 */
@@ -539,7 +539,7 @@ function vipgoci_support_level_label_set(
 			 * GitHub already.
 			 */
 			vipgoci_log(
-				'Correct support label already attached to Pull-Request, skipping',
+				'Correct support label already attached to pull request, skipping',
 				array(
 					'repo_owner'             => $options['repo-owner'],
 					'repo_name'              => $options['repo-name'],

@@ -1121,7 +1121,9 @@ function vipgoci_run_init_options_lint( array &$options ) :void {
 
 		if ( empty( $options['lint-php-versions'] ) ) {
 			vipgoci_sysexit(
-				'--lint-php-versions is empty and --lint option is set to true. Must define at least one PHP version for linting'
+				'--lint-php-versions is empty and --lint option is set to true. Must define at least one PHP version for linting',
+				array(),
+				VIPGOCI_EXIT_USAGE_ERROR
 			);
 		}
 
@@ -1136,7 +1138,9 @@ function vipgoci_run_init_options_lint( array &$options ) :void {
 
 		if ( empty( $options['lint-php-version-paths'] ) ) {
 			vipgoci_sysexit(
-				'--lint-php-version-paths is empty and --lint option is set to true. Must define at least one path to PHP interpreter'
+				'--lint-php-version-paths is empty and --lint option is set to true. Must define at least one path to PHP interpreter',
+				array(),
+				VIPGOCI_EXIT_USAGE_ERROR
 			);
 		}
 
@@ -1161,7 +1165,8 @@ function vipgoci_run_init_options_lint( array &$options ) :void {
 					'Invalid formatting of option --lint-php-version-paths',
 					array(
 						'lint-php-version-path-invalid' => $tmp_php_version_path,
-					)
+					),
+					VIPGOCI_EXIT_USAGE_ERROR
 				);
 			}
 
@@ -1170,7 +1175,8 @@ function vipgoci_run_init_options_lint( array &$options ) :void {
 					'Invalid formatting of option --lint-php-version-paths; version must be numeric',
 					array(
 						'lint-php-version-path-invalid' => $tmp_version_to_path_arr[0],
-					)
+					),
+					VIPGOCI_EXIT_USAGE_ERROR
 				);
 			}
 
@@ -1180,7 +1186,8 @@ function vipgoci_run_init_options_lint( array &$options ) :void {
 					array(
 						'php-version-key'   => $tmp_version_to_path_arr[0],
 						'path-not-existing' => $tmp_version_to_path_arr[1],
-					)
+					),
+					VIPGOCI_EXIT_USAGE_ERROR
 				);
 			}
 
@@ -1193,7 +1200,8 @@ function vipgoci_run_init_options_lint( array &$options ) :void {
 					'Option --lint-php-version-paths contains duplicate PHP version key',
 					array(
 						'lint-php-version-duplicate' => $tmp_version_to_path_arr[0],
-					)
+					),
+					VIPGOCI_EXIT_USAGE_ERROR
 				);
 			} else {
 				$tmp_php_paths_versions_seen[] = $tmp_version_to_path_arr[0];
@@ -1212,7 +1220,8 @@ function vipgoci_run_init_options_lint( array &$options ) :void {
 					'Unable to get PHP interpreter when parsing option --lint-php-version-paths',
 					array(
 						'lint-php-interpreter-path' => $tmp_version_to_path_arr[1],
-					)
+					),
+					VIPGOCI_EXIT_USAGE_ERROR
 				);
 			}
 
@@ -1225,7 +1234,8 @@ function vipgoci_run_init_options_lint( array &$options ) :void {
 					array(
 						'version-defined'            => $tmp_version_to_path_arr[0],
 						'actual-interpreter-version' => $tmp_lint_php_interpreter_version,
-					)
+					),
+					VIPGOCI_EXIT_USAGE_ERROR
 				);
 			}
 
@@ -1252,7 +1262,8 @@ function vipgoci_run_init_options_lint( array &$options ) :void {
 					array(
 						'version-not-defined' => $tmp_lint_php_version,
 						'versions-defined'    => array_keys( $options['lint-php-version-paths'] ),
-					)
+					),
+					VIPGOCI_EXIT_USAGE_ERROR
 				);
 			}
 		}
@@ -1737,24 +1748,6 @@ function vipgoci_run_init_options_irc( array &$options ) :void {
 		)
 	);
 
-	/*
-	 * In case of exiting before we
-	 * empty the IRC queue, do it on shutdown.
-	 */
-	if (
-		( ! empty( $options['irc-api-url'] ) ) &&
-		( ! empty( $options['irc-api-token'] ) ) &&
-		( ! empty( $options['irc-api-bot'] ) ) &&
-		( ! empty( $options['irc-api-room'] ) )
-	) {
-		register_shutdown_function(
-			'vipgoci_irc_api_alerts_send',
-			$options['irc-api-url'],
-			$options['irc-api-token'],
-			$options['irc-api-bot'],
-			$options['irc-api-room']
-		);
-	}
 }
 
 /**
@@ -1789,6 +1782,11 @@ function vipgoci_run_cleanup_irc( array &$options ) :void {
 			'Did not send alerts to IRC, due to missing configuration parameter'
 		);
 	}
+
+	/*
+	 * Note: vipgoci_irc_api_alerts_send() is called
+	 * from shutdown function.
+	 */
 }
 
 /**
@@ -2119,7 +2117,8 @@ function vipgoci_run_init_options_repo_options( array &$options ):void {
 			array(
 				'allowed_values'   => $repo_options_allowed_arr,
 				'specified_values' => $options['repo-options-allowed'],
-			)
+			),
+			VIPGOCI_EXIT_USAGE_ERROR
 		);
 	}
 
@@ -2286,6 +2285,11 @@ function vipgoci_run_init_options(
 	 * options.
 	 */
 	vipgoci_options_read_repo_skip_files( $options );
+
+	/*
+	 * Register shutdown function.
+	 */
+	register_shutdown_function( 'vipgoci_shutdown_function', $options );
 }
 
 /**
@@ -2748,6 +2752,22 @@ function vipgoci_run_scan(
 	// Find PRs relating to the commit we are processing.
 	$prs_implicated = vipgoci_run_scan_find_prs( $options );
 
+	// Log to IRC URLs to PRs implicated.
+	$prs_urls = vipgoci_github_prs_urls_get(
+		$prs_implicated,
+		' -- '
+	);
+
+	vipgoci_log(
+		'Starting scanning PRs; ' . $prs_urls,
+		array(
+			'repo-owner' => $options['repo-owner'],
+			'repo-name'  => $options['repo-name'],
+		),
+		0,
+		true // Log to IRC.
+	);
+
 	// Check that each PR has the commit specified as the latest one.
 	vipgoci_run_scan_check_latest_commit(
 		$options,
@@ -2784,6 +2804,7 @@ function vipgoci_run_scan(
 			VIPGOCI_NO_ISSUES_FOUND_MSG_AND_EXISTING_REVIEWS,
 			VIPGOCI_LINT_FAILED_MSG_START,
 			VIPGOCI_PHPCS_SCAN_FAILED_MSG_START,
+			VIPGOCI_OUT_OF_MEMORY_ERROR,
 		)
 	);
 
@@ -2834,6 +2855,9 @@ function vipgoci_run_scan(
 			$results['stats'][ VIPGOCI_STATS_LINT ],
 			$results[ VIPGOCI_SKIPPED_FILES ]
 		);
+
+		// Reduce memory usage as possible.
+		gc_collect_cycles();
 	}
 
 	// Next PHPCS scan if configured to do so.
@@ -2844,6 +2868,8 @@ function vipgoci_run_scan(
 			$results['stats'][ VIPGOCI_STATS_PHPCS ],
 			$results[ VIPGOCI_SKIPPED_FILES ]
 		);
+
+		gc_collect_cycles();
 	}
 
 	/*
@@ -2858,6 +2884,8 @@ function vipgoci_run_scan(
 		$options,
 		$results
 	);
+
+	gc_collect_cycles();
 
 	/*
 	 * Remove comments from $results that have
@@ -2914,6 +2942,8 @@ function vipgoci_run_scan(
 	} else {
 		$scan_details_msg = '';
 	}
+
+	gc_collect_cycles();
 
 	/*
 	 * Submit any remaining issues to GitHub
@@ -3096,6 +3126,9 @@ function vipgoci_run_init_vars() :array {
  * @codeCoverageIgnore
  */
 function vipgoci_run() :int {
+	// Set memory limit to 400MB.
+	ini_set( 'memory_limit', '400M' ); // phpcs:ignore WordPress.PHP.IniSet.memory_limit_Blacklisted
+
 	/*
 	 * Assign a few variables.
 	 */
@@ -3148,6 +3181,9 @@ function vipgoci_run() :int {
 
 	// Process options parameters.
 	vipgoci_run_init_options( $options, $options_recognized );
+
+	// Reduce memory usage as possible.
+	gc_collect_cycles();
 
 	// Run scans.
 	vipgoci_run_scan( $options, $results, $prs_implicated, $startup_time );
@@ -3223,5 +3259,83 @@ function vipgoci_run() :int {
 	return vipgoci_exit_status(
 		$results
 	);
+}
+
+/**
+ * Shutdown function. Handle out of memory
+ * situations, clear IRC queue.
+ *
+ * @param array $options Options array for the program.
+ *
+ * @return void
+ */
+function vipgoci_shutdown_function(
+	array $options
+) :void {
+	/*
+	 * Get last PHP error, if any.
+	 */
+	$error_last = error_get_last();
+
+	if (
+		( null !== $error_last ) &&
+		( E_ERROR === $error_last['type'] ) &&
+		( str_contains( $error_last['message'], 'Allowed memory size' ) )
+	) {
+		vipgoci_log(
+			'Ran out of memory during execution, exiting',
+			array(
+				'repo-owner' => $options['repo-owner'],
+				'repo-name'  => $options['repo-name'],
+				'commit-id'  => $options['commit'],
+			),
+			0,
+			true // Log to IRC.
+		);
+
+		/*
+		 * Post generic message indicating
+		 * resource constraints issue to each
+		 * pull request implicated.
+		 */
+		$prs_implicated = vipgoci_github_prs_implicated(
+			$options['repo-owner'],
+			$options['repo-name'],
+			$options['commit'],
+			$options['token'],
+			$options['branches-ignore'],
+			$options['skip-draft-prs'],
+			false
+		);
+
+		foreach ( $prs_implicated as $pr_item ) {
+			vipgoci_github_pr_comments_generic_submit(
+				$options['repo-owner'],
+				$options['repo-name'],
+				$options['token'],
+				$pr_item->number,
+				VIPGOCI_OUT_OF_MEMORY_ERROR,
+				$options['commit']
+			);
+		}
+	}
+
+	/*
+	 * In case of exiting before we
+	 * empty the IRC queue, do it on shutdown.
+	 */
+	if (
+		( ! empty( $options['irc-api-url'] ) ) &&
+		( ! empty( $options['irc-api-token'] ) ) &&
+		( ! empty( $options['irc-api-bot'] ) ) &&
+		( ! empty( $options['irc-api-room'] ) )
+	) {
+		vipgoci_irc_api_alerts_send(
+			$options['irc-api-url'],
+			$options['irc-api-token'],
+			$options['irc-api-bot'],
+			$options['irc-api-room']
+		);
+	}
 }
 
