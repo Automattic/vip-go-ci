@@ -689,7 +689,8 @@ function vipgoci_github_post_url(
  */
 function vipgoci_github_fetch_url(
 	$github_url,
-	$github_token
+	$github_token,
+	$fatal_error_on_failure = true
 ) {
 
 	$curl_retries = 0;
@@ -784,31 +785,48 @@ function vipgoci_github_fetch_url(
 			null
 		);
 
-
 		/*
 		 * Detect and process possible errors
 		 */
 		if (
-			( false === $resp_data ) ||
+			( false === $resp_data )
+			||
 			( curl_errno( $ch ) )
+			||
+			(
+				// Detect internal server errors (HTTP 50X).
+				( isset( $resp_headers['status'][0] ) ) &&
+				( 500 <= (int) $resp_headers['status'][0] ) &&
+				( 600 > (int) $resp_headers['status'][0] )
+			)
 		) {
 			vipgoci_log(
 				'Sending request to GitHub failed, will ' .
 					'retry in a bit... ',
 
 				array(
-					'github_url' => $github_url,
-					'curl_retries' => $curl_retries,
+					'github_url'    => $github_url,
+					'curl_retries'  => $curl_retries,
 
-					'curl_errno' => curl_errno(
+					'curl_errno'    => curl_errno(
 						$ch
 					),
 
 					'curl_errormsg' => curl_strerror(
 						curl_errno( $ch )
 					),
+					'http_status'   =>
+						isset( $resp_headers['status'] ) ?
+						$resp_headers['status'] : null,
+					'http_response' =>
+						$resp_data,
+					'x-github-request-id' =>
+						isset( $resp_headers['x-github-request-id'] ) ?
+						$resp_headers['x-github-request-id'] : null,
 				)
 			);
+
+			$resp_data = false;
 
 			sleep( 10 );
 		}
@@ -828,16 +846,24 @@ function vipgoci_github_fetch_url(
 
 	} while (
 		( false === $resp_data ) &&
-		( $curl_retries++ < 2 )
+		( $curl_retries++ < 4 )
 	);
 
 
-	if ( false === $resp_data ) {
+	if (
+		( true === $fatal_error_on_failure ) &&
+		( false === $resp_data )
+	) {
 		vipgoci_sysexit(
 			'Gave up retrying request to GitHub, cannot continue',
 			array(),
 			VIPGOCI_EXIT_GITHUB_PROBLEM
 		);
+	} elseif (
+		( false === $fatal_error_on_failure ) &&
+		( false === $resp_data )
+	) {
+		return null;
 	}
 
 	return $resp_data;
@@ -1369,7 +1395,7 @@ function vipgoci_github_pr_reviews_comments_get(
 	$cached_data = vipgoci_cache( $cached_id );
 
 	vipgoci_log(
-		'Fetching Pull-Requests comments info from GitHub' .
+		'Fetching pull requests comments info from GitHub' .
 			vipgoci_cached_indication_str( $cached_data ),
 
 		array(
@@ -1408,13 +1434,28 @@ function vipgoci_github_pr_reviews_comments_get(
 				'page=' . rawurlencode( $page ) . '&' .
 				'per_page=' . rawurlencode( $per_page );
 
-			// FIXME: Detect when GitHub returned with an error
-			$prs_comments_tmp = json_decode(
-				vipgoci_github_fetch_url(
-					$github_url,
-					$github_token
-				)
+			$prs_comments_tmp = vipgoci_github_fetch_url(
+				$github_url,
+				$github_token,
+				false // Do not stop execution on failure.
 			);
+
+			if ( null !== $prs_comments_tmp ) {
+				$prs_comments_tmp = json_decode(
+					$prs_comments_tmp
+				);
+			} elseif ( null === $prs_comments_tmp ) {
+				vipgoci_log(
+					'Unable to fetch data from GitHub, returning partial results',
+					array(
+						'request_response' => $prs_comments_tmp,
+					)
+				);
+
+				$page++;
+
+				continue;
+			}
 
 			foreach ( $prs_comments_tmp as $pr_comment ) {
 				$prs_comments_cache[] = $pr_comment;
@@ -1460,7 +1501,7 @@ function vipgoci_github_pr_reviews_comments_get(
 
 /*
  * Get all review-comments submitted to a
- * particular Pull-Request.
+ * particular pull request.
  * Supports filtering by:
  * - User submitted (parameter: login)
  * - Comment state (parameter: comments_active, true/false)
@@ -1494,7 +1535,7 @@ function vipgoci_github_pr_reviews_comments_get_by_pr(
 	$cached_data = vipgoci_cache( $cache_id );
 
 	vipgoci_log(
-		'Fetching all review comments submitted to a Pull-Request' .
+		'Fetching all review comments submitted to a pull request' .
 			vipgoci_cached_indication_str( $cached_data ),
 		array(
 			'repo_owner'	=> $options['repo-owner'],
@@ -1592,8 +1633,8 @@ function vipgoci_github_pr_reviews_comments_delete(
 	$comment_id
 ) {
 	vipgoci_log(
-		'Deleting an inline comment from a Pull-Request ' .
-			'Review',
+		'Deleting an inline comment from a pull request ' .
+			'review',
 		array(
 			'repo_owner'	=> $options['repo-owner'],
 			'repo_name'	=> $options['repo-name'],
@@ -1619,7 +1660,7 @@ function vipgoci_github_pr_reviews_comments_delete(
 }
 
 /*
- * Get all generic comments made to a Pull-Request from Github.
+ * Get all generic comments made to a pull request from Github.
  */
 
 function vipgoci_github_pr_generic_comments_get_all(
@@ -1639,7 +1680,7 @@ function vipgoci_github_pr_generic_comments_get_all(
 	$cached_data = vipgoci_cache( $cached_id );
 
 	vipgoci_log(
-		'Fetching Pull-Requests generic comments from GitHub' .
+		'Fetching pull requests generic comments from GitHub' .
 			vipgoci_cached_indication_str( $cached_data ),
 
 		array(
@@ -1712,7 +1753,7 @@ function vipgoci_github_pr_comments_generic_submit(
 	$commit_id = null
 ) {
 	vipgoci_log(
-		'Posting a comment to a Pull-Request',
+		'Posting a comment to a pull request',
 		array(
 			'repo_owner' => $repo_owner,
 			'repo_name' => $repo_name,
@@ -1837,7 +1878,7 @@ function vipgoci_github_pr_comments_cleanup(
 
 
 /*
- * Delete generic comment made to Pull-Request.
+ * Delete generic comment made to pull request.
  */
 
 function vipgoci_github_pr_generic_comment_delete(
@@ -1878,7 +1919,7 @@ function vipgoci_github_pr_generic_comment_delete(
 }
 
 /*
- * Get all reviews for a particular Pull-Request,
+ * Get all reviews for a particular pull request,
  * and allow filtering by:
  * - User submitted (parameter: login)
  * - State of review (parameter: state,
@@ -1910,7 +1951,7 @@ function vipgoci_github_pr_reviews_get(
 	}
 
 	vipgoci_log(
-		'Fetching reviews for Pull-Request ' .
+		'Fetching reviews for pull request ' .
 			vipgoci_cached_indication_str( $cached_data ),
 		array(
 			'repo_owner' => $repo_owner,
@@ -2037,7 +2078,7 @@ function vipgoci_github_pr_reviews_get(
 
 /*
  * Dismiss a particular review
- * previously submitted to a Pull-Request.
+ * previously submitted to a pull request.
  */
 
 function vipgoci_github_pr_review_dismiss(
@@ -2050,7 +2091,7 @@ function vipgoci_github_pr_review_dismiss(
 ) {
 
 	vipgoci_log(
-		'Dismissing a Pull-Request Review',
+		'Dismissing a pull request review',
 		array(
 			'repo_owner'		=> $repo_owner,
 			'repo_name'		=> $repo_name,
@@ -2082,7 +2123,7 @@ function vipgoci_github_pr_review_dismiss(
 
 
 /*
- * Dismiss all Pull-Request Reviews that have no
+ * Dismiss all pull request reviews that have no
  * active comments attached to them.
  */
 function vipgoci_github_pr_reviews_dismiss_with_non_active_comments(
@@ -2090,7 +2131,7 @@ function vipgoci_github_pr_reviews_dismiss_with_non_active_comments(
 	$pr_number
 ) {
 	vipgoci_log(
-		'Dismissing any Pull-Request reviews submitted by ' .
+		'Dismissing any pull request reviews submitted by ' .
 			'us and contain no active inline comments any more',
 		array(
 			'repo_owner'		=> $options['repo-owner'],
@@ -2100,7 +2141,7 @@ function vipgoci_github_pr_reviews_dismiss_with_non_active_comments(
 	);
 
 	/*
-	 * Get any Pull-Request reviews with changes
+	 * Get any pull request reviews with changes
  	 * required status, and submitted by us.
 	 */
 	$pr_reviews = vipgoci_github_pr_reviews_get(
@@ -2115,7 +2156,7 @@ function vipgoci_github_pr_reviews_dismiss_with_non_active_comments(
 	);
 
 	/*
-	 * Get all comments to a the current Pull-Request.
+	 * Get all comments to the current pull request.
 	 *
 	 * Note that we must bypass cache here,
 	 */
@@ -2141,7 +2182,7 @@ function vipgoci_github_pr_reviews_dismiss_with_non_active_comments(
 		 */
 		vipgoci_log(
 			'Not dismissing any reviews, as no inactive ' .
-				'comments submitted to the Pull-Request ' .
+				'comments submitted to the pull request ' .
 				'were found',
 			array(
 				'repo_owner'	=> $options['repo-owner'],
@@ -2234,13 +2275,13 @@ function vipgoci_github_pr_reviews_dismiss_with_non_active_comments(
 }
 
 /*
- * Approve a Pull-Request, and afterwards
+ * Approve a pull request, and afterwards
  * make sure to verify that the latest commit
- * added to the Pull-Request is commit with
+ * added to the pull request is commit with
  * commit-ID $latest_commit_id -- this is to avoid
  * race-conditions.
  *
- * The race-conditions can occur when a Pull-Request
+ * The race-conditions can occur when a pull request
  * is approved, but it is approved after a new commit
  * was added which has not been scanned.
  */
@@ -2272,7 +2313,7 @@ function vipgoci_github_approve_pr(
 	$github_postfields['body'] = $message;
 
 	vipgoci_log(
-		'Sending request to GitHub to approve Pull-Request',
+		'Sending request to GitHub to approve pull request',
 		array(
 			'repo_owner'		=> $repo_owner,
 			'repo_name'		=> $repo_name,
@@ -2331,7 +2372,7 @@ function vipgoci_github_prs_implicated(
 	}
 
 	vipgoci_log(
-		'Fetching all open Pull-Requests from GitHub' .
+		'Fetching all open pull requests from GitHub' .
 			vipgoci_cached_indication_str( $cached_data ),
 		array(
 			'repo_owner'		=> $repo_owner,
@@ -2345,7 +2386,7 @@ function vipgoci_github_prs_implicated(
 
 	if ( false !== $cached_data ) {
 		/*
-		 * Filter away draft Pull-Requests if requested.
+		 * Filter away draft pull requests if requested.
 		 */
 		if ( true === $skip_draft_prs ) {
 			$cached_data = vipgoci_github_pr_remove_drafts(
@@ -2367,7 +2408,7 @@ function vipgoci_github_prs_implicated(
 	$per_page = 100;
 
 	/*
-	 * Fetch all open Pull-Requests, store
+	 * Fetch all open pull requests, store
 	 * PR IDs that have a commit-head that matches
 	 * the one we are working on.
 	 */
@@ -2398,7 +2439,7 @@ function vipgoci_github_prs_implicated(
 			}
 
 			/*
-			 * If the branch this Pull-Request is associated
+			 * If the branch this pull request is associated
 			 * with is one of those we are supposed to ignore,
 			 * then ignore it.
 			 */
@@ -2412,8 +2453,8 @@ function vipgoci_github_prs_implicated(
 
 			/*
 			 * If the commit we are processing currently
-			 * matches the head-commit of the Pull-Request,
-			 * then the Pull-Request should be considered to
+			 * matches the head-commit of the pull request,
+			 * then the pull request should be considered to
 			 * be relevant.
 			 */
 			if ( $commit_id === $pr_item->head->sha ) {
@@ -2445,7 +2486,7 @@ function vipgoci_github_prs_implicated(
 	vipgoci_cache( $cached_id, $prs_implicated );
 
 	/*
-	 * Filter away draft Pull-Requests if requested.
+	 * Filter away draft pull requests if requested.
 	 */
 	if ( true === $skip_draft_prs ) {
 		$prs_implicated = vipgoci_github_pr_remove_drafts(
@@ -2517,7 +2558,7 @@ function vipgoci_github_prs_implicated_with_retries(
 }
 
 /*
- * Get all commits that are a part of a Pull-Request.
+ * Get all commits that are a part of a pull request.
  */
 
 function vipgoci_github_prs_commits_list(
@@ -2540,7 +2581,7 @@ function vipgoci_github_prs_commits_list(
 
 	vipgoci_log(
 		'Fetching information about all commits made' .
-			' to Pull-Request #' .
+			' to pull request #' .
 			(int) $pr_number . ' from GitHub' .
 			vipgoci_cached_indication_str( $cached_data ),
 
@@ -2665,7 +2706,7 @@ function vipgoci_github_authenticated_user_get( $github_token ) {
 
 /*
  * Add a particular label to a specific
- * Pull-Request (or issue).
+ * pull request (or issue).
  */
 function vipgoci_github_label_add_to_pr(
 	$repo_owner,
@@ -2706,7 +2747,7 @@ function vipgoci_github_label_add_to_pr(
 
 /*
  * Fetch labels associated with a
- * particular issue/Pull-Request.
+ * particular issue/pull request.
  */
 function vipgoci_github_pr_labels_get(
 	$repo_owner,
@@ -2807,7 +2848,7 @@ function vipgoci_github_pr_labels_get(
 
 /*
  * Remove a particular label from a specific
- * Pull-Request (or issue).
+ * pull request (or issue).
  */
 function vipgoci_github_pr_label_remove(
 	$repo_owner,
@@ -2846,7 +2887,7 @@ function vipgoci_github_pr_label_remove(
 
 
 /*
- * Get all events issues related to a Pull-Request
+ * Get all events issues related to a pull request
  * from the GitHub API, and filter away any items that
  * do not match a given criteria (if applicable).
  *
@@ -2867,7 +2908,7 @@ function vipgoci_github_pr_review_events_get(
 	$cached_data = vipgoci_cache( $cached_id );
 
 	vipgoci_log(
-		'Getting issue events for Pull-Request from GitHub API' .
+		'Getting issue events for pull request from GitHub API' .
 		vipgoci_cached_indication_str( $cached_data ),
 		array(
 			'repo_owner' => $options['repo-owner'],
