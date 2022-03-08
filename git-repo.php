@@ -1400,7 +1400,7 @@ function vipgoci_git_diffs_fetch(
 		 * This can happen for example:
 		 * - When only part of the repository was fetched
 		 * - When the commit-ID refers to a repository 
-		 *   outside of this one, for example when a Pull-Request
+		 *   outside of this one, for example when a pull request
 		 *   refers to a forked repository.
 		 * - When there is an I/O error with the local filesystem.
 		 * - Previously, we had a problem with local git repo and
