@@ -674,7 +674,7 @@ function vipgoci_lint_scan_commit(
 
 	/*
 	 * Process results of linting
-	 * for each Pull-Request -- actually
+	 * for each pull request -- actually
 	 * queue issues for submission.
 	 */
 	$file_names = array_keys( $scanning_results );
