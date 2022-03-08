@@ -607,7 +607,7 @@ function vipgoci_phpcs_scan_commit(
 
 	vipgoci_log(
 		'About to PHPCS-scan all files affected by any of the ' .
-			'Pull-Requests',
+			'pull requests',
 		array(
 			'repo_owner'               => $repo_owner,
 			'repo_name'                => $repo_name,
@@ -904,7 +904,7 @@ function vipgoci_phpcs_scan_commit(
 	foreach ( $prs_implicated as $pr_item ) {
 		vipgoci_log(
 			'Preparing to process PHPCS scanned files in ' .
-				'Pull-Request, to construct results ' .
+				'pull request, to construct results ' .
 				'to be submitted',
 			array(
 				'repo_owner'    => $repo_owner,
