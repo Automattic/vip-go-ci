@@ -803,7 +803,6 @@ function vipgoci_github_fetch_url(
 			vipgoci_log(
 				'Sending request to GitHub failed, will ' .
 					'retry in a bit... ',
-
 				array(
 					'github_url'    => $github_url,
 					'curl_retries'  => $curl_retries,
@@ -823,7 +822,9 @@ function vipgoci_github_fetch_url(
 					'x-github-request-id' =>
 						isset( $resp_headers['x-github-request-id'] ) ?
 						$resp_headers['x-github-request-id'] : null,
-				)
+				),
+				0,
+				true // Log to IRC.
 			);
 
 			$resp_data = false;
