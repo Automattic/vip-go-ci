@@ -1121,7 +1121,9 @@ function vipgoci_run_init_options_lint( array &$options ) :void {
 
 		if ( empty( $options['lint-php-versions'] ) ) {
 			vipgoci_sysexit(
-				'--lint-php-versions is empty and --lint option is set to true. Must define at least one PHP version for linting'
+				'--lint-php-versions is empty and --lint option is set to true. Must define at least one PHP version for linting',
+				array(),
+				VIPGOCI_EXIT_USAGE_ERROR
 			);
 		}
 
@@ -1136,7 +1138,9 @@ function vipgoci_run_init_options_lint( array &$options ) :void {
 
 		if ( empty( $options['lint-php-version-paths'] ) ) {
 			vipgoci_sysexit(
-				'--lint-php-version-paths is empty and --lint option is set to true. Must define at least one path to PHP interpreter'
+				'--lint-php-version-paths is empty and --lint option is set to true. Must define at least one path to PHP interpreter',
+				array(),
+				VIPGOCI_EXIT_USAGE_ERROR
 			);
 		}
 
@@ -1161,7 +1165,8 @@ function vipgoci_run_init_options_lint( array &$options ) :void {
 					'Invalid formatting of option --lint-php-version-paths',
 					array(
 						'lint-php-version-path-invalid' => $tmp_php_version_path,
-					)
+					),
+					VIPGOCI_EXIT_USAGE_ERROR
 				);
 			}
 
@@ -1170,7 +1175,8 @@ function vipgoci_run_init_options_lint( array &$options ) :void {
 					'Invalid formatting of option --lint-php-version-paths; version must be numeric',
 					array(
 						'lint-php-version-path-invalid' => $tmp_version_to_path_arr[0],
-					)
+					),
+					VIPGOCI_EXIT_USAGE_ERROR
 				);
 			}
 
@@ -1180,7 +1186,8 @@ function vipgoci_run_init_options_lint( array &$options ) :void {
 					array(
 						'php-version-key'   => $tmp_version_to_path_arr[0],
 						'path-not-existing' => $tmp_version_to_path_arr[1],
-					)
+					),
+					VIPGOCI_EXIT_USAGE_ERROR
 				);
 			}
 
@@ -1193,7 +1200,8 @@ function vipgoci_run_init_options_lint( array &$options ) :void {
 					'Option --lint-php-version-paths contains duplicate PHP version key',
 					array(
 						'lint-php-version-duplicate' => $tmp_version_to_path_arr[0],
-					)
+					),
+					VIPGOCI_EXIT_USAGE_ERROR
 				);
 			} else {
 				$tmp_php_paths_versions_seen[] = $tmp_version_to_path_arr[0];
@@ -1212,7 +1220,8 @@ function vipgoci_run_init_options_lint( array &$options ) :void {
 					'Unable to get PHP interpreter when parsing option --lint-php-version-paths',
 					array(
 						'lint-php-interpreter-path' => $tmp_version_to_path_arr[1],
-					)
+					),
+					VIPGOCI_EXIT_USAGE_ERROR
 				);
 			}
 
@@ -1225,7 +1234,8 @@ function vipgoci_run_init_options_lint( array &$options ) :void {
 					array(
 						'version-defined'            => $tmp_version_to_path_arr[0],
 						'actual-interpreter-version' => $tmp_lint_php_interpreter_version,
-					)
+					),
+					VIPGOCI_EXIT_USAGE_ERROR
 				);
 			}
 
@@ -1252,7 +1262,8 @@ function vipgoci_run_init_options_lint( array &$options ) :void {
 					array(
 						'version-not-defined' => $tmp_lint_php_version,
 						'versions-defined'    => array_keys( $options['lint-php-version-paths'] ),
-					)
+					),
+					VIPGOCI_EXIT_USAGE_ERROR
 				);
 			}
 		}
@@ -2119,7 +2130,8 @@ function vipgoci_run_init_options_repo_options( array &$options ):void {
 			array(
 				'allowed_values'   => $repo_options_allowed_arr,
 				'specified_values' => $options['repo-options-allowed'],
-			)
+			),
+			VIPGOCI_EXIT_USAGE_ERROR
 		);
 	}
 
