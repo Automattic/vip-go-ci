@@ -1440,7 +1440,7 @@ function vipgoci_github_pr_reviews_comments_get(
 			 * kinds of requests, returning HTTP 500 errors, probably
 			 * due to a bug in the API. We want to continue processing
 			 * despite this and return partial results, as it will not
-			 * have a great impact on the final output. 
+			 * have a great impact on the final output.
 			 */
 			$prs_comments_tmp = vipgoci_github_fetch_url(
 				$github_url,
