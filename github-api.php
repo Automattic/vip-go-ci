@@ -1452,7 +1452,12 @@ function vipgoci_github_pr_reviews_comments_get(
 				$prs_comments_tmp = json_decode(
 					$prs_comments_tmp
 				);
-			} elseif ( null === $prs_comments_tmp ) {
+			}
+
+			if (
+				( null === $prs_comments_tmp ) || 
+				( false === is_array( $prs_comments_tmp ) )
+			) {
 				vipgoci_log(
 					'Unable to fetch data from GitHub, returning partial results',
 					array(
