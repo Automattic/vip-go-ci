@@ -11,7 +11,7 @@ final class GitHubFetchUrlTest extends TestCase {
 	public function testGitHubFetchUrl1() {
 		$ret = vipgoci_github_fetch_url(
 			'https://api.github.com/rate_limit',
-			null
+			''
 		);
 
 		$ret = json_decode(
