@@ -38,6 +38,10 @@ final class GitHubLabelsFetchTest extends TestCase {
 				'github-token',
 				true // Fetch from secrets file
 			);
+
+		if ( empty( $this->options['github-token'] ) ) {
+			$this->options['github-token'] = '';
+		}
 	}
 
 	protected function tearDown(): void {
@@ -71,6 +75,10 @@ final class GitHubLabelsFetchTest extends TestCase {
 		);
 
 		vipgoci_unittests_output_unsuppress();
+
+		if ( ! is_array( $labels ) ) {
+			throw new Exception( 'Unexpected return value from vipgoci_github_pr_labels_get(), possibly incorrect GitHub credentials' );
+		}
 
 		$this->assertSame(
 			'enhancement',
