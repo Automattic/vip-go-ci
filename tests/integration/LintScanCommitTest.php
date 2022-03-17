@@ -79,6 +79,10 @@ final class LintScanCommitTest extends TestCase {
 		$this->options['token'] =
 			$this->options['github-token'];
 
+		if ( empty( $this->options['github-token'] ) ) {
+			$this->options['github-token'] = '';
+		}
+
 		$this->options['lint'] = true;
 
 		$this->options['lint-skip-folders'] = array();
