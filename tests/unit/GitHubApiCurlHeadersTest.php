@@ -1,51 +1,62 @@
 <?php
+/**
+ * Test vipgoci_curl_headers() function.
+ *
+ * @package Automattic/vip-go-ci
+ */
 
 declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
-require_once( __DIR__ . './../../github-api.php' );
-
 use PHPUnit\Framework\TestCase;
 
-// phpcs:disable PSR1.Files.SideEffects
-
+/**
+ * Class that implements the testing.
+ *
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class GitHubApiCurlHeadersTest extends TestCase {
 	/**
+	 * Setup function. Require files.
+	 */
+	protected function setUp() :void {
+		require_once __DIR__ . '/../../http-functions.php';
+	}
+
+	/**
+	 * Test using fairly typical HTTP headers.
+	 *
+	 * @return void
+	 *
 	 * @covers ::vipgoci_curl_headers
 	 */
-	public function testCurlHeaders1() {
-		/*
-		 * Make sure it is empty before starting.
-		 */
-		vipgoci_curl_headers(
-			null,
-			null
-		);
+	public function testCurlHeaders1() :void {
+		$ch = curl_init();
 
 		/*
 		 * Populate headers
 		 */
 		vipgoci_curl_headers(
-			'',
+			$ch,
 			'Content-Type: text/plain'
 		);
 
 		vipgoci_curl_headers(
-			'',
+			$ch,
 			'Date: Mon, 04 Mar 2019 16:43:35 GMT'
 		);
 
 		vipgoci_curl_headers(
-			'',
-			'Location: https://www.ruv.is/'
+			$ch,
+			'Location: https://www.mytestdomain.is/'
 		);
 
 		vipgoci_curl_headers(
-			'',
+			$ch,
 			'Status: 200 OK'
 		);
-
 
 		$actual_results = vipgoci_curl_headers(
 			null,
@@ -54,48 +65,44 @@ final class GitHubApiCurlHeadersTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				'content-type'	=> array( 'text/plain' ),
-				'date'		=> array( 'Mon, 04 Mar 2019 16:43:35 GMT' ),
-				'location'	=> array( 'https://www.ruv.is/' ),
-				'status'	=> array( '200', 'OK' ),
+				'content-type' => array( 'text/plain' ),
+				'date'         => array( 'Mon, 04 Mar 2019 16:43:35 GMT' ),
+				'location'     => array( 'https://www.mytestdomain.is/' ),
+				'status'       => array( '200', 'OK' ),
 			),
 			$actual_results
 		);
+
+		curl_close( $ch );
 	}
 
 	/**
-	 * Test Status compatibility header.
+	 * Test using HTTP/2 Status compatibility header.
+	 *
+	 * @return void
 	 *
 	 * @covers ::vipgoci_curl_headers
 	 */
-	public function testCurlHeaders2() {
-		/*
-		 * Make sure it is empty before starting.
-		 */
-		vipgoci_curl_headers(
-			null,
-			null
-		);
+	public function testCurlHeaders2() :void {
+		$ch = curl_init();
 
 		/*
 		 * Populate headers
 		 */
-
 		vipgoci_curl_headers(
-			'',
+			$ch,
 			'HTTP/2 205'
 		);
 
 		vipgoci_curl_headers(
-			'',
+			$ch,
 			'Date: Mon, 04 Mar 2020 16:43:35 GMT'
 		);
 
 		vipgoci_curl_headers(
-			'',
-			'Location: https://www.kernel.org/'
+			$ch,
+			'Location: https://www.mytestdomain2.is/'
 		);
-
 
 		$actual_results = vipgoci_curl_headers(
 			null,
@@ -104,9 +111,9 @@ final class GitHubApiCurlHeadersTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				'status'	=> array( '205' ),
-				'date'		=> array( 'Mon, 04 Mar 2020 16:43:35 GMT' ),
-				'location'	=> array( 'https://www.kernel.org/' ),
+				'status'   => array( '205' ),
+				'date'     => array( 'Mon, 04 Mar 2020 16:43:35 GMT' ),
+				'location' => array( 'https://www.mytestdomain2.is/' ),
 			),
 			$actual_results
 		);
