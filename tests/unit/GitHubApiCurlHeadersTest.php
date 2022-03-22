@@ -78,7 +78,6 @@ final class GitHubApiCurlHeadersTest extends TestCase {
 
 	/**
 	 * Test using HTTP/2 Status compatibility header.
-	 * Also test using two headers with same name.
 	 *
 	 * @return void
 	 *
@@ -105,16 +104,6 @@ final class GitHubApiCurlHeadersTest extends TestCase {
 			'Location: https://www.mytestdomain2.is/'
 		);
 
-		vipgoci_curl_headers(
-			$ch,
-			'X-Test-Header: value1',
-		);
-
-		vipgoci_curl_headers(
-			$ch,
-			'X-Test-Header: value2',
-		);
-
 		$actual_results = vipgoci_curl_headers(
 			null,
 			null
@@ -125,9 +114,62 @@ final class GitHubApiCurlHeadersTest extends TestCase {
 				'status'        => array( '205' ),
 				'date'          => array( 'Mon, 04 Mar 2020 16:43:35 GMT' ),
 				'location'      => array( 'https://www.mytestdomain2.is/' ),
-				'x-test-header' => array( 'value1', 'value2' ),
 			),
 			$actual_results
 		);
 	}
-}
+
+	/**
+	 * Test using headers seen twice, among
+	 * headers that are seen only once.
+	 *
+	 * @return void
+	 *
+	 * @covers ::vipgoci_curl_headers
+	 */
+	public function testCurlHeaders3() :void {
+		$ch = curl_init();
+
+		/*
+		 * Populate headers
+		 */
+		vipgoci_curl_headers(
+			$ch,
+			'Date: Mon, 04 Mar 2020 16:43:35 GMT'
+		);
+
+		vipgoci_curl_headers(
+			$ch,
+			'X-Test-Header: value1',
+		);
+
+		vipgoci_curl_headers(
+			$ch,
+			'X-Test-Header: value2',
+		);
+
+		vipgoci_curl_headers(
+			$ch,
+			'X-Test-Header: value3',
+		);
+
+		vipgoci_curl_headers(
+			$ch,
+			'X-Another-Test-Header: value1',
+		);
+
+		$actual_results = vipgoci_curl_headers(
+			null,
+			null
+		);
+
+		$this->assertSame(
+			array(
+				'date'                  => array( 'Mon, 04 Mar 2020 16:43:35 GMT' ),
+				'x-test-header'         => array( 'value1', 'value2', 'value3' ),
+				'x-another-test-header' => array( 'value1' ),
+			),
+			$actual_results
+		);
+	}
+
