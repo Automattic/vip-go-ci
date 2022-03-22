@@ -172,4 +172,4 @@ final class GitHubApiCurlHeadersTest extends TestCase {
 			$actual_results
 		);
 	}
-
+}
