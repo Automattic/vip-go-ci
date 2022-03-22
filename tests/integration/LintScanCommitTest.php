@@ -76,12 +76,12 @@ final class LintScanCommitTest extends TestCase {
 				true // Fetch from secrets file.
 			);
 
-		$this->options['token'] =
-			$this->options['github-token'];
-
 		if ( empty( $this->options['github-token'] ) ) {
 			$this->options['github-token'] = '';
 		}
+
+		$this->options['token'] =
+			$this->options['github-token'];
 
 		$this->options['lint'] = true;
 
