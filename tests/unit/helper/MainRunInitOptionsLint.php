@@ -26,39 +26,36 @@ function vipgoci_util_php_interpreter_get_version(
 	} elseif ( str_contains( $php_path, 'php7.4' ) ) {
 		return '7.4.2';
 	} elseif ( str_contains( $php_path, 'php8.0' ) ) {
-		return '8.0.3';
+		return '7.4.3';
+	} elseif ( str_contains( $php_path, 'php8.0' ) ) {
+		return '8.0.4';
 	} elseif ( str_contains( $php_path, 'php8.1' ) ) {
-		return '8.1.4';
+		return '8.1.5';
 	}
 
 	return '7.4.20';
 }
 
 /**
- * Helper function that does nothing.
+ * Throws an exception indicating error when called.
  *
- * @param string $phpcs_path Path to PHPCS.
- * @param string $php_path   Path to PHP.
+ * @param string $str         Message (not used).
+ * @param array  $debug_data  Debug data (not used).
+ * @param int    $exit_status Exit status (not used).
+ * @param bool   $irc         (not used).
  *
- * @return string Version number (fixed).
+ * @throws ErrorException Throws exception when called.
+ *
+ * @return void|int Throws exception.
  */
-function vipgoci_phpcs_get_version(
-	string $phpcs_path,
-	string $php_path
-) :string {
-	return '3.5.5';
-}
-
-/**
- * Helper function that does nothing.
- *
- * @param array $options Options needed.
- *
- * @return array
- */
-function vipgoci_options_sensitive_clean(
-	array $options
-) :array {
-	return $options;
+function vipgoci_sysexit(
+	string $str,
+	array $debug_data = array(),
+	int $exit_status = VIPGOCI_EXIT_USAGE_ERROR,
+	bool $irc = false
+) {
+	throw new ErrorException(
+		'vipgoci_sysexit() was called. This means that some options are not defined or incorrectly used.'
+	);
 }
 

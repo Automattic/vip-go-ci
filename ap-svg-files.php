@@ -186,19 +186,6 @@ function vipgoci_ap_svg_files(
 		}
 	}
 
-	/*
-	 * Reduce memory-usage as possible
-	 */
-	unset( $tmp_scan_results );
-	unset( $prs_implicated );
-	unset( $pr_diff );
-	unset( $pr_item );
-	unset( $pr_diff_file_extension );
-	unset( $pr_diff_file_name );
-	unset( $file_issues_arr_master );
-
-	gc_collect_cycles();
-
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'ap_svg_files' );
 }
 

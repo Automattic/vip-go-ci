@@ -101,7 +101,7 @@ final class PhpcsScanDoScanTest extends TestCase {
 		unlink( $temp_file_path );
 
 		$this->assertSame(
-			'{"totals":{"errors":1,"warnings":1,"fixable":0},"files":{"' . addcslashes( $temp_file_path, '/' ) . '":{"errors":1,"warnings":1,"messages":[{"message":"All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found \'time\'.","source":"WordPress.Security.EscapeOutput.OutputNotEscaped","severity":5,"fixable":false,"type":"ERROR","line":2,"column":6},{"message":"`strip_tags()` does not strip CSS and JS in between the script and style tags. Use `wp_strip_all_tags()` to strip all tags.","source":"WordPressVIPMinimum.Functions.StripTags.StripTagsOneParameter","severity":5,"fixable":false,"type":"WARNING","line":4,"column":16}]}}}',
+			'{"totals":{"errors":1,"warnings":1,"fixable":0},"files":{"' . addcslashes( $temp_file_path, '/' ) . '":{"errors":1,"warnings":1,"messages":[{"message":"All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found \'time\'.","source":"WordPress.Security.EscapeOutput.OutputNotEscaped","severity":5,"fixable":false,"type":"ERROR","line":2,"column":6},{"message":"`strip_tags()` does not strip CSS and JS in between the script and style tags. Use `wp_strip_all_tags()` to strip all tags.","source":"WordPressVIPMinimum.Functions.StripTags.StripTagsOneParameter","severity":5,"fixable":false,"type":"WARNING","line":4,"column":16}]}}}' . PHP_EOL,
 			$phpcs_res
 		);
 	}
@@ -193,7 +193,7 @@ final class PhpcsScanDoScanTest extends TestCase {
 		unlink( $temp_file_path );
 
 		$this->assertSame(
-			'{"totals":{"errors":2,"warnings":1,"fixable":1},"files":{"' . addcslashes( $temp_file_path, '/' ) . '":{"errors":2,"warnings":1,"messages":[{"message":"All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found \'time\'.","source":"WordPress.Security.EscapeOutput.OutputNotEscaped","severity":5,"fixable":false,"type":"ERROR","line":2,"column":6},{"message":"`strip_tags()` does not strip CSS and JS in between the script and style tags. Use `wp_strip_all_tags()` to strip all tags.","source":"WordPressVIPMinimum.Functions.StripTags.StripTagsOneParameter","severity":5,"fixable":false,"type":"WARNING","line":4,"column":16},{"message":"Expected 1 space before array closer, found 5.","source":"WordPress.Arrays.ArrayDeclarationSpacing.SpaceBeforeArrayCloser","severity":5,"fixable":true,"type":"ERROR","line":5,"column":25}]}}}',
+			'{"totals":{"errors":2,"warnings":1,"fixable":1},"files":{"' . addcslashes( $temp_file_path, '/' ) . '":{"errors":2,"warnings":1,"messages":[{"message":"All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found \'time\'.","source":"WordPress.Security.EscapeOutput.OutputNotEscaped","severity":5,"fixable":false,"type":"ERROR","line":2,"column":6},{"message":"`strip_tags()` does not strip CSS and JS in between the script and style tags. Use `wp_strip_all_tags()` to strip all tags.","source":"WordPressVIPMinimum.Functions.StripTags.StripTagsOneParameter","severity":5,"fixable":false,"type":"WARNING","line":4,"column":16},{"message":"Expected 1 space before array closer, found 5.","source":"WordPress.Arrays.ArrayDeclarationSpacing.SpaceBeforeArrayCloser","severity":5,"fixable":true,"type":"ERROR","line":5,"column":25}]}}}' . PHP_EOL,
 			$phpcs_res
 		);
 	}
@@ -249,7 +249,7 @@ final class PhpcsScanDoScanTest extends TestCase {
 		unlink( $temp_file_path );
 
 		$this->assertSame(
-			'{"totals":{"errors":1,"warnings":0,"fixable":0},"files":{"' . addcslashes( $temp_file_path, '/' ) . '":{"errors":1,"warnings":0,"messages":[{"message":"All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found \'time\'.","source":"WordPress.Security.EscapeOutput.OutputNotEscaped","severity":5,"fixable":false,"type":"ERROR","line":2,"column":6}]}}}',
+			'{"totals":{"errors":1,"warnings":0,"fixable":0},"files":{"' . addcslashes( $temp_file_path, '/' ) . '":{"errors":1,"warnings":0,"messages":[{"message":"All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found \'time\'.","source":"WordPress.Security.EscapeOutput.OutputNotEscaped","severity":5,"fixable":false,"type":"ERROR","line":2,"column":6}]}}}' . PHP_EOL,
 			$phpcs_res
 		);
 	}
@@ -324,7 +324,7 @@ final class PhpcsScanDoScanTest extends TestCase {
 		unlink( $temp_file_path );
 
 		$this->assertSame(
-			'{"totals":{"errors":2,"warnings":0,"fixable":1},"files":{"' . addcslashes( $temp_file_path, '/' ) . '":{"errors":2,"warnings":0,"messages":[{"message":"All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found \'time\'.","source":"WordPress.Security.EscapeOutput.OutputNotEscaped","severity":5,"fixable":false,"type":"ERROR","line":2,"column":6},{"message":"Expected 1 space before array closer, found 5.","source":"WordPress.Arrays.ArrayDeclarationSpacing.SpaceBeforeArrayCloser","severity":5,"fixable":true,"type":"ERROR","line":5,"column":25}]}}}',
+			'{"totals":{"errors":2,"warnings":0,"fixable":1},"files":{"' . addcslashes( $temp_file_path, '/' ) . '":{"errors":2,"warnings":0,"messages":[{"message":"All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found \'time\'.","source":"WordPress.Security.EscapeOutput.OutputNotEscaped","severity":5,"fixable":false,"type":"ERROR","line":2,"column":6},{"message":"Expected 1 space before array closer, found 5.","source":"WordPress.Arrays.ArrayDeclarationSpacing.SpaceBeforeArrayCloser","severity":5,"fixable":true,"type":"ERROR","line":5,"column":25}]}}}' . PHP_EOL,
 			$phpcs_res
 		);
 	}

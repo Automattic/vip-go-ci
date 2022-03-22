@@ -100,7 +100,7 @@ function vipgoci_ap_nonfunctional_changes(
 
 			/*
 			 * Save contents of version of
-			 * file at the base of the Pull-Request
+			 * file at the base of the pull request
 			 * to a temporary file ("old version").
 			 */
 
@@ -141,7 +141,7 @@ function vipgoci_ap_nonfunctional_changes(
 
 			/*
 			 * Save contents of version of
-			 * file at the head of the Pull-Request
+			 * file at the head of the pull request
 			 * to a temporary file ("new version").
 			 */
 
@@ -182,9 +182,9 @@ function vipgoci_ap_nonfunctional_changes(
 
 			/*
 			 * Check if the version at the base of
-			 * of the Pull-Request ("old version")
+			 * of the pull request ("old version")
 			 * is the same as the latest version at
-			 * the head of the Pull-Request ("new version")
+			 * the head of the pull request ("new version")
 			 * are exactly the same, given that we remove
 			 * all whitespacing changes.
 			 */
@@ -224,19 +224,6 @@ function vipgoci_ap_nonfunctional_changes(
 			);
 		}
 	}
-
-	/*
-	 * Reduce memory-usage as possible
-	 */
-	unset( $prs_implicated );
-	unset( $pr_diff );
-	unset( $pr_item );
-	unset( $pr_diff_file_extension );
-	unset( $pr_diff_file_name );
-	unset( $tmp_file_old );
-	unset( $tmp_file_new );
-
-	gc_collect_cycles();
 
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'ap_nonfunctional_changes' );
 }

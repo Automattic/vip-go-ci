@@ -18,6 +18,15 @@ declare(strict_types=1);
 function vipgoci_util_php_interpreter_get_version(
 	string $php_path
 ) :string|null {
+
+	$cache_id = array( __FUNCTION__, $php_path );
+
+	$cached_data = vipgoci_cache( $cache_id );
+
+	if ( false !== $cached_data ) {
+		return $cached_data;
+	}
+
 	$php_cmd = sprintf(
 		'( %s %s 2>&1 )',
 		escapeshellcmd( $php_path ),
@@ -36,6 +45,7 @@ function vipgoci_util_php_interpreter_get_version(
 				'cmd'    => $php_cmd,
 				'output' => $php_output,
 			),
+			VIPGOCI_EXIT_SYSTEM_PROBLEM
 		);
 	}
 
@@ -55,6 +65,19 @@ function vipgoci_util_php_interpreter_get_version(
 		return null;
 	}
 
-	return $php_output_arr[0];
+	$php_version_str = trim( $php_output_arr[0] );
+
+	vipgoci_log(
+		'Determined PHP version',
+		array(
+			'php-path'    => $php_path,
+			'php-version' => $php_version_str,
+		),
+		2
+	);
+
+	vipgoci_cache( $cache_id, $php_version_str );
+
+	return $php_version_str;
 }
 

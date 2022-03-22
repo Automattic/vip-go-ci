@@ -39,11 +39,14 @@ svg-scanner-path=/home/phpunit/vip-go-ci-tools/vip-go-svg-sanitizer/svg-scanner.
 commit-test-svg-scan-single-file-test-1=935bcf78887d54228c7d705a196de4b72947fd42
 
 [lint-scan]
-lint-php-path=/usr/bin/php
 commit-test-lint-scan-commit-1=6968d452099d2b43fd85953076b34a5b2e2d707f
 commit-test-lint-scan-commit-2=20fee28020873cb7fdfadf1cfa101f94026bc75e
 commit-test-lint-scan-commit-3=dd60c66a7c1e27fc78c400f0c5160c9a80c4bd49
 commit-test-lint-scan-commit-4=84985c25706e83dada8c40061e6f1496cfe3c522
+lint-php1-path=/usr/bin/php7.4
+lint-php1-version=7.4
+lint-php2-path=/usr/bin/php8.1
+lint-php2-version=8.1
 
 [auto-approvals]
 commit-test-file-types-1=2d864e5dd9d89ea3362d965477432873bf970345

@@ -10,7 +10,7 @@ declare(strict_types=1);
 /*
  * Version number.
  */
-define( 'VIPGOCI_VERSION', '1.2.0' );
+define( 'VIPGOCI_VERSION', '1.2.2' );
 
 /*
  * Define minimum version requirements.
@@ -43,7 +43,7 @@ define( 'VIPGOCI_FILE_IS_APPROVED_MSG', 'File is approved in review database (ha
 define(
 	'VIPGOCI_REVIEW_COMMENTS_TOTAL_MAX',
 	'Total number of active review comments per ' .
-					'Pull-Request has been reached and some ' .
+					'pull request has been reached and some ' .
 					'comments might not appear as a result. ' .
 					'Please resolve some issues to see more'
 );
@@ -85,6 +85,11 @@ define(
 );
 
 define(
+	'VIPGOCI_OUT_OF_MEMORY_ERROR',
+	'Unable to analyze the pull request due to resource constraints. The pull request may be too large to process. Please try submitting a smaller pull request'
+);
+
+define(
 	'VIPGOCI_NO_ISSUES_FOUND_MSG_AND_NO_REVIEWS',
 	'No issues were found to report when scanning latest commit'
 );
@@ -92,6 +97,26 @@ define(
 define(
 	'VIPGOCI_NO_ISSUES_FOUND_MSG_AND_EXISTING_REVIEWS',
 	'Scanning latest commit did not yield any new issues. Please have a look at older feedback still existing'
+);
+
+define(
+	'VIPGOCI_LINT_FAILED_MSG_START',
+	'Unable to PHP lint one or more files due to error running PHP linter: '
+);
+
+define(
+	'VIPGOCI_LINT_FAILED_MSG_END',
+	'The error may be temporary. If the error persists, please contact a human'
+);
+
+define(
+	'VIPGOCI_PHPCS_SCAN_FAILED_MSG_START',
+	'Unable to PHPCS or SVG scan one or more files due to error running PHPCS/SVG scanner: '
+);
+
+define(
+	'VIPGOCI_PHPCS_SCAN_FAILED_MSG_END',
+	'The error may be temporary. If the error persists, please contact a human'
 );
 
 /*

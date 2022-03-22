@@ -121,7 +121,8 @@ switch ( $options['build-state'] ) {
 			'Invalid parameter for --build-state, only "pending", "failure", and "success" are valid',
 			array(
 				'build-state' => $options['build-state'],
-			)
+			),
+			VIPGOCI_EXIT_USAGE_ERROR
 		);
 }
 

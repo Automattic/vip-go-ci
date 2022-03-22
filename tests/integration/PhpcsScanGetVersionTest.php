@@ -19,7 +19,7 @@ use PHPUnit\Framework\TestCase;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class PhpcsScanGetVersion extends TestCase {
+final class PhpcsScanGetVersionTest extends TestCase {
 	/**
 	 * Options array.
 	 *

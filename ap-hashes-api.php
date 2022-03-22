@@ -247,7 +247,7 @@ function vipgoci_ap_hashes_api_file_approved(
 
 /**
  * Scan a particular commit, look for altered
- * files in the Pull-Request we are associated with
+ * files in the pull request we are associated with
  * and for each of these files, check if they
  * are approved in the hashes-to-hashes API.
  *
@@ -267,7 +267,7 @@ function vipgoci_ap_hashes_api_scan_commit(
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'hashes_api_scan' );
 
 	vipgoci_log(
-		'Scanning altered or new files affected by Pull-Request(s) ' .
+		'Scanning altered or new files affected by pull request(s) ' .
 			'using hashes-to-hashes API',
 		array(
 			'repo_owner'     => $options['repo-owner'],
@@ -333,7 +333,7 @@ function vipgoci_ap_hashes_api_scan_commit(
 
 			/*
 			 * Add the file to a list of approved files
-			 * of these affected by the Pull-Request.
+			 * of these affected by the pull request.
 			 */
 			if ( true === $approval_status ) {
 				vipgoci_log(
@@ -365,17 +365,6 @@ function vipgoci_ap_hashes_api_scan_commit(
 			}
 		}
 	}
-
-	/*
-	 * Reduce memory-usage as possible
-	 */
-	unset( $prs_implicated );
-	unset( $pr_item );
-	unset( $pr_diff );
-	unset( $pr_diff_contents );
-	unset( $approval_status );
-
-	gc_collect_cycles();
 
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'hashes_api_scan' );
 }

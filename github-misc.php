@@ -42,7 +42,7 @@ function vipgoci_patch_changed_lines(
 	string $file_name
 ): ?array {
 	/*
-	 * Fetch patch for all files of the Pull-Request
+	 * Fetch patch for all files of the pull request
 	 */
 	$patch_arr = vipgoci_git_diffs_fetch(
 		$local_git_repo,
@@ -179,7 +179,7 @@ function vipgoci_blame_filter_commits(
 	 * 'git blame' log for the file, so
 	 * so we can filter out issues not
 	 * stemming from commits that are a
-	 * part of the current Pull-Request.
+	 * part of the current pull request.
 	 */
 
 	$blame_log_filtered = array();
@@ -319,3 +319,30 @@ function vipgoci_github_wait() {
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'github_forced_wait' );
 }
 
+/**
+ * Construct and return URLs to pull requests
+ * specified in $prs_arr
+ *
+ * @param array  $prs_arr    Pull requests.
+ * @param string $separator  Separator to use between URLs.
+ *
+ * @return string URLs to pull requests.
+ */
+function vipgoci_github_prs_urls_get(
+	array $prs_arr,
+	string $separator = ', '
+) :string {
+	$prs_urls = '';
+
+	foreach ( $prs_arr as $pr_item ) {
+		if ( ! empty( $prs_urls ) ) {
+			$prs_urls .= $separator;
+		}
+
+		$prs_urls .= $pr_item->head->repo->html_url .
+			'/pull/' .
+			rawurlencode( (string) $pr_item->number );
+	}
+
+	return $prs_urls;
+}

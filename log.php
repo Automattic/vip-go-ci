@@ -42,7 +42,10 @@ function vipgoci_log(
 	}
 
 	echo '[ ' . gmdate( 'c' ) . ' GMT -- ' . (int) $debug_level . ' ]  ' .
-		$str .
+		json_encode(
+			$str,
+			JSON_PRETTY_PRINT
+		) .
 		'; ' .
 		print_r(
 			json_encode(

@@ -9,8 +9,8 @@
 declare(strict_types=1);
 
 /**
- * Remove comments that exist on a GitHub Pull-Request from
- * the results array. Will loop through each Pull-Request
+ * Remove comments that exist on a GitHub pull request from
+ * the results array. Will loop through each pull request
  * affected by the current commit, and remove any comment
  * from the results array if it already exists.
  *
@@ -54,7 +54,7 @@ function vipgoci_results_remove_existing_github_comments(
 
 		/*
 		 * Get all commits related to the current
-		 * Pull-Request.
+		 * pull request.
 		 */
 
 		$pr_item_commits = vipgoci_github_prs_commits_list(
@@ -301,7 +301,7 @@ function vipgoci_results_remove_existing_github_comments(
  * do not do this for 'info' type messages,
  * as they are informational, and not problems.
  *
- * We do this, because sometimes Pull-Requests
+ * We do this, because sometimes pull requests
  * will be opened that contain approved code,
  * and we do not want to clutter them with
  * non-relevant comments.
@@ -332,14 +332,14 @@ function vipgoci_results_approved_files_comments_remove(
 	);
 
 	/*
-	 * Loop through each Pull-Request
+	 * Loop through each pull request
 	 */
 	foreach ( $results['issues'] as
 		$pr_number => $pr_issues
 	) {
 		/*
 		 * Loop through each issue affecting each
-		 * Pull-Request.
+		 * pull request.
 		 */
 		foreach ( $pr_issues as
 			$issue_number => $issue_item
@@ -408,8 +408,8 @@ function vipgoci_results_approved_files_comments_remove(
 
 /**
  * Limit the number of to-be-submitted comments to
- * the Pull-Requests. We take into account the number
- * to be submitted for each Pull-Request, the number of
+ * the pull requests. We take into account the number
+ * to be submitted for each pull request, the number of
  * comments already submitted, and the limit specified
  * on start-up. Comments are removed as needed, and
  * what comments are removed is reported.
@@ -455,7 +455,7 @@ function vipgoci_results_filter_comments_to_max(
 	) {
 		/*
 		 * Take into account previously submitted comments
-		 * by us for the current Pull-Request.
+		 * by us for the current pull request.
 		 */
 
 		$pr_previous_comments_cnt = count(
@@ -594,7 +594,7 @@ function vipgoci_results_filter_comments_to_max(
 
 	/*
 	 * Populate '$prs_comments_maxed' which
-	 * indicates which Pull-Requests have
+	 * indicates which pull requests have
 	 * had number of comments posted limited.
 	 */
 	$prs_comments_maxed = array_map(
@@ -952,7 +952,7 @@ function vipgoci_results_filter_irrellevant(
 	/*
 	 * Filter out any issues
 	 * that are due to commits outside
-	 * of the Pull-Request
+	 * of the pull request
 	 */
 
 	$file_blame_log_filtered =

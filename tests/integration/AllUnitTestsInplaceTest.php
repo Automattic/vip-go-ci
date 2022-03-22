@@ -32,6 +32,7 @@ final class AllUnitTestsInplaceTest extends TestCase {
 				switch ( $file_item ) {
 					case '.':
 					case '..':
+					case 'helper':
 					case 'helper-scripts':
 					case 'Skeleton.php':
 					case 'IncludesForTests.php':
