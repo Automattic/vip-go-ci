@@ -40,7 +40,7 @@ final class GitHubPrReviewsCommentsGetTest extends TestCase {
 		if ( empty( $this->options['github-token'] ) ) {
 			$this->options['github-token'] = '';
 		}
-		
+
 		$this->options['token'] =
 			$this->options['github-token'];
 	}
