@@ -18,7 +18,7 @@ declare(strict_types=1);
 function vipgoci_github_rate_limit_usage(
 	$github_token
 ) {
-	$rate_limit = vipgoci_github_fetch_url(
+	$rate_limit = vipgoci_http_api_fetch_url(
 		VIPGOCI_GITHUB_BASE_URL . '/rate_limit',
 		$github_token
 	);
@@ -83,7 +83,7 @@ function vipgoci_github_diffs_fetch_unfiltered(
 
 	// FIXME: Error-handling
 	$resp_raw = json_decode(
-		vipgoci_github_fetch_url(
+		vipgoci_http_api_fetch_url(
 			$github_url,
 			$github_token
 		),
@@ -218,7 +218,7 @@ function vipgoci_github_fetch_commit_info(
 			rawurlencode( $commit_id );
 
 		$data = json_decode(
-			vipgoci_github_fetch_url(
+			vipgoci_http_api_fetch_url(
 				$github_url,
 				$github_token
 			)
@@ -393,7 +393,7 @@ function vipgoci_github_pr_reviews_comments_get(
 			 * despite this and return partial results, as it will not
 			 * have a great impact on the final output.
 			 */
-			$prs_comments_tmp = vipgoci_github_fetch_url(
+			$prs_comments_tmp = vipgoci_http_api_fetch_url(
 				$github_url,
 				$github_token,
 				false // Do not stop execution on failure.
@@ -543,7 +543,7 @@ function vipgoci_github_pr_reviews_comments_get_by_pr(
 			'per_page=' . rawurlencode( (string) $per_page );
 
 		$comments = json_decode(
-			vipgoci_github_fetch_url(
+			vipgoci_http_api_fetch_url(
 				$github_url,
 				$options['token']
 			)
@@ -611,7 +611,7 @@ function vipgoci_github_pr_reviews_comments_delete(
 		'comments/' .
 		rawurlencode( $comment_id );
 
-	vipgoci_github_post_url(
+	vipgoci_http_api_post_url(
 		$github_url,
 		array(),
 		$options['token'],
@@ -678,7 +678,7 @@ function vipgoci_github_pr_generic_comments_get_all(
 
 
 		$pr_comments_raw = json_decode(
-			vipgoci_github_fetch_url(
+			vipgoci_http_api_fetch_url(
 				$github_url,
 				$github_token
 			)
@@ -747,7 +747,7 @@ function vipgoci_github_pr_comments_generic_submit(
 	$github_postfields['body'] .=
 		"\n\r";
 
-	vipgoci_github_post_url(
+	vipgoci_http_api_post_url(
 		$github_url,
 		$github_postfields,
 		$github_token
@@ -870,7 +870,7 @@ function vipgoci_github_pr_generic_comment_delete(
 	/*
 	 * Send DELETE request to GitHub.
 	 */
-	vipgoci_github_post_url(
+	vipgoci_http_api_post_url(
 		$github_url,
 		array(),
 		$github_token,
@@ -950,7 +950,7 @@ function vipgoci_github_pr_reviews_get(
 			 * Fetch reviews, decode result.
 			 */
 			$pr_reviews = json_decode(
-				vipgoci_github_fetch_url(
+				vipgoci_http_api_fetch_url(
 					$github_url,
 					$github_token
 				)
@@ -1072,7 +1072,7 @@ function vipgoci_github_pr_review_dismiss(
 		rawurlencode( (string) $review_id ) . '/' .
 		'dismissals';
 
-	vipgoci_github_put_url(
+	vipgoci_http_api_put_url(
 		$github_url,
 		array(
 			'message' => $dismiss_message
@@ -1286,7 +1286,7 @@ function vipgoci_github_approve_pr(
 	);
 
 	// Actually approve
-	vipgoci_github_post_url(
+	vipgoci_http_api_post_url(
 		$github_url,
 		$github_postfields,
 		$github_token
@@ -1386,7 +1386,7 @@ function vipgoci_github_prs_implicated(
 
 		// FIXME: Detect when GitHub sent back an error
 		$prs_implicated_unfiltered = json_decode(
-			vipgoci_github_fetch_url(
+			vipgoci_http_api_fetch_url(
 				$github_url,
 				$github_token
 			)
@@ -1581,7 +1581,7 @@ function vipgoci_github_prs_commits_list(
 
 		// FIXME: Detect when GitHub sent back an error
 		$pr_commits_raw = json_decode(
-			vipgoci_github_fetch_url(
+			vipgoci_http_api_fetch_url(
 				$github_url,
 				$github_token
 			)
@@ -1628,7 +1628,7 @@ function vipgoci_github_authenticated_user_get( $github_token ) {
 		VIPGOCI_GITHUB_BASE_URL . '/' .
 		'user';
 
-	$current_user_info_json = vipgoci_github_fetch_url(
+	$current_user_info_json = vipgoci_http_api_fetch_url(
 		$github_url,
 		$github_token
 	);
@@ -1698,7 +1698,7 @@ function vipgoci_github_label_add_to_pr(
 		$label_name
 	);
 
-	vipgoci_github_post_url(
+	vipgoci_http_api_post_url(
 		$github_url,
 		$github_postfields,
 		$github_token
@@ -1765,7 +1765,7 @@ function vipgoci_github_pr_labels_get(
 			rawurlencode( (string) $pr_number ) . '/' .
 			'labels';
 
-		$data = vipgoci_github_fetch_url(
+		$data = vipgoci_http_api_fetch_url(
 			$github_url,
 			$github_token
 		);
@@ -1837,7 +1837,7 @@ function vipgoci_github_pr_label_remove(
 		'labels/' .
 		rawurlencode( $label_name );
 
-	vipgoci_github_post_url(
+	vipgoci_http_api_post_url(
 		$github_url,
 		array(),
 		$github_token,
@@ -1898,7 +1898,7 @@ function vipgoci_github_pr_review_events_get(
 				'per_page=' . rawurlencode( (string) $per_page );
 
 
-			$issue_events = vipgoci_github_fetch_url(
+			$issue_events = vipgoci_http_api_fetch_url(
 				$github_url,
 				$options['token']
 			);
@@ -2052,7 +2052,7 @@ function vipgoci_github_team_members_get(
 				'per_page=' . rawurlencode( (string) $per_page );
 
 
-			$team_members = vipgoci_github_fetch_url(
+			$team_members = vipgoci_http_api_fetch_url(
 				$github_url,
 				$github_token
 			);
@@ -2195,7 +2195,7 @@ function vipgoci_github_org_teams_get(
 				'per_page=' . rawurlencode( (string) $per_page );
 
 
-			$org_teams = vipgoci_github_fetch_url(
+			$org_teams = vipgoci_http_api_fetch_url(
 				$github_url,
 				$github_token
 			);
@@ -2329,7 +2329,7 @@ function vipgoci_github_repo_collaborators_get(
 				$github_url .= '&affiliation=' . rawurlencode( $affiliation );
 			}
 
-			$repo_users = vipgoci_github_fetch_url(
+			$repo_users = vipgoci_http_api_fetch_url(
 				$github_url,
 				$github_token
 			);
@@ -2434,7 +2434,7 @@ function vipgoci_github_status_create(
 		)
 	);
 
-	vipgoci_github_post_url(
+	vipgoci_http_api_post_url(
 		$github_url,
 		$github_postfields,
 		$github_token
