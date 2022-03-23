@@ -168,19 +168,18 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 				'?page=' . rawurlencode( $page ) . '&' .
 				'per_page=' . rawurlencode( $per_page );
 
+			$pr_comments_raw = json_decode(
+				vipgoci_http_api_fetch_url(
+					$github_url,
+					$this->options['github-token']
+				)
+			);
 
-	                $pr_comments_raw = json_decode(
-	                        vipgoci_http_api_fetch_url(
-        	                        $github_url,
-                	                $this->options['github-token']
-                        	)
-	                );
+			foreach ( $pr_comments_raw as $pr_comment ) {
+				$pr_comments_ret[] = $pr_comment;
+			}
 
-	                foreach ( $pr_comments_raw as $pr_comment ) {
-	                        $pr_comments_ret[] = $pr_comment;
-        	        }
-
-	                $page++;
+			$page++;
 		} while ( count( $pr_comments_raw ) >= $per_page );
 
 		return $pr_comments_ret;
@@ -295,7 +294,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 		$this->options['post-generic-pr-support-comments'] = false;
 
 		// Get Pull-Requests
-        	$prs_implicated = $this->_getPrsImplicated();
+		$prs_implicated = $this->_getPrsImplicated();
 
 		// Check we have at least one PR
 		$this->assertTrue(
@@ -364,7 +363,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 			);
 
 		// Get Pull-Requests
-        	$prs_implicated = $this->_getPrsImplicated();
+		$prs_implicated = $this->_getPrsImplicated();
 
 		// Check we have at least one PR
 		$this->assertTrue(
@@ -479,7 +478,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 			);
 
 		// Get Pull-Requests
-        	$prs_implicated = $this->_getPrsImplicated();
+		$prs_implicated = $this->_getPrsImplicated();
 
 		// Check we have at least one PR
 		$this->assertTrue(
@@ -594,7 +593,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 			);
 
 		// Get Pull-Requests
-        	$prs_implicated = $this->_getPrsImplicated();
+		$prs_implicated = $this->_getPrsImplicated();
 
 		// Check we have at least one PR
 		$this->assertTrue(
@@ -671,7 +670,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 			);
 
 		// Get Pull-Requests
-        	$prs_implicated = $this->_getPrsImplicated();
+		$prs_implicated = $this->_getPrsImplicated();
 
 		// Check we have at least one PR
 		$this->assertTrue(
@@ -829,7 +828,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 		);
 
 		// Get Pull-Requests
-        	$prs_implicated = $this->_getPrsImplicated();
+		$prs_implicated = $this->_getPrsImplicated();
 
 		// Check we have at least one PR
 		$this->assertTrue(
