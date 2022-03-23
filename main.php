@@ -2759,7 +2759,7 @@ function vipgoci_run_scan(
 	);
 
 	vipgoci_log(
-		'Starting scanning PRs; ' . $prs_urls,
+		'Starting scanning PRs; ' . $prs_urls . ' ',
 		array(
 			'repo-owner' => $options['repo-owner'],
 			'repo-name'  => $options['repo-name'],
