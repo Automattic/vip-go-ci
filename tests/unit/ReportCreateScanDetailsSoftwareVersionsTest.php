@@ -63,7 +63,7 @@ final class ReportCreateScanDetailsSoftwareVersionsTest extends TestCase {
 		$this->assertNotFalse(
 			strpos(
 				$actual_output,
-				'<li>vip-go-ci version: <code>' . VIPGOCI_VERSION . '</code></li>'
+				'<li><a href="https://github.com/Automattic/vip-go-ci">vip-go-ci</a> version: <code>' . VIPGOCI_VERSION . '</code></li>'
 			)
 		);
 
@@ -157,7 +157,7 @@ final class ReportCreateScanDetailsSoftwareVersionsTest extends TestCase {
 		$this->assertNotFalse(
 			strpos(
 				$actual_output,
-				'<li>vip-go-ci version: <code>' . VIPGOCI_VERSION . '</code></li>'
+				'<li><a href="https://github.com/Automattic/vip-go-ci">vip-go-ci</a> version: <code>' . VIPGOCI_VERSION . '</code></li>'
 			)
 		);
 
