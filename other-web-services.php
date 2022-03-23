@@ -113,7 +113,7 @@ function vipgoci_irc_api_alerts_send(
 		);
 
 		curl_setopt(
-			$ch, CURLOPT_CONNECTTIMEOUT, 5
+			$ch, CURLOPT_CONNECTTIMEOUT, VIPGOCI_HTTP_API_SHORT_TIMEOUT
 		);
 
 		curl_setopt(
