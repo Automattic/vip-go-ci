@@ -105,23 +105,33 @@ function vipgoci_irc_api_alerts_send(
 		$ch = curl_init();
 
 		curl_setopt(
-			$ch, CURLOPT_URL, $irc_api_url
+			$ch,
+			CURLOPT_URL,
+			$irc_api_url
 		);
 
 		curl_setopt(
-			$ch, CURLOPT_RETURNTRANSFER, 1
+			$ch,
+			CURLOPT_RETURNTRANSFER,
+			1
 		);
 
 		curl_setopt(
-			$ch, CURLOPT_CONNECTTIMEOUT, VIPGOCI_HTTP_API_SHORT_TIMEOUT
+			$ch,
+			CURLOPT_CONNECTTIMEOUT,
+			VIPGOCI_HTTP_API_SHORT_TIMEOUT
 		);
 
 		curl_setopt(
-			$ch, CURLOPT_USERAGENT, VIPGOCI_CLIENT_ID
+			$ch,
+			CURLOPT_USERAGENT,
+			VIPGOCI_CLIENT_ID
 		);
 
 		curl_setopt(
-			$ch, CURLOPT_POST, 1
+			$ch,
+			CURLOPT_POST,
+			1
 		);
 
 		curl_setopt(
