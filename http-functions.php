@@ -65,7 +65,7 @@ function vipgoci_curl_headers(
 
 	/*
 	 * Construct 'status' HTTP header based on the
-	 * HTTP status code. 
+	 * HTTP status code.
 	 */
 
 	if (
