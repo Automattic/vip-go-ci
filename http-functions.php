@@ -65,8 +65,7 @@ function vipgoci_curl_headers(
 
 	/*
 	 * Construct 'status' HTTP header based on the
-	 * HTTP status code. This used to be provided
-	 * by GitHub, but is not anymore.
+	 * HTTP status code. 
 	 */
 
 	if (
@@ -237,18 +236,18 @@ function vipgoci_http_resp_sunset_header_check(
 }
 
 /**
- * Detect if we exceeded the GitHub rate-limits,
+ * Detect if we exceeded the API rate-limits,
  * and if so, exit with error.
  *
- * @param string $github_url   GitHub URL used.
+ * @param string $http_api_url API URL used.
  * @param array  $resp_headers HTTP response headers.
  *
  * @return void
  *
  * @codeCoverageIgnore
  */
-function vipgoci_github_rate_limits_check(
-	string $github_url,
+function vipgoci_http_api_rate_limits_check(
+	string $http_api_url,
 	array $resp_headers
 ) :void {
 	if (
@@ -256,10 +255,10 @@ function vipgoci_github_rate_limits_check(
 		( $resp_headers['x-ratelimit-remaining'][0] <= 1 )
 	) {
 		vipgoci_sysexit(
-			'Ran out of request limits for GitHub, cannot ' .
+			'Ran out of request limits for API, cannot ' .
 				'continue without making further requests.',
 			array(
-				'github_url'            => $github_url,
+				'http_api_url'          => $http_api_url,
 				'x-ratelimit-remaining' => $resp_headers['x-ratelimit-remaining'][0],
 				'x-ratelimit-limit'     => $resp_headers['x-ratelimit-limit'][0],
 			),
@@ -267,6 +266,40 @@ function vipgoci_github_rate_limits_check(
 			true // Log to IRC.
 		);
 	}
+}
+
+/**
+ * Make sure to wait in between requests to
+ * HTTP APIs. Only waits if it is really needed.
+ *
+ * This function should only be called just before
+ * sending a request to a HTTP API -- that is the most
+ * effective usage.
+ *
+ * See here for background:
+ * https://developer.github.com/v3/guides/best-practices-for-integrators/#dealing-with-abuse-rate-limits
+ */
+function vipgoci_http_api_wait() {
+	static $last_request_time = null;
+
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'http_api_forced_wait' );
+
+	if ( null !== $last_request_time ) {
+		/*
+		 * Only sleep if less than specified time
+		 * has elapsed from last request.
+		 */
+		if (
+			( time() - $last_request_time ) <
+			VIPGOCI_HTTP_API_WAIT_TIME_SECONDS
+		) {
+			sleep( VIPGOCI_HTTP_API_WAIT_TIME_SECONDS );
+		}
+	}
+
+	$last_request_time = time();
+
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'http_api_forced_wait' );
 }
 
 /**
@@ -382,40 +415,40 @@ function vipgoci_oauth1_signature_get_hmac_sha1(
  * the request. Returns with a full HTTP header for
  * a OAuth 1.0a HTTP request.
  *
- * @param string       $http_method  HTTP method.
- * @param string       $github_url   HTTP request URL.
- * @param string|array $github_token Access token.
+ * @param string       $http_method    HTTP method.
+ * @param string       $http_api_url   HTTP request URL.
+ * @param string|array $http_api_token Access token.
  *
  * @return string Resulting HTTP header string.
  */
 function vipgoci_oauth1_headers_get(
 	string $http_method,
-	string $github_url,
-	string|array $github_token
+	string $http_api_url,
+	string|array $http_api_token
 ) :string {
 	/*
 	 * Set signature-method header, static.
 	 */
-	$github_token['oauth_signature_method'] =
+	$http_api_token['oauth_signature_method'] =
 		'HMAC-SHA1';
 
 	/*
 	 * Set timestamp and nonce.
 	 */
-	$github_token['oauth_timestamp'] = (string) ( time() - 1 );
+	$http_api_token['oauth_timestamp'] = (string) ( time() - 1 );
 
-	$github_token['oauth_nonce'] = (string) md5(
+	$http_api_token['oauth_nonce'] = (string) md5(
 		openssl_random_pseudo_bytes( 100 )
 	);
 
 	/*
 	 * Get the signature for the header.
 	 */
-	$github_token['oauth_signature'] =
+	$http_api_token['oauth_signature'] =
 		vipgoci_oauth1_signature_get_hmac_sha1(
 			$http_method,
-			$github_url,
-			$github_token
+			$http_api_url,
+			$http_api_token
 		);
 
 	/*
@@ -423,8 +456,8 @@ function vipgoci_oauth1_headers_get(
 	 * so we remove them to limit any risk
 	 * of information leakage.
 	 */
-	unset( $github_token['oauth_token_secret'] );
-	unset( $github_token['oauth_consumer_secret'] );
+	unset( $http_api_token['oauth_token_secret'] );
+	unset( $http_api_token['oauth_consumer_secret'] );
 
 	/*
 	 * Actually create the full HTTP header
@@ -434,11 +467,11 @@ function vipgoci_oauth1_headers_get(
 	$sep        = '';
 
 	foreach (
-		$github_token as
-			$github_token_key => $github_token_value
+		$http_api_token as
+			$http_api_token_key => $http_api_token_value
 	) {
 		if ( strpos(
-			$github_token_key,
+			$http_api_token_key,
 			'oauth_'
 		) !== 0 ) {
 			/*
@@ -451,8 +484,8 @@ function vipgoci_oauth1_headers_get(
 
 		$res_header .=
 			$sep .
-			$github_token_key . '="' .
-			rawurlencode( $github_token_value ) .
+			$http_api_token_key . '="' .
+			rawurlencode( $http_api_token_value ) .
 			'"';
 
 		$sep = ', ';
@@ -465,21 +498,21 @@ function vipgoci_oauth1_headers_get(
 }
 
 /**
- * Make a GET request to GitHub, for the URL
+ * Make a GET request to HTTP API, for the URL
  * provided, using the access-token specified.
  *
- * Will return the raw-data returned by GitHub,
+ * Will return the raw-data returned by the HTTP API,
  * or halt execution on repeated errors.
  *
- * @param string       $github_url             HTTP request URL.
- * @param string|array $github_token           Access token to use.
+ * @param string       $http_api_url           HTTP request URL.
+ * @param string|array $http_api_token         Access token to use.
  * @param bool         $fatal_error_on_failure If to exit on failure or return.
  *
  * @return string|null String containing results on success, null on failure (if set not to exit).
  */
-function vipgoci_github_fetch_url(
-	string $github_url,
-	string|array $github_token,
+function vipgoci_http_api_fetch_url(
+	string $http_api_url,
+	string|array $http_api_token,
 	bool $fatal_error_on_failure = true
 ) :string|null {
 	$curl_retries = 0;
@@ -494,7 +527,7 @@ function vipgoci_github_fetch_url(
 		curl_setopt(
 			$ch,
 			CURLOPT_URL,
-			$github_url
+			$http_api_url
 		);
 
 		curl_setopt(
@@ -506,7 +539,7 @@ function vipgoci_github_fetch_url(
 		curl_setopt(
 			$ch,
 			CURLOPT_CONNECTTIMEOUT,
-			20
+			VIPGOCI_HTTP_API_LONG_TIMEOUT
 		);
 
 		curl_setopt(
@@ -522,25 +555,25 @@ function vipgoci_github_fetch_url(
 		);
 
 		if (
-			( is_string( $github_token ) ) &&
-			( strlen( $github_token ) > 0 )
+			( is_string( $http_api_token ) ) &&
+			( strlen( $http_api_token ) > 0 )
 		) {
 			curl_setopt(
 				$ch,
 				CURLOPT_HTTPHEADER,
-				array( 'Authorization: token ' . $github_token )
+				array( 'Authorization: token ' . $http_api_token )
 			);
-		} elseif ( is_array( $github_token ) ) {
+		} elseif ( is_array( $http_api_token ) ) {
 			if (
-				( isset( $github_token['oauth_consumer_key'] ) ) &&
-				( isset( $github_token['oauth_consumer_secret'] ) ) &&
-				( isset( $github_token['oauth_token'] ) ) &&
-				( isset( $github_token['oauth_token_secret'] ) )
+				( isset( $http_api_token['oauth_consumer_key'] ) ) &&
+				( isset( $http_api_token['oauth_consumer_secret'] ) ) &&
+				( isset( $http_api_token['oauth_token'] ) ) &&
+				( isset( $http_api_token['oauth_token_secret'] ) )
 			) {
-				$github_auth_header = vipgoci_oauth1_headers_get(
+				$http_api_auth_header = vipgoci_oauth1_headers_get(
 					'GET',
-					$github_url,
-					$github_token
+					$http_api_url,
+					$http_api_token
 				);
 
 				curl_setopt(
@@ -548,7 +581,7 @@ function vipgoci_github_fetch_url(
 					CURLOPT_HTTPHEADER,
 					array(
 						'Authorization: ' .
-							$github_auth_header,
+							$http_api_auth_header,
 					)
 				);
 			}
@@ -558,25 +591,25 @@ function vipgoci_github_fetch_url(
 			$ch
 		);
 
-		// Make sure to pause between GitHub-requests.
-		vipgoci_github_wait();
+		// Make sure to pause between API requests.
+		vipgoci_http_api_wait();
 
 		/*
-		 * Execute query to GitHub, keep
+		 * Execute query to API, keep
 		 * record of how long time it took,
 		 * and also keep count of how many we do.
 		 */
-		vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'github_api_get' );
+		vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'http_api_api_get' );
 
 		vipgoci_counter_report(
 			VIPGOCI_COUNTERS_DO,
-			'github_api_request_get',
+			'http_api_api_get',
 			1
 		);
 
 		$resp_data = curl_exec( $ch );
 
-		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'github_api_get' );
+		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'http_api_api_get' );
 
 		$resp_headers = vipgoci_curl_headers(
 			null,
@@ -597,10 +630,10 @@ function vipgoci_github_fetch_url(
 			)
 		) {
 			vipgoci_log(
-				'Sending request to GitHub failed, will ' .
+				'Sending request to HTTP API failed, will ' .
 					'retry in a bit... ',
 				array(
-					'github_url'          => $github_url,
+					'http_api_url'        => $http_api_url,
 					'curl_retries'        => $curl_retries,
 					'curl_errno'          => curl_errno(
 						$ch
@@ -625,13 +658,13 @@ function vipgoci_github_fetch_url(
 			sleep( 10 );
 		}
 
-		vipgoci_github_rate_limits_check(
-			$github_url,
+		vipgoci_http_api_rate_limits_check(
+			$http_api_url,
 			$resp_headers
 		);
 
 		vipgoci_http_resp_sunset_header_check(
-			$github_url,
+			$http_api_url,
 			$resp_headers
 		);
 
@@ -647,7 +680,7 @@ function vipgoci_github_fetch_url(
 		( false === $resp_data )
 	) {
 		vipgoci_sysexit(
-			'Gave up retrying request to GitHub, cannot continue',
+			'Gave up retrying request to HTTP API, cannot continue',
 			array(),
 			VIPGOCI_EXIT_GITHUB_PROBLEM,
 			true // Log to IRC.
@@ -663,29 +696,29 @@ function vipgoci_github_fetch_url(
 }
 
 /**
- * Send a POST/DELETE request to GitHub -- attempt
+ * Send a POST/DELETE request to HTTP API -- attempt
  * to retry if errors were encountered.
  *
  * Note that the '$http_delete' parameter will determine
  * if a POST or DELETE request will be sent.
  *
- * @param string $github_url        HTTP request URL.
- * @param array  $github_postfields HTTP request fields.
- * @param string $github_token      Access token to use.
- * @param bool   $http_delete       If to perform HTTP DELETE instead of POST.
+ * @param string $http_api_url        HTTP request URL.
+ * @param array  $http_api_postfields HTTP request fields.
+ * @param string $http_api_token      Access token to use.
+ * @param bool   $http_delete         If to perform HTTP DELETE instead of POST.
  *
  * @return int Zero (0) on success, -1 on failure. Failures will be logged.
  *
  * @codeCoverageIgnore
  */
-function vipgoci_github_post_url(
-	string $github_url,
-	array $github_postfields,
-	string $github_token,
+function vipgoci_http_api_post_url(
+	string $http_api_url,
+	array $http_api_postfields,
+	string $http_api_token,
 	bool $http_delete = false
 ) :null|int {
 	/*
-	 * Actually send a request to GitHub -- make sure
+	 * Actually send a request to HTTP API -- make sure
 	 * to retry if something fails.
 	 */
 	do {
@@ -707,7 +740,7 @@ function vipgoci_github_post_url(
 		curl_setopt(
 			$ch,
 			CURLOPT_URL,
-			$github_url
+			$http_api_url
 		);
 
 		curl_setopt(
@@ -719,7 +752,7 @@ function vipgoci_github_post_url(
 		curl_setopt(
 			$ch,
 			CURLOPT_CONNECTTIMEOUT,
-			20
+			VIPGOCI_HTTP_API_LONG_TIMEOUT
 		);
 
 		curl_setopt(
@@ -745,7 +778,7 @@ function vipgoci_github_post_url(
 		curl_setopt(
 			$ch,
 			CURLOPT_POSTFIELDS,
-			json_encode( $github_postfields )
+			json_encode( $http_api_postfields )
 		);
 
 		curl_setopt(
@@ -757,31 +790,31 @@ function vipgoci_github_post_url(
 		curl_setopt(
 			$ch,
 			CURLOPT_HTTPHEADER,
-			array( 'Authorization: token ' . $github_token )
+			array( 'Authorization: token ' . $http_api_token )
 		);
 
 		vipgoci_curl_set_security_options(
 			$ch
 		);
 
-		// Make sure to pause between GitHub-requests.
-		vipgoci_github_wait();
+		// Make sure to pause between HTTP API requests.
+		vipgoci_http_api_wait();
 
 		/*
-		 * Execute query to GitHub, keep
+		 * Execute query to HTTP API, keep
 		 * record of how long time it took,
 		 * and keep count of how many requests we do.
 		 */
 
-		vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'github_api_post' );
+		vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'http_api_request_post' );
 
-		vipgoci_counter_report( VIPGOCI_COUNTERS_DO, 'github_api_request_post', 1 );
+		vipgoci_counter_report( VIPGOCI_COUNTERS_DO, 'http_api_request_post', 1 );
 
 		$resp_data = curl_exec( $ch );
 		// @todo: Retry request when $resp_data === false
 		// @todo: maximum retries.
 
-		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'github_api_post' );
+		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'http_api_request_post' );
 
 		$resp_headers = vipgoci_curl_headers(
 			null,
@@ -867,33 +900,27 @@ function vipgoci_github_post_url(
 			}
 
 			vipgoci_log(
-				'GitHub reported an error' .
+				'HTTP API reported an error' .
 					( true === $retry_req ?
-					' will retry request in ' .
-					(string) $retry_sleep . ' seconds' :
+					' will retry request in ' . (string) $retry_sleep . ' seconds' :
 					'' ),
 				array(
-					'http_url'
-						=> $github_url,
-
-					'http_response_headers'
-						=> $resp_headers,
-
-					'http_reponse_body'
-						=> $resp_data,
+					'http_api_url'          => $http_api_url,
+					'http_response_headers' => $resp_headers,
+					'http_reponse_body'     => $resp_data,
 				)
 			);
 
 			sleep( $retry_sleep + 1 );
 		}
 
-		vipgoci_github_rate_limits_check(
-			$github_url,
+		vipgoci_http_api_rate_limits_check(
+			$http_api_url,
 			$resp_headers
 		);
 
 		vipgoci_http_resp_sunset_header_check(
-			$github_url,
+			$http_api_url,
 			$resp_headers
 		);
 
@@ -905,23 +932,23 @@ function vipgoci_github_post_url(
 }
 
 /**
- * Submit PUT request to the GitHub API.
+ * Submit PUT request to the HTTP API.
  *
- * @param string $github_url        HTTP request URL.
- * @param array  $github_postfields HTTP request fields.
- * @param string $github_token      Access token to use.
- *
- * @codeCoverageIgnore
+ * @param string $http_api_url        HTTP request URL.
+ * @param array  $http_api_postfields HTTP request fields.
+ * @param string $http_api_token      Access token to use.
  *
  * @return int Returns zero (0) on success, -1 on failure.
+ *
+ * @codeCoverageIgnore
  */
-function vipgoci_github_put_url(
-	string $github_url,
-	array $github_postfields,
-	string $github_token
+function vipgoci_http_api_put_url(
+	string $http_api_url,
+	array $http_api_postfields,
+	string $http_api_token
 ) :int {
 	/*
-	 * Actually send a request to GitHub -- make sure
+	 * Actually send a request to HTTP API -- make sure
 	 * to retry if something fails.
 	 */
 	do {
@@ -939,7 +966,7 @@ function vipgoci_github_put_url(
 		curl_setopt(
 			$ch,
 			CURLOPT_URL,
-			$github_url
+			$http_api_url
 		);
 
 		curl_setopt(
@@ -951,7 +978,7 @@ function vipgoci_github_put_url(
 		curl_setopt(
 			$ch,
 			CURLOPT_CONNECTTIMEOUT,
-			20
+			VIPGOCI_HTTP_API_LONG_TIMEOUT
 		);
 
 		curl_setopt(
@@ -969,7 +996,7 @@ function vipgoci_github_put_url(
 		curl_setopt(
 			$ch,
 			CURLOPT_POSTFIELDS,
-			json_encode( $github_postfields )
+			json_encode( $http_api_postfields )
 		);
 
 		curl_setopt(
@@ -981,23 +1008,23 @@ function vipgoci_github_put_url(
 		curl_setopt(
 			$ch,
 			CURLOPT_HTTPHEADER,
-			array( 'Authorization: token ' . $github_token )
+			array( 'Authorization: token ' . $http_api_token )
 		);
 
 		vipgoci_curl_set_security_options(
 			$ch
 		);
 
-		// Make sure to pause between GitHub-requests.
-		vipgoci_github_wait();
+		// Make sure to pause between HTTP API requests.
+		vipgoci_http_api_wait();
 
 		/*
-		 * Execute query to GitHub, keep
+		 * Execute query to HTTP API, keep
 		 * record of how long time it took,
 		 * and keep count of how many requests we do.
 		 */
 
-		vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'github_api_put' );
+		vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'http_api_put' );
 
 		vipgoci_counter_report( VIPGOCI_COUNTERS_DO, 'github_api_request_put', 1 );
 
@@ -1005,7 +1032,7 @@ function vipgoci_github_put_url(
 
 		// @todo: Retry request when $resp_data === false.
 
-		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'github_api_put' );
+		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'http_api_put' );
 
 		$resp_headers = vipgoci_curl_headers(
 			null,
@@ -1067,13 +1094,13 @@ function vipgoci_github_put_url(
 			}
 
 			vipgoci_log(
-				'GitHub reported an error' .
+				'HTTP API reported an error' .
 					( true === $retry_req ?
 					' will retry request in ' .
 					(string) $retry_sleep . ' seconds' :
 					'' ),
 				array(
-					'http_url'              => $github_url,
+					'http_api_url'          => $http_api_url,
 					'http_response_headers' => $resp_headers,
 					'http_reponse_body'     => $resp_data,
 				)
@@ -1082,13 +1109,13 @@ function vipgoci_github_put_url(
 			sleep( $retry_sleep + 1 );
 		}
 
-		vipgoci_github_rate_limits_check(
-			$github_url,
+		vipgoci_http_api_rate_limits_check(
+			$http_api_url,
 			$resp_headers
 		);
 
 		vipgoci_http_resp_sunset_header_check(
-			$github_url,
+			$http_api_url,
 			$resp_headers
 		);
 
