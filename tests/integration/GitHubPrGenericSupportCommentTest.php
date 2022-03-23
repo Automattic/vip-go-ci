@@ -170,7 +170,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 
 
 	                $pr_comments_raw = json_decode(
-	                        vipgoci_github_fetch_url(
+	                        vipgoci_http_api_fetch_url(
         	                        $github_url,
                 	                $this->options['github-token']
                         	)

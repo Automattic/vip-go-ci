@@ -6,10 +6,10 @@ use PHPUnit\Framework\TestCase;
 
 final class GitHubFetchUrlTest extends TestCase {
 	/**
-	 * @covers ::vipgoci_github_fetch_url
+	 * @covers ::vipgoci_http_api_fetch_url
 	 */
 	public function testGitHubFetchUrl1() {
-		$ret = vipgoci_github_fetch_url(
+		$ret = vipgoci_http_api_fetch_url(
 			'https://api.github.com/rate_limit',
 			''
 		);
