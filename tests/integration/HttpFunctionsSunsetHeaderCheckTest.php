@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 
 // phpcs:disable PSR1.Files.SideEffects
 
-final class HttpRespSunsetHeaderCheckTest extends TestCase {
+final class HttpFunctionsSunsetHeaderCheckTest extends TestCase {
 	protected function setUp(): void {
 		vipgoci_irc_api_alert_queue( null, true ); // Empty IRC queue
 	}
