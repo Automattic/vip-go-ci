@@ -4,7 +4,7 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 
 use PHPUnit\Framework\TestCase;
 
-final class GitHubFetchUrlTest extends TestCase {
+final class HttpApiFetchUrlTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_http_api_fetch_url
 	 */
