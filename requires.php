@@ -21,6 +21,7 @@ require_once __DIR__ . '/file-validation.php';
 require_once __DIR__ . '/github-api.php';
 require_once __DIR__ . '/github-misc.php';
 require_once __DIR__ . '/git-repo.php';
+require_once __DIR__ . '/http-functions.php';
 require_once __DIR__ . '/lint-scan.php';
 require_once __DIR__ . '/log.php';
 require_once __DIR__ . '/main.php';

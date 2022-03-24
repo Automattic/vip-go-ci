@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
-require_once( __DIR__ . './../../github-api.php' );
+require_once( __DIR__ . './../../http-functions.php' );
 
 use PHPUnit\Framework\TestCase;
 
 // phpcs:disable PSR1.Files.SideEffects
 
-final class GitHubOauthSignatureGetHmacSha1Test extends TestCase {
+final class HttpFunctionsOauthSignatureGetHmacSha1Test extends TestCase {
 	/**
 	 * @covers ::vipgoci_oauth1_signature_get_hmac_sha1
 	 */

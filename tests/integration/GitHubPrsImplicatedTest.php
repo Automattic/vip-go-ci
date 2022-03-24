@@ -40,6 +40,10 @@ final class GitHubPrsImplicatedTest extends TestCase {
 				true // Fetch from secrets file
 			);
 
+		if ( empty( $this->options['github-token'] ) ) {
+			$this->options['github-token'] = '';
+		}
+
 		$this->options['lint-skip-folders'] = array();
 
 		$this->options['phpcs-skip-folders'] = array();

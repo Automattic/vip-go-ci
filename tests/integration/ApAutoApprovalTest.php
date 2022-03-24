@@ -179,7 +179,7 @@ final class ApAutoApprovalTest extends TestCase {
 			rawurlencode( $this->options['pr-test-ap-auto-approval-1'] ) . '/' .
 			'labels';
 
-		$data = vipgoci_github_fetch_url(
+		$data = vipgoci_http_api_fetch_url(
 			$github_url,
 			$this->options['token']
 		);
