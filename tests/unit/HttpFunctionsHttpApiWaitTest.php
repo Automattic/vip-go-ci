@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class GitHubMiscGitHubWaitTest extends TestCase {
+final class HttpFunctionsHttpApiWaitTest extends TestCase {
 	/**
 	 * Setup function. Require files.
 	 */
