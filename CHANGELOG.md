@@ -2,7 +2,6 @@
 
 All notable changes to this project will be documented in this file.
 
-
 ## [1.2.3](https://github.com/Automattic/vip-go-ci/releases/tag/1.2.3) - 2022-03-??
 
 ## Added
