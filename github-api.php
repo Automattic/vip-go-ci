@@ -316,16 +316,17 @@ function vipgoci_github_fetch_commit_info(
 
 /**
  * Fetch all comments from GitHub API for the
- * repository and commit specified -- the ones
- * that are associated with a pull request.
+ * repository and commit specified, will fetch only
+ * comments made after certain timestamp and that are
+ * associated with a pull request.
  *
  * Will populate associative array of comments (the pointer
  * $pr_comments), with file-name and file-position as
  * keys.
  *
  * @param array  $options        Options array for the program.
- * @param string $commit_id      Commit-ID to use as reference.
- * @param string $commit_made_at Timestamp when commit was made.
+ * @param string $commit_id      Will fetch comments associated with this commit-ID.
+ * @param string $commit_made_at Will fetch comments made after this timestamp.
  * @param array  $prs_comments   Results array pointer; pull request comments.
  *
  * @return void
