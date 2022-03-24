@@ -147,7 +147,7 @@ final class A09GitHubLabelsTest extends TestCase {
 			rawurlencode( $this->options['labels-pr-to-modify'] ) . '/' .
 			'labels';
 
-		$data = vipgoci_github_fetch_url(
+		$data = vipgoci_http_api_fetch_url(
 			$github_url,
 			$this->options['github-token']
 		);

@@ -74,7 +74,7 @@ final class GitHubStatusCreateTest extends TestCase {
 			'target_url'	=> $this->options['build-target-url'],
 		);
 
-		vipgoci_github_post_url(
+		vipgoci_http_api_post_url(
 			$github_url,
 			$github_postfields,
 			$this->options['github-token']
@@ -93,7 +93,7 @@ final class GitHubStatusCreateTest extends TestCase {
 			rawurlencode( $this->options['github-commit'] ) . '/' .
 			'status';
 
-		$data = vipgoci_github_fetch_url(
+		$data = vipgoci_http_api_fetch_url(
 			$github_url,
 			$this->options['github-token']
 		);

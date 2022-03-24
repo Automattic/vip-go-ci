@@ -71,7 +71,7 @@ function vipgoci_repo_meta_api_data_fetch(
 
 		curl_setopt( $ch, CURLOPT_URL, $endpoint_url );
 		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
-		curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, 20 );
+		curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, VIPGOCI_HTTP_API_LONG_TIMEOUT );
 
 		curl_setopt(
 			$ch,

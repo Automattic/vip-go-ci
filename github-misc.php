@@ -286,40 +286,6 @@ function vipgoci_markdown_comment_add_pagebreak(
 }
 
 /**
- * Make sure to wait in between requests to
- * GitHub. Only waits if it is really needed.
- *
- * This function should only be called just before
- * sending a request to GitHub -- that is the most
- * effective usage.
- *
- * See here for background:
- * https://developer.github.com/v3/guides/best-practices-for-integrators/#dealing-with-abuse-rate-limits
- */
-function vipgoci_github_wait() {
-	static $last_request_time = null;
-
-	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'github_forced_wait' );
-
-	if ( null !== $last_request_time ) {
-		/*
-		 * Only sleep if less than specified time
-		 * has elapsed from last request.
-		 */
-		if (
-			( time() - $last_request_time ) <
-			VIPGOCI_GITHUB_WAIT_TIME_SECONDS
-		) {
-			sleep( VIPGOCI_GITHUB_WAIT_TIME_SECONDS );
-		}
-	}
-
-	$last_request_time = time();
-
-	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'github_forced_wait' );
-}
-
-/**
  * Construct and return URLs to pull requests
  * specified in $prs_arr
  *
