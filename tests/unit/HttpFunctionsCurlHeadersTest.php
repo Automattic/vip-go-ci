@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class GitHubApiCurlHeadersTest extends TestCase {
+final class HttpFunctionsCurlHeadersTest extends TestCase {
 	/**
 	 * Setup function. Require files.
 	 */
