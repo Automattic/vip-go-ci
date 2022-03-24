@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 // phpcs:disable PSR1.Files.SideEffects
 
-final class GitHubOauthSignatureGetHmacSha1Test extends TestCase {
+final class HttpFunctionsOauthSignatureGetHmacSha1Test extends TestCase {
 	/**
 	 * @covers ::vipgoci_oauth1_signature_get_hmac_sha1
 	 */
