@@ -1,47 +1,65 @@
 <?php
+/**
+ * Test vipgoci_phpcs_validate_sniffs_in_options_and_report() function.
+ *
+ * @package Automattic/vip-go-ci
+ */
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+declare(strict_types=1);
+
+namespace Vipgoci\Tests\Integration;
 
 use PHPUnit\Framework\TestCase;
 
+/**
+ * Class that implements the testing.
+ *
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
-	var $options_phpcs = array(
-		'phpcs-path'
-			=> null,
-
-		'phpcs-php-path'
-			=> null,
-
-		'phpcs-standard'
-			=> null,
-
-		'phpcs-validate-sniffs-and-report-include-commit'
-			=> null,
-
-		'phpcs-validate-sniffs-and-report-include-invalid'
-			=> null,
-
-		'phpcs-validate-sniffs-and-report-include-valid'
-			=> null,
-
-		'phpcs-validate-sniffs-and-report-exclude-commit'
-			=> null,
-
-		'phpcs-validate-sniffs-and-report-exclude-invalid'
-			=> null,
-
-		'phpcs-validate-sniffs-and-report-exclude-valid'
-			=> null,
+	/**
+	 * PHPCS options.
+	 *
+	 * @var $options_phpcs
+	 */
+	private array $options_phpcs = array(
+		'phpcs-path'                                       => null,
+		'phpcs-php-path'                                   => null,
+		'phpcs-standard'                                   => null,
+		'phpcs-validate-sniffs-and-report-include-commit'  => null,
+		'phpcs-validate-sniffs-and-report-include-invalid' => null,
+		'phpcs-validate-sniffs-and-report-include-valid'   => null,
+		'phpcs-validate-sniffs-and-report-exclude-commit'  => null,
+		'phpcs-validate-sniffs-and-report-exclude-invalid' => null,
+		'phpcs-validate-sniffs-and-report-exclude-valid'   => null,
 	);
 
-	var $options_git = array(
-		'repo-owner'	=> null,
-		'repo-name'	=> null,
+	/**
+	 * Git options.
+	 *
+	 * @var $options_git
+	 */
+	private array $options_git = array(
+		'repo-owner' => null,
+		'repo-name'  => null,
 	);
 
-	var $current_user_info = null;
+	/**
+	 * Information about current token holder.
+	 *
+	 * @var $current_user_info
+	 */
+	private null|object $current_user_info = null;
 
+	/**
+	 * Setup function. Require files, set variables, etc.
+	 *
+	 * @return void
+	 */
 	protected function setUp(): void {
+		require_once __DIR__ . '/IncludesForTests.php';
+
 		vipgoci_unittests_get_config_values(
 			'phpcs-scan',
 			$this->options_phpcs
@@ -57,11 +75,11 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 			$this->options_git
 		);
 
-		$this->options[ 'github-token' ] =
+		$this->options['github-token'] =
 			vipgoci_unittests_get_config_value(
 				'git-secrets',
 				'github-token',
-				true // Fetch from secrets file
+				true // Fetch from secrets file.
 			);
 
 		$this->options['token'] =
@@ -74,7 +92,7 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 		$this->options['phpcs-sniffs-include'] = array();
 		$this->options['phpcs-sniffs-exclude'] = array();
 
-		foreach(
+		foreach (
 			array(
 				'phpcs-validate-sniffs-and-report-include-valid',
 				'phpcs-validate-sniffs-and-report-include-invalid',
@@ -92,7 +110,7 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 			$this->options['phpcs-validate-sniffs-and-report-include-valid'],
 			$this->options['phpcs-validate-sniffs-and-report-include-invalid']
 		);
-	
+
 		$this->options['phpcs-validate-sniffs-and-report-exclude-valid-and-invalid'] = array_merge(
 			$this->options['phpcs-validate-sniffs-and-report-exclude-valid'],
 			$this->options['phpcs-validate-sniffs-and-report-exclude-invalid']
@@ -117,16 +135,26 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 		$this->options['skip-draft-prs'] = false;
 	}
 
+	/**
+	 * Tear down function, clean up.
+	 *
+	 * @return void
+	 */
 	protected function tearDown(): void {
-		$this->options_phpcs = null;
-		$this->options_git = null;
-		$this->options = null;
+		unset( $this->options_phpcs );
+		unset( $this->options_git );
+		unset( $this->options );
 	}
 
 	/**
+	 * Test function with sniffs being included and verify
+	 * that errors are posted to pull request.
+	 *
+	 * @return void
+	 *
 	 * @covers ::vipgoci_phpcs_validate_sniffs_in_options_and_report
 	 */
-	public function testPhpcsValidateIncludeSniffsWithErrors() {
+	public function testPhpcsValidateIncludeSniffsWithErrors() :void {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array(),
@@ -165,11 +193,11 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 		);
 
 		/*
-		 * For each Pull-Request, check
+		 * For each pull request, check
 		 * that it has no comments.
 		 */
-		foreach( $prs_implicated as $pr_item ) {
-			$pr_comments = $this->_getPrGenericComments(
+		foreach ( $prs_implicated as $pr_item ) {
+			$pr_comments = $this->getPrGenericComments(
 				$pr_item->number
 			);
 
@@ -193,7 +221,7 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 		vipgoci_unittests_output_unsuppress();
 
 		/*
-		 * For each Pull-Request implicated,
+		 * For each pull request implicated,
 		 * there should be at least one generic
 		 * comment about invalid sniffs. Check
 		 * those are in place and remove.
@@ -204,8 +232,8 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 			count( $prs_implicated )
 		);
 
-		foreach( $prs_implicated as $pr_item ) {
-			$pr_comments = $this->_getPrGenericComments(
+		foreach ( $prs_implicated as $pr_item ) {
+			$pr_comments = $this->getPrGenericComments(
 				$pr_item->number
 			);
 
@@ -217,12 +245,12 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 			$removed_comments = 0;
 
 			foreach ( $pr_comments as $pr_comment ) {
-				// Make sure it is from the current token holder
+				// Make sure it is from the current token holder.
 				if ( $pr_comment->user->login !== $this->current_user_info->login ) {
 					continue;
 				}
 
-				// Check if the comment is about invalid sniffs
+				// Check if the comment is about invalid sniffs.
 				if ( strpos(
 					$pr_comment->body,
 					VIPGOCI_PHPCS_INVALID_SNIFFS
@@ -230,14 +258,13 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 					continue;
 				}
 
-				// Check if at least one invalid sniff-name is found in the comment
+				// Check if at least one invalid sniff-name is found in the comment.
 				if ( strpos(
 					$pr_comment->body,
 					$this->options['phpcs-validate-sniffs-and-report-include-invalid'][0]
 				) === false ) {
 					continue;
 				}
-
 
 				vipgoci_unittests_output_suppress();
 
@@ -254,7 +281,7 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 				$removed_comments++;
 			}
 
-			// Make sure we removed one comment
+			// Make sure we removed one comment.
 			$this->assertSame(
 				1,
 				$removed_comments
@@ -268,9 +295,14 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 	}
 
 	/**
+	 * Test function with sniffs being included and verify that
+	 * no errors are posted to pull request.
+	 *
+	 * @return void
+	 *
 	 * @covers ::vipgoci_phpcs_validate_sniffs_in_options_and_report
 	 */
-	public function testPhpcsValidateIncludeSniffsNoErrors() {
+	public function testPhpcsValidateIncludeSniffsNoErrors() :void {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array(),
@@ -309,11 +341,11 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 		);
 
 		/*
-		 * For each Pull-Request, check
+		 * For each pull request, check
 		 * that it has no comments.
 		 */
-		foreach( $prs_implicated as $pr_item ) {
-			$pr_comments = $this->_getPrGenericComments(
+		foreach ( $prs_implicated as $pr_item ) {
+			$pr_comments = $this->getPrGenericComments(
 				$pr_item->number
 			);
 
@@ -337,9 +369,9 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 		vipgoci_unittests_output_unsuppress();
 
 		/*
-		 * For each Pull-Request implicated,
+		 * For each pull request implicated,
 		 * there should be no generic comments
-		 * comment about invalid sniffs.
+		 * about invalid sniffs.
 		 */
 
 		$this->assertGreaterThanOrEqual(
@@ -347,8 +379,8 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 			count( $prs_implicated )
 		);
 
-		foreach( $prs_implicated as $pr_item ) {
-			$pr_comments = $this->_getPrGenericComments(
+		foreach ( $prs_implicated as $pr_item ) {
+			$pr_comments = $this->getPrGenericComments(
 				$pr_item->number
 			);
 
@@ -365,9 +397,14 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 	}
 
 	/**
+	 * Test function with sniffs being excluded, some errors should
+	 * be posted to pull request.
+	 *
+	 * @return void
+	 *
 	 * @covers ::vipgoci_phpcs_validate_sniffs_in_options_and_report
 	 */
-	public function testPhpcsValidateExcludeSniffsWithErrors() {
+	public function testPhpcsValidateExcludeSniffsWithErrors() :void {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array(),
@@ -406,11 +443,11 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 		);
 
 		/*
-		 * For each Pull-Request, check
+		 * For each pull request, check
 		 * that it has no comments.
 		 */
-		foreach( $prs_implicated as $pr_item ) {
-			$pr_comments = $this->_getPrGenericComments(
+		foreach ( $prs_implicated as $pr_item ) {
+			$pr_comments = $this->getPrGenericComments(
 				$pr_item->number
 			);
 
@@ -434,7 +471,7 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 		vipgoci_unittests_output_unsuppress();
 
 		/*
-		 * For each Pull-Request implicated,
+		 * For each pull request implicated,
 		 * there should be at least one generic
 		 * comment about invalid sniffs. Check
 		 * those are in place and remove.
@@ -445,8 +482,8 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 			count( $prs_implicated )
 		);
 
-		foreach( $prs_implicated as $pr_item ) {
-			$pr_comments = $this->_getPrGenericComments(
+		foreach ( $prs_implicated as $pr_item ) {
+			$pr_comments = $this->getPrGenericComments(
 				$pr_item->number
 			);
 
@@ -458,12 +495,12 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 			$removed_comments = 0;
 
 			foreach ( $pr_comments as $pr_comment ) {
-				// Make sure it is from the current token holder
+				// Make sure it is from the current token holder.
 				if ( $pr_comment->user->login !== $this->current_user_info->login ) {
 					continue;
 				}
 
-				// Check if the comment is about invalid sniffs
+				// Check if the comment is about invalid sniffs.
 				if ( strpos(
 					$pr_comment->body,
 					VIPGOCI_PHPCS_INVALID_SNIFFS
@@ -471,14 +508,13 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 					continue;
 				}
 
-				// Check if at least one invalid sniff-name is found in the comment
+				// Check if at least one invalid sniff-name is found in the comment.
 				if ( strpos(
 					$pr_comment->body,
 					$this->options['phpcs-validate-sniffs-and-report-exclude-invalid'][0]
 				) === false ) {
 					continue;
 				}
-
 
 				vipgoci_unittests_output_suppress();
 
@@ -495,7 +531,7 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 				$removed_comments++;
 			}
 
-			// Make sure we removed one comment
+			// Make sure we removed one comment.
 			$this->assertSame(
 				1,
 				$removed_comments
@@ -509,9 +545,14 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 	}
 
 	/**
+	 * Test function with sniffs being excluded, no errors should be
+	 * posted to pull request.
+	 *
+	 * @return void
+	 *
 	 * @covers ::vipgoci_phpcs_validate_sniffs_in_options_and_report
 	 */
-	public function testPhpcsValidateExcludeSniffsNoErrors() {
+	public function testPhpcsValidateExcludeSniffsNoErrors() :void {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array(),
@@ -550,11 +591,11 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 		);
 
 		/*
-		 * For each Pull-Request, check
+		 * For each pull request, check
 		 * that it has no comments.
 		 */
-		foreach( $prs_implicated as $pr_item ) {
-			$pr_comments = $this->_getPrGenericComments(
+		foreach ( $prs_implicated as $pr_item ) {
+			$pr_comments = $this->getPrGenericComments(
 				$pr_item->number
 			);
 
@@ -578,7 +619,7 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 		vipgoci_unittests_output_unsuppress();
 
 		/*
-		 * For each Pull-Request implicated,
+		 * For each pull request implicated,
 		 * there should be no generic comments
 		 * comment about invalid sniffs.
 		 */
@@ -588,8 +629,8 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 			count( $prs_implicated )
 		);
 
-		foreach( $prs_implicated as $pr_item ) {
-			$pr_comments = $this->_getPrGenericComments(
+		foreach ( $prs_implicated as $pr_item ) {
+			$pr_comments = $this->getPrGenericComments(
 				$pr_item->number
 			);
 
@@ -605,16 +646,18 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 		);
 	}
 
-	/*
-	 * Get generic comments made to a Pull-Request
+	/**
+	 * Get generic comments made to a pull request
 	 * from GitHub, uncached.
+	 *
+	 * @param int $pr_number Pull request number.
+	 *
+	 * @return array Comments made to pull request.
 	 */
-	protected function _getPrGenericComments(
-		$pr_number
-	) {
+	protected function getPrGenericComments( $pr_number ) :array {
 		$pr_comments_ret = array();
 
-		$page = 1;
+		$page     = 1;
 		$per_page = 100;
 
 		do {
@@ -624,10 +667,10 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 				rawurlencode( $this->options['repo-owner'] ) . '/' .
 				rawurlencode( $this->options['repo-name'] ) . '/' .
 				'issues/' .
-				rawurlencode( $pr_number ) . '/' .
+				rawurlencode( (string) $pr_number ) . '/' .
 				'comments' .
-				'?page=' . rawurlencode( $page ) . '&' .
-				'per_page=' . rawurlencode( $per_page );
+				'?page=' . rawurlencode( (string) $page ) . '&' .
+				'per_page=' . rawurlencode( (string) $per_page );
 
 			$pr_comments_raw = json_decode(
 				vipgoci_http_api_fetch_url(
@@ -641,7 +684,9 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 			}
 
 			$page++;
-		} while ( count( $pr_comments_raw ) >= $per_page );
+
+			$pr_comments_raw_cnt = count( $pr_comments_raw );
+		} while ( $pr_comments_raw_cnt >= $per_page );
 
 		return $pr_comments_ret;
 	}
