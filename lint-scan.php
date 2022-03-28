@@ -46,13 +46,13 @@ function vipgoci_lint_do_scan_file(
 	 * measure how long time it took.
 	 */
 	$tmp_output      = '';
-	$tmp_status_code = -255;
+	$tmp_result_code = -255;
 
 	$file_issues_str = vipgoci_runtime_measure_exec_with_retry(
 		$cmd,
 		array( 0, 255 ),
 		$tmp_output,
-		$tmp_status_code,
+		$tmp_result_code,
 		'php_lint_cli',
 		true
 	);
