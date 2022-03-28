@@ -44,14 +44,14 @@ function vipgoci_svg_do_scan_with_scanner(
 	/*
 	 * Actually execute
 	 */
-	$result_output      = '';
-	$result_status_code = -255;
+	$result_output = '';
+	$result_code   = -255;
 
 	$result = vipgoci_runtime_measure_exec_with_retry(
 		$cmd,
 		array( 0, 1 ),
 		$result_output,
-		$result_status_code,
+		$result_code,
 		'svg_scanner_cli',
 		true
 	);
