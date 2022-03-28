@@ -31,7 +31,7 @@ function vipgoci_lint_do_scan_file(
 	 */
 
 	$cmd = sprintf(
-		'( %s -d %s -d %s -d %s -l %s 2>&1 )',
+		'%s -d %s -d %s -d %s -l %s',
 		escapeshellcmd( $php_path ),
 		escapeshellarg( 'error_reporting=24575' ),
 		escapeshellarg( 'error_log=null' ),
@@ -45,10 +45,16 @@ function vipgoci_lint_do_scan_file(
 	 * Execute linter, grab issues in array,
 	 * measure how long time it took.
 	 */
+	$tmp_output      = '';
+	$tmp_status_code = -255;
 
-	$file_issues_str = vipgoci_runtime_measure_shell_exec_with_retry(
+	$file_issues_str = vipgoci_runtime_measure_exec_with_retry(
 		$cmd,
-		'php_lint_cli'
+		array( 0, 255 ),
+		$tmp_output,
+		$tmp_status_code,
+		'php_lint_cli',
+		true
 	);
 
 	/*
