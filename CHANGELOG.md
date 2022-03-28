@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 - [#260](https://github.com/Automattic/vip-go-ci/pull/260): Move generic HTTP functions from github-api.php and to http-functions.php
 - [#261](https://github.com/Automattic/vip-go-ci/pull/261): Apply WP CS to tests and other updates: GitHubPrGenericSupportCommentTest.php, PhpcsScanValidateSniffsInOptionAndReportTest.php, Skeleton.php
 - [#263](https://github.com/Automattic/vip-go-ci/pull/263): Improve GitHub API error handling
+- [#262](https://github.com/Automattic/vip-go-ci/pull/262): Use exec() instead of shell_exec(), use result code
 
 ## [1.2.2](https://github.com/Automattic/vip-go-ci/releases/tag/1.2.2) - 2022-03-08
 
