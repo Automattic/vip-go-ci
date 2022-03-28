@@ -314,32 +314,38 @@ function vipgoci_github_fetch_commit_info(
 	return $data;
 }
 
-
-/*
- * Fetch all comments made on GitHub for the
- * repository and commit specified -- but are
- * still associated with a Pull Request.
+/**
+ * Fetch all comments from GitHub API for the
+ * repository and commit specified, will fetch only
+ * comments made after certain timestamp and that are
+ * associated with a pull request.
  *
- * Will return an associative array of comments,
- * with file-name and file-line number as keys. Will
- * return false on an error.
+ * Will populate associative array of comments (the pointer
+ * $pr_comments), with file-name and file-position as
+ * keys.
+ *
+ * @param array  $options        Options array for the program.
+ * @param string $commit_id      Will fetch comments associated with this commit-ID.
+ * @param string $commit_made_at Will fetch comments made after this timestamp.
+ * @param array  $prs_comments   Results array pointer; pull request comments.
+ *
+ * @return void
  */
 function vipgoci_github_pr_reviews_comments_get(
-	$options,
-	$commit_id,
-	$commit_made_at,
-	&$prs_comments
-) {
-	$repo_owner = $options['repo-owner'];
-	$repo_name = $options['repo-name'];
-	$github_token = $options['token'];
-
+	array $options,
+	string $commit_id,
+	string $commit_made_at,
+	array &$prs_comments
+) :void {
 	/*
 	 * Try to get comments from cache
 	 */
 	$cached_id = array(
-		__FUNCTION__, $repo_owner, $repo_name,
-		$commit_made_at, $github_token
+		__FUNCTION__,
+		$options['repo-owner'],
+		$options['repo-name'],
+		$commit_made_at,
+		$options['token'],
 	);
 
 	$cached_data = vipgoci_cache( $cached_id );
@@ -347,35 +353,32 @@ function vipgoci_github_pr_reviews_comments_get(
 	vipgoci_log(
 		'Fetching pull requests comments info from GitHub' .
 			vipgoci_cached_indication_str( $cached_data ),
-
 		array(
-			'repo_owner' => $repo_owner,
-			'repo_name' => $repo_name,
-			'commit_id' => $commit_id,
+			'repo_owner'     => $options['repo-owner'],
+			'repo_name'      => $options['repo-name'],
+			'commit_id'      => $commit_id,
 			'commit_made_at' => $commit_made_at,
 		)
 	);
 
-
 	if ( false !== $cached_data ) {
 		$prs_comments_cache = $cached_data;
-	}
-
-	else {
+	} else {
 		/*
 		 * Nothing in cache, ask GitHub.
 		 */
 
-		$page = 1;
+		$page     = 1;
 		$per_page = 100;
+
 		$prs_comments_cache = array();
 
 		do {
 			$github_url =
 				VIPGOCI_GITHUB_BASE_URL . '/' .
 				'repos/' .
-				rawurlencode( $repo_owner ) . '/' .
-				rawurlencode( $repo_name ) . '/' .
+				rawurlencode( $options['repo-owner'] ) . '/' .
+				rawurlencode( $options['repo-name'] ) . '/' .
 				'pulls/' .
 				'comments?' .
 				'sort=created&' .
@@ -395,7 +398,7 @@ function vipgoci_github_pr_reviews_comments_get(
 			 */
 			$prs_comments_tmp = vipgoci_http_api_fetch_url(
 				$github_url,
-				$github_token,
+				$options['token'],
 				false // Do not stop execution on failure.
 			);
 
@@ -403,7 +406,12 @@ function vipgoci_github_pr_reviews_comments_get(
 				$prs_comments_tmp = json_decode(
 					$prs_comments_tmp
 				);
-			} elseif ( null === $prs_comments_tmp ) {
+			}
+
+			if (
+				( null === $prs_comments_tmp ) ||
+				( false === is_array( $prs_comments_tmp ) )
+			) {
 				vipgoci_log(
 					'Unable to fetch data from GitHub, returning partial results',
 					array(
@@ -421,12 +429,13 @@ function vipgoci_github_pr_reviews_comments_get(
 				$prs_comments_cache[] = $pr_comment;
 			}
 
+			$prs_comments_tmp_cnt = count( $prs_comments_tmp );
+
 			$page++;
-		} while ( count( $prs_comments_tmp ) >= $per_page );
+		} while ( $prs_comments_tmp_cnt >= $per_page );
 
 		vipgoci_cache( $cached_id, $prs_comments_cache );
 	}
-
 
 	foreach ( $prs_comments_cache as $pr_comment ) {
 		if ( null === $pr_comment->position ) {
@@ -446,18 +455,13 @@ function vipgoci_github_pr_reviews_comments_get(
 		}
 
 		/*
-		 * Look through each comment, create an associative array
-		 * of file:position out of all the comments, so any comment
-		 * can easily be found.
+		 * Create an associative array of file:position out
+		 * of all the comments, so any comment can be easily found.
 		 */
-
-		$prs_comments[
-			$pr_comment->path . ':' .
-			$pr_comment->position
-		][] = $pr_comment;
+		$prs_comments[ $pr_comment->path . ':' . $pr_comment->position ][] =
+			$pr_comment;
 	}
 }
-
 
 /*
  * Get all review-comments submitted to a
