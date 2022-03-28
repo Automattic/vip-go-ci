@@ -40,13 +40,13 @@ final class StatisticsRuntimeMeasureShellExecWithRetryTest extends TestCase {
 		vipgoci_unittests_output_suppress();
 
 		$output_2    = '';
-		$status_code = -255;
+		$result_code = -255;
 
 		$output = vipgoci_runtime_measure_exec_with_retry(
 			'sleep 1 ; echo -n "test_string"',
 			array( 0 ),
 			$output_2,
-			$status_code,
+			$result_code,
 			'mytimer10'
 		);
 
@@ -64,7 +64,7 @@ final class StatisticsRuntimeMeasureShellExecWithRetryTest extends TestCase {
 
 		$this->assertSame(
 			0,
-			$status_code
+			$result_code
 		);
 
 		$runtime_stats = vipgoci_runtime_measure(
@@ -125,7 +125,7 @@ final class StatisticsRuntimeMeasureShellExecWithRetryTest extends TestCase {
 		vipgoci_unittests_output_suppress();
 
 		$output_2    = '';
-		$status_code = -255;
+		$result_code = -255;
 
 		$output = vipgoci_runtime_measure_exec_with_retry(
 			escapeshellcmd( 'php' ) . ' ' .
@@ -133,7 +133,7 @@ final class StatisticsRuntimeMeasureShellExecWithRetryTest extends TestCase {
 				escapeshellarg( $path_to_temp_for_cli ) . ' 2>/dev/null',
 			array( 0 ),
 			$output_2,
-			$status_code,
+			$result_code,
 			'mytimer20',
 			false,
 			true, // Retry when status code does not match expected ones.
@@ -154,7 +154,7 @@ final class StatisticsRuntimeMeasureShellExecWithRetryTest extends TestCase {
 
 		$this->assertSame(
 			0,
-			$status_code
+			$result_code
 		);
 
 		/*
