@@ -144,24 +144,71 @@ function vipgoci_runtime_measure(
 }
 
 /**
- * A simple function to keep record of how much time
- * executing a particular command takes. Attemps to
- * run command again a few times if execution fails.
+ * A simple function to execute a utility and keep record of how much time
+ * executing this utility takes. Attemps to run command again a few times if
+ * execution fails. Will record status code and allows for standard error to be
+ * returned as part of the output string.
  *
- * @param string $cmd                  Shell command to execute.
- * @param string $runtime_measure_type Type of measurement to use.
- * @param int    $exec_retry_max       Number of times to retry execution of command.
+ * This function will use exec() to run the utility. The reasoning for the choice
+ * is as follows:
+ * - exec() will provide result code, unlike shell_exec(), system() and pcntl_exec()
+ * - exec() will not direct the results to the user directly, unlike passthru()
+ *
+ * However, exec() will trim the output from the command executed, thus corrupting
+ * it for many use-cases (such as git). To avoid this, this function will instruct
+ * the shell to direct output to a temporary file, from where the output is read and
+ * finally returned to the caller.
+ *
+ * @param string $cmd                             Command to execute.
+ * @param array  $expected_result_code            Array of expected result codes.
+ * @param string $res_output                      Output string (pointer).
+ * @param int    $res_result_code                 Result code (pointer).
+ * @param string $runtime_measure_type            Type of measurement to use.
+ * @param bool   $catch_stderr                    If to include standard error (stderr) in output string (default false).
+ * @param bool   $retry_on_unexpected_result_code If to retry when unexpected result code is observed (default false).
+ * @param int    $exec_retry_max                  Number of times to retry execution of command in case exec() returns
+ *                                                with false or unexpected result code is observed (when configured).
  *
  * @return string Output of command.
  */
-function vipgoci_runtime_measure_shell_exec_with_retry(
+function vipgoci_runtime_measure_exec_with_retry(
 	string $cmd,
+	array $expected_result_code,
+	string &$res_output,
+	int &$res_result_code,
 	string $runtime_measure_type,
+	bool $catch_stderr = false,
+	bool $retry_on_unexpected_result_code = false,
 	int $exec_retry_max = 2
 ): ?string {
-	$exec_retry_cnt = 0;
+	$exec_retry_cnt  = 0;
+	$exec_retry_stop = false;
 
 	do {
+		// Create temporary file for output.
+		$output_file = vipgoci_save_temp_file(
+			'vipgoci-exec-output-',
+			null,
+			''
+		);
+
+		/*
+		 * Output everything into file we read later.
+		 *
+		 * Reason: We cannot use the parameter exec() provides
+		 * as the results will be trimmed (whitespaces removed),
+		 * which means for many of our use-cases, the data is corrupt.
+		 * Hence, we output to a temporary file and read it again
+		 * afterwards.
+		 *
+		 * See: https://www.php.net/manual/en/function.exec.php
+		 */
+		$cmd_amended = $cmd . ' >' . $output_file;
+
+		if ( true === $catch_stderr ) {
+			$cmd_amended .= ' 2>&1 ';
+		}
+
 		if ( 0 < $exec_retry_cnt ) {
 			/*
 			 * If retrying, sleep one second just in
@@ -176,8 +223,11 @@ function vipgoci_runtime_measure_shell_exec_with_retry(
 				'Executing command...' :
 				'Retrying execution of command...',
 			array(
-				'cmd'            => $cmd,
-				'exec_retry_cnt' => $exec_retry_cnt,
+				'cmd_amended'          => $cmd_amended,
+				'exec_retry_cnt'       => $exec_retry_cnt,
+				'runtime_measure_type' => $runtime_measure_type,
+				'expected_result_code' => $expected_result_code,
+				'catch_stderr'         => $catch_stderr,
 			),
 			( 0 === $exec_retry_cnt ) ? 2 : 0,
 			( 0 === $exec_retry_cnt ) ? false : true
@@ -185,23 +235,129 @@ function vipgoci_runtime_measure_shell_exec_with_retry(
 
 		vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, $runtime_measure_type );
 
-		$shell_exec_output = @shell_exec( $cmd ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
-
-		/*
-		 * Detect if shell returns with a file not found error.
-		 * In those cases, set to null to avoid problems later.
-		 */
-		if (
-			( null !== $shell_exec_output ) &&
-			( 0 === strpos( $shell_exec_output, 'sh: 1' ) ) &&
-			( false !== strrpos( $shell_exec_output, ': not found' ) )
-		) {
-			$shell_exec_output = null;
-		}
+		$exec_result_return = exec(
+			$cmd_amended,
+			$exec_result_output,
+			$exec_result_code,
+		);
 
 		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, $runtime_measure_type );
+
+		/*
+		 * Ensure temporary file is accessible only to owner. Shell
+		 * will maintain permission but this is for extra safety.
+		 */
+		$chmod_res = chmod( $output_file, 0600 );
+
+		if ( false === $chmod_res ) {
+			vipgoci_log(
+				'Unable to change permission of temporary file, unexpected error',
+				array(
+					'output_file' => $output_file,
+				)
+			);
+
+			$exec_result_return = null;
+
+			continue;
+		}
+
+		$res_result_code = $exec_result_code;
+		$res_output      = null;
+
+		if ( false === $exec_result_return ) {
+			/*
+			 * exec() returned with failure.
+			 * We can retry in this case.
+			 */
+			$exec_result_return = null;
+			$exec_retry_stop    = false;
+		} elseif (
+			( false !== $exec_result_return ) &&
+			( 0 === strpos( $exec_result_return, 'sh: 1' ) ) &&
+			( false !== strrpos( $exec_result_return, ': not found' ) )
+		) {
+			/*
+			 * Shell returned with a file not found error.
+			 * In those cases, set to null to avoid problems later.
+			 * Ensure we retry only once.
+			 */
+
+			$exec_result_return = null;
+			$exec_retry_stop    = false;
+
+			if ( 1 < $exec_retry_max ) {
+				$exec_retry_max = 1; // Retry only once more.
+			}
+		} elseif ( false === in_array(
+			$exec_result_code,
+			$expected_result_code,
+			true
+		) ) {
+			/*
+			 * Command was executed but returned with unexpected
+			 * status code.
+			 */
+			$exec_result_return = null;
+
+			if ( false === $retry_on_unexpected_result_code ) {
+				// Do not retry in case of unexpected exit code.
+				$exec_retry_stop = true;
+			} else {
+				$exec_retry_stop = false;
+			}
+		} else {
+			$exec_result_return = file_get_contents(
+				$output_file
+			);
+
+			if ( false === $exec_result_return ) {
+				vipgoci_log(
+					'Unable to read file with results from executing command',
+					array(
+						'exec_result_return' => $exec_result_return,
+						'output_file'        => $output_file,
+					)
+				);
+
+				$exec_result_return = null;
+			}
+
+			if ( ! empty( $exec_result_output ) ) {
+				// All output should be in temporary file.
+				vipgoci_sysexit(
+					'Got non-empty output result from exec() parameter. This should not happen',
+					array(
+						'cmd_amended'        => $cmd_amended,
+						'exec_result_output' => $exec_result_output,
+						'exec_result_return' => $exec_result_return,
+					)
+				);
+			}
+
+			$res_output = $exec_result_return;
+		}
+
+		unlink( $output_file );
+
+		vipgoci_log(
+			( null !== $exec_result_return ) ?
+				'Successfully executed command' :
+				'Could not execute command; exec() returned with failure',
+			array(
+				'cmd_amended'        => $cmd_amended,
+				'exec_result_output' => $exec_result_output,
+				'exec_result_return' => $exec_result_return,
+				'exec_result_code'   => $exec_result_code,
+				'exec_retry_stop'    => $exec_retry_stop,
+			),
+			( 0 === $exec_retry_cnt ) ? 2 : 0,
+			( 0 === $exec_retry_cnt ) ? false : true
+		);
+
 	} while (
-		( null === $shell_exec_output ) &&
+		( false === $exec_retry_stop ) &&
+		( null === $exec_result_return ) &&
 		( $exec_retry_max > 0 ) &&
 		( ++$exec_retry_cnt <= $exec_retry_max )
 	);
@@ -211,8 +367,9 @@ function vipgoci_runtime_measure_shell_exec_with_retry(
 	 */
 	if ( 0 < $exec_retry_cnt ) {
 		vipgoci_log(
-			( null === $shell_exec_output ) ?
-				'Failed to execute command' : 'Retried executing command with success',
+			( null === $exec_result_return ) ?
+				'Failed to execute command' :
+				'Retried executing command with success',
 			array(
 				'cmd'            => $cmd,
 				'exec_retry_cnt' => $exec_retry_cnt,
@@ -222,7 +379,7 @@ function vipgoci_runtime_measure_shell_exec_with_retry(
 		);
 	}
 
-	return $shell_exec_output;
+	return $exec_result_return;
 }
 
 /**
