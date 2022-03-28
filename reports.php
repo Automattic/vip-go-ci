@@ -798,7 +798,7 @@ function vipgoci_report_submit_pr_generic_comment_from_results(
 			$github_postfields['body'] .= $scan_details_msg;
 		}
 
-		vipgoci_github_post_url(
+		vipgoci_http_api_post_url(
 			$github_url,
 			$github_postfields,
 			$github_token
@@ -1256,7 +1256,7 @@ function vipgoci_report_submit_pr_review_from_results(
 			}
 
 			// Actually send a request to GitHub.
-			$github_post_res_tmp = vipgoci_github_post_url(
+			$github_post_res_tmp = vipgoci_http_api_post_url(
 				$github_url,
 				$github_postfields_tmp,
 				$github_token

@@ -1,234 +1,11 @@
 <?php
-
-/*
- * This function works both to collect headers
- + when called as a callback function, and to return
- * the headers collected when called standalone.
- *
- * The difference is that the '$ch' argument is non-null
- * when called as a callback.
- */
-function vipgoci_curl_headers( $ch, $header ) {
-	static $resp_headers = array();
-
-	if ( null === $ch ) {
-		/*
-		 * If $ch is null, we are being called to
-		 * return whatever headers we have collected.
-		 *
-		 * Make sure to empty the headers collected.
-		 */
-		$ret = $resp_headers;
-		$resp_headers = array();
-
-		/*
-		 * 'Fix' the status header before returning;
-		 * we want the value to be an array such as:
-		 * array(
-		 *	0 => 201, // Status-code
-		 *	1 => 'Created' // Status-string
-		 * )
-		 */
-		if ( isset( $ret['status'] ) ) {
-			$ret['status'] = explode(
-				' ',
-				$ret['status'][0]
-			);
-		}
-
-		return $ret;
-	}
-
-
-	/*
-	 * Get header length
-	 */
-	$header_len = strlen( $header );
-
-	/*
-	 * Construct 'status' HTTP header based on the
-	 * HTTP status code. This used to be provided
-	 * by GitHub, but is not anymore.
-	 */
-
-	if ( strpos( $header, 'HTTP/' ) === 0 ) {
-		$header = explode(
-			' ',
-			$header
-		);
-
-		$header = 'Status: ' . $header[1] . "\n\r";
-	}
-
-	/*
-	 * Turn the header into an array
-	 */
-	$header = explode( ':', $header, 2 );
-
-	if ( count( $header ) < 2 ) {
-		/*
-		 * Should there be less than two values
-		 * in the array, simply return, as the header is
-		 * invalid.
-		 */
-		return $header_len;
-	}
-
-
-	/*
-	 * Save the header as a key => value
-	 * in our associative array.
-	 */
-	$key = strtolower( trim( $header[0] ) );
-
-	if ( ! array_key_exists( $key, $resp_headers ) ) {
-		$resp_headers[ $key ] = array();
-	}
-
-	$resp_headers[ $key ][] = trim(
-		$header[1]
-	);
-
-	return $header_len;
-}
-
-/*
- * Set a few options for cURL that enhance security.
- *
- * @codeCoverageIgnore
- */
-function vipgoci_curl_set_security_options( $ch ) {
-	/*
-	 * Maximum number of redirects to zero.
-	 */
-	curl_setopt(
-		$ch,
-		CURLOPT_MAXREDIRS,
-		0
-	);	
-
-	/*
-	 * Do not follow any "Location:" headers.
-	 */
-	curl_setopt(
-		$ch,
-		CURLOPT_FOLLOWLOCATION,
-		false
-	);
-}
-
-/*
- * Log a warning if a Sunset HTTP header is
- * found in array of response headers, as this indicates
- * that the API feature will become deprecated in the
- * future. Will log the URL called, but without query
- * component, as it may contain sensitive information.
- *
- * Information on Sunset HTTP headers:
- * https://datatracker.ietf.org/doc/html/draft-wilde-sunset-header-03
- */
-function vipgoci_http_resp_sunset_header_check(
-	string $http_url,
-	array $resp_headers
-) {
-	/*
-	 * Only do detection in 20% of cases, to limit
-	 * amount of logging. In case of unit-testing this
-	 * will be 100%.
-	 */
-	if ( ( ! defined( 'VIPGOCI_UNIT_TESTING' ) ) || ( true !== VIPGOCI_UNIT_TESTING ) ) {
-		if ( rand( 1, 5 ) > 1 ) {
-			return;
-		}
-	}
-
-	/*
-	 * If no sunset header is found, do nothing.
-	 */
-	if (
-		( ! isset( $resp_headers['sunset'][0] ) ) ||
-		( strlen( $resp_headers['sunset'][0] ) <= 0 )
-	) {
-		return;
-	}
-
-	$sunset_date = $resp_headers['sunset'];
-
-	/*
-	 * To minimize likelihood of data-leaks via the URL being
-	 * logged, remove any query parameters and leave
-	 * only the base URL.
-	 */
-
-	$http_url_parsed = parse_url( $http_url );
-
-	$http_url_clean =
-		$http_url_parsed['scheme'] . '://' .
-		$http_url_parsed['host'];
-
-	
-	if ( isset( $http_url_parsed['port'] ) ) {
-		$http_url_clean .= ':' . (int) $http_url_parsed['port'];
-	}
-
-	if ( isset( $http_url_parsed['path'] ) ) {
-		$http_url_clean .=
-			'/' .
-			$http_url_parsed['path'];
-	}
-
-
-	vipgoci_log(
-		'Warning: Sunset HTTP header detected, feature will become unavailable',
-		array(
-			'http_url_clean'	=> $http_url_clean,
-			'sunset_date'		=> $sunset_date,
-		),
-		0,
-		true // Log to IRC.
-	);
-}
-
-
 /**
- * Detect if we exceeded the GitHub rate-limits,
- * and if so, exit with error.
+ * GitHub API related functions.
  *
- * @param string $github_url   GitHub URL used.
- * @param array  $resp_headers HTTP response headers.
- *
- * @return void
- *
- * @codeCoverageIgnore
+ * @package Automattic/vip-go-ci
  */
 
-function vipgoci_github_rate_limits_check(
-	string $github_url,
-	array $resp_headers
-) :void {
-	if (
-		( isset( $resp_headers['x-ratelimit-remaining'][0] ) ) &&
-		( $resp_headers['x-ratelimit-remaining'][0] <= 1 )
-	) {
-		vipgoci_sysexit(
-			'Ran out of request limits for GitHub, ' .
-				'cannot continue without making ' .
-				'making further requests.',
-			array(
-				'github_url' => $github_url,
-
-				'x-ratelimit-remaining' =>
-					$resp_headers['x-ratelimit-remaining'][0],
-
-				'x-ratelimit-limit' =>
-					$resp_headers['x-ratelimit-limit'][0],
-			),
-			VIPGOCI_EXIT_GITHUB_PROBLEM,
-			true // Log to IRC.
-		);
-	}
-}
-
+declare(strict_types=1);
 
 /*
  * Ask GitHub for API rate-limit information and
@@ -241,7 +18,7 @@ function vipgoci_github_rate_limits_check(
 function vipgoci_github_rate_limit_usage(
 	$github_token
 ) {
-	$rate_limit = vipgoci_github_fetch_url(
+	$rate_limit = vipgoci_http_api_fetch_url(
 		VIPGOCI_GITHUB_BASE_URL . '/rate_limit',
 		$github_token
 	);
@@ -249,832 +26,6 @@ function vipgoci_github_rate_limit_usage(
 	return json_decode(
 		$rate_limit
 	);
-}
-
-/*
- * Calculate HMAC-SHA1 signature for OAuth 1.0 HTTP
- * request. Follows the standard on this but to a
- * limited extent only. For instance, this function
- * does not support having two parameters with the
- * same name.
- *
- * See here for background:
- * https://oauth.net/core/1.0a/#signing_process
- */
-function vipgoci_oauth1_signature_get_hmac_sha1(
-	$http_method,
-	$request_url,
-	$parameters_arr
-) {
-	/*
-	 * Start constructing the 'base string' --
-	 * a crucial part of the signature.
-	 */
-	$base_string = strtoupper( $http_method ) . '&';
-	$base_string .= rawurlencode( $request_url ) . '&';
-
-
-	/*
-	 * New array for parameters, temporary
-	 * so we can alter them freely.
-	 */
-	$parameters_arr_new = array();
-
-	/*
-	 * In case this parameter is present, it
-	 * should not be part of the signature according
-	 * to the standard.
-	 */
-	if ( isset( $parameters_arr['realm'] ) ) {
-		unset( $parameters_arr['realm'] );
-	}
-
-	/*
-	 * Add parameters to the new array, these
-	 * need to be encoded in a certain way.
-	 */
-	foreach( $parameters_arr as $key => $value ) {
-		$parameters_arr_new[ rawurlencode( $key ) ] =
-			rawurlencode( $value );
-	}
-
-	/*
-	 * Also these two should not be part of the
-	 * signature.
-	 */
-	unset( $parameters_arr_new['oauth_token_secret'] );
-	unset( $parameters_arr_new['oauth_consumer_secret'] );
-
-	/*
-	 * Sort the parameters alphabetically.
-	 */
-	ksort( $parameters_arr_new );
-
-
-	/*
-	 * Loop through the parameters, and add them
-	 * to a temporary 'base string' according to the standard.
-	 */
-
-	$delimiter = '';
-	$base_string_tmp = '';
-
-	foreach( $parameters_arr_new as $key => $value ) {
-		$base_string_tmp .=
-			$delimiter .
-			$key .
-			'=' .
-			$value;
-
-		$delimiter = '&';
-	}
-
-	/*
-	 * Then add the temporary 'base string' to the
-	 * permanent 'base string'.
-	 */
-	$base_string .= rawurlencode(
-		$base_string_tmp
-	);
-
-	/*
-	 * Now calculate hash, using the
-	 * 'base string' as input, and
-	 * secrets as key.
-	 */
-	$hash_raw = hash_hmac(
-		'sha1',
-		$base_string,
-		$parameters_arr['oauth_consumer_secret'] . '&' .
-			$parameters_arr['oauth_token_secret'],
-		true
-	);
-
-	/*
-	 * Return it base64 encoded.
-	 */
-	return base64_encode( $hash_raw );
-}
-
-
-/*
- * Create and set HTTP header for OAuth 1.0a requests,
- * including timestamp, nonce, signature method
- * (all part of the header) and then actually sign
- * the request. Returns with a full HTTP header for
- * a OAuth 1.0a HTTP request.
- */
-function vipgoci_oauth1_headers_get(
-	$http_method,
-	$github_url,
-	$github_token
-) {
-
-	/*
-	 * Set signature-method header, static.
-	 */
-	$github_token['oauth_signature_method'] =
-		'HMAC-SHA1';
-
-	/*
-	 * Set timestamp and nonce.
-	 */
-	$github_token['oauth_timestamp'] = (string) ( time() - 1);
-
-	$github_token['oauth_nonce'] = (string) md5(
-		openssl_random_pseudo_bytes( 100 )
-	);
-
-	/*
-	 * Get the signature for the header.
-	 */
-	$github_token['oauth_signature'] =
-		vipgoci_oauth1_signature_get_hmac_sha1(
-			$http_method,
-			$github_url,
-			$github_token
-		);
-
-	/*
-	 * Those are not needed after this point,
-	 * so we remove them to limit any risk
-	 * of information leakage.
-	 */
-	unset( $github_token['oauth_token_secret' ] );
-	unset( $github_token['oauth_consumer_secret' ] );
-
-	/*
-	 * Actually create the full HTTP header
-	 */
-
-	$res_header = 'OAuth ';
-	$sep = '';
-
-	foreach(
-		$github_token as
-			$github_token_key =>
-			$github_token_value
-	) {
-		if ( strpos(
-			$github_token_key,
-			'oauth_'
-		) !== 0 ) {
-			/*
-			 * If the token_key does not
-			 * start with 'oauth_' we skip to
-			 * avoid information-leakage.
-			 */
-			continue;
-		}
-
-		$res_header .=
-			$sep .
-			$github_token_key . '="' .
-			rawurlencode( $github_token_value ) .
-			'"';
-		$sep = ', ';
-	}
-
-	/*
-	 * Return the header.
-	 */
-	return $res_header;
-}
-
-
-/**
- * Send a POST/DELETE request to GitHub -- attempt
- * to retry if errors were encountered.
- *
- * Note that the '$http_delete' parameter will determine
- * if a POST or DELETE request will be sent.
- *
- * @codeCoverageIgnore
- */
-
-function vipgoci_github_post_url(
-	$github_url,
-	$github_postfields,
-	$github_token,
-	$http_delete = false
-) {
-	/*
-	 * Actually send a request to GitHub -- make sure
-	 * to retry if something fails.
-	 */
-	do {
-		/*
-		 * By default, assume request went through okay.
-		 */
-
-		$ret_val = 0;
-
-		/*
-		 * By default, do not retry the request,
-		 * just assume everything goes well
-		 */
-
-		$retry_req = false;
-
-		/*
-		 * Initialize and send request.
-		 */
-
-		$ch = curl_init();
-
-		curl_setopt(
-			$ch, CURLOPT_URL, $github_url
-		);
-
-		curl_setopt(
-			$ch, CURLOPT_RETURNTRANSFER, 1
-		);
-
-		curl_setopt(
-			$ch, CURLOPT_CONNECTTIMEOUT, 20
-		);
-
-		curl_setopt(
-			$ch, CURLOPT_USERAGENT,	VIPGOCI_CLIENT_ID
-		);
-
-		if ( false === $http_delete ) {
-			curl_setopt(
-				$ch, CURLOPT_POST, 1
-			);
-		}
-
-		else {
-			curl_setopt(
-				$ch, CURLOPT_CUSTOMREQUEST, 'DELETE'
-			);
-		}
-
-		curl_setopt(
-			$ch,
-			CURLOPT_POSTFIELDS,
-			json_encode( $github_postfields )
-		);
-
-		curl_setopt(
-			$ch,
-			CURLOPT_HEADERFUNCTION,
-			'vipgoci_curl_headers'
-		);
-
-		curl_setopt(
-			$ch,
-			CURLOPT_HTTPHEADER,
-			array( 'Authorization: token ' . $github_token )
-		);
-
-		vipgoci_curl_set_security_options(
-			$ch
-		);
-
-		// Make sure to pause between GitHub-requests
-		vipgoci_github_wait();
-
-		/*
-		 * Execute query to GitHub, keep
-		 * record of how long time it took,
-		 * and keep count of how many requests we do.
-		 */
-
-		vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'github_api_post' );
-
-		vipgoci_counter_report(
-			VIPGOCI_COUNTERS_DO,
-			'github_api_request_post',
-			1
-		);
-
-		$resp_data = curl_exec( $ch );
-
-		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'github_api_post' );
-
-
-		$resp_headers = vipgoci_curl_headers(
-			null,
-			null
-		);
-
-
-		/*
-		 * Allow certain statuses, depending on type of request
-		 */
-		if (
-			(
-				( false === $http_delete ) &&
-				( intval( $resp_headers['status'][0] ) !== 200 ) &&
-				( intval( $resp_headers['status'][0] ) !== 201 ) &&
-				( intval( $resp_headers['status'][0] ) !== 100 )
-			)
-
-			||
-
-			(
-				( true === $http_delete ) &&
-				( intval( $resp_headers['status'][0] ) !== 204 ) &&
-				( intval( $resp_headers['status'][0] ) !== 200 )
-			)
-		) {
-			/*
-			 * Set default wait period between requests
-			 */
-			$retry_sleep = 10;
-
-			/*
-			 * Set error-return value
-			 */
-			$ret_val = -1;
-
-			/*
-			 * Figure out if to retry...
-			 */
-
-			// Decode JSON
-			$resp_data = json_decode( $resp_data );
-
-			if (
-				( isset(
-					$resp_headers['retry-after']
-				) ) &&
-				( intval(
-					$resp_headers['retry-after']
-				) > 0 )
-			) {
-				$retry_req = true;
-				$retry_sleep = intval(
-					$resp_headers['retry-after']
-				);
-			}
-
-			else if (
-				( $resp_data->message ==
-					'Validation Failed' ) &&
-
-				( $resp_data->errors[0] ==
-					'was submitted too quickly ' .
-					'after a previous comment' )
-			) {
-				/*
-				 * These messages are due to the
-				 * submission being categorized
-				 * as a spam by GitHub -- no good
-				 * reason to retry, really.
-				 */
-				$retry_req = false;
-				$retry_sleep = 20;
-			}
-
-			else if (
-				( $resp_data->message ==
-					'Validation Failed' )
-			) {
-				$retry_req = false;
-			}
-
-			else if (
-				( $resp_data->message ==
-					'Server Error' )
-			) {
-				$retry_req = false;
-			}
-
-			vipgoci_log(
-				'GitHub reported an error' .
-					( $retry_req === true ?
-					' will retry request in ' .
-					$retry_sleep . ' seconds' :
-					'' ),
-				array(
-					'http_url'
-						=> $github_url,
-
-					'http_response_headers'
-						=> $resp_headers,
-
-					'http_reponse_body'
-						=> $resp_data,
-				)
-			);
-
-			sleep( $retry_sleep + 1 );
-		}
-
-		vipgoci_github_rate_limits_check(
-			$github_url,
-			$resp_headers
-		);
-
-		vipgoci_http_resp_sunset_header_check(
-			$github_url,
-			$resp_headers
-		);
-
-		curl_close( $ch );
-
-	} while ( $retry_req == true );
-
-	return $ret_val;
-}
-
-/**
- * Make a GET request to GitHub, for the URL
- * provided, using the access-token specified.
- *
- * Will return the raw-data returned by GitHub,
- * or halt execution on repeated errors.
- */
-function vipgoci_github_fetch_url(
-	$github_url,
-	$github_token,
-	$fatal_error_on_failure = true
-) {
-
-	$curl_retries = 0;
-
-	/*
-	 * Attempt to send request -- retry if
-	 * it fails.
-	 */
-	do {
-		$ch = curl_init();
-
-		curl_setopt( $ch, CURLOPT_URL,			$github_url );
-		curl_setopt( $ch, CURLOPT_RETURNTRANSFER,	1 );
-		curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT,	20 );
-
-		curl_setopt(
-			$ch,
-			CURLOPT_USERAGENT,
-			VIPGOCI_CLIENT_ID
-		);
-
-		curl_setopt(
-			$ch,
-			CURLOPT_HEADERFUNCTION,
-			'vipgoci_curl_headers'
-		);
-
-		if (
-			( is_string( $github_token ) ) &&
-			( strlen( $github_token ) > 0 )
-		) {
-			curl_setopt(
-				$ch,
-				CURLOPT_HTTPHEADER,
-				array( 'Authorization: token ' . $github_token )
-			);
-		}
-
-		else if ( is_array( $github_token ) ) {
-			if (
-				( isset( $github_token[ 'oauth_consumer_key' ] ) ) &&
-				( isset( $github_token[ 'oauth_consumer_secret' ] ) ) &&
-				( isset( $github_token[ 'oauth_token' ] ) ) &&
-				( isset( $github_token[ 'oauth_token_secret' ] ) )
-			) {
-				$github_auth_header = vipgoci_oauth1_headers_get(
-					'GET',
-					$github_url,
-					$github_token
-				);
-
-				curl_setopt(
-					$ch,
-					CURLOPT_HTTPHEADER,
-					array(
-						'Authorization: ' .
-						$github_auth_header
-					)
-				);
-			}
-		}
-
-		vipgoci_curl_set_security_options(
-			$ch
-		);
-
-
-		// Make sure to pause between GitHub-requests
-		vipgoci_github_wait();
-
-
-		/*
-		 * Execute query to GitHub, keep
-		 * record of how long time it took,
-		 + and also keep count of how many we do.
-		 */
-		vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'github_api_get' );
-
-		vipgoci_counter_report(
-			VIPGOCI_COUNTERS_DO,
-			'github_api_request_get',
-			1
-		);
-
-		$resp_data = curl_exec( $ch );
-
-		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'github_api_get' );
-
-
-		$resp_headers = vipgoci_curl_headers(
-			null,
-			null
-		);
-
-		/*
-		 * Detect and process possible errors
-		 */
-		if (
-			( false === $resp_data )
-			||
-			( curl_errno( $ch ) )
-			||
-			(
-				// Detect internal server errors (HTTP 50X).
-				( isset( $resp_headers['status'][0] ) ) &&
-				( 500 <= (int) $resp_headers['status'][0] ) &&
-				( 600 > (int) $resp_headers['status'][0] )
-			)
-		) {
-			vipgoci_log(
-				'Sending request to GitHub failed, will ' .
-					'retry in a bit... ',
-				array(
-					'github_url'          => $github_url,
-					'curl_retries'        => $curl_retries,
-					'curl_errno'          => curl_errno(
-						$ch
-					),
-					'curl_errormsg'       => curl_strerror(
-						curl_errno( $ch )
-					),
-					'http_status'         =>
-						isset( $resp_headers['status'] ) ?
-						$resp_headers['status'] : null,
-					'http_response'       => $resp_data,
-					'x-github-request-id' =>
-						isset( $resp_headers['x-github-request-id'] ) ?
-						$resp_headers['x-github-request-id'] : null,
-				),
-				0,
-				true // Log to IRC.
-			);
-
-			$resp_data = false;
-
-			sleep( 10 );
-		}
-
-
-		vipgoci_github_rate_limits_check(
-			$github_url,
-			$resp_headers
-		);
-
-		vipgoci_http_resp_sunset_header_check(
-			$github_url,
-			$resp_headers
-		);
-
-		curl_close( $ch );
-
-	} while (
-		( false === $resp_data ) &&
-		( $curl_retries++ < 4 )
-	);
-
-
-	if (
-		( true === $fatal_error_on_failure ) &&
-		( false === $resp_data )
-	) {
-		vipgoci_sysexit(
-			'Gave up retrying request to GitHub, cannot continue',
-			array(),
-			VIPGOCI_EXIT_GITHUB_PROBLEM,
-			true // Log to IRC.
-		);
-	} elseif (
-		( false === $fatal_error_on_failure ) &&
-		( false === $resp_data )
-	) {
-		return null;
-	}
-
-	return $resp_data;
-}
-
-/**
- * Submit PUT request to the GitHub API.
- *
- * @codeCoverageIgnore
- */
-function vipgoci_github_put_url(
-	$github_url,
-	$github_postfields,
-	$github_token
-) {
-	/*
-	 * Actually send a request to GitHub -- make sure
-	 * to retry if something fails.
-	 */
-	do {
-		/*
-		 * By default, assume request went through okay.
-		 */
-
-		$ret_val = 0;
-
-		/*
-		 * By default, do not retry the request,
-		 * just assume everything goes well
-		 */
-
-		$retry_req = false;
-
-		/*
-		 * Initialize and send request.
-		 */
-
-		$ch = curl_init();
-
-		curl_setopt(
-			$ch, CURLOPT_URL, $github_url
-		);
-
-		curl_setopt(
-			$ch, CURLOPT_RETURNTRANSFER, 1
-		);
-
-		curl_setopt(
-			$ch, CURLOPT_CONNECTTIMEOUT, 20
-		);
-
-		curl_setopt(
-			$ch, CURLOPT_USERAGENT,	VIPGOCI_CLIENT_ID
-		);
-
-		curl_setopt(
-			$ch, CURLOPT_CUSTOMREQUEST, 'PUT'
-		);
-
-		curl_setopt(
-			$ch,
-			CURLOPT_POSTFIELDS,
-			json_encode( $github_postfields )
-		);
-
-		curl_setopt(
-			$ch,
-			CURLOPT_HEADERFUNCTION,
-			'vipgoci_curl_headers'
-		);
-
-		curl_setopt(
-			$ch,
-			CURLOPT_HTTPHEADER,
-			array( 'Authorization: token ' . $github_token )
-		);
-
-		vipgoci_curl_set_security_options(
-			$ch
-		);
-
-		// Make sure to pause between GitHub-requests
-		vipgoci_github_wait();
-
-		/*
-		 * Execute query to GitHub, keep
-		 * record of how long time it took,
-		 * and keep count of how many requests we do.
-		 */
-
-		vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'github_api_put' );
-
-		vipgoci_counter_report(
-			VIPGOCI_COUNTERS_DO,
-			'github_api_request_put',
-			1
-		);
-
-		$resp_data = curl_exec( $ch );
-
-		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'github_api_put' );
-
-
-		$resp_headers = vipgoci_curl_headers(
-			null,
-			null
-		);
-
-
-		/*
-		 * Assume 200 for success, everything else for failure.
-		 */
-		if ( intval( $resp_headers['status'][0] ) !== 200 ) {
-			/*
-			 * Set default wait period between requests
-			 */
-			$retry_sleep = 10;
-
-			/*
-			 * Set error-return value
-			 */
-			$ret_val = -1;
-
-			/*
-			 * Figure out if to retry...
-			 */
-
-			// Decode JSON
-			$resp_data = json_decode( $resp_data );
-
-			if (
-				( isset(
-					$resp_headers['retry-after']
-				) ) &&
-				( intval(
-					$resp_headers['retry-after']
-				) > 0 )
-			) {
-				$retry_req = true;
-				$retry_sleep = intval(
-					$resp_headers['retry-after']
-				);
-			}
-
-			else if (
-				( $resp_data->message ==
-					'Validation Failed' ) &&
-
-				( $resp_data->errors[0] ==
-					'was submitted too quickly ' .
-					'after a previous comment' )
-			) {
-				/*
-				 * These messages are due to the
-				 * submission being categorized
-				 * as a spam by GitHub -- no good
-				 * reason to retry, really.
-				 */
-				$retry_req = false;
-				$retry_sleep = 20;
-			}
-
-			else if (
-				( $resp_data->message ==
-					'Validation Failed' )
-			) {
-				$retry_req = false;
-			}
-
-			else if (
-				( $resp_data->message ==
-					'Server Error' )
-			) {
-				$retry_req = false;
-			}
-
-			vipgoci_log(
-				'GitHub reported an error' .
-					( $retry_req === true ?
-					' will retry request in ' .
-					$retry_sleep . ' seconds' :
-					'' ),
-				array(
-					'http_url'
-						=> $github_url,
-
-					'http_response_headers'
-						=> $resp_headers,
-
-					'http_reponse_body'
-						=> $resp_data,
-				)
-			);
-
-			sleep( $retry_sleep + 1 );
-		}
-
-		vipgoci_github_rate_limits_check(
-			$github_url,
-			$resp_headers
-		);
-
-		vipgoci_http_resp_sunset_header_check(
-			$github_url,
-			$resp_headers
-		);
-
-		curl_close( $ch );
-
-	} while ( $retry_req == true );
-
-	return $ret_val;
 }
 
 /*
@@ -1132,7 +83,7 @@ function vipgoci_github_diffs_fetch_unfiltered(
 
 	// FIXME: Error-handling
 	$resp_raw = json_decode(
-		vipgoci_github_fetch_url(
+		vipgoci_http_api_fetch_url(
 			$github_url,
 			$github_token
 		),
@@ -1267,7 +218,7 @@ function vipgoci_github_fetch_commit_info(
 			rawurlencode( $commit_id );
 
 		$data = json_decode(
-			vipgoci_github_fetch_url(
+			vipgoci_http_api_fetch_url(
 				$github_url,
 				$github_token
 			)
@@ -1363,32 +314,38 @@ function vipgoci_github_fetch_commit_info(
 	return $data;
 }
 
-
-/*
- * Fetch all comments made on GitHub for the
- * repository and commit specified -- but are
- * still associated with a Pull Request.
+/**
+ * Fetch all comments from GitHub API for the
+ * repository and commit specified, will fetch only
+ * comments made after certain timestamp and that are
+ * associated with a pull request.
  *
- * Will return an associative array of comments,
- * with file-name and file-line number as keys. Will
- * return false on an error.
+ * Will populate associative array of comments (the pointer
+ * $pr_comments), with file-name and file-position as
+ * keys.
+ *
+ * @param array  $options        Options array for the program.
+ * @param string $commit_id      Will fetch comments associated with this commit-ID.
+ * @param string $commit_made_at Will fetch comments made after this timestamp.
+ * @param array  $prs_comments   Results array pointer; pull request comments.
+ *
+ * @return void
  */
 function vipgoci_github_pr_reviews_comments_get(
-	$options,
-	$commit_id,
-	$commit_made_at,
-	&$prs_comments
-) {
-	$repo_owner = $options['repo-owner'];
-	$repo_name = $options['repo-name'];
-	$github_token = $options['token'];
-
+	array $options,
+	string $commit_id,
+	string $commit_made_at,
+	array &$prs_comments
+) :void {
 	/*
 	 * Try to get comments from cache
 	 */
 	$cached_id = array(
-		__FUNCTION__, $repo_owner, $repo_name,
-		$commit_made_at, $github_token
+		__FUNCTION__,
+		$options['repo-owner'],
+		$options['repo-name'],
+		$commit_made_at,
+		$options['token'],
 	);
 
 	$cached_data = vipgoci_cache( $cached_id );
@@ -1396,42 +353,39 @@ function vipgoci_github_pr_reviews_comments_get(
 	vipgoci_log(
 		'Fetching pull requests comments info from GitHub' .
 			vipgoci_cached_indication_str( $cached_data ),
-
 		array(
-			'repo_owner' => $repo_owner,
-			'repo_name' => $repo_name,
-			'commit_id' => $commit_id,
+			'repo_owner'     => $options['repo-owner'],
+			'repo_name'      => $options['repo-name'],
+			'commit_id'      => $commit_id,
 			'commit_made_at' => $commit_made_at,
 		)
 	);
 
-
 	if ( false !== $cached_data ) {
 		$prs_comments_cache = $cached_data;
-	}
-
-	else {
+	} else {
 		/*
 		 * Nothing in cache, ask GitHub.
 		 */
 
-		$page = 1;
+		$page     = 1;
 		$per_page = 100;
+
 		$prs_comments_cache = array();
 
 		do {
 			$github_url =
 				VIPGOCI_GITHUB_BASE_URL . '/' .
 				'repos/' .
-				rawurlencode( $repo_owner ) . '/' .
-				rawurlencode( $repo_name ) . '/' .
+				rawurlencode( $options['repo-owner'] ) . '/' .
+				rawurlencode( $options['repo-name'] ) . '/' .
 				'pulls/' .
 				'comments?' .
 				'sort=created&' .
 				'direction=asc&' .
 				'since=' . rawurlencode( $commit_made_at ) . '&' .
-				'page=' . rawurlencode( $page ) . '&' .
-				'per_page=' . rawurlencode( $per_page );
+				'page=' . rawurlencode( (string) $page ) . '&' .
+				'per_page=' . rawurlencode( (string) $per_page );
 
 			/*
 			 * Fetch results from GitHub, but do not stop
@@ -1442,9 +396,9 @@ function vipgoci_github_pr_reviews_comments_get(
 			 * despite this and return partial results, as it will not
 			 * have a great impact on the final output.
 			 */
-			$prs_comments_tmp = vipgoci_github_fetch_url(
+			$prs_comments_tmp = vipgoci_http_api_fetch_url(
 				$github_url,
-				$github_token,
+				$options['token'],
 				false // Do not stop execution on failure.
 			);
 
@@ -1452,7 +406,12 @@ function vipgoci_github_pr_reviews_comments_get(
 				$prs_comments_tmp = json_decode(
 					$prs_comments_tmp
 				);
-			} elseif ( null === $prs_comments_tmp ) {
+			}
+
+			if (
+				( null === $prs_comments_tmp ) ||
+				( false === is_array( $prs_comments_tmp ) )
+			) {
 				vipgoci_log(
 					'Unable to fetch data from GitHub, returning partial results',
 					array(
@@ -1470,12 +429,13 @@ function vipgoci_github_pr_reviews_comments_get(
 				$prs_comments_cache[] = $pr_comment;
 			}
 
+			$prs_comments_tmp_cnt = count( $prs_comments_tmp );
+
 			$page++;
-		} while ( count( $prs_comments_tmp ) >= $per_page );
+		} while ( $prs_comments_tmp_cnt >= $per_page );
 
 		vipgoci_cache( $cached_id, $prs_comments_cache );
 	}
-
 
 	foreach ( $prs_comments_cache as $pr_comment ) {
 		if ( null === $pr_comment->position ) {
@@ -1495,18 +455,13 @@ function vipgoci_github_pr_reviews_comments_get(
 		}
 
 		/*
-		 * Look through each comment, create an associative array
-		 * of file:position out of all the comments, so any comment
-		 * can easily be found.
+		 * Create an associative array of file:position out
+		 * of all the comments, so any comment can be easily found.
 		 */
-
-		$prs_comments[
-			$pr_comment->path . ':' .
-			$pr_comment->position
-		][] = $pr_comment;
+		$prs_comments[ $pr_comment->path . ':' . $pr_comment->position ][] =
+			$pr_comment;
 	}
 }
-
 
 /*
  * Get all review-comments submitted to a
@@ -1586,13 +541,13 @@ function vipgoci_github_pr_reviews_comments_get_by_pr(
 			rawurlencode( $options['repo-owner'] ) . '/' .
 			rawurlencode( $options['repo-name'] ) . '/' .
 			'pulls/' .
-			rawurlencode( $pr_number ) . '/' .
+			rawurlencode( (string) $pr_number ) . '/' .
 			'comments?' .
-			'page=' . rawurlencode( $page ) . '&' .
-			'per_page=' . rawurlencode( $per_page );
+			'page=' . rawurlencode( (string) $page ) . '&' .
+			'per_page=' . rawurlencode( (string) $per_page );
 
 		$comments = json_decode(
-			vipgoci_github_fetch_url(
+			vipgoci_http_api_fetch_url(
 				$github_url,
 				$options['token']
 			)
@@ -1660,7 +615,7 @@ function vipgoci_github_pr_reviews_comments_delete(
 		'comments/' .
 		rawurlencode( $comment_id );
 
-	vipgoci_github_post_url(
+	vipgoci_http_api_post_url(
 		$github_url,
 		array(),
 		$options['token'],
@@ -1720,14 +675,14 @@ function vipgoci_github_pr_generic_comments_get_all(
 			rawurlencode( $repo_owner ) . '/' .
 			rawurlencode( $repo_name ) . '/' .
 			'issues/' .
-			rawurlencode( $pr_number ) . '/' .
+			rawurlencode( (string) $pr_number ) . '/' .
 			'comments' .
-			'?page=' . rawurlencode( $page ) . '&' .
-			'per_page=' . rawurlencode( $per_page );
+			'?page=' . rawurlencode( (string) $page ) . '&' .
+			'per_page=' . rawurlencode( (string) $per_page );
 
 
 		$pr_comments_raw = json_decode(
-			vipgoci_github_fetch_url(
+			vipgoci_http_api_fetch_url(
 				$github_url,
 				$github_token
 			)
@@ -1780,7 +735,7 @@ function vipgoci_github_pr_comments_generic_submit(
 		rawurlencode( $repo_owner ) . '/' .
 		rawurlencode( $repo_name ) . '/' .
 		'issues/' .
-		rawurlencode( $pr_number ) . '/' .
+		rawurlencode( (string) $pr_number ) . '/' .
 		'comments';
 
 
@@ -1796,7 +751,7 @@ function vipgoci_github_pr_comments_generic_submit(
 	$github_postfields['body'] .=
 		"\n\r";
 
-	vipgoci_github_post_url(
+	vipgoci_http_api_post_url(
 		$github_url,
 		$github_postfields,
 		$github_token
@@ -1914,12 +869,12 @@ function vipgoci_github_pr_generic_comment_delete(
 		rawurlencode( $repo_name ) . '/' .
 		'issues/' .
 		'comments/' .
-		rawurlencode( $comment_id );
+		rawurlencode( (string) $comment_id );
 
 	/*
 	 * Send DELETE request to GitHub.
 	 */
-	vipgoci_github_post_url(
+	vipgoci_http_api_post_url(
 		$github_url,
 		array(),
 		$github_token,
@@ -1989,17 +944,17 @@ function vipgoci_github_pr_reviews_get(
 				rawurlencode( $repo_owner ) . '/' .
 				rawurlencode( $repo_name ) . '/' .
 				'pulls/' .
-				rawurlencode( $pr_number ) . '/' .
+				rawurlencode( (string) $pr_number ) . '/' .
 				'reviews' .
-				'?per_page=' . rawurlencode( $per_page ) . '&' .
-				'page=' . rawurlencode( $page );
+				'?per_page=' . rawurlencode( (string) $per_page ) . '&' .
+				'page=' . rawurlencode( (string) $page );
 
 
 			/*
 			 * Fetch reviews, decode result.
 			 */
 			$pr_reviews = json_decode(
-				vipgoci_github_fetch_url(
+				vipgoci_http_api_fetch_url(
 					$github_url,
 					$github_token
 				)
@@ -2116,12 +1071,12 @@ function vipgoci_github_pr_review_dismiss(
 		rawurlencode( $repo_owner ) . '/' .
 		rawurlencode( $repo_name ) . '/' .
 		'pulls/' .
-		rawurlencode( $pr_number ) . '/' .
+		rawurlencode( (string) $pr_number ) . '/' .
 		'reviews/' .
-		rawurlencode( $review_id ) . '/' .
+		rawurlencode( (string) $review_id ) . '/' .
 		'dismissals';
 
-	vipgoci_github_put_url(
+	vipgoci_http_api_put_url(
 		$github_url,
 		array(
 			'message' => $dismiss_message
@@ -2308,7 +1263,7 @@ function vipgoci_github_approve_pr(
 		rawurlencode( $repo_owner ) . '/' .
 		rawurlencode( $repo_name ) . '/' .
 		'pulls/' .
-		rawurlencode( $pr_number ) . '/' .
+		rawurlencode( (string) $pr_number ) . '/' .
 		'reviews';
 
 	$github_postfields = array(
@@ -2334,7 +1289,7 @@ function vipgoci_github_approve_pr(
 	);
 
 	// Actually approve
-	vipgoci_github_post_url(
+	vipgoci_http_api_post_url(
 		$github_url,
 		$github_postfields,
 		$github_token
@@ -2428,13 +1383,13 @@ function vipgoci_github_prs_implicated(
 			rawurlencode( $repo_name ) . '/' .
 			'pulls' .
 			'?state=open&' .
-			'page=' . rawurlencode( $page ) . '&' .
-			'per_page=' . rawurlencode( $per_page );
+			'page=' . rawurlencode( (string) $page ) . '&' .
+			'per_page=' . rawurlencode( (string) $per_page );
 
 
 		// FIXME: Detect when GitHub sent back an error
 		$prs_implicated_unfiltered = json_decode(
-			vipgoci_github_fetch_url(
+			vipgoci_http_api_fetch_url(
 				$github_url,
 				$github_token
 			)
@@ -2621,15 +1576,15 @@ function vipgoci_github_prs_commits_list(
 			rawurlencode( $repo_owner ) . '/' .
 			rawurlencode( $repo_name ) . '/' .
 			'pulls/' .
-			rawurlencode( $pr_number ) . '/' .
+			rawurlencode( (string) $pr_number ) . '/' .
 			'commits?' .
-			'page=' . rawurlencode( $page ) . '&' .
-			'per_page=' . rawurlencode( $per_page );
+			'page=' . rawurlencode( (string) $page ) . '&' .
+			'per_page=' . rawurlencode( (string) $per_page );
 
 
 		// FIXME: Detect when GitHub sent back an error
 		$pr_commits_raw = json_decode(
-			vipgoci_github_fetch_url(
+			vipgoci_http_api_fetch_url(
 				$github_url,
 				$github_token
 			)
@@ -2676,7 +1631,7 @@ function vipgoci_github_authenticated_user_get( $github_token ) {
 		VIPGOCI_GITHUB_BASE_URL . '/' .
 		'user';
 
-	$current_user_info_json = vipgoci_github_fetch_url(
+	$current_user_info_json = vipgoci_http_api_fetch_url(
 		$github_url,
 		$github_token
 	);
@@ -2739,14 +1694,14 @@ function vipgoci_github_label_add_to_pr(
 		rawurlencode( $repo_owner ) . '/' .
 		rawurlencode( $repo_name ) . '/' .
 		'issues/' .
-		rawurlencode( $pr_number ) . '/' .
+		rawurlencode( (string) $pr_number ) . '/' .
 		'labels';
 
 	$github_postfields = array(
 		$label_name
 	);
 
-	vipgoci_github_post_url(
+	vipgoci_http_api_post_url(
 		$github_url,
 		$github_postfields,
 		$github_token
@@ -2810,10 +1765,10 @@ function vipgoci_github_pr_labels_get(
 			rawurlencode( $repo_owner ) . '/' .
 			rawurlencode( $repo_name ) . '/' .
 			'issues/' .
-			rawurlencode( $pr_number ) . '/' .
+			rawurlencode( (string) $pr_number ) . '/' .
 			'labels';
 
-		$data = vipgoci_github_fetch_url(
+		$data = vipgoci_http_api_fetch_url(
 			$github_url,
 			$github_token
 		);
@@ -2881,11 +1836,11 @@ function vipgoci_github_pr_label_remove(
 		rawurlencode( $repo_owner ) . '/' .
 		rawurlencode( $repo_name ) . '/' .
 		'issues/' .
-		rawurlencode( $pr_number ) . '/' .
+		rawurlencode( (string) $pr_number ) . '/' .
 		'labels/' .
 		rawurlencode( $label_name );
 
-	vipgoci_github_post_url(
+	vipgoci_http_api_post_url(
 		$github_url,
 		array(),
 		$github_token,
@@ -2940,13 +1895,13 @@ function vipgoci_github_pr_review_events_get(
 				rawurlencode( $options['repo-owner'] ) . '/' .
 				rawurlencode( $options['repo-name'] ) . '/' .
 				'issues/' .
-				rawurlencode( $pr_number ) . '/' .
+				rawurlencode( (string) $pr_number ) . '/' .
 				'events?' .
-				'page=' . rawurlencode( $page ) . '&' .
-				'per_page=' . rawurlencode( $per_page );
+				'page=' . rawurlencode( (string) $page ) . '&' .
+				'per_page=' . rawurlencode( (string) $per_page );
 
 
-			$issue_events = vipgoci_github_fetch_url(
+			$issue_events = vipgoci_http_api_fetch_url(
 				$github_url,
 				$options['token']
 			);
@@ -3096,11 +2051,11 @@ function vipgoci_github_team_members_get(
 				'teams/' .
 				rawurlencode( $team_slug ) . '/' .
 				'members?' .
-				'page=' . rawurlencode( $page ) . '&' .
-				'per_page=' . rawurlencode( $per_page );
+				'page=' . rawurlencode( (string) $page ) . '&' .
+				'per_page=' . rawurlencode( (string) $per_page );
 
 
-			$team_members = vipgoci_github_fetch_url(
+			$team_members = vipgoci_http_api_fetch_url(
 				$github_url,
 				$github_token
 			);
@@ -3239,11 +2194,11 @@ function vipgoci_github_org_teams_get(
 				'orgs/' .
 				rawurlencode( $org_slug ) . '/' .
 				'teams?' .
-				'page=' . rawurlencode( $page ) . '&' .
-				'per_page=' . rawurlencode( $per_page );
+				'page=' . rawurlencode( (string) $page ) . '&' .
+				'per_page=' . rawurlencode( (string) $per_page );
 
 
-			$org_teams = vipgoci_github_fetch_url(
+			$org_teams = vipgoci_http_api_fetch_url(
 				$github_url,
 				$github_token
 			);
@@ -3370,14 +2325,14 @@ function vipgoci_github_repo_collaborators_get(
 				rawurlencode( $repo_owner ) . '/' .
 				rawurlencode( $repo_name ) . '/' .
 				'collaborators?' .
-				'page=' . rawurlencode( $page ) . '&' .
-				'per_page=' . rawurlencode( $per_page );
+				'page=' . rawurlencode( (string) $page ) . '&' .
+				'per_page=' . rawurlencode( (string) $per_page );
 
 			if ( null !== $affiliation ) {
 				$github_url .= '&affiliation=' . rawurlencode( $affiliation );
 			}
 
-			$repo_users = vipgoci_github_fetch_url(
+			$repo_users = vipgoci_http_api_fetch_url(
 				$github_url,
 				$github_token
 			);
@@ -3482,7 +2437,7 @@ function vipgoci_github_status_create(
 		)
 	);
 
-	vipgoci_github_post_url(
+	vipgoci_http_api_post_url(
 		$github_url,
 		$github_postfields,
 		$github_token

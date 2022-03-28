@@ -31,7 +31,7 @@ final class GitHubPrReviewEventsGetTest extends TestCase {
 			$this->options_git_repo_tests
 		);
 
-		$this->options['token'] = null;
+		$this->options['token'] = '';
 	}
 
 	protected function tearDown(): void {
