@@ -39,13 +39,13 @@ function vipgoci_phpcs_get_version(
 	);
 
 	$phpcs_output_2    = '';
-	$phpcs_status_code = -255;
+	$phpcs_result_code = -255;
 
 	$phpcs_output = vipgoci_runtime_measure_exec_with_retry(
 		$cmd,
 		array( 0 ),
 		$phpcs_output_2,
-		$phpcs_status_code,
+		$phpcs_result_code,
 		'phpcs_cli',
 		false
 	);
@@ -209,14 +209,14 @@ function vipgoci_phpcs_do_scan(
 	/*
 	 * Actually execute
 	 */
-	$result_output      = '';
-	$result_status_code = -255;
+	$result_output = '';
+	$result_code   = -255;
 
 	$result = vipgoci_runtime_measure_exec_with_retry(
 		$cmd,
 		array( 0, 1, 2 ),
 		$result_output,
-		$result_status_code,
+		$result_code,
 		'phpcs_cli',
 		true
 	);
