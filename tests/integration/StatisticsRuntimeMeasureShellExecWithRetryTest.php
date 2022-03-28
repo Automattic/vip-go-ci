@@ -34,13 +34,19 @@ final class StatisticsRuntimeMeasureShellExecWithRetryTest extends TestCase {
 	 * and that output returned is correct
 	 * as well.
 	 *
-	 * @covers ::vipgoci_runtime_measure_shell_exec_with_retry
+	 * @covers ::vipgoci_runtime_measure_exec_with_retry
 	 */
 	public function testShellExecRuntimeMeasure() :void {
 		vipgoci_unittests_output_suppress();
 
-		$output = vipgoci_runtime_measure_shell_exec_with_retry(
+		$output_2    = '';
+		$status_code = -255;
+
+		$output = vipgoci_runtime_measure_exec_with_retry(
 			'sleep 1 ; echo -n "test_string"',
+			array( 0 ),
+			$output_2,
+			$status_code,
 			'mytimer10'
 		);
 
@@ -49,6 +55,16 @@ final class StatisticsRuntimeMeasureShellExecWithRetryTest extends TestCase {
 		$this->assertSame(
 			'test_string',
 			$output
+		);
+
+		$this->assertSame(
+			'test_string',
+			$output_2
+		);
+
+		$this->assertSame(
+			0,
+			$status_code
 		);
 
 		$runtime_stats = vipgoci_runtime_measure(
@@ -66,7 +82,7 @@ final class StatisticsRuntimeMeasureShellExecWithRetryTest extends TestCase {
 	 * and if the output is correct when that occurs. Will also
 	 * check if the function really attempts retries.
 	 *
-	 * @covers ::vipgoci_runtime_measure_shell_exec_with_retry
+	 * @covers ::vipgoci_runtime_measure_exec_with_retry
 	 */
 	public function testShellExecRetry() :void {
 		$path_to_cli = tempnam(
@@ -108,11 +124,19 @@ final class StatisticsRuntimeMeasureShellExecWithRetryTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
-		$output = vipgoci_runtime_measure_shell_exec_with_retry(
+		$output_2    = '';
+		$status_code = -255;
+
+		$output = vipgoci_runtime_measure_exec_with_retry(
 			escapeshellcmd( 'php' ) . ' ' .
 				escapeshellcmd( $path_to_cli ) . ' ' .
 				escapeshellarg( $path_to_temp_for_cli ) . ' 2>/dev/null',
+			array( 0 ),
+			$output_2,
+			$status_code,
 			'mytimer20',
+			false,
+			true, // Retry when status code does not match expected ones.
 			2 // Retry twice (three times in total).
 		);
 
@@ -121,6 +145,16 @@ final class StatisticsRuntimeMeasureShellExecWithRetryTest extends TestCase {
 		$this->assertSame(
 			'Success' . PHP_EOL,
 			$output
+		);
+
+		$this->assertSame(
+			'Success' . PHP_EOL,
+			$output_2
+		);
+
+		$this->assertSame(
+			0,
+			$status_code
 		);
 
 		/*
