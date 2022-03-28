@@ -139,7 +139,7 @@ function vipgoci_gitrepo_get_head( $local_git_repo ) {
 	/*
 	 * Actually execute
 	 */
-	$result_output    = '';
+	$result_output      = '';
 	$result_status_code = -255;
 
 	$result = vipgoci_runtime_measure_exec_with_retry(
