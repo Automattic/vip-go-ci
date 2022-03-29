@@ -19,7 +19,7 @@ use PHPUnit\Framework\TestCase;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class StatisticsRuntimeMeasureShellExecWithRetryTest extends TestCase {
+final class StatisticsRuntimeMeasureExecWithRetryTest extends TestCase {
 	/**
 	 * Setup function. Require files.
 	 *
