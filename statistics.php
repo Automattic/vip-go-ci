@@ -174,7 +174,7 @@ function vipgoci_runtime_measure(
 function vipgoci_runtime_measure_exec_with_retry(
 	string $cmd,
 	array $expected_result_code,
-	string|null &$res_output,
+	string &$res_output,
 	int &$res_result_code,
 	string $runtime_measure_type,
 	bool $catch_stderr = false,
