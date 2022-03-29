@@ -36,11 +36,11 @@ final class StatisticsRuntimeMeasureExecWithRetryTest extends TestCase {
 	 *
 	 * @covers ::vipgoci_runtime_measure_exec_with_retry
 	 */
-	public function testShellExecRuntimeMeasure() :void {
-		vipgoci_unittests_output_suppress();
-
+	public function testExecSuccessRuntimeMeasure() :void {
 		$output_2    = '';
 		$result_code = -255;
+
+		vipgoci_unittests_output_suppress();
 
 		$output = vipgoci_runtime_measure_exec_with_retry(
 			'sleep 1 ; echo -n "test_string"',
@@ -78,13 +78,51 @@ final class StatisticsRuntimeMeasureExecWithRetryTest extends TestCase {
 	}
 
 	/**
+	 * Ensure that empty output results in an empty string
+	 * and result code is correct.
+	 *
+	 * @covers: vipgoci_runtime_measure_exec_with_retry
+	 */
+	public function testExecSuccessWithEmptyReturn() :void {
+		$output_2    = '';
+		$result_code = -255;
+
+		vipgoci_unittests_output_suppress();
+
+		$output = vipgoci_runtime_measure_exec_with_retry(
+			'echo -n ""',
+			array( 0 ),
+			$output_2,
+			$result_code,
+			'mytimer20'
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		$this->assertSame(
+			'',
+			$output
+		);
+
+		$this->assertSame(
+			'',
+			$output_2
+		);
+
+		$this->assertSame(
+			0,
+			$result_code
+		);
+	}
+
+	/**
 	 * Test if the function retries execution up on failure
 	 * and if the output is correct when that occurs. Will also
 	 * check if the function really attempts retries.
 	 *
 	 * @covers ::vipgoci_runtime_measure_exec_with_retry
 	 */
-	public function testShellExecRetry() :void {
+	public function testExecRetry() :void {
 		$path_to_cli = tempnam(
 			sys_get_temp_dir(),
 			'cli-predictably-fails-script'
@@ -122,10 +160,10 @@ final class StatisticsRuntimeMeasureExecWithRetryTest extends TestCase {
 			chmod( $path_to_temp_for_cli, 0700 )
 		);
 
-		vipgoci_unittests_output_suppress();
-
 		$output_2    = '';
 		$result_code = -255;
+
+		vipgoci_unittests_output_suppress();
 
 		$output = vipgoci_runtime_measure_exec_with_retry(
 			escapeshellcmd( 'php' ) . ' ' .
@@ -134,7 +172,7 @@ final class StatisticsRuntimeMeasureExecWithRetryTest extends TestCase {
 			array( 0 ),
 			$output_2,
 			$result_code,
-			'mytimer20',
+			'mytimer30',
 			false,
 			true, // Retry when status code does not match expected ones.
 			2 // Retry twice (three times in total).
@@ -184,6 +222,47 @@ final class StatisticsRuntimeMeasureExecWithRetryTest extends TestCase {
 		unlink( $path_to_cli );
 
 		rmdir( $path_to_temp_for_cli );
+	}
+
+	/**
+	 * Test if the function returns correct status code on failure.
+	 * Check if the output string obtained is correct.
+	 *
+	 * @covers ::vipgoci_runtime_measure_exec_with_retry
+	 */
+	public function testExecAlwaysFails() :void {
+		$output_2    = '';
+		$result_code = -255;
+
+		vipgoci_unittests_output_suppress();
+
+		$output = vipgoci_runtime_measure_exec_with_retry(
+			'( echo -n "test123" ; exit 124 )',
+			array( 0 ),
+			$output_2,
+			$result_code,
+			'mytimer40',
+			false, // Do not get standard error.
+			true, // Retry when status code does not match expected ones.
+			2 // Retry twice (three times in total).
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		$this->assertSame(
+			null,
+			$output
+		);
+
+		$this->assertSame(
+			'test123',
+			$output_2
+		);
+
+		$this->assertSame(
+			124,
+			$result_code
+		);
 	}
 }
 
