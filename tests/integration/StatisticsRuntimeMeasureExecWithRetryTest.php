@@ -116,9 +116,9 @@ final class StatisticsRuntimeMeasureExecWithRetryTest extends TestCase {
 	}
 
 	/**
-	 * Test if the function retries execution up on failure
-	 * and if the output is correct when that occurs. Will also
-	 * check if the function really attempts retries.
+	 * Test if the function retries execution when status code
+	 * is unexpected and if the output is correct when that occurs.
+	 * Will also check if the function really attempts retries.
 	 *
 	 * @covers ::vipgoci_runtime_measure_exec_with_retry
 	 */
@@ -173,7 +173,7 @@ final class StatisticsRuntimeMeasureExecWithRetryTest extends TestCase {
 			$output_2,
 			$result_code,
 			'mytimer30',
-			false,
+			false, // Do not get standard error.
 			true, // Retry when status code does not match expected ones.
 			2 // Retry twice (three times in total).
 		);
@@ -261,6 +261,69 @@ final class StatisticsRuntimeMeasureExecWithRetryTest extends TestCase {
 
 		$this->assertSame(
 			124,
+			$result_code
+		);
+	}
+
+	/**
+	 * Check if the output string obtained is correct, check if standard
+	 * error is included.
+	 *
+	 * @covers ::vipgoci_runtime_measure_exec_with_retry
+	 */
+	public function testExecAlwaysFailsCheckStderr() :void {
+		$output_2    = '';
+		$result_code = -255;
+
+		$path_to_cli = tempnam(
+			sys_get_temp_dir(),
+			'cli-prints-and-exits-script-'
+		);
+
+		$this->assertNotFalse(
+			$path_to_cli
+		);
+
+		$this->assertTrue(
+			copy(
+				__DIR__ . '/helper-scripts/cli-prints-and-exits.php',
+				$path_to_cli
+			)
+		);
+
+		$this->assertNotFalse(
+			chmod( $path_to_cli, 0700 )
+		);
+
+		vipgoci_unittests_output_suppress();
+
+		$output = vipgoci_runtime_measure_exec_with_retry(
+			$path_to_cli,
+			array( 125 ),
+			$output_2,
+			$result_code,
+			'mytimer50',
+			true, // Do get standard error.
+			true, // Retry when status code does not match expected ones.
+			2 // Retry twice (three times in total).
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		unlink( $path_to_cli );
+
+		$this->assertSame(
+			'test123test456',
+			$output
+		);
+
+		$this->assertSame(
+			'test123test456',
+			$output_2
+		);
+
+		$this->assertSame(
+			125,
 			$result_code
 		);
 	}
