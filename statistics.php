@@ -174,7 +174,7 @@ function vipgoci_runtime_measure(
 function vipgoci_runtime_measure_exec_with_retry(
 	string $cmd,
 	array $expected_result_code,
-	string &$res_output,
+	string|null &$res_output,
 	int &$res_result_code,
 	string $runtime_measure_type,
 	bool $catch_stderr = false,
@@ -306,7 +306,30 @@ function vipgoci_runtime_measure_exec_with_retry(
 			} else {
 				$exec_retry_stop = false;
 			}
+
+			/*
+			 * Read output from command and store.
+			 *
+			 * Do not change $exec_result_return as that
+			 * should be null, indicating failure.
+			 */
+			$res_output = file_get_contents(
+				$output_file
+			);
+
+			if ( false === $res_output ) {
+				vipgoci_log(
+					'Unable to read file with results from executing command',
+					array(
+						'exec_result_return' => $exec_result_return,
+						'output_file'        => $output_file,
+					)
+				);
+
+				$res_output = null;
+			}
 		} else {
+			// Read output and store.
 			$exec_result_return = file_get_contents(
 				$output_file
 			);
@@ -321,6 +344,8 @@ function vipgoci_runtime_measure_exec_with_retry(
 				);
 
 				$exec_result_return = null;
+			} else {
+				$res_output = $exec_result_return;
 			}
 
 			if ( ! empty( $exec_result_output ) ) {
@@ -334,8 +359,6 @@ function vipgoci_runtime_measure_exec_with_retry(
 					)
 				);
 			}
-
-			$res_output = $exec_result_return;
 		}
 
 		unlink( $output_file );
