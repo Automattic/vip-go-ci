@@ -12,6 +12,7 @@ All notable changes to this project will be documented in this file.
 - [#263](https://github.com/Automattic/vip-go-ci/pull/263): Improve GitHub API error handling
 - [#262](https://github.com/Automattic/vip-go-ci/pull/262): Use exec() instead of shell_exec(), use result code
 - [#264](https://github.com/Automattic/vip-go-ci/pull/264): Configuring debug mode in test-suite via environmental variables
+- [#266](https://github.com/Automattic/vip-go-ci/pull/266): HTTP API: Better logging, add retry mechanism, better error detection
 
 ## [1.2.2](https://github.com/Automattic/vip-go-ci/releases/tag/1.2.2) - 2022-03-08
 
