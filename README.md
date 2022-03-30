@@ -777,7 +777,7 @@ This file is not included, and needs to be configured manually.
 
 The unit test suite can be run using the following command:
 
-> phpunit --testsuite=unit-tests -vv
+> VIPGOCI_TESTING_DEBUG_MODE=true phpunit --testsuite=unit-tests
 
 By running this command, you will run the tests that do not depend on external calls. 
 
@@ -785,7 +785,7 @@ By running this command, you will run the tests that do not depend on external c
 
 The integration tests can be run using the following command:
 
-> phpunit --testsuite=integration-tests -vv
+> VIPGOCI_TESTING_DEBUG_MODE=true phpunit --testsuite=integration-tests
 
 Integration tests will execute the scanning utilities — PHPCS, SVG scanner and PHP Lint — and so paths to these, and a PHP interpreter, need to be configured. See the `unittests.ini` file.
 
