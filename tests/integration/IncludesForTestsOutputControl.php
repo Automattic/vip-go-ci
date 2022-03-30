@@ -1,4 +1,9 @@
 <?php
+/**
+ * Functions to control output during testing.
+ *
+ * @package Automattic/vip-go-ci
+ */
 
 declare( strict_types=1 );
 
@@ -13,16 +18,9 @@ function vipgoci_unittests_debug_mode_on() :bool {
 	 * Detect if phpunit was started with
 	 * debug-mode on.
 	 */
-	if ( ! isset( $_SERVER['argv'] ) ) {
-		return false;
-	}
+	$debug_mode = getenv( 'VIPGOCI_TESTING_DEBUG_MODE' );
 
-	if (
-		( in_array( '-v', $_SERVER['argv'], true ) ) ||
-		( in_array( '-vv', $_SERVER['argv'], true ) ) ||
-		( in_array( '-vvv', $_SERVER['argv'], true ) ) ||
-		( in_array( '--debug', $_SERVER['argv'], true ) )
-	) {
+	if ( 'true' === $debug_mode ) {
 		return true;
 	}
 
