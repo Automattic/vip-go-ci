@@ -1205,6 +1205,11 @@ function vipgoci_report_submit_pr_review_from_results(
 			$github_postfields['body'] .= $scan_details_msg;
 		}
 
+		// Remove IRC constants from postfields body before submitting.
+		$github_postfields['body'] = vipgoci_irc_api_clean_ignorable_constants(
+			$github_postfields['body']
+		);
+
 		/*
 		 * Only submit a specific number of comments in one go.
 		 *
