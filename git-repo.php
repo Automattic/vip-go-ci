@@ -12,7 +12,7 @@ function vipgoci_git_version(): ?string {
 	}
 
 	$git_version_cmd = sprintf(
-		'%s %s 2>&1',
+		'%s %s',
 		escapeshellcmd( 'git' ),
 		escapeshellarg( '--version' )
 	);
@@ -24,10 +24,19 @@ function vipgoci_git_version(): ?string {
 		)
 	);
 
-	/* Actually execute */
-	$git_version_results = vipgoci_runtime_measure_shell_exec_with_retry(
+	/*
+	 * Actually execute
+	 */
+	$git_output      = '';
+	$git_result_code = -255;
+
+	$git_version_results = vipgoci_runtime_measure_exec_with_retry(
 		$git_version_cmd,
-		'git_cli'
+		array( 0 ),
+		$git_output,
+		$git_result_code,
+		'git_cli',
+		false
 	);
 
 	if ( null === $git_version_results ) {
@@ -120,17 +129,26 @@ function vipgoci_gitrepo_get_head( $local_git_repo ) {
 	 */
 
 	$cmd = sprintf(
-		'%s -C %s log -n %s --pretty=format:"%s" 2>&1',
+		'%s -C %s log -n %s --pretty=format:"%s"',
 		escapeshellcmd( 'git' ),
 		escapeshellarg( $local_git_repo ),
 		escapeshellarg( 1 ),
 		escapeshellarg( '%H' )
 	);
 
-	/* Actually execute */
-	$result = vipgoci_runtime_measure_shell_exec_with_retry(
+	/*
+	 * Actually execute
+	 */
+	$result_output = '';
+	$result_code   = -255;
+
+	$result = vipgoci_runtime_measure_exec_with_retry(
 		$cmd,
-		'git_cli'
+		array( 0 ),
+		$result_output,
+		$result_code,
+		'git_cli',
+		false
 	);
 
 	if ( null === $result ) {
@@ -167,15 +185,24 @@ function vipgoci_gitrepo_get_head( $local_git_repo ) {
 
 function vipgoci_gitrepo_branch_current_get( $local_git_repo ) {
 	$cmd = sprintf(
-		'%s -C %s branch 2>&1',
+		'%s -C %s branch',
 		escapeshellcmd( 'git' ),
 		escapeshellarg( $local_git_repo ),
 	);
 
-	/* Actually execute */
-	$results = vipgoci_runtime_measure_shell_exec_with_retry(
+	/*
+	 * Actually execute
+	 */
+	$results_output      = '';
+	$results_result_code = -255;
+
+	$results = vipgoci_runtime_measure_exec_with_retry(
 		$cmd,
-		'git_cli'
+		array( 0 ),
+		$results_output,
+		$results_result_code,
+		'git_cli',
+		true
 	);
 
 	if ( null === $results ) {
@@ -400,16 +427,25 @@ function vipgoci_gitrepo_blame_for_file(
 	 */
 
 	$cmd = sprintf(
-		'%s -C %s blame --line-porcelain %s 2>&1',
+		'%s -C %s blame --line-porcelain %s',
 		escapeshellcmd( 'git' ),
 		escapeshellarg( $local_git_repo ),
 		escapeshellarg( $file_name )
 	);
 
-	/* Actually execute */
-	$result = vipgoci_runtime_measure_shell_exec_with_retry(
+	/*
+	 * Actually execute
+	 */
+	$result_output = '';
+	$result_code   = -255;
+
+	$result = vipgoci_runtime_measure_exec_with_retry(
 		$cmd,
-		'git_cli'
+		array( 0 ),
+		$result_output,
+		$result_code,
+		'git_cli',
+		true
 	);
 
 	if ( null === $result ) {
@@ -587,17 +623,26 @@ function vipgoci_gitrepo_get_file_at_commit(
 	 */
 
 	$cmd = sprintf(
-		'%s -C %s show %s:%s 2>&1',
+		'%s -C %s show %s:%s',
 		escapeshellcmd( 'git' ),
 		escapeshellarg( $local_git_repo ),
 		escapeshellarg( $commit_id ),
 		escapeshellarg( $file_name )
 	);
 
-	/* Actually execute */
-	$result = vipgoci_runtime_measure_shell_exec_with_retry(
+	/*
+	 * Actually execute
+	 */
+	$result_output = '';
+	$result_code   = -255;
+
+	$result = vipgoci_runtime_measure_exec_with_retry(
 		$cmd,
-		'git_cli'
+		array( 0, 128 ),
+		$result_output,
+		$result_code,
+		'git_cli',
+		true
 	);
 
 	if ( null === $result ) {
@@ -618,8 +663,8 @@ function vipgoci_gitrepo_get_file_at_commit(
 	 * this revision, return null.
 	 */
 	if ( strpos(
-		$result,
-		'fatal: Path '
+		strtolower( $result ),
+		'fatal: path '
 	) === 0 ) {
 		return null;
 	}
@@ -632,17 +677,26 @@ function vipgoci_gitrepo_get_file_at_commit(
  */
 function vipgoci_gitrepo_submodules_setup( $local_git_repo ) {
 	$cmd = sprintf(
-		'%s -C %s submodule init && %s -C %s submodule update 2>&1',
+		'%s -C %s submodule init && %s -C %s submodule update',
 		escapeshellcmd( 'git' ),
 		escapeshellarg( $local_git_repo ),
 		escapeshellcmd( 'git' ),
 		escapeshellarg( $local_git_repo )
 	);
 
-	/* Actually execute */
-	$result = vipgoci_runtime_measure_shell_exec_with_retry(
+	/*
+	 * Actually execute
+	 */
+	$result_output = '';
+	$result_code   = -255;
+
+	$result = vipgoci_runtime_measure_exec_with_retry(
 		$cmd,
-		'git_cli'
+		array( 0 ),
+		$result_output,
+		$result_code,
+		'git_cli',
+		true
 	);
 
 	if ( null === $result ) {
@@ -681,15 +735,24 @@ function vipgoci_gitrepo_submodules_list( $local_git_repo ) {
 	 */
 
 	$cmd = sprintf(
-		'%s -C %s submodule 2>&1',
+		'%s -C %s submodule',
 		escapeshellcmd( 'git' ),
 		escapeshellarg( $local_git_repo ),
 	);
 
-	/* Actually execute */
-	$result = vipgoci_runtime_measure_shell_exec_with_retry(
+	/*
+	 * Actually execute
+	 */
+	$result_output = '';
+	$result_code   = -255;
+
+	$result = vipgoci_runtime_measure_exec_with_retry(
 		$cmd,
-		'git_cli'
+		array( 0 ),
+		$result_output,
+		$result_code,
+		'git_cli',
+		true
 	);
 
 	if ( null === $result ) {
@@ -920,7 +983,7 @@ function vipgoci_gitrepo_diffs_fetch_unfiltered(
 	 * as that is what GitHub uses: https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/about-comparing-branches-in-pull-requests#three-dot-and-two-dot-git-diff-comparisons
 	 */
 	$git_diff_cmd = sprintf(
-		'%s -C %s diff %s 2>&1',
+		'%s -C %s diff %s',
 		escapeshellcmd( 'git' ),
 		escapeshellarg( $local_git_repo ),
 		escapeshellarg( $commit_id_a . '...'. $commit_id_b )
@@ -933,10 +996,19 @@ function vipgoci_gitrepo_diffs_fetch_unfiltered(
 		)
 	);
 
-	/* Actually execute */
-	$git_diff_results = vipgoci_runtime_measure_shell_exec_with_retry(
+	/*
+	 * Actually execute.
+	 */
+	$git_diff_results_output = '';
+	$git_diff_results_code   = -255;
+
+	$git_diff_results = vipgoci_runtime_measure_exec_with_retry(
 		$git_diff_cmd,
-		'git_cli'
+		array( 0 ),
+		$git_diff_results_output,
+		$git_diff_results_code,
+		'git_cli',
+		true
 	);
 
 	if ( null === $git_diff_results ) {

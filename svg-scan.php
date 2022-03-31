@@ -33,8 +33,6 @@ function vipgoci_svg_do_scan_with_scanner(
 		escapeshellarg( $temp_file_name )
 	);
 
-	$cmd .= ' 2>&1';
-
 	vipgoci_log(
 		'Running SVG scanner now',
 		array(
@@ -43,10 +41,19 @@ function vipgoci_svg_do_scan_with_scanner(
 		2
 	);
 
-	/* Actually execute */
-	$result = vipgoci_runtime_measure_shell_exec_with_retry(
+	/*
+	 * Actually execute
+	 */
+	$result_output = '';
+	$result_code   = -255;
+
+	$result = vipgoci_runtime_measure_exec_with_retry(
 		$cmd,
-		'svg_scanner_cli'
+		array( 0, 1 ),
+		$result_output,
+		$result_code,
+		'svg_scanner_cli',
+		true
 	);
 
 	return $result;
