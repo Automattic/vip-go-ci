@@ -71,6 +71,7 @@ final class MainRunInitOptionsReviewsTest extends TestCase {
 			'review-comments-ignore'            => '  comment1.|||CoMMENt2  ',
 			'dismiss-stale-reviews'             => 'true',
 			'dismissed-reviews-repost-comments' => 'false',
+			'informational-msg'                 => 'message-string-123',
 			'scan-details-msg-include'          => 'true',
 		);
 
@@ -87,7 +88,9 @@ final class MainRunInitOptionsReviewsTest extends TestCase {
 				'review-comments-total-max'         => 100,
 				'review-comments-ignore'            => array( 'comment1', 'comment2' ),
 				'dismiss-stale-reviews'             => true,
+
 				'dismissed-reviews-repost-comments' => false,
+				'informational-msg'                 => VIPGOCI_IRC_IGNORE_STRING_START . PHP_EOL . 'message-string-123' . PHP_EOL . VIPGOCI_IRC_IGNORE_STRING_END . PHP_EOL,
 				'scan-details-msg-include'          => true,
 				'dismissed-reviews-exclude-reviews-from-team' => array(),
 			),

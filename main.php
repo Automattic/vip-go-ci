@@ -1036,6 +1036,16 @@ function vipgoci_run_init_options_reviews( array &$options ) :void {
 	);
 
 	/*
+	 * Process --informational-msg. Add the IRC ignore strings.
+	 */
+	if ( ! empty( $options['informational-msg'] ) ) {
+		$options['informational-msg'] =
+			VIPGOCI_IRC_IGNORE_STRING_START . PHP_EOL .
+			$options['informational-msg'] . PHP_EOL .
+			VIPGOCI_IRC_IGNORE_STRING_END . PHP_EOL;
+	}
+
+	/*
 	 * Process --scan-details-msg-include
 	 */
 	vipgoci_option_bool_handle(
