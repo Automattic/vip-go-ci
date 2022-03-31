@@ -1,22 +1,52 @@
 <?php
+/**
+ * Test for vipgoci_gitrepo_blame_for_file() function.
+ *
+ * @package Automattic/vip-go-ci
+ */
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+declare(strict_types=1);
+
+namespace Vipgoci\Tests\Integration;
 
 use PHPUnit\Framework\TestCase;
 
+/**
+ * Class that implements the testing.
+ *
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class GitRepoRepoBlameForFileTest extends TestCase {
-	var $options_git = array(
-		'git-path'			=> null,
-		'github-repo-url'		=> null,
-		'repo-owner'			=> null,
-		'repo-name'			=> null,
+	/**
+	 * Git options.
+	 *
+	 * @var $options_git
+	 */
+	private array $options_git = array(
+		'git-path'        => null,
+		'github-repo-url' => null,
+		'repo-owner'      => null,
+		'repo-name'       => null,
 	);
 
-	var $options_git_repo_tests = array(
-		'commit-test-repo-blame-for-file-2'	=> null,
+	/**
+	 * Git repo tests options.
+	 *
+	 * @var $options_git_repo_tests
+	 */
+	private array $options_git_repo_tests = array(
+		'commit-test-repo-blame-for-file-2' => null,
 	);
 
+	/**
+	 * Setup function. Require files, check out git repository, etc.
+	 *
+	 * @return void
+	 */
 	protected function setUp(): void {
+		require_once __DIR__ . '/IncludesForTests.php';
+
 		vipgoci_unittests_get_config_values(
 			'git',
 			$this->options_git
@@ -31,15 +61,32 @@ final class GitRepoRepoBlameForFileTest extends TestCase {
 			$this->options_git,
 			$this->options_git_repo_tests
 		);
-	
-		$this->options[ 'github-token' ] =
+
+		$this->options['github-token'] =
 			vipgoci_unittests_get_config_value(
 				'git-secrets',
 				'github-token',
-				true // Fetch from secrets file
+				true // Fetch from secrets file.
 			);
+
+		$this->options['commit'] =
+			$this->options['commit-test-repo-blame-for-file-2'];
+
+		vipgoci_unittests_output_suppress();
+
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
+
+		vipgoci_unittests_output_unsuppress();
 	}
 
+	/**
+	 * Tear down function, remove repository, clean up variables.
+	 *
+	 * @return void
+	 */
 	protected function tearDown(): void {
 		if ( false !== $this->options['local-git-repo'] ) {
 			vipgoci_unittests_remove_git_repo(
@@ -53,9 +100,14 @@ final class GitRepoRepoBlameForFileTest extends TestCase {
 	}
 
 	/**
+	 * Get 'git blame' for two non-empty files, check if returned
+	 * values are as expected.
+	 *
+	 * @return void
+	 *
 	 * @covers ::vipgoci_gitrepo_blame_for_file
 	 */
-	public function testGitRepoBlameForFile1() {
+	public function testGitRepoBlameForFiles() :void {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
@@ -65,18 +117,6 @@ final class GitRepoRepoBlameForFileTest extends TestCase {
 		if ( -1 === $options_test ) {
 			return;
 		}
-
-		$this->options['commit'] =
-			$this->options['commit-test-repo-blame-for-file-2'];
-
-		vipgoci_unittests_output_suppress();
-
-		$this->options['local-git-repo'] =
-			vipgoci_unittests_setup_git_repo(
-				$this->options
-			);
-
-	
 		if ( false === $this->options['local-git-repo'] ) {
 			$this->markTestSkipped(
 				'Could not set up git repository: ' .
@@ -87,6 +127,7 @@ final class GitRepoRepoBlameForFileTest extends TestCase {
 		$this->options['token'] =
 			$this->options['github-token'];
 
+		vipgoci_unittests_output_suppress();
 
 		$ret = vipgoci_gitrepo_blame_for_file(
 			$this->options['commit'],
@@ -99,17 +140,17 @@ final class GitRepoRepoBlameForFileTest extends TestCase {
 		$this->assertSame(
 			array(
 				array(
-					'commit_id'	=> '4869335189752462325aaef4838c9761d56195ce',
-					'file_name'	=> 'README.md',
-					'line_no'	=> 1,
-					'content'	=> '# vip-go-ci-testing',
+					'commit_id' => '4869335189752462325aaef4838c9761d56195ce',
+					'file_name' => 'README.md',
+					'line_no'   => 1,
+					'content'   => '# vip-go-ci-testing',
 				),
 				array(
-					'commit_id'	=> '45b9e6479dfba4d54b584d53ace1814ce155d35e',
-					'file_name'	=> 'README.md',
-					'line_no'	=> 2,
-					'content'	=> 'Pull-Requests, commits and data to test <a href="https://github.com/automattic/vip-go-ci/">vip-go-ci</a>\'s functionality. Please do not remove or alter unless you\'ve contacted the VIP Team first. ',
-				)
+					'commit_id' => '45b9e6479dfba4d54b584d53ace1814ce155d35e',
+					'file_name' => 'README.md',
+					'line_no'   => 2,
+					'content'   => 'Pull-Requests, commits and data to test <a href="https://github.com/automattic/vip-go-ci/">vip-go-ci</a>\'s functionality. Please do not remove or alter unless you\'ve contacted the VIP Team first. ',
+				),
 			),
 			$ret
 		);
@@ -127,198 +168,225 @@ final class GitRepoRepoBlameForFileTest extends TestCase {
 		$this->assertSame(
 			array(
 				array(
-					'commit_id'	=> 'bb001b24bf6bbdd98004ea49511a4290e173a965',
-					'file_name'	=> 'file1.txt',
-					'line_no'	=> 1,
-					'content'	=> 'Line 1',
+					'commit_id' => 'bb001b24bf6bbdd98004ea49511a4290e173a965',
+					'file_name' => 'file1.txt',
+					'line_no'   => 1,
+					'content'   => 'Line 1',
 				),
 				array(
-					'commit_id'	=> 'bb001b24bf6bbdd98004ea49511a4290e173a965',
-					'file_name'	=> 'file1.txt',
-					'line_no'	=> 2,
-					'content'	=> '',
+					'commit_id' => 'bb001b24bf6bbdd98004ea49511a4290e173a965',
+					'file_name' => 'file1.txt',
+					'line_no'   => 2,
+					'content'   => '',
 				),
 				array(
-					'commit_id'	=> '179ed3fa92f15c65b127adb459974d65ff8df053',
-					'file_name'	=> 'file1.txt',
-					'line_no'	=> 3,
-					'content'	=> 'Line 3',
+					'commit_id' => '179ed3fa92f15c65b127adb459974d65ff8df053',
+					'file_name' => 'file1.txt',
+					'line_no'   => 3,
+					'content'   => 'Line 3',
 				),
 				array(
-					'commit_id'	=> '179ed3fa92f15c65b127adb459974d65ff8df053',
-					'file_name'	=> 'file1.txt',
-					'line_no'	=> 4,
-					'content'	=> '',
+					'commit_id' => '179ed3fa92f15c65b127adb459974d65ff8df053',
+					'file_name' => 'file1.txt',
+					'line_no'   => 4,
+					'content'   => '',
 				),
 				array(
-					'commit_id'	=> '5292767197e77cbd1259671913bd2912b24d7e10',
-					'file_name'	=> 'file1.txt',
-					'line_no'	=> 5,
-					'content'	=> 'Line 5',
+					'commit_id' => '5292767197e77cbd1259671913bd2912b24d7e10',
+					'file_name' => 'file1.txt',
+					'line_no'   => 5,
+					'content'   => 'Line 5',
 				),
 				array(
-					'commit_id'	=> '5292767197e77cbd1259671913bd2912b24d7e10',
-					'file_name'	=> 'file1.txt',
-					'line_no'	=> 6,
-					'content'	=> '',
+					'commit_id' => '5292767197e77cbd1259671913bd2912b24d7e10',
+					'file_name' => 'file1.txt',
+					'line_no'   => 6,
+					'content'   => '',
 				),
 				array(
-					'commit_id'	=> '179ed3fa92f15c65b127adb459974d65ff8df053',
-					'file_name'	=> 'file1.txt',
-					'line_no'	=> 7,
-					'content'	=> 'Line 7',
+					'commit_id' => '179ed3fa92f15c65b127adb459974d65ff8df053',
+					'file_name' => 'file1.txt',
+					'line_no'   => 7,
+					'content'   => 'Line 7',
 				),
 				array(
-					'commit_id'	=> '179ed3fa92f15c65b127adb459974d65ff8df053',
-					'file_name'	=> 'file1.txt',
-					'line_no'	=> 8,
-					'content'	=> '',
+					'commit_id' => '179ed3fa92f15c65b127adb459974d65ff8df053',
+					'file_name' => 'file1.txt',
+					'line_no'   => 8,
+					'content'   => '',
 				),
 				array(
-					'commit_id'	=> 'bf3d2edfa286b3531d4f0d491fbb2ce27a75af9e',
-					'file_name'	=> 'file1.txt',
-					'line_no'	=> 9,
-					'content'	=> 'echo "1";',
+					'commit_id' => 'bf3d2edfa286b3531d4f0d491fbb2ce27a75af9e',
+					'file_name' => 'file1.txt',
+					'line_no'   => 9,
+					'content'   => 'echo "1";',
 				),
 				array(
-					'commit_id'	=> 'bf3d2edfa286b3531d4f0d491fbb2ce27a75af9e',
-					'file_name'	=> 'file1.txt',
-					'line_no'	=> 10,
-					'content'	=> 'echo "2";',
+					'commit_id' => 'bf3d2edfa286b3531d4f0d491fbb2ce27a75af9e',
+					'file_name' => 'file1.txt',
+					'line_no'   => 10,
+					'content'   => 'echo "2";',
 				),
 				array(
-					'commit_id'	=> 'bf3d2edfa286b3531d4f0d491fbb2ce27a75af9e',
-					'file_name'	=> 'file1.txt',
-					'line_no'	=> 11,
-					'content'	=> 'echo "3";',
+					'commit_id' => 'bf3d2edfa286b3531d4f0d491fbb2ce27a75af9e',
+					'file_name' => 'file1.txt',
+					'line_no'   => 11,
+					'content'   => 'echo "3";',
 				),
 				array(
-					'commit_id'	=> 'bf3d2edfa286b3531d4f0d491fbb2ce27a75af9e',
-					'file_name'	=> 'file1.txt',
-					'line_no'	=> 12,
-					'content'	=> 'echo "4";',
+					'commit_id' => 'bf3d2edfa286b3531d4f0d491fbb2ce27a75af9e',
+					'file_name' => 'file1.txt',
+					'line_no'   => 12,
+					'content'   => 'echo "4";',
 				),
 				array(
-					'commit_id'	=> 'bf3d2edfa286b3531d4f0d491fbb2ce27a75af9e',
-					'file_name'	=> 'file1.txt',
-					'line_no'	=> 13,
-					'content'	=> 'echo "5";',
+					'commit_id' => 'bf3d2edfa286b3531d4f0d491fbb2ce27a75af9e',
+					'file_name' => 'file1.txt',
+					'line_no'   => 13,
+					'content'   => 'echo "5";',
 				),
 				array(
-					'commit_id'	=> 'bf3d2edfa286b3531d4f0d491fbb2ce27a75af9e',
-					'file_name'	=> 'file1.txt',
-					'line_no'	=> 14,
-					'content'	=> 'echo "6";',
+					'commit_id' => 'bf3d2edfa286b3531d4f0d491fbb2ce27a75af9e',
+					'file_name' => 'file1.txt',
+					'line_no'   => 14,
+					'content'   => 'echo "6";',
 				),
 				array(
-					'commit_id'	=> 'bf3d2edfa286b3531d4f0d491fbb2ce27a75af9e',
-					'file_name'	=> 'file1.txt',
-					'line_no'	=> 15,
-					'content'	=> 'echo "7";',
+					'commit_id' => 'bf3d2edfa286b3531d4f0d491fbb2ce27a75af9e',
+					'file_name' => 'file1.txt',
+					'line_no'   => 15,
+					'content'   => 'echo "7";',
 				),
 				array(
-					'commit_id'	=> 'bf3d2edfa286b3531d4f0d491fbb2ce27a75af9e',
-					'file_name'	=> 'file1.txt',
-					'line_no'	=> 16,
-					'content'	=> 'echo "8";',
+					'commit_id' => 'bf3d2edfa286b3531d4f0d491fbb2ce27a75af9e',
+					'file_name' => 'file1.txt',
+					'line_no'   => 16,
+					'content'   => 'echo "8";',
 				),
 				array(
-					'commit_id'	=> 'bf3d2edfa286b3531d4f0d491fbb2ce27a75af9e',
-					'file_name'	=> 'file1.txt',
-					'line_no'	=> 17,
-					'content'	=> 'echo "9";',
+					'commit_id' => 'bf3d2edfa286b3531d4f0d491fbb2ce27a75af9e',
+					'file_name' => 'file1.txt',
+					'line_no'   => 17,
+					'content'   => 'echo "9";',
 				),
 				array(
-					'commit_id'	=> 'bf3d2edfa286b3531d4f0d491fbb2ce27a75af9e',
-					'file_name'	=> 'file1.txt',
-					'line_no'	=> 18,
-					'content'	=> 'echo "10";',
+					'commit_id' => 'bf3d2edfa286b3531d4f0d491fbb2ce27a75af9e',
+					'file_name' => 'file1.txt',
+					'line_no'   => 18,
+					'content'   => 'echo "10";',
 				),
 				array(
-					'commit_id'	=> 'bf3d2edfa286b3531d4f0d491fbb2ce27a75af9e',
-					'file_name'	=> 'file1.txt',
-					'line_no'	=> 19,
-					'content'	=> 'echo "11";',
+					'commit_id' => 'bf3d2edfa286b3531d4f0d491fbb2ce27a75af9e',
+					'file_name' => 'file1.txt',
+					'line_no'   => 19,
+					'content'   => 'echo "11";',
 				),
 				array(
-					'commit_id'	=> 'bf3d2edfa286b3531d4f0d491fbb2ce27a75af9e',
-					'file_name'	=> 'file1.txt',
-					'line_no'	=> 20,
-					'content'	=> 'echo "12";',
+					'commit_id' => 'bf3d2edfa286b3531d4f0d491fbb2ce27a75af9e',
+					'file_name' => 'file1.txt',
+					'line_no'   => 20,
+					'content'   => 'echo "12";',
 				),
 				array(
-					'commit_id'	=> 'bf3d2edfa286b3531d4f0d491fbb2ce27a75af9e',
-					'file_name'	=> 'file1.txt',
-					'line_no'	=> 21,
-					'content'	=> 'echo "13";',
+					'commit_id' => 'bf3d2edfa286b3531d4f0d491fbb2ce27a75af9e',
+					'file_name' => 'file1.txt',
+					'line_no'   => 21,
+					'content'   => 'echo "13";',
 				),
 				array(
-					'commit_id'	=> 'bf3d2edfa286b3531d4f0d491fbb2ce27a75af9e',
-					'file_name'	=> 'file1.txt',
-					'line_no'	=> 22,
-					'content'	=> 'echo "14";',
+					'commit_id' => 'bf3d2edfa286b3531d4f0d491fbb2ce27a75af9e',
+					'file_name' => 'file1.txt',
+					'line_no'   => 22,
+					'content'   => 'echo "14";',
 				),
 				array(
-					'commit_id'	=> 'bf3d2edfa286b3531d4f0d491fbb2ce27a75af9e',
-					'file_name'	=> 'file1.txt',
-					'line_no'	=> 23,
-					'content'	=> 'echo "15";',
+					'commit_id' => 'bf3d2edfa286b3531d4f0d491fbb2ce27a75af9e',
+					'file_name' => 'file1.txt',
+					'line_no'   => 23,
+					'content'   => 'echo "15";',
 				),
 				array(
-					'commit_id'	=> 'ac5aa2f4199906a2dcb335f97ec053995a59c546',
-					'file_name'	=> 'file1.txt',
-					'line_no'	=> 24,
-					'content'	=> '',
+					'commit_id' => 'ac5aa2f4199906a2dcb335f97ec053995a59c546',
+					'file_name' => 'file1.txt',
+					'line_no'   => 24,
+					'content'   => '',
 				),
 				array(
-					'commit_id'	=> 'bf3d2edfa286b3531d4f0d491fbb2ce27a75af9e',
-					'file_name'	=> 'file1.txt',
-					'line_no'	=> 25,
-					'content'	=> 'echo "495";',
+					'commit_id' => 'bf3d2edfa286b3531d4f0d491fbb2ce27a75af9e',
+					'file_name' => 'file1.txt',
+					'line_no'   => 25,
+					'content'   => 'echo "495";',
 				),
 				array(
-					'commit_id'	=> 'bf3d2edfa286b3531d4f0d491fbb2ce27a75af9e',
-					'file_name'	=> 'file1.txt',
-					'line_no'	=> 26,
-					'content'	=> 'echo "496";',
+					'commit_id' => 'bf3d2edfa286b3531d4f0d491fbb2ce27a75af9e',
+					'file_name' => 'file1.txt',
+					'line_no'   => 26,
+					'content'   => 'echo "496";',
 				),
 				array(
-					'commit_id'	=> 'bf3d2edfa286b3531d4f0d491fbb2ce27a75af9e',
-					'file_name'	=> 'file1.txt',
-					'line_no'	=> 27,
-					'content'	=> 'echo "497";',
+					'commit_id' => 'bf3d2edfa286b3531d4f0d491fbb2ce27a75af9e',
+					'file_name' => 'file1.txt',
+					'line_no'   => 27,
+					'content'   => 'echo "497";',
 				),
 				array(
-					'commit_id'	=> 'bf3d2edfa286b3531d4f0d491fbb2ce27a75af9e',
-					'file_name'	=> 'file1.txt',
-					'line_no'	=> 28,
-					'content'	=> 'echo "498";',
+					'commit_id' => 'bf3d2edfa286b3531d4f0d491fbb2ce27a75af9e',
+					'file_name' => 'file1.txt',
+					'line_no'   => 28,
+					'content'   => 'echo "498";',
 				),
 				array(
-					'commit_id'	=> 'bf3d2edfa286b3531d4f0d491fbb2ce27a75af9e',
-					'file_name'	=> 'file1.txt',
-					'line_no'	=> 29,
-					'content'	=> 'echo "499";',
+					'commit_id' => 'bf3d2edfa286b3531d4f0d491fbb2ce27a75af9e',
+					'file_name' => 'file1.txt',
+					'line_no'   => 29,
+					'content'   => 'echo "499";',
 				),
 				array(
-					'commit_id'	=> 'bf3d2edfa286b3531d4f0d491fbb2ce27a75af9e',
-					'file_name'	=> 'file1.txt',
-					'line_no'	=> 30,
-					'content'	=> 'echo "500";',
+					'commit_id' => 'bf3d2edfa286b3531d4f0d491fbb2ce27a75af9e',
+					'file_name' => 'file1.txt',
+					'line_no'   => 30,
+					'content'   => 'echo "500";',
 				),
 				array(
-					'commit_id'	=> 'bf3d2edfa286b3531d4f0d491fbb2ce27a75af9e',
-					'file_name'	=> 'file1.txt',
-					'line_no'	=> 31,
-					'content'	=> '',
+					'commit_id' => 'bf3d2edfa286b3531d4f0d491fbb2ce27a75af9e',
+					'file_name' => 'file1.txt',
+					'line_no'   => 31,
+					'content'   => '',
 				),
 				array(
-					'commit_id'	=> 'bb001b24bf6bbdd98004ea49511a4290e173a965',
-					'file_name'	=> 'file1.txt',
-					'line_no'	=> 32,
-					'content'	=> 'Last line of file',
+					'commit_id' => 'bb001b24bf6bbdd98004ea49511a4290e173a965',
+					'file_name' => 'file1.txt',
+					'line_no'   => 32,
+					'content'   => 'Last line of file',
 				),
 			),
+			$ret
+		);
+	}
+
+	/**
+	 * Get 'git blame' for an empty file.
+	 *
+	 * @return void
+	 *
+	 * @covers ::vipgoci_gitrepo_blame_for_file
+	 */
+	public function testGitRepoBlameForEmptyFile() {
+		/*
+		 * Check empty file.
+		 */
+		vipgoci_unittests_output_suppress();
+
+		$ret = vipgoci_gitrepo_blame_for_file(
+			$this->options['commit'],
+			'file2.txt',
+			$this->options['local-git-repo']
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		$this->assertSame(
+			array(),
 			$ret
 		);
 	}

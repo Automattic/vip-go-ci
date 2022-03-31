@@ -69,12 +69,18 @@ function vipgoci_is_number_of_lines_valid( string $temp_file_name, string $file_
 	 * if it is > than the default limit (defined at defined)
 	 * the bot won't scan it
 	 */
-	$cmd = sprintf( 'wc -l %s | awk \'{print $1;}\' 2>&1', escapeshellcmd( $temp_file_name ) );
+	$cmd = sprintf( 'wc -l %s | awk \'{print $1;}\'', escapeshellcmd( $temp_file_name ) );
 
+	$output_2        = '';
+	$output_res_code = -255;
 
-	$output = vipgoci_runtime_measure_shell_exec_with_retry(
+	$output = vipgoci_runtime_measure_exec_with_retry(
 		$cmd,
-		'file_validation'
+		array( 0 ),
+		$output_2,
+		$output_res_code,
+		'file_validation',
+		true
 	);
 
 	vipgoci_log(

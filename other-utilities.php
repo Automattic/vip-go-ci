@@ -28,14 +28,21 @@ function vipgoci_util_php_interpreter_get_version(
 	}
 
 	$php_cmd = sprintf(
-		'( %s %s 2>&1 )',
+		'%s %s',
 		escapeshellcmd( $php_path ),
 		escapeshellarg( '-v' )
 	);
 
-	$php_output = vipgoci_runtime_measure_shell_exec_with_retry(
+	$php_output_2    = '';
+	$php_result_code = -255;
+
+	$php_output = vipgoci_runtime_measure_exec_with_retry(
 		$php_cmd,
-		'php_cli'
+		array( 0 ),
+		$php_output_2,
+		$php_result_code,
+		'php_cli',
+		false
 	);
 
 	if ( null === $php_output ) {
