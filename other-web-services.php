@@ -22,6 +22,95 @@ function vipgoci_irc_api_alert_queue(
 	$msg_queue[] = $message;
 }
 
+/**
+ * Remove any string sections found in string bounded between the
+ * VIPGOCI_IRC_IGNORE_STRING_START and VIPGOCI_IRC_IGNORE_STRING_END
+ * string constants.
+ *
+ * @param string $message Message string to filter.
+ *
+ * @return string Message with ignorable strings removed.
+ */
+function vipgoci_irc_api_filter_ignorable_strings(
+	string $message
+) :string {
+	do {
+		$ignore_section_start = strpos( $message, VIPGOCI_IRC_IGNORE_STRING_START );
+
+		if ( false !== $ignore_section_start ) {
+			/*
+			 * Ensure the end mark is relative to the start mark.
+			 * This is so we can process multiple such marks in one string.
+			 */
+			$ignore_section_end = strpos(
+				$message,
+				VIPGOCI_IRC_IGNORE_STRING_END,
+				$ignore_section_start
+			);
+		} else {
+			$ignore_section_end = false;
+		}
+
+		if (
+			( false === $ignore_section_start ) ||
+			( false === $ignore_section_end )
+		) {
+			// Neither string was found, stop processing here.
+			continue;
+		}
+
+		if ( $ignore_section_end > $ignore_section_start ) {
+			// End mark should always come after start mark.
+			$message = substr_replace(
+				$message,
+				'',
+				$ignore_section_start,
+				( $ignore_section_end + strlen( VIPGOCI_IRC_IGNORE_STRING_END ) ) -
+					$ignore_section_start
+			);
+		} elseif ( $ignore_section_end <= $ignore_section_start ) {
+			// Invalid usage.
+			vipgoci_sysexit(
+				'Incorrect usage of VIPGOCI_IRC_IGNORE_STRING_START and VIPGOCI_IRC_IGNORE_STRING_END; former should be placed before the latter',
+				array(
+					'message' => $message,
+				)
+			);
+		}
+	} while (
+		( false !== $ignore_section_start ) &&
+		( false !== $ignore_section_end )
+	);
+
+	return $message;
+}
+
+/**
+ * Clean IRC ignorable constants away from message specified.
+ *
+ * Useful for functions submitting messages to GitHub, were the
+ * constants should not be part of the HTML submitted.
+ *
+ * @param string $message Message to process.
+ *
+ * @return string Message, with constants removed (if any).
+ */
+function vipgoci_irc_api_clean_ignorable_constants(
+	string $message
+) :string {
+	return str_replace(
+		array(
+			VIPGOCI_IRC_IGNORE_STRING_START,
+			VIPGOCI_IRC_IGNORE_STRING_END,
+		),
+		array(
+			'',
+			'',
+		),
+		$message
+	);
+}
+
 /*
  * Make messages in IRC queue unique, but add
  * a prefix to those messages that were not unique
@@ -80,10 +169,18 @@ function vipgoci_irc_api_alerts_send(
 	$botname,
 	$channel
 ) {
+	// Get IRC message queue.
 	$msg_queue = vipgoci_irc_api_alert_queue(
 		null, true
 	);
 
+	// Filter away removable strings.
+	$msg_queue = array_map(
+		'vipgoci_irc_api_filter_ignorable_strings',
+		$msg_queue
+	);
+
+	// Ensure all strings we log are unique; if not make unique and add prefix.
 	$msg_queue = vipgoci_irc_api_alert_queue_unique(
 		$msg_queue
 	);
