@@ -515,7 +515,8 @@ function vipgoci_http_api_fetch_url(
 	string|array $http_api_token,
 	bool $fatal_error_on_failure = true
 ) :string|null {
-	$curl_retries = 0;
+	$curl_retries     = 0;
+	$curl_retries_max = 4;
 
 	/*
 	 * Attempt to send request -- retry if
@@ -627,27 +628,43 @@ function vipgoci_http_api_fetch_url(
 				( isset( $resp_headers['status'][0] ) ) &&
 				( 500 <= (int) $resp_headers['status'][0] ) &&
 				( 600 > (int) $resp_headers['status'][0] )
+			) ||
+			(
+				( isset( $resp_headers['retry-after'] ) ) &&
+				( intval( $resp_headers['retry-after'] ) > 0 )
 			)
 		) {
+			if (
+				( isset( $resp_headers['retry-after'] ) ) &&
+				( intval( $resp_headers['retry-after'] ) > 0 )
+			) {
+				$retry_sleep = intval( $resp_headers['retry-after'] ) + 1;
+			} else {
+				$retry_sleep = 10;
+			}
+
 			vipgoci_log(
-				'Sending request to HTTP API failed, will ' .
-					'retry in a bit... ',
+				'Sending GET request to HTTP API failed' .
+					( ( $curl_retries < $curl_retries_max ) ?
+					', will retry in ' . (string) $retry_sleep . ' second(s)' :
+					'' ),
 				array(
-					'http_api_url'        => $http_api_url,
-					'curl_retries'        => $curl_retries,
-					'curl_errno'          => curl_errno(
+					'http_api_url'          => $http_api_url,
+					'curl_retries'          => $curl_retries,
+					'curl_errno'            => curl_errno(
 						$ch
 					),
-					'curl_errormsg'       => curl_strerror(
+					'curl_errormsg'         => curl_strerror(
 						curl_errno( $ch )
 					),
-					'http_status'         =>
+					'http_status'           =>
 						isset( $resp_headers['status'] ) ?
 						$resp_headers['status'] : null,
-					'http_response'       => $resp_data,
-					'x-github-request-id' =>
+					'x-github-request-id'   =>
 						isset( $resp_headers['x-github-request-id'] ) ?
 						$resp_headers['x-github-request-id'] : null,
+					'http_response_headers' => $resp_headers,
+					'http_response_body'    => $resp_data,
 				),
 				0,
 				true // Log to IRC.
@@ -655,7 +672,7 @@ function vipgoci_http_api_fetch_url(
 
 			$resp_data = false;
 
-			sleep( 10 );
+			sleep( $retry_sleep );
 		}
 
 		vipgoci_http_api_rate_limits_check(
@@ -672,7 +689,7 @@ function vipgoci_http_api_fetch_url(
 
 	} while (
 		( false === $resp_data ) &&
-		( $curl_retries++ < 4 )
+		( $curl_retries++ < $curl_retries_max )
 	);
 
 	if (
@@ -721,6 +738,9 @@ function vipgoci_http_api_post_url(
 	 * Actually send a request to HTTP API -- make sure
 	 * to retry if something fails.
 	 */
+	$retry_cnt = 0;
+	$retry_max = 4;
+
 	do {
 		/*
 		 * By default, assume request went through okay.
@@ -811,8 +831,6 @@ function vipgoci_http_api_post_url(
 		vipgoci_counter_report( VIPGOCI_COUNTERS_DO, 'http_api_request_post', 1 );
 
 		$resp_data = curl_exec( $ch );
-		// @todo: Retry request when $resp_data === false
-		// @todo: maximum retries.
 
 		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'http_api_request_post' );
 
@@ -821,34 +839,37 @@ function vipgoci_http_api_post_url(
 			null
 		);
 
-		/*
-		 * Allow certain statuses, depending on type of request
-		 */
-		if (
+		if ( false === $resp_data ) {
+			// Request failed, retry.
+			$retry_req = true;
+
+			// Retry in one second.
+			$retry_sleep = 1;
+
+			// Indicate request failed.
+			$ret_val = -1;
+		} elseif (
+			// Allow certain statuses, depending on type of request.
 			(
 				( false === $http_delete ) &&
+				( isset( $resp_headers['status'][0] ) ) &&
 				( intval( $resp_headers['status'][0] ) !== 200 ) &&
 				( intval( $resp_headers['status'][0] ) !== 201 ) &&
 				( intval( $resp_headers['status'][0] ) !== 100 )
 			)
-
 			||
-
 			(
 				( true === $http_delete ) &&
+				( isset( $resp_headers['status'][0] ) ) &&
 				( intval( $resp_headers['status'][0] ) !== 204 ) &&
 				( intval( $resp_headers['status'][0] ) !== 200 )
 			)
 		) {
-			/*
-			 * Set default wait period between requests
-			 */
-			$retry_sleep = 10;
-
-			/*
-			 * Set default return value.
-			 */
+			// Indicate request failed.
 			$ret_val = -1;
+
+			// Set wait period between requests. May be altered.
+			$retry_sleep = 10;
 
 			/*
 			 * Figure out if to retry.
@@ -872,7 +893,7 @@ function vipgoci_http_api_post_url(
 				$retry_req   = true;
 				$retry_sleep = intval(
 					$resp_headers['retry-after']
-				);
+				) + 1;
 			} elseif (
 				( false !== $resp_data ) &&
 				( isset( $resp_data->message ) ) &&
@@ -898,20 +919,41 @@ function vipgoci_http_api_post_url(
 			) {
 				$retry_req = false;
 			}
+		}
 
+		if ( -1 === $ret_val ) {
 			vipgoci_log(
-				'HTTP API reported an error' .
-					( true === $retry_req ?
-					' will retry request in ' . (string) $retry_sleep . ' seconds' :
-					'' ),
+				( false === $resp_data ?
+					'Sending POST request to HTTP API failed' :
+					'HTTP API reported an error during POST request'
+				) .
+				( ( true === $retry_req ) && ( $retry_cnt < $retry_max ) ?
+					', will retry request in ' . (string) $retry_sleep . ' second(s)' :
+					''
+				),
 				array(
 					'http_api_url'          => $http_api_url,
+					'retry_cnt'             => $retry_cnt,
+					'curl_errno'            => curl_errno(
+						$ch
+					),
+					'curl_errormsg'         => curl_strerror(
+						curl_errno( $ch )
+					),
+					'http_status'           =>
+						isset( $resp_headers['status'] ) ?
+						$resp_headers['status'] : null,
+					'x-github-request-id'   =>
+						isset( $resp_headers['x-github-request-id'] ) ?
+						$resp_headers['x-github-request-id'] : null,
 					'http_response_headers' => $resp_headers,
-					'http_reponse_body'     => $resp_data,
-				)
+					'http_response_body'    => $resp_data,
+				),
+				0,
+				true // Log to IRC.
 			);
 
-			sleep( $retry_sleep + 1 );
+			sleep( $retry_sleep );
 		}
 
 		vipgoci_http_api_rate_limits_check(
@@ -925,8 +967,10 @@ function vipgoci_http_api_post_url(
 		);
 
 		curl_close( $ch );
-
-	} while ( true === $retry_req );
+	} while (
+		( true === $retry_req ) &&
+		( $retry_cnt++ < $retry_max )
+	);
 
 	return $ret_val;
 }
@@ -947,6 +991,9 @@ function vipgoci_http_api_put_url(
 	array $http_api_postfields,
 	string $http_api_token
 ) :int {
+	$retry_cnt = 0;
+	$retry_max = 4;
+
 	/*
 	 * Actually send a request to HTTP API -- make sure
 	 * to retry if something fails.
@@ -1030,8 +1077,6 @@ function vipgoci_http_api_put_url(
 
 		$resp_data = curl_exec( $ch );
 
-		// @todo: Retry request when $resp_data === false.
-
 		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'http_api_put' );
 
 		$resp_headers = vipgoci_curl_headers(
@@ -1039,13 +1084,23 @@ function vipgoci_http_api_put_url(
 			null
 		);
 
-		/*
-		 * Assume 200 for success, everything else for failure.
-		 */
-		if (
+		if ( false === $resp_data ) {
+			// Indicate failure.
+			$ret_val = -1;
+
+			// Retry in one second.
+			$retry_sleep = 1;
+
+			// Set to retry.
+			$retry_req = true;
+		} elseif (
 			( isset( $resp_headers['status'][0] ) ) &&
 			( intval( $resp_headers['status'][0] ) !== 200 )
 		) {
+			/*
+			 * We assume status 200 for success, everything else for failure.
+			 */
+
 			// Set default wait period between requests.
 			$retry_sleep = 10;
 
@@ -1071,7 +1126,7 @@ function vipgoci_http_api_put_url(
 				$retry_req   = true;
 				$retry_sleep = intval(
 					$resp_headers['retry-after']
-				);
+				) + 1;
 			} elseif (
 				( isset( $resp_data->message ) ) &&
 				( 'Validation Failed' === $resp_data->message ) &&
@@ -1092,21 +1147,40 @@ function vipgoci_http_api_put_url(
 			) {
 				$retry_req = false;
 			}
+		}
 
+		if ( -1 === $ret_val ) {
 			vipgoci_log(
-				'HTTP API reported an error' .
-					( true === $retry_req ?
-					' will retry request in ' .
-					(string) $retry_sleep . ' seconds' :
-					'' ),
+				( false === $resp_data ?
+					'Sending PUT request to HTTP API failed' :
+					'HTTP API reported an error during PUT request'
+				) .
+				( ( true === $retry_req ) && ( $retry_cnt < $retry_max ) ?
+				', will retry request in ' . (string) $retry_sleep . ' second(s)' :
+				'' ),
 				array(
 					'http_api_url'          => $http_api_url,
+					'retry_cnt'             => $retry_cnt,
+					'curl_errno'            => curl_errno(
+						$ch
+					),
+					'curl_errormsg'         => curl_strerror(
+						curl_errno( $ch )
+					),
+					'http_status'           =>
+						isset( $resp_headers['status'] ) ?
+						$resp_headers['status'] : null,
+					'x-github-request-id'   =>
+						isset( $resp_headers['x-github-request-id'] ) ?
+						$resp_headers['x-github-request-id'] : null,
 					'http_response_headers' => $resp_headers,
 					'http_reponse_body'     => $resp_data,
-				)
+				),
+				0,
+				true // Log to IRC.
 			);
 
-			sleep( $retry_sleep + 1 );
+			sleep( $retry_sleep );
 		}
 
 		vipgoci_http_api_rate_limits_check(
@@ -1121,7 +1195,10 @@ function vipgoci_http_api_put_url(
 
 		curl_close( $ch );
 
-	} while ( true === $retry_req );
+	} while (
+		( true === $retry_req ) &&
+		( $retry_cnt++ < $retry_max )
+	);
 
 	return $ret_val;
 }
