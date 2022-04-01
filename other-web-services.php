@@ -23,9 +23,9 @@ function vipgoci_irc_api_alert_queue(
 }
 
 /**
- * Remove any string sections found in string bounded between the
+ * Remove any sections found in $message string bounded between the
  * VIPGOCI_IRC_IGNORE_STRING_START and VIPGOCI_IRC_IGNORE_STRING_END
- * string constants.
+ * constants.
  *
  * @param string $message Message string to filter.
  *
