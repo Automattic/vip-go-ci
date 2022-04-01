@@ -38,17 +38,20 @@ function vipgoci_irc_api_filter_ignorable_strings(
 		$ignore_section_start = strpos( $message, VIPGOCI_IRC_IGNORE_STRING_START );
 
 		if ( false !== $ignore_section_start ) {
-			/*
-			 * Ensure the end mark is relative to the start mark.
-			 * This is so we can process multiple such marks in one string.
-			 */
 			$ignore_section_end = strpos(
 				$message,
 				VIPGOCI_IRC_IGNORE_STRING_END,
-				$ignore_section_start
+				0 // From string start; needed for check below.
+			);
+
+			$ignore_section_start_2 = strpos(
+				$message,
+				VIPGOCI_IRC_IGNORE_STRING_START,
+				$ignore_section_start + strlen( VIPGOCI_IRC_IGNORE_STRING_START ) // Needed for check below.
 			);
 		} else {
-			$ignore_section_end = false;
+			$ignore_section_end     = false;
+			$ignore_section_start_2 = false;
 		}
 
 		if (
@@ -59,22 +62,38 @@ function vipgoci_irc_api_filter_ignorable_strings(
 			continue;
 		}
 
-		if ( $ignore_section_end > $ignore_section_start ) {
-			// End mark should always come after start mark.
+		if ( $ignore_section_end <= $ignore_section_start ) {
+			// Invalid usage.
+			$ignore_section_end = false; // For unit testing, to ensure loop ends.
+
+			vipgoci_sysexit(
+				'Incorrect usage of VIPGOCI_IRC_IGNORE_STRING_START and VIPGOCI_IRC_IGNORE_STRING_END; former should be placed before the latter',
+				array(
+					'message' => $message,
+				)
+			);
+
+		} elseif (
+			( false !== $ignore_section_start_2 ) &&
+			( $ignore_section_end > $ignore_section_start_2 )
+		) {
+			$ignore_section_end = false; // For unit testing, to ensure loop ends.
+
+			// Invalid usage.
+			vipgoci_sysexit(
+				'Incorrect usage of VIPGOCI_IRC_IGNORE_STRING_START and VIPGOCI_IRC_IGNORE_STRING_END; embedding one ignore string within another is not allowed',
+				array(
+					'message' => $message,
+				)
+			);
+		} elseif ( $ignore_section_end > $ignore_section_start ) {
+			// Correct usage; end constant should always come after start constant.
 			$message = substr_replace(
 				$message,
 				'',
 				$ignore_section_start,
 				( $ignore_section_end + strlen( VIPGOCI_IRC_IGNORE_STRING_END ) ) -
 					$ignore_section_start
-			);
-		} elseif ( $ignore_section_end <= $ignore_section_start ) {
-			// Invalid usage.
-			vipgoci_sysexit(
-				'Incorrect usage of VIPGOCI_IRC_IGNORE_STRING_START and VIPGOCI_IRC_IGNORE_STRING_END; former should be placed before the latter',
-				array(
-					'message' => $message,
-				)
 			);
 		}
 	} while (
@@ -93,7 +112,7 @@ function vipgoci_irc_api_filter_ignorable_strings(
  *
  * @param string $message Message to process.
  *
- * @return string Message, with constants removed (if any).
+ * @return string Message with constants removed (if any).
  */
 function vipgoci_irc_api_clean_ignorable_constants(
 	string $message
