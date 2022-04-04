@@ -126,6 +126,20 @@ define(
 );
 
 /*
+ * Indicates which sections of log
+ * messages should not be logged to IRC.
+ */
+define(
+	'VIPGOCI_IRC_IGNORE_STRING_START',
+	'<!-- vip-go-ci-irc-ignore-start -->'
+);
+
+define(
+	'VIPGOCI_IRC_IGNORE_STRING_END',
+	'<!-- vip-go-ci-irc-ignore-end -->'
+);
+
+/*
  * Define exit-codes
  */
 define( 'VIPGOCI_EXIT_NORMAL', 0 );

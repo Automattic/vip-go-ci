@@ -436,7 +436,9 @@ function vipgoci_report_create_scan_details_auto_approve_configuration(
 function vipgoci_report_create_scan_details(
 	array $options_copy
 ) :string {
-	$details  = '<details>' . PHP_EOL;
+	$details = PHP_EOL . VIPGOCI_IRC_IGNORE_STRING_START . PHP_EOL;
+
+	$details .= '<details>' . PHP_EOL;
 	$details .= '<hr />' . PHP_EOL;
 	$details .= '<summary>Scan run detail</summary>' . PHP_EOL;
 
@@ -461,6 +463,8 @@ function vipgoci_report_create_scan_details(
 	$details .= '</table>' . PHP_EOL;
 
 	$details .= '</details>' . PHP_EOL;
+
+	$details .= PHP_EOL . VIPGOCI_IRC_IGNORE_STRING_END . PHP_EOL;
 
 	return $details;
 }
@@ -1200,6 +1204,11 @@ function vipgoci_report_submit_pr_review_from_results(
 		if ( ! empty( $scan_details_msg ) ) {
 			$github_postfields['body'] .= $scan_details_msg;
 		}
+
+		// Remove IRC constants from postfields body before submitting.
+		$github_postfields['body'] = vipgoci_irc_api_clean_ignorable_constants(
+			$github_postfields['body']
+		);
 
 		/*
 		 * Only submit a specific number of comments in one go.
