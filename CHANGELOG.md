@@ -18,6 +18,9 @@ All notable changes to this project will be documented in this file.
 - [#267](https://github.com/Automattic/vip-go-ci/pull/267): Update two integration tests relating to git functionality
 - [#270](https://github.com/Automattic/vip-go-ci/pull/270): Update PULL_REQUEST_TEMPLATE: Mention checking and updating all test types
 
+## Fixed
+- [#271](https://github.com/Automattic/vip-go-ci/pull/271): Set exit code for vipgoci_sysexit() called in vipgoci_runtime_measure_exec_with_retry() 
+
 ## [1.2.2](https://github.com/Automattic/vip-go-ci/releases/tag/1.2.2) - 2022-03-08
 
 ### Added
