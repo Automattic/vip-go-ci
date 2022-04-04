@@ -11,7 +11,7 @@ Pull-Requests should have a TODO included. Here are three drafts. Please select 
 Draft for a patch:
 
 TODO:
-- [ ] Add/update unit-tests (if needed)
+- [ ] Add/update tests -- unit and/or integrated (if needed)
 - [ ] Check status of automated tests
 - [ ] Add or update `PHPDoc` comments for new or updated functions (main code only; for VIP)
 - [ ] Changelog entry (for VIP)
@@ -24,7 +24,7 @@ TODO:
 - [ ] Specify a parameter to make [feature] configurable
 - [ ] Update `--help` message
 - [ ] Implement [new feature / logic]
-- [ ] Add/update unit-tests
+- [ ] Add/update tests -- unit and/or integrated
 - [ ] Add or update `PHPDoc` comments for new or updated functions (main code only)
 - [ ] Update README
 - [ ] Changelog entry
