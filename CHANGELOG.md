@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ## Added
 - [#268](https://github.com/Automattic/vip-go-ci/pull/268): Filter IRC log messages, removing strings to ignore
+- [#269](https://github.com/Automattic/vip-go-ci/pull/269): Verify commit and access to repository on start up
 - 
 ## Updated
 - [#260](https://github.com/Automattic/vip-go-ci/pull/260): Move generic HTTP functions from github-api.php and to http-functions.php
