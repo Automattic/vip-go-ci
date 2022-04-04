@@ -2,10 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.2.3](https://github.com/Automattic/vip-go-ci/releases/tag/1.2.3) - 2022-03-??
+## [1.2.3](https://github.com/Automattic/vip-go-ci/releases/tag/1.2.3) - 2022-04-04
 
 ## Added
-
+- [#268](https://github.com/Automattic/vip-go-ci/pull/268): Filter IRC log messages, removing strings to ignore
+- 
 ## Updated
 - [#260](https://github.com/Automattic/vip-go-ci/pull/260): Move generic HTTP functions from github-api.php and to http-functions.php
 - [#261](https://github.com/Automattic/vip-go-ci/pull/261): Apply WP CS to tests and other updates: GitHubPrGenericSupportCommentTest.php, PhpcsScanValidateSniffsInOptionAndReportTest.php, Skeleton.php
