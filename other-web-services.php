@@ -64,28 +64,29 @@ function vipgoci_irc_api_filter_ignorable_strings(
 
 		if ( $ignore_section_end <= $ignore_section_start ) {
 			// Invalid usage.
-			$ignore_section_end = false; // For unit testing, to ensure loop ends.
-
-			vipgoci_sysexit(
+			vipgoci_log(
 				'Incorrect usage of VIPGOCI_IRC_IGNORE_STRING_START and VIPGOCI_IRC_IGNORE_STRING_END; former should be placed before the latter',
 				array(
 					'message' => $message,
-				)
+				),
+				0
 			);
 
+			break;
 		} elseif (
 			( false !== $ignore_section_start_2 ) &&
 			( $ignore_section_end > $ignore_section_start_2 )
 		) {
-			$ignore_section_end = false; // For unit testing, to ensure loop ends.
-
 			// Invalid usage.
-			vipgoci_sysexit(
+			vipgoci_log(
 				'Incorrect usage of VIPGOCI_IRC_IGNORE_STRING_START and VIPGOCI_IRC_IGNORE_STRING_END; embedding one ignore string within another is not allowed',
 				array(
 					'message' => $message,
-				)
+				),
+				0
 			);
+
+			break;
 		} elseif ( $ignore_section_end > $ignore_section_start ) {
 			// Correct usage; end constant should always come after start constant.
 			$message = substr_replace(
