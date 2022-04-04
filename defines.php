@@ -131,12 +131,12 @@ define(
  */
 define(
 	'VIPGOCI_IRC_IGNORE_STRING_START',
-	PHP_EOL . '<!-- vip-go-ci-irc-ignore-start -->' . PHP_EOL
+	'<!-- vip-go-ci-irc-ignore-start -->'
 );
 
 define(
 	'VIPGOCI_IRC_IGNORE_STRING_END',
-	PHP_EOL . '<!-- vip-go-ci-irc-ignore-end -->' . PHP_EOL
+	'<!-- vip-go-ci-irc-ignore-end -->'
 );
 
 /*
