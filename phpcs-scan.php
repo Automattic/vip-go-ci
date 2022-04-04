@@ -507,26 +507,6 @@ function vipgoci_phpcs_scan_commit(
 		)
 	);
 
-	/*
-	 * First, figure out if a .gitmodules
-	 * file was added or modified; if so,
-	 * we need to scan the relevant sub-module(s)
-	 * specifically.
-	 */
-	$commit_info = vipgoci_github_fetch_commit_info(
-		$repo_owner,
-		$repo_name,
-		$commit_id,
-		$github_token,
-		array(
-			'file_extensions'
-				=> array( 'gitmodules' ),
-
-			'status'
-				=> array( 'added', 'modified' ),
-		)
-	);
-
 	// Fetch list of all pull requests which the commit is a part of.
 	$prs_implicated = vipgoci_github_prs_implicated(
 		$repo_owner,
