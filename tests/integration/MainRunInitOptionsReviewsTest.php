@@ -1,4 +1,9 @@
 <?php
+/**
+ * Test vipgoci_run_init_options_reviews() function.
+ *
+ * @package Automattic/vip-go-ci
+ */
 
 declare(strict_types=1);
 
@@ -90,7 +95,7 @@ final class MainRunInitOptionsReviewsTest extends TestCase {
 				'dismiss-stale-reviews'             => true,
 
 				'dismissed-reviews-repost-comments' => false,
-				'informational-msg'                 => PHP_EOL . VIPGOCI_IRC_IGNORE_STRING_START . PHP_EOL. 'message-string-123' . PHP_EOL . VIPGOCI_IRC_IGNORE_STRING_END . PHP_EOL,
+				'informational-msg'                 => PHP_EOL . VIPGOCI_IRC_IGNORE_STRING_START . PHP_EOL . 'message-string-123' . PHP_EOL . VIPGOCI_IRC_IGNORE_STRING_END . PHP_EOL,
 				'scan-details-msg-include'          => true,
 				'dismissed-reviews-exclude-reviews-from-team' => array(),
 			),
