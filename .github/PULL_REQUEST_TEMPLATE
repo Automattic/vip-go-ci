@@ -12,7 +12,7 @@ Draft for a patch:
 
 TODO:
 - [ ] Add/update unit-tests (if needed)
-- [ ] Check automated unit-tests
+- [ ] Check status of automated tests
 - [ ] Add or update `PHPDoc` comments for new or updated functions (main code only; for VIP)
 - [ ] Changelog entry (for VIP)
 
@@ -29,7 +29,7 @@ TODO:
 - [ ] Update README
 - [ ] Changelog entry
 - [ ] Public documentation changes
-- [ ] Check automated unit-tests
+- [ ] Check status of automated tests
 
 ***
 
