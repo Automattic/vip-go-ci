@@ -436,7 +436,7 @@ function vipgoci_report_create_scan_details_auto_approve_configuration(
 function vipgoci_report_create_scan_details(
 	array $options_copy
 ) :string {
-	$details = VIPGOCI_IRC_IGNORE_STRING_START;
+	$details = PHP_EOL . VIPGOCI_IRC_IGNORE_STRING_START . PHP_EOL;
 
 	$details .= '<details>' . PHP_EOL;
 	$details .= '<hr />' . PHP_EOL;
@@ -464,7 +464,7 @@ function vipgoci_report_create_scan_details(
 
 	$details .= '</details>' . PHP_EOL;
 
-	$details .= VIPGOCI_IRC_IGNORE_STRING_END;
+	$details .= PHP_EOL . VIPGOCI_IRC_IGNORE_STRING_END . PHP_EOL;
 
 	return $details;
 }

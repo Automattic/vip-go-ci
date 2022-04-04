@@ -1040,9 +1040,9 @@ function vipgoci_run_init_options_reviews( array &$options ) :void {
 	 */
 	if ( ! empty( $options['informational-msg'] ) ) {
 		$options['informational-msg'] =
-			VIPGOCI_IRC_IGNORE_STRING_START .
+			PHP_EOL . VIPGOCI_IRC_IGNORE_STRING_START . PHP_EOL .
 			$options['informational-msg'] .
-			VIPGOCI_IRC_IGNORE_STRING_END;
+			PHP_EOL . VIPGOCI_IRC_IGNORE_STRING_END . PHP_EOL;
 	}
 
 	/*
