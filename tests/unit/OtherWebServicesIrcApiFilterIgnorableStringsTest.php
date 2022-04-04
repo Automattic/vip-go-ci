@@ -74,7 +74,6 @@ final class OtherWebServicesIrcApiFilterIgnorableStringsTest extends TestCase {
 		);
 	}
 
-
 	/**
 	 * Test more complex usage of the function.
 	 *
@@ -88,6 +87,22 @@ final class OtherWebServicesIrcApiFilterIgnorableStringsTest extends TestCase {
 			vipgoci_irc_api_filter_ignorable_strings(
 				'abc' . VIPGOCI_IRC_IGNORE_STRING_START . 'def' . VIPGOCI_IRC_IGNORE_STRING_END . 'ghi' .
 				'123' . VIPGOCI_IRC_IGNORE_STRING_START . '456' . VIPGOCI_IRC_IGNORE_STRING_END . '789'
+			)
+		);
+	}
+
+	/**
+	 * Test with no strings to remove.
+	 *
+	 * @covers ::vipgoci_irc_api_filter_ignorable_strings
+	 *
+	 * @return void
+	 */
+	public function testFilterIgnorableStringsNotFound(): void {
+		$this->assertSame(
+			'abcdef',
+			vipgoci_irc_api_filter_ignorable_strings(
+				'abcdef'
 			)
 		);
 	}
