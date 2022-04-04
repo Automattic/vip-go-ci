@@ -356,7 +356,8 @@ function vipgoci_runtime_measure_exec_with_retry(
 						'cmd_amended'        => $cmd_amended,
 						'exec_result_output' => $exec_result_output,
 						'exec_result_return' => $exec_result_return,
-					)
+					),
+					VIPGOCI_EXIT_SYSTEM_PROBLEM
 				);
 			}
 		}
