@@ -37,6 +37,10 @@ final class GitHubPrGenericCommentsGetTest extends TestCase {
 				true // Fetch from secrets file
 			);
 
+		if ( empty( $this->options['github-token'] ) ) {
+			$this->options['github-token'] = '';
+		}
+
 		$this->options['token'] =
 			$this->options['github-token'];
 	}

@@ -35,9 +35,9 @@ commands:
       # Move to project directory
       - run: cd ~/project
       # Run unit tests
-      - run: ./vendor/bin/phpunit --testsuite=unit-tests -vv
+      - run: VIPGOCI_TESTING_DEBUG_MODE=true ./vendor/bin/phpunit --testsuite=unit-tests
       # Run integration tests
-      - run: ./vendor/bin/phpunit --testsuite=integration-tests -vv
+      - run: VIPGOCI_TESTING_DEBUG_MODE=true ./vendor/bin/phpunit --testsuite=integration-tests
       # Run PHPCS, check for PHP compatibility issues
       - run: ~/vip-go-ci-tools/phpcs/bin/phpcs --runtime-set 'testVersion' '8.1-'  --standard=PHPCompatibility,PHPCompatibilityParagonieRandomCompat,PHPCompatibilityParagonieSodiumCompat --ignore="vendor/*"  ~/project
 

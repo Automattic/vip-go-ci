@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 // phpcs:disable PSR1.Files.SideEffects
 
-final class GitHubOauth1HeadersGetTest extends TestCase {
+final class HttpFunctionsOauth1HeadersGetTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_oauth1_headers_get
 	 */

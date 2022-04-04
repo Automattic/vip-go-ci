@@ -157,7 +157,7 @@ function vipgoci_ap_hashes_api_file_approved(
 	 */
 
 	$file_hashes_info =
-		vipgoci_github_fetch_url(
+		vipgoci_http_api_fetch_url(
 			$hashes_to_hashes_url,
 			array(
 				'oauth_consumer_key'    => $options['hashes-oauth-consumer-key'],

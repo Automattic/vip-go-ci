@@ -38,9 +38,16 @@ function vipgoci_phpcs_get_version(
 		escapeshellarg( '--version' )
 	);
 
-	$phpcs_output = vipgoci_runtime_measure_shell_exec_with_retry(
+	$phpcs_output_2    = '';
+	$phpcs_result_code = -255;
+
+	$phpcs_output = vipgoci_runtime_measure_exec_with_retry(
 		$cmd,
-		'phpcs_cli'
+		array( 0 ),
+		$phpcs_output_2,
+		$phpcs_result_code,
+		'phpcs_cli',
+		false
 	);
 
 	if ( null === $phpcs_output ) {
@@ -191,8 +198,6 @@ function vipgoci_phpcs_do_scan(
 		escapeshellarg( $filename_tmp )
 	);
 
-	$cmd .= ' 2>&1';
-
 	vipgoci_log(
 		'Running PHPCS now',
 		array(
@@ -201,10 +206,19 @@ function vipgoci_phpcs_do_scan(
 		0
 	);
 
-	/* Actually execute */
-	$result = vipgoci_runtime_measure_shell_exec_with_retry(
+	/*
+	 * Actually execute
+	 */
+	$result_output = '';
+	$result_code   = -255;
+
+	$result = vipgoci_runtime_measure_exec_with_retry(
 		$cmd,
-		'phpcs_cli'
+		array( 0, 1, 2 ),
+		$result_output,
+		$result_code,
+		'phpcs_cli',
+		true
 	);
 
 	return $result;
@@ -490,26 +504,6 @@ function vipgoci_phpcs_scan_commit(
 			'repo_owner' => $repo_owner,
 			'repo_name'  => $repo_name,
 			'commit_id'  => $commit_id,
-		)
-	);
-
-	/*
-	 * First, figure out if a .gitmodules
-	 * file was added or modified; if so,
-	 * we need to scan the relevant sub-module(s)
-	 * specifically.
-	 */
-	$commit_info = vipgoci_github_fetch_commit_info(
-		$repo_owner,
-		$repo_name,
-		$commit_id,
-		$github_token,
-		array(
-			'file_extensions'
-				=> array( 'gitmodules' ),
-
-			'status'
-				=> array( 'added', 'modified' ),
 		)
 	);
 
@@ -1141,10 +1135,19 @@ function vipgoci_phpcs_get_all_standards(
 		0
 	);
 
-	/* Actually execute */
-	$result = vipgoci_runtime_measure_shell_exec_with_retry(
+	/*
+	 * Actually execute
+	 */
+	$result_output = '';
+	$result_code   = -255;
+
+	$result = vipgoci_runtime_measure_exec_with_retry(
 		$cmd,
-		'phpcs_cli'
+		array( 0 ),
+		$result_output,
+		$result_code,
+		'phpcs_cli',
+		false
 	);
 
 	if ( null === $result ) {
@@ -1231,10 +1234,19 @@ function vipgoci_phpcs_get_sniffs_for_standard(
 		0
 	);
 
-	/* Actually execute */
-	$result = vipgoci_runtime_measure_shell_exec_with_retry(
+	/*
+	 * Actually execute
+	 */
+	$result_output = '';
+	$result_code   = -255;
+
+	$result = vipgoci_runtime_measure_exec_with_retry(
 		$cmd,
-		'phpcs_cli'
+		array( 0 ),
+		$result_output,
+		$result_code,
+		'phpcs_cli',
+		false
 	);
 
 	if ( null === $result ) {

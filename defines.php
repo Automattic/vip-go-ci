@@ -36,6 +36,12 @@ if ( ! defined( 'VIPGOCI_GITHUB_BASE_URL' ) ) {
 }
 
 /*
+ * Timeout constant for HTTP APIs.
+ */
+define( 'VIPGOCI_HTTP_API_LONG_TIMEOUT', 20 );
+define( 'VIPGOCI_HTTP_API_SHORT_TIMEOUT', 5 );
+
+/*
  * Various messages.
  */
 define( 'VIPGOCI_FILE_IS_APPROVED_MSG', 'File is approved in review database (hashes-to-hashes).' );
@@ -120,6 +126,20 @@ define(
 );
 
 /*
+ * Indicates which sections of log
+ * messages should not be logged to IRC.
+ */
+define(
+	'VIPGOCI_IRC_IGNORE_STRING_START',
+	'<!-- vip-go-ci-irc-ignore-start -->'
+);
+
+define(
+	'VIPGOCI_IRC_IGNORE_STRING_END',
+	'<!-- vip-go-ci-irc-ignore-end -->'
+);
+
+/*
  * Define exit-codes
  */
 define( 'VIPGOCI_EXIT_NORMAL', 0 );
@@ -169,9 +189,9 @@ define( 'VIPGOCI_COUNTERS_DO', 'do' );
 define( 'VIPGOCI_CACHE_CLEAR', '--VIPGOCI-CACHE-CLEAR-0x321--' );
 
 /*
- * Define for vipgoci_github_wait() function.
+ * Define for vipgoci_http_api_wait() function.
  */
-define( 'VIPGOCI_GITHUB_WAIT_TIME_SECONDS', 2 );
+define( 'VIPGOCI_HTTP_API_WAIT_TIME_SECONDS', 2 );
 
 /*
  * Defines for files.
