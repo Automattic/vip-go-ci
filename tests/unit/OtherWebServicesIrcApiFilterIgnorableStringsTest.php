@@ -125,7 +125,7 @@ final class OtherWebServicesIrcApiFilterIgnorableStringsTest extends TestCase {
 		$this->assertTrue(
 			str_contains(
 				$printed_data,
-				'Usage: Incorrect usage of VIPGOCI_IRC_IGNORE_STRING_START and VIPGOCI_IRC_IGNORE_STRING_END; embedding one ignore string within another is not allowed'
+				'Incorrect usage of VIPGOCI_IRC_IGNORE_STRING_START and VIPGOCI_IRC_IGNORE_STRING_END; embedding one ignore string within another is not allowed'
 			),
 			'Should have printed message about invalid usage of IRC ignore constants'
 		);
