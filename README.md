@@ -678,6 +678,8 @@ This feature can be used in this fashion:
 
 At this time, only certain messages are posted to IRC, all indicated by a special parameter to the `vipgoci_log()` function. See the code for implementation details.
 
+Using the `VIPGOCI_IRC_IGNORE_STRING_START` and `VIPGOCI_IRC_IGNORE_STRING_END` constants, it is possible to designate parts of strings that should not be logged to the IRC API. Simply place any string not to be logged to IRC between these two constants and it will be filtered away before submisssion. Multiple constants can be used in one log message.
+
 
 ## Updating tools-init.sh with new versions
 
