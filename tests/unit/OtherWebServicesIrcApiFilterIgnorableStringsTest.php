@@ -59,6 +59,23 @@ final class OtherWebServicesIrcApiFilterIgnorableStringsTest extends TestCase {
 	}
 
 	/**
+	 * Test usage with JSON encoded string.
+	 *
+	 * @covers ::vipgoci_irc_api_filter_ignorable_strings
+	 *
+	 * @return void
+	 */
+	public function testFilterIgnorableStringsJsonUsage(): void {
+		$this->assertSame(
+			'"abcghi"',
+			vipgoci_irc_api_filter_ignorable_strings(
+				json_encode( 'abc' . VIPGOCI_IRC_IGNORE_STRING_START . 'def' . VIPGOCI_IRC_IGNORE_STRING_END . 'ghi' )
+			)
+		);
+	}
+
+
+	/**
 	 * Test more complex usage of the function.
 	 *
 	 * @covers ::vipgoci_irc_api_filter_ignorable_strings
