@@ -740,8 +740,11 @@ function vipgoci_github_pr_comments_generic_submit(
 
 
 	$github_postfields = array();
-	$github_postfields['body'] =
-		$message;
+
+	// Add body to postfields. Ensure to remove IRC ignore constants first.
+	$github_postfields['body'] = vipgoci_irc_api_clean_ignorable_constants(
+		$message
+	);
 
 	if ( ! empty( $commit_id ) ) {
 		$github_postfields['body'] .=
@@ -1273,7 +1276,10 @@ function vipgoci_github_approve_pr(
 		'comments' => array()
 	);
 
-	$github_postfields['body'] = $message;
+	// Add body to postfields. Ensure to remove IRC ignore constants first.
+	$github_postfields['body'] = vipgoci_irc_api_clean_ignorable_constants(
+		$message
+	);
 
 	vipgoci_log(
 		'Sending request to GitHub to approve pull request',

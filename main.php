@@ -1036,6 +1036,16 @@ function vipgoci_run_init_options_reviews( array &$options ) :void {
 	);
 
 	/*
+	 * Process --informational-msg. Add the IRC ignore strings.
+	 */
+	if ( ! empty( $options['informational-msg'] ) ) {
+		$options['informational-msg'] =
+			PHP_EOL . VIPGOCI_IRC_IGNORE_STRING_START . PHP_EOL .
+			$options['informational-msg'] .
+			PHP_EOL . VIPGOCI_IRC_IGNORE_STRING_END . PHP_EOL;
+	}
+
+	/*
 	 * Process --scan-details-msg-include
 	 */
 	vipgoci_option_bool_handle(
@@ -2352,6 +2362,57 @@ function vipgoci_run_scan_skip_execution( array &$options ) :void {
 }
 
 /**
+ * Ensure we have access to the commit and repository
+ * specified by fetching commit information from GitHub API.
+ * Will effectively exit if we do not have access to the commit
+ * or repository, or they do not exist.
+ *
+ * @param array $options Array of options.
+ *
+ * @return void
+ *
+ * @codeCoverageIgnore
+ */
+function vipgoci_run_verify_access_to_commit_and_repository(
+	array $options
+) :void {
+	/*
+	 * Try fetching the commit.
+	 */
+	$commit_info = vipgoci_github_fetch_commit_info(
+		$options['repo-owner'],
+		$options['repo-name'],
+		$options['commit'],
+		$options['token'],
+		null
+	);
+
+	if (
+		( empty( $commit_info->commit ) ) ||
+		( empty( $commit_info->url ) )
+	) {
+		vipgoci_sysexit(
+			'Unable to fetch information from GitHub API about commit, possibly the commit does not exist or the current user does not have sufficient privileges',
+			array(
+				'repo_owner' => $options['repo-owner'],
+				'repo_name'  => $options['repo-name'],
+				'commit'     => $options['commit'],
+			),
+			VIPGOCI_EXIT_GITHUB_PROBLEM
+		);
+	} else {
+		vipgoci_log(
+			'Validated access to git commit and repository via GitHub API',
+			array(
+				'repo_owner' => $options['repo-owner'],
+				'repo_name'  => $options['repo-name'],
+				'commit'     => $options['commit'],
+			)
+		);
+	}
+}
+
+/**
  * Find pull requests implicated by the commit specified in $options.
  *
  * @param array $options Array of options.
@@ -2748,6 +2809,9 @@ function vipgoci_run_scan(
 
 	// Enforce maximum execution time from now on.
 	vipgoci_run_scan_max_exec_time( $options, $startup_time );
+
+	// Ensure we have access to commit and repository.
+	vipgoci_run_verify_access_to_commit_and_repository( $options );
 
 	// Find PRs relating to the commit we are processing.
 	$prs_implicated = vipgoci_run_scan_find_prs( $options );

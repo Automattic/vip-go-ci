@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.3](https://github.com/Automattic/vip-go-ci/releases/tag/1.2.3) - 2022-04-04
+
+## Added
+- [#268](https://github.com/Automattic/vip-go-ci/pull/268): Filter IRC log messages, removing strings to ignore
+- [#269](https://github.com/Automattic/vip-go-ci/pull/269): Verify commit and access to repository on start up
+- 
+## Updated
+- [#260](https://github.com/Automattic/vip-go-ci/pull/260): Move generic HTTP functions from github-api.php and to http-functions.php
+- [#261](https://github.com/Automattic/vip-go-ci/pull/261): Apply WP CS to tests and other updates: GitHubPrGenericSupportCommentTest.php, PhpcsScanValidateSniffsInOptionAndReportTest.php, Skeleton.php
+- [#263](https://github.com/Automattic/vip-go-ci/pull/263): Improve GitHub API error handling
+- [#262](https://github.com/Automattic/vip-go-ci/pull/262): Use exec() instead of shell_exec(), use result code
+- [#264](https://github.com/Automattic/vip-go-ci/pull/264): Configuring debug mode in test-suite via environmental variables
+- [#266](https://github.com/Automattic/vip-go-ci/pull/266): HTTP API: Better logging, add retry mechanism, better error detection
+- [#267](https://github.com/Automattic/vip-go-ci/pull/267): Update two integration tests relating to git functionality
+- [#270](https://github.com/Automattic/vip-go-ci/pull/270): Update PULL_REQUEST_TEMPLATE: Mention checking and updating all test types
+
+## Fixed
+- [#271](https://github.com/Automattic/vip-go-ci/pull/271): Set exit code for vipgoci_sysexit() called in vipgoci_runtime_measure_exec_with_retry() 
+
 ## [1.2.2](https://github.com/Automattic/vip-go-ci/releases/tag/1.2.2) - 2022-03-08
 
 ### Added

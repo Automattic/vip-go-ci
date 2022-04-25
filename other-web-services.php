@@ -22,6 +22,115 @@ function vipgoci_irc_api_alert_queue(
 	$msg_queue[] = $message;
 }
 
+/**
+ * Remove any sections found in $message string bounded between the
+ * VIPGOCI_IRC_IGNORE_STRING_START and VIPGOCI_IRC_IGNORE_STRING_END
+ * constants.
+ *
+ * @param string $message Message string to filter.
+ *
+ * @return string Message with ignorable strings removed.
+ */
+function vipgoci_irc_api_filter_ignorable_strings(
+	string $message
+) :string {
+	do {
+		$ignore_section_start_pos = strpos( $message, VIPGOCI_IRC_IGNORE_STRING_START );
+
+		if ( false !== $ignore_section_start_pos ) {
+			$ignore_section_end_pos = strpos(
+				$message,
+				VIPGOCI_IRC_IGNORE_STRING_END,
+				0 // From string start; needed for check below.
+			);
+
+			$ignore_section_start_pos_2 = strpos(
+				$message,
+				VIPGOCI_IRC_IGNORE_STRING_START,
+				$ignore_section_start_pos + strlen( VIPGOCI_IRC_IGNORE_STRING_START ) // Needed for check below.
+			);
+		} else {
+			$ignore_section_end_pos     = false;
+			$ignore_section_start_pos_2 = false;
+		}
+
+		if (
+			( false === $ignore_section_start_pos ) ||
+			( false === $ignore_section_end_pos )
+		) {
+			// Neither string was found, stop processing here.
+			continue;
+		}
+
+		if ( $ignore_section_end_pos <= $ignore_section_start_pos ) {
+			// Invalid usage.
+			vipgoci_log(
+				'Incorrect usage of VIPGOCI_IRC_IGNORE_STRING_START and VIPGOCI_IRC_IGNORE_STRING_END; former should be placed before the latter',
+				array(
+					'message' => $message,
+				),
+				0
+			);
+
+			break;
+		} elseif (
+			( false !== $ignore_section_start_pos_2 ) &&
+			( $ignore_section_end_pos > $ignore_section_start_pos_2 )
+		) {
+			// Invalid usage.
+			vipgoci_log(
+				'Incorrect usage of VIPGOCI_IRC_IGNORE_STRING_START and VIPGOCI_IRC_IGNORE_STRING_END; embedding one ignore string within another is not allowed',
+				array(
+					'message' => $message,
+				),
+				0
+			);
+
+			break;
+		} elseif ( $ignore_section_end_pos > $ignore_section_start_pos ) {
+			// Correct usage; end constant should always come after start constant.
+			$message = substr_replace(
+				$message,
+				'',
+				$ignore_section_start_pos,
+				( $ignore_section_end_pos + strlen( VIPGOCI_IRC_IGNORE_STRING_END ) ) -
+					$ignore_section_start_pos
+			);
+		}
+	} while (
+		( false !== $ignore_section_start_pos ) &&
+		( false !== $ignore_section_end_pos )
+	);
+
+	return $message;
+}
+
+/**
+ * Clean IRC ignorable constants away from message specified.
+ *
+ * Useful for functions submitting messages to GitHub, were the
+ * constants should not be part of the HTML submitted.
+ *
+ * @param string $message Message to process.
+ *
+ * @return string Message with constants removed (if any).
+ */
+function vipgoci_irc_api_clean_ignorable_constants(
+	string $message
+) :string {
+	return str_replace(
+		array(
+			VIPGOCI_IRC_IGNORE_STRING_START,
+			VIPGOCI_IRC_IGNORE_STRING_END,
+		),
+		array(
+			'',
+			'',
+		),
+		$message
+	);
+}
+
 /*
  * Make messages in IRC queue unique, but add
  * a prefix to those messages that were not unique
@@ -80,10 +189,18 @@ function vipgoci_irc_api_alerts_send(
 	$botname,
 	$channel
 ) {
+	// Get IRC message queue.
 	$msg_queue = vipgoci_irc_api_alert_queue(
 		null, true
 	);
 
+	// Filter away removable strings.
+	$msg_queue = array_map(
+		'vipgoci_irc_api_filter_ignorable_strings',
+		$msg_queue
+	);
+
+	// Ensure all strings we log are unique; if not make unique and add prefix.
 	$msg_queue = vipgoci_irc_api_alert_queue_unique(
 		$msg_queue
 	);

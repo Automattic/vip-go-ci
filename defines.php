@@ -10,7 +10,7 @@ declare(strict_types=1);
 /*
  * Version number.
  */
-define( 'VIPGOCI_VERSION', '1.2.2' );
+define( 'VIPGOCI_VERSION', '1.2.3' );
 
 /*
  * Define minimum version requirements.
@@ -123,6 +123,20 @@ define(
 define(
 	'VIPGOCI_PHPCS_SCAN_FAILED_MSG_END',
 	'The error may be temporary. If the error persists, please contact a human'
+);
+
+/*
+ * Indicates which sections of log
+ * messages should not be logged to IRC.
+ */
+define(
+	'VIPGOCI_IRC_IGNORE_STRING_START',
+	'<!-- vip-go-ci-irc-ignore-start -->'
+);
+
+define(
+	'VIPGOCI_IRC_IGNORE_STRING_END',
+	'<!-- vip-go-ci-irc-ignore-end -->'
 );
 
 /*
