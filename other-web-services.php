@@ -424,7 +424,7 @@ function vipgoci_send_stats_to_pixel_api(
 
 		if ( false === $ret ) {
 			vipgoci_log(
-				'Unable to send data to pixel API service',
+				'Unable to send data to Pixel API service',
 				array(),
 				0,
 				true // Send to IRC.
