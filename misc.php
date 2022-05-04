@@ -1,16 +1,24 @@
 <?php
+/**
+ * Misc functions for vip-go-ci.
+ *
+ * @package Automattic/vip-go-ci
+ */
 
-/*
+declare(strict_types=1);
+
+/**
  * Set how to deal with errors:
  * Report all errors, and display them.
-*/
-
-function vipgoci_set_php_error_reporting() {
-	ini_set( 'error_log', '' );
+ *
+ * @return void
+ */
+function vipgoci_set_php_error_reporting() :void {
+	ini_set( 'error_log', '' ); // phpcs:ignore WordPress.PHP.IniSet
 
 	error_reporting( E_ALL );
 
-	ini_set( 'display_errors', 'on' );
+	ini_set( 'display_errors', 'on' ); // phpcs:ignore WordPress.PHP.IniSet
 }
 
 /**
@@ -51,7 +59,7 @@ function vipgoci_set_maximum_exec_time(
 	vipgoci_log(
 		'Setting maximum execution time',
 		array(
-			'max_exec_time'	=> $max_exec_time,
+			'max_exec_time' => $max_exec_time,
 		)
 	);
 
@@ -89,7 +97,7 @@ function vipgoci_set_maximum_exec_time(
 	pcntl_alarm( $max_exec_time );
 }
 
-/*
+/**
  * Check if a particular set of fields exist
  * in a target array and if their values match a set
  * given. Will return an array describing
@@ -97,54 +105,67 @@ function vipgoci_set_maximum_exec_time(
  * and the matching values.
  *
  * Example:
- *	$fields_arr = array(
- *		'a'	=> 920,
- *		'b'	=> 700,
- *	);
+ *  $fields_arr = array(
+ *   'a' => 920,
+ *   'b' => 700,
+ *  );
  *
- *	$data_arr = array(
- *		array(
- *			'a'	=> 920,
- *			'b'	=> 500,
- *			'c'	=> 0,
- *			'd'	=> 1,
- *			...
- *		),
- *		array(
- *			'a'	=> 920,
- *			'b'	=> 700,
- *			'c'	=> 0,
- *			'd'	=> 2,
- *			...
- *		),
- *	);
+ *  $data_arr = array(
+ *    array(
+ *      'a' => 920,
+ *      'b' => 500,
+ *      'c' => 0,
+ *      'd' => 1,
+ *      ...
+ *    ),
+ *    array(
+ *      'a' => 920,
+ *      'b' => 700,
+ *      'c' => 0,
+ *      'd' => 2,
+ *      ...
+ *    ),
+ *  );
  *
- *	$res = vipgoci_find_fields_in_array(
- *		$fields_arr, $data_arr
- *	);
+ *  $res = vipgoci_find_fields_in_array(
+ *    $fields_arr,
+ *    $data_arr
+ *  );
  *
- *	$res will be:
- *	array(
- *		0 => false,
- *		1 => true,
- *	);
+ * $res will be:
+ *   array(
+ *     0 => false,
+ *     1 => true,
+ *   );
+ *
+ * ***
+ *
+ * @param array $fields_arr Associative array (see example above).
+ * @param array $data_arr   Array of associative arrays (see example above).
+ *
+ * @return array Array of keys and values, values true or false.
  */
-function vipgoci_find_fields_in_array( $fields_arr, $data_arr ) {
+function vipgoci_find_fields_in_array(
+	array $fields_arr,
+	array $data_arr
+) :array {
 	$res_arr = array();
 
-	for(
+	$data_arr_cnt = count( $data_arr );
+
+	for (
 		$data_item_cnt = 0;
-		$data_item_cnt < count( $data_arr );
+		$data_item_cnt < $data_arr_cnt;
 		$data_item_cnt++
 	) {
 		$res_arr[ $data_item_cnt ] = 0;
 
-		foreach( $fields_arr as $field_name => $field_values ) {
+		foreach ( $fields_arr as $field_name => $field_values ) {
 			if ( ! array_key_exists( $field_name, $data_arr[ $data_item_cnt ] ) ) {
 				continue;
 			}
 
-			foreach( $field_values as $field_value_item ) {
+			foreach ( $field_values as $field_value_item ) {
 				if ( $data_arr[ $data_item_cnt ][ $field_name ] === $field_value_item ) {
 					$res_arr[ $data_item_cnt ]++;
 
@@ -159,24 +180,28 @@ function vipgoci_find_fields_in_array( $fields_arr, $data_arr ) {
 			}
 		}
 
-		$res_arr[
-			$data_item_cnt
-		] = (
-			$res_arr[ $data_item_cnt ]
-			===
+		$res_arr[ $data_item_cnt ] = (
 			count( array_keys( $fields_arr ) )
+			===
+			$res_arr[ $data_item_cnt ]
 		);
 	}
 
 	return $res_arr;
 }
 
-/*
+/**
  * Convert a string that contains "true", "false" or
  * "null" to a variable of that type.
+ *
+ * @param string $str String to convert.
+ *
+ * @return string|bool|null String, bool (true or false) or null.
  */
-function vipgoci_convert_string_to_type( $str ) {
-	switch( $str ) {
+function vipgoci_convert_string_to_type(
+	string $str
+) :string|bool|null {
+	switch ( $str ) {
 		case 'true':
 			$ret = true;
 			break;
@@ -197,10 +222,16 @@ function vipgoci_convert_string_to_type( $str ) {
 	return $ret;
 }
 
-/*
+/**
  * Round items in an array to a certain precision, return
  * new array with results. Essentially a wrapper around the
  * PHP round() function.
+ *
+ * @param array $arr       Array to process.
+ * @param int   $precision Precision to use.
+ * @param int   $mode      Mode for round().
+ *
+ * @return array
  */
 function vipgoci_round_array_items(
 	array $arr,
@@ -215,34 +246,40 @@ function vipgoci_round_array_items(
 	);
 }
 
-/*
+/**
  * Create a temporary file, and return the
  * full-path to the file.
+ *
+ * @param string      $file_name_prefix    Temporary file name prefix.
+ * @param null|string $file_name_extension File extention of temporary file, null for no extension.
+ * @param string      $file_contents       Contents of resulting file.
+ *
+ * @return string Path to the file
  */
-
 function vipgoci_save_temp_file(
-	$file_name_prefix,
-	$file_name_extension = null,
-	$file_contents = ''
-) {
-	// Determine name for temporary-file
-	$temp_file_name = $temp_file_save_status = tempnam(
+	string $file_name_prefix,
+	null|string $file_name_extension = null,
+	string $file_contents = ''
+) :string {
+	// Determine name for temporary-file.
+	$temp_file_save_status = tempnam(
 		sys_get_temp_dir(),
 		$file_name_prefix
 	);
+
+	$temp_file_name = $temp_file_save_status;
 
 	/*
 	 * If temporary file should have an extension,
 	 * make that happen by renaming the currently existing
 	 * file.
 	 */
-
 	if (
 		( null !== $file_name_extension ) &&
 		( false !== $temp_file_name )
 	) {
 		$temp_file_name_old = $temp_file_name;
-		$temp_file_name .= '.' . $file_name_extension;
+		$temp_file_name    .= '.' . $file_name_extension;
 
 		if ( true !== rename(
 			$temp_file_name_old,
@@ -272,12 +309,11 @@ function vipgoci_save_temp_file(
 		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'save_temp_file' );
 	}
 
-	// Detect possible errors when saving the temporary file
+	// Detect possible errors when saving the temporary file.
 	if ( false === $temp_file_save_status ) {
 		vipgoci_sysexit(
 			'Could not save file to disk, got ' .
 			'an error. Exiting...',
-
 			array(
 				'temp_file_name' => $temp_file_name,
 			),
@@ -288,12 +324,18 @@ function vipgoci_save_temp_file(
 	return $temp_file_name;
 }
 
-/*
+/**
  * Determine file-extension of a particular file,
  * and return it in lowercase. If it can not be
  * determined, return null.
+ *
+ * @param string $file_name File name whose file-extention to get.
+ *
+ * @return string File extension.
  */
-function vipgoci_file_extension_get( $file_name ) {
+function vipgoci_file_extension_get(
+	string $file_name
+) :string {
 	$file_extension = pathinfo(
 		$file_name,
 		PATHINFO_EXTENSION
@@ -310,18 +352,20 @@ function vipgoci_file_extension_get( $file_name ) {
 	return $file_extension;
 }
 
-/*
+/**
  * Determine if the presented file has an
  * allowable file-ending, and if the file presented
  * is in a directory that is can be scanned.
  *
- * Note: $filename is expected to be a relative
- * path to the git-repository root.
+ * @param string     $filename File name; is expected to be a relative path to the git-repository root.
+ * @param null|array $filter   Filter to apply.
+ *
+ * @return bool False when file does not match filter criteria, else true.
  */
 function vipgoci_filter_file_path(
-	$filename,
-	$filter
-) {
+	string $filename,
+	null|array $filter
+) :bool {
 	$file_info_extension = vipgoci_file_extension_get(
 		$filename
 	);
@@ -359,7 +403,7 @@ function vipgoci_filter_file_path(
 		/*
 		 * Loop through all skip-folders.
 		 */
-		foreach(
+		foreach (
 			$filter['skip_folders'] as $tmp_skip_folder_item
 		) {
 			/*
@@ -401,19 +445,13 @@ function vipgoci_filter_file_path(
 		( true === $file_folders_match )
 	) {
 		vipgoci_log(
-			'Skipping file that does not seem ' .
-				'to be a file matching ' .
-				'filter-criteria',
-
+			'Skipping file that does not seem to be a file ' .
+				'matching filter-criteria',
 			array(
-				'filename' =>
-					$filename,
-
-				'filter' =>
-					$filter,
-
-				'matches' => array(
-					'file_ext_match' => $file_ext_match,
+				'filename' => $filename,
+				'filter'   => $filter,
+				'matches'  => array(
+					'file_ext_match'     => $file_ext_match,
 					'file_folders_match' => $file_folders_match,
 				),
 			),
@@ -427,23 +465,29 @@ function vipgoci_filter_file_path(
 }
 
 
-/*
+/**
  * Recursively scan the git repository,
  * returning list of files that exist in
  * it, making sure to filter the result
  *
- * Note: Do not call with $base_path parameter,
- * that is reserved for internal use only.
+ * @param string      $path      Path to scan.
+ * @param null|array  $filter    Filter to apply.
+ * @param null|string $base_path Internal only, should be null normally.
+ *
+ * @return array Array of files found.
  */
-function vipgoci_scandir_git_repo( $path, $filter, $base_path = null ) {
+function vipgoci_scandir_git_repo(
+	string $path,
+	null|array $filter,
+	null|string $base_path = null
+) :array {
 	$result = array();
 
 	vipgoci_log(
 		'Fetching git-tree using scandir()',
-
 		array(
-			'path' => $path,
-			'filter' => $filter,
+			'path'      => $path,
+			'filter'    => $filter,
 			'base_path' => $base_path,
 		),
 		2
@@ -455,7 +499,7 @@ function vipgoci_scandir_git_repo( $path, $filter, $base_path = null ) {
 	 * when making sure we do not
 	 * accidentally filter by the filesystem
 	 * outside of the git-repository (see below).
- 	 */
+	 */
 	if ( null === $base_path ) {
 		$base_path = $path;
 	}
@@ -466,16 +510,15 @@ function vipgoci_scandir_git_repo( $path, $filter, $base_path = null ) {
 
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'git_repo_scandir' );
 
-
 	foreach ( $cdir as $key => $value ) {
 		if ( in_array(
 			$value,
-			array( '.', '..', '.git' )
+			array( '.', '..', '.git' ),
+			true
 		) ) {
-			// Skip '.' and '..'
+			// Skip '.' and '..'.
 			continue;
 		}
-
 
 		if ( is_dir(
 			$path . DIRECTORY_SEPARATOR . $value
@@ -516,7 +559,7 @@ function vipgoci_scandir_git_repo( $path, $filter, $base_path = null ) {
 			 */
 			$file_path_without_git_repo = substr(
 				$path . DIRECTORY_SEPARATOR . $value,
-				strlen( $base_path ) + 1 // Send in what looks like a relative path
+				strlen( $base_path ) + 1 // Relative path.
 			);
 
 			if ( false === vipgoci_filter_file_path(
@@ -527,29 +570,45 @@ function vipgoci_scandir_git_repo( $path, $filter, $base_path = null ) {
 			}
 		}
 
-		// Not a directory, passed filter, save in array
+		// Not a directory, passed filter, save in array.
 		$result[] = $value;
 	}
 
 	return $result;
 }
 
-/*
+/**
  * Sanitize a string, removing any whitespace-characters
  * from the beginning and end, and transform to lowercase.
+ *
+ * @param string $str String to sanitize.
+ *
+ * @return string Sanitized string.
  */
-function vipgoci_sanitize_string( $str ) {
-	return strtolower( ltrim( rtrim(
-		$str
-	) ) );
+function vipgoci_sanitize_string(
+	string $str
+) :string {
+	return strtolower(
+		trim(
+			$str
+		)
+	);
 }
 
-/*
+/**
  * Sanitize path, remove any of the specified prefixes
  * if exist.
+ *
+ * @param string $path     Path to process.
+ * @param array  $prefixes Prefixes to remove from path.
+ *
+ * @return string Sanitized path, prefix removed if found.
  */
-function vipgoci_sanitize_path_prefix( string $path, array $prefixes ): string {
-	foreach( $prefixes as $prefix ) {
+function vipgoci_sanitize_path_prefix(
+	string $path,
+	array $prefixes
+): string {
+	foreach ( $prefixes as $prefix ) {
 		if ( 0 === strpos( $path, $prefix ) ) {
 			$path = substr(
 				$path,
