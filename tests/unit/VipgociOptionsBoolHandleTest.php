@@ -1,20 +1,40 @@
 <?php
+/**
+ * Test vipgoci_option_bool_handle() function.
+ *
+ * @package Automattic/vip-go-ci
+ */
 
 declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
-require_once( __DIR__ . '/../../options.php' );
-
 use PHPUnit\Framework\TestCase;
 
-// phpcs:disable PSR1.Files.SideEffects
-
+/**
+ * Class that implements the testing.
+ *
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class VipgociOptionsBoolHandleTest extends TestCase {
 	/**
+	 * Setup function. Require files.
+	 *
+	 * @return void
+	 */
+	public function setUp() :void {
+		require_once __DIR__ . '/../../options.php';
+	}
+
+	/**
+	 * Test common usage, no option value specified.
+	 *
+	 * @return void
+	 *
 	 * @covers ::vipgoci_option_bool_handle
 	 */
-	public function testOptionsBoolHandle1() {
+	public function testOptionsBoolHandle1() :void {
 		$options = array();
 
 		vipgoci_option_bool_handle(
@@ -28,10 +48,15 @@ final class VipgociOptionsBoolHandleTest extends TestCase {
 			$options['mytestoption']
 		);
 	}
+
 	/**
+	 * Test usage with option value specified.
+	 *
+	 * @return void
+	 *
 	 * @covers ::vipgoci_option_bool_handle
 	 */
-	public function testOptionsBoolHandle2() {
+	public function testOptionsBoolHandle2() :void {
 		$options = array(
 			'mytestoption' => 'false',
 		);
@@ -49,9 +74,13 @@ final class VipgociOptionsBoolHandleTest extends TestCase {
 	}
 
 	/**
+	 * Test usage with option value specified.
+	 *
+	 * @return void
+	 *
 	 * @covers ::vipgoci_option_bool_handle
 	 */
-	public function testOptionsBoolHandle3() {
+	public function testOptionsBoolHandle3() :void {
 		$options = array(
 			'mytestoption' => 'true',
 		);
