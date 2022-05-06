@@ -335,7 +335,7 @@ function vipgoci_save_temp_file(
  */
 function vipgoci_file_extension_get(
 	string $file_name
-) :string {
+) :string|null {
 	$file_extension = pathinfo(
 		$file_name,
 		PATHINFO_EXTENSION
