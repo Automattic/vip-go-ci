@@ -1,25 +1,37 @@
 <?php
+/**
+ * Options logic for vip-go-ci.
+ *
+ * @package Automattic/vip-go-ci
+ */
 
-/*
+declare(strict_types=1);
+
+/**
  * Read settings from a options file in the
  * repository, but only allow certain options
  * to be configured.
+ *
+ * @param array  $options                Options array for the program.
+ * @param string $repo_options_file_name Name of options file name.
+ * @param array  $options_overwritable   Array of options that can be overwritten.
+ *
+ * @return bool
  */
 function vipgoci_options_read_repo_file(
-	&$options,
-	$repo_options_file_name,
-	$options_overwritable
-) {
+	array &$options,
+	string $repo_options_file_name,
+	array $options_overwritable
+) :bool {
 	$options['repo-options-set'] = array();
 
-	if ( false === $options[ 'repo-options' ] ) {
+	if ( false === $options['repo-options'] ) {
 		vipgoci_log(
 			'Skipping possibly overwriting options ' .
 				'using data from repository settings file ' .
 				'as this is disabled via command-line options',
 			array(
-				'repo-options'
-					=> $options[ 'repo-options' ],
+				'repo-options' => $options['repo-options'],
 			)
 		);
 
@@ -30,15 +42,14 @@ function vipgoci_options_read_repo_file(
 		'Reading options from repository, overwriting ' .
 			'already set option values if applicable',
 		array(
-			'repo_owner'		=> $options['repo-owner'],
-			'repo_name'		=> $options['repo-name'],
-			'commit'		=> $options['commit'],
-			'filename'		=> $repo_options_file_name,
-			'options_overwritable'	=> $options_overwritable,
-			'repo_options_allowed'	=> $options['repo-options-allowed'],
+			'repo_owner'           => $options['repo-owner'],
+			'repo_name'            => $options['repo-name'],
+			'commit'               => $options['commit'],
+			'filename'             => $repo_options_file_name,
+			'options_overwritable' => $options_overwritable,
+			'repo_options_allowed' => $options['repo-options-allowed'],
 		)
 	);
-
 
 	/*
 	 * Try to read options-file from
@@ -91,17 +102,15 @@ function vipgoci_options_read_repo_file(
 		return false;
 	}
 
-
 	/*
 	 * Actually set/overwrite values. Keep account of what we set
 	 * and to what value, log it at the end.
 	 */
 	$options_read = array();
 
-	foreach(
+	foreach (
 		$options_overwritable as
-			$option_overwritable_name =>
-			$option_overwritable_conf
+			$option_overwritable_name => $option_overwritable_conf
 	) {
 		/*
 		 * Detect possible issues with
@@ -110,9 +119,7 @@ function vipgoci_options_read_repo_file(
 		 */
 		if (
 			( ! isset(
-				$repo_options_arr[
-					$option_overwritable_name
-				]
+				$repo_options_arr[ $option_overwritable_name ]
 			) )
 			||
 			( ! isset(
@@ -129,9 +136,7 @@ function vipgoci_options_read_repo_file(
 		 */
 		if (
 			( 'array' !== $option_overwritable_conf['type'] ) &&
-			( ! isset(
-				$option_overwritable_conf['valid_values']
-			) )
+			( ! isset( $option_overwritable_conf['valid_values'] ) )
 		) {
 			continue;
 		}
@@ -181,58 +186,38 @@ function vipgoci_options_read_repo_file(
 		$do_skip = false;
 
 		if ( 'integer' === $option_overwritable_conf['type'] ) {
-			if ( ! is_numeric( $repo_options_arr[
-					$option_overwritable_name
-				]
+			if ( ! is_numeric(
+				$repo_options_arr[ $option_overwritable_name ]
 			) ) {
 				$do_skip = true;
-			}
-
-			else if ( ! in_array(
-				$repo_options_arr[
-					$option_overwritable_name
-				],
+			} elseif ( ! in_array(
+				$repo_options_arr[ $option_overwritable_name ],
 				$option_overwritable_conf['valid_values'],
 				true
 			) ) {
 				$do_skip = true;
 			}
-		}
-
-		else if ( 'boolean' === $option_overwritable_conf['type'] ) {
+		} elseif ( 'boolean' === $option_overwritable_conf['type'] ) {
 			if ( ! is_bool(
-				$repo_options_arr[
-					$option_overwritable_name
-				]
+				$repo_options_arr[ $option_overwritable_name ]
 			) ) {
 				$do_skip = true;
-			}
-
-			else if ( ! in_array(
-				$repo_options_arr[
-					$option_overwritable_name
-				],
+			} elseif ( ! in_array(
+				$repo_options_arr[ $option_overwritable_name ],
 				$option_overwritable_conf['valid_values'],
 				true
 			) ) {
 				$do_skip = true;
 			}
-		}
-
-		else if ( 'array' === $option_overwritable_conf['type'] ) {
+		} elseif ( 'array' === $option_overwritable_conf['type'] ) {
 			if ( ! is_array(
-				$repo_options_arr[
-					$option_overwritable_name
-				]
+				$repo_options_arr[ $option_overwritable_name ]
 			) ) {
 				$do_skip = true;
 			}
-		}
-
-		else {
+		} else {
 			$do_skip = true;
 		}
-
 
 		if ( true === $do_skip ) {
 			vipgoci_log(
@@ -244,7 +229,7 @@ function vipgoci_options_read_repo_file(
 					'option_overwritable_conf'
 						=> $option_overwritable_conf,
 
-					'repo_options_arr[' . $option_overwritable_name .' ]'
+					'repo_options_arr[' . $option_overwritable_name . ']'
 						=> $repo_options_arr[ $option_overwritable_name ],
 				)
 			);
@@ -256,35 +241,17 @@ function vipgoci_options_read_repo_file(
 			( 'array' === $option_overwritable_conf['type'] ) &&
 			( true === $option_overwritable_conf['append'] )
 		) {
-			$options[
-				$option_overwritable_name
-			] = array_merge(
-				$options[
-					$option_overwritable_name
-				],
-				$repo_options_arr[
-					$option_overwritable_name
-				]
+			$options[ $option_overwritable_name ] = array_merge(
+				$options[ $option_overwritable_name ],
+				$repo_options_arr[ $option_overwritable_name ],
 			);
+		} else {
+			$options[ $option_overwritable_name ] =
+				$repo_options_arr[ $option_overwritable_name ];
 		}
 
-		else {
-			$options[
-				$option_overwritable_name
-			]
-			=
-			$repo_options_arr[
-				$option_overwritable_name
-			];
-		}
-
-		$options_read[
-			$option_overwritable_name
-		]
-		=
-		$repo_options_arr[
-			$option_overwritable_name
-		];
+		$options_read[ $option_overwritable_name ] =
+			$repo_options_arr[ $option_overwritable_name ];
 	}
 
 	vipgoci_log(
@@ -297,16 +264,20 @@ function vipgoci_options_read_repo_file(
 	return true;
 }
 
-/*
+/**
  * Read from repository files which folders are to
  * be skipped from PHPCS scanning and PHP Linting,
  * if configured to do so, and join with any folders
  * specified on the command line.
+ *
+ * @param array $options Options array for the program.
+ *
+ * @return void
  */
 function vipgoci_options_read_repo_skip_files(
-	&$options
-) {
-	foreach(
+	array &$options
+) :void {
+	foreach (
 		array( 'phpcs', 'lint' ) as $scan_type
 	) {
 		/*
@@ -319,8 +290,8 @@ function vipgoci_options_read_repo_skip_files(
 				$scan_type . ' folders can be skipped, as not ' .
 				'configured to do so',
 				array(
-					$scan_type . '_skip_folders_in_repo_options_file'	=>
-						$options[ $scan_type . '-skip-folders-in-repo-options-file' ]
+					$scan_type . '_skip_folders_in_repo_options_file' =>
+						$options[ $scan_type . '-skip-folders-in-repo-options-file' ],
 				)
 			);
 
@@ -331,8 +302,8 @@ function vipgoci_options_read_repo_skip_files(
 			'Reading from repository files which folders can ' .
 				'be skipped from ' . $scan_type . ' scanning',
 			array(
-				$scan_type . '_skip_folders_in_repo_options_file'	=>
-					$options[ $scan_type . '-skip-folders-in-repo-options-file' ]
+				$scan_type . '_skip_folders_in_repo_options_file' =>
+					$options[ $scan_type . '-skip-folders-in-repo-options-file' ],
 			)
 		);
 
@@ -354,7 +325,7 @@ function vipgoci_options_read_repo_skip_files(
 			vipgoci_log(
 				'No folders skippable found in repository for ' . $scan_type . ', so skipping',
 				array(
-					'type_options_file_name'	=> $type_options_file_name,
+					'type_options_file_name' => $type_options_file_name,
 				)
 			);
 
@@ -366,13 +337,12 @@ function vipgoci_options_read_repo_skip_files(
 		 * new-lines as separators
 		 * between items. Here we
 		 * emulate the behaviour
-	 	 * found on the command-line,
+		 * found on the command-line,
 		 * which is to use commas.
 		 */
-		$type_options_file_contents =
-			str_replace(
-				"\n",
-				',',
+		$type_options_file_contents = str_replace(
+			"\n",
+			',',
 			$type_options_file_contents
 		);
 
@@ -385,8 +355,7 @@ function vipgoci_options_read_repo_skip_files(
 		 */
 
 		$tmp_options = array(
-			'tmp-skip-folders' =>
-				$type_options_file_contents
+			'tmp-skip-folders' => $type_options_file_contents,
 		);
 
 		/*
@@ -414,44 +383,30 @@ function vipgoci_options_read_repo_skip_files(
 		 * folders.
 		 */
 		if (
-			( is_array(
-				$tmp_options[
-					'tmp-skip-folders'
-				]
-			) )
-			&&
-			( count(
-				$tmp_options[
-					'tmp-skip-folders'
-				]
-			) > 0 )
+			( is_array( $tmp_options['tmp-skip-folders'] ) ) &&
+			( count( $tmp_options['tmp-skip-folders'] ) > 0 )
 		) {
 
 			$log_msg = 'Merging folders found in configuration ' .
 					'file with possible other folders';
 
 			$options[ $scan_type . '-skip-folders' ] = array_merge(
-				$options[ $scan_type . '-skip-folders'],
+				$options[ $scan_type . '-skip-folders' ],
 				$tmp_options['tmp-skip-folders']
 			);
-		}
-
-		else {
+		} else {
 			$log_msg = 'No folders found to merge with options, skipping';
 		}
 
+		$log_msg_details = array(
+			'scan_type'                                    => $scan_type,
+			'file_options_' . $scan_type . '_skip_folders' => $tmp_options['tmp-skip-folders'],
+			'current_' . $scan_type . '_skip_folders'      => $options[ $scan_type . '-skip-folders' ],
+		);
+
 		vipgoci_log(
 			$log_msg,
-			array(
-				'scan_type'
-					=> $scan_type,
-
-				'file_options_' . $scan_type . '_skip_folders' =>
-					$tmp_options['tmp-skip-folders'],
-
-				'current_' . $scan_type . '_skip_folders' =>
-					$options[ $scan_type . '-skip-folders'],
-			)
+			$log_msg_details
 		);
 
 		unset( $tmp_options );
@@ -487,9 +442,7 @@ function vipgoci_options_read_env(
 
 	$options_configured = array();
 
-	foreach(
-		$options['env-options'] as $option_unparsed
-	) {
+	foreach ( $options['env-options'] as $option_unparsed ) {
 		/*
 		 * Try to parse option from the command-line
 		 * to figure out which environmental variable to use
@@ -498,21 +451,21 @@ function vipgoci_options_read_env(
 		$option_parsed = explode(
 			'=',
 			$option_unparsed,
-			2 // Max one '='; any extra will be preserved in the option-env-var
+			2 // Max one '='; any extra will be preserved in the option-env-var.
 		);
 
 		if ( count( $option_parsed ) !== 2 ) {
 			vipgoci_log(
 				'Invalid option provided via environment, skipping',
 				array(
-					'option_parsed'	=> $option_parsed,
+					'option_parsed' => $option_parsed,
 				)
 			);
 
 			continue;
 		}
 
-		$option_name = $option_parsed[0];
+		$option_name    = $option_parsed[0];
 		$option_env_var = $option_parsed[1];
 		unset( $option_parsed );
 
@@ -531,11 +484,8 @@ function vipgoci_options_read_env(
 			vipgoci_log(
 				'Skipping option name/var-name from environment as it is too short',
 				array(
-					'option_name' =>
-						$option_name,
-
-					'option_env_var' =>
-						$option_env_var,
+					'option_name'    => $option_name,
+					'option_env_var' => $option_env_var,
 				)
 			);
 
@@ -553,14 +503,9 @@ function vipgoci_options_read_env(
 			vipgoci_log(
 				'Skipping option from environment as it is not recognized',
 				array(
-					'option_name' =>
-						$option_name,
-
-					'option_env_var' =>
-						$option_env_var,
-
-					'options_recognized' =>
-						$options_recognized,
+					'option_name'        => $option_name,
+					'option_env_var'     => $option_env_var,
+					'options_recognized' => $options_recognized,
 				)
 			);
 
@@ -572,16 +517,14 @@ function vipgoci_options_read_env(
 		 */
 		if ( in_array(
 			$option_name,
-			array( 'env-options' )
+			array( 'env-options' ), // phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
+			false
 		) ) {
 			vipgoci_log(
 				'Skipping option from environment as it is not allowed',
 				array(
-					'option_name' =>
-						$option_name,
-
-					'option_env_var' =>
-						$option_env_var,
+					'option_name'    => $option_name,
+					'option_env_var' => $option_env_var,
 				)
 			);
 
@@ -594,26 +537,14 @@ function vipgoci_options_read_env(
 		 * round? Then skip.
 		 */
 		if (
-			( isset(
-				$options[
-					$option_name
-				]
-			) )
-			&&
-			( ! isset(
-				$options_configured[
-					$option_name
-				]
-			) )
+			( isset( $options[ $option_name ] ) ) &&
+			( ! isset( $options_configured[ $option_name ] ) )
 		) {
 			vipgoci_log(
 				'Skipping option from environment as it is already configured',
 				array(
-					'option_name' =>
-						$option_name,
-
-					'option_env_var'
-						=> $option_env_var,
+					'option_name'    => $option_name,
+					'option_env_var' => $option_env_var,
 				)
 			);
 
@@ -629,14 +560,9 @@ function vipgoci_options_read_env(
 			vipgoci_log(
 				'Skipping option from environment as the variable is not defined',
 				array(
-					'option_name' =>
-						$option_name,
-
-					'option_env_var' =>
-						$option_env_var,
-
-					'option_env_var_value' =>
-						$option_env_var_value,
+					'option_name'          => $option_name,
+					'option_env_var'       => $option_env_var,
+					'option_env_var_value' => $option_env_var_value,
 				)
 			);
 
@@ -647,54 +573,55 @@ function vipgoci_options_read_env(
 		 * All checks passed.
 		 * Actually set value.
 		 */
-		$options[
-			$option_name
-		] = $option_env_var_value;
+		$options[ $option_name ] = $option_env_var_value;
 
-		$options_configured[
-			$option_name
-		] = $option_env_var_value;
+		$options_configured[ $option_name ] = $option_env_var_value;
 	}
 
 	vipgoci_log(
 		'Read and set options from environment',
 		array(
+
 			/*
 			 * Note: Do not print out the actual
 			 * values, so not to expose them in logs.
 			 */
 			'options_configured_keys' => array_keys(
 				$options_configured
-			)
+			),
 		)
 	);
 }
 
-/*
+/**
  * Replace any sensitive option value from
  * a given option array with something
  * that can be printed safely and return
  * a new array.
+ *
+ * @param null|array $options                  Options array when sanitizing, else null.
+ * @param array      $options_add_to_sensitive If set, will add to list of sensitive option names.
+ *
+ * @return mixed Nothing is returned when sensitive options are added, else array when cleaning.
  */
 function vipgoci_options_sensitive_clean(
-	$options,
-	$options_add_to_sensitive = array()
-) {
-	static $sensitive_options = array(
-	);
+	null|array $options,
+	array $options_add_to_sensitive = array()
+) :array {
+	static $sensitive_options = array();
 
-	if ( ! empty ( $options_add_to_sensitive ) ) {
+	if ( ! empty( $options_add_to_sensitive ) ) {
 		$sensitive_options = array_merge(
 			$sensitive_options,
 			$options_add_to_sensitive
 		);
 
-		return;
+		return $sensitive_options;
 	}
 
 	$options_clean = $options;
 
-	foreach(
+	foreach (
 		$options_clean as
 			$option_key => $option_value
 	) {
@@ -716,30 +643,34 @@ function vipgoci_options_sensitive_clean(
 	return $options_clean;
 }
 
-/*
+/**
  * Handle boolean parameters given on the command-line.
  *
  * Will set a default value for the given parameter name,
  * if no value is set. Will then proceed to check if the
  * value given is a boolean and will then convert the value
  * to a boolean-type, and finally set it in $options.
+ *
+ * @param array  $options        Options array for the program.
+ * @param string $parameter_name Parameter name.
+ * @param string $default_value  Default value.
+ *
+ * @return void
  */
-
 function vipgoci_option_bool_handle(
-	&$options,
-	$parameter_name,
-	$default_value
-) {
-
+	array &$options,
+	string $parameter_name,
+	string $default_value
+) :void {
 	/* If no default is given, set it */
 	if ( ! isset( $options[ $parameter_name ] ) ) {
 		$options[ $parameter_name ] = $default_value;
 	}
 
-	/* Check if the gien value is a false or true */
+	/* Check if the given value is a false or true */
 	if (
-		( $options[ $parameter_name ] !== 'false' ) &&
-		( $options[ $parameter_name ] !== 'true' )
+		( 'false' !== $options[ $parameter_name ] ) &&
+		( 'true' !== $options[ $parameter_name ] )
 	) {
 		vipgoci_sysexit(
 			'Parameter --' . $parameter_name .
@@ -750,16 +681,14 @@ function vipgoci_option_bool_handle(
 	}
 
 	/* Convert the given value to a boolean type value */
-	if ( $options[ $parameter_name ] === 'false' ) {
+	if ( 'false' === $options[ $parameter_name ] ) {
 		$options[ $parameter_name ] = false;
-	}
-
-	else {
+	} else {
 		$options[ $parameter_name ] = true;
 	}
 }
 
-/*
+/**
  * Handle integer parameters given on the command-line.
  *
  * Will set a default value for the given parameter name,
@@ -768,14 +697,20 @@ function vipgoci_option_bool_handle(
  * it to integer-value to make sure it is of that type,
  * then check if it is in a list of allowable values.
  * If any of these fail, it will exit the program with an error.
+ *
+ * @param array      $options        Options array for the program.
+ * @param string     $parameter_name Parameter name to process.
+ * @param int        $default_value  Default value for parameter.
+ * @param null|array $allowed_values Values allowed for parameter.
+ *
+ * @return void
  */
-
 function vipgoci_option_integer_handle(
-	&$options,
-	$parameter_name,
-	$default_value,
-	$allowed_values = null
-) {
+	array &$options,
+	string $parameter_name,
+	int $default_value,
+	null|array $allowed_values = null
+) :void {
 	/* If no value is set, set the default value */
 	if ( ! isset( $options[ $parameter_name ] ) ) {
 		$options[ $parameter_name ] = $default_value;
@@ -800,8 +735,7 @@ function vipgoci_option_integer_handle(
 	 */
 
 	if (
-		( null !== $allowed_values )
-		&&
+		( null !== $allowed_values ) &&
 		( ! in_array(
 			$options[ $parameter_name ],
 			$allowed_values,
@@ -818,7 +752,7 @@ function vipgoci_option_integer_handle(
 
 }
 
-/*
+/**
  * Handle array-like option parameters given on the command line
  *
  * Parses the parameter, turns it into a real array,
@@ -827,27 +761,34 @@ function vipgoci_option_integer_handle(
  * $options directly.
  *
  * Allows for array-item separator to be specified.
+ *
+ * @param array             $options               Options array for the program.
+ * @param string            $option_name           Option name to process.
+ * @param array|string      $default_value         Default value if nothing is set.
+ * @param string|array|null $forbidden_value       Values not permissible to use.
+ * @param string            $array_separator       String separator between values.
+ * @param bool              $strlower_option_value If to convert values to lower case.
+ *
+ * @return void
  */
 function vipgoci_option_array_handle(
-	&$options,
-	$option_name,
-	$default_value = array(),
-	$forbidden_value = null,
-	$array_separator = ',',
-	$strlower_option_value = true
-) {
+	array &$options,
+	string $option_name,
+	array|string $default_value = array(),
+	string|array|null $forbidden_value = null,
+	string $array_separator = ',',
+	bool $strlower_option_value = true
+) :void {
 	if ( ! isset( $options[ $option_name ] ) ) {
 		$options[ $option_name ] = $default_value;
-	}
-
-	/*
-	 * Detect when option is already
-	 * array, which can happen when
-	 * an option is specified twice.
-	 */
-	else if ( is_array(
+	} elseif ( is_array(
 		$options[ $option_name ]
 	) ) {
+		/*
+		 * Option is already an array
+		 * which can happen when an
+		 * option is specified twice.
+		 */
 		vipgoci_sysexit(
 			'Parameter --' .
 			$option_name . ' ' .
@@ -857,9 +798,7 @@ function vipgoci_option_array_handle(
 			array(),
 			VIPGOCI_EXIT_USAGE_ERROR
 		);
-	}
-
-	else {
+	} else {
 		if ( true === $strlower_option_value ) {
 			$options[ $option_name ] = strtolower(
 				$options[ $option_name ]
@@ -904,26 +843,28 @@ function vipgoci_option_array_handle(
 }
 
 
-/*
+/**
  * Handle parameter that expects the value
  * of it to be a file. Allow a default value
  * to be set if none is set.
+ *
+ * @param array       $options       Options array for the program.
+ * @param string      $option_name   Option name to process.
+ * @param string|null $default_value Path to file, or null.
+ *
+ * @return void
  */
-
 function vipgoci_option_file_handle(
-	&$options,
-	$option_name,
-	$default_value = null
-) {
-
+	array &$options,
+	string $option_name,
+	string|null $default_value = null
+) :void {
 	if (
 		( ! isset( $options[ $option_name ] ) ) &&
 		( null !== $default_value )
 	) {
 		$options[ $option_name ] = $default_value;
-	}
-
-	else if (
+	} elseif (
 		( ! isset( $options[ $option_name ] ) ) ||
 		( ! is_file( $options[ $option_name ] ) )
 	) {
@@ -943,14 +884,19 @@ function vipgoci_option_file_handle(
  * a URL (not starting with http:// or https://),
  * exit with error. If empty, sets a default.
  *
+ * @param array       $options       Options array for the program.
+ * @param string      $option_name   Option name to process.
+ * @param string|null $default_value Default value to set if empty, or null.
+ *
+ * @return void
+ *
  * @codeCoverageIgnore
  */
-
 function vipgoci_option_url_handle(
-	&$options,
-	$option_name,
-	$default_value
-) {
+	array &$options,
+	string $option_name,
+	string|null $default_value
+) :void {
 	/*
 	 * If not set, assume default value.
 	 */
@@ -984,8 +930,7 @@ function vipgoci_option_url_handle(
 			vipgoci_sysexit(
 				'Option --' . $option_name . ' should ' .
 					'be an URL',
-				array(
-				),
+				array(),
 				VIPGOCI_EXIT_USAGE_ERROR
 			);
 		}
@@ -1005,8 +950,7 @@ function vipgoci_option_url_handle(
 		vipgoci_sysexit(
 			'Option --' . $option_name . ' should ' .
 				'be an URL starting with https://',
-			array(
-			),
+			array(),
 			VIPGOCI_EXIT_USAGE_ERROR
 		);
 	}
@@ -1043,7 +987,6 @@ function vipgoci_option_teams_handle(
 		$options[ $option_name ]
 	);
 
-
 	$teams_info = vipgoci_github_org_teams_get(
 		$options['token'],
 		$options['repo-owner'],
@@ -1051,9 +994,8 @@ function vipgoci_option_teams_handle(
 		'slug'
 	);
 
-	foreach(
-		$options[ $option_name ] as
-			$team_slug_key => $team_slug_value
+	foreach (
+		$options[ $option_name ] as $team_slug_key => $team_slug_value
 	) {
 		$team_slug_value_original = $team_slug_value;
 
@@ -1064,9 +1006,7 @@ function vipgoci_option_teams_handle(
 		 */
 		if ( ! empty( $teams_info[ $team_slug_value ] ) ) {
 			$team_slug_value = $teams_info[ $team_slug_value ][0]->slug;
-		}
-
-		else {
+		} else {
 			/*
 			 * Something failed; slug may have been invalid so
 			 * remove it from the options array.
@@ -1090,10 +1030,9 @@ function vipgoci_option_teams_handle(
 	}
 
 	/* Reconstruct array from the previous one */
-	$options[ $option_name ] =
-		array_values( array_unique(
-			$options[ $option_name ]
-		) );
+	$options[ $option_name ] = array_values(
+		array_unique( $options[ $option_name ] )
+	);
 
 	vipgoci_log(
 		'Team information verified via GitHub API',
@@ -1109,24 +1048,29 @@ function vipgoci_option_teams_handle(
 }
 
 
-/*
+/**
  * Handles --skip-folder like parameters;
  * they are mostly handled as arrays, but
  * in addition we remove certain strings
  * from the beginning and end of each array
  * element.
-*/
+ *
+ * @param array  $options     Array of options.
+ * @param string $option_name Option name to process.
+ *
+ * @return void
+ */
 function vipgoci_option_skip_folder_handle(
-	&$options,
-	$option_name
-) {
+	array &$options,
+	string $option_name
+) :void {
 	vipgoci_option_array_handle(
 		$options,
 		$option_name,
 		array(),
 		null,
 		',',
-		false // no strtolower
+		false // No transformation to lowercase.
 	);
 
 	/*
@@ -1134,71 +1078,57 @@ function vipgoci_option_skip_folder_handle(
 	 * and end of each element, as they
 	 * should be treated as relative paths.
 	 */
-	$options[
-		$option_name
-	] = array_map(
+	$options[ $option_name ] = array_map(
 		function( $skip_folder_item ) {
 			return trim(
 				$skip_folder_item,
 				'/'
 			);
 		},
-		$options[
-			$option_name
-		]
+		$options[ $option_name ]
 	);
 }
 
-/*
+/**
  * Process options for generic support options parameters.
+ *
+ * @param array  $options               Options array for the program.
+ * @param string $option_name           Option name to process.
+ * @param string $type                  Type of option $option_name is: 'string', 'array' or 'boolean'.
+ * @param bool   $strlower_option_value If to set string to lowercase.
+ *
+ * @return void
  */
 function vipgoci_option_generic_support_comments_process(
-	&$options,
-	$option_name,
-	$type = 'string',
-	$strlower_option_value = true
-) {
-	if ( ! isset(
-		$options[
-			$option_name
-		]
-	) ) {
-
+	array &$options,
+	string $option_name,
+	string $type = 'string',
+	bool $strlower_option_value = true
+) :void {
+	if ( ! isset( $options[ $option_name ] ) ) {
 		if ( 'string' === $type ) {
 			$default_value = null;
-		}
-
-		else if ( 'array' === $type ) {
+		} elseif ( 'array' === $type ) {
 			$default_value = array();
-		}
-
-		else if ( 'boolean' === $type ) {
+		} elseif ( 'boolean' === $type ) {
 			$default_value = false;
 		}
 
-		$options[
-			$option_name
-		] = $default_value;
+		$options[ $option_name ] = $default_value;
 
 		return;
 	}
 
-
-	if ( is_array(
-			$options[
-				$option_name
-			]
-	) ) {
+	if ( is_array( $options[ $option_name ] ) ) {
 		vipgoci_sysexit(
 			'Option --' . $option_name . ' is an array, but should not be. Maybe specified twice?',
 			array(
-				'option_name'	=> $option_name,
-				'option_value'	=> $options[ $option_name ],
+				'option_name'  => $option_name,
+				'option_value' => $options[ $option_name ],
 			),
 			VIPGOCI_EXIT_USAGE_ERROR
 		);
 	}
-
 
 	$options[ $option_name ] =
 		trim(
@@ -1222,9 +1152,10 @@ function vipgoci_option_generic_support_comments_process(
 	);
 
 	$original_option_value = $options[ $option_name ];
+
 	$options[ $option_name ] = array();
 
-	foreach(
+	foreach (
 		array_values(
 			$original_option_value
 		) as $tmp_string_option
@@ -1234,10 +1165,10 @@ function vipgoci_option_generic_support_comments_process(
 			explode(
 				':',
 				$tmp_string_option,
-				2 // Max two items in array, ID and value
+				2 // Max two items in array, ID and value.
 			);
 
-		$tmp_key = $tmp_string_option_arr[0];
+		$tmp_key   = $tmp_string_option_arr[0];
 		$tmp_value = $tmp_string_option_arr[1];
 
 		if ( 'boolean' === $type ) {
@@ -1245,15 +1176,13 @@ function vipgoci_option_generic_support_comments_process(
 				$tmp_value = vipgoci_convert_string_to_type(
 					$tmp_value
 				);
-			}
-
-			else {
+			} else {
 				vipgoci_sysexit(
 					'Unsupported option value provided to options parameter',
 					array(
-						'option_name'		=> $option_name,
-						'option_value'		=> $original_option_value,
-						'option_value_problem'	=> $tmp_value,
+						'option_name'          => $option_name,
+						'option_value'         => $original_option_value,
+						'option_value_problem' => $tmp_value,
 					),
 					VIPGOCI_EXIT_USAGE_ERROR
 				);
@@ -1261,19 +1190,13 @@ function vipgoci_option_generic_support_comments_process(
 
 			$options[ $option_name ][ $tmp_key ] =
 				$tmp_value;
-		}
-
-		else if ('string' === $type ) {
+		} elseif ( 'string' === $type ) {
 			$options[ $option_name ][ $tmp_key ] =
 				$tmp_value;
-		}
-
-		else if ( 'array' === $type ) {
+		} elseif ( 'array' === $type ) {
 			if ( empty( $tmp_value ) ) {
 				$options[ $option_name ][ $tmp_key ] = array();
-			}
-
-			else {
+			} else {
 				$options[ $option_name ][ $tmp_key ] = explode(
 					',',
 					$tmp_value
@@ -1283,16 +1206,21 @@ function vipgoci_option_generic_support_comments_process(
 	}
 }
 
-/*
+/**
  * Process options for generic support comments matching.
  *
  * Syntax of this option is:
  * --post-generic-pr-support-comments-repo-meta-match="0:mykey=myvalue,foo=bar|||1:mykey2=myvalue3,aaa=bbb"
+ *
+ * @param array  $options     Options array for the program.
+ * @param string $option_name Option name.
+ *
+ * @return void
  */
 function vipgoci_option_generic_support_comments_match(
-	&$options,
-	$option_name
-) {
+	array &$options,
+	string $option_name
+) :void {
 	vipgoci_option_array_handle(
 		$options,
 		$option_name,
@@ -1303,19 +1231,15 @@ function vipgoci_option_generic_support_comments_match(
 
 	$raw_option_value = $options[ $option_name ];
 
+	$raw_option_value_cnt = count( $raw_option_value );
+
 	$processed_option_value = array();
 
 	/*
 	 * Loop through possible matches, separated
 	 * by "|||"
 	 */
-	for(
-		$i = 0;
-		$i < count(
-			$raw_option_value
-		);
-		$i++
-	) {
+	for ( $i = 0; $i < $raw_option_value_cnt; $i++ ) {
 		/*
 		 * Split each possible match by ":" --
 		 * should originally a string be something like: "0:key=value",
@@ -1325,17 +1249,15 @@ function vipgoci_option_generic_support_comments_match(
 		$match_with_id_arr = explode(
 			':',
 			$raw_option_value[ $i ],
-			2 // Max one ':'; any extra will be preserve
+			2 // Max one ':'; any extra will be preserved.
 		);
 
-		/* Should be only two items in the array */
-		if ( count( $match_with_id_arr ) != 2 ) {
+		// Should be only two items in the array.
+		if ( 2 !== count( $match_with_id_arr ) ) {
 			continue;
 		}
 
-		$processed_option_value[
-			$match_with_id_arr[0]
-		] = array();
+		$processed_option_value[ $match_with_id_arr[0] ] = array();
 
 		/*
 		 * Within each match, split by
@@ -1346,7 +1268,7 @@ function vipgoci_option_generic_support_comments_match(
 			$match_with_id_arr[1]
 		);
 
-		foreach( $match_key_values_arr as $match_key_value_item ) {
+		foreach ( $match_key_values_arr as $match_key_value_item ) {
 			$match_key_value_item_arr = explode(
 				'=',
 				$match_key_value_item,
@@ -1354,17 +1276,14 @@ function vipgoci_option_generic_support_comments_match(
 			);
 
 			if ( ! isset(
-				$processed_option_value[
-					$match_with_id_arr[0]
-				][
-					$match_key_value_item_arr[0]
-				]
+				$processed_option_value
+					[ $match_with_id_arr[0] ]
+					[ $match_key_value_item_arr[0] ]
 			) ) {
-				$processed_option_value[
-					$match_with_id_arr[0]
-				][
-					$match_key_value_item_arr[0]
-				] = array();
+				$processed_option_value
+					[ $match_with_id_arr[0] ]
+					[ $match_key_value_item_arr[0] ]
+					= array();
 			}
 
 			if ( ! isset(
@@ -1386,31 +1305,31 @@ function vipgoci_option_generic_support_comments_match(
 				);
 			}
 
-
-			$processed_option_value[
-				$match_with_id_arr[0]
-			][
-				$match_key_value_item_arr[0]
-			][] = vipgoci_convert_string_to_type(
-				$match_key_value_item_arr[1]
-			);
+			$processed_option_value
+					[ $match_with_id_arr[0] ]
+					[ $match_key_value_item_arr[0] ]
+					[] = vipgoci_convert_string_to_type(
+						$match_key_value_item_arr[1]
+					);
 		}
 	}
 
-	$options[
-		$option_name
-	] = $processed_option_value;
+	$options[ $option_name ] = $processed_option_value;
 }
 
-/*
- * Process --phpcs-runtime-set like parameters -- 
+/**
+ * Process --phpcs-runtime-set like parameters --
  * expected to be an array of values.
+ *
+ * @param array  $options     Options array for the program.
+ * @param string $option_name Option name.
+ *
+ * @return void
  */
-
 function vipgoci_option_phpcs_runtime_set(
-	&$options,
-	$option_name
-) {
+	array &$options,
+	string $option_name
+) :void {
 	if ( empty( $options[ $option_name ] ) ) {
 		$options[ $option_name ] = array();
 
@@ -1426,7 +1345,7 @@ function vipgoci_option_phpcs_runtime_set(
 		false
 	);
 
-	foreach(
+	foreach (
 		$options[ $option_name ] as
 			$tmp_runtime_key =>
 				$tmp_runtime_set
@@ -1438,10 +1357,9 @@ function vipgoci_option_phpcs_runtime_set(
 
 		/*
 		 * Catch any abnormalities with
-	 	 * the --phpcs-runtime-set like parameter, such
+		 * the --phpcs-runtime-set like parameter, such
 		 * as key/value being missing, or set to empty.
 		 */
-
 		if (
 			( count(
 				$options
@@ -1449,16 +1367,18 @@ function vipgoci_option_phpcs_runtime_set(
 				[ $tmp_runtime_key ]
 			) < 2 )
 			||
-			( empty( $options
-				[ $option_name ]
-				[ $tmp_runtime_key ]
-				[0]
+			( empty(
+				$options
+					[ $option_name ]
+					[ $tmp_runtime_key ]
+					[0]
 			) )
 			||
-			( empty( $options
-				[ $option_name ]
-				[ $tmp_runtime_key ]
-				[1]
+			( empty(
+				$options
+					[ $option_name ]
+					[ $tmp_runtime_key ]
+					[1]
 			) )
 		) {
 			vipgoci_sysexit(
@@ -1466,7 +1386,7 @@ function vipgoci_option_phpcs_runtime_set(
 				'be a comma separated string of keys and values.' . PHP_EOL .
 				'For instance: --' . $option_name . '="foo1 bar1,foo2 bar2"',
 				array(
-					$options[ $option_name ]
+					$options[ $option_name ],
 				),
 				VIPGOCI_EXIT_USAGE_ERROR
 			);
@@ -1474,11 +1394,17 @@ function vipgoci_option_phpcs_runtime_set(
 	}
 }
 
-/*
+/**
  * Return options as key-value pairs that start
  * with $start_with, but skip any options in
  * $options_skip. Will sort the results according
  * to key.
+ *
+ * @param array  $options      Options array for the program.
+ * @param string $starts_with  Key prefix to look for.
+ * @param array  $options_skip Option names to skip.
+ *
+ * @return array
  */
 function vipgoci_options_get_starting_with(
 	array $options,
@@ -1487,12 +1413,12 @@ function vipgoci_options_get_starting_with(
 ) :array {
 	$ret_vals = array();
 
-	foreach( array_keys( $options ) as $option_name ) {
+	foreach ( array_keys( $options ) as $option_name ) {
 		if ( 0 !== strpos( $option_name, $starts_with ) ) {
 			continue;
 		}
 
-		if ( in_array( $option_name, $options_skip ) ) {
+		if ( in_array( $option_name, $options_skip, true ) ) {
 			continue;
 		}
 
