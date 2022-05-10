@@ -18,7 +18,8 @@ declare(strict_types=1);
  * @param null|CurlHandle $ch     cURL handle.
  * @param null|string     $header HTTP header to process, or null.
  *
- * @return int|array
+ * @return int|array When collecting header, returns length of 
+ *                   header saved. Returns array of headers otherwise.
  */
 function vipgoci_curl_headers(
 	null|CurlHandle $ch,
