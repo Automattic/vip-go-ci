@@ -54,7 +54,7 @@ function vipgoci_ap_svg_files(
 			$pr_item->base->sha,
 			$options['commit'],
 			true, // Include renamed files.
-			true, // Include removed files.
+			false, // Exclude removed files.
 			true // Include permission changes.
 		);
 
