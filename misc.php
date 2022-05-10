@@ -231,7 +231,7 @@ function vipgoci_convert_string_to_type(
  * @param int   $precision Precision to use.
  * @param int   $mode      Mode for round().
  *
- * @return array
+ * @return array Array of items rounded to precision.
  */
 function vipgoci_round_array_items(
 	array $arr,
