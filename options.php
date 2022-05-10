@@ -16,7 +16,8 @@ declare(strict_types=1);
  * @param string $repo_options_file_name Name of options file name.
  * @param array  $options_overwritable   Array of options that can be overwritten.
  *
- * @return bool
+ * @return bool False when options could not be read or set,
+ *              true when read and option(s) potentially changed.
  */
 function vipgoci_options_read_repo_file(
 	array &$options,
@@ -35,7 +36,7 @@ function vipgoci_options_read_repo_file(
 			)
 		);
 
-		return true;
+		return false;
 	}
 
 	vipgoci_log(
@@ -1404,7 +1405,7 @@ function vipgoci_option_phpcs_runtime_set(
  * @param string $starts_with  Key prefix to look for.
  * @param array  $options_skip Option names to skip.
  *
- * @return array
+ * @return array Sorted key-value pairs options array with items that match $start_with.
  */
 function vipgoci_options_get_starting_with(
 	array $options,
