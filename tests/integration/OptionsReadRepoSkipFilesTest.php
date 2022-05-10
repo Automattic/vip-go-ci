@@ -64,7 +64,9 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 			'mmm-300/800',
 		);
 
-		$this->options['token'] = null;
+		if ( empty( $this->options['token'] ) ) {
+			$this->options['token'] = '';
+		}
 	}
 
 	/**
