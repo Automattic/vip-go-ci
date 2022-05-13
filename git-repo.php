@@ -246,7 +246,7 @@ function vipgoci_gitrepo_get_head(
  *
  * @param string $local_git_repo Path to local git repository.
  *
- * @return null|string Current branch as string on success, null on failure. 
+ * @return null|string Current branch as string on success, null on failure.
  */
 function vipgoci_gitrepo_branch_current_get(
 	string $local_git_repo
@@ -359,7 +359,7 @@ function vipgoci_gitrepo_branch_current_get(
  * @param string     $commit_id Commit-ID of current commit.
  * @param null|array $filter    Filter to apply.
  *
- * @return array Array with files in repository as items. 
+ * @return array Array with files in repository as items.
  */
 function vipgoci_gitrepo_fetch_tree(
 	array $options,
@@ -1066,7 +1066,7 @@ function vipgoci_gitrepo_submodule_get_url(
  *      'file-2.php' => ...,
  *    ),
  *  );
-*/
+ */
 function vipgoci_gitrepo_diffs_fetch_unfiltered(
 	string $local_git_repo,
 	string $commit_id_a,
@@ -1524,7 +1524,7 @@ function vipgoci_gitrepo_diffs_fetch_unfiltered(
  * @param bool       $permission_changes_also If to include files whose permissions were changed.
  * @param null|array $filter                  Filter to apply to results.
  *
- * @return array Array with results. For example: 
+ * @return array Array with results. For example:
  *  array(
  *    'statistics'  => array(
  *      'additions' => 25,
@@ -1664,7 +1664,6 @@ function vipgoci_git_diffs_fetch(
 	);
 
 	foreach ( $diff_results['files'] as $file_item ) {
-
 		/*
 		 * Skip removed files if so requested.
 		 */
