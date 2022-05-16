@@ -16,6 +16,7 @@ use PHPUnit\Framework\TestCase;
  *
  * Note: Running in separate processes fails for unknown reasons.
  *
+ * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
 final class GitRepoSubmoduleFilePathGetTest extends TestCase {
