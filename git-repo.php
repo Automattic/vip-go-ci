@@ -121,17 +121,16 @@ function vipgoci_gitrepo_ok(
 		( false !== $commit_id ) &&
 		( $commit_id !== $lgit_head )
 	) {
-		vipgoci_log(
+		vipgoci_sysexit(
 			'Can not use local Git repository, seems not to be in ' .
 			'sync with current commit or does not exist',
 			array(
 				'commit_id'           => $commit_id,
 				'local_git_repo'      => $local_git_repo,
 				'local_git_repo_head' => $lgit_head,
-			)
+			),
+			VIPGOCI_EXIT_USAGE_ERROR
 		);
-
-		exit( VIPGOCI_EXIT_USAGE_ERROR );
 	}
 }
 
@@ -764,7 +763,7 @@ function vipgoci_gitrepo_submodules_setup(
 	string $local_git_repo
 ) :string {
 	$cmd = sprintf(
-		'%s -C %s submodule init && %s -C %s submodule update',
+		'( %s -C %s submodule init && %s -C %s submodule update )',
 		escapeshellcmd( 'git' ),
 		escapeshellarg( $local_git_repo ),
 		escapeshellcmd( 'git' ),
