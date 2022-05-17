@@ -162,6 +162,7 @@ define( 'VIPGOCI_EXIT_USAGE_ERROR', 253 );
 define( 'VIPGOCI_STATS_PHPCS', 'phpcs' );
 define( 'VIPGOCI_STATS_LINT', 'lint' );
 define( 'VIPGOCI_STATS_HASHES_API', 'hashes-api' );
+define( 'VIPGOCI_STATS_WPSCAN_API', 'wpscan-api' );
 
 /*
  * Define auto-approval types
@@ -228,3 +229,12 @@ define(
 );
 
 define( 'VIPGOCI_VALIDATION_MAXIMUM_DETAIL_MSG', 'Note that the above file(s) were not analyzed due to their length.' );
+
+/*
+ * Enum for WPScan API support.
+ */
+
+enum VIPGOCI_WPSCAN_API_TYPES {
+	case VIPGOCI_WPSCAN_PLUGIN;
+	case VIPGOCI_WPSCAN_THEME;
+}
