@@ -586,6 +586,15 @@ function vipgoci_http_api_fetch_url(
 							$http_api_auth_header,
 					)
 				);
+			} elseif ( isset( $http_api_token['wpscan_token'] ) ) {
+				curl_setopt(
+					$ch,
+					CURLOPT_HTTPHEADER,
+					array(
+						'Authorization: Token token=' .
+							$http_api_token['wpscan_token'],
+					)
+				);			
 			}
 		}
 
