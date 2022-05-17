@@ -594,7 +594,7 @@ function vipgoci_http_api_fetch_url(
 						'Authorization: Token token=' .
 							$http_api_token['wpscan_token'],
 					)
-				);			
+				);
 			}
 		}
 
