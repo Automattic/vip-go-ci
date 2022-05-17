@@ -223,6 +223,31 @@ function vipgoci_convert_string_to_type(
 }
 
 /**
+ * Will return beginning of a string, or if not a string, the item
+ * unchanged. Useful for example in logging, when it is not
+ * suitable to log very long strings.
+ *
+ * @param mixed $data_for_preview String to shorten and return. If not a string, will return item unchanged.
+ * @param int   $preview_length   Length of string to return.
+ *
+ * @return mixed Shortened string, else unchanged data.
+ */
+function vipgoci_preview_string(
+	mixed $data_for_preview,
+	int $preview_length = 100
+): mixed {
+	if ( ! is_string( $data_for_preview ) ) {
+		return $data_for_preview;
+	}
+
+	return substr(
+		$data_for_preview,
+		0,
+		$preview_length
+	);
+}
+
+/**
  * Round items in an array to a certain precision, return
  * new array with results. Essentially a wrapper around the
  * PHP round() function.
