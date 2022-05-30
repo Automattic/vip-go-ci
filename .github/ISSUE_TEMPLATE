@@ -2,7 +2,7 @@
 
 <!-- Also note: This issue tracker is only intended for problems that relate to vip-go-ci it self -- any issues that relate to PHPCS rulesets (for instance) should be filed against the project that houses them. -->
 
-<!-- If you are filing a feature request, please have a look at the document on contributing first: https://github.com/Automattic/vip-go-ci/blob/main/CONTRIBUTING.md -->
+<!-- If you are filing a feature request, please have a look at the document on contributing first: https://github.com/Automattic/vip-go-ci/blob/trunk/CONTRIBUTING.md -->
 
 <!-- Please use the following template when filing a bug report: -->
 
