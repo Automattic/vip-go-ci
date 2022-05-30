@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.4](https://github.com/Automattic/vip-go-ci/releases/tag/1.2.4) - 2022-06-??
+
+## Updated
+- [#274](https://github.com/Automattic/vip-go-ci/pull/274): Update files to reflect that "main" branch is now named "trunk"
+- [#272](https://github.com/Automattic/vip-go-ci/pull/272): Apply WP CS and variable types to final files
+
 ## [1.2.3](https://github.com/Automattic/vip-go-ci/releases/tag/1.2.3) - 2022-04-04
 
 ## Added
