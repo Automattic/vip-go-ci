@@ -129,4 +129,3 @@ function vipgoci_wpscan_filter_fixed_vulnerabilities(
 	return $wpscan_results;
 }
 
-
