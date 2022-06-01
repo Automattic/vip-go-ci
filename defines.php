@@ -36,6 +36,12 @@ if ( ! defined( 'VIPGOCI_GITHUB_BASE_URL' ) ) {
 }
 
 /*
+ * Defines for various sizes, such as KB.
+ */
+
+define( 'VIPGOCI_KB_IN_BYTES', 1024 );
+
+/*
  * Timeout constant for HTTP APIs.
  */
 define( 'VIPGOCI_HTTP_API_LONG_TIMEOUT', 20 );
@@ -231,10 +237,10 @@ define(
 define( 'VIPGOCI_VALIDATION_MAXIMUM_DETAIL_MSG', 'Note that the above file(s) were not analyzed due to their length.' );
 
 /*
- * Enum for WPScan API support.
+ * Defines for WPScan API support.
  */
 
-enum VIPGOCI_WPSCAN_API_TYPES {
-	case VIPGOCI_WPSCAN_PLUGIN;
-	case VIPGOCI_WPSCAN_THEME;
-}
+define( 'VIPGOCI_WPSCAN_PLUGIN', 'vipgoci-wpscan-plugin' );
+define( 'VIPGOCI_WPSCAN_THEME', 'vipgoci-wpscan-theme' );
+
+
