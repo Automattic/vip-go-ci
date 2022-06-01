@@ -37,7 +37,9 @@ require_once __DIR__ . '/skip-file.php';
 require_once __DIR__ . '/statistics.php';
 require_once __DIR__ . '/support-level-label.php';
 require_once __DIR__ . '/svg-scan.php';
+require_once __DIR__ . '/wp-core-misc.php';
 require_once __DIR__ . '/wpscan-scan.php';
+require_once __DIR__ . '/wpscan-api.php';
 
 // Require file that executes vipgoci_run().
 require_once __DIR__ . '/exec.php';
