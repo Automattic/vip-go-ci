@@ -111,7 +111,7 @@ if [ "$VIP_GO_CI_VER" == "" ] ; then
 	TMP_FILE=`mktemp /tmp/vip-go-ci-latest-release-XXXXX.php`
 
 	echo "$0: Trying to determine latest release of vip-go-ci, need to fetch latest-release.php first..."
-	wget -O "$TMP_FILE" https://raw.githubusercontent.com/Automattic/vip-go-ci/main/latest-release.php && \
+	wget -O "$TMP_FILE" https://raw.githubusercontent.com/Automattic/vip-go-ci/trunk/latest-release.php && \
 	chmod u+x "$TMP_FILE" && \
 	export VIP_GO_CI_VER=`php $TMP_FILE` && \
 	rm "$TMP_FILE" && \
