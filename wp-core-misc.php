@@ -330,7 +330,7 @@ function vipgoci_wpcore_misc_scan_directory_for_addons(
  *
  * Parts adopted from WordPress: https://core.trac.wordpress.org/browser/tags/6.0/src/wp-includes/update.php#L257
  *
- * @param array $plugin_or_theme_data Information about plugins/themes. For example:
+ * @param array $addons_data Information about plugins/themes. For example:
  * Array(
  *   [hello/hello.php] => Array(
  *     [type] => vipgoci-wpscan-plugin
@@ -365,7 +365,7 @@ function vipgoci_wpcore_misc_scan_directory_for_addons(
  *   [custom-plugin/custom-plugin.php] => null // API returned no information.
  */
 function vipgoci_wpcore_api_determine_slug_and_other_for_addons(
-	array $plugin_or_theme_data
+	array $addons_data
 ) :array {
 	// Data to send to WordPress.org API.
 	$addon_data_to_send = array();
@@ -373,12 +373,12 @@ function vipgoci_wpcore_api_determine_slug_and_other_for_addons(
 	// Data collected about addons.
 	$slugs_by_plugin = array();
 
-	if ( empty( $plugin_or_theme_data ) ) {
+	if ( empty( $addons_data ) ) {
 		// Got no plugins/themes to query API for, return empty array.
 		vipgoci_log(
 			'No plugin/themes to query WordPress.org API about, returning empty',
 			array(
-				'plugin_or_theme_data' => $plugin_or_theme_data,
+				'addons_data' => $addons_data,
 			),
 			0,
 			true // Log to IRC.
@@ -387,7 +387,7 @@ function vipgoci_wpcore_api_determine_slug_and_other_for_addons(
 		return $slugs_by_plugin;
 	}
 
-	foreach ( $plugin_or_theme_data as $key => $data_item ) {
+	foreach ( $addons_data as $key => $data_item ) {
 		$addon_data_to_send[ $key ] = $data_item['addon_headers'];
 
 		$slugs_by_plugin[ $key ] = null;
