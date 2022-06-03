@@ -263,6 +263,10 @@ function vipgoci_wpcore_misc_scan_directory_for_addons(
 		return $plugin_files;
 	}
 
+	/*
+	 * Loop through files/directories in $path and compile
+	 * an array of files found.
+	 */
 	while ( ( $file = readdir( $plugins_dir ) ) !== false ) { // phpcs:ignore WordPress.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition
 		if ( '.' === substr( $file, 0, 1 ) ) {
 			continue;
@@ -295,6 +299,10 @@ function vipgoci_wpcore_misc_scan_directory_for_addons(
 
 	closedir( $plugins_dir );
 
+	/*
+	 * Compile list of plugins based on $plugin_files
+	 * and return the result.
+	 */
 	$wp_plugins = array();
 
 	if ( empty( $plugin_files ) ) {
@@ -313,6 +321,7 @@ function vipgoci_wpcore_misc_scan_directory_for_addons(
 			$tmp_path
 		);
 
+		// When no headers are found in file, ignore file.
 		if ( empty( $plugin_data['addon_headers']['Name'] ) ) {
 			continue;
 		}
