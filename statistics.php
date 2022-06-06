@@ -45,6 +45,7 @@ function vipgoci_stats_init(
 				VIPGOCI_STATS_PHPCS,
 				VIPGOCI_STATS_LINT,
 				VIPGOCI_STATS_HASHES_API,
+				VIPGOCI_STATS_WPSCAN_API,
 			)
 			as $stats_type
 		) {
