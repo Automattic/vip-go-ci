@@ -38,7 +38,6 @@ if ( ! defined( 'VIPGOCI_GITHUB_BASE_URL' ) ) {
 /*
  * Defines for various sizes, such as KB.
  */
-
 define( 'VIPGOCI_KB_IN_BYTES', 1024 );
 
 /*
@@ -164,7 +163,6 @@ define( 'VIPGOCI_EXIT_USAGE_ERROR', 253 );
  * arguments passed to the program (e.g., --phpcs)
  * -- altering these is not recommended.
  */
-
 define( 'VIPGOCI_STATS_PHPCS', 'phpcs' );
 define( 'VIPGOCI_STATS_LINT', 'lint' );
 define( 'VIPGOCI_STATS_HASHES_API', 'hashes-api' );
@@ -173,7 +171,6 @@ define( 'VIPGOCI_STATS_WPSCAN_API', 'wpscan-api' );
 /*
  * Define auto-approval types
  */
-
 define( 'VIPGOCI_APPROVAL_AUTOAPPROVE', 'auto-approval' );
 define( 'VIPGOCI_APPROVAL_HASHES_API', 'hashes-api' );
 
@@ -239,7 +236,6 @@ define( 'VIPGOCI_VALIDATION_MAXIMUM_DETAIL_MSG', 'Note that the above file(s) we
 /*
  * Defines for WPScan API support.
  */
-
 define( 'VIPGOCI_WPSCAN_PLUGIN', 'vipgoci-wpscan-plugin' );
 define( 'VIPGOCI_WPSCAN_THEME', 'vipgoci-wpscan-theme' );
 
