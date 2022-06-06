@@ -98,6 +98,29 @@ function vipgoci_set_maximum_exec_time(
 }
 
 /**
+ * Add value to array, if not found there already.
+ *
+ * @param array $arr    Target array.
+ * @param mixed $value  Value to add, if not already exists in array.
+ * @param bool  $strict If to perform strict comparison, true by default.
+ *
+ * @return void
+ */
+function vipgoci_array_push_uniquely(
+	array &$arr,
+	mixed $value,
+	bool $strict = true
+) :void {
+	if ( false === in_array(
+		$value,
+		$arr, // phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
+		$strict
+	) ) {
+		$arr[] = $value;
+	}
+}
+
+/**
  * Check if a particular set of fields exist
  * in a target array and if their values match a set
  * given. Will return an array describing
