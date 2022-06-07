@@ -1,6 +1,6 @@
 # vip-go-ci
 
-[![Release Date of the Latest Version](https://img.shields.io/github/release-date/Automattic/vip-go-ci.svg?maxAge=1800)](https://github.com/Automattic/vip-go-ci/releases) [![CircleCI](https://circleci.com/gh/Automattic/vip-go-ci/tree/main.svg?style=shield)](https://circleci.com/gh/Automattic/vip-go-ci/tree/main) [![Number of Contributors](https://img.shields.io/github/contributors/Automattic/vip-go-ci.svg?maxAge=3600)](https://github.com/Automattic/vip-go-ci/graphs/contributors)
+[![Release Date of the Latest Version](https://img.shields.io/github/release-date/Automattic/vip-go-ci.svg?maxAge=1800)](https://github.com/Automattic/vip-go-ci/releases) [![CircleCI](https://circleci.com/gh/Automattic/vip-go-ci/tree/trunk.svg?style=shield)](https://circleci.com/gh/Automattic/vip-go-ci/tree/trunk) [![Number of Contributors](https://img.shields.io/github/contributors/Automattic/vip-go-ci.svg?maxAge=3600)](https://github.com/Automattic/vip-go-ci/graphs/contributors)
 
 Continuous integration for VIP Go repositories.
 
@@ -227,7 +227,7 @@ You can set up `vip-go-ci` with TeamCity, so that when a commit gets pushed to G
 
 This flowchart shows how `vip-go-ci` interacts with TeamCity, git, GitHub, and the utilities it uses:
 
-![Flowchart](https://raw.githubusercontent.com/Automattic/vip-go-ci/main/docs/vipgoci-flow.png)
+![Flowchart](https://raw.githubusercontent.com/Automattic/vip-go-ci/trunk/docs/vipgoci-flow.png)
 
 To get `vip-go-ci` working, follow these steps:
 
@@ -252,7 +252,7 @@ To get `vip-go-ci` working, follow these steps:
 if [ -d ~/vip-go-ci-tools ] ; then
 	bash ~/vip-go-ci-tools/vip-go-ci/tools-init.sh
 else
-	wget https://raw.githubusercontent.com/Automattic/vip-go-ci/main/tools-init.sh -O tools-init.sh && \
+	wget https://raw.githubusercontent.com/Automattic/vip-go-ci/trunk/tools-init.sh -O tools-init.sh && \
 	bash tools-init.sh && \
 	rm -f tools-init.sh
 fi
@@ -634,7 +634,7 @@ There are further parameters for more advanced usage:
 
 The feature can be used in the following fashion:
 
-> ./vip-go-ci.php --post-generic-pr-support-comments=true --post-generic-pr-support-comments-string="This is a generic support message from `vip-go-ci`. We hope this is useful." --post-generic-pr-support-comments-branches="main" --post-generic-pr-support-comments-skip-if-label-exists="requesting-review"
+> ./vip-go-ci.php --post-generic-pr-support-comments=true --post-generic-pr-support-comments-string="This is a generic support message from `vip-go-ci`. We hope this is useful." --post-generic-pr-support-comments-branches="trunk" --post-generic-pr-support-comments-skip-if-label-exists="requesting-review"
 
 The `--post-generic-pr-support-comments-branches` parameter can be specified as 'any' to allow posting to any branch. With the `--post-generic-pr-support-comments-skip-if-label-exists` parameter posting of the generic support message is not performed if the label specified in the parameter is already attached to the pull request.
 
@@ -642,7 +642,7 @@ You can limit what pull requests the generic support message are posted to, give
 
 For example:
 
-> ./vip-go-ci.php --post-generic-pr-support-comments=true --post-generic-pr-support-comments-string="This ..." --post-generic-pr-support-comments-branches="main" --post-generic-pr-support-comments-repo-meta-match="support_message=true,support_plan=true" 
+> ./vip-go-ci.php --post-generic-pr-support-comments=true --post-generic-pr-support-comments-string="This ..." --post-generic-pr-support-comments-branches="trunk" --post-generic-pr-support-comments-repo-meta-match="support_message=true,support_plan=true" 
 
 With the `--post-generic-pr-support-comments-repo-meta-match` parameter added, `vip-go-ci` will look at the data returned by the repo-meta API, and check if these fields and their values are found in there for at least one entry. If so, the generic support message will be posted, and not otherwise.
 
