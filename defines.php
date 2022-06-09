@@ -238,5 +238,5 @@ define( 'VIPGOCI_VALIDATION_MAXIMUM_DETAIL_MSG', 'Note that the above file(s) we
  */
 define( 'VIPGOCI_WPSCAN_PLUGIN', 'vipgoci-wpscan-plugin' );
 define( 'VIPGOCI_WPSCAN_THEME', 'vipgoci-wpscan-theme' );
-
+define( 'VIPGOCI_WPSCAN_BASE_URL', 'https://wpscan.com/api/v3');
 
