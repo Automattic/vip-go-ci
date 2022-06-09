@@ -260,6 +260,14 @@ function vipgoci_wpcore_misc_scan_directory_for_addons(
 	$plugin_files = array();
 
 	if ( false === $plugins_dir ) {
+		vipgoci_log(
+			'Unable to scan directory for plugins/themes, skipping',
+			array(
+				'path' => $path,
+			),
+			2
+		);
+
 		return $plugin_files;
 	}
 
@@ -306,6 +314,14 @@ function vipgoci_wpcore_misc_scan_directory_for_addons(
 	$wp_plugins = array();
 
 	if ( empty( $plugin_files ) ) {
+		vipgoci_log(
+			'No plugins/themes found while scanning directory',
+			array(
+				'path' => $path,
+			),
+			2
+		);
+
 		return $wp_plugins;
 	}
 
@@ -328,6 +344,15 @@ function vipgoci_wpcore_misc_scan_directory_for_addons(
 
 		$wp_plugins[ basename( $plugin_file ) ] = $plugin_data; // @todo: plugin_basename() is used in WordPress.
 	}
+
+	vipgoci_log(
+		'Scanned directory for plugins/themes',
+		array(
+			'path'       => $path,
+			'wp_plugins' => $wp_plugins,
+		),
+		2
+	);
 
 	return $wp_plugins;
 }
@@ -454,6 +479,15 @@ function vipgoci_wpcore_api_determine_slug_and_other_for_addons(
 		$slugs_by_plugin[ $key ] = $data_item;
 	}
 
+	vipgoci_log(
+		'Got plugin/theme information from WordPress.org API',
+		array(
+			'addons_data'     => $addons_data,
+			'slugs_by_plugin' => $slugs_by_plugin,
+		),
+		2
+	);
+
 	return $slugs_by_plugin;
 }
 
@@ -520,6 +554,15 @@ function vipgoci_wpcore_misc_get_addon_data_and_slugs_for_directory(
 			}
 		}
 	}
+
+	vipgoci_log(
+		'Got plugin/theme information from directory scan and WordPress.org API request',
+		array(
+			'path'          => $path,
+			'plugins_found' => $plugins_found,
+		),
+		2
+	);
 
 	return $plugins_found;
 }
