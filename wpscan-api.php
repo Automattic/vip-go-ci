@@ -28,8 +28,7 @@ function vipgoci_wpscan_do_scan_via_api(
 	 * Construct WPScan API URL
 	 */
 	$wpscan_complete_url =
-		$wpscan_api_base_url .
-		'/api/v3';
+		$wpscan_api_base_url;
 
 	if ( VIPGOCI_WPSCAN_PLUGIN === $wpscan_type ) {
 		$wpscan_complete_url .= '/plugins';
