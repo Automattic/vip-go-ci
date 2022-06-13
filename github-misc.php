@@ -411,12 +411,11 @@ function vipgoci_github_files_affected_by_commit(
 				) )
 				&&
 				( true === in_array(
-					$file_name,
+					$pr_item_file_name,
 					$commit_skipped_files[ $pr_item->number ]['issues'][ VIPGOCI_VALIDATION_MAXIMUM_LINES ],
 					true
 				) )
 			) {
-				$files_issues_arr[ $file_name ] = array();
 				continue;
 			}
 
