@@ -312,3 +312,129 @@ function vipgoci_github_prs_urls_get(
 
 	return $prs_urls;
 }
+
+/**
+ * Construct array of files affected -- altered, added, deleted -- by
+ * each pull request implicated by the commit. Will also include list
+ * of all files affected.
+ *
+ * @param array  $options               Options array for the program.
+ * @param string $commit_id             Commit-ID of current commit.
+ * @param array  $commit_skipped_files  Information about skipped files (reference).
+ * @param array  $skip_folders          Directories not to scan.
+ *
+ * @return array Returns associative array with key as pull request number and value as array of affected files. Includes special key 'all' which includes all files altered by all pull requests. Example:
+ *  Array(
+ *    [all] => Array(
+ *      [0] => folder1/test.php
+ *      [1] => folder2/test2.php
+ *      [2] => testing/file.php
+ *    ),
+ *    [17] => Array(
+ *      [0] => folder1/test.php
+ *      [1] => testing/file.php
+ *    ),
+ *    [20] => Array(
+ *      [0] => folder1/test.php
+ *      [1] => folder2/test2.php
+ *    )
+ *  )
+ */
+function vipgoci_github_files_affected_by_commit(
+	array $options,
+	string $commit_id,
+	array &$commit_skipped_files,
+	array $skip_folders
+) :array {
+	vipgoci_log(
+		'Fetching list of all files affected by each pull request ' .
+			'implicated by the commit',
+		array(
+			'repo_owner' => $options['repo-owner'],
+			'repo_name'  => $options['repo-name'],
+			'commit_id'  => $options['commit'],
+		)
+	);
+
+	// Fetch list of all pull requests which the commit is a part of.
+	$prs_implicated = vipgoci_github_prs_implicated(
+		$options['repo-owner'],
+		$options['repo-name'],
+		$commit_id,
+		$options['token'],
+		$options['branches-ignore'],
+		$options['skip-draft-prs']
+	);
+
+	$pr_item_files_changed = array(
+		'all' => array(),
+	);
+
+	foreach ( $prs_implicated as $pr_item ) {
+		/*
+		 * Make sure that the PR is defined in the array.
+		 */
+		if ( ! isset( $pr_item_files_changed[ $pr_item->number ] ) ) {
+			$pr_item_files_changed[ $pr_item->number ] = array();
+		}
+
+		/*
+		 * Get list of all files changed
+		 * in this pull request.
+		 */
+		$pr_item_files_tmp = vipgoci_git_diffs_fetch(
+			$options['local-git-repo'],
+			$options['repo-owner'],
+			$options['repo-name'],
+			$options['token'],
+			$pr_item->base->sha,
+			$options['commit'],
+			false, // Exclude renamed files.
+			false, // Exclude removed files.
+			false, // Exclude permission changes.
+			array(
+				'file_extensions' => array( 'php' ),
+				'skip_folders'    => $skip_folders,
+			)
+		);
+
+		foreach (
+			array_keys( $pr_item_files_tmp['files'] ) as
+				$pr_item_file_name
+		) {
+			/*
+			 * Check for too long file.
+			 */
+			if (
+				( isset(
+					$commit_skipped_files[ $pr_item->number ]['issues'][ VIPGOCI_VALIDATION_MAXIMUM_LINES ]
+				) )
+				&&
+				( true === in_array(
+					$file_name,
+					$commit_skipped_files[ $pr_item->number ]['issues'][ VIPGOCI_VALIDATION_MAXIMUM_LINES ],
+					true
+				) )
+			) {
+				$files_issues_arr[ $file_name ] = array();
+				continue;
+			}
+
+			/*
+			 * Add file to arrays, if not already there.
+			 */
+			vipgoci_array_push_uniquely(
+				$pr_item_files_changed['all'],
+				$pr_item_file_name
+			);
+
+			vipgoci_array_push_uniquely(
+				$pr_item_files_changed[ $pr_item->number ],
+				$pr_item_file_name
+			);
+		}
+	}
+
+	return $pr_item_files_changed;
+}
+
