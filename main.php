@@ -315,6 +315,15 @@ function vipgoci_options_recognized() :array {
 		'svg-scanner-path:',
 
 		/*
+		 * WPScan API scanning configuration
+		 */
+		'wpscan-api:',
+		'wpscan-api-paths:',
+		'wpscan-api-skip-folders:',
+		'wpscan-api-url:',
+		'wpscan-api-token:',
+
+		/*
 		 * Auto approve configuration
 		 */
 		'autoapprove:',
@@ -637,6 +646,66 @@ function vipgoci_run_init_options_phpcs( array &$options ) :void {
 		1,
 		array( 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 )
 	);
+}
+
+/**
+ * Process WPScan API related options, such as --wpscan-api.
+ *
+ * @param array $options Array of options (reference).
+ *
+ * @return void
+ */
+function vipgoci_run_init_options_wpscan( array &$options ) :void {
+	/*
+	 * Handle boolean options related to WPScan API.
+	 */
+	vipgoci_option_bool_handle( $options, 'wpscan-api', 'false' );
+
+	/*
+	 * Process --wpscan-folders -- expected to be an
+	 * array of values.
+	 */
+	vipgoci_option_skip_folder_handle(
+		$options,
+		'wpscan-api-paths'
+	);
+
+	/*
+	 * Process --wpscan-api-skip-folders -- expected to be an
+	 * array of values.
+	 */
+	vipgoci_option_skip_folder_handle(
+		$options,
+		'wpscan-api-skip-folders'
+	);
+
+	/*
+	 * Process --wpscan-api-url -- expected to be a base URL to WPScan API.
+	 */
+	vipgoci_option_url_handle(
+		$options,
+		'wpscan-api-url',
+		VIPGOCI_WPSCAN_BASE_URL
+	);
+
+	if ( 
+		( true === $options['wpscan-api'] ) && 
+		(
+			( empty( $options['wpscan-api-paths'] ) ) ||
+			( empty( $options['wpscan-api-url'] ) ) ||
+			( empty( $options['wpscan-api-token'] ) )
+		)
+	) {
+		vipgoci_sysexit(
+			'--wpscan-api is set to true, but --wpscan-api-paths, --wpscan-api-url or --wpscan-api-token are not set',
+			array(
+				'wpscan-api-paths' => @$options['wpscan-api-paths'],
+				'wpscan-api-url'   => @$options['wpscan-api-url'],
+				'wpscan-api-token' => @$options['wpscan-api-token'],
+			),
+			VIPGOCI_EXIT_USAGE_ERROR
+		);
+	}
 }
 
 /**
@@ -2227,6 +2296,9 @@ function vipgoci_run_init_options(
 	// Set options relating to PHCPS.
 	vipgoci_run_init_options_phpcs( $options );
 
+	// Set options relating to WPScan API.
+	vipgoci_run_init_options_wpscan( $options );
+
 	// Process autoapprove options.
 	vipgoci_run_init_options_autoapprove( $options );
 
@@ -2823,7 +2895,7 @@ function vipgoci_run_scan(
 	);
 
 	vipgoci_log(
-		'Starting scanning PRs; ' . $prs_urls,
+		'Starting scanning PRs; ' . $prs_urls . ' ', // Extra space for IRC logs.
 		array(
 			'repo-owner' => $options['repo-owner'],
 			'repo-name'  => $options['repo-name'],
@@ -2930,6 +3002,17 @@ function vipgoci_run_scan(
 			$options,
 			$results['issues'],
 			$results['stats'][ VIPGOCI_STATS_PHPCS ],
+			$results[ VIPGOCI_SKIPPED_FILES ]
+		);
+
+		gc_collect_cycles();
+	}
+
+	if ( true === $options['wpscan-api'] ) {
+		vipgoci_wpscan_scan_commit(
+			$options,
+			$results['issues'],
+			$results['stats'][ VIPGOCI_STATS_WPSCAN_API ],
 			$results[ VIPGOCI_SKIPPED_FILES ]
 		);
 
@@ -3158,6 +3241,7 @@ function vipgoci_run_init_vars() :array {
 			VIPGOCI_STATS_PHPCS      => null,
 			VIPGOCI_STATS_LINT       => null,
 			VIPGOCI_STATS_HASHES_API => null,
+			VIPGOCI_STATS_WPSCAN_API => null,
 		),
 	);
 
