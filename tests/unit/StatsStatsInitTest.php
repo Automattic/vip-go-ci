@@ -29,7 +29,8 @@ final class StatsStatsInitTest extends TestCase {
 			array(
 				'phpcs'      => true,
 				'lint'       => true,
-				'hashes-api' => false
+				'hashes-api' => false,
+				'wpscan-api' => true,
 			),
 			array(
 				$pr_item1,
@@ -59,9 +60,7 @@ final class StatsStatsInitTest extends TestCase {
 						'warning' => 0,
 						'info'    => 0,
 					),
-					// no hashes-api; not supposed to initialize that
 				),
-
 				VIPGOCI_STATS_LINT => array(
 					100 => array(
 						'error'   => 0,
@@ -73,7 +72,20 @@ final class StatsStatsInitTest extends TestCase {
 						'warning' => 0,
 						'info'    => 0,
 					),
-					// no hashes-api; not supposed to initialize that
+				),
+
+				// no hashes-api; not supposed to initialize that
+				VIPGOCI_STATS_WPSCAN_API => array(
+					100 => array(
+						'error'   => 0,
+						'warning' => 0,
+						'info'    => 0,
+					),
+					110 => array(
+						'error'   => 0,
+						'warning' => 0,
+						'info'    => 0,
+					),
 				),
 			),
 		);
