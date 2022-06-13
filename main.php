@@ -688,8 +688,8 @@ function vipgoci_run_init_options_wpscan( array &$options ) :void {
 		VIPGOCI_WPSCAN_BASE_URL
 	);
 
-	if ( 
-		( true === $options['wpscan-api'] ) && 
+	if (
+		( true === $options['wpscan-api'] ) &&
 		(
 			( empty( $options['wpscan-api-paths'] ) ) ||
 			( empty( $options['wpscan-api-url'] ) ) ||
@@ -697,11 +697,11 @@ function vipgoci_run_init_options_wpscan( array &$options ) :void {
 		)
 	) {
 		vipgoci_sysexit(
-			'--wpscan-api is set to true, but --wpscan-api-paths, --wpscan-api-url or --wpscan-api-token are not set',
+			'--wpscan-api is set to true, but --wpscan-api-paths, --wpscan-api-url or --wpscan-api-token are not set or are empty',
 			array(
-				'wpscan-api-paths' => @$options['wpscan-api-paths'],
-				'wpscan-api-url'   => @$options['wpscan-api-url'],
-				'wpscan-api-token' => @$options['wpscan-api-token'],
+				'wpscan-api-paths' => isset( $options['wpscan-api-paths'] ) ? $options['wpscan-api-paths'] : null,
+				'wpscan-api-url'   => isset( $options['wpscan-api-url'] ) ? $options['wpscan-api-url'] : null,
+				'wpscan-api-token' => isset( $options['wpscan-api-token'] ) ? $options['wpscan-api-token'] : null,
 			),
 			VIPGOCI_EXIT_USAGE_ERROR
 		);
