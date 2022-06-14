@@ -401,6 +401,77 @@ function vipgoci_file_extension_get(
 }
 
 /**
+ * Get "base" path of target directory along with the
+ * directory-name itself, skip any sub-directories.
+ *
+ * @param string $base_dir_path   Base directory.
+ * @param string $target_dir_path Target directory - should include the base directory.
+ *
+ * @return null|string Returns null on failure, string with path on success.
+ * For example, when called with these parameters: 
+ *  - $base_dir = 'plugins';
+ *  - $target_dir = 'plugins/my-plugin/dir1/subdir2';
+ * The function will return 'plugins/my-plugin'.
+ */
+function vipgoci_directory_path_get_dir_and_include_base(
+	string $base_dir_path,
+	string $target_dir_path
+) :null|string {
+	// Trim directory paths.
+	$base_dir_path   = trim( $base_dir_path, '/' );
+	$target_dir_path = trim( $target_dir_path, '/' );
+
+	// Ensure $target_dir starts with $base_dir.
+	if ( false === str_starts_with(
+		$target_dir_path,
+		$base_dir_path . '/'
+	) ) {
+		return null;
+	}
+
+	/*
+	 * Count "/" in paths.
+	 */
+	$base_dir_path_slashes = substr_count(
+		$base_dir_path,
+		'/'
+	);
+
+	$target_dir_path_slashes = substr_count(
+		$target_dir_path,
+		'/'
+	);
+
+	// Do a sanity check.
+	if ( $target_dir_path_slashes < $base_dir_path_slashes ) {
+		vipgoci_sysexit(
+			'Internal error: $target_dir_path_slashes < $base_dir_path_slashes',
+			array(
+				'base_dir_path'           => $base_dir_path,
+				'base_dir_path_slashes'   => $base_dir_path_slashes,
+				'target_dir_path'         => $target_dir_path,
+				'target_dir_path_slashes' => $target_dir_path_slashes,
+			),
+			VIPGOCI_EXIT_INTERNAL_ERROR
+		);
+	}
+
+	if ( 0 === $target_dir_path_slashes ) {
+		// No "/" found, return with error.
+		return null;
+	} elseif ( ( $target_dir_path_slashes - 1 ) <= $base_dir_path_slashes ) {
+		// Nothing to do.
+		return $target_dir_path;
+	} elseif ( ( $target_dir_path_slashes - 1 ) > $base_dir_path_slashes ) {
+		// Ensure we return base and plugin directory.
+		return dirname(
+			$target_dir_path,
+			( ( $target_dir_path_slashes - 1 ) - $base_dir_path_slashes )
+		);
+	}
+}
+
+/**
  * Determine if the presented file has an
  * allowable file-ending, and if the file presented
  * is in a directory that is can be scanned.
