@@ -408,7 +408,7 @@ function vipgoci_file_extension_get(
  * @param string $target_dir_path Target directory - should include the base directory.
  *
  * @return null|string Returns null on failure, string with path on success.
- * For example, when called with these parameters: 
+ * For example, when called with these parameters:
  *  - $base_dir = 'plugins';
  *  - $target_dir = 'plugins/my-plugin/dir1/subdir2';
  * The function will return 'plugins/my-plugin'.
