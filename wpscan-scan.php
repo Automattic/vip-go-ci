@@ -183,8 +183,8 @@ function vipgoci_wpscan_scan_dirs_altered(
 			$options['local-git-repo'] . DIRECTORY_SEPARATOR . $addon_dir_relevant
 		);
 
-		foreach ( $addon_data_for_dir as $addon_item_key => $addon_item_value ) {
-			if ( empty( $addon_item_value['slug'] ) ) {
+		foreach ( $addon_data_for_dir as $addon_item_key => $addon_item_info ) {
+			if ( empty( $addon_item_info['slug'] ) ) {
 				continue;
 			}
 
@@ -204,16 +204,16 @@ function vipgoci_wpscan_scan_dirs_altered(
 			 * we get latest version available.
 			 */
 			$wpscan_results = vipgoci_wpscan_do_scan_via_api(
-				$addon_item_value['slug'],
-				$addon_item_value['type'],
+				$addon_item_info['slug'],
+				$addon_item_info['type'],
 				$options['wpscan-api-url'],
 				$options['wpscan-api-token']
 			);
 
 			// Filter away vulnerabilities that have been fixed in the observed version.
 			$wpscan_results = vipgoci_wpscan_filter_fixed_vulnerabilities(
-				$addon_item_value['slug'],
-				$addon_item_value['version_detected'],
+				$addon_item_info['slug'],
+				$addon_item_info['version_detected'],
 				$wpscan_results
 			);
 
@@ -222,13 +222,13 @@ function vipgoci_wpscan_scan_dirs_altered(
 			 * security vulnerabilities.
 			 */
 			$addon_obsolete = version_compare(
-				$wpscan_results[ $addon_item_value['slug'] ]['latest_version'],
-				$addon_item_value['version_detected'],
+				$wpscan_results[ $addon_item_info['slug'] ]['latest_version'],
+				$addon_item_info['version_detected'],
 				'>='
 			);
 
 			$addon_security_vulnerabilities = ( ! empty(
-				$wpscan_results[ $addon_item_value['slug'] ]['vulnerabilities']
+				$wpscan_results[ $addon_item_info['slug'] ]['vulnerabilities']
 			) );
 
 			/*
@@ -255,8 +255,8 @@ function vipgoci_wpscan_scan_dirs_altered(
 				 */
 				$problematic_addons_found[ $addon_dir_relevant ][ $addon_item_key ] = array(
 					'type'               => 'obsolete_but_not_vulnerable',
-					'wpscan_results'     => $wpscan_results[ $addon_item_value['slug'] ],
-					'addon_data_for_dir' => $addon_item_value,
+					'wpscan_results'     => $wpscan_results[ $addon_item_info['slug'] ],
+					'addon_data_for_dir' => $addon_item_info,
 				);
 			} elseif ( true === $addon_security_vulnerabilities ) {
 				/*
@@ -265,8 +265,8 @@ function vipgoci_wpscan_scan_dirs_altered(
 				 */
 				$problematic_addons_found[ $addon_dir_relevant ][ $addon_item_key ] = array(
 					'type'               => 'vulnerable',
-					'wpscan_results'     => $wpscan_results[ $addon_item_value['slug'] ],
-					'addon_data_for_dir' => $addon_item_value,
+					'wpscan_results'     => $wpscan_results[ $addon_item_info['slug'] ],
+					'addon_data_for_dir' => $addon_item_info,
 				);
 			}
 		}
