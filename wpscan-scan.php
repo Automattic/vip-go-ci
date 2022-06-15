@@ -109,10 +109,10 @@ function vipgoci_wpscan_find_addon_dirs_altered(
 			'No plugins/themes found to scan via WPScan API' :
 			'Found plugins/themes to scan via WPScan API',
 		array(
-			'repo_owner'                     => $options['repo-owner'],
-			'repo_name'                      => $options['repo-name'],
-			'wpscan_paths'                   => $options['wpscan-api-paths'],
-			'addon_dirs_relevant_to_scan'    => $addon_dirs_relevant_to_scan,
+			'repo_owner'                  => $options['repo-owner'],
+			'repo_name'                   => $options['repo-name'],
+			'wpscan_paths'                => $options['wpscan-api-paths'],
+			'addon_dirs_relevant_to_scan' => $addon_dirs_relevant_to_scan,
 		),
 		0,
 		true // Log to IRC.
@@ -125,4 +125,6 @@ function vipgoci_wpscan_find_addon_dirs_altered(
 
 	return $addon_dirs_relevant_to_scan;
 }
+
+
 
