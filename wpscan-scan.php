@@ -298,7 +298,7 @@ function vipgoci_wpscan_scan_save_for_submission(
 	array $problematic_addons_found
 ) :void {
 	vipgoci_log(
-		'Adding into results information about vulnerable/obsolete plugins/themes '.
+		'Adding into results information about vulnerable/obsolete plugins/themes ' .
 			'gathered via local scanning, WPScan API and WordPress.org API',
 		array(
 			'repo_owner'               => $options['repo-owner'],
@@ -351,25 +351,24 @@ function vipgoci_wpscan_scan_save_for_submission(
 					continue;
 				}
 
-
 				// @todo: Ensure that only one file needs to be changed, not the specific plugin file.
 				if ( true === in_array(
 					$dir_with_problem_addons . DIRECTORY_SEPARATOR . $problem_addon_file_name,
 					$pr_changed_files,
 					true
 				) ) {
-					$level = $problem_addon_files[ $problem_addon_file_name ]['type'] ===
-						'vulnerable' ? 'error' : 'warning';
+					$level = 'vulnerable' === $problem_addon_files[ $problem_addon_file_name ]['type'] ?
+						'error' : 'warning';
 
 					$commit_issues_submit[ $pr_key ][] = array(
 						'type'      => VIPGOCI_STATS_WPSCAN_API,
 						'file_name' => $dir_with_problem_addons . DIRECTORY_SEPARATOR . $problem_addon_file_name,
 						'file_line' => 1,
 						'issue'     => array(
-							'message' => '', // @todo: Add issue.
-							'level' => strtoupper( $level ),
+							'message'  => '', // @todo: Add issue.
+							'level'    => strtoupper( $level ),
 							'severity' => 10,
-						)
+						),
 					);
 
 					/*
@@ -382,5 +381,4 @@ function vipgoci_wpscan_scan_save_for_submission(
 		}
 	}
 }
-
 
