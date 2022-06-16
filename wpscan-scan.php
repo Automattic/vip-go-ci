@@ -382,3 +382,106 @@ function vipgoci_wpscan_scan_save_for_submission(
 	}
 }
 
+/**
+ * Scan pull requests associated with the commit specified in $options['commit']
+ * for any insecure or obsolete plugins or themes using the WPScan API. Information
+ * will be collected via the WordPress.org API as well -- in particular, slugs.
+ *
+ * @param array $options              Options array for the program.
+ * @param array $commit_issues_submit Results for WPScan API scanning (reference).
+ * @param array $commit_issues_stats  Result statistics for WPScan API scanning (reference).
+ * @param array $commit_skipped_files Information about skipped files (reference).
+ *
+ * @return void
+ */
+function vipgoci_wpscan_scan_commit(
+	array $options,
+	array &$commit_issues_submit,
+	array &$commit_issues_stats,
+	array &$commit_skipped_files
+) :void {
+	if ( false === $options['wpscan-api'] ) {
+		vipgoci_log(
+			'Will not scan added/updated themes/plugins using WPScan API, not configured to do so',
+			array(
+				'repo_owner' => $options['repo-owner'],
+				'repo_name'  => $options['repo-name'],
+				'commit_id'  => $options['commit'],
+			)
+		);
+
+		return;
+	} else {
+		vipgoci_log(
+			'About to scan added/updated themes/plugins using WPScan API',
+			array(
+				'repo_owner' => $options['repo-owner'],
+				'repo_name'  => $options['repo-name'],
+				'commit_id'  => $options['commit'],
+			)
+		);
+	}
+
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'wpscan_scan_commit' );
+
+	/*
+	 * Get paths to added/altered plugins or themes.
+	 * Paths are relative to base of repository.
+	 */
+
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'wpscan_find_addon_dirs_altered' );
+
+	$addon_dirs_relevant_to_scan = vipgoci_wpscan_find_addon_dirs_altered(
+		$options,
+		$commit_skipped_files
+	);
+
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'wpscan_find_addon_dirs_altered' );
+
+	if ( null === $addon_dirs_relevant_to_scan ) {
+		// No paths found, do not continue.
+		vipgoci_log(
+			'Will not scan added/updated themes/plugins using WPScan API, no plugins/themes added/updated',
+			array(
+				'repo_owner' => $options['repo-owner'],
+				'repo_name'  => $options['repo-name'],
+				'commit_id'  => $options['commit'],
+			)
+		);
+
+		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'wpscan_scan_commit' );
+
+		return;
+	}
+
+	/*
+	 * Scan all directories with added/altered plugins or themes.
+	 */
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'wpscan_scan_get_addon_data_and_slugs_for_directories' );
+
+	$problematic_addons_found = vipgoci_wpscan_scan_dirs_altered(
+		$options,
+		$addon_dirs_relevant_to_scan
+	);
+
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'wpscan_scan_get_addon_data_and_slugs_for_directories' );
+
+	/*
+	 * Save results for submission later.
+	 */
+	vipgoci_wpscan_scan_save_for_submission(
+		$options,
+		$commit_issues_submit,
+		$commit_issues_stats,
+		$commit_skipped_files,
+		$problematic_addons_found
+	);
+
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'wpscan_scan_commit' );
+
+	vipgoci_log(
+		'Scanning via WPScan API complete',
+		array()
+	);
+}
+
