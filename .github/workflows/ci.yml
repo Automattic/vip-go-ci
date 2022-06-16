@@ -90,7 +90,7 @@ jobs:
       - name: Set default PHP version
         run: sudo update-alternatives --set php "/usr/bin/php${{ matrix.php }}"
 
-      - name: Run unit tests
+      - name: Run integration tests
         run: phpunit --testsuite=integration-tests
         env:
           VIPGOCI_TESTING_DEBUG_MODE: 'true'
