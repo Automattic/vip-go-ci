@@ -95,8 +95,8 @@ jobs:
         env:
           VIPGOCI_TESTING_DEBUG_MODE: 'true'
 
-  lint:
-    name: PHPCS check
+  phpcs-scan:
+    name: PHPCS scan
     runs-on: ubuntu-latest
     steps:
       - name: Check out the source code
