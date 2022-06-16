@@ -278,3 +278,109 @@ function vipgoci_wpscan_scan_dirs_altered(
 	return $problematic_addons_found;
 }
 
+/**
+ * Add information about plugins or themes which
+ * are vulnerable or obsolete to results array.
+ *
+ * @param array $options                  Options array for the program.
+ * @param array $commit_issues_submit     Results array for WPScan API scanning (reference).
+ * @param array $commit_issues_stats      Result statistics for WPScan API scanning (reference).
+ * @param array $commit_skipped_files     Information about skipped files (reference).
+ * @param array $problematic_addons_found Array with problematic addons found, should include local information and WPScan API information.
+ *
+ * @return void
+ */
+function vipgoci_wpscan_scan_save_for_submission(
+	array $options,
+	array &$commit_issues_submit,
+	array &$commit_issues_stats,
+	array &$commit_skipped_files,
+	array $problematic_addons_found
+) :void {
+	vipgoci_log(
+		'Adding into results information about vulnerable/obsolete plugins/themes '.
+			'gathered via local scanning, WPScan API and WordPress.org API',
+		array(
+			'repo_owner'               => $options['repo-owner'],
+			'repo_name'                => $options['repo-name'],
+			'wpscan_paths'             => $options['wpscan-api-paths'],
+			'problematic_addons_found' => $problematic_addons_found,
+		),
+		2
+	);
+
+	/*
+	 * Get list of all files affected by
+	 * pull requests implicated by the commit.
+	 */
+	$files_affected_by_commit_by_pr = vipgoci_github_files_affected_by_commit(
+		$options,
+		$options['commit'],
+		$commit_skipped_files,
+		$options['wpscan-api-skip-folders']
+	);
+
+	/*
+	 * Loop through each plugin/theme that is vulnerable/obsolete;
+	 * key is the base path and value is information about each plugin/theme.
+	 */
+	foreach (
+		$problematic_addons_found as
+			$dir_with_problem_addons => $problem_addon_files
+	) {
+		// Get array of file-names which are vulnerable/obsolete.
+		$problem_addon_file_names = array_keys(
+			$problem_addon_files
+		);
+
+		// Loop through each file.
+		foreach (
+			$problem_addon_files as
+				$problem_addon_file_name => $problems_in_addon_file
+		) {
+			/*
+			 * Loop through each pull request; we need to
+			 * assign result to submit for each applicable pull request.
+			 */
+			foreach (
+				$files_affected_by_commit_by_pr as
+					$pr_key => $pr_changed_files
+			) {
+				if ( 'all' === $pr_key ) {
+					// Ignore the special 'all' key.
+					continue;
+				}
+
+
+				// @todo: Ensure that only one file needs to be changed, not the specific plugin file.
+				if ( true === in_array(
+					$dir_with_problem_addons . DIRECTORY_SEPARATOR . $problem_addon_file_name,
+					$pr_changed_files,
+					true
+				) ) {
+					$level = $problem_addon_files[ $problem_addon_file_name ]['type'] ===
+						'vulnerable' ? 'error' : 'warning';
+
+					$commit_issues_submit[ $pr_key ][] = array(
+						'type'      => VIPGOCI_STATS_WPSCAN_API,
+						'file_name' => $dir_with_problem_addons . DIRECTORY_SEPARATOR . $problem_addon_file_name,
+						'file_line' => 1,
+						'issue'     => array(
+							'message' => '', // @todo: Add issue.
+							'level' => strtoupper( $level ),
+							'severity' => 10,
+						)
+					);
+
+					/*
+					 * Collect statistics on
+					 * number of warnings/errors
+					 */
+					$commit_issues_stats[ $pr_key ][ $level ]++;
+				}
+			}
+		}
+	}
+}
+
+
