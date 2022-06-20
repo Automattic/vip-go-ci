@@ -66,6 +66,24 @@ If you have a feature request, please read the [file on contributing](CONTRIBUTI
 
 `vip-go-ci` comes with a small utility, `tools-init.sh`, that will install PHPCS and related tools in your home-directory upon execution. This utility will check if the tools required are installed, and if not, install them, or if they are, check if they are of the latest version, and upgrade them as needed. It is highly recommended to run this utility on a regular basis.
 
+For example:
+
+```
+#
+# If ~/vip-go-ci-tools does not exist, install it by 
+# fetching and running tools-init.sh. If it does exist, 
+# run tools-init.sh to check for updates.
+#
+
+if [ -d ~/vip-go-ci-tools ] ; then
+	bash ~/vip-go-ci-tools/vip-go-ci/tools-init.sh
+else
+	wget https://raw.githubusercontent.com/Automattic/vip-go-ci/trunk/tools-init.sh -O tools-init.sh && \
+	bash tools-init.sh && \
+	rm -f tools-init.sh
+fi
+```
+
 ### Running on the console, standalone
 
 `vip-go-ci` can be run standalone on the console. This is mainly useful for debugging purposes and to understand if everything is correctly configured, but for production purposes it should ideally be run via some kind of build management software (for instance TeamCity or GitHub Actions). To run `vip-go-ci` on the console, a few tools are required. The `tools-init.sh` script that is included will install the tools needed.
