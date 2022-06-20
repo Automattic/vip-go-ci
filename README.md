@@ -78,7 +78,7 @@ For example:
 if [ -d ~/vip-go-ci-tools ] ; then
 	bash ~/vip-go-ci-tools/vip-go-ci/tools-init.sh
 else
-	wget https://raw.githubusercontent.com/Automattic/vip-go-ci/trunk/tools-init.sh -O tools-init.sh && \
+	wget https://raw.githubusercontent.com/Automattic/vip-go-ci/latest/tools-init.sh -O tools-init.sh && \
 	bash tools-init.sh && \
 	rm -f tools-init.sh
 fi
