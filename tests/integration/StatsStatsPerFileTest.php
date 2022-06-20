@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class A01StatsStatsPerFileTest extends TestCase {
+final class StatsStatsPerFileTest extends TestCase {
 	/**
 	 * Options for git.
 	 *
