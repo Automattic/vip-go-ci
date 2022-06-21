@@ -90,7 +90,7 @@ if [ -d ~/vip-go-ci-tools ] ; then
 	export TMP_RAND=`seq 1 3 | sort -R | head -n 1`
 
 	if [ "$TMP_RAND" -ne "1" ] ; then
-		echo "$0: Not due to update anything, exiting"
+		echo "$0: Will not check for updates at this time, exiting"
 		lock_remove
 		exit 1
 	fi
@@ -111,7 +111,7 @@ if [ "$VIP_GO_CI_VER" == "" ] ; then
 	TMP_FILE=`mktemp /tmp/vip-go-ci-latest-release-XXXXX.php`
 
 	echo "$0: Trying to determine latest release of vip-go-ci, need to fetch latest-release.php first..."
-	wget -O "$TMP_FILE" https://raw.githubusercontent.com/Automattic/vip-go-ci/trunk/latest-release.php && \
+	wget -O "$TMP_FILE" https://raw.githubusercontent.com/Automattic/vip-go-ci/latest/latest-release.php && \
 	chmod u+x "$TMP_FILE" && \
 	export VIP_GO_CI_VER=`php $TMP_FILE` && \
 	rm "$TMP_FILE" && \
