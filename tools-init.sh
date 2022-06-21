@@ -90,7 +90,7 @@ if [ -d ~/vip-go-ci-tools ] ; then
 	export TMP_RAND=`seq 1 3 | sort -R | head -n 1`
 
 	if [ "$TMP_RAND" -ne "1" ] ; then
-		echo "$0: Not due to update anything, exiting"
+		echo "$0: Will not check for updates at this time, exiting"
 		lock_remove
 		exit 1
 	fi
