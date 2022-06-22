@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 - [#276](https://github.com/Automattic/vip-go-ci/pull/276): Update phpcs-variable-analysis to version 2.11.3
 - [#278](https://github.com/Automattic/vip-go-ci/pull/278): Switch to GitHub Actions
 - [#279](https://github.com/Automattic/vip-go-ci/pull/279): Utilize 'latest' branch in documentation and in scripts
+- [#280](https://github.com/Automattic/vip-go-ci/pull/280): Re-enable auto-approval of removed SVG files
 
 
 ## [1.2.3](https://github.com/Automattic/vip-go-ci/releases/tag/1.2.3) - 2022-04-04
