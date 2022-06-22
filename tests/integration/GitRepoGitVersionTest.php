@@ -21,5 +21,13 @@ final class GitRepoGitVersionTest extends TestCase {
 				$git_version
 			)
 		);
+
+		// Verify second call returns same results (should be cached).
+		$git_version_2 = vipgoci_git_version();
+
+		$this->assertSame(
+			$git_version,
+			$git_version_2
+		);
 	}
 }

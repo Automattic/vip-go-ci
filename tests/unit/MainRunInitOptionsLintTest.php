@@ -14,7 +14,7 @@ use PHPUnit\Framework\TestCase;
 /**
  * Check if options relating to linting
  * are correctly parsed and set.
-*
+ *
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */

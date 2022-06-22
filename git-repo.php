@@ -1,15 +1,23 @@
 <?php
-
-/*
- * Get version of git we are using
+/**
+ * Local git repo functions.
+ *
+ * @package Automattic/vip-go-ci
  */
 
-function vipgoci_git_version(): ?string {
-	static $git_version_cached = null;
+declare(strict_types=1);
 
-	if ( null !== $git_version_cached ) {
-		return $git_version_cached;
-	}
+/**
+ * Get version of git we are using
+ *
+ * @return string Git version number.
+ */
+function vipgoci_git_version(): string {
+	$cached_id = array(
+		__FUNCTION__,
+	);
+
+	$cached_data = vipgoci_cache( $cached_id );
 
 	$git_version_cmd = sprintf(
 		'%s %s',
@@ -18,11 +26,16 @@ function vipgoci_git_version(): ?string {
 	);
 
 	vipgoci_log(
-		'Getting git version...',
+		'Getting git version...' .
+			vipgoci_cached_indication_str( $cached_data ),
 		array(
-			'cmd'	=> $git_version_cmd
+			'cmd' => $git_version_cmd,
 		)
 	);
+
+	if ( false !== $cached_data ) {
+		return $cached_data;
+	}
 
 	/*
 	 * Actually execute
@@ -39,15 +52,26 @@ function vipgoci_git_version(): ?string {
 		false
 	);
 
+	$log_detail = array(
+		'cmd'             => $git_version_cmd,
+		'cmd_result_code' => $git_result_code,
+		'output'          => $git_output,
+	);
+
 	if ( null === $git_version_results ) {
 		vipgoci_sysexit(
 			'Unable to run git due to error',
-			array(
-				'cmd'    => $git_version_cmd,
-				'output' => $git_version_results,
-			),
+			$log_detail,
 			VIPGOCI_EXIT_SYSTEM_PROBLEM
 		);
+	} elseif ( false === str_contains( $git_output, 'git version' ) ) {
+		vipgoci_sysexit(
+			'Unable to retrieve git version',
+			$log_detail,
+			VIPGOCI_EXIT_SYSTEM_PROBLEM
+		);
+	} else {
+		$git_version_results = $git_output;
 	}
 
 	$git_version_results = str_replace(
@@ -56,23 +80,26 @@ function vipgoci_git_version(): ?string {
 		$git_version_results
 	);
 
-	$git_version_cached = $git_version_results;
+	vipgoci_cache( $cached_id, $git_version_results );
 
 	return $git_version_results;
 }
 
-/*
+/**
  * Determine if repository specified is in
  * sync with the commit-ID specified.
  *
  * If it is not in sync, exit with error.
+ *
+ * @param string $commit_id      Current commit-ID.
+ * @param string $local_git_repo Path to local git repository.
+ *
+ * @return void Exits with error if repository does not exist or is not in sync.
  */
-
 function vipgoci_gitrepo_ok(
-	$commit_id,
-	$local_git_repo
-) {
-
+	string $commit_id,
+	string $local_git_repo
+) :void {
 	/*
 	 * Check at what revision the local git repository is.
 	 *
@@ -85,7 +112,6 @@ function vipgoci_gitrepo_ok(
 		$local_git_repo
 	);
 
-
 	/*
 	 * Check if commit-ID and head are the same, and
 	 * return with a status accordingly.
@@ -95,32 +121,48 @@ function vipgoci_gitrepo_ok(
 		( false !== $commit_id ) &&
 		( $commit_id !== $lgit_head )
 	) {
-		vipgoci_log(
+		vipgoci_sysexit(
 			'Can not use local Git repository, seems not to be in ' .
 			'sync with current commit or does not exist',
 			array(
-				'commit_id'		=> $commit_id,
-				'local_git_repo'	=> $local_git_repo,
-				'local_git_repo_head'	=> $lgit_head,
-			)
+				'commit_id'           => $commit_id,
+				'local_git_repo'      => $local_git_repo,
+				'local_git_repo_head' => $lgit_head,
+			),
+			VIPGOCI_EXIT_USAGE_ERROR
 		);
-
-		exit ( VIPGOCI_EXIT_USAGE_ERROR );
-
 	}
-
-	return true;
 }
 
+/**
+ * Verify that given string is of valid commit-ID format.
+ * Does not verify that it exists.
+ *
+ * @param string $commit_id Git commit-ID.
+ *
+ * @return bool True when it is of valid format, else false.
+ */
+function vipgoci_gitrepo_commit_id_validate_format(
+	string $commit_id
+) :bool {
+	return (
+		( ctype_xdigit( $commit_id ) ) &&
+		( 40 === strlen( $commit_id ) )
+	);
+}
 
-/*
+/**
  * Get latest commit HEAD in the specified repository.
  * Will return a commit-hash if successful. Note that
  * this function will execute git.
+ *
+ * @param string $local_git_repo Path to local git repository.
+ *
+ * @return string Latest commit-ID in the repository's current branch.
  */
-
-function vipgoci_gitrepo_get_head( $local_git_repo ) {
-
+function vipgoci_gitrepo_get_head(
+	string $local_git_repo
+) :string {
 	/*
 	 * Prepare to execute git; ask git to
 	 * operate within a certain path ( -C param ),
@@ -132,7 +174,7 @@ function vipgoci_gitrepo_get_head( $local_git_repo ) {
 		'%s -C %s log -n %s --pretty=format:"%s"',
 		escapeshellcmd( 'git' ),
 		escapeshellarg( $local_git_repo ),
-		escapeshellarg( 1 ),
+		escapeshellarg( (string) 1 ),
 		escapeshellarg( '%H' )
 	);
 
@@ -151,39 +193,63 @@ function vipgoci_gitrepo_get_head( $local_git_repo ) {
 		false
 	);
 
+	$log_detail = array(
+		'cmd'             => $cmd,
+		'cmd_result_code' => $result_code,
+		'output'          => $result,
+		'result_output'   => $result_output,
+	);
+
 	if ( null === $result ) {
 		vipgoci_sysexit(
 			'Unable to run git due to error',
-			array(
-				'cmd'    => $cmd,
-				'output' => $result,
-			),
+			$log_detail,
 			VIPGOCI_EXIT_SYSTEM_PROBLEM
 		);
 	}
 
 	/*
-	 * Trim any whitespace characters away
+	 * If string, trim any whitespace characters away.
+	 * Validation is then performed.
 	 */
-	if ( false !== $result ) {
-		$result = trim(
-			$result
+	if ( is_string( $result_output ) ) {
+		$result_output = trim(
+			$result_output
 		);
 
-		$result = trim(
-			$result,
+		$result_output = trim(
+			$result_output,
 			"'\""
 		);
 	}
 
-	return $result;
+	/*
+	 * Validate the outputted string. Exit if it does not validate.
+	 */
+	if (
+		( ! is_string( $result_output ) ) ||
+		( false === vipgoci_gitrepo_commit_id_validate_format( $result_output ) )
+	) {
+		vipgoci_sysexit(
+			'Unexpected git commit-ID retrieved',
+			$log_detail,
+			VIPGOCI_EXIT_SYSTEM_PROBLEM
+		);
+	}
+
+	return $result_output;
 }
 
-/*
- * Get the current branch of the git-repository.
+/**
+ * Get the current branch of git repository specified.
+ *
+ * @param string $local_git_repo Path to local git repository.
+ *
+ * @return null|string Current branch as string on success, null on failure.
  */
-
-function vipgoci_gitrepo_branch_current_get( $local_git_repo ) {
+function vipgoci_gitrepo_branch_current_get(
+	string $local_git_repo
+) :null|string {
 	$cmd = sprintf(
 		'%s -C %s branch',
 		escapeshellcmd( 'git' ),
@@ -250,12 +316,12 @@ function vipgoci_gitrepo_branch_current_get( $local_git_repo ) {
 		function( $line ) {
 			return str_replace(
 				array(
-					" ",
-					"*",
+					' ',
+					'*',
 				),
 				array(
-					"",
-					"",
+					'',
+					'',
 				),
 				$line
 			);
@@ -275,32 +341,38 @@ function vipgoci_gitrepo_branch_current_get( $local_git_repo ) {
 		$results
 	) ) {
 		return $results[0];
-	}
-
-	else {
+	} else {
 		return null;
 	}
 }
 
-/*
+/**
  * Fetch "tree" of the repository; a tree
  * of files that are part of the commit
  * specified.
  *
  * Allows filtering out files that the
  * caller does only want to see.
+ *
+ * @param array      $options   Options array for the program.
+ * @param string     $commit_id Commit-ID of current commit.
+ * @param null|array $filter    Filter to apply.
+ *
+ * @return array Array with files in repository as items.
  */
-
 function vipgoci_gitrepo_fetch_tree(
-	$options,
-	$commit_id,
-	$filter = null
-) {
-
-	/* Check for cached version */
+	array $options,
+	string $commit_id,
+	null|array $filter = null
+) :array {
+	// Check for cached version.
 	$cached_id = array(
-		__FUNCTION__, $options['repo-owner'], $options['repo-name'],
-		$commit_id, $options['token'], $filter
+		__FUNCTION__,
+		$options['repo-owner'],
+		$options['repo-name'],
+		$commit_id,
+		$options['token'],
+		$filter,
 	);
 
 	$cached_data = vipgoci_cache( $cached_id );
@@ -308,12 +380,11 @@ function vipgoci_gitrepo_fetch_tree(
 	vipgoci_log(
 		'Fetching tree info' .
 			( $cached_data ? ' (cached)' : '' ),
-
 		array(
 			'repo_owner' => $options['repo-owner'],
-			'repo_name' => $options['repo-name'],
-			'commit_id' => $commit_id,
-			'filter' => $filter,
+			'repo_name'  => $options['repo-name'],
+			'commit_id'  => $commit_id,
+			'filter'     => $filter,
 		)
 	);
 
@@ -321,22 +392,16 @@ function vipgoci_gitrepo_fetch_tree(
 		return $cached_data;
 	}
 
-
-	/*
-	 * Use local git repository
-	 */
-
 	vipgoci_gitrepo_ok(
 		$commit_id,
 		$options['local-git-repo']
 	);
 
-	// Actually get files
+	// Actually get files.
 	$files_arr = vipgoci_scandir_git_repo(
 		$options['local-git-repo'],
 		$filter
 	);
-
 
 	/*
 	 * Cache the results and return
@@ -349,45 +414,50 @@ function vipgoci_gitrepo_fetch_tree(
 	return $files_arr;
 }
 
-
-/*
- * Fetch from the local git-repository a particular file
+/**
+ * Fetch from the local git repository a particular file
  * which is a part of a commit. Will return the file (raw),
  * or false on error.
+ *
+ * @param string $repo_owner     Repository owner.
+ * @param string $repo_name      Repository name.
+ * @param string $github_token   GitHub token to use to make GitHub API requests.
+ * @param string $commit_id      Current commit-ID.
+ * @param string $file_name      File name whose content to fetch.
+ * @param string $local_git_repo Path to local git repository.
+ *
+ * @return false|string String with file contents on success, false on failure.
  */
-
 function vipgoci_gitrepo_fetch_committed_file(
-	$repo_owner,
-	$repo_name,
-	$github_token,
-	$commit_id,
-	$file_name,
-	$local_git_repo
-) {
-
+	string $repo_owner,
+	string $repo_name,
+	string $github_token,
+	string $commit_id,
+	string $file_name,
+	string $local_git_repo
+) :false|string {
 	vipgoci_gitrepo_ok(
-		$commit_id, $local_git_repo
+		$commit_id,
+		$local_git_repo
 	);
 
 	vipgoci_log(
 		'Fetching file-contents from local Git repository',
 		array(
-			'repo_owner'		=> $repo_owner,
-			'repo_name'		=> $repo_name,
-			'commit_id'		=> $commit_id,
-			'filename'		=> $file_name,
-			'local_git_repo'	=> $local_git_repo,
+			'repo_owner'     => $repo_owner,
+			'repo_name'      => $repo_name,
+			'commit_id'      => $commit_id,
+			'filename'       => $file_name,
+			'local_git_repo' => $local_git_repo,
 		)
 	);
-
 
 	/*
 	 * If everything seems fine, return the file.
 	 */
-
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'git_repo_fetch_file' );
 
-	$file_contents_tmp = @file_get_contents(
+	$file_contents_tmp = @file_get_contents( // phpcs:ignore WordPress.PHP.NoSilencedErrors
 		$local_git_repo . '/' . $file_name
 	);
 
@@ -396,19 +466,24 @@ function vipgoci_gitrepo_fetch_committed_file(
 	return $file_contents_tmp;
 }
 
-
-/*
+/**
  * Get 'git blame' log for a particular file,
  * using a local Git repository.
+ *
+ * @param string $commit_id      Commit-ID to use.
+ * @param string $file_name      File name whose 'git blame' to get.
+ * @param string $local_git_repo Path to local git repository.
+ *
+ * @return array Blame log entries, one line per array item.
  */
-
 function vipgoci_gitrepo_blame_for_file(
 	string $commit_id,
 	string $file_name,
 	string $local_git_repo
 ): array {
 	vipgoci_gitrepo_ok(
-		$commit_id, $local_git_repo
+		$commit_id,
+		$local_git_repo
 	);
 
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'git_repo_blame_for_file' );
@@ -416,8 +491,8 @@ function vipgoci_gitrepo_blame_for_file(
 	vipgoci_log(
 		'Fetching \'git blame\' log from Git repository for file',
 		array(
-			'commmit_id' => $commit_id,
-			'file_name' => $file_name,
+			'commit_id'      => $commit_id,
+			'file_name'      => $file_name,
 			'local_git_repo' => $local_git_repo,
 		)
 	);
@@ -471,20 +546,16 @@ function vipgoci_gitrepo_blame_for_file(
 		$result
 	);
 
-	$current_commit = array(
-	);
+	$current_commit = array();
 
 	foreach ( $result as $result_line ) {
-
 		/*
 		 * First split the line into an array
 		 */
-
 		$result_line_arr = explode(
 			' ',
 			$result_line
 		);
-
 
 		/*
 		 * Try to figure out if the line is contains
@@ -494,64 +565,64 @@ function vipgoci_gitrepo_blame_for_file(
 		 *
 		 * and if so, store them.
 		 */
-
 		if (
 			( count( $result_line_arr ) >= 3 ) &&
-			( strlen( $result_line_arr[0] ) === 40 ) &&
-			( ctype_xdigit( $result_line_arr[0] ) === true )
+			( true === vipgoci_gitrepo_commit_id_validate_format( $result_line_arr[0] ) )
 		) {
 			$current_commit = array(
-				'commit_id'	=> $result_line_arr[0], // Get commit-ID
-				'number'	=> $result_line_arr[2], // Line number in final file
+				'commit_id' => $result_line_arr[0], // Commit-ID field.
+				'number'    => $result_line_arr[2], // Line number field.
 			);
-		}
-
-		/*
-		 * Test if the first string on the line is 'filename',
-		 * and if so, store the filename it self. Do so using
-		 * a method that will save spaces and so forth in the
-		 * filename.
-		 */
-
-		else if (
+		} elseif (
 			( count( $result_line_arr ) >= 2 ) &&
 			( 'filename' === $result_line_arr[0] )
 		) {
+			/*
+			 * When the first string on the line is 'filename',
+			 * store the filename it self. Do so using
+			 * a method that will save spaces and so forth in the
+			 * filename.
+			 */
 			$tmp_file_arr = $result_line_arr;
 			unset( $tmp_file_arr[0] );
 
 			$current_commit['filename'] = implode( ' ', $tmp_file_arr );
 
 			unset( $tmp_file_arr );
-		}
-
-		/*
-		 * If we see any of these keywords,
-		 * ignore them.
-		 */
-		else if (
+		} elseif (
 			( count( $result_line_arr ) >= 1 ) &&
 			( in_array(
 				$result_line_arr[0],
 				array(
-					'author', 'author-mail', 'author-time',
-					'author-tz', 'boundary', 'committer',
-					'committer-mail', 'committer-time',
-					'committer-tz', 'summary', 'previous',
-				)
+					'author',
+					'author-mail',
+					'author-time',
+					'author-tz',
+					'boundary',
+					'committer',
+					'committer-mail',
+					'committer-time',
+					'committer-tz',
+					'summary',
+					'previous',
+				),
+				true
 			) )
 		) {
+			/*
+			 * If we see any of these keywords,
+			 * ignore them.
+			 */
 			continue;
-		}
-
-		/*
-		 * If line starts with a tab,
-		 * this is our code -- save that.
-		 */
-		else if (
+		} elseif (
 			( isset( $result_line[0] ) ) &&
 			( ord( $result_line[0] ) === 9 )
 		) {
+			/*
+			 * When line starts with a tab,
+			 * this is our code -- save that.
+			 */
+
 			$tmp_content = substr(
 				$result_line,
 				1
@@ -572,10 +643,10 @@ function vipgoci_gitrepo_blame_for_file(
 			( isset( $current_commit['content'] ) )
 		) {
 			$blame_log[] = array(
-				'commit_id'	=> $current_commit['commit_id'],
-				'file_name'	=> $current_commit['filename'],
-				'line_no'	=> (int) $current_commit['number'],
-				'content'	=> $current_commit['content'],
+				'commit_id' => $current_commit['commit_id'],
+				'file_name' => $current_commit['filename'],
+				'line_no'   => (int) $current_commit['number'],
+				'content'   => $current_commit['content'],
 			);
 
 			$current_commit = array();
@@ -587,17 +658,24 @@ function vipgoci_gitrepo_blame_for_file(
 	return $blame_log;
 }
 
-/*
+/**
  * Get contents of a particular file at a
  * particular commit-ID from the local git
  * repository.
+ *
+ * @param string $commit_id                     Commit-ID to use.
+ * @param string $file_name                     File name whose content to get.
+ * @param string $local_git_repo                Path to local git repository.
+ * @param string $local_git_repo_head_commit_id Commit-ID of HEAD of local git repository (for verification).
+ *
+ * @return null|string File contents as string on success, null on failure.
  */
 function vipgoci_gitrepo_get_file_at_commit(
-	$commit_id,
-	$file_name,
-	$local_git_repo,
-	$local_git_repo_head_commit_id
-) {
+	string $commit_id,
+	string $file_name,
+	string $local_git_repo,
+	string $local_git_repo_head_commit_id
+) :null|string {
 	/*
 	 * Check if repository is looking good.
 	 */
@@ -611,10 +689,10 @@ function vipgoci_gitrepo_get_file_at_commit(
 	vipgoci_log(
 		'Fetching contents of a particular file from the local git repository',
 		array(
-			'commmit_id'			=> $commit_id,
-			'file_name'			=> $file_name,
-			'local_git_repo'		=> $local_git_repo,
-			'local_git_repo_head_commit_id'	=> $local_git_repo_head_commit_id,
+			'commit_id'                     => $commit_id,
+			'file_name'                     => $file_name,
+			'local_git_repo'                => $local_git_repo,
+			'local_git_repo_head_commit_id' => $local_git_repo_head_commit_id,
 		)
 	);
 
@@ -672,12 +750,20 @@ function vipgoci_gitrepo_get_file_at_commit(
 	return $result;
 }
 
-/*
+/**
  * Initialise submodules for the given local git repository.
+ *
+ * @param string $local_git_repo Path to local git repository.
+ *
+ * @return string Result of running "submodule init" and
+ *                "submodule update" on success. Will exit
+ *                on failure.
  */
-function vipgoci_gitrepo_submodules_setup( $local_git_repo ) {
+function vipgoci_gitrepo_submodules_setup(
+	string $local_git_repo
+) :string {
 	$cmd = sprintf(
-		'%s -C %s submodule init && %s -C %s submodule update',
+		'( %s -C %s submodule init && %s -C %s submodule update )',
 		escapeshellcmd( 'git' ),
 		escapeshellarg( $local_git_repo ),
 		escapeshellcmd( 'git' ),
@@ -713,13 +799,20 @@ function vipgoci_gitrepo_submodules_setup( $local_git_repo ) {
 	return $result;
 }
 
-/*
+/**
  * Get submodules for the given local git repository.
+ *
+ * @param string $local_git_repo Path to local git repository.
+ *
+ * @return array Submodules present as array, each submodule as associative array.
  */
-function vipgoci_gitrepo_submodules_list( $local_git_repo ) {
+function vipgoci_gitrepo_submodules_list(
+	string $local_git_repo
+) :array {
 	/* Check for cached version */
 	$cached_id = array(
-		__FUNCTION__, $local_git_repo
+		__FUNCTION__,
+		$local_git_repo,
 	);
 
 	$cached_data = vipgoci_cache( $cached_id );
@@ -795,17 +888,16 @@ function vipgoci_gitrepo_submodules_list( $local_git_repo ) {
 			);
 
 			return array(
-				'commit_id'		=> $arr[0],
-				'submodule_path'	=> $arr[1],
-				'submodule_tag'		=> $arr[2],
+				'commit_id'      => $arr[0],
+				'submodule_path' => $arr[1],
+				'submodule_tag'  => $arr[2],
 			);
 		},
 		$result
 	);
 
 	/*
-	 * Remove any array items that are not
-	 * of correct size.
+	 * Remove any array items that seem invalid.
 	 */
 	$result = array_filter(
 		$result,
@@ -825,23 +917,28 @@ function vipgoci_gitrepo_submodules_list( $local_git_repo ) {
 		$cached_id,
 		$result
 	);
-	
+
 	return $result;
 }
 
-/*
- * Get submodule path for the given file,
+/**
+ * Get submodule for the given path,
  * if is a submodule.
+ *
+ * @param string $local_git_repo Path to local git repository.
+ * @param string $file_path      Relative path to file.
+ *
+ * @return null|array Submodule array on success, null on failure.
  */
 function vipgoci_gitrepo_submodule_file_path_get(
-	$local_git_repo,
-	$file_path
-) {
+	string $local_git_repo,
+	string $file_path
+) :null|array {
 	$submodules_list = vipgoci_gitrepo_submodules_list(
 		$local_git_repo
 	);
 
-	foreach(
+	foreach (
 		$submodules_list as $submodule_item
 	) {
 		if ( strpos(
@@ -852,22 +949,26 @@ function vipgoci_gitrepo_submodule_file_path_get(
 		}
 	}
 
-	return null;	
+	return null;
 }
 
-
-
-/*
+/**
  * Get URL for submodule from repository config.
+ *
+ * @param string $local_git_repo Path to local git repository.
+ * @param string $submodule_path Relative path to submodule.
+ *
+ * @return null|string Submodule URL as string on success, null on failure.
  */
 function vipgoci_gitrepo_submodule_get_url(
-	$local_git_repo,
-	$submodule_path
-) {
+	string $local_git_repo,
+	string $submodule_path
+) :null|string {
 	/* Check for cached version */
 	$cached_id = array(
-		__FUNCTION__, $local_git_repo,
-		$submodule_path
+		__FUNCTION__,
+		$local_git_repo,
+		$submodule_path,
 	);
 
 	$cached_data = vipgoci_cache( $cached_id );
@@ -876,8 +977,8 @@ function vipgoci_gitrepo_submodule_get_url(
 		'Fetching GitHub repository URL for submodule' .
 			vipgoci_cached_indication_str( $cached_data ),
 		array(
-			'local-git-repo'	=> $local_git_repo,
-			'submodule_path'	=> $submodule_path,
+			'local-git-repo' => $local_git_repo,
+			'submodule_path' => $submodule_path,
 		)
 	);
 
@@ -897,7 +998,7 @@ function vipgoci_gitrepo_submodule_get_url(
 
 	$ret_val = null;
 
-	foreach(
+	foreach (
 		$git_modules_parsed as
 			$git_module_folder => $git_module_info
 	) {
@@ -929,29 +1030,55 @@ function vipgoci_gitrepo_submodule_get_url(
 	vipgoci_log(
 		'Fetched Github repository URL',
 		array(
-			'submodule_path'	=> $submodule_path,
-			'submodule_git_url'	=> $ret_val,
+			'submodule_path'    => $submodule_path,
+			'submodule_git_url' => $ret_val,
 		)
 	);
 
 	return $ret_val;
 }
 
-/*
+/**
  * Fetch diff from git repository, unprocessed.
  * Results are not cached.
+ *
+ * @param string $local_git_repo  Path to local git repository.
+ * @param string $commit_id_a     Baseline commit.
+ * @param string $commit_id_b     Commit for comparison.
+ *
+ * @return null|array Null on failure, array with results on success. Example array:
+ *  array(
+ *    'statistics'  => array(
+ *      'additions' => 25,
+ *      'deletions' => 100,
+ *      'changes'   => 125,
+ *    ),
+ *    'files'       => array(
+ *      'file-1.php' => array(
+ *        'filename'  => 'file-1.php',
+ *        'patch'     => '--- a/file-1.php... +++ b/file-1.php ...',
+ *        'status'    => 'added',
+ *        'additions' => 25,
+ *        'deletions' => 100,
+ *        'changes'   => 125,
+ *      ),
+ *      'file-2.php' => ...,
+ *    ),
+ *  );
  */
 function vipgoci_gitrepo_diffs_fetch_unfiltered(
 	string $local_git_repo,
 	string $commit_id_a,
 	string $commit_id_b
-): ?array {
-
+): null|array {
 	/*
 	 * Check for a cached copy of the diffs
 	 */
 	$cached_id = array(
-		__FUNCTION__, $local_git_repo, $commit_id_a, $commit_id_b
+		__FUNCTION__,
+		$local_git_repo,
+		$commit_id_a,
+		$commit_id_b,
 	);
 
 	$cached_data = vipgoci_cache( $cached_id );
@@ -960,11 +1087,10 @@ function vipgoci_gitrepo_diffs_fetch_unfiltered(
 		'Fetching diffs between two commits ' .
 			'from git repository' .
 			vipgoci_cached_indication_str( $cached_data ),
-
 		array(
-			'local_git_repo'	=> $local_git_repo,
-			'commit_id_a'		=> $commit_id_a,
-			'commit_id_b'		=> $commit_id_b,
+			'local_git_repo' => $local_git_repo,
+			'commit_id_a'    => $commit_id_a,
+			'commit_id_b'    => $commit_id_b,
 		)
 	);
 
@@ -986,13 +1112,13 @@ function vipgoci_gitrepo_diffs_fetch_unfiltered(
 		'%s -C %s diff %s',
 		escapeshellcmd( 'git' ),
 		escapeshellarg( $local_git_repo ),
-		escapeshellarg( $commit_id_a . '...'. $commit_id_b )
+		escapeshellarg( $commit_id_a . '...' . $commit_id_b )
 	);
 
 	vipgoci_log(
 		'Running git...',
 		array(
-			'cmd'	=> $git_diff_cmd
+			'cmd' => $git_diff_cmd,
 		)
 	);
 
@@ -1046,11 +1172,11 @@ function vipgoci_gitrepo_diffs_fetch_unfiltered(
 	 * Prepare results array.
 	 */
 	$diff_results = array(
-		'files'		=> array(),
-		'statistics'	=> array(
-			VIPGOCI_GIT_DIFF_CALC_CHANGES['+']	=> 0,
-			VIPGOCI_GIT_DIFF_CALC_CHANGES['-'] 	=> 0,
-			'changes'				=> 0,
+		'files'      => array(),
+		'statistics' => array(
+			VIPGOCI_GIT_DIFF_CALC_CHANGES['+'] => 0,
+			VIPGOCI_GIT_DIFF_CALC_CHANGES['-'] => 0,
+			'changes'                          => 0,
 		),
 	);
 
@@ -1067,17 +1193,17 @@ function vipgoci_gitrepo_diffs_fetch_unfiltered(
 	 * Initialize stateful variables.
 	 */
 
-	$cur_file = null;
+	$cur_file              = null;
 	$cur_file_path_cleaned = false;
 
-	$cur_mode = 'info'; // Other mode is 'patch'
+	$cur_mode                  = 'info'; // Other mode is 'patch'.
 	$cur_file_first_patch_line = true;
-	$cur_file_status = null;
+	$cur_file_status           = null;
 
-	$cur_file_minus = null;
+	$cur_file_minus              = null;
 	$cur_file_minus_path_cleaned = false;
 
-	$cur_file_plus = null;
+	$cur_file_plus              = null;
 	$cur_file_plus_path_cleaned = false;
 
 	$cur_file_previous_filename = null;
@@ -1103,7 +1229,7 @@ function vipgoci_gitrepo_diffs_fetch_unfiltered(
 	 *  ...
 	 */
 
-	foreach( $git_diff_results as $git_result_item ) {
+	foreach ( $git_diff_results as $git_result_item ) {
 		/*
 		 * Split each line into array at spaces,
 		 * making it easy to process each line of results.
@@ -1125,23 +1251,21 @@ function vipgoci_gitrepo_diffs_fetch_unfiltered(
 		) {
 			$cur_mode = 'info';
 
-			$cur_file = null;
+			$cur_file              = null;
 			$cur_file_path_cleaned = false;
 
 			$cur_file_status = null;
 
-			$cur_file_minus = $git_result_item_arr[2];
+			$cur_file_minus              = $git_result_item_arr[2];
 			$cur_file_minus_path_cleaned = false;
 
-			$cur_file_plus = $git_result_item_arr[3];
+			$cur_file_plus              = $git_result_item_arr[3];
 			$cur_file_plus_path_cleaned = false;
 
 			$cur_file_previous_filename = null;
 
 			$cur_file_patch_buffer = '';
-		}
-
-		else if (
+		} elseif (
 			( 'info' === $cur_mode ) &&
 			( ! empty( $git_result_item_arr ) )
 		) {
@@ -1150,33 +1274,26 @@ function vipgoci_gitrepo_diffs_fetch_unfiltered(
 				( 'mode' === $git_result_item_arr[1] )
 			) {
 				$cur_file_status = 'modified';
-			}
-
-			else if (
+			} elseif (
 				( 'rename' === $git_result_item_arr[0] ) &&
 				( 'from' === $git_result_item_arr[1] )
 			) {
 				$cur_file_previous_filename = $git_result_item_arr[2];
-			}
-
-			else if ( '---' === $git_result_item_arr[0] ) {
+			} elseif ( '---' === $git_result_item_arr[0] ) {
 				$cur_file_minus = $git_result_item_arr[1];
 
 				$cur_file_minus_path_cleaned = false;
-			}
-
-			else if ( '+++' === $git_result_item_arr[0] ) {
+			} elseif ( '+++' === $git_result_item_arr[0] ) {
 				$cur_file_plus = $git_result_item_arr[1];
 
 				$cur_file_plus_path_cleaned = false;
-			}
-
-			else if (
+			} elseif (
 				'@@' === $git_result_item_arr[0]
 			) {
 				$cur_mode = 'patch';
+
 				$cur_file_first_patch_line = true;
-				// Continue processing, below data is possibly collected
+				// Continue processing. Data may be collected below.
 			}
 		}
 
@@ -1185,7 +1302,7 @@ function vipgoci_gitrepo_diffs_fetch_unfiltered(
 		 * Avoid cleaning the same path twice.
 		 */
 		if (
-			( $cur_file_path_cleaned === false ) &&
+			( false === $cur_file_path_cleaned ) &&
 			( null !== $cur_file )
 		) {
 			$cur_file = vipgoci_sanitize_path_prefix(
@@ -1197,7 +1314,7 @@ function vipgoci_gitrepo_diffs_fetch_unfiltered(
 		}
 
 		if (
-			( $cur_file_minus_path_cleaned === false ) &&
+			( false === $cur_file_minus_path_cleaned ) &&
 			( null !== $cur_file_minus )
 		) {
 			$cur_file_minus = vipgoci_sanitize_path_prefix(
@@ -1209,7 +1326,7 @@ function vipgoci_gitrepo_diffs_fetch_unfiltered(
 		}
 
 		if (
-			( $cur_file_plus_path_cleaned === false ) &&
+			( false === $cur_file_plus_path_cleaned ) &&
 			( null !== $cur_file_plus )
 		) {
 			$cur_file_plus = vipgoci_sanitize_path_prefix(
@@ -1220,7 +1337,6 @@ function vipgoci_gitrepo_diffs_fetch_unfiltered(
 			$cur_file_plus_path_cleaned = true;
 		}
 
-
 		/*
 		 * Logic to handle file names.
 		 */
@@ -1229,32 +1345,27 @@ function vipgoci_gitrepo_diffs_fetch_unfiltered(
 			( ! empty( $cur_file_plus ) )
 		) {
 			if ( $cur_file_minus === $cur_file_plus ) {
-				$cur_file = $cur_file_plus;
+				$cur_file        = $cur_file_plus;
 				$cur_file_status = 'modified';
-			}
-
-			else {
+			} else {
 				/*
 				 * If the file names do not match,
 				 * and either is /dev/null, then
 				 * it is a new file or a removed file.
 				 */
-				if ( $cur_file_minus === '/dev/null' ) {
-					$cur_file = $cur_file_plus;
+				if ( '/dev/null' === $cur_file_minus ) {
+					$cur_file        = $cur_file_plus;
 					$cur_file_status = 'added';
-				}
-
-				else if ( $cur_file_plus === '/dev/null' ) {
-					$cur_file = $cur_file_minus;
+				} elseif ( '/dev/null' === $cur_file_plus ) {
+					$cur_file        = $cur_file_minus;
 					$cur_file_status = 'removed';
-				}
+				} else {
+					/*
+					 * No match and no mention of /dev/null,
+					 * so the file must have been renamed.
+					 */
 
-				/*
-				 * No match and no mention of /dev/null,
-				 * so the file must have been renamed.
-				 */
-				else {
-					$cur_file = $cur_file_plus;
+					$cur_file        = $cur_file_plus;
 					$cur_file_status = 'renamed';
 				}
 			}
@@ -1271,12 +1382,12 @@ function vipgoci_gitrepo_diffs_fetch_unfiltered(
 			( ! isset( $diff_results['files'][ $cur_file ] ) )
 		) {
 			$diff_results['files'][ $cur_file ] = array(
-				'filename'	=> $cur_file,
-				'patch'		=> '',
-				'status'	=> $cur_file_status,
-				'additions'	=> 0,
-				'deletions'	=> 0,
-				'changes'	=> 0,
+				'filename'  => $cur_file,
+				'patch'     => '',
+				'status'    => $cur_file_status,
+				'additions' => 0,
+				'deletions' => 0,
+				'changes'   => 0,
 			);
 		}
 
@@ -1285,7 +1396,7 @@ function vipgoci_gitrepo_diffs_fetch_unfiltered(
 			 * Update file-status each time we loop
 			 * as the calculated status might change.
 			 */
-			$diff_results['files'][ $cur_file ][ 'status' ] =
+			$diff_results['files'][ $cur_file ]['status'] =
 				$cur_file_status;
 		}
 
@@ -1306,13 +1417,12 @@ function vipgoci_gitrepo_diffs_fetch_unfiltered(
 			vipgoci_log(
 				'Problem when getting git diff, no file name found in patch',
 				array(
-					'local_git_repo'	=> $local_git_repo,
-					'commit_id_a'		=> $commit_id_a,
-					'commit_id_b'		=> $commit_id_b,
-					'cur_file'		=> $cur_file,
-					'cur_file_minus'	=> $cur_file_minus,
-					'cur_file_plus'		=> $cur_file_plus,
-
+					'local_git_repo' => $local_git_repo,
+					'commit_id_a'    => $commit_id_a,
+					'commit_id_b'    => $commit_id_b,
+					'cur_file'       => $cur_file,
+					'cur_file_minus' => $cur_file_minus,
+					'cur_file_plus'  => $cur_file_plus,
 				)
 			);
 
@@ -1324,35 +1434,24 @@ function vipgoci_gitrepo_diffs_fetch_unfiltered(
 		 */
 		if (
 			( strlen( $git_result_item ) > 0 ) &&
-			( isset(
-				VIPGOCI_GIT_DIFF_CALC_CHANGES[
-					$git_result_item[0]
-				]
-			) )
+			( isset( VIPGOCI_GIT_DIFF_CALC_CHANGES[ $git_result_item[0] ] ) )
 		) {
 			/*
 			 * Statistics specific for a file
 			 */
-			$diff_results['files'][
-				$cur_file
-			][
-				VIPGOCI_GIT_DIFF_CALC_CHANGES[
-					$git_result_item[0]
-				]
-			]++;
+			$diff_results
+				['files']
+				[ $cur_file ]
+				[ VIPGOCI_GIT_DIFF_CALC_CHANGES[ $git_result_item[0] ] ]++;
 
 			$diff_results['files'][ $cur_file ]['changes']++;
 
 			/*
 			 * Overall statistics
 			 */
-			$diff_results['statistics'][
-				VIPGOCI_GIT_DIFF_CALC_CHANGES[
-					$git_result_item[0]
-				]
-			]++;
+			$diff_results['statistics'][ VIPGOCI_GIT_DIFF_CALC_CHANGES[ $git_result_item[0] ] ]++;
 
-			$diff_results[ 'statistics' ]['changes']++;
+			$diff_results['statistics']['changes']++;
 		}
 
 		/*
@@ -1362,9 +1461,7 @@ function vipgoci_gitrepo_diffs_fetch_unfiltered(
 		 */
 		if ( true === $cur_file_first_patch_line ) {
 			$cur_file_first_patch_line = false;
-		}
-
-		else if ( false === $cur_file_first_patch_line ) {
+		} elseif ( false === $cur_file_first_patch_line ) {
 			/*
 			 * If not on first line of patch,
 			 * and the current line is an empty
@@ -1381,9 +1478,7 @@ function vipgoci_gitrepo_diffs_fetch_unfiltered(
 
 			if ( '' === $git_result_item ) {
 				$cur_file_patch_buffer .= PHP_EOL;
-			}
-
-			else {
+			} else {
 				$diff_results['files'][ $cur_file ]['patch'] .= PHP_EOL;
 			}
 		}
@@ -1394,14 +1489,14 @@ function vipgoci_gitrepo_diffs_fetch_unfiltered(
 	vipgoci_log(
 		'Fetched git diff from local git repository',
 		array(
-			'statistics'		=> $diff_results['statistics'],
-			'files_partial_20_max'	=> array_slice(
+			'statistics'           => $diff_results['statistics'],
+			'files_partial_20_max' => array_slice(
 				array_keys(
 					$diff_results['files']
 				),
 				0,
 				20
-			)
+			),
 		)
 	);
 
@@ -1410,12 +1505,44 @@ function vipgoci_gitrepo_diffs_fetch_unfiltered(
 	return $diff_results;
 }
 
-/*
+/**
  * Fetch diffs between two commits,
  * filter the results if requested.
  *
- * Needs arguments both for local git 
+ * Needs arguments both for local git
  * repo and GitHub API as fallback.
+ *
+ * @param string     $local_git_repo          Path to local git repository.
+ * @param string     $repo_owner              Repository owner.
+ * @param string     $repo_name               Repository name.
+ * @param string     $github_token            GitHub token to use to make GitHub API requests.
+ * @param string     $commit_id_a             Baseline commit.
+ * @param string     $commit_id_b             Commit for comparison.
+ * @param bool       $renamed_files_also      If to include renamed files.
+ * @param bool       $removed_files_also      If to include removed files.
+ * @param bool       $permission_changes_also If to include files whose permissions were changed.
+ * @param null|array $filter                  Filter to apply to results.
+ *
+ * @return array Array with results. For example:
+ *  array(
+ *    'statistics'  => array(
+ *      'additions' => 25,
+ *      'deletions' => 100,
+ *      'changes'   => 125,
+ *    ),
+ *    'files'       => array(
+ *      'file-1.php' => array(
+ *        'filename'  => 'file-1.php',
+ *        'patch'     => '--- a/file-1.php... +++ b/file-1.php ...',
+ *        'status'    => 'added',
+ *        'additions' => 25,
+ *        'deletions' => 100,
+ *        'changes'   => 125,
+ *      ),
+ *      'file-2.php' => ...,
+ *    ),
+ *    'data_source' => 'local-git-repo',
+ *  );
  */
 function vipgoci_git_diffs_fetch(
 	string $local_git_repo,
@@ -1427,30 +1554,32 @@ function vipgoci_git_diffs_fetch(
 	bool $renamed_files_also = false,
 	bool $removed_files_also = true,
 	bool $permission_changes_also = false,
-	?array $filter = null
+	null|array $filter = null
 ): array {
-
 	/*
 	 * Check if we have a preference whether to
 	 * use local git repository or GitHub API.
 	 */
 	$cached_id = array(
-		__FUNCTION__, $local_git_repo, $repo_owner, $repo_name,
-		$commit_id_a, $commit_id_b
+		__FUNCTION__,
+		$local_git_repo,
+		$repo_owner,
+		$repo_name,
+		$commit_id_a,
+		$commit_id_b,
 	);
-	
+
 	$github_api_preferred = vipgoci_cache( $cached_id );
 
 	vipgoci_log(
 		'Fetching diffs between two commits',
-
 		array(
-			'local_git_repo'	=> $local_git_repo,
-			'repo_owner'		=> $repo_owner,
-			'repo_name'		=> $repo_name,
-			'commit_id_a'		=> $commit_id_a,
-			'commit_id_b'		=> $commit_id_b,
-			'github_api_preferred'	=> $github_api_preferred,
+			'local_git_repo'       => $local_git_repo,
+			'repo_owner'           => $repo_owner,
+			'repo_name'            => $repo_name,
+			'commit_id_a'          => $commit_id_a,
+			'commit_id_b'          => $commit_id_b,
+			'github_api_preferred' => $github_api_preferred,
 		)
 	);
 
@@ -1466,9 +1595,8 @@ function vipgoci_git_diffs_fetch(
 			$commit_id_a,
 			$commit_id_b
 		);
-	
-		$diff_results_data_source =
-			VIPGOCI_GIT_DIFF_DATA_SOURCE_GIT_REPO;
+
+		$diff_results_data_source = VIPGOCI_GIT_DIFF_DATA_SOURCE_GIT_REPO;
 	}
 
 	if ( null === $diff_results ) {
@@ -1478,7 +1606,7 @@ function vipgoci_git_diffs_fetch(
 		 *
 		 * This can happen for example:
 		 * - When only part of the repository was fetched
-		 * - When the commit-ID refers to a repository 
+		 * - When the commit-ID refers to a repository
 		 *   outside of this one, for example when a pull request
 		 *   refers to a forked repository.
 		 * - When there is an I/O error with the local filesystem.
@@ -1491,10 +1619,10 @@ function vipgoci_git_diffs_fetch(
 				'Requesting diff from GitHub API, ' .
 					'issues with local git repo',
 				array(
-					'repo-owner'	=> $repo_owner,
-					'repo-name'	=> $repo_name,
-					'commit_id_a'	=> $commit_id_a,
-					'commit_id_b'	=> $commit_id_b,
+					'repo-owner'  => $repo_owner,
+					'repo-name'   => $repo_name,
+					'commit_id_a' => $commit_id_a,
+					'commit_id_b' => $commit_id_b,
 				),
 				0,
 				true
@@ -1524,17 +1652,18 @@ function vipgoci_git_diffs_fetch(
 	 */
 
 	$results = array(
-		'statistics'	=> array(
-			VIPGOCI_GIT_DIFF_CALC_CHANGES['+']	=> 0,
-			VIPGOCI_GIT_DIFF_CALC_CHANGES['-']	=> 0,
-			'changes'				=> 0,
+		'statistics'   => array(
+			VIPGOCI_GIT_DIFF_CALC_CHANGES['+'] => 0,
+			VIPGOCI_GIT_DIFF_CALC_CHANGES['-'] => 0,
+			'changes'                          => 0,
 		),
 
-		'files'		=> array(),
-		'data_source'	=> $diff_results_data_source,
+		'files'        => array(),
+		'files_status' => array(),
+		'data_source'  => $diff_results_data_source,
 	);
 
-	foreach( $diff_results['files'] as $file_item ) {
+	foreach ( $diff_results['files'] as $file_item ) {
 		/*
 		 * Skip removed files if so requested.
 		 */
@@ -1546,7 +1675,6 @@ function vipgoci_git_diffs_fetch(
 			continue;
 		}
 
-
 		/*
 		 * Skip renamed files if so requested.
 		 */
@@ -1556,7 +1684,6 @@ function vipgoci_git_diffs_fetch(
 		) {
 			continue;
 		}
-
 
 		/*
 		 * If file is modified, but there are no changed lines,
@@ -1571,7 +1698,6 @@ function vipgoci_git_diffs_fetch(
 			continue;
 		}
 
-
 		/*
 		 * Allow filtering of files returned.
 		 */
@@ -1579,7 +1705,7 @@ function vipgoci_git_diffs_fetch(
 		if (
 			( null !== $filter ) &&
 			( false === vipgoci_filter_file_path(
-				$file_item['filename'], // Send in what looks like a relative path
+				$file_item['filename'], // Relative path.
 				$filter
 			) )
 		) {
@@ -1594,8 +1720,14 @@ function vipgoci_git_diffs_fetch(
 			$file_item['patch'] = null;
 		}
 
-		$results[ 'files' ][ $file_item['filename'] ] =
+		$results['files'][ $file_item['filename'] ] =
 			$file_item['patch'];
+
+		/*
+		 * Add status information for file.
+		 */
+		$results['files_status'][ $file_item['filename'] ] =
+			$file_item['status'];
 
 		/*
 		 * Add this file to statistics
@@ -1606,11 +1738,10 @@ function vipgoci_git_diffs_fetch(
 		$results['statistics'][ VIPGOCI_GIT_DIFF_CALC_CHANGES['-'] ] +=
 			$file_item[ VIPGOCI_GIT_DIFF_CALC_CHANGES['-'] ];
 
-		$results['statistics'][ 'changes' ] +=
-			$file_item[ 'changes' ];
+		$results['statistics']['changes'] +=
+			$file_item['changes'];
 	}
 
 	return $results;
 }
-
 

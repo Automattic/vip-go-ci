@@ -618,7 +618,7 @@ function vipgoci_results_filter_comments_to_max(
  *
  * @param string $message Message to standardize.
  *
- * @returns string
+ * @return string Standardized message.
  */
 function vipgoci_results_standardize_ignorable_message(
 	string $message

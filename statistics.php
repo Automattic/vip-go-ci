@@ -169,7 +169,7 @@ function vipgoci_runtime_measure(
  * @param int    $exec_retry_max                  Number of times to retry execution of command in case exec() returns
  *                                                with false or unexpected result code is observed (when configured).
  *
- * @return string Output of command.
+ * @return string|null Output of command as string, or null on failure.
  */
 function vipgoci_runtime_measure_exec_with_retry(
 	string $cmd,
