@@ -1,29 +1,64 @@
 <?php
+/**
+ * Test vipgoci_ap_svg_files() function.
+ *
+ * @package Automattic/vip-go-ci
+ */
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+declare(strict_types=1);
+
+namespace Vipgoci\Tests\Integration;
 
 use PHPUnit\Framework\TestCase;
 
+/**
+ * Class that implements the testing.
+ *
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class ApSvgFilesTest extends TestCase {
-	var $options_git = array(
-		'repo-owner'			=> null,
-		'repo-name'			=> null,
-		'github-repo-url'		=> null,
-		'git-path'			=> null,
+	/**
+	 * Git options.
+	 *
+	 * @var $options_git
+	 */
+	private array $options_git = array(
+		'repo-owner'      => null,
+		'repo-name'       => null,
+		'github-repo-url' => null,
+		'git-path'        => null,
 	);
 
-	var $options_svg_scan = array(
-		'svg-php-path'			=> null,
-		'svg-scanner-path'		=> null,
+	/**
+	 * SVG scan options.
+	 *
+	 * @var $options_svg_scan
+	 */
+	private array $options_svg_scan = array(
+		'svg-php-path'     => null,
+		'svg-scanner-path' => null,
 	);
 
-	var $options_auto_approvals = array(
-		'autoapprove-filetypes'		=> null,
-		'commit-test-svg-files-1'	=> null,
-		'commit-test-svg-files-2b'	=> null,
+	/**
+	 * Options for auto approvals.
+	 *
+	 * @var $options_auto_approvals
+	 */
+	private array $options_auto_approvals = array(
+		'autoapprove-filetypes'    => null,
+		'commit-test-svg-files-1'  => null,
+		'commit-test-svg-files-2b' => null,
 	);
-	
+
+	/**
+	 * Setup function. Require files, initialize variables, etc
+	 *
+	 * @return void
+	 */
 	protected function setUp(): void {
+		require_once __DIR__ . '/IncludesForTests.php';
+
 		vipgoci_unittests_get_config_values(
 			'git',
 			$this->options_git
@@ -45,11 +80,11 @@ final class ApSvgFilesTest extends TestCase {
 			$this->options_auto_approvals
 		);
 
-		$this->options[ 'github-token' ] =
+		$this->options['github-token'] =
 			vipgoci_unittests_get_config_value(
 				'git-secrets',
 				'github-token',
-				true // Fetch from secrets file
+				true // Fetch from secrets file.
 			);
 
 		if ( empty( $this->options['github-token'] ) ) {
@@ -60,8 +95,9 @@ final class ApSvgFilesTest extends TestCase {
 			$this->options['github-token'];
 
 		unset( $this->options['github-token'] );
-		
+
 		$this->options['autoapprove'] = true;
+
 		$this->options['autoapprove-filetypes'] =
 			explode(
 				',',
@@ -71,7 +107,7 @@ final class ApSvgFilesTest extends TestCase {
 		$this->options['branches-ignore'] = array();
 
 		$this->options['skip-draft-prs'] = false;
-		
+
 		$this->options['skip-large-files'] = false;
 
 		$this->options['skip-large-files-limit'] = 15;
@@ -79,23 +115,33 @@ final class ApSvgFilesTest extends TestCase {
 		$this->options['lint-modified-files-only'] = false;
 	}
 
+	/**
+	 * Tear down function. Remove local git repository, clear variables.
+	 *
+	 * @return void
+	 */
 	protected function tearDown(): void {
-		if ( false !== $this->options['local-git-repo'] ) {
+		if (
+			( ! empty( $this->options['local-git-repo'] ) ) &&
+			( false !== $this->options['local-git-repo'] )
+		) {
 			vipgoci_unittests_remove_git_repo(
 				$this->options['local-git-repo']
 			);
 		}
 
-		$this->options = null;
-		$this->options_auto_approvals = null;
-		$this->options_svg_scan = null;
-		$this->options_git = null;
+		unset( $this->options );
+		unset( $this->options_auto_approvals );
+		unset( $this->options_svg_scan );
+		unset( $this->options_git );
 	}
 
 	/**
+	 * Test common usage of the function.
+	 *
 	 * @covers ::vipgoci_ap_svg_files
 	 */
-	public function testApSvgFiles1() {
+	public function testApSvgFiles1() :void {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
@@ -112,7 +158,6 @@ final class ApSvgFilesTest extends TestCase {
 
 		$this->options['commit'] =
 			$this->options['commit-test-svg-files-1'];
-
 
 		vipgoci_unittests_output_suppress();
 
@@ -136,7 +181,6 @@ final class ApSvgFilesTest extends TestCase {
 		);
 
 		vipgoci_unittests_output_unsuppress();
-
 
 		$this->assertSame(
 			array(
@@ -156,7 +200,7 @@ final class ApSvgFilesTest extends TestCase {
 	 *
 	 * @covers ::vipgoci_ap_svg_files
 	 */
-	public function testApSvgFiles2() {
+	public function testApSvgFiles2() :void {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
@@ -173,7 +217,6 @@ final class ApSvgFilesTest extends TestCase {
 
 		$this->options['commit'] =
 			$this->options['commit-test-svg-files-2b'];
-
 
 		vipgoci_unittests_output_suppress();
 
@@ -198,14 +241,12 @@ final class ApSvgFilesTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-
 		$this->assertSame(
 			array(
-				'auto-approvable-1.svg' => 'ap-svg-files',
+				'auto-approvable-1.svg'         => 'ap-svg-files',
 				'auto-approvable-2-renamed.svg' => 'ap-svg-files',
-				'auto-approvable-7.svg' => 'ap-svg-files',
-				'auto-approvable3.svg' => 'ap-svg-files',
-				'auto-approvable4.svg' => 'ap-svg-files',
+				'auto-approvable-7.svg'         => 'ap-svg-files',
+				'auto-approvable3.svg'          => 'ap-svg-files',
 			),
 			$auto_approved_files_arr
 		);
