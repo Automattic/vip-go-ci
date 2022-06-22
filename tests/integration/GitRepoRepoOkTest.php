@@ -50,7 +50,7 @@ final class GitRepoRepoOkTest extends TestCase {
 		require_once __DIR__ . '/../unit/helper/IndicateTestId.php';
 
 		vipgoci_unittests_indicate_test_id( 'GitRepoRepoOkTest' );
- 
+
 		vipgoci_unittests_get_config_values(
 			'git',
 			$this->options_git
@@ -135,9 +135,9 @@ final class GitRepoRepoOkTest extends TestCase {
 			$this->options['local-git-repo']
 		);
 
-                $printed_data = ob_get_contents();
+		$printed_data = ob_get_contents();
 
-                ob_end_clean();
+		ob_end_clean();
 
 		$this->assertEmpty( $printed_data );
 	}
@@ -184,9 +184,9 @@ final class GitRepoRepoOkTest extends TestCase {
 			$this->options['local-git-repo']
 		);
 
-                $printed_data = ob_get_contents();
+		$printed_data = ob_get_contents();
 
-                ob_end_clean();
+		ob_end_clean();
 
 		$this->assertTrue(
 			str_contains(

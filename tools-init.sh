@@ -19,8 +19,8 @@ export VIP_CODING_STANDARDS_VER="2.3.3"
 export VIP_CODING_STANDARDS_SHA1SUM="44c6519c628d450be5330b2706ae9dbb09dbd6be";
 
 # https://github.com/sirbrillig/phpcs-variable-analysis/releases
-export PHPCS_VARIABLE_ANALYSIS_VER="2.11.2"
-export PHPCS_VARIABLE_ANALYSIS_SHA1SUM="bde2f16104bc97966d1ad368ba5aac2fd26d2c7e"
+export PHPCS_VARIABLE_ANALYSIS_VER="2.11.3"
+export PHPCS_VARIABLE_ANALYSIS_SHA1SUM="4468db94e39598e616c113a658a69a6265da05d2"
 
 # https://github.com/phpcompatibility/phpcompatibility/releases
 export PHP_COMPATIBILITY_VER="9.3.5"
@@ -90,7 +90,7 @@ if [ -d ~/vip-go-ci-tools ] ; then
 	export TMP_RAND=`seq 1 3 | sort -R | head -n 1`
 
 	if [ "$TMP_RAND" -ne "1" ] ; then
-		echo "$0: Not due to update anything, exiting"
+		echo "$0: Will not check for updates at this time, exiting"
 		lock_remove
 		exit 1
 	fi
@@ -111,7 +111,7 @@ if [ "$VIP_GO_CI_VER" == "" ] ; then
 	TMP_FILE=`mktemp /tmp/vip-go-ci-latest-release-XXXXX.php`
 
 	echo "$0: Trying to determine latest release of vip-go-ci, need to fetch latest-release.php first..."
-	wget -O "$TMP_FILE" https://raw.githubusercontent.com/Automattic/vip-go-ci/main/latest-release.php && \
+	wget -O "$TMP_FILE" https://raw.githubusercontent.com/Automattic/vip-go-ci/latest/latest-release.php && \
 	chmod u+x "$TMP_FILE" && \
 	export VIP_GO_CI_VER=`php $TMP_FILE` && \
 	rm "$TMP_FILE" && \

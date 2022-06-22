@@ -54,7 +54,7 @@ function vipgoci_ap_svg_files(
 			$pr_item->base->sha,
 			$options['commit'],
 			true, // Include renamed files.
-			false, // Exclude removed files.
+			true, // Include removed files.
 			true // Include permission changes.
 		);
 
@@ -106,6 +106,20 @@ function vipgoci_ap_svg_files(
 
 				$auto_approved_files_arr[ $pr_diff_file_name ]
 					= 'ap-svg-files';
+			} elseif ( 'removed' === $pr_diff['files_status'][ $pr_diff_file_name ] ) {
+				vipgoci_log(
+					'Adding SVG file to list of ' .
+						'approved files, as it was ' .
+						'removed',
+					array(
+						'file_name' =>
+							$pr_diff_file_name,
+					)
+				);
+
+				$auto_approved_files_arr[ $pr_diff_file_name ] =
+					'ap-svg-files';
+				continue;
 			}
 
 			/*

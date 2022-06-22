@@ -1652,14 +1652,15 @@ function vipgoci_git_diffs_fetch(
 	 */
 
 	$results = array(
-		'statistics'  => array(
+		'statistics'   => array(
 			VIPGOCI_GIT_DIFF_CALC_CHANGES['+'] => 0,
 			VIPGOCI_GIT_DIFF_CALC_CHANGES['-'] => 0,
 			'changes'                          => 0,
 		),
 
-		'files'       => array(),
-		'data_source' => $diff_results_data_source,
+		'files'        => array(),
+		'files_status' => array(),
+		'data_source'  => $diff_results_data_source,
 	);
 
 	foreach ( $diff_results['files'] as $file_item ) {
@@ -1721,6 +1722,12 @@ function vipgoci_git_diffs_fetch(
 
 		$results['files'][ $file_item['filename'] ] =
 			$file_item['patch'];
+
+		/*
+		 * Add status information for file.
+		 */
+		$results['files_status'][ $file_item['filename'] ] =
+			$file_item['status'];
 
 		/*
 		 * Add this file to statistics
