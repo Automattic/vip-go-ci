@@ -219,7 +219,7 @@ function vipgoci_get_skipped_files_from_pr_comments( array $comments, string $va
  * @param string $comment_body              Comment to process.
  * @param string $validation_message_prefix Message used to indicate file was skipped.
  *
- * @return string[] Files skipped.
+ * @return array Files skipped.
  */
 function vipgoci_get_skipped_files_from_comment(
 	string $comment_body,

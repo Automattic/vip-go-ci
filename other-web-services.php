@@ -1,14 +1,26 @@
 <?php
+/**
+ * Other web services used by vip-go-ci.
+ *
+ * @package Automattic/vip-go-ci
+ */
 
-/*
+declare(strict_types=1);
+
+/**
  * Queue up a message for IRC API,
  * or alternatively empty the queue and
  * return its contents.
+ *
+ * @param string|null $message Message to add to queue, or null if to dump queue.
+ * @param bool        $dump    Specify true if to dump queue.
+ *
+ * @return bool|array Returns array when dumping results, true when adding message to queue.
  */
 function vipgoci_irc_api_alert_queue(
-	$message = null,
-	$dump = false
-) {
+	string|null $message = null,
+	bool $dump = false
+) :bool|array {
 	static $msg_queue = array();
 
 	if ( true === $dump ) {
@@ -20,6 +32,8 @@ function vipgoci_irc_api_alert_queue(
 	}
 
 	$msg_queue[] = $message;
+
+	return true;
 }
 
 /**
@@ -131,12 +145,18 @@ function vipgoci_irc_api_clean_ignorable_constants(
 	);
 }
 
-/*
+/**
  * Make messages in IRC queue unique, but add
  * a prefix to those messages that were not unique
  * indicating how many they were.
+ *
+ * @param array $msg_queue Message queue.
+ *
+ * @return array New IRC queue, with prefixes as applicable.
  */
-function vipgoci_irc_api_alert_queue_unique( array $msg_queue ) {
+function vipgoci_irc_api_alert_queue_unique(
+	array $msg_queue
+) :array {
 	$msg_queue_unique = array_unique(
 		$msg_queue
 	);
@@ -164,7 +184,7 @@ function vipgoci_irc_api_alert_queue_unique( array $msg_queue ) {
 	/*
 	 * Add prefix where needed.
 	 */
-	foreach( $msg_queue_count as $msg => $cnt ) {
+	foreach ( $msg_queue_count as $msg => $cnt ) {
 		$msg_prefix = '';
 
 		if ( $cnt > 1 ) {
@@ -181,17 +201,25 @@ function vipgoci_irc_api_alert_queue_unique( array $msg_queue ) {
  * Empty IRC message queue and send off
  * to the IRC API.
  *
+ * @param string $irc_api_url   URL to IRC API.
+ * @param string $irc_api_token Access token to IRC API.
+ * @param string $botname       Name of IRC bot.
+ * @param string $channel       Channel to post to.
+ *
+ * @return void
+ *
  * @codeCoverageIgnore
  */
 function vipgoci_irc_api_alerts_send(
-	$irc_api_url,
-	$irc_api_token,
-	$botname,
-	$channel
-) {
+	string $irc_api_url,
+	string $irc_api_token,
+	string $botname,
+	string $channel
+) :void {
 	// Get IRC message queue.
 	$msg_queue = vipgoci_irc_api_alert_queue(
-		null, true
+		null,
+		true
 	);
 
 	// Filter away removable strings.
@@ -212,7 +240,7 @@ function vipgoci_irc_api_alerts_send(
 		)
 	);
 
-	foreach( $msg_queue as $message ) {
+	foreach ( $msg_queue as $message ) {
 		$irc_api_postfields = array(
 			'message' => $message,
 			'botname' => $botname,
@@ -310,44 +338,43 @@ function vipgoci_irc_api_alerts_send(
  * we can keep track of actions we
  * take during runtime.
  *
+ * @param string $pixel_api_url        URL to Pixel API.
+ * @param array  $stat_names_to_report Statistics to report, both repository specific and global. Should be associative array.
+ * @param array  $statistics           Statistics array, associative array of keys and values.
+ *
+ * @return void
+ *
  * @codeCoverageIgnore
  */
 function vipgoci_send_stats_to_pixel_api(
-	$pixel_api_url,
-	$stat_names_to_report,
-	$statistics
-) {
+	string $pixel_api_url,
+	array $stat_names_to_report,
+	array $statistics
+) :void {
 	vipgoci_log(
 		'Sending statistics to pixel API service',
 		array(
-			'stat_names_to_report' =>
-				$stat_names_to_report
+			'stat_names_to_report' => $stat_names_to_report,
 		)
 	);
 
-	$stat_names_to_groups = array(
-	);
+	$stat_names_to_groups = array();
 
-	foreach(
+	foreach (
 		array_keys( $stat_names_to_report ) as
 			$statistic_group
 	) {
-		foreach(
-			$stat_names_to_report[
-				$statistic_group
-			] as $stat_name
+		foreach (
+			$stat_names_to_report[ $statistic_group ] as $stat_name
 		) {
-			$stat_names_to_groups[
-				$stat_name
-			] = $statistic_group;
+			$stat_names_to_groups[ $stat_name ] = $statistic_group;
 		}
 	}
 
-	foreach(
+	foreach (
 		$statistics as
 			$stat_name => $stat_value
 	) {
-
 		/*
 		 * We are to report only certain
 		 * values, so skip those who we should
@@ -366,22 +393,19 @@ function vipgoci_send_stats_to_pixel_api(
 		/*
 		 * Compose URL.
 		 */
-		$url =
-			$pixel_api_url .
+		$url = $pixel_api_url .
 			'?' .
 			'v=wpcom-no-pv' .
 			'&' .
 			'x_' . rawurlencode(
-				$stat_names_to_groups[
-					$stat_name
-				]
+				$stat_names_to_groups[ $stat_name ]
 			) .
 			'/' .
 			rawurlencode(
 				$stat_name
 			) . '=' .
 			rawurlencode(
-				$stat_value
+				(string) $stat_value
 			);
 
 		/*
@@ -391,12 +415,21 @@ function vipgoci_send_stats_to_pixel_api(
 		$ctx = stream_context_create(
 			array(
 				'http' => array(
-					'timeout' => 5
-				)
+					'timeout' => 5,
+				),
 			)
 		);
 
-		file_get_contents( $url, 0, $ctx );
+		$ret = file_get_contents( $url, false, $ctx );
+
+		if ( false === $ret ) {
+			vipgoci_log(
+				'Unable to send data to Pixel API service',
+				array(),
+				0,
+				true // Send to IRC.
+			);
+		}
 
 		/*
 		 * Sleep a short while between
