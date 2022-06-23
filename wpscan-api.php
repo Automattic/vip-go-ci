@@ -75,6 +75,8 @@ function vipgoci_wpscan_do_scan_via_api(
 		0
 	);
 
+	// @todo: Audit if any expected fields are missing.
+
 	if ( null === $wpscan_report_json ) {
 		return null;
 	} else {
