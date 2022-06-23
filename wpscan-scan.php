@@ -139,7 +139,7 @@ function vipgoci_wpscan_find_addon_dirs_altered(
  *   Array(
  *     [plugins/my-plugin] => Array(
  *       [plugin.php] => Array(
- *         [type] => obsolete_but_not_vulnerable
+ *         [type] => obsolete
  *         [wpscan_results] => Array(
  *           [friendly_name] => My plugin
  *           [latest_version] => 1.0.0
@@ -254,7 +254,7 @@ function vipgoci_wpscan_scan_dirs_altered(
 				 * plugins/themes.
 				 */
 				$problematic_addons_found[ $addon_dir_relevant ][ $addon_item_key ] = array(
-					'type'               => 'obsolete_but_not_vulnerable',
+					'type'               => VIPGOCI_WPSCAN_OBSOLETE,
 					'wpscan_results'     => $wpscan_results[ $addon_item_info['slug'] ],
 					'addon_data_for_dir' => $addon_item_info,
 				);
@@ -264,7 +264,7 @@ function vipgoci_wpscan_scan_dirs_altered(
 				 * vulnerable, then add to vulnerable addons.
 				 */
 				$problematic_addons_found[ $addon_dir_relevant ][ $addon_item_key ] = array(
-					'type'               => 'vulnerable',
+					'type'               => VIPGOCI_WPSCAN_VULNERABLE,
 					'wpscan_results'     => $wpscan_results[ $addon_item_info['slug'] ],
 					'addon_data_for_dir' => $addon_item_info,
 				);
@@ -358,16 +358,27 @@ function vipgoci_wpscan_scan_save_for_submission(
 					true
 				) ) {
 					$level = 'vulnerable' === $problem_addon_files[ $problem_addon_file_name ]['type'] ?
-						'error' : 'warning';
+						VIPGOCI_ISSUE_TYPE_ERROR : VIPGOCI_ISSUE_TYPE_WARNING;
+
+					$issue_details = $problem_addon_files[ $problem_addon_file_name ];
 
 					$commit_issues_submit[ $pr_key ][] = array(
 						'type'      => VIPGOCI_STATS_WPSCAN_API,
 						'file_name' => $dir_with_problem_addons . DIRECTORY_SEPARATOR . $problem_addon_file_name,
 						'file_line' => 1,
 						'issue'     => array(
-							'message'  => '', // @todo: Add issue.
-							'level'    => strtoupper( $level ),
+							'message'  => $problem_addon_files[ $problem_addon_file_name ]['wpscan_results']['friendly_name'], 
+							'level'    => $level,
+							'security' => $problem_addon_files[ $problem_addon_file_name ]['type'],
 							'severity' => 10,
+							'details'  => array(
+								'plugin_uri'          => $issue_details['addon_data_for_dir']['addon_headers']['PluginURI'],
+								'installed_location'  => $dir_with_problem_addons . DIRECTORY_SEPARATOR . $problem_addon_file_name,
+								'version_detected'    => $issue_details['addon_data_for_dir']['version_detected'],
+								'latest_version'      => $issue_details['wpscan_results']['latest_version'],
+								'latest_download_uri' => $issue_details['addon_data_for_dir']['package'],
+								'vulnerabilities'     => $issue_details['wpscan_results']['vulnerabilities'],
+							),
 						),
 					);
 
