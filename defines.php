@@ -19,10 +19,15 @@ define( 'VIPGOCI_GIT_VERSION_MINIMUM', '2.10' );
 define( 'VIPGOCI_PHP_VERSION_MINIMUM', '7.3.0' );
 
 /*
- * Client-ID for curl-requests, etc.
+ * Client-ID for HTTP requests.
  */
 define( 'VIPGOCI_CLIENT_ID', 'automattic-vip-go-ci' );
+
+/*
+ * Strings for generic messages.
+ */
 define( 'VIPGOCI_SYNTAX_ERROR_STR', 'PHP Syntax Errors Found' );
+define( 'VIPGOCI_WPSCAN_API_ERROR', 'Automated Addon Security Scanning' );
 define( 'VIPGOCI_GITHUB_ERROR_STR', 'GitHub API communication error. Please contact a human.' );
 
 /*
@@ -169,6 +174,13 @@ define( 'VIPGOCI_STATS_HASHES_API', 'hashes-api' );
 define( 'VIPGOCI_STATS_WPSCAN_API', 'wpscan-api' );
 
 /*
+ * Define error/warning/info constants.
+ */
+define( 'VIPGOCI_ISSUE_TYPE_INFO', 'info' );
+define( 'VIPGOCI_ISSUE_TYPE_WARNING', 'warning' );
+define( 'VIPGOCI_ISSUE_TYPE_ERROR', 'error' );
+
+/*
  * Define auto-approval types
  */
 define( 'VIPGOCI_APPROVAL_AUTOAPPROVE', 'auto-approval' );
@@ -239,4 +251,14 @@ define( 'VIPGOCI_VALIDATION_MAXIMUM_DETAIL_MSG', 'Note that the above file(s) we
 define( 'VIPGOCI_WPSCAN_PLUGIN', 'vipgoci-wpscan-plugin' );
 define( 'VIPGOCI_WPSCAN_THEME', 'vipgoci-wpscan-theme' );
 define( 'VIPGOCI_WPSCAN_BASE_URL', 'https://wpscan.com/api/v3' );
+
+define( 'VIPGOCI_WPSCAN_VULNERABLE', 'vulnerable' );
+define( 'VIPGOCI_WPSCAN_OBSOLETE', 'obsolete' );
+
+define( 'VIPGOCI_WPSCAN_SEVERITY_UNKNOWN', -1 );
+define( 'VIPGOCI_WPSCAN_SEVERITY_NONE', 0.0 );
+define( 'VIPGOCI_WPSCAN_SEVERITY_LOW', 3.9 ); // 0.1-3.9.
+define( 'VIPGOCI_WPSCAN_SEVERITY_MEDIUM', 6.9 ); // 4.0-6.9.
+define( 'VIPGOCI_WPSCAN_SEVERITY_HIGH', 8.9 ); // 7.0-8.9.
+define( 'VIPGOCI_WPSCAN_SEVERITY_CRITICAL', 10.0 ); // 9.0-10.
 
