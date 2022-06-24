@@ -12,8 +12,7 @@ declare(strict_types=1);
  *
  * @return string Returns beginning of comment.
  */
-function vipgoci_wpscan_report_start(
-) :string {
+function vipgoci_wpscan_report_start() :string {
 	$comment_start =
 		'# ' . VIPGOCI_WPSCAN_API_ERROR .
 		"\n\r" .
