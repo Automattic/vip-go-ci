@@ -573,22 +573,15 @@ function vipgoci_phpcs_scan_commit(
 		);
 
 		foreach ( $pr_item_files_tmp['files'] as $pr_item_file_name => $_tmp ) {
-			if ( in_array(
-				$pr_item_file_name,
+			vipgoci_array_push_uniquely(
 				$pr_item_files_changed['all'],
-				true
-			) === false ) {
-				$pr_item_files_changed['all'][] =
-					$pr_item_file_name;
-			}
+				$pr_item_file_name
+			);
 
-			if ( in_array(
-				$pr_item_file_name,
+			vipgoci_array_push_uniquely(
 				$pr_item_files_changed[ $pr_item->number ],
-				true
-			) === false ) {
-				$pr_item_files_changed[ $pr_item->number ][] = $pr_item_file_name;
-			}
+				$pr_item_file_name
+			);
 		}
 	}
 
@@ -748,13 +741,10 @@ function vipgoci_phpcs_scan_commit(
 			 * Keep track of files that we could not
 			 * PHPCS or SVG scan. Avoid duplicate entries.
 			 */
-			if ( false === in_array(
-				$file_name,
+			vipgoci_array_push_uniquely(
 				$files_failed_phpcs_scanning,
-				true
-			) ) {
-				$files_failed_phpcs_scanning[] = $file_name;
-			}
+				$file_name,
+			);
 
 			continue;
 		}

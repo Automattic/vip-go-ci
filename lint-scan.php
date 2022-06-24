@@ -440,13 +440,10 @@ function vipgoci_lint_scan_multiple_files(
 				$temp_linting_results_arr = null;
 
 				// Avoid duplicate entries.
-				if ( false === in_array(
-					$filename,
+				vipgoci_array_push_uniquely(
 					$files_failed_linting,
-					true
-				) ) {
-					$files_failed_linting[] = $filename;
-				}
+					$filename,
+				);
 			}
 
 			vipgoci_log(
