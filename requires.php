@@ -22,6 +22,7 @@ require_once __DIR__ . '/github-api.php';
 require_once __DIR__ . '/github-misc.php';
 require_once __DIR__ . '/git-repo.php';
 require_once __DIR__ . '/http-functions.php';
+require_once __DIR__ . '/lint-reports.php';
 require_once __DIR__ . '/lint-scan.php';
 require_once __DIR__ . '/log.php';
 require_once __DIR__ . '/main.php';
@@ -38,8 +39,9 @@ require_once __DIR__ . '/statistics.php';
 require_once __DIR__ . '/support-level-label.php';
 require_once __DIR__ . '/svg-scan.php';
 require_once __DIR__ . '/wp-core-misc.php';
-require_once __DIR__ . '/wpscan-scan.php';
 require_once __DIR__ . '/wpscan-api.php';
+require_once __DIR__ . '/wpscan-reports.php';
+require_once __DIR__ . '/wpscan-scan.php';
 
 // Require file that executes vipgoci_run().
 require_once __DIR__ . '/exec.php';
