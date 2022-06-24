@@ -270,26 +270,48 @@ function vipgoci_http_api_rate_limits_check(
 }
 
 /**
- * Make sure to wait between requests to
- * HTTP APIs but only for certain APIs. 
+ * Make sure to wait between requests to HTTP APIs,
+ * but only for certain APIs and when needed.
  *
- * This function should only be called just before
+ * This function should be called just before
  * sending a request to a HTTP API -- that is the most
  * effective usage. Will only wait if not enough time
- * has passed between calls to this function.
+ * has passed between calls to this function and if the
+ * HTTP API URL specified matches one of the URLs in
+ * VIPGOCI_HTTP_API_WAIT_APIS_ARRAY.
  *
  * See here for background for GitHub API requests:
  * https://developer.github.com/v3/guides/best-practices-for-integrators/#dealing-with-abuse-rate-limits
+ *
+ * @param string $http_api_url The HTTP API URL being called.
+ *
+ * @return void
  */
 function vipgoci_http_api_wait( string $http_api_url ) :void {
 	static $last_request_time = null;
 
-	// Only wait in case of GitHub HTTP API.
-	if ( false === stripos( $http_api_url, 'api.github.com' ) ) {
+	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'http_api_forced_wait' );
+
+	/*
+	 * Only wait in case of certain APIs being called.
+	 */
+	$maybe_wait = false;
+
+	foreach ( VIPGOCI_HTTP_API_WAIT_APIS_ARRAY as $http_api_should_wait_url ) {
+		if ( false !== stripos( $http_api_url, $http_api_should_wait_url ) ) {
+			$maybe_wait = true;
+			break;
+		}
+	}
+
+	if ( false === $maybe_wait ) {
+		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'http_api_forced_wait' );
 		return;
 	}
 
-	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'http_api_forced_wait' );
+	/*
+	 * We should maybe wait.
+	 */
 
 	if ( null !== $last_request_time ) {
 		/*
