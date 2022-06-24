@@ -367,7 +367,7 @@ function vipgoci_wpscan_scan_save_for_submission(
 						'file_name' => $dir_with_problem_addons . DIRECTORY_SEPARATOR . $problem_addon_file_name,
 						'file_line' => 1,
 						'issue'     => array(
-							'message'  => $problem_addon_files[ $problem_addon_file_name ]['wpscan_results']['friendly_name'], 
+							'message'  => $problem_addon_files[ $problem_addon_file_name ]['wpscan_results']['friendly_name'],
 							'level'    => $level,
 							'security' => $problem_addon_files[ $problem_addon_file_name ]['type'],
 							'severity' => 10,
