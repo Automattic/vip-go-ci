@@ -610,10 +610,9 @@ function vipgoci_report_maybe_no_issues_found(
 }
 
 /**
- * Submit generic PR comment to GitHub, reporting any
- * issues found within $results. Selectively report
- * issues that we are supposed to report on, ignore
- * others. Attempts to format the comment to GitHub.
+ * Formats and submits one or more generic pull request comments to GitHub,
+ * reporting any issues found within $results, if any relevant issues were
+ * found.
  *
  * @param string $repo_owner        Repository owner.
  * @param string $repo_name         Repository name.
@@ -634,17 +633,12 @@ function vipgoci_report_submit_pr_generic_comment_from_results(
 	string $informational_msg,
 	string $scan_details_msg
 ) :void {
-	$stats_types_to_process = array(
-		VIPGOCI_STATS_LINT,
-	);
-
 	vipgoci_log(
 		'About to submit generic PR comment to GitHub about issues',
 		array(
 			'repo_owner' => $repo_owner,
 			'repo_name'  => $repo_name,
 			'commit_id'  => $commit_id,
-			'results'    => $results,
 		)
 	);
 
@@ -654,6 +648,7 @@ function vipgoci_report_submit_pr_generic_comment_from_results(
 			$results['issues']
 		) as $pr_number
 	) {
+		// Construct URL to GitHub API to post comment.
 		$github_url =
 			VIPGOCI_GITHUB_BASE_URL . '/' .
 			'repos/' .
@@ -663,155 +658,163 @@ function vipgoci_report_submit_pr_generic_comment_from_results(
 			rawurlencode( (string) $pr_number ) . '/' .
 			'comments';
 
-		$github_postfields = array(
+		/*
+		 * Arrays for postfields. One for PHP lint
+		 * results, one for WPScan API results.
+		 */
+		$lint_result_postfields = array(
 			'body' => '',
 		);
 
-		$tmp_linebreak = false;
+		$wpscan_result_postfields = array(
+			'body' => '',
+		);
 
+		/*
+		 * Loop through issues found for the current pull request.
+		 */
 		foreach (
 			$results['issues'][ $pr_number ]
 				as $commit_issue
 		) {
+			$commit_issue['type'] = strtolower(
+				$commit_issue['type']
+			);
+
 			if ( ! in_array(
-				strtolower(
-					$commit_issue['type']
+				$commit_issue['type'],
+				array(
+					VIPGOCI_STATS_LINT,
+					VIPGOCI_STATS_WPSCAN_API,
 				),
-				$stats_types_to_process,
 				true
 			) ) {
 				// Not an issue we process, ignore.
 				continue;
 			}
 
-			/*
-			 * Put in linebreaks
-			 */
+			if ( VIPGOCI_STATS_LINT === $commit_issue['type'] ) {
+				/*
+				 * Construct comment for PHP linting.
+				 */
+				if ( '' !== $lint_result_postfields['body'] ) {
+					/*
+					 * Put in linebreaks.
+					 */
+					$lint_result_postfields['body'] .= "\n\r";
 
-			if ( false === $tmp_linebreak ) {
-				$tmp_linebreak = true;
-			} else {
-				$github_postfields['body'] .= "\n\r";
+					vipgoci_markdown_comment_add_pagebreak(
+						$lint_result_postfields['body']
+					);
+				}
+
+				$lint_result_postfields['body'] .=
+					vipgoci_lint_report_comment_format_result(
+						$repo_owner,
+						$repo_name,
+						$commit_id,
+						$commit_issue['file_name'],
+						$commit_issue['file_line'],
+						$commit_issue['issue']['level'],
+						$commit_issue['issue']['message']
+					);
+			} elseif ( VIPGOCI_STATS_WPSCAN_API === $commit_issue['type'] ) {
+				/*
+				 * Submit comment for WPScan API result.
+				 */
+				$wpscan_result_postfields['body'] .=
+					vipgoci_wpscan_report_comment_format_result(
+						$repo_owner,
+						$repo_name,
+						$commit_id,
+						$commit_issue['file_name'],
+						$commit_issue['file_line'],
+						$commit_issue['issue']
+					);
 
 				vipgoci_markdown_comment_add_pagebreak(
-					$github_postfields['body']
+					$wpscan_result_postfields['body']
 				);
+			}
+		}
+
+		/*
+		 * Loop through each postfield variable. If anything is to be
+		 * reported add template for each and submit results to the
+		 * GitHub API.
+		 */
+		foreach (
+			array(
+				'lint'       => &$lint_result_postfields,
+				'wpscan_api' => &$wpscan_result_postfields,
+			) as $result_type => &$github_postfields
+		) {
+			if ( '' === $github_postfields['body'] ) {
+				continue;
+			}
+
+			if ( 'lint' === $result_type ) {
+				$postfields_body_start = vipgoci_lint_report_comment_start(
+					$repo_owner,
+					$repo_name,
+					$commit_id
+				);
+
+				$postfields_body_end = '';
+			} elseif ( 'wpscan_api' === $result_type ) {
+				$postfields_body_start = vipgoci_wpscan_report_start();
+
+				$postfields_body_end = vipgoci_wpscan_report_end();
 			}
 
 			/*
-			 * Construct comment -- (start or continue)
+			 * Construct postfield body.
 			 */
-			$github_postfields['body'] .=
-				'**' .
+			$github_postfields['body'] =
+				$postfields_body_start .
+				$github_postfields['body'] .
+				$postfields_body_end;
 
-				// First in: level (error, warning).
-				ucfirst(
-					strtolower(
-						$commit_issue['issue']['level']
-					)
-				) .
+			unset( $postfields_body_start );
+			unset( $postfields_body_end );
 
-				'**' .
+			vipgoci_markdown_comment_add_pagebreak(
+				$github_postfields['body']
+			);
 
-				': ' .
-
-				// Then the message.
-				str_replace(
-					'\'',
-					'`',
-					$commit_issue['issue']['message']
-				) .
-
-				"\n\r\n\r" .
-
-				// And finally an URL to the issue.
-				VIPGOCI_GITHUB_WEB_BASE_URL . '/' .
-					$repo_owner . '/' .
-					$repo_name . '/' .
-					'blob/' .
-					$commit_id . '/' .
-					$commit_issue['file_name'] .
-					'#L' . $commit_issue['file_line'] .
-
-				"\n\r";
-		}
-
-		if ( '' === $github_postfields['body'] ) {
 			/*
-			 * No issues? Nothing to report to GitHub.
+			 * If we have informational URL, append that.
 			 */
-			continue;
+			if ( ! empty( $informational_msg ) ) {
+				$github_postfields['body'] .=
+					$informational_msg .
+					"\n\r";
+			}
+
+			/*
+			 * Append scan details message if we have that.
+			 */
+			if ( ! empty( $scan_details_msg ) ) {
+				$github_postfields['body'] .= $scan_details_msg;
+			}
+
+			// Post to GitHub API.
+			vipgoci_http_api_post_url(
+				$github_url,
+				$github_postfields,
+				$github_token
+			);
+
+			// Indicate internally that feedback was submitted.
+			vipgoci_report_feedback_to_github_was_submitted(
+				$repo_owner,
+				$repo_name,
+				$pr_number,
+				true
+			);
+
+			unset( $github_postfields );
 		}
-
-		/*
-		 * There are issues, report them.
-		 *
-		 * Put togather a comment to be posted to GitHub
-		 * -- splice a header to the message we currently have.
-		 */
-
-		$tmp_postfields_body =
-			'**' . VIPGOCI_SYNTAX_ERROR_STR . '**' .
-			"\n\r\n\r" .
-
-			'Scan performed on the code at commit ' . $commit_id .
-				' ([view code](' .
-				VIPGOCI_GITHUB_WEB_BASE_URL . '/' .
-				rawurlencode( $repo_owner ) . '/' .
-				rawurlencode( $repo_name ) . '/' .
-				'tree/' .
-				rawurlencode( $commit_id ) .
-				')).' .
-				"\n\r";
-
-		vipgoci_markdown_comment_add_pagebreak(
-			$tmp_postfields_body
-		);
-
-		/*
-		 * Splice the two messages together,
-		 * remove temporary variable.
-		 */
-		$github_postfields['body'] =
-			$tmp_postfields_body .
-			$github_postfields['body'];
-
-		unset( $tmp_postfields_body );
-
-		vipgoci_markdown_comment_add_pagebreak(
-			$github_postfields['body']
-		);
-
-		/*
-		 * If we have informational URL, append that
-		 * and a generic message.
-		 */
-		if ( ! empty( $informational_msg ) ) {
-			$github_postfields['body'] .=
-				$informational_msg .
-				"\n\r";
-		}
-
-		/*
-		 * Append scan details
-		 * message if we have that.
-		 */
-		if ( ! empty( $scan_details_msg ) ) {
-			$github_postfields['body'] .= $scan_details_msg;
-		}
-
-		vipgoci_http_api_post_url(
-			$github_url,
-			$github_postfields,
-			$github_token
-		);
-
-		vipgoci_report_feedback_to_github_was_submitted(
-			$repo_owner,
-			$repo_name,
-			$pr_number,
-			true
-		);
 	}
 }
 
@@ -855,7 +858,6 @@ function vipgoci_report_submit_pr_review_from_results(
 			'repo_owner' => $repo_owner,
 			'repo_name'  => $repo_name,
 			'commit_id'  => $commit_id,
-			'results'    => $results,
 		)
 	);
 
