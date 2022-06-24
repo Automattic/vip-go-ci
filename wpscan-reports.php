@@ -10,16 +10,9 @@ declare(strict_types=1);
 /**
  * Returns beginning of a WPScan API report comment.
  *
- * @param string $repo_owner Repository owner.
- * @param string $repo_name  Repository name.
- * @param string $commit_id  Current commit-ID.
- *
  * @return string Returns beginning of comment.
  */
 function vipgoci_wpscan_report_start(
-	string $repo_owner,
-	string $repo_name,
-	string $commit_id
 ) :string {
 	$comment_start =
 		'# ' . VIPGOCI_WPSCAN_API_ERROR .
@@ -87,8 +80,8 @@ function vipgoci_wpscan_report_comment_format_result(
 
 		foreach ( $issue['details']['vulnerabilities'] as $vuln_item ) {
 			$res .= '### &#x1f512; Security information' . "\n" . // Header markup and lock sign.
-			'**Title**: ' . vipgoci_output_html_escape( $issue['message'] ) . ' &lt; ' . vipgoci_output_sanitize_version_number( $vuln_item['fixed_in'] ) . ' - ' . vipgoci_output_html_escape( $vuln_item['title'] ) . "\n" .
-			'**Details**: ' . vipgoci_output_html_escape( VIPGOCI_WPSCAN_API_BASE_URL . '/vulnerability/' . $vuln_item['id'] ) . "\n" .
+			'**Title**: ' . vipgoci_output_html_escape( $vuln_item['title'] ) . "\n" .
+			'**Details**: ' . vipgoci_output_html_escape( VIPGOCI_WPSCAN_BASE_URL . '/vulnerability/' . $vuln_item['id'] ) . "\n" .
 			'**Severity**:  6.1/10 (MEDIUM)' . "\n"; // @todo: Format severity, available in $issue['severity'].
 		}
 	}
