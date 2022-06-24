@@ -685,7 +685,7 @@ function vipgoci_run_init_options_wpscan( array &$options ) :void {
 	vipgoci_option_url_handle(
 		$options,
 		'wpscan-api-url',
-		VIPGOCI_WPSCAN_BASE_URL
+		VIPGOCI_WPSCAN_API_BASE_URL
 	);
 
 	if (
