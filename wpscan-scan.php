@@ -369,7 +369,7 @@ function vipgoci_wpscan_scan_save_for_submission(
 						'issue'     => array(
 							'message'  => $problem_addon_files[ $problem_addon_file_name ]['wpscan_results']['friendly_name'],
 							'level'    => $level,
-							'security' => $problem_addon_files[ $problem_addon_file_name ]['type'],
+							'security' => $problem_addon_files[ $problem_addon_file_name ]['type'], // @todo: Rename field.
 							'severity' => 10,
 							'details'  => array(
 								'plugin_uri'          => $issue_details['addon_data_for_dir']['addon_headers']['PluginURI'],
