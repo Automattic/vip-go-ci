@@ -256,10 +256,39 @@ define( 'VIPGOCI_WPSCAN_API_BASE_URL', VIPGOCI_WPSCAN_BASE_URL . '/api/v3' );
 define( 'VIPGOCI_WPSCAN_VULNERABLE', 'vulnerable' );
 define( 'VIPGOCI_WPSCAN_OBSOLETE', 'obsolete' );
 
-define( 'VIPGOCI_WPSCAN_SEVERITY_UNKNOWN', -1 );
-define( 'VIPGOCI_WPSCAN_SEVERITY_NONE', 0.0 );
-define( 'VIPGOCI_WPSCAN_SEVERITY_LOW', 3.9 ); // 0.1-3.9.
-define( 'VIPGOCI_WPSCAN_SEVERITY_MEDIUM', 6.9 ); // 4.0-6.9.
-define( 'VIPGOCI_WPSCAN_SEVERITY_HIGH', 8.9 ); // 7.0-8.9.
-define( 'VIPGOCI_WPSCAN_SEVERITY_CRITICAL', 10.0 ); // 9.0-10.
+define(
+	'VIPGOCI_WPSCAN_SEVERITY_RATING',
+	array(
+		array(
+			'severity'   => 'UNKNOWN',
+			'value_low'  => -1,
+			'value_high' => -1,
+		),
+		array(
+			'severity'   => 'NONE',
+			'value_low'  => 0.0,
+			'value_high' => 0.0,
+		),
+		array(
+			'severity'   => 'LOW',
+			'value_low'  => 0.1,
+			'value_high' => 3.9,
+		),
+		array(
+			'severity'   => 'MEDIUM',
+			'value_low'  => 4.0,
+			'value_high' => 6.9,
+		),
+		array(
+			'severity'   => 'HIGH',
+			'value_low'  => 7.0,
+			'value_high' => 8.9,
+		),
+		array(
+			'severity'   => 'CRITICAL',
+			'value_low'  => 9.0,
+			'value_high' => 10.0,
+		),
+	)
+);
 
