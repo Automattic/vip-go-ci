@@ -270,18 +270,24 @@ function vipgoci_http_api_rate_limits_check(
 }
 
 /**
- * Make sure to wait in between requests to
- * HTTP APIs. Only waits if it is really needed.
+ * Make sure to wait between requests to
+ * HTTP APIs but only for certain APIs. 
  *
  * This function should only be called just before
  * sending a request to a HTTP API -- that is the most
- * effective usage.
+ * effective usage. Will only wait if not enough time
+ * has passed between calls to this function.
  *
- * See here for background:
+ * See here for background for GitHub API requests:
  * https://developer.github.com/v3/guides/best-practices-for-integrators/#dealing-with-abuse-rate-limits
  */
-function vipgoci_http_api_wait() {
+function vipgoci_http_api_wait( string $http_api_url ) :void {
 	static $last_request_time = null;
+
+	// Only wait in case of GitHub HTTP API.
+	if ( false === stripos( $http_api_url, 'api.github.com' ) ) {
+		return;
+	}
 
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'http_api_forced_wait' );
 
@@ -602,8 +608,8 @@ function vipgoci_http_api_fetch_url(
 			$ch
 		);
 
-		// Make sure to pause between API requests.
-		vipgoci_http_api_wait();
+		// Make sure to wait if needed.
+		vipgoci_http_api_wait( $http_api_url );
 
 		/*
 		 * Execute query to API, keep
@@ -862,8 +868,8 @@ function vipgoci_http_api_post_url(
 			$ch
 		);
 
-		// Make sure to pause between HTTP API requests.
-		vipgoci_http_api_wait();
+		// Make sure to wait if needed.
+		vipgoci_http_api_wait( $http_api_url );
 
 		/*
 		 * Execute query to HTTP API, keep
@@ -1112,8 +1118,8 @@ function vipgoci_http_api_put_url(
 			$ch
 		);
 
-		// Make sure to pause between HTTP API requests.
-		vipgoci_http_api_wait();
+		// Make sure to wait if needed.
+		vipgoci_http_api_wait( $http_api_url );
 
 		/*
 		 * Execute query to HTTP API, keep
