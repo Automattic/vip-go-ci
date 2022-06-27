@@ -3006,7 +3006,6 @@ function vipgoci_run_init_vars() :array {
 		'stats'  => array(
 			VIPGOCI_STATS_PHPCS      => null,
 			VIPGOCI_STATS_LINT       => null,
-			VIPGOCI_STATS_HASHES_API => null,
 		),
 	);
 
