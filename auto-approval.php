@@ -516,7 +516,7 @@ function vipgoci_auto_approval_process(
 
 	/*
 	 * Remove issues from $results for files
-	 * that are approved in hashes-to-hashes API.
+	 * that are approved.
 	 */
 	vipgoci_results_approved_files_comments_remove(
 		$options,
