@@ -43,7 +43,6 @@ Here is an example auto approval by `vip-go-ci`:
 `vip-go-ci` has support for a number of other features in addition to the above, such as:
 * Publishing a <a href="#setting-github-build-status">GitHub build status</a>.
 * Automatic submission of <a href="#general-support-messages">support messages to pull requests</a>.
-* Auto approval of files via <a href="#hashes-api">Hashes API</a>.
 * Dismissing <a href="#dismissing-stale-reviews">stale reviews</a>.
 * Logging messages to a <a href="#irc-support">IRC gateway</a>.
 
@@ -495,7 +494,7 @@ With this setting, any PHP files having only whitespacing changes or updating to
 
 Note also that if set up to auto-approve, and the Hases API feature (see below) is configured, it will be utilised.
 
-If _all_ files altered by a pull request have been found to be auto-approvable -- for example, by the non-functional changes or Hashes API --, the whole pull request will be approved automatically.
+If _all_ files altered by a pull request have been found to be auto-approvable -- for example, by the non-functional changes mechanism --, the whole pull request will be approved automatically.
 
 The following Autoapprovals-related options can be configured via repository config-file:
 
@@ -507,38 +506,6 @@ For instance:
 
 ```
 {"autoapprove": false, "autoapprove-php-nonfunctional-changes": false}
-```
-
-### Hashes API
-
-This feature is useful when you want to automatically approve pull requests containing PHP or JavaScript files that are already known to be good and are approved already, so no manual reviewing is needed. To make use of this feature, you will need a database of files already approved. You will also have to be using the auto-approvals feature. 
-
-The feature can be activated using the `--hashes-api` parameter and by specifying a HTTP API endpoint. For instance:
-
-> ./vip-go-ci.php --autoapprove=true --hashes-api=true --hashes-api-url=https://myservice.mycompany.is/wp-json/viphash/
-
-Configured this way, `vip-go-ci` will make HTTP API requests for any PHP or JavaScript file it sees being altered in pull requests it scans. The HTTP API requests would look like this:
-
-> https://myservice.mycompany.is/wp-json/viphash/v1/hashes/id/[HASH]
-
-where `[HASH]` is a SHA1 hash of a particular PHP or JavaScript file, after it all comments and whitespaces have been removed from them. `vip-go-ci` expects a JSON result like this from the HTTP API:
-
-```
-[{"status":"true"},{"status":"true"}]
-```
-
-The JSON result can contain other fields, but they are not used. Note that a single "false" status is enough to make sure a file is considered _not_ approved.
-
-An open-source tool to label files as approved or non-approved is available [here](https://github.com/Automattic/vip-hash/). It requires a HTTP API service that `vip-go-ci` communicates with as well.
-
-The following Hashes-API related option can be configured via repository config-file:
-
-#### Option `--hashes-api`
-
-Specifies if to check for approved files in Hashes-API. For instance:
-
-```
-{"hashes-api":true}
 ```
 
 ### Ignore certain branches
@@ -762,20 +729,13 @@ Start with preparing the `unittests.ini` file:
 
 Alter any options in the file as needed to match the setup of your system. Note that in some cases, you may have to use different PHP versions for PHPCS or the SVG scanner, than `vip-go-ci` itself.
 
-Note that some tests will require a GitHub token to submit POST/PUT requests to GitHub in order to complete, need access to the hashes-to-hashes database, or to a repo-meta API. 
+Note that some tests will require a GitHub token to submit POST/PUT requests to GitHub in order to complete, and some may need access to a repo-meta API. 
 
 To skip these tests, simply place an empty `unittests-secrets.ini` file in the root directory of `vip-go-ci` and skip the rest of this section. 
 
 To enable the testing of these, you need to set up a `unittests-secrets.ini` file in the root directory of `vip-go-ci`. This file should include the following fields:
 
 ```
-[auto-approvals-secrets]
-hashes-api-url=
-hashes-oauth-consumer-key=
-hashes-oauth-consumer-secret=
-hashes-oauth-token=
-hashes-oauth-token-secret=
-
 [git-secrets]
 github-token= ; Personal access token from GitHub
 team-slug=    ; Team slug to test if present, is a string.
