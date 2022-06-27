@@ -381,7 +381,6 @@ function vipgoci_report_create_scan_details_auto_approve_configuration(
 		array(
 			'autoapprove'                           => 'Auto-approvals enabled',
 			'autoapprove-php-nonfunctional-changes' => 'Non-functional changes auto-approved',
-			'hashes-api'                            => 'Auto-approval DB enabled',
 		) as $key => $value
 	) {
 		if (
