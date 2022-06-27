@@ -54,7 +54,6 @@ commit-test-svg-files-1=44ed02088a503d84522f6e9b40eb0788e0935c24
 commit-test-svg-files-2b=bc23e8530ad4881af447646c6e53f2acd1ef364d
 
 autoapprove-filetypes=txt,gif,jpg,png,md
-commit-test-ap-hashes-file-approved-1=3dc1135e4bc1dbc5c5a57cdf45c2ba2bd5690b51
 commit-test-ap-auto-approval-1=a96b12cc806fef600818085cf26dad61321ddc81
 pr-test-ap-auto-approval-1=40
 
