@@ -534,13 +534,7 @@ final class ApAutoApprovalTest extends TestCase {
 		);
 
 		$results = array(
-			'stats' => array(
-				VIPGOCI_STATS_HASHES_API => array(
-					$this->options['pr-test-ap-auto-approval-1'] => array(
-						'info' => 0
-					)
-				)
-			)
+			'stats' => array(),
 		);
 
 		vipgoci_unittests_output_suppress();
@@ -602,19 +596,10 @@ final class ApAutoApprovalTest extends TestCase {
 		);
 
 		$this->assertSame(
-			1,
-			$results['stats']
-				[ VIPGOCI_STATS_HASHES_API ]
-				[ $this->options['pr-test-ap-auto-approval-1'] ]
-				[ 'info' ]
-		);
-
-		$this->assertSame(
-			'file-1.php',
-			$results['issues']
-				[ $this->options['pr-test-ap-auto-approval-1'] ]
-				[ 0 ]
-				['file_name']
+			array(
+				'stats' => array(),
+			),
+			$results
 		);
 	}
 
@@ -693,13 +678,7 @@ final class ApAutoApprovalTest extends TestCase {
 		);
 		
 		$results = array(
-			'stats' => array(
-				VIPGOCI_STATS_HASHES_API => array(
-					$this->options['pr-test-ap-auto-approval-1'] => array(
-						'info' => 0
-					)
-				)
-			)
+			'stats' => array(),
 		);
 
 		vipgoci_unittests_output_suppress();
