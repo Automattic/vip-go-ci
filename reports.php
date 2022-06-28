@@ -659,15 +659,14 @@ function vipgoci_report_submit_pr_generic_comment_from_results(
 			'comments';
 
 		/*
-		 * Arrays for postfields. One for PHP lint
-		 * results, one for WPScan API results.
+		 * Array for postfields; one key/value for PHP lint
+		 * results, two for WPScan API results
+		 * (plugins and themes).
 		 */
-		$lint_result_postfields = array(
-			'body' => '',
-		);
-
-		$wpscan_result_postfields = array(
-			'body' => '',
+		$postfields_bodies = array(
+			'lint_body'               => '',
+			'wpscan_api_plugins_body' => '',
+			'wpscan_api_themes_body'  => '',
 		);
 
 		/*
@@ -697,18 +696,18 @@ function vipgoci_report_submit_pr_generic_comment_from_results(
 				/*
 				 * Construct comment for PHP linting.
 				 */
-				if ( '' !== $lint_result_postfields['body'] ) {
+				if ( '' !== $postfields_bodies['lint_body'] ) {
 					/*
 					 * Put in linebreaks.
 					 */
-					$lint_result_postfields['body'] .= "\n\r";
+					$postfields_bodies['lint_body'] .= "\n\r";
 
 					vipgoci_markdown_comment_add_pagebreak(
-						$lint_result_postfields['body']
+						$postfields_bodies['lint_body']
 					);
 				}
 
-				$lint_result_postfields['body'] .=
+				$postfields_bodies['lint_body'] .=
 					vipgoci_lint_report_comment_format_result(
 						$repo_owner,
 						$repo_name,
@@ -720,20 +719,31 @@ function vipgoci_report_submit_pr_generic_comment_from_results(
 					);
 			} elseif ( VIPGOCI_STATS_WPSCAN_API === $commit_issue['type'] ) {
 				/*
+				 * Determine key based on addon_type;
+				 * either VIPGOCI_WPSCAN_PLUGIN or VIPGOCI_WPSCAN_THEME.
+				 */
+				if ( VIPGOCI_WPSCAN_PLUGIN === $commit_issue['issue']['addon_type'] ) {
+					$postfields_key = 'wpscan_api_plugins_body';
+				} elseif ( VIPGOCI_WPSCAN_THEME === $commit_issue['issue']['addon_type'] ) {
+					$postfields_key = 'wpscan_api_themes_body';
+				}
+
+				/*
 				 * Submit comment for WPScan API result.
 				 */
-				$wpscan_result_postfields['body'] .=
+				$postfields_bodies[ $postfields_key ] .=
 					vipgoci_wpscan_report_comment_format_result(
 						$repo_owner,
 						$repo_name,
 						$commit_id,
 						$commit_issue['file_name'],
 						$commit_issue['file_line'],
-						$commit_issue['issue']
+						$commit_issue['issue'],
+						$commit_issue['issue']['addon_type']
 					);
 
 				vipgoci_markdown_comment_add_pagebreak(
-					$wpscan_result_postfields['body']
+					$postfields_bodies[ $postfields_key ]
 				);
 			}
 		}
@@ -744,16 +754,13 @@ function vipgoci_report_submit_pr_generic_comment_from_results(
 		 * GitHub API.
 		 */
 		foreach (
-			array(
-				'lint'       => &$lint_result_postfields,
-				'wpscan_api' => &$wpscan_result_postfields,
-			) as $result_type => &$github_postfields
+			array_keys( $postfields_bodies ) as $key
 		) {
-			if ( '' === $github_postfields['body'] ) {
+			if ( '' === $postfields_bodies[ $key ] ) {
 				continue;
 			}
 
-			if ( 'lint' === $result_type ) {
+			if ( 'lint_body' === $key ) {
 				$postfields_body_start = vipgoci_lint_report_comment_start(
 					$repo_owner,
 					$repo_name,
@@ -761,19 +768,32 @@ function vipgoci_report_submit_pr_generic_comment_from_results(
 				);
 
 				$postfields_body_end = '';
-			} elseif ( 'wpscan_api' === $result_type ) {
-				$postfields_body_start = vipgoci_wpscan_report_start();
+			} elseif ( 'wpscan_api_plugins_body' === $key ) {
+				$postfields_body_start = vipgoci_wpscan_report_start(
+					VIPGOCI_WPSCAN_PLUGIN
+				);
 
-				$postfields_body_end = vipgoci_wpscan_report_end();
+				$postfields_body_end = vipgoci_wpscan_report_end(
+					VIPGOCI_WPSCAN_PLUGIN
+				);
+			} elseif ( 'wpscan_api_themes_body' === $key ) {
+				$postfields_body_start = vipgoci_wpscan_report_start(
+					VIPGOCI_WPSCAN_THEME
+				);
+
+				$postfields_body_end = vipgoci_wpscan_report_end(
+					VIPGOCI_WPSCAN_THEME
+				);
 			}
 
 			/*
-			 * Construct postfield body.
+			 * Construct final postfield body.
 			 */
-			$github_postfields['body'] =
-				$postfields_body_start .
-				$github_postfields['body'] .
-				$postfields_body_end;
+			$github_postfields = array(
+				'body' => $postfields_body_start .
+					$postfields_bodies[ $key ] .
+					$postfields_body_end,
+			);
 
 			unset( $postfields_body_start );
 			unset( $postfields_body_end );
