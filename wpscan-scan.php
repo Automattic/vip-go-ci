@@ -328,11 +328,6 @@ function vipgoci_wpscan_scan_save_for_submission(
 		$problematic_addons_found as
 			$dir_with_problem_addons => $problem_addon_files
 	) {
-		// Get array of file-names which are vulnerable/obsolete.
-		$problem_addon_file_names = array_keys(
-			$problem_addon_files
-		);
-
 		// Loop through each file.
 		foreach (
 			$problem_addon_files as
