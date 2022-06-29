@@ -40,7 +40,7 @@ final class WpscanReportStartTest extends TestCase {
 	public function testWpscanReportStartPlugin(): void {
 		$report_start = vipgoci_wpscan_report_start(
 			VIPGOCI_WPSCAN_PLUGIN
-		);		
+		);
 
 		$this->assertStringContainsString(
 			VIPGOCI_WPSCAN_API_ERROR,
@@ -74,7 +74,7 @@ final class WpscanReportStartTest extends TestCase {
 	public function testWpscanReportStartTheme(): void {
 		$report_start = vipgoci_wpscan_report_start(
 			VIPGOCI_WPSCAN_THEME
-		);		
+		);
 
 		$this->assertStringContainsString(
 			VIPGOCI_WPSCAN_API_ERROR,
