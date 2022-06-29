@@ -117,7 +117,7 @@ function vipgoci_wpscan_filter_fixed_vulnerabilities(
 			return version_compare(
 				$version_number,
 				$vuln_item['fixed_in'],
-				'<='
+				'<'
 			);
 		}
 	);
