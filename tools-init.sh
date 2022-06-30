@@ -7,28 +7,32 @@
 #
 
 # https://github.com/squizlabs/PHP_CodeSniffer/releases
-export PHP_CODESNIFFER_VER="3.6.2"
-export PHP_CODESNIFFER_SHA1SUM="e3fe7a4251223db0bff2ec66974346777129952f"
+export PHP_CODESNIFFER_VER="3.7.1"
+export PHP_CODESNIFFER_SHA1SUM="ca1bd8bc97fede23155b83029d174079c3905014"
 
 # https://github.com/WordPress/WordPress-Coding-Standards/releases
 export WP_CODING_STANDARDS_VER="2.3.0"
-export WP_CODING_STANDARDS_SHA1SUM="c8161d77fcf63bdeaa3e8e6aa36bc1936b469070";
+export WP_CODING_STANDARDS_SHA1SUM="c8161d77fcf63bdeaa3e8e6aa36bc1936b469070"
 
 # https://github.com/automattic/vip-coding-standards/releases
 export VIP_CODING_STANDARDS_VER="2.3.3"
-export VIP_CODING_STANDARDS_SHA1SUM="44c6519c628d450be5330b2706ae9dbb09dbd6be";
+export VIP_CODING_STANDARDS_SHA1SUM="44c6519c628d450be5330b2706ae9dbb09dbd6be"
 
 # https://github.com/sirbrillig/phpcs-variable-analysis/releases
 export PHPCS_VARIABLE_ANALYSIS_VER="2.11.3"
 export PHPCS_VARIABLE_ANALYSIS_SHA1SUM="4468db94e39598e616c113a658a69a6265da05d2"
 
 # https://github.com/phpcompatibility/phpcompatibility/releases
-export PHP_COMPATIBILITY_VER="9.3.5"
-export PHP_COMPATIBILITY_SHA1SUM="880d017ff6c3b64fda2c569bc79e589cc405e9b8";
+export PHP_COMPATIBILITY_VER="c23e20c0aaa5c527fd7b3fbef38c50c458bb47f1" # Using develop branch.
+export PHP_COMPATIBILITY_SHA1SUM="3787a3f86edbfbc4881d2b123f17ca1e1bcbeb66"
 
 # https://github.com/phpcompatibility/phpcompatibilitywp/releases
 export PHP_COMPATIBILITY_WP_VER="2.1.3"
 export PHP_COMPATIBILITY_WP_SHA1SUM="671eb42d7a20008e9259755a72c28c94c0d04e9f"
+
+# https://github.com/PHPCSStandards/PHPCSUtils/releases
+export PHPCS_UTILS_VER="b65fbd47c38202a667ea3930a4a51c5c8b9ca434" # Using develop branch.
+export PHPCS_UTILS_SHA1SUM="bc3309c56747e4c2ee165fa4b1ba2bf994e78570"
 
 # https://github.com/phpcompatibility/phpcompatibilityparagonie/releases
 export PHP_COMPATIBILITY_PARAGONIE_VER="1.3.1"
@@ -211,6 +215,12 @@ else
 	mv PHPCompatibilityParagonie-$PHP_COMPATIBILITY_PARAGONIE_VER/PHPCompatibilityParagonie* phpcs/src/Standards/ && \
 	touch $TMP_FOLDER/php-compatibility-paragonie-$PHP_COMPATIBILITY_PARAGONIE_VER.txt && \
 	rm -f "$PHP_COMPATIBILITY_PARAGONIE_VER.tar.gz" && \
+	wget "https://github.com/PHPCSStandards/PHPCSUtils/archive/$PHPCS_UTILS_VER.tar.gz" && \
+	sha1sum_check "$PHPCS_UTILS_VER.tar.gz" "$PHPCS_UTILS_SHA1SUM" && \
+	tar -zxvf "$PHPCS_UTILS_VER.tar.gz" && \
+	mv PHPCSUtils-$PHPCS_UTILS_VER/PHPCS* PHPCSUtils-$PHPCS_UTILS_VER/phpcsutils-autoload.php phpcs/src/Standards/ && \
+	touch $TMP_FOLDER/phpcs-utils-$PHPCS_UTILS_VER.txt && \
+	rm -f "$PHPCS_UTILS_VER.tar.gz" && \
 	wget "https://github.com/Automattic/vip-go-svg-sanitizer/archive/$VIP_GO_SVG_SANITIZER_VER.tar.gz" && \
 	sha1sum_check "$VIP_GO_SVG_SANITIZER_VER.tar.gz" "$VIP_GO_SVG_SANITIZER_SHA1SUM" && \
 	tar -zxvf "$VIP_GO_SVG_SANITIZER_VER.tar.gz" && \
