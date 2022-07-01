@@ -318,14 +318,14 @@ function vipgoci_github_prs_urls_get(
  * each pull request implicated by the commit. Will also include list
  * of all files affected.
  *
- * @param array  $options                 Options array for the program.
- * @param string $commit_id               Commit-ID of current commit.
- * @param array  $commit_skipped_files    Information about skipped files (reference).
- * @param array  $skip_folders            Directories not to scan.
- * @param bool   $renamed_files_also      If to include renamed files in results.
- * @param bool   $removed_files_also      If to include removed files in results.
- * @param bool   $permission_changes_also If to include files whose permissions were changed in results.
- * @param bool   $always_define_pr_number When true, will define array-key for a pull request in results even when no files are placed in it.
+ * @param array      $options                 Options array for the program.
+ * @param string     $commit_id               Commit-ID of current commit.
+ * @param array      $commit_skipped_files    Information about skipped files (reference).
+ * @param bool       $renamed_files_also      If to include renamed files in results.
+ * @param bool       $removed_files_also      If to include removed files in results.
+ * @param bool       $permission_changes_also If to include files whose permissions were changed in results.
+ * @param null|array $filter                  Filter to apply.
+ * @param bool       $always_define_pr_number When true, will define array-key for a pull request in results even when no files are placed in the value.
  *
  * @return array Returns associative array with key as pull request number and value as array of affected files. Includes special key 'all' which includes all files altered by all pull requests. Example:
  *  Array(
@@ -348,9 +348,9 @@ function vipgoci_github_files_affected_by_commit(
 	array $options,
 	string $commit_id,
 	array &$commit_skipped_files,
-        bool $renamed_files_also = false,
-        bool $removed_files_also = true,
-        bool $permission_changes_also = false,
+	bool $renamed_files_also = false,
+	bool $removed_files_also = true,
+	bool $permission_changes_also = false,
 	array $filter = null,
 	bool $always_define_pr_number = true
 ) :array {
