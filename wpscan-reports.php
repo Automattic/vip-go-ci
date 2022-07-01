@@ -22,6 +22,7 @@ function vipgoci_wpscan_report_start(
 	} elseif ( VIPGOCI_WPSCAN_THEME === $issue_type ) {
 		$comment_type = 'theme';
 	}
+	// @todo: sysexit
 
 	$comment_start =
 		'# ' . VIPGOCI_WPSCAN_API_ERROR .
@@ -51,6 +52,7 @@ function vipgoci_wpscan_report_end(
 	} elseif ( VIPGOCI_WPSCAN_THEME === $issue_type ) {
 		$comment_type = 'theme';
 	}
+	// @todo: sysexit
 
 	return '##### Incorrect ' . $comment_type . 's? [Learn how to prevent false-positive matches.](https://docs.wpvip.com/technical-references/codebase-manager/#h-preventing-false-positive-plugin-matches)' . // @todo: Should be configurable.
 		"\n\r";
@@ -86,6 +88,7 @@ function vipgoci_wpscan_report_comment_format_result(
 	} elseif ( VIPGOCI_WPSCAN_VULNERABLE === $issue['security'] ) {
 		$res .= 'Vulnerable';
 	}
+	// @todo: sysexit
 
 	// Type of addon.
 	if ( VIPGOCI_WPSCAN_PLUGIN === $issue_type ) {
@@ -97,6 +100,7 @@ function vipgoci_wpscan_report_comment_format_result(
 			'**Theme Name**: ' . vipgoci_output_html_escape( $issue['message'] ) . "\n" .
 			'**Theme URI**: ' . vipgoci_output_html_escape( $issue['details']['theme_uri'] ) . "\n";
 	}
+	// @todo: sysexit
 
 	$res .=
 		// @todo: Add link to file and line.
