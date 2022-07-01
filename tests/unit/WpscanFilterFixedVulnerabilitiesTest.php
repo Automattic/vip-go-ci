@@ -34,7 +34,7 @@ final class WpscanFilterFixedVulnerabilitiesTest extends TestCase {
 	 *
 	 * @return void
 	 */
-	public function testFilterFixedVulnerabilities(): void {
+	public function testFilterFixedVulnerabilitiesCommonUsage(): void {
 		// Unfiltered results.
 		$results_unfiltered = array(
 			'my-plugin' => array(
@@ -117,6 +117,27 @@ final class WpscanFilterFixedVulnerabilitiesTest extends TestCase {
 		// Assert if the results are same as the expected ones.
 		$this->assertSame(
 			$results_expected,
+			$results_filtered
+		);
+	}
+
+	/**
+	 * Test invalid usage of the function.
+	 *
+	 * @covers ::vipgoci_wpscan_filter_fixed_vulnerabilities
+	 *
+	 * @return void
+	 */
+	public function testFilterFixedVulnerabilitiesInvalidUsage(): void {
+		// Filter results.
+		$results_filtered = vipgoci_wpscan_filter_fixed_vulnerabilities(
+			'my-plugin',
+			'1.0.0',
+			array() // Invalid parameter.
+		);
+
+		// Assert if null is returned.
+		$this->assertNull(
 			$results_filtered
 		);
 	}
