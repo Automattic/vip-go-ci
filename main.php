@@ -2167,6 +2167,11 @@ function vipgoci_run_init_options_repo_options( array &$options ):void {
 			'type'         => 'boolean',
 			'valid_values' => array( true, false ),
 		),
+
+		'wpscan-api'                            => array(
+			'type'         => 'boolean',
+			'valid_values' => array( true, false ),
+		),
 	);
 
 	/*
