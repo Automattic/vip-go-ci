@@ -30,7 +30,13 @@ function vipgoci_wpscan_find_addon_dirs_altered(
 		$options,
 		$options['commit'],
 		$commit_skipped_files,
-		$options['wpscan-api-skip-folders']
+		true,
+		true,
+		true,
+		array(
+			'skip_folders' => $options['wpscan-api-skip-folders'],
+		),
+		false
 	);
 
 	if ( empty( $files_affected_by_commit_by_pr['all'] ) ) {
@@ -317,7 +323,13 @@ function vipgoci_wpscan_scan_save_for_submission(
 		$options,
 		$options['commit'],
 		$commit_skipped_files,
-		$options['wpscan-api-skip-folders']
+		true,
+		true,
+		true,
+		array(
+			'skip_folders' => $options['wpscan-api-skip-folders'],
+		),
+		false
 	);
 
 	/*
