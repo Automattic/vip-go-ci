@@ -25,8 +25,10 @@ final class GitHubFilesAffectedByCommitTest extends TestCase {
 	 */
 	private array $options_git_repo_tests = array(
 		'commit-test-github-files-affected-by-commit-2' => null,
+		'commit-test-github-files-affected-by-commit-4' => null,
 		'pr-test-github-files-affected-by-commit-a'     => null,
 		'pr-test-github-files-affected-by-commit-b'     => null,
+		'pr-test-github-files-affected-by-commit-c'     => null,
 	);
 
 	/**
@@ -86,8 +88,6 @@ final class GitHubFilesAffectedByCommitTest extends TestCase {
 
 		$this->options['skip-draft-prs'] = false;
 
-		$this->options['commit'] = $this->options['commit-test-github-files-affected-by-commit-2'];
-
 		$this->options['local-git-repo'] = false;
 	}
 
@@ -109,13 +109,16 @@ final class GitHubFilesAffectedByCommitTest extends TestCase {
 	}
 
 	/**
-	 * Test common usage of the function.
+	 * Test simple usage of the function.
+	 *
+	 * Test usage with no filter applied, and all
+	 * pull request IDs present in results.
 	 *
 	 * @covers ::vipgoci_github_files_affected_by_commit
 	 *
 	 * @return void
 	 */
-	public function testGitHubFilesAffectedByCommit(): void {
+	public function testGitHubFilesAffectedByCommitSimple(): void {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
@@ -125,6 +128,8 @@ final class GitHubFilesAffectedByCommitTest extends TestCase {
 		if ( -1 === $options_test ) {
 			return;
 		}
+
+		$this->options['commit'] = $this->options['commit-test-github-files-affected-by-commit-2'];
 
 		vipgoci_unittests_output_suppress();
 
@@ -142,22 +147,22 @@ final class GitHubFilesAffectedByCommitTest extends TestCase {
 			return;
 		}
 
-		$commit_skipped_files = array();
+		$commit_skipped_files = array(); // No skipped files.
 
 		$files_affected_by_pr = vipgoci_github_files_affected_by_commit(
 			$this->options,
 			$this->options['commit'],
-			$commit_skipped_files,
+			$commit_skipped_files, // Reference.
 			true,
 			true,
 			true,
-			array()
+			null, // No filter.
+			true // Include all pull request IDs in results.
 		);
 
 		vipgoci_unittests_output_unsuppress();
 
 		$this->assertSame(
-			$files_affected_by_pr,
 			array(
 				'all' => array(
 					0 => 'README.md',
@@ -171,7 +176,282 @@ final class GitHubFilesAffectedByCommitTest extends TestCase {
 					0 => 'README.md',
 				),
 			),
+			$files_affected_by_pr
 		);
 	}
-}
 
+	/**
+	 * Test usage with filter applied, do not ask
+	 * for all pull request IDs to be present.
+	 *
+	 * @covers ::vipgoci_github_files_affected_by_commit
+	 *
+	 * @return void
+	 */
+	public function testGitHubFilesAffectedByCommitWithFilter1(): void {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( 'github-token', 'token' ),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
+		$this->options['commit'] = $this->options['commit-test-github-files-affected-by-commit-2'];
+
+		vipgoci_unittests_output_suppress();
+
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped(
+				'Could not set up git repository: ' .
+					vipgoci_unittests_output_get()
+			);
+
+			return;
+		}
+
+		$commit_skipped_files = array(); // No skipped files.
+
+		$files_affected_by_pr = vipgoci_github_files_affected_by_commit(
+			$this->options,
+			$this->options['commit'],
+			$commit_skipped_files, // Reference.
+			true,
+			true,
+			true,
+			array(
+				'file_extensions' => array( 'php' ), // Filter applied.
+			),
+			false // Do not define all pull request IDs.
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		$this->assertSame(
+			array(
+				'all' => array(
+					0 => 'tests1/some_phpcs_issues.php',
+				),
+				$this->options['pr-test-github-files-affected-by-commit-b'] => array(
+					0 => 'tests1/some_phpcs_issues.php',
+				),
+			),
+			$files_affected_by_pr
+		);
+	}
+
+	/**
+	 * Test usage with filter applied and ask for all
+	 * pull request IDs to be present in results.
+	 *
+	 * @covers ::vipgoci_github_files_affected_by_commit
+	 *
+	 * @return void
+	 */
+	public function testGitHubFilesAffectedByCommitWithFilter2(): void {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( 'github-token', 'token' ),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
+		$this->options['commit'] = $this->options['commit-test-github-files-affected-by-commit-2'];
+
+		vipgoci_unittests_output_suppress();
+
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped(
+				'Could not set up git repository: ' .
+					vipgoci_unittests_output_get()
+			);
+
+			return;
+		}
+
+		$commit_skipped_files = array(); // No skipped files.
+
+		$files_affected_by_pr = vipgoci_github_files_affected_by_commit(
+			$this->options,
+			$this->options['commit'],
+			$commit_skipped_files, // Reference.
+			true,
+			true,
+			true,
+			array(
+				'file_extensions' => array( 'php' ), // Filter applied.
+			),
+			true // All pull request IDs to be present.
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		$this->assertSame(
+			array(
+				'all' => array(
+					0 => 'tests1/some_phpcs_issues.php',
+				),
+				$this->options['pr-test-github-files-affected-by-commit-b'] => array(
+					0 => 'tests1/some_phpcs_issues.php',
+				),
+				$this->options['pr-test-github-files-affected-by-commit-a'] => array(),
+			),
+			$files_affected_by_pr,
+		);
+	}
+
+	/**
+	 * Test usage with no filter applied, and a file
+	 * that should be skipped due to length.
+	 *
+	 * @covers ::vipgoci_github_files_affected_by_commit
+	 *
+	 * @return void
+	 */
+	public function testGitHubFilesAffectedByCommitWithSkippedFile(): void {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( 'github-token', 'token' ),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
+		$this->options['commit'] = $this->options['commit-test-github-files-affected-by-commit-2'];
+
+		vipgoci_unittests_output_suppress();
+
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped(
+				'Could not set up git repository: ' .
+					vipgoci_unittests_output_get()
+			);
+
+			return;
+		}
+
+		// File to be skipped.
+		$commit_skipped_files = array(
+			$this->options['pr-test-github-files-affected-by-commit-a'] => array(
+				'issues' => array(
+					VIPGOCI_VALIDATION_MAXIMUM_LINES => array(
+						'README.md',
+					),
+				),
+			),
+		);
+
+		$files_affected_by_pr = vipgoci_github_files_affected_by_commit(
+			$this->options,
+			$this->options['commit'],
+			$commit_skipped_files, // Reference.
+			true,
+			true,
+			true,
+			array(), // No filter applied.
+			true // All pull request IDs should be present in results.
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		$this->assertSame(
+			array(
+				'all' => array(
+					0 => 'README.md',
+					1 => 'tests1/some_phpcs_issues.php',
+				),
+				$this->options['pr-test-github-files-affected-by-commit-b'] => array(
+					0 => 'README.md',
+					1 => 'tests1/some_phpcs_issues.php',
+				),
+				$this->options['pr-test-github-files-affected-by-commit-a'] => array(),
+			),
+			$files_affected_by_pr
+		);
+	}
+
+	/**
+	 * Test usage with no filter applied, without removed
+	 * files included in results, and all pull request IDs present
+	 * in results.
+	 *
+	 * @covers ::vipgoci_github_files_affected_by_commit
+	 *
+	 * @return void
+	 */
+	public function testGitHubFilesAffectedByCommitWithoutRemovedFiles(): void {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( 'github-token', 'token' ),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
+		$this->options['commit'] = $this->options['commit-test-github-files-affected-by-commit-4'];
+
+		vipgoci_unittests_output_suppress();
+
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped(
+				'Could not set up git repository: ' .
+					vipgoci_unittests_output_get()
+			);
+
+			return;
+		}
+
+		$commit_skipped_files = array(); // No skipped files.
+
+		$files_affected_by_pr = vipgoci_github_files_affected_by_commit(
+			$this->options,
+			$this->options['commit'],
+			$commit_skipped_files, // Reference.
+			true,
+			false, // No removed files.
+			true,
+			array(), // No filter.
+			true // All pull request IDs should be present in results.
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		$this->assertSame(
+			array(
+				'all' => array(),
+				$this->options['pr-test-github-files-affected-by-commit-c'] => array(),
+			),
+			$files_affected_by_pr
+		);
+	}
+
+}
