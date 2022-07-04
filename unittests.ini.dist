@@ -121,6 +121,3 @@ commit-test-options-read-repo-file-with-file-2=fe24a89ee9e9184681c6482ca60af57cc
 commit-test-options-read-repo-file-with-file-3=1615b03f6997878feb1a25926631c4165e2efeec
 commit-test-options-read-repo-file-with-file-5=9a13bbec0cc2c7557539076f0125cc396fab22c1
 
-[repo-meta-api]
-commit-support-level-set-test=4e56c433e2e7c0de62e333cdf719949ea0a1ccb5
-
