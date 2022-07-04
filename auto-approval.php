@@ -96,116 +96,6 @@ function vipgoci_auto_approval_non_approval(
 	}
 
 	/*
-	 * Loop through approved PHP and JS files,
-	 * adding comment for each about it
-	 * being approved in the hashes-to-hashes API.
-	 */
-	foreach (
-		$auto_approved_files_arr as
-			$approved_file => $approved_file_system
-	) {
-		/*
-		 * Make sure that the file was
-		 * really altered in the pull request;
-		 * this is to avoid any errors when
-		 * submitting inline comments.
-		 */
-		if ( in_array(
-			$approved_file,
-			$pr_files_changed,
-			true
-		) === false ) {
-			vipgoci_log(
-				'Not adding auto-approved in hashes-api ' .
-				'database to results for file, as it ' .
-				'was not altered by the pull request',
-				array(
-					'pr_number'        => $pr_item->number,
-					'file_name'        => $approved_file,
-					'pr_files_changed' => $pr_files_changed,
-				)
-			);
-
-			continue;
-		}
-
-		if (
-			'autoapprove-hashes-to-hashes' !==
-				$approved_file_system
-		) {
-			/*
-			 * If not autoapproved by hashes-to-hashes,
-			 * do not comment on it. Only PHP and JS files
-			 * are auto-approved by hashes-to-hashes.
-			 */
-			continue;
-		}
-
-		$results['issues'][ (int) $pr_item->number ][] = array(
-			'type'      => VIPGOCI_STATS_HASHES_API,
-			'file_name' => $approved_file,
-			'file_line' => 1,
-			'issue'     => array(
-				'message'  => VIPGOCI_FILE_IS_APPROVED_MSG,
-				'source'   => 'VipgociInternal.Info.ApprovedHashesToHashesAPI',
-				'severity' => 1,
-				'fixable'  => false,
-				'type'     => 'INFO',
-				'line'     => 1,
-				'column'   => 1,
-				'level'    => 'INFO',
-			),
-		);
-
-		$results['stats'][ VIPGOCI_STATS_HASHES_API ][ (int) $pr_item->number ]['info']++;
-	}
-
-	/*
-	 * Remove any 'file is approved in ...' comments,
-	 * but only for files that are no longer approved.
-	 */
-	vipgoci_log(
-		'Removing any comments indicating a file is approved ' .
-			'for files that are not approved anymore',
-		array(
-			'pr_number' => $pr_item->number,
-		)
-	);
-
-	$pr_comments = vipgoci_github_pr_reviews_comments_get_by_pr(
-		$options,
-		$pr_item->number,
-		array(
-			'login' => 'myself',
-		)
-	);
-
-	foreach ( $pr_comments as $pr_comment_item ) {
-		/*
-		 * Skip approved files.
-		 */
-		if ( isset(
-			$auto_approved_files_arr[ $pr_comment_item->path ]
-		) ) {
-			continue;
-		}
-
-		/*
-		 * If we find the 'approved in hashes-to-hashes ...'
-		 * message, we can safely remove the comment.
-		 */
-		if ( false !== strpos(
-			$pr_comment_item->body,
-			VIPGOCI_FILE_IS_APPROVED_MSG
-		) ) {
-			vipgoci_github_pr_reviews_comments_delete(
-				$options,
-				$pr_comment_item->id
-			);
-		}
-	}
-
-	/*
 	 * Get any approving reviews for the pull request
 	 * submitted by us. Then dismiss them.
 	 */
@@ -333,13 +223,12 @@ function vipgoci_autoapproval_do_approve(
 			$options['commit'],
 			'Auto-approved pull request #' .
 				(int) $pr_item->number . ' as it ' .
-				'contains only auto-approvable files' .
-				' -- either pre-approved files' .
+				'contains only auto-approvable files -- ' .
 				(
 					true === $options['autoapprove-php-nonfunctional-changes'] ?
-					', non-functional changes to PHP files ' : ''
+					'non-functional changes to PHP files or ' : ''
 				) .
-				' _or_ file-types that are ' .
+				'file-types that are ' .
 				'auto-approvable (' .
 				implode(
 					', ',
@@ -403,46 +292,6 @@ function vipgoci_autoapproval_do_approve(
 				'label_name' => $options['autoapprove-label'],
 			)
 		);
-	}
-
-	/*
-	 * Remove any comments indicating that a file is
-	 * approved -- we want to get rid of these, as they
-	 * are useless to reviewers at this point. The PR is
-	 * approved anyway.
-	 */
-	vipgoci_log(
-		'Removing any previously submitted comments ' .
-			'indicating that a particular file ' .
-			'is approved as the whole ' .
-			'pull request is approved',
-		array(
-			'pr_number' => $pr_item->number,
-		)
-	);
-
-	$pr_comments = vipgoci_github_pr_reviews_comments_get_by_pr(
-		$options,
-		$pr_item->number,
-		array(
-			'login' => 'myself',
-		)
-	);
-
-	foreach ( $pr_comments as $pr_comment_item ) {
-		/*
-		 * If we find the 'approved in hashes-to-hashes ...'
-		 * message, we can safely remove the comment.
-		 */
-		if ( false !== strpos(
-			$pr_comment_item->body,
-			rtrim( VIPGOCI_FILE_IS_APPROVED_MSG, '.' )
-		) ) {
-			vipgoci_github_pr_reviews_comments_delete(
-				$options,
-				$pr_comment_item->id
-			);
-		}
 	}
 
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'vipgoci_autoapproval_do_approve' );
@@ -650,21 +499,6 @@ function vipgoci_auto_approval_process(
 		);
 	}
 
-	/*
-	 * Do scanning of all altered files, using
-	 * the hashes-to-hashes database API, collecting
-	 * which files can be auto-approved.
-	 */
-
-	if ( true === $options['hashes-api'] ) {
-		vipgoci_ap_hashes_api_scan_commit(
-			$options,
-			$results['issues'],
-			$results['stats'][ VIPGOCI_STATS_HASHES_API ],
-			$auto_approved_files_arr
-		);
-	}
-
 	// If set to true, any SVG files without issues is auto-approved.
 	if ( true === $options['svg-checks'] ) {
 		vipgoci_ap_svg_files(
@@ -682,7 +516,7 @@ function vipgoci_auto_approval_process(
 
 	/*
 	 * Remove issues from $results for files
-	 * that are approved in hashes-to-hashes API.
+	 * that are approved.
 	 */
 	vipgoci_results_approved_files_comments_remove(
 		$options,
