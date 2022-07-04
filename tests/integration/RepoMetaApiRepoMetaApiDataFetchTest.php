@@ -73,6 +73,8 @@ final class RepoMetaApiRepoMetaApiDataFetchTest extends TestCase {
 	/**
 	 * Test common usage of the function.
 	 *
+	 * @return void
+	 *
 	 * @covers ::vipgoci_repo_meta_api_data_fetch
 	 */
 	public function testMetaApiDataFetch() :void {
