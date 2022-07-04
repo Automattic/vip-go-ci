@@ -203,12 +203,6 @@ function vipgoci_help_print() :void {
 		"\t" . '                                                           matches the criteria specified here.' . PHP_EOL .
 		"\t" . '                                                           See README.md for usage.' . PHP_EOL .
 		PHP_EOL .
-		'Support level configuration:' . PHP_EOL .
-		"\t" . '--set-support-level-label=BOOL       Whether to attach support level labels to pull requests.' . PHP_EOL .
-		"\t" . '                                     Will fetch information on support levels from repo-meta API.' . PHP_EOL .
-		"\t" . '--set-support-level-label-prefix=STRING    Prefix to use for support level labels. Should be longer than five letters.' . PHP_EOL .
-		"\t" . '--set-support-level-field=STRING     Field in responses from repo-meta API which we use to extract support level.' . PHP_EOL .
-		PHP_EOL .
 		'Repo meta API configuration:' . PHP_EOL .
 		"\t" . '--repo-meta-api-base-url=STRING      Base URL to repo-meta API, containing support level and other' . PHP_EOL .
 		"\t" . '                                     information.' . PHP_EOL .
@@ -331,13 +325,6 @@ function vipgoci_options_recognized() :array {
 		'post-generic-pr-support-comments-skip-if-label-exists:',
 		'post-generic-pr-support-comments-branches:',
 		'post-generic-pr-support-comments-repo-meta-match:',
-
-		/*
-		 * Support level configuration
-		 */
-		'set-support-level-label:',
-		'set-support-level-label-prefix:',
-		'set-support-level-field:',
 
 		/*
 		 * Repo meta API configuration.
@@ -1674,50 +1661,6 @@ function vipgoci_run_cleanup_irc( array &$options ) :void {
 }
 
 /**
- * Set support level label options.
- *
- * @param array $options Array of options.
- *
- * @return void
- */
-function vipgoci_run_init_options_set_support_level_label(
-	array &$options
-) :void {
-	/*
-	 * Handle option for setting support
-	 * labels. Handle prefix and field too.
-	 */
-
-	vipgoci_option_bool_handle(
-		$options,
-		'set-support-level-label',
-		'false'
-	);
-
-	if (
-		( isset( $options['set-support-level-label-prefix'] ) ) &&
-		( strlen( $options['set-support-level-label-prefix'] ) > 5 )
-	) {
-		$options['set-support-level-label-prefix'] = trim(
-			$options['set-support-level-label-prefix']
-		);
-	} else {
-		$options['set-support-level-label-prefix'] = null;
-	}
-
-	if (
-		( isset( $options['set-support-level-field'] ) ) &&
-		( strlen( $options['set-support-level-field'] ) > 1 )
-	) {
-		$options['set-support-level-field'] = trim(
-			$options['set-support-level-field']
-		);
-	} else {
-		$options['set-support-level-field'] = null;
-	}
-}
-
-/**
  * Set repo-meta API options.
  *
  * @param array $options Array of options.
@@ -2105,9 +2048,6 @@ function vipgoci_run_init_options(
 
 	// Set options relating to generic PR support comments.
 	vipgoci_run_init_options_post_generic_pr_support_comments( $options );
-
-	// Set options relating to support level labels.
-	vipgoci_run_init_options_set_support_level_label( $options );
 
 	// Set options relating to the repo-meta API.
 	vipgoci_run_init_options_repo_meta_api( $options );
@@ -2730,13 +2670,6 @@ function vipgoci_run_scan(
 		$options,
 		$prs_implicated
 	);
-
-	/*
-	 * Add support level label, if:
-	 * - configured to do so
-	 * - data is available in repo-meta API
-	 */
-	vipgoci_support_level_label_set( $options );
 
 	if ( true === $options['phpcs'] ) {
 		/*
