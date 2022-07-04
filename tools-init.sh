@@ -11,46 +11,55 @@ set -e
 # https://github.com/squizlabs/PHP_CodeSniffer
 export PHP_CODESNIFFER_REPO="squizlabs/PHP_CodeSniffer"
 export PHP_CODESNIFFER_VER="3.7.1"
+export PHP_CODESNIFFER_VER_FILE="php-codesniffer-$PHP_CODESNIFFER_VER.txt"
 export PHP_CODESNIFFER_SHA1SUM="ca1bd8bc97fede23155b83029d174079c3905014"
 
 # https://github.com/WordPress/WordPress-Coding-Standards
 export WP_CODING_STANDARDS_REPO="WordPress/WordPress-Coding-Standards"
 export WP_CODING_STANDARDS_VER="2.3.0"
+export WP_CODING_STANDARDS_VER_FILE="wp-coding-standards-$WP_CODING_STANDARDS_VER.txt"
 export WP_CODING_STANDARDS_SHA1SUM="c8161d77fcf63bdeaa3e8e6aa36bc1936b469070"
 
 # https://github.com/automattic/vip-coding-standards
 export VIP_CODING_STANDARDS_REPO="automattic/vip-coding-standards"
 export VIP_CODING_STANDARDS_VER="2.3.3"
+export VIP_CODING_STANDARDS_VER_FILE="vip-coding-standards-$VIP_CODING_STANDARDS_VER.txt"
 export VIP_CODING_STANDARDS_SHA1SUM="44c6519c628d450be5330b2706ae9dbb09dbd6be"
 
 # https://github.com/sirbrillig/phpcs-variable-analysis
 export PHPCS_VARIABLE_ANALYSIS_REPO="sirbrillig/phpcs-variable-analysis"
 export PHPCS_VARIABLE_ANALYSIS_VER="v2.11.3"
+export PHPCS_VARIABLE_ANALYSIS_VER_FILE="phpcs-variable-analysis-$PHPCS_VARIABLE_ANALYSIS_VER.txt"
 export PHPCS_VARIABLE_ANALYSIS_SHA1SUM="4468db94e39598e616c113a658a69a6265da05d2"
 
 # https://github.com/phpcompatibility/phpcompatibility
 export PHP_COMPATIBILITY_REPO="phpcompatibility/phpcompatibility"
 export PHP_COMPATIBILITY_VER="c23e20c0aaa5c527fd7b3fbef38c50c458bb47f1" # Using develop branch.
+export PHP_COMPATIBILITY_VER_FILE="php-compatibility-$PHP_COMPATIBILITY_VER.txt"
 export PHP_COMPATIBILITY_SHA1SUM="3787a3f86edbfbc4881d2b123f17ca1e1bcbeb66"
 
 # https://github.com/phpcompatibility/phpcompatibilitywp
 export PHP_COMPATIBILITY_WP_REPO="phpcompatibility/phpcompatibilitywp"
 export PHP_COMPATIBILITY_WP_VER="2.1.3"
+export PHP_COMPATIBILITY_WP_VER_FILE="php-compatibility-wp-$PHP_COMPATIBILITY_WP_VER.txt"
 export PHP_COMPATIBILITY_WP_SHA1SUM="671eb42d7a20008e9259755a72c28c94c0d04e9f"
 
 # https://github.com/phpcompatibility/phpcompatibilityparagonie
 export PHP_COMPATIBILITY_PARAGONIE_REPO="phpcompatibility/phpcompatibilityparagonie"
 export PHP_COMPATIBILITY_PARAGONIE_VER="1.3.1"
+export PHP_COMPATIBILITY_PARAGONIE_VER_FILE="php-compatibility-paragonie-$PHP_COMPATIBILITY_PARAGONIE_VER.txt"
 export PHP_COMPATIBILITY_PARAGONIE_SHA1SUM="a51cf3a1af05e6192ce9db6fc90ccb7afd58cb22"
 
 # https://github.com/PHPCSStandards/PHPCSUtils
 export PHPCS_UTILS_REPO="PHPCSStandards/PHPCSUtils"
 export PHPCS_UTILS_VER="b65fbd47c38202a667ea3930a4a51c5c8b9ca434" # Using develop branch.
+export PHPCS_UTILS_VER_FILE="phpcs-utils-$PHPCS_UTILS_VER.txt"
 export PHPCS_UTILS_SHA1SUM="bc3309c56747e4c2ee165fa4b1ba2bf994e78570"
 
 # https://github.com/Automattic/vip-go-svg-sanitizer
 export VIP_GO_SVG_SANITIZER_REPO="Automattic/vip-go-svg-sanitizer"
 export VIP_GO_SVG_SANITIZER_VER="0.9.8"
+export VIP_GO_SVG_SANITIZER_VER_FILE="vip-go-svg-sanitizer-$VIP_GO_SVG_SANITIZER_VER.txt"
 export VIP_GO_SVG_SANITIZER_SHA1SUM="558f16dcff6adc4637c1d0287cc6f95fe9ab2ece"
 
 export TMP_LOCK_FILE="$HOME/.vip-go-ci-tools-init.lck"
@@ -87,9 +96,12 @@ function gh_fetch_and_verify() {
 	touch $VERSION_INDICATOR_FILE && \
 	rm -rf $TMP_FOR_ARCHIVE && \
 	popd && \
-	echo "$0: Fetched & verified for $GITHUB_OWNER_AND_REPO" ) \
+	echo "$0: Fetched & verified for $GITHUB_OWNER_AND_REPO" && \
+	return 0 ) \
 	|| \
-	( echo "$0: Problem fetching/verifying files for $GITHUB_OWNER_AND_REPO" ; exit 1 )
+	( echo "$0: Problem fetching/verifying files for $GITHUB_OWNER_AND_REPO" ; \
+	rm -rf "$TMP_FOR_ARCHIVE" ; \
+	return 1 )
 }
 
 function lock_place() {
@@ -175,7 +187,7 @@ if [ -d ~/vip-go-ci-tools ] ; then
 	export TMP_DO_DELETE="0"
 
 
-	for TMP_FILE in	"vip-coding-standards-$VIP_CODING_STANDARDS_VER.txt" "wp-coding-standards-$WP_CODING_STANDARDS_VER.txt" "php-codesniffer-$PHP_CODESNIFFER_VER.txt" "vip-go-ci-$VIP_GO_CI_VER.txt" "phpcs-variable-analysis-$PHPCS_VARIABLE_ANALYSIS_VER.txt" "php-compatibility-$PHP_COMPATIBILITY_VER.txt" "php-compatibility-wp-$PHP_COMPATIBILITY_WP_VER.txt" "php-compatibility-paragonie-$PHP_COMPATIBILITY_PARAGONIE_VER.txt" "vip-go-svg-sanitizer-$VIP_GO_SVG_SANITIZER_VER.txt" ; do
+	for TMP_FILE in	"$PHP_CODESNIFFER_VER_FILE" "$WP_CODING_STANDARDS_VER_FILE" "$VIP_CODING_STANDARDS_VER_FILE" "$PHPCS_VARIABLE_ANALYSIS_VER_FILE" "$PHP_COMPATIBILITY_VER_FILE" "$PHP_COMPATIBILITY_WP_VER_FILE" "$PHP_COMPATIBILITY_PARAGONIE_VER_FILE" "$PHPCS_UTILS_VER_FILE" "$VIP_GO_SVG_SANITIZER_VER_FILE" "vip-go-ci-$VIP_GO_CI_VER.txt"; do
 		if [ ! -f ~/vip-go-ci-tools/$TMP_FILE ] ; then
 			export TMP_DO_DELETE="1"
 		fi
@@ -206,38 +218,36 @@ else
 
 	cd $TMP_FOLDER || exit "Unable to change to dir $TMP_FOLDER"
 	
-	gh_fetch_and_verify "$PHP_CODESNIFFER_REPO" $PHP_CODESNIFFER_VER $PHP_CODESNIFFER_SHA1SUM "$TMP_FOLDER/php-codesniffer-$PHP_CODESNIFFER_VER.txt" "PHP_CodeSniffer-$PHP_CODESNIFFER_VER/" "$TMP_FOLDER/phpcs"
-
-	gh_fetch_and_verify "$WP_CODING_STANDARDS_REPO" $WP_CODING_STANDARDS_VER $WP_CODING_STANDARDS_SHA1SUM "$TMP_FOLDER/wp-coding-standards-$WP_CODING_STANDARDS_VER.txt" "WordPress-Coding-Standards-$WP_CODING_STANDARDS_VER/WordPress*" $TMP_FOLDER/phpcs/src/Standards/
-
-	gh_fetch_and_verify "$VIP_CODING_STANDARDS_REPO" "$VIP_CODING_STANDARDS_VER" $VIP_CODING_STANDARDS_SHA1SUM "$TMP_FOLDER/vip-coding-standards-$VIP_CODING_STANDARDS_VER.txt" "VIP-Coding-Standards-$VIP_CODING_STANDARDS_VER/WordPressVIPMinimum/ VIP-Coding-Standards-$VIP_CODING_STANDARDS_VER/WordPress-VIP-Go/" "$TMP_FOLDER/phpcs/src/Standards/"
-
-	gh_fetch_and_verify "$PHPCS_VARIABLE_ANALYSIS_REPO" "$PHPCS_VARIABLE_ANALYSIS_VER" $PHPCS_VARIABLE_ANALYSIS_SHA1SUM "$TMP_FOLDER/phpcs-variable-analysis-$PHPCS_VARIABLE_ANALYSIS_VER.txt" "phpcs-variable-analysis-*/VariableAnalysis/" "$TMP_FOLDER/phpcs/src/Standards/"
-
-	gh_fetch_and_verify "$PHP_COMPATIBILITY_REPO" "$PHP_COMPATIBILITY_VER" "$PHP_COMPATIBILITY_SHA1SUM" "$TMP_FOLDER/php-compatibility-$PHP_COMPATIBILITY_VER.txt" "PHPCompatibility-$PHP_COMPATIBILITY_VER/PHPCompatibility PHPCompatibility-$PHP_COMPATIBILITY_VER/PHPCSAliases.php" "$TMP_FOLDER/phpcs/src/Standards/" 
-
-	gh_fetch_and_verify "$PHP_COMPATIBILITY_WP_REPO" "$PHP_COMPATIBILITY_WP_VER" "$PHP_COMPATIBILITY_WP_SHA1SUM" "$TMP_FOLDER/php-compatibility-wp-$PHP_COMPATIBILITY_WP_VER.txt" "PHPCompatibilityWP-$PHP_COMPATIBILITY_WP_VER/PHPCompatibilityWP" "$TMP_FOLDER/phpcs/src/Standards/" 
-	
-	gh_fetch_and_verify "$PHP_COMPATIBILITY_PARAGONIE_REPO" "$PHP_COMPATIBILITY_PARAGONIE_VER" "$PHP_COMPATIBILITY_PARAGONIE_SHA1SUM" "$TMP_FOLDER/php-compatibility-paragonie-$PHP_COMPATIBILITY_PARAGONIE_VER.txt" "PHPCompatibilityParagonie-$PHP_COMPATIBILITY_PARAGONIE_VER/PHPCompatibilityParagonie*" "$TMP_FOLDER/phpcs/src/Standards/"
-
-	gh_fetch_and_verify "$PHPCS_UTILS_REPO" "$PHPCS_UTILS_VER" "$PHPCS_UTILS_SHA1SUM" "$TMP_FOLDER/phpcs-utils-$PHPCS_UTILS_VER.txt" "PHPCSUtils-$PHPCS_UTILS_VER/PHPCS* PHPCSUtils-$PHPCS_UTILS_VER/phpcsutils-autoload.php" "$TMP_FOLDER/phpcs/src/Standards/"
-
-	gh_fetch_and_verify "$VIP_GO_SVG_SANITIZER_REPO" "$VIP_GO_SVG_SANITIZER_VER" "$VIP_GO_SVG_SANITIZER_SHA1SUM" "$TMP_FOLDER/vip-go-svg-sanitizer-$VIP_GO_SVG_SANITIZER_VER.txt" "vip-go-svg-sanitizer-$VIP_GO_SVG_SANITIZER_VER" "$TMP_FOLDER/vip-go-svg-sanitizer" 
-
+	gh_fetch_and_verify "$PHP_CODESNIFFER_REPO" $PHP_CODESNIFFER_VER $PHP_CODESNIFFER_SHA1SUM "$TMP_FOLDER/$PHP_CODESNIFFER_VER_FILE" "PHP_CodeSniffer-$PHP_CODESNIFFER_VER/" "$TMP_FOLDER/phpcs" && \
+	\
+	gh_fetch_and_verify "$WP_CODING_STANDARDS_REPO" $WP_CODING_STANDARDS_VER $WP_CODING_STANDARDS_SHA1SUM "$TMP_FOLDER/$WP_CODING_STANDARDS_VER_FILE" "WordPress-Coding-Standards-$WP_CODING_STANDARDS_VER/WordPress*" $TMP_FOLDER/phpcs/src/Standards/ && \
+	\
+	gh_fetch_and_verify "$VIP_CODING_STANDARDS_REPO" "$VIP_CODING_STANDARDS_VER" $VIP_CODING_STANDARDS_SHA1SUM "$TMP_FOLDER/$VIP_CODING_STANDARDS_VER_FILE" "VIP-Coding-Standards-$VIP_CODING_STANDARDS_VER/WordPressVIPMinimum/ VIP-Coding-Standards-$VIP_CODING_STANDARDS_VER/WordPress-VIP-Go/" "$TMP_FOLDER/phpcs/src/Standards/" && \
+	\
+	gh_fetch_and_verify "$PHPCS_VARIABLE_ANALYSIS_REPO" "$PHPCS_VARIABLE_ANALYSIS_VER" $PHPCS_VARIABLE_ANALYSIS_SHA1SUM "$TMP_FOLDER/$PHPCS_VARIABLE_ANALYSIS_VER_FILE" "phpcs-variable-analysis-*/VariableAnalysis/" "$TMP_FOLDER/phpcs/src/Standards/" && \
+	\
+	gh_fetch_and_verify "$PHP_COMPATIBILITY_REPO" "$PHP_COMPATIBILITY_VER" "$PHP_COMPATIBILITY_SHA1SUM" "$TMP_FOLDER/$PHP_COMPATIBILITY_VER_FILE" "PHPCompatibility-$PHP_COMPATIBILITY_VER/PHPCompatibility PHPCompatibility-$PHP_COMPATIBILITY_VER/PHPCSAliases.php" "$TMP_FOLDER/phpcs/src/Standards/" && \
+	\
+	gh_fetch_and_verify "$PHP_COMPATIBILITY_WP_REPO" "$PHP_COMPATIBILITY_WP_VER" "$PHP_COMPATIBILITY_WP_SHA1SUM" "$TMP_FOLDER/$PHP_COMPATIBILITY_WP_VER_FILE" "PHPCompatibilityWP-$PHP_COMPATIBILITY_WP_VER/PHPCompatibilityWP" "$TMP_FOLDER/phpcs/src/Standards/" && \
+	\
+	gh_fetch_and_verify "$PHP_COMPATIBILITY_PARAGONIE_REPO" "$PHP_COMPATIBILITY_PARAGONIE_VER" "$PHP_COMPATIBILITY_PARAGONIE_SHA1SUM" "$TMP_FOLDER/$PHP_COMPATIBILITY_PARAGONIE_VER_FILE" "PHPCompatibilityParagonie-$PHP_COMPATIBILITY_PARAGONIE_VER/PHPCompatibilityParagonie*" "$TMP_FOLDER/phpcs/src/Standards/" && \
+	\
+	gh_fetch_and_verify "$PHPCS_UTILS_REPO" "$PHPCS_UTILS_VER" "$PHPCS_UTILS_SHA1SUM" "$TMP_FOLDER/$PHPCS_UTILS_VER_FILE" "PHPCSUtils-$PHPCS_UTILS_VER/PHPCS* PHPCSUtils-$PHPCS_UTILS_VER/phpcsutils-autoload.php" "$TMP_FOLDER/phpcs/src/Standards/" && \
+	\
+	gh_fetch_and_verify "$VIP_GO_SVG_SANITIZER_REPO" "$VIP_GO_SVG_SANITIZER_VER" "$VIP_GO_SVG_SANITIZER_SHA1SUM" "$TMP_FOLDER/$VIP_GO_SVG_SANITIZER_VER_FILE" "vip-go-svg-sanitizer-$VIP_GO_SVG_SANITIZER_VER" "$TMP_FOLDER/vip-go-svg-sanitizer" && \
+	\
 	( wget "https://github.com/Automattic/vip-go-ci/archive/$VIP_GO_CI_VER.tar.gz" && \
 	tar -zxf "$VIP_GO_CI_VER.tar.gz" && \
 	mv "vip-go-ci-$VIP_GO_CI_VER" vip-go-ci && \
 	rm -f "$VIP_GO_CI_VER.tar.gz" && \
 	touch "$TMP_FOLDER/vip-go-ci-$VIP_GO_CI_VER.txt" && \
+	echo "$0: Installation of tools finished" && \
 	mv $TMP_FOLDER ~/vip-go-ci-tools ) \
 	|| \
-	( echo "$0: Unable to install vip-go-ci" ; exit 1 )
-
-	# Note that the last action above is atomic:
-	# Either moving the folder succeeds, and the tools
-	# are all installed, or it fails and no tools are installed.
-
-	echo "$0: Installation of tools finished"
+	( echo "$0: Unable to install tools" ; \
+	rm -rf "$TMP_FOLDER" ; \
+	lock_remove ; \
+	exit 1 )
 fi
 
 lock_remove
