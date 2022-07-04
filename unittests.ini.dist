@@ -133,3 +133,8 @@ commit-test-options-read-repo-file-with-file-5=9a13bbec0cc2c7557539076f0125cc396
 [repo-meta-api]
 commit-support-level-set-test=4e56c433e2e7c0de62e333cdf719949ea0a1ccb5
 
+; For WPScan API tests. Plugin/theme known to API.
+[wpscan-api-scan]
+plugin-slug=classic-editor
+theme-slug=twentytwenty
+
