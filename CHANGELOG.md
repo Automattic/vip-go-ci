@@ -16,6 +16,7 @@ All notable changes to this project will be documented in this file.
 
 ## Removed
 - [#282](https://github.com/Automattic/vip-go-ci/pull/282): Remove Hashes API support
+- [#284](https://github.com/Automattic/vip-go-ci/pull/284): Remove support level label feature
 
 ## [1.2.3](https://github.com/Automattic/vip-go-ci/releases/tag/1.2.3) - 2022-04-04
 
