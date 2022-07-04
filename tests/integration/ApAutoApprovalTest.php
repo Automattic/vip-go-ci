@@ -199,62 +199,12 @@ final class ApAutoApprovalTest extends TestCase {
 	}
 
 	/**
-	 * Test which PRs we get; make sure these
-	 * are only the relevant ones. Mimics behaviour
-	 * found in vipgoci_auto_approval_scan_commit().
-	 *
-	 * @covers ::vipgoci_auto_approval
-	 */
-
-	public function testAutoApproval1() {
-		$options_test = vipgoci_unittests_options_test(
-			$this->options,
-			array( ),
-			$this
-		);
-
-		if ( -1 === $options_test ) {
-			return;
-		}
-
-		if ( false === $this->safe_to_run ) {
-			$this->markTestSkipped(
-				'Test not safe to run due to earlier warnings'
-			);
-		}
-
-		vipgoci_unittests_output_suppress();
-
-		$prs_implicated = vipgoci_github_prs_implicated(
-			$this->options['repo-owner'],
-			$this->options['repo-name'],
-			$this->options['commit'],
-			$this->options['token'],
-			$this->options['branches-ignore']
-		);
-
-		vipgoci_unittests_output_unsuppress();
-
-		$this->assertSame(
-			1,
-			count( $prs_implicated )
-		);
-
-		foreach ( $prs_implicated as $pr_item ) {
-			$this->assertSame(
-				$this->options['pr-test-ap-auto-approval-1'],
-				$pr_item->number
-			);
-		}
-	}
-
-	/**
 	 * Test auto-approvals for PR that should
 	 * auto-appove.
-
-	 * @covers ::vipgoci_auto_approval
+	 *
+	 * @covers ::vipgoci_auto_approval_scan_commit
 	 */
-	public function testAutoApproval2() {
+	public function testAutoApproval1() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( ),
@@ -286,7 +236,7 @@ final class ApAutoApprovalTest extends TestCase {
 		}
 
 		$auto_approved_files_arr = array(
-			'file-1.php' => 'autoapprove-hashes-to-hashes',
+			'file-1.php' => 'autoapprove-approved-php-file', // Not a value used generally, only for testing.
 			'file-2.css' => 'autoapprove-filetypes',
 			'file-3.txt' => 'autoapprove-filetypes',
 			'file-4.json' => 'autoapprove-filetypes',
@@ -328,6 +278,7 @@ final class ApAutoApprovalTest extends TestCase {
 		);
 
 		foreach ( $prs_implicated as $pr_item ) {
+			// Ensure the correct pull request was retrieved.
 			$this->assertSame(
 				$this->options['pr-test-ap-auto-approval-1'],
 				$pr_item->number
@@ -374,9 +325,9 @@ final class ApAutoApprovalTest extends TestCase {
 	 * Test auto-approvals for PR that should
 	 * not auto-appove.
 
-	 * @covers ::vipgoci_auto_approval
+	 * @covers ::vipgoci_auto_approval_scan_commit
 	 */
-	public function testAutoApproval3() {
+	public function testAutoApproval2() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( ),
@@ -450,6 +401,7 @@ final class ApAutoApprovalTest extends TestCase {
 		);
 
 		foreach ( $prs_implicated as $pr_item ) {
+			// Ensure the correct pull request was retrieved.
 			$this->assertSame(
 				$this->options['pr-test-ap-auto-approval-1'],
 				$pr_item->number
@@ -490,9 +442,9 @@ final class ApAutoApprovalTest extends TestCase {
 	 * not auto-appove, but should leave a comment
 	 * about one PHP file that is approved.
 	 *
-	 * @covers ::vipgoci_auto_approval
+	 * @covers ::vipgoci_auto_approval_scan_commit
 	 */
-	public function testAutoApproval4() {
+	public function testAutoApproval3() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( ),
@@ -526,7 +478,7 @@ final class ApAutoApprovalTest extends TestCase {
 		$auto_approved_files_arr = array(
 			// note: file-1.php is approved, but
 			// some of the other files are not
-			'file-1.php' => 'autoapprove-hashes-to-hashes',
+			'file-1.php' => 'autoapprove-approved-php-file', // Not a value used generally, only for testing.
 			'file-2.css' => 'autoapprove-filetypes',
 			'file-3.txt' => 'autoapprove-filetypes',
 			// file-4.json is not approved
@@ -561,6 +513,7 @@ final class ApAutoApprovalTest extends TestCase {
 		);
 
 		foreach ( $prs_implicated as $pr_item ) {
+			// Ensure the correct pull request was retrieved.
 			$this->assertSame(
 				$this->options['pr-test-ap-auto-approval-1'],
 				$pr_item->number
@@ -608,9 +561,9 @@ final class ApAutoApprovalTest extends TestCase {
 	 * sure we do not re-approve already approved
 	 * Pull-Requests. Make sure this really works.
 	 *
-	 * @covers ::vipgoci_auto_approval
+	 * @covers ::vipgoci_auto_approval_scan_commit
 	 */
-	public function testAutoApproval5() {
+	public function testAutoApproval4() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( ),
@@ -671,7 +624,7 @@ final class ApAutoApprovalTest extends TestCase {
 
 		$auto_approved_files_arr = array(
 			// all files in the PR are approvable
-			'file-1.php' => 'autoapprove-hashes-to-hashes', 
+			'file-1.php' => 'autoapprove-approved-php-file', // Not a value used generally, only for testing.
 			'file-2.css' => 'autoapprove-filetypes',
 			'file-3.txt' => 'autoapprove-filetypes',
 			'file-4.json' => 'autoapprove-filetypes',
