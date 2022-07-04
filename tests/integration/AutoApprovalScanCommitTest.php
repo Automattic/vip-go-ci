@@ -27,7 +27,7 @@ final class AutoApprovalScanCommitTest extends TestCase {
 	private mixed $safe_to_run = null;
 
 	/**
-	 * Setup function. Require files, etc.
+	 * Setup function. Require files, set up variables, etc.
 	 *
 	 * @return void
 	 */
