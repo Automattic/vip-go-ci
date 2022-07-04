@@ -11,7 +11,6 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/ap-file-types.php';
-require_once __DIR__ . '/ap-hashes-api.php';
 require_once __DIR__ . '/ap-nonfunctional-changes.php';
 require_once __DIR__ . '/ap-svg-files.php';
 require_once __DIR__ . '/auto-approval.php';

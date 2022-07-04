@@ -139,21 +139,6 @@ function vipgoci_help_print() :void {
 		"\t" . '                                                whitespacing and comment changes.' . PHP_EOL .
 		"\t" . '--autoapprove-label=STRING     String to use for labels when auto-approving.' . PHP_EOL .
 		PHP_EOL .
-		'Hashes API configuration:' . PHP_EOL .
-		"\t" . '--hashes-api=BOOL              Whether to do hashes-to-hashes API verfication with' . PHP_EOL .
-		"\t" . '                               individual PHP files found to be altered in' . PHP_EOL .
-		"\t" . '                               scanned pull requests.' . PHP_EOL .
-		"\t" . '--hashes-api-url=STRING        URL to hashes-to-hashes HTTP API root' . PHP_EOL .
-		"\t" . '                               -- note that it should not include any specific' . PHP_EOL .
-		"\t" . '                               paths to individual parts of the API.' . PHP_EOL .
-		"\t" . '--hashes-oauth-token=STRING,' . PHP_EOL .
-		"\t" . '--hashes-oauth-token-secret=STRING,' . PHP_EOL .
-		"\t" . '--hashes-oauth-consumer-key=STRING,' . PHP_EOL .
-		"\t" . '--hashes-oauth-consumer-secret=STRING' . PHP_EOL .
-		"\t" . '                               OAuth 1.0 token, token secret, consumer key and' . PHP_EOL .
-		"\t" . '                               consumer secret needed for hashes-to-hashes HTTP requests.' . PHP_EOL .
-		"\t" . '                               All required for hashes-to-hashes requests.' . PHP_EOL .
-		PHP_EOL .
 		'GitHub reviews & generic comments configuration:' . PHP_EOL .
 		"\t" . '--report-no-issues-found=BOOL  Post message indicating no issues were found during scanning.' . PHP_EOL .
 		"\t" . '                               Enabled by default.' . PHP_EOL .
@@ -330,16 +315,6 @@ function vipgoci_options_recognized() :array {
 		'autoapprove-filetypes:',
 		'autoapprove-php-nonfunctional-changes:',
 		'autoapprove-label:',
-
-		/*
-		 * Hashes API configuration
-		 */
-		'hashes-api:',
-		'hashes-api-url:',
-		'hashes-oauth-token:',
-		'hashes-oauth-token-secret:',
-		'hashes-oauth-consumer-key:',
-		'hashes-oauth-consumer-secret:',
 
 		/*
 		 * GitHub reviews & generic comments configuration
@@ -892,107 +867,6 @@ function vipgoci_run_init_options_autoapprove( array &$options ) :void {
 			'SVG files cannot be auto-approved on file-type basis, as they ' .
 				'can contain problematic code. Use --svg-checks=true to ' .
 				'allow auto-approval of SVG files',
-			array(),
-			VIPGOCI_EXIT_USAGE_ERROR
-		);
-	}
-}
-
-/**
- * Process hashes-to-hashes options.
- *
- * @param array $options                Array of options.
- * @param array $hashes_oauth_arguments OAuth 1.0a options for hashes-to-hashes API.
- *
- * @return void
- *
- * @codeCoverageIgnore
- */
-function vipgoci_run_init_options_hashes_options(
-	array &$options,
-	array $hashes_oauth_arguments
-) :void {
-	/*
-	 * Process --hashes-api -- expected to be a boolean.
-	*/
-	vipgoci_option_bool_handle( $options, 'hashes-api', 'false' );
-
-	/*
-	 * Process --hashes-api-url -- expected to
-	 * be an URL to a webservice.
-	 */
-	vipgoci_option_url_handle( $options, 'hashes-api-url', null );
-
-	$options['hashes-api-url'] = trim(
-		$options['hashes-api-url'],
-		'/'
-	);
-
-	/*
-	 * Sanity check: Can only use --hashes-api=true with a URL
-	 * configured.
-	 */
-	if (
-		( true === $options['hashes-api'] ) &&
-		( empty( $options['hashes-api-url'] ) )
-	) {
-		vipgoci_sysexit(
-			'Cannot run with --hashes-api set to true and without --hashes-api-url set',
-			array(),
-			VIPGOCI_EXIT_USAGE_ERROR
-		);
-	}
-
-	/*
-	 * Process hashes-oauth arguments
-	 */
-	foreach ( $hashes_oauth_arguments as $tmp_key ) {
-		if ( ! isset( $options[ $tmp_key ] ) ) {
-			vipgoci_sysexit(
-				'Asking to use --hashes-api-url without --hashes-oauth-* parameters, but that is not possible, as authorization is needed for hashes-to-hashes API',
-				array(),
-				VIPGOCI_EXIT_USAGE_ERROR
-			);
-		}
-
-		$options[ $tmp_key ] = trim(
-			$options[ $tmp_key ]
-		);
-
-		unset( $tmp_key );
-	}
-
-	/*
-	 * Ask for the hashes-oauth-* arguments
-	 * to be considered as sensitive options
-	 * when cleaning options for printing.
-	 */
-	vipgoci_options_sensitive_clean(
-		null,
-		$hashes_oauth_arguments
-	);
-}
-
-/**
- * Sanity-checks for hashes-to-hashes options.
- *
- * @param array $options Array of options.
- *
- * @return void
- */
-function vipgoci_run_init_options_autoapprove_hashes_overlap(
-	array &$options
-) :void {
-	/*
-	 * Do sanity-checking with --autoapprove parameter
-	 * and --hashes-api-url parameter.
-	 */
-	if (
-		( isset( $options['hashes-api-url'] ) ) &&
-		( false === $options['autoapprove'] )
-	) {
-		vipgoci_sysexit(
-			'Asking to use --hashes-api-url without --autoapproval set to true, but for hashes-to-hashes functionality to be useful, --autoapprove must be enabled. Otherwise the functionality will not really be used',
 			array(),
 			VIPGOCI_EXIT_USAGE_ERROR
 		);
@@ -2096,11 +1970,6 @@ function vipgoci_run_init_options_repo_options( array &$options ):void {
 			'valid_values' => array( true, false ),
 		),
 
-		'hashes-api'                            => array(
-			'type'         => 'boolean',
-			'valid_values' => array( true, false ),
-		),
-
 		'lint-modified-files-only'              => array(
 			'type'         => 'boolean',
 			'valid_values' => array( true, false ),
@@ -2228,14 +2097,6 @@ function vipgoci_run_init_options(
 	array &$options,
 	array $options_recognized
 ):void {
-	$hashes_oauth_arguments =
-		array(
-			'hashes-oauth-token',
-			'hashes-oauth-token-secret',
-			'hashes-oauth-consumer-key',
-			'hashes-oauth-consumer-secret',
-		);
-
 	/*
 	 * Handle --enforce-https-urls absolutely first,
 	 * as that is used in processing parameters expecting
@@ -2307,12 +2168,6 @@ function vipgoci_run_init_options(
 	// Process autoapprove options.
 	vipgoci_run_init_options_autoapprove( $options );
 
-	// Process hashes-to-hashes options.
-	vipgoci_run_init_options_hashes_options(
-		$options,
-		$hashes_oauth_arguments
-	);
-
 	// Set SVG options.
 	vipgoci_run_init_options_svg( $options );
 
@@ -2342,12 +2197,6 @@ function vipgoci_run_init_options(
 
 	// Check --output option.
 	vipgoci_run_init_options_output( $options );
-
-	/*
-	 * Process autoapprove and hashes-to-hashes
-	 * options that overlap.
-	 */
-	vipgoci_run_init_options_autoapprove_hashes_overlap( $options );
 
 	/*
 	 * Handle --repo-options and related parameters.
@@ -3031,7 +2880,7 @@ function vipgoci_run_scan(
 	 * approvable.
 	 *
 	 * Will also remove from $results any files
-	 * auto-approved in hashes-to-hashes API.
+	 * auto-approved.
 	 */
 	vipgoci_auto_approval_process(
 		$options,
@@ -3246,7 +3095,6 @@ function vipgoci_run_init_vars() :array {
 		'stats'  => array(
 			VIPGOCI_STATS_PHPCS      => null,
 			VIPGOCI_STATS_LINT       => null,
-			VIPGOCI_STATS_HASHES_API => null,
 			VIPGOCI_STATS_WPSCAN_API => null,
 		),
 	);

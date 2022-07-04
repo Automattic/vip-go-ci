@@ -54,8 +54,6 @@ define( 'VIPGOCI_HTTP_API_SHORT_TIMEOUT', 5 );
 /*
  * Various messages.
  */
-define( 'VIPGOCI_FILE_IS_APPROVED_MSG', 'File is approved in review database (hashes-to-hashes).' );
-
 define(
 	'VIPGOCI_REVIEW_COMMENTS_TOTAL_MAX',
 	'Total number of active review comments per ' .
@@ -170,7 +168,6 @@ define( 'VIPGOCI_EXIT_USAGE_ERROR', 253 );
  */
 define( 'VIPGOCI_STATS_PHPCS', 'phpcs' );
 define( 'VIPGOCI_STATS_LINT', 'lint' );
-define( 'VIPGOCI_STATS_HASHES_API', 'hashes-api' );
 define( 'VIPGOCI_STATS_WPSCAN_API', 'wpscan-api' );
 
 /*
@@ -184,7 +181,6 @@ define( 'VIPGOCI_ISSUE_TYPE_ERROR', 'error' );
  * Define auto-approval types
  */
 define( 'VIPGOCI_APPROVAL_AUTOAPPROVE', 'auto-approval' );
-define( 'VIPGOCI_APPROVAL_HASHES_API', 'hashes-api' );
 
 /*
  * Defines for vipgoci_runtime_measure() function.

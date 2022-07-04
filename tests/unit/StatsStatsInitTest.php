@@ -47,7 +47,7 @@ final class StatsStatsInitTest extends TestCase {
 			array(
 				'phpcs'      => true,
 				'lint'       => true,
-				'hashes-api' => false,
+				'test-api' => false,
 				'wpscan-api' => true,
 			),
 			array(
@@ -96,6 +96,7 @@ final class StatsStatsInitTest extends TestCase {
 						'warning' => 0,
 						'info'    => 0,
 					),
+					// no test-api; not supposed to initialize that.
 				),
 
 				/*
@@ -113,6 +114,7 @@ final class StatsStatsInitTest extends TestCase {
 						'warning' => 0,
 						'info'    => 0,
 					),
+					// no test-api; not supposed to initialize that.
 				),
 			),
 		);
