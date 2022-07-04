@@ -789,6 +789,9 @@ repo-owner=                     ; Repository owner for the test, should be found
 repo-name=                      ; Repository name for the test
 support-level=                  ; Name of support level given by meta API
 support-level-field-name=       ; Support level field name in meta API
+
+[wpscan-api-scan]
+access-token= ; Access token for WPScan API.
 ```
 
 This file is not included, and needs to be configured manually.
