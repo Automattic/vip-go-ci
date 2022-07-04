@@ -66,7 +66,7 @@ final class MainRunScanTotalCommentsMaxWarningPostTest extends TestCase {
 
 		$this->options['commit'] = $this->options['commit-test-run-scan-total-comments-max-warning-post'];
 
-		$this->options['pr_number'] = $this->options['pr-test-run-scan-total-comments-max-warning-post'];
+		$this->options['pr_number'] = (int) $this->options['pr-test-run-scan-total-comments-max-warning-post'];
 
 		if ( ! empty( $this->options['github-token'] ) ) {
 			$this->options['token'] = $this->options['github-token'];

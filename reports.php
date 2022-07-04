@@ -381,7 +381,6 @@ function vipgoci_report_create_scan_details_auto_approve_configuration(
 		array(
 			'autoapprove'                           => 'Auto-approvals enabled',
 			'autoapprove-php-nonfunctional-changes' => 'Non-functional changes auto-approved',
-			'hashes-api'                            => 'Auto-approval DB enabled',
 		) as $key => $value
 	) {
 		if (
@@ -846,7 +845,6 @@ function vipgoci_report_submit_pr_review_from_results(
 ) :void {
 	$stats_types_to_process = array(
 		VIPGOCI_STATS_PHPCS,
-		VIPGOCI_STATS_HASHES_API,
 	);
 
 	vipgoci_log(

@@ -115,7 +115,6 @@ function vipgoci_sysexit(
 			( vipgoci_unittests_check_indication_for_test_id( 'MainRunScanSkipExecutionTest' ) ) ||
 			( vipgoci_unittests_check_indication_for_test_id( 'MainRunScanMaxExecTimeTest' ) ) ||
 			( vipgoci_unittests_check_indication_for_test_id( 'MainRunInitGithubTokenOptionTest' ) ) ||
-			( vipgoci_unittests_check_indication_for_test_id( 'MainRunInitOptionsAutoapproveHashesOverlapTest' ) ) ||
 			( vipgoci_unittests_check_indication_for_test_id( 'OtherWebServicesIrcApiFilterIgnorableStringsTest' ) ) ||
 			( vipgoci_unittests_check_indication_for_test_id( 'GitRepoRepoOkTest' ) )
 		)
