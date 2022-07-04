@@ -4,7 +4,7 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 
 use PHPUnit\Framework\TestCase;
 
-final class RepoMetaApiRepoMetaApiDataMatchTest extends TestCase {
+final class SupportLevelLabelRepoMetaApiDataMatchTest extends TestCase {
 	var $options_meta_api_secrets = array(
 		'repo-meta-api-base-url'	=> null,
 		'repo-meta-api-user-id'		=> null,
