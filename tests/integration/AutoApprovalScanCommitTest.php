@@ -127,7 +127,7 @@ final class AutoApprovalScanCommitTest extends TestCase {
 
 	/**
 	 * Dismiss any previously submitted reviews
-	 * to pull requests.
+	 * to pull requests used in these tests.
 	 *
 	 * @return void
 	 */
@@ -206,7 +206,7 @@ final class AutoApprovalScanCommitTest extends TestCase {
 	}
 
 	/**
-	 * Get labels for pull request.
+	 * Get labels for pull request used in these tests.
 	 *
 	 * @return mixed
 	 */
