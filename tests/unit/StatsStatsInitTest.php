@@ -27,9 +27,9 @@ final class StatsStatsInitTest extends TestCase {
 
 		vipgoci_stats_init(
 			array(
-				'phpcs'      => true,
-				'lint'       => true,
-				'hashes-api' => false
+				'phpcs'    => true,
+				'lint'     => true,
+				'test-api' => false,
 			),
 			array(
 				$pr_item1,
@@ -59,7 +59,7 @@ final class StatsStatsInitTest extends TestCase {
 						'warning' => 0,
 						'info'    => 0,
 					),
-					// no hashes-api; not supposed to initialize that
+					// no test-api; not supposed to initialize that.
 				),
 
 				VIPGOCI_STATS_LINT => array(
@@ -73,7 +73,7 @@ final class StatsStatsInitTest extends TestCase {
 						'warning' => 0,
 						'info'    => 0,
 					),
-					// no hashes-api; not supposed to initialize that
+					// no test-api; not supposed to initialize that.
 				),
 			),
 		);

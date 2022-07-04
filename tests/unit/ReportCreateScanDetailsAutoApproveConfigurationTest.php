@@ -75,13 +75,6 @@ final class ReportCreateScanDetailsAutoApproveConfigurationTest extends TestCase
 		$this->assertFalse(
 			strpos(
 				$actual_output,
-				'Auto-approval DB enabled'
-			)
-		);
-
-		$this->assertFalse(
-			strpos(
-				$actual_output,
 				'Auto-approved file-types'
 			)
 		);
@@ -96,7 +89,6 @@ final class ReportCreateScanDetailsAutoApproveConfigurationTest extends TestCase
 		$this->options['autoapprove']                           = true;
 		$this->options['autoapprove-php-nonfunctional-changes'] = true;
 		$this->options['autoapprove-filetypes']                 = array( 'txt', 'ini' );
-		$this->options['hashes-api']                            = false;
 
 		$actual_output = vipgoci_report_create_scan_details_auto_approve_configuration(
 			$this->options
@@ -131,14 +123,6 @@ final class ReportCreateScanDetailsAutoApproveConfigurationTest extends TestCase
 				'<p>Auto-approved file-types:</p>' . PHP_EOL .
 				'<ul>' . PHP_EOL .
 				'<li><code>txt</code></li><li><code>ini</code></li></ul>'
-			)
-		);
-
-		$this->assertNotFalse(
-			strpos(
-				$actual_output,
-				'<p>Auto-approval DB enabled:' . PHP_EOL .
-				'<code>false</code></p>'
 			)
 		);
 	}
