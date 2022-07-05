@@ -1325,12 +1325,14 @@ function vipgoci_phpcs_get_sniffs_for_standard(
  * Do this by getting a list of valid sniffs
  * and check if each and every one is in the list.
  *
- * @param array $options Options needed.
+ * @param array $options                    Options needed (reference).
+ * @param array $debug_standards_and_sniffs Reference to array to save valid PHPCS standards and sniffs.
  *
  * @return void
  */
 function vipgoci_phpcs_validate_sniffs_in_options_and_report(
-	array &$options
+	array &$options,
+	array &$debug_standards_and_sniffs
 ) :void {
 	// If PHPCS scanning is disabled, do not do anything.
 	if ( false === $options['phpcs'] ) {
@@ -1362,7 +1364,7 @@ function vipgoci_phpcs_validate_sniffs_in_options_and_report(
 	/*
 	 * Get all valid sniffs for all standards.
 	 */
-	$all_standards_arr = vipgoci_phpcs_get_all_standards(
+	$all_standards_arr_unfiltered = vipgoci_phpcs_get_all_standards(
 		$options['phpcs-path'],
 		$options['phpcs-php-path']
 	);
@@ -1371,9 +1373,9 @@ function vipgoci_phpcs_validate_sniffs_in_options_and_report(
 	 * Filter away PHPCS sniffs configured
 	 * to ignore.
 	 */
-	$all_standards_arr = array_values(
+	$all_standards_arr_filtered = array_values(
 		array_diff(
-			$all_standards_arr,
+			$all_standards_arr_unfiltered,
 			$options['phpcs-standards-to-ignore']
 		)
 	);
@@ -1381,7 +1383,7 @@ function vipgoci_phpcs_validate_sniffs_in_options_and_report(
 	$phpcs_sniffs_valid_for_all_standards = vipgoci_phpcs_get_sniffs_for_standard(
 		$options['phpcs-path'],
 		$options['phpcs-php-path'],
-		$all_standards_arr
+		$all_standards_arr_filtered
 	);
 
 	/*
@@ -1571,18 +1573,25 @@ function vipgoci_phpcs_validate_sniffs_in_options_and_report(
 		);
 	}
 
+	// Save debug information, used in logging also.
+	$debug_standards_and_sniffs = array(
+		'phpcs-path'                                => $options['phpcs-path'],
+		'phpcs-php-path'                            => $options['phpcs-php-path'],
+		'phpcs-standard'                            => $options['phpcs-standard'],
+		'phpcs-sniffs-include-after'                => $options['phpcs-sniffs-include'],
+		'phpcs-sniffs-include-invalid'              => $phpcs_sniffs_include_invalid,
+		'phpcs-sniffs-exclude-after'                => $options['phpcs-sniffs-exclude'],
+		'phpcs-sniffs-exclude-invalid'              => $phpcs_sniffs_exclude_invalid,
+		'phpcs-sniffs-excluded-and-included'        => $phpcs_sniffs_excluded_and_included,
+		'phpcs-sniffs-valid-for-selected-standards' => $phpcs_sniffs_valid_for_selected_standards,
+		'phpcs-sniffs-valid-for-all-standards'      => $phpcs_sniffs_valid_for_all_standards,
+		'all-phpcs-standards-unfiltered'            => $all_standards_arr_unfiltered,
+		'all-phpcs-standards-filtered'              => $all_standards_arr_filtered,
+	);
+
 	vipgoci_log(
 		'Validated sniffs provided in options',
-		array(
-			'phpcs-path'                         => $options['phpcs-path'],
-			'phpcs-php-path'                     => $options['phpcs-php-path'],
-			'phpcs-standard'                     => $options['phpcs-standard'],
-			'phpcs-sniffs-include-after'         => $options['phpcs-sniffs-include'],
-			'phpcs-sniffs-include-invalid'       => $phpcs_sniffs_include_invalid,
-			'phpcs-sniffs-exclude-after'         => $options['phpcs-sniffs-exclude'],
-			'phpcs-sniffs-exclude-invalid'       => $phpcs_sniffs_exclude_invalid,
-			'phpcs-sniffs-excluded-and-included' => $phpcs_sniffs_excluded_and_included,
-		)
+		$debug_standards_and_sniffs
 	);
 }
 
