@@ -11,7 +11,6 @@ All notable changes to this project will be documented in this file.
 - [#278](https://github.com/Automattic/vip-go-ci/pull/278): Switch to GitHub Actions
 - [#279](https://github.com/Automattic/vip-go-ci/pull/279): Utilize 'latest' branch in documentation and in scripts
 - [#280](https://github.com/Automattic/vip-go-ci/pull/280): Re-enable auto-approval of removed SVG files
-- [#281](https://github.com/Automattic/vip-go-ci/pull/281): Small updates: Use new functions introduced in #273; update HTTP wait function; update URL in README.md
 - [#283](https://github.com/Automattic/vip-go-ci/pull/283): Update PHPCS, update PHPCompatibility and add PHPCSUtils, restructure tools-init.sh
 
 ## Removed
