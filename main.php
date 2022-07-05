@@ -96,6 +96,8 @@ function vipgoci_help_print() :void {
 		"\t" . '--phpcs-path=FILE              Full path to PHPCS script.' . PHP_EOL .
 		"\t" . '--phpcs-standard=STRING        Specify which PHPCS standard(s) to use. Separate by commas.' . PHP_EOL .
 		"\t" . '                               If nothing is specified, the \'WordPress\' standard is used.' . PHP_EOL .
+		"\t" . '--phpcs-standards-to-ignore    PHPCS standards to ignore when scanning for PHPCS standards available' . PHP_EOL .
+		"\t" . '                               during startup. Useful if some standards cause problems.' . PHP_EOL .
 		"\t" . '--phpcs-severity=NUMBER        Specify severity for PHPCS.' . PHP_EOL .
 		"\t" . '--phpcs-sniffs-include=ARRAY   Specify which sniffs to include when PHPCS scanning,' . PHP_EOL .
 		"\t" . '                               should be an array with items separated by commas.' . PHP_EOL .
@@ -283,6 +285,7 @@ function vipgoci_options_recognized() :array {
 		'phpcs-php-path:',
 		'phpcs-path:',
 		'phpcs-standard:',
+		'phpcs-standards-to-ignore:',
 		'phpcs-severity:',
 		'phpcs-sniffs-include:',
 		'phpcs-sniffs-exclude:',
@@ -537,7 +540,7 @@ function vipgoci_run_init_options_phpcs( array &$options ) :void {
 
 	/*
 	 * Process --phpcs-standard -- expected to be
-	 * a string
+	 * a string.
 	 */
 	if ( empty( $options['phpcs-standard'] ) ) {
 		$options['phpcs-standard'] = array(
@@ -551,6 +554,42 @@ function vipgoci_run_init_options_phpcs( array &$options ) :void {
 			array(),
 			',',
 			false
+		);
+	}
+
+	/*
+	 * Process --phpcs-standards-to-ignore -- expected to be
+	 * a string.
+	 */
+	if ( empty( $options['phpcs-standards-to-ignore'] ) ) {
+		$options['phpcs-standards-to-ignore'] = array();
+	} else {
+		vipgoci_option_array_handle(
+			$options,
+			'phpcs-standards-to-ignore',
+			array(),
+			array(),
+			',',
+			false
+		);
+	}
+
+	/*
+	 * Ensure that --phpcs-standard and --phpcs-standards-to-ignore
+	 * do not intersect.
+	 */
+	if ( ! empty(
+		array_intersect(
+			$options['phpcs-standard'],
+			$options['phpcs-standards-to-ignore']
+		)
+	) ) {
+		vipgoci_sysexit(
+			'--phpcs-standard and --phpcs-standards-to-ignore cannot share values',
+			array(
+				'phpcs-standard'            => $options['phpcs-standard'],
+				'phpcs-standards-to-ignore' => $options['phpcs-standards-to-ignore'],
+			)
 		);
 	}
 
