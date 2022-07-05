@@ -96,7 +96,7 @@ function vipgoci_help_print() :void {
 		"\t" . '--phpcs-path=FILE              Full path to PHPCS script.' . PHP_EOL .
 		"\t" . '--phpcs-standard=STRING        Specify which PHPCS standard(s) to use. Separate by commas.' . PHP_EOL .
 		"\t" . '                               If nothing is specified, the \'WordPress\' standard is used.' . PHP_EOL .
-		"\t" . '--phpcs-standards-to-ignore    PHPCS standards to ignore when scanning for PHPCS standards available' . PHP_EOL .
+		"\t" . '--phpcs-standards-to-ignore    PHPCS standards to ignore when searching for PHPCS standards available' . PHP_EOL .
 		"\t" . '                               during startup. Useful if some standards cause problems.' . PHP_EOL .
 		"\t" . '--phpcs-severity=NUMBER        Specify severity for PHPCS.' . PHP_EOL .
 		"\t" . '--phpcs-sniffs-include=ARRAY   Specify which sniffs to include when PHPCS scanning,' . PHP_EOL .
