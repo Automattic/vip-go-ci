@@ -33,6 +33,7 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 		'phpcs-validate-sniffs-and-report-exclude-commit'  => null,
 		'phpcs-validate-sniffs-and-report-exclude-invalid' => null,
 		'phpcs-validate-sniffs-and-report-exclude-valid'   => null,
+		'phpcs-validate-sniffs-and-report-sniffs-ignore'   => null,
 	);
 
 	/**
@@ -91,6 +92,11 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 
 		$this->options['phpcs-sniffs-include'] = array();
 		$this->options['phpcs-sniffs-exclude'] = array();
+
+		$this->options['phpcs-standards-to-ignore'] = explode(
+			',',
+			$this->options['phpcs-validate-sniffs-and-report-sniffs-ignore']
+		);
 
 		foreach (
 			array(
