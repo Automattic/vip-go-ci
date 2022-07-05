@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [1.2.4](https://github.com/Automattic/vip-go-ci/releases/tag/1.2.4) - 2022-07-??
 
+## Added
+- [#285](https://github.com/Automattic/vip-go-ci/pull/285): Add support for ignoring PHPCS standards during startup
+
 ## Updated
 - [#274](https://github.com/Automattic/vip-go-ci/pull/274): Update files to reflect that "main" branch is now named "trunk"
 - [#272](https://github.com/Automattic/vip-go-ci/pull/272): Apply WP CS and variable types to final files
