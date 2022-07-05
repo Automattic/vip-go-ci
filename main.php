@@ -96,8 +96,8 @@ function vipgoci_help_print() :void {
 		"\t" . '--phpcs-path=FILE              Full path to PHPCS script.' . PHP_EOL .
 		"\t" . '--phpcs-standard=STRING        Specify which PHPCS standard(s) to use. Separate by commas.' . PHP_EOL .
 		"\t" . '                               If nothing is specified, the \'WordPress\' standard is used.' . PHP_EOL .
-		"\t" . '--phpcs-standards-to-ignore    PHPCS standards to ignore when searching for PHPCS standards available' . PHP_EOL .
-		"\t" . '                               during startup. Useful if some standards cause problems.' . PHP_EOL .
+		"\t" . '--phpcs-standards-to-ignore    PHPCS standards to ignore when searching for PHPCS standards/sniffs' . PHP_EOL .
+		"\t" . '                               available during startup. See details in README.md.' . PHP_EOL .
 		"\t" . '--phpcs-severity=NUMBER        Specify severity for PHPCS.' . PHP_EOL .
 		"\t" . '--phpcs-sniffs-include=ARRAY   Specify which sniffs to include when PHPCS scanning,' . PHP_EOL .
 		"\t" . '                               should be an array with items separated by commas.' . PHP_EOL .
@@ -2784,9 +2784,15 @@ function vipgoci_run_scan(
 		 * invalid sniffs from the options on the fly and
 		 * post a message to users about the invalid sniffs.
 		 */
+
+		$debug_standards_and_sniffs = array(); // Needed for reference, not used here.
+
 		vipgoci_phpcs_validate_sniffs_in_options_and_report(
-			$options
+			$options,
+			$debug_standards_and_sniffs
 		);
+
+		unset( $debug_standards_and_sniffs );
 
 		/*
 		 * Set to use new PHPCS standard if needed.
