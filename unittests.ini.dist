@@ -32,7 +32,9 @@ phpcs-validate-sniffs-and-report-include-valid=WordPressVIPMinimum.Functions.Str
 phpcs-validate-sniffs-and-report-exclude-commit=fa1b1a695a0c25895ed8ccb3c0d475e077f396f8
 phpcs-validate-sniffs-and-report-exclude-invalid=MyInvalidSniff.SniffName
 phpcs-validate-sniffs-and-report-exclude-valid=WordPressVIPMinimum.Functions.StripTags,WordPress.PHP.IniSet
-phpcs-validate-sniffs-and-report-sniffs-ignore=PHPCSUtils
+phpcs-validate-sniffs-and-report-standard-ignore=PHPCSUtils
+phpcs-validate-sniffs-and-report-sniff-valid-for-selected-standard=WordPressVIPMinimum.Classes.DeclarationCompatibility
+phpcs-validate-sniffs-and-report-sniff-valid-for-all-valid-standards=PHPCS23Utils.Load.LoadUtils
 
 [svg-scan]
 svg-php-path=/usr/bin/php
