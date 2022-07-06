@@ -144,4 +144,34 @@ final class WpscanDoScanViaApiTest extends TestCase {
 			isset( $actual_results[ $this->options['theme-slug'] ]['vulnerabilities'] )
 		);
 	}
+
+	/**
+	 * Make an invalid request to WPScan API.
+	 *
+	 * @covers ::vipgoci_wpscan_do_scan_via_api
+	 *
+	 * @return void
+	 */
+	public function testWpscanDoScanViaApiInvalid(): void {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( 'wpscan-api-token' ),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
+		$actual_results = vipgoci_wpscan_do_scan_via_api(
+			'my-invalid-theme',
+			VIPGOCI_WPSCAN_THEME,
+			VIPGOCI_WPSCAN_API_BASE_URL,
+			'invalid-token'
+		);
+
+		$this->assertNull(
+			$actual_results
+		);
+	}
 }
