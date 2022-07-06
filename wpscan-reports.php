@@ -64,8 +64,6 @@ function vipgoci_wpscan_report_end(
  * @param string $repo_owner Repository owner.
  * @param string $repo_name  Repository name.
  * @param string $commit_id  Commit-ID of current commit.
- * @param string $file_name  Name of file.
- * @param int    $file_line  Line number in file.
  * @param array  $issue      Array with issue details to report.
  * @param string $issue_type Type of result being processed; VIPGOCI_WPSCAN_PLUGIN or VIPGOCI_WPSCAN_THEME.
  *
@@ -75,8 +73,6 @@ function vipgoci_wpscan_report_comment_format_result(
 	string $repo_owner,
 	string $repo_name,
 	string $commit_id,
-	string $file_name,
-	int $file_line,
 	array $issue,
 	string $issue_type
 ) :string {
@@ -87,8 +83,14 @@ function vipgoci_wpscan_report_comment_format_result(
 		$res .= 'Obsolete';
 	} elseif ( VIPGOCI_WPSCAN_VULNERABLE === $issue['security'] ) {
 		$res .= 'Vulnerable';
+	} else {
+		vipgoci_sysexit(
+			'Internal error: Invalid $issue[security] in ' . __FUNCTION__,
+			array(
+				'$issue[security]' => $issue['security'],
+			)
+		);
 	}
-	// @todo: sysexit
 
 	// Type of addon.
 	if ( VIPGOCI_WPSCAN_PLUGIN === $issue_type ) {
@@ -99,12 +101,27 @@ function vipgoci_wpscan_report_comment_format_result(
 		$res .= ' Theme information' . "\n" .
 			'**Theme Name**: ' . vipgoci_output_html_escape( $issue['message'] ) . "\n" .
 			'**Theme URI**: ' . vipgoci_output_html_escape( $issue['details']['theme_uri'] ) . "\n";
+	} else {
+		vipgoci_sysexit(
+			'Internal error: Invalid $issue_type in ' . __FUNCTION__,
+			array(
+				'$issue_type' => $issue_type,
+			)
+		);
 	}
-	// @todo: sysexit
+
+	// Construct URL to the relevant file.
+	$view_code_link = '([view code](' .
+		VIPGOCI_GITHUB_WEB_BASE_URL . '/' .
+		rawurlencode( $repo_owner ) . '/' .
+		rawurlencode( $repo_name ) . '/' .
+		'tree/' .
+		rawurlencode( $commit_id ) . '/' .
+		$issue['details']['installed_location'] . // Internally constructed.
+		')).';
 
 	$res .=
-		// @todo: Add link to file and line.
-		'**Installed location**: `' . vipgoci_output_html_escape( $issue['details']['installed_location'] ) . "`\n" .
+		'**Installed location**: `' . vipgoci_output_html_escape( $issue['details']['installed_location'] ) . '` ' . $view_code_link . "\n" .
 		'**Version observed**: ' . vipgoci_output_sanitize_version_number( $issue['details']['version_detected'] ) . "\n" .
 		'**Latest version available**: ' . vipgoci_output_sanitize_version_number( $issue['details']['latest_version'] ) . "\n" .
 		'**Latest version download URI**: ' . vipgoci_output_html_escape( $issue['details']['latest_download_uri'] ) . "\n";
