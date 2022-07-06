@@ -430,6 +430,8 @@ Any number of PHPCS standards can be specified, and any number of runtime settin
 
 To use a different PHP interpreter than the system default to run PHPCS, use `--phpcs-php-path`. This should point to a PHP binary.
 
+PHPCS standards can be ignored while searching for PHPCS standards and sniffs during startup by using the `--phpcs-standards-to-ignore` parameter. This is useful for example when a PHPCS standard available does not implement any sniffs, which can cause PHPCS to exit with error when asked to provide sniffs for such a standard. Sniffs implemented by ignored PHPCS standards are not available via `--phpcs-sniffs-include` or `--phpcs-sniffs-exclude` (unless they are included by other PHPCS standards available) and `vip-go-ci` will not attempt to search for sniffs implemented by ignored PHPCS standards.
+
 The following PHPCS-related options can be configured via repository config-file:
 
 #### Options `--phpcs` and `--phpcs-severity`
@@ -643,16 +645,6 @@ For example:
 {"post-generic-pr-support-comments":false}
 ```
 
-### Support labels
-
-`vip-go-ci` can put labels on pull requests indicating level of support provided. With this feature configured, `vip-go-ci` will attach a label to every new pull request that does not have it. For this to work, it will need access to a `repo-meta API` that needs to be available and `vip-go-ci` has to be configured to work with.
-
-This feature can be used in the following way:
-
-> ./vip-go-ci.php --set-support-level-label=true --set-support-level-field="support-level" --repo-meta-api-base-url="http://myrepometa-api.mycompany.is" --repo-meta-api-user-id=7334005 --repo-meta-api-access-token="MY-TOKEN"
-
-Note that by default, all support level labels have a prefix: `[Support Level]`. This can be changed by using the `--set-support-level-label-prefix` option.
-
 ### IRC support
 
 `vip-go-ci` supports posting certain logged messages to a HTTP API that will eventually relay the information to a IRC channel. This can of course be any IRC-like system, as long as the HTTP API behaves the same. This is useful if you need to have some information submitted to a monitoring system, for instance.
@@ -749,8 +741,8 @@ repo-meta-api-user-id=          ; User ID for the meta API
 repo-meta-api-access-token=     ; Access token for the meta API
 repo-owner=                     ; Repository owner for the test, should be found in meta API
 repo-name=                      ; Repository name for the test
-support-level=                  ; Name of support level given by meta API
-support-level-field-name=       ; Support level field name in meta API
+support-level=                  ; Name of support level given by meta API (only used in tests)
+support-level-field-name=       ; Support level field name in meta API (only used in tests)
 
 [wpscan-api-scan]
 access-token= ; Access token for WPScan API.
