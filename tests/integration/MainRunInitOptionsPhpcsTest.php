@@ -31,6 +31,8 @@ final class MainRunInitOptionsPhpcsTest extends TestCase {
 	 * Set up all variables.
 	 */
 	protected function setUp() :void {
+		require_once __DIR__ . '/../unit/helper/IndicateTestId.php';
+
 		$this->phpcs_path = vipgoci_unittests_get_config_value(
 			'phpcs-scan',
 			'phpcs-path',
@@ -73,6 +75,7 @@ final class MainRunInitOptionsPhpcsTest extends TestCase {
 				'phpcs-skip-scanning-via-labels-allowed'  => null,
 				'phpcs-path'                              => null,
 				'phpcs-standard'                          => null,
+				'phpcs-standards-to-ignore'               => null,
 				'phpcs-sniffs-include'                    => null,
 				'phpcs-sniffs-exclude'                    => null,
 				'phpcs-runtime-set'                       => null,
@@ -93,6 +96,7 @@ final class MainRunInitOptionsPhpcsTest extends TestCase {
 				'phpcs-skip-scanning-via-labels-allowed'  => false,
 				'phpcs-path'                              => null,
 				'phpcs-standard'                          => array( 'WordPress' ),
+				'phpcs-standards-to-ignore'               => array(),
 				'phpcs-sniffs-include'                    => array(),
 				'phpcs-sniffs-exclude'                    => array(),
 				'phpcs-runtime-set'                       => array(),
@@ -130,6 +134,7 @@ final class MainRunInitOptionsPhpcsTest extends TestCase {
 			'phpcs-skip-scanning-via-labels-allowed'  => 'true',
 			'phpcs-path'                              => $this->phpcs_path,
 			'phpcs-standard'                          => 'WordPress,myStandard1',
+			'phpcs-standards-to-ignore'               => 'myStandardToIgnore1,myStandardToIgnore2',
 			'phpcs-sniffs-include'                    => 'Sniff1,Sniff2',
 			'phpcs-sniffs-exclude'                    => 'Sniff3,Sniff4',
 			'phpcs-runtime-set'                       => 'key1 value1,key2 value2',
@@ -148,6 +153,7 @@ final class MainRunInitOptionsPhpcsTest extends TestCase {
 				'phpcs-skip-scanning-via-labels-allowed'  => true,
 				'phpcs-path'                              => $this->phpcs_path,
 				'phpcs-standard'                          => array( 'WordPress', 'myStandard1' ),
+				'phpcs-standards-to-ignore'               => array( 'myStandardToIgnore1', 'myStandardToIgnore2' ),
 				'phpcs-sniffs-include'                    => array( 'Sniff1', 'Sniff2' ),
 				'phpcs-sniffs-exclude'                    => array( 'Sniff3', 'Sniff4' ),
 				'phpcs-runtime-set'                       => array(
@@ -161,5 +167,63 @@ final class MainRunInitOptionsPhpcsTest extends TestCase {
 			),
 			$this->options
 		);
+	}
+
+	/**
+	 * Test function. Check for vipgoci_sysexit() call
+	 * when invalid options are used.
+	 *
+	 * @covers ::vipgoci_run_init_options_phpcs
+	 */
+	public function testRunInitOptionsPhpcsInvalid() :void {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array(),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
+		// Set options with invalid values.
+		$this->options = array(
+			'phpcs'                                   => 'true',
+			'phpcs-skip-folders-in-repo-options-file' => 'true',
+			'phpcs-skip-scanning-via-labels-allowed'  => 'true',
+			'phpcs-path'                              => $this->phpcs_path,
+			'phpcs-standard'                          => 'WordPress,myStandard1',
+			'phpcs-standards-to-ignore'               => 'myStandard1', // Same value as in --phpcs-standard.
+			'phpcs-sniffs-include'                    => 'Sniff1,Sniff2',
+			'phpcs-sniffs-exclude'                    => 'Sniff3,Sniff4',
+			'phpcs-runtime-set'                       => 'key1 value1,key2 value2',
+			'phpcs-skip-folders'                      => 'myfolder1,myfolder2',
+			'phpcs-severity'                          => 5,
+		);
+
+		vipgoci_unittests_indicate_test_id( 'MainRunInitOptionsPhpcsTest' );
+
+		ob_start();
+
+		vipgoci_run_init_options_phpcs(
+			$this->options
+		);
+
+		$printed_data = ob_get_contents();
+
+		ob_end_clean();
+
+		vipgoci_unittests_remove_indication_for_test_id( 'MainRunInitOptionsPhpcsTest' );
+
+		if ( true === vipgoci_unittests_debug_mode_on() ) {
+			echo $printed_data;
+		}
+
+		$printed_data_found = strpos(
+			$printed_data,
+			'--phpcs-standard and --phpcs-standards-to-ignore cannot share values'
+		);
+
+		$this->assertNotFalse( $printed_data_found );
 	}
 }
