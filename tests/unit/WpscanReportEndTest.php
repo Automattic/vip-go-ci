@@ -93,7 +93,7 @@ final class WpscanReportEndTest extends TestCase {
 
 		ob_start();
 
-		$report_start = vipgoci_wpscan_report_end(
+		vipgoci_wpscan_report_end(
 			'invalid' // Invalid usage.
 		);
 
