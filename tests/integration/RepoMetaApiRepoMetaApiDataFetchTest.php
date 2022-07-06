@@ -1,23 +1,46 @@
 <?php
+/**
+ * Test vipgoci_repo_meta_api_data_fetch() function.
+ *
+ * @package Automattic/vip-go-ci
+ */
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+declare(strict_types=1);
+
+namespace Vipgoci\Tests\Integration;
 
 use PHPUnit\Framework\TestCase;
 
-final class SupportLevelLabelMetaApiDataFetchTest extends TestCase {
-	var $options_meta_api_secrets = array(
-		'repo-meta-api-base-url'	=> null,
-		'repo-meta-api-user-id'		=> null,
-		'repo-meta-api-access-token'	=> null,
-
-		'repo-owner'			=> null,
-		'repo-name'			=> null,
-
-		'support-level'			=> null,
-		'support-level-field-name'	=> null,
+/**
+ * Class that implements the testing.
+ *
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
+final class RepoMetaApiRepoMetaApiDataFetchTest extends TestCase {
+	/**
+	 * Options for repo meta API.
+	 *
+	 * @var $options_meta_api_secrets
+	 */
+	private array $options_meta_api_secrets = array(
+		'repo-meta-api-base-url'     => null,
+		'repo-meta-api-user-id'      => null,
+		'repo-meta-api-access-token' => null,
+		'repo-owner'                 => null,
+		'repo-name'                  => null,
+		'support-level'              => null,
+		'support-level-field-name'   => null,
 	);
 
+	/**
+	 * Setup function. Require files, etc.
+	 *
+	 * @return void
+	 */
 	protected function setUp(): void {
+		require_once __DIR__ . '/IncludesForTests.php';
+
 		vipgoci_unittests_get_config_values(
 			'repo-meta-api-secrets',
 			$this->options_meta_api_secrets,
@@ -37,15 +60,24 @@ final class SupportLevelLabelMetaApiDataFetchTest extends TestCase {
 		}
 	}
 
+	/**
+	 * Tear down function. Unset variables.
+	 *
+	 * @return void
+	 */
 	protected function tearDown(): void {
-		$this->options_meta_api_secrets = null;
-		$this->options = null;
+		unset( $this->options_meta_api_secrets );
+		unset( $this->options );
 	}
 
 	/**
+	 * Test common usage of the function.
+	 *
+	 * @return void
+	 *
 	 * @covers ::vipgoci_repo_meta_api_data_fetch
 	 */
-	public function testMetaApiDataFetch() {
+	public function testMetaApiDataFetch() :void {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'repo-meta-api-user-id', 'repo-meta-api-access-token' ),
@@ -70,19 +102,13 @@ final class SupportLevelLabelMetaApiDataFetchTest extends TestCase {
 			) > 0
 		);
 
-		$this->assertTrue(
-			( ! empty(
-				$repo_meta_data['data'][0][
-					$this->options['support-level-field-name']
-				]
-			) )
+		$this->assertNotEmpty(
+			$repo_meta_data['data'][0][ $this->options['support-level-field-name'] ]
 		);
 
 		$this->assertSame(
 			$this->options['support-level'],
-			$repo_meta_data['data'][0][
-				$this->options['support-level-field-name']
-			]
+			$repo_meta_data['data'][0][ $this->options['support-level-field-name'] ]
 		);
 
 		/*

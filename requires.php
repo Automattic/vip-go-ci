@@ -31,10 +31,10 @@ require_once __DIR__ . '/other-web-services.php';
 require_once __DIR__ . '/output-security.php';
 require_once __DIR__ . '/phpcs-scan.php';
 require_once __DIR__ . '/reports.php';
+require_once __DIR__ . '/repo-meta-api.php';
 require_once __DIR__ . '/results.php';
 require_once __DIR__ . '/skip-file.php';
 require_once __DIR__ . '/statistics.php';
-require_once __DIR__ . '/support-level-label.php';
 require_once __DIR__ . '/svg-scan.php';
 
 // Require file that executes vipgoci_run().
