@@ -2785,14 +2785,14 @@ function vipgoci_run_scan(
 		 * post a message to users about the invalid sniffs.
 		 */
 
-		$debug_standards_and_sniffs = array(); // Needed for reference, not used here.
+		$debug_phpcs_info = array(); // Needed for reference, not used here.
 
 		vipgoci_phpcs_validate_sniffs_in_options_and_report(
 			$options,
-			$debug_standards_and_sniffs
+			$debug_phpcs_info
 		);
 
-		unset( $debug_standards_and_sniffs );
+		unset( $debug_phpcs_info );
 
 		/*
 		 * Set to use new PHPCS standard if needed.

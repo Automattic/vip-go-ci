@@ -1325,14 +1325,14 @@ function vipgoci_phpcs_get_sniffs_for_standard(
  * Do this by getting a list of valid sniffs
  * and check if each and every one is in the list.
  *
- * @param array $options                    Options needed (reference).
- * @param array $debug_standards_and_sniffs Reference to array to save valid PHPCS standards and sniffs.
+ * @param array $options          Options needed (reference).
+ * @param array $debug_phpcs_info Reference to array to save PHPCS debug info.
  *
  * @return void
  */
 function vipgoci_phpcs_validate_sniffs_in_options_and_report(
 	array &$options,
-	array &$debug_standards_and_sniffs
+	array &$debug_phpcs_info
 ) :void {
 	// If PHPCS scanning is disabled, do not do anything.
 	if ( false === $options['phpcs'] ) {
@@ -1574,7 +1574,7 @@ function vipgoci_phpcs_validate_sniffs_in_options_and_report(
 	}
 
 	// Save debug information, used in logging also.
-	$debug_standards_and_sniffs = array(
+	$debug_phpcs_info = array(
 		'phpcs-path'                                => $options['phpcs-path'],
 		'phpcs-php-path'                            => $options['phpcs-php-path'],
 		'phpcs-standard'                            => $options['phpcs-standard'],
@@ -1591,7 +1591,7 @@ function vipgoci_phpcs_validate_sniffs_in_options_and_report(
 
 	vipgoci_log(
 		'Validated sniffs provided in options',
-		$debug_standards_and_sniffs
+		$debug_phpcs_info
 	);
 }
 
