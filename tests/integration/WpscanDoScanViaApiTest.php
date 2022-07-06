@@ -97,7 +97,7 @@ final class WpscanDoScanViaApiTest extends TestCase {
 		$this->assertNotEmpty(
 			$actual_results[ $this->options['plugin-slug'] ]['last_updated']
 		);
-	
+
 		$this->assertTrue(
 			isset( $actual_results[ $this->options['plugin-slug'] ]['vulnerabilities'] )
 		);
