@@ -28,6 +28,10 @@ final class WpscanReportCommentFormatResultTest extends TestCase {
 		require_once __DIR__ . '/../../output-security.php';
 		require_once __DIR__ . '/../../github-misc.php';
 		require_once __DIR__ . '/../../wpscan-reports.php';
+		require_once __DIR__ . '/../../log.php';
+
+		require_once __DIR__ . '/../integration/IncludesForTestsOutputControl.php';
+		require_once __DIR__ . '/helper/IndicateTestId.php';
 	}
 
 	/**
@@ -42,8 +46,6 @@ final class WpscanReportCommentFormatResultTest extends TestCase {
 			'repo_owner',
 			'repo_name',
 			'commit12345id',
-			'file-1.php',
-			250,
 			array(
 				'security' => VIPGOCI_WPSCAN_OBSOLETE,
 				'message'  => 'My Plugin',
@@ -55,7 +57,7 @@ final class WpscanReportCommentFormatResultTest extends TestCase {
 					'latest_download_uri' => 'https://downloads.wordpress.org/plugins/my-plugin-2.0.0.zip',
 					'vulnerabilities'     => array(
 						array(
-							'id'    => '0x100',
+							'id'    => '0100100',
 							'title' => 'Security problem in My Plugin',
 						),
 					),
@@ -110,6 +112,11 @@ final class WpscanReportCommentFormatResultTest extends TestCase {
 		);
 
 		$this->assertStringContainsString(
+			VIPGOCI_GITHUB_WEB_BASE_URL . '/repo_owner/repo_name/tree/commit12345id/plugins/my-plugin',
+			$report_str
+		);
+
+		$this->assertStringContainsString(
 			'plugins/my-plugin',
 			$report_str
 		);
@@ -160,7 +167,7 @@ final class WpscanReportCommentFormatResultTest extends TestCase {
 		);
 
 		$this->assertStringContainsString(
-			VIPGOCI_WPSCAN_BASE_URL . '/vulnerability/0x100',
+			VIPGOCI_WPSCAN_BASE_URL . '/vulnerability/0100100',
 			$report_str
 		);
 
@@ -187,8 +194,6 @@ final class WpscanReportCommentFormatResultTest extends TestCase {
 			'repo_owner',
 			'repo_name',
 			'commit12345id',
-			'file-1.php',
-			250,
 			array(
 				'security' => VIPGOCI_WPSCAN_VULNERABLE,
 				'message'  => 'My Theme',
@@ -200,7 +205,7 @@ final class WpscanReportCommentFormatResultTest extends TestCase {
 					'latest_download_uri' => 'https://downloads.wordpress.org/themes/my-theme-2.0.0.zip',
 					'vulnerabilities'     => array(
 						array(
-							'id'    => '0x100',
+							'id'    => '0100100',
 							'title' => 'Security problem in My Theme',
 						),
 					),
@@ -255,6 +260,11 @@ final class WpscanReportCommentFormatResultTest extends TestCase {
 		);
 
 		$this->assertStringContainsString(
+			VIPGOCI_GITHUB_WEB_BASE_URL . '/repo_owner/repo_name/tree/commit12345id/themes/my-theme',
+			$report_str
+		);
+
+		$this->assertStringContainsString(
 			'themes/my-theme',
 			$report_str
 		);
@@ -305,7 +315,7 @@ final class WpscanReportCommentFormatResultTest extends TestCase {
 		);
 
 		$this->assertStringContainsString(
-			VIPGOCI_WPSCAN_BASE_URL . '/vulnerability/0x100',
+			VIPGOCI_WPSCAN_BASE_URL . '/vulnerability/0100100',
 			$report_str
 		);
 
@@ -317,6 +327,114 @@ final class WpscanReportCommentFormatResultTest extends TestCase {
 		$this->assertStringContainsString(
 			'MEDIUM',
 			$report_str
+		);
+	}
+
+	/**
+	 * Test invalid usage, invalid 'security' field.
+	 *
+	 * @covers ::vipgoci_wpscan_report_comment_format_result
+	 *
+	 * @return void
+	 */
+	public function testReportResultSecurityTypeInvalid(): void {
+		vipgoci_unittests_indicate_test_id( 'WpscanReportCommentFormatResultTest' );
+
+		ob_start();
+
+		$report_str = vipgoci_wpscan_report_comment_format_result(
+			'repo_owner',
+			'repo_name',
+			'commit12345id',
+			array(
+				'security' => 'invalid', // Invalid.
+				'message'  => 'My Theme',
+				'details'  => array(
+					'theme_uri'           => 'https://wordpress.org/themes/my-theme',
+					'installed_location'  => 'themes/my-theme',
+					'version_detected'    => '1.0.0',
+					'latest_version'      => '2.0.0',
+					'latest_download_uri' => 'https://downloads.wordpress.org/themes/my-theme-2.0.0.zip',
+					'vulnerabilities'     => array(
+						array(
+							'id'    => '0100100',
+							'title' => 'Security problem in My Theme',
+						),
+					),
+				),
+			),
+			VIPGOCI_WPSCAN_THEME
+		);
+
+		vipgoci_unittests_remove_indication_for_test_id( 'WpscanReportCommentFormatResultTest' );
+
+		// String should have been printed.
+		$printed_data = ob_get_contents();
+
+		ob_end_clean();
+
+		if ( true === vipgoci_unittests_debug_mode_on() ) {
+			echo $printed_data;
+		}
+
+		// Check if expected string was printed.
+		$this->assertStringContainsString(
+			'Internal error: Invalid $issue[security] in ',
+			$printed_data,
+		);
+	}
+
+	/**
+	 * Test invalid usage, invalid 'issue_type' field.
+	 *
+	 * @covers ::vipgoci_wpscan_report_comment_format_result
+	 *
+	 * @return void
+	 */
+	public function testReportResultIssueTypeInvalid(): void {
+		vipgoci_unittests_indicate_test_id( 'WpscanReportCommentFormatResultTest' );
+
+		ob_start();
+
+		$report_str = vipgoci_wpscan_report_comment_format_result(
+			'repo_owner',
+			'repo_name',
+			'commit12345id',
+			array(
+				'security' => VIPGOCI_WPSCAN_OBSOLETE,
+				'message'  => 'My Theme',
+				'details'  => array(
+					'theme_uri'           => 'https://wordpress.org/themes/my-theme',
+					'installed_location'  => 'themes/my-theme',
+					'version_detected'    => '1.0.0',
+					'latest_version'      => '2.0.0',
+					'latest_download_uri' => 'https://downloads.wordpress.org/themes/my-theme-2.0.0.zip',
+					'vulnerabilities'     => array(
+						array(
+							'id'    => '0100100',
+							'title' => 'Security problem in My Theme',
+						),
+					),
+				),
+			),
+			'invalid' // Invalid.
+		);
+
+		vipgoci_unittests_remove_indication_for_test_id( 'WpscanReportCommentFormatResultTest' );
+
+		// String should have been printed.
+		$printed_data = ob_get_contents();
+
+		ob_end_clean();
+
+		if ( true === vipgoci_unittests_debug_mode_on() ) {
+			echo $printed_data;
+		}
+
+		// Check if expected string was printed.
+		$this->assertStringContainsString(
+			'Internal error: Invalid $issue_type in ',
+			$printed_data,
 		);
 	}
 }
