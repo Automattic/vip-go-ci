@@ -22,7 +22,7 @@ phpcs-sniffs-existing=WordPressVIPMinimum.Functions.StripTags,WordPressVIPMinimu
 commit-test-phpcs-scan-commit-1=9882d7da670f8f45f3431e3c7da80a00d6af4b5e
 commit-test-phpcs-scan-commit-2=1c63fd89388e3f5563869ca5dc54ae7d4da9f1a4
 commit-test-phpcs-scan-commit-3=ba678917a65855a3129ff4f95de3b2ede3d76f4b
-commit-test-phpcs-scan-commit-4=4702a1416ee36510a3cc43c68e631be572acddfe
+commit-test-phpcs-scan-commit-4=62adb9b6cd459c086fc10bdc98d57891fb9e55d4
 commit-test-phpcs-scan-commit-5=dd60c66a7c1e27fc78c400f0c5160c9a80c4bd49
 commit-test-phpcs-scan-commit-6=84985c25706e83dada8c40061e6f1496cfe3c522
 
@@ -54,10 +54,8 @@ commit-test-svg-files-1=44ed02088a503d84522f6e9b40eb0788e0935c24
 commit-test-svg-files-2b=bc23e8530ad4881af447646c6e53f2acd1ef364d
 
 autoapprove-filetypes=txt,gif,jpg,png,md
-commit-test-ap-hashes-file-approved-1=3dc1135e4bc1dbc5c5a57cdf45c2ba2bd5690b51
-commit-test-ap-auto-approval-1=a96b12cc806fef600818085cf26dad61321ddc81
-pr-test-ap-auto-approval-1=40
-commit-test-hashes-api-scan-commit=f8a50f557b25dca72978854eae97bd8ba07f0a55
+commit-test-ap-auto-approval-1=5a891b161ec88bd885cd09e3fd370399921508d8
+pr-test-ap-auto-approval-1=46
 
 commit-test-ap-nonfunctionalchanges-1b=c4a3fe05f67f329cdf884392df29e55f5b8d4498
 
