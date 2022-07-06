@@ -102,7 +102,7 @@ function vipgoci_wpscan_do_scan_via_api(
 			0,
 			true // Log to IRC.
 		);
-	
+
 		return null;
 	} elseif (
 		// Check if all expected keys exist.
@@ -117,7 +117,7 @@ function vipgoci_wpscan_do_scan_via_api(
 			0,
 			true // Log to IRC.
 		);
-			
+
 		return null;
 	} else {
 		return $wpscan_report;
