@@ -21,8 +21,16 @@ function vipgoci_wpscan_report_start(
 		$comment_type = 'plugin';
 	} elseif ( VIPGOCI_WPSCAN_THEME === $issue_type ) {
 		$comment_type = 'theme';
+	} else {
+		vipgoci_sysexit(
+			'Internal error: Invalid $issue_type in ' . __FUNCTION__,
+			array(
+				'issue_type' => $issue_type,
+			)
+		);
+
+		return ''; // For unit test.
 	}
-	// @todo: sysexit
 
 	$comment_start =
 		'# ' . VIPGOCI_WPSCAN_API_ERROR .
@@ -51,11 +59,44 @@ function vipgoci_wpscan_report_end(
 		$comment_type = 'plugin';
 	} elseif ( VIPGOCI_WPSCAN_THEME === $issue_type ) {
 		$comment_type = 'theme';
+	} else {
+		vipgoci_sysexit(
+			'Internal error: Invalid $issue_type in ' . __FUNCTION__,
+			array(
+				'issue_type' => $issue_type,
+			)
+		);
+
+		return ''; // For unit-test.
 	}
-	// @todo: sysexit
 
 	return '##### Incorrect ' . $comment_type . 's? [Learn how to prevent false-positive matches.](https://docs.wpvip.com/technical-references/codebase-manager/#h-preventing-false-positive-plugin-matches)' . // @todo: Should be configurable.
 		"\n\r";
+}
+
+/**
+ * Returns severity number as readable string, such as 'MEDIUM'.
+ *
+ * @param float $severity Severity rating number to be rendered as a string.
+ *
+ * @todo: Missing test.
+ *
+ * @return string
+ */
+function vipgoci_wpscan_report_format_severity(
+	float $severity
+) :string {
+
+	foreach ( VIPGOCI_WPSCAN_SEVERITY_RATING as $severity_info ) {
+		if (
+			( $severity >= $severity_info['value_low'] ) &&
+			( $severity <= $severity_info['value_high'] )
+		) {
+			return $severity_info['severity'];
+		}
+	}
+
+	return 'UNKNOWN';
 }
 
 /**
@@ -129,11 +170,13 @@ function vipgoci_wpscan_report_comment_format_result(
 	if ( ! empty( $issue['details']['vulnerabilities'] ) ) {
 		$res .= "\n\r";
 
+		$severity = 9; // @todo
+
 		foreach ( $issue['details']['vulnerabilities'] as $vuln_item ) {
 			$res .= '### &#x1f512; Security information' . "\n" . // Header markup and lock sign.
 			'**Title**: ' . vipgoci_output_html_escape( $vuln_item['title'] ) . "\n" .
 			'**Details**: ' . vipgoci_output_html_escape( VIPGOCI_WPSCAN_BASE_URL . '/vulnerability/' . $vuln_item['id'] ) . "\n" .
-			'**Severity**:  6.1/10 (MEDIUM)' . "\n"; // @todo: Format severity, available in $issue['severity'].
+			'**Severity**:  ' . vipgoci_output_html_escape( (string) $severity ) . '/10 (' . vipgoci_output_html_escape( vipgoci_wpscan_report_format_severity( $severity ) ) . ") \n";
 		}
 	}
 
