@@ -735,8 +735,6 @@ function vipgoci_report_submit_pr_generic_comment_from_results(
 						$repo_owner,
 						$repo_name,
 						$commit_id,
-						$commit_issue['file_name'],
-						$commit_issue['file_line'],
 						$commit_issue['issue'],
 						$commit_issue['issue']['addon_type']
 					);
