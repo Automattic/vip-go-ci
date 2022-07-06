@@ -33,6 +33,9 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 		'phpcs-validate-sniffs-and-report-exclude-commit'  => null,
 		'phpcs-validate-sniffs-and-report-exclude-invalid' => null,
 		'phpcs-validate-sniffs-and-report-exclude-valid'   => null,
+		'phpcs-validate-sniffs-and-report-standard-ignore' => null,
+		'phpcs-validate-sniffs-and-report-sniff-valid-for-selected-standards' => null,
+		'phpcs-validate-sniffs-and-report-sniff-valid-for-all-valid-standards' => null,
 	);
 
 	/**
@@ -91,6 +94,11 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 
 		$this->options['phpcs-sniffs-include'] = array();
 		$this->options['phpcs-sniffs-exclude'] = array();
+
+		$this->options['phpcs-standards-to-ignore'] = explode(
+			',',
+			$this->options['phpcs-validate-sniffs-and-report-standard-ignore']
+		);
 
 		foreach (
 			array(
@@ -214,8 +222,11 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
+		$debug_phpcs_info = array();
+
 		vipgoci_phpcs_validate_sniffs_in_options_and_report(
-			$this->options
+			$this->options,
+			$debug_phpcs_info
 		);
 
 		vipgoci_unittests_output_unsuppress();
@@ -292,6 +303,43 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 			$this->options['phpcs-validate-sniffs-and-report-include-valid'],
 			$this->options['phpcs-sniffs-include']
 		);
+
+		/*
+		 * Verify PHPCS standards and sniffs
+		 * are available where they should be.
+		 */
+
+		$this->assertTrue(
+			in_array(
+				$this->options['phpcs-standards-to-ignore'][0],
+				$debug_phpcs_info['all-phpcs-standards-unfiltered'],
+				true
+			)
+		);
+
+		$this->assertFalse(
+			in_array(
+				$this->options['phpcs-standards-to-ignore'][0],
+				$debug_phpcs_info['all-phpcs-standards-filtered'],
+				true
+			)
+		);
+
+		$this->assertTrue(
+			in_array(
+				$this->options['phpcs-validate-sniffs-and-report-sniff-valid-for-selected-standards'],
+				$debug_phpcs_info['phpcs-sniffs-valid-for-selected-standards'],
+				true
+			)
+		);
+
+		$this->assertTrue(
+			in_array(
+				$this->options['phpcs-validate-sniffs-and-report-sniff-valid-for-all-valid-standards'],
+				$debug_phpcs_info['phpcs-sniffs-valid-for-all-standards'],
+				true
+			)
+		);
 	}
 
 	/**
@@ -362,8 +410,11 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
+		$debug_phpcs_info = array();
+
 		vipgoci_phpcs_validate_sniffs_in_options_and_report(
-			$this->options
+			$this->options,
+			$debug_phpcs_info
 		);
 
 		vipgoci_unittests_output_unsuppress();
@@ -393,6 +444,43 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 		$this->assertSame(
 			$this->options['phpcs-validate-sniffs-and-report-include-valid'],
 			$this->options['phpcs-sniffs-include']
+		);
+
+		/*
+		 * Verify PHPCS standards and sniffs
+		 * are available where they should be.
+		 */
+
+		$this->assertTrue(
+			in_array(
+				$this->options['phpcs-standards-to-ignore'][0],
+				$debug_phpcs_info['all-phpcs-standards-unfiltered'],
+				true
+			)
+		);
+
+		$this->assertFalse(
+			in_array(
+				$this->options['phpcs-standards-to-ignore'][0],
+				$debug_phpcs_info['all-phpcs-standards-filtered'],
+				true
+			)
+		);
+
+		$this->assertTrue(
+			in_array(
+				$this->options['phpcs-validate-sniffs-and-report-sniff-valid-for-selected-standards'],
+				$debug_phpcs_info['phpcs-sniffs-valid-for-selected-standards'],
+				true
+			)
+		);
+
+		$this->assertTrue(
+			in_array(
+				$this->options['phpcs-validate-sniffs-and-report-sniff-valid-for-all-valid-standards'],
+				$debug_phpcs_info['phpcs-sniffs-valid-for-all-standards'],
+				true
+			)
 		);
 	}
 
@@ -464,8 +552,11 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
+		$debug_phpcs_info = array();
+
 		vipgoci_phpcs_validate_sniffs_in_options_and_report(
-			$this->options
+			$this->options,
+			$debug_phpcs_info
 		);
 
 		vipgoci_unittests_output_unsuppress();
@@ -542,6 +633,43 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 			$this->options['phpcs-validate-sniffs-and-report-exclude-valid'],
 			$this->options['phpcs-sniffs-exclude']
 		);
+
+		/*
+		 * Verify PHPCS standards and sniffs
+		 * are available where they should be.
+		 */
+
+		$this->assertTrue(
+			in_array(
+				$this->options['phpcs-standards-to-ignore'][0],
+				$debug_phpcs_info['all-phpcs-standards-unfiltered'],
+				true
+			)
+		);
+
+		$this->assertFalse(
+			in_array(
+				$this->options['phpcs-standards-to-ignore'][0],
+				$debug_phpcs_info['all-phpcs-standards-filtered'],
+				true
+			)
+		);
+
+		$this->assertTrue(
+			in_array(
+				$this->options['phpcs-validate-sniffs-and-report-sniff-valid-for-selected-standards'],
+				$debug_phpcs_info['phpcs-sniffs-valid-for-selected-standards'],
+				true
+			)
+		);
+
+		$this->assertTrue(
+			in_array(
+				$this->options['phpcs-validate-sniffs-and-report-sniff-valid-for-all-valid-standards'],
+				$debug_phpcs_info['phpcs-sniffs-valid-for-all-standards'],
+				true
+			)
+		);
 	}
 
 	/**
@@ -612,8 +740,11 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
+		$debug_phpcs_info = array();
+
 		vipgoci_phpcs_validate_sniffs_in_options_and_report(
-			$this->options
+			$this->options,
+			$debug_phpcs_info
 		);
 
 		vipgoci_unittests_output_unsuppress();
@@ -640,9 +771,46 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 			);
 		}
 
+		/*
+		 * Verify PHPCS standards and sniffs
+		 * are available where they should be.
+		 */
+
 		$this->assertSame(
 			$this->options['phpcs-validate-sniffs-and-report-exclude-valid'],
 			$this->options['phpcs-sniffs-exclude']
+		);
+
+		$this->assertTrue(
+			in_array(
+				$this->options['phpcs-standards-to-ignore'][0],
+				$debug_phpcs_info['all-phpcs-standards-unfiltered'],
+				true
+			)
+		);
+
+		$this->assertFalse(
+			in_array(
+				$this->options['phpcs-standards-to-ignore'][0],
+				$debug_phpcs_info['all-phpcs-standards-filtered'],
+				true
+			)
+		);
+
+		$this->assertTrue(
+			in_array(
+				$this->options['phpcs-validate-sniffs-and-report-sniff-valid-for-selected-standards'],
+				$debug_phpcs_info['phpcs-sniffs-valid-for-selected-standards'],
+				true
+			)
+		);
+
+		$this->assertTrue(
+			in_array(
+				$this->options['phpcs-validate-sniffs-and-report-sniff-valid-for-all-valid-standards'],
+				$debug_phpcs_info['phpcs-sniffs-valid-for-all-standards'],
+				true
+			)
 		);
 	}
 
