@@ -1,41 +1,65 @@
 #!/bin/bash
 
+set -e
+
 #
 # Before updating these version numbers and
 # hashes, please read the documentation here:
 # https://github.com/Automattic/vip-go-ci/#updating-tools-initsh-with-new-versions
 #
 
-# https://github.com/squizlabs/PHP_CodeSniffer/releases
-export PHP_CODESNIFFER_VER="3.6.2"
-export PHP_CODESNIFFER_SHA1SUM="e3fe7a4251223db0bff2ec66974346777129952f"
+# https://github.com/squizlabs/PHP_CodeSniffer
+export PHP_CODESNIFFER_REPO="squizlabs/PHP_CodeSniffer"
+export PHP_CODESNIFFER_VER="3.7.1"
+export PHP_CODESNIFFER_VER_FILE="php-codesniffer-$PHP_CODESNIFFER_VER.txt"
+export PHP_CODESNIFFER_SHA1SUM="ca1bd8bc97fede23155b83029d174079c3905014"
 
-# https://github.com/WordPress/WordPress-Coding-Standards/releases
+# https://github.com/WordPress/WordPress-Coding-Standards
+export WP_CODING_STANDARDS_REPO="WordPress/WordPress-Coding-Standards"
 export WP_CODING_STANDARDS_VER="2.3.0"
-export WP_CODING_STANDARDS_SHA1SUM="c8161d77fcf63bdeaa3e8e6aa36bc1936b469070";
+export WP_CODING_STANDARDS_VER_FILE="wp-coding-standards-$WP_CODING_STANDARDS_VER.txt"
+export WP_CODING_STANDARDS_SHA1SUM="c8161d77fcf63bdeaa3e8e6aa36bc1936b469070"
 
-# https://github.com/automattic/vip-coding-standards/releases
+# https://github.com/automattic/vip-coding-standards
+export VIP_CODING_STANDARDS_REPO="automattic/vip-coding-standards"
 export VIP_CODING_STANDARDS_VER="2.3.3"
-export VIP_CODING_STANDARDS_SHA1SUM="44c6519c628d450be5330b2706ae9dbb09dbd6be";
+export VIP_CODING_STANDARDS_VER_FILE="vip-coding-standards-$VIP_CODING_STANDARDS_VER.txt"
+export VIP_CODING_STANDARDS_SHA1SUM="44c6519c628d450be5330b2706ae9dbb09dbd6be"
 
-# https://github.com/sirbrillig/phpcs-variable-analysis/releases
-export PHPCS_VARIABLE_ANALYSIS_VER="2.11.3"
+# https://github.com/sirbrillig/phpcs-variable-analysis
+export PHPCS_VARIABLE_ANALYSIS_REPO="sirbrillig/phpcs-variable-analysis"
+export PHPCS_VARIABLE_ANALYSIS_VER="v2.11.3"
+export PHPCS_VARIABLE_ANALYSIS_VER_FILE="phpcs-variable-analysis-$PHPCS_VARIABLE_ANALYSIS_VER.txt"
 export PHPCS_VARIABLE_ANALYSIS_SHA1SUM="4468db94e39598e616c113a658a69a6265da05d2"
 
-# https://github.com/phpcompatibility/phpcompatibility/releases
-export PHP_COMPATIBILITY_VER="9.3.5"
-export PHP_COMPATIBILITY_SHA1SUM="880d017ff6c3b64fda2c569bc79e589cc405e9b8";
+# https://github.com/phpcompatibility/phpcompatibility
+export PHP_COMPATIBILITY_REPO="phpcompatibility/phpcompatibility"
+export PHP_COMPATIBILITY_VER="c23e20c0aaa5c527fd7b3fbef38c50c458bb47f1" # Using develop branch.
+export PHP_COMPATIBILITY_VER_FILE="php-compatibility-$PHP_COMPATIBILITY_VER.txt"
+export PHP_COMPATIBILITY_SHA1SUM="3787a3f86edbfbc4881d2b123f17ca1e1bcbeb66"
 
-# https://github.com/phpcompatibility/phpcompatibilitywp/releases
+# https://github.com/phpcompatibility/phpcompatibilitywp
+export PHP_COMPATIBILITY_WP_REPO="phpcompatibility/phpcompatibilitywp"
 export PHP_COMPATIBILITY_WP_VER="2.1.3"
+export PHP_COMPATIBILITY_WP_VER_FILE="php-compatibility-wp-$PHP_COMPATIBILITY_WP_VER.txt"
 export PHP_COMPATIBILITY_WP_SHA1SUM="671eb42d7a20008e9259755a72c28c94c0d04e9f"
 
-# https://github.com/phpcompatibility/phpcompatibilityparagonie/releases
+# https://github.com/phpcompatibility/phpcompatibilityparagonie
+export PHP_COMPATIBILITY_PARAGONIE_REPO="phpcompatibility/phpcompatibilityparagonie"
 export PHP_COMPATIBILITY_PARAGONIE_VER="1.3.1"
+export PHP_COMPATIBILITY_PARAGONIE_VER_FILE="php-compatibility-paragonie-$PHP_COMPATIBILITY_PARAGONIE_VER.txt"
 export PHP_COMPATIBILITY_PARAGONIE_SHA1SUM="a51cf3a1af05e6192ce9db6fc90ccb7afd58cb22"
 
-# https://github.com/Automattic/vip-go-svg-sanitizer/releases
+# https://github.com/PHPCSStandards/PHPCSUtils
+export PHPCS_UTILS_REPO="PHPCSStandards/PHPCSUtils"
+export PHPCS_UTILS_VER="b65fbd47c38202a667ea3930a4a51c5c8b9ca434" # Using develop branch.
+export PHPCS_UTILS_VER_FILE="phpcs-utils-$PHPCS_UTILS_VER.txt"
+export PHPCS_UTILS_SHA1SUM="bc3309c56747e4c2ee165fa4b1ba2bf994e78570"
+
+# https://github.com/Automattic/vip-go-svg-sanitizer
+export VIP_GO_SVG_SANITIZER_REPO="Automattic/vip-go-svg-sanitizer"
 export VIP_GO_SVG_SANITIZER_VER="0.9.8"
+export VIP_GO_SVG_SANITIZER_VER_FILE="vip-go-svg-sanitizer-$VIP_GO_SVG_SANITIZER_VER.txt"
 export VIP_GO_SVG_SANITIZER_SHA1SUM="558f16dcff6adc4637c1d0287cc6f95fe9ab2ece"
 
 export TMP_LOCK_FILE="$HOME/.vip-go-ci-tools-init.lck"
@@ -47,9 +71,37 @@ function sha1sum_check() {
 	TMP_HASH=`sha1sum $FILENAME|awk '{print $1}'`
 
 	if [ "$TMP_HASH" != "$CORRECT_HASH" ] ; then
-		echo "FAILED sha1sum check for $FILENAME; $TMP_HASH (downloaded) vs. $CORRECT_HASH (correct)";
-		exit;
+		echo "FAILED sha1sum check for $FILENAME; $TMP_HASH (downloaded) vs. $CORRECT_HASH (correct)"
+		return 1
 	fi
+
+	return 0
+}
+
+function gh_fetch_and_verify() {
+	GITHUB_OWNER_AND_REPO=$1
+	VERSION_TO_FETCH=$2
+	VERSION_INDICATOR_FILE=$3
+	CORRECT_HASH=$4
+	FILES_TO_MOVE=$5
+	DESTINATION_DIR=$6
+
+	TMP_FOR_ARCHIVE=`mktemp -d /tmp/vip-go-ci-tools-archive-XXXXXX`
+
+	( pushd $TMP_FOR_ARCHIVE && \
+	wget -O "archive.tar.gz" "https://github.com/$GITHUB_OWNER_AND_REPO/archive/$VERSION_TO_FETCH.tar.gz" && \
+	sha1sum_check "archive.tar.gz" "$CORRECT_HASH" && \
+	tar -zxf "archive.tar.gz" && \
+	mv $FILES_TO_MOVE $DESTINATION_DIR && \
+	touch $VERSION_INDICATOR_FILE && \
+	rm -rf $TMP_FOR_ARCHIVE && \
+	popd && \
+	echo "$0: Fetched & verified for $GITHUB_OWNER_AND_REPO" && \
+	return 0 ) \
+	|| \
+	( echo "$0: Problem fetching/verifying files for $GITHUB_OWNER_AND_REPO" ; \
+	rm -rf "$TMP_FOR_ARCHIVE" ; \
+	return 1 )
 }
 
 function lock_place() {
@@ -68,7 +120,6 @@ function lock_remove() {
 }
 
 lock_place
-
 
 #
 # Exit if running as root
@@ -136,7 +187,7 @@ if [ -d ~/vip-go-ci-tools ] ; then
 	export TMP_DO_DELETE="0"
 
 
-	for TMP_FILE in	"vip-coding-standards-$VIP_CODING_STANDARDS_VER.txt" "wp-coding-standards-$WP_CODING_STANDARDS_VER.txt" "php-codesniffer-$PHP_CODESNIFFER_VER.txt" "vip-go-ci-$VIP_GO_CI_VER.txt" "phpcs-variable-analysis-$PHPCS_VARIABLE_ANALYSIS_VER.txt" "php-compatibility-$PHP_COMPATIBILITY_VER.txt" "php-compatibility-wp-$PHP_COMPATIBILITY_WP_VER.txt" "php-compatibility-paragonie-$PHP_COMPATIBILITY_PARAGONIE_VER.txt" "vip-go-svg-sanitizer-$VIP_GO_SVG_SANITIZER_VER.txt" ; do
+	for TMP_FILE in	"$PHP_CODESNIFFER_VER_FILE" "$WP_CODING_STANDARDS_VER_FILE" "$VIP_CODING_STANDARDS_VER_FILE" "$PHPCS_VARIABLE_ANALYSIS_VER_FILE" "$PHP_COMPATIBILITY_VER_FILE" "$PHP_COMPATIBILITY_WP_VER_FILE" "$PHP_COMPATIBILITY_PARAGONIE_VER_FILE" "$PHPCS_UTILS_VER_FILE" "$VIP_GO_SVG_SANITIZER_VER_FILE" "vip-go-ci-$VIP_GO_CI_VER.txt"; do
 		if [ ! -f ~/vip-go-ci-tools/$TMP_FILE ] ; then
 			export TMP_DO_DELETE="1"
 		fi
@@ -165,70 +216,38 @@ else
 
 	TMP_FOLDER=`mktemp -d /tmp/vip-go-ci-tools-XXXXXX`
 
-	cd $TMP_FOLDER && \
-	wget "https://github.com/squizlabs/PHP_CodeSniffer/archive/$PHP_CODESNIFFER_VER.tar.gz" && \
-	sha1sum_check "$PHP_CODESNIFFER_VER.tar.gz" "$PHP_CODESNIFFER_SHA1SUM" && \
-	tar -zxvf "$PHP_CODESNIFFER_VER.tar.gz"  && \
-	rm -fv "$PHP_CODESNIFFER_VER.tar.gz" && \
-	mv "PHP_CodeSniffer-$PHP_CODESNIFFER_VER/" phpcs && \
-	touch $TMP_FOLDER/php-codesniffer-$PHP_CODESNIFFER_VER.txt && \
-	wget "https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards/archive/$WP_CODING_STANDARDS_VER.tar.gz" && \
-	sha1sum_check "$WP_CODING_STANDARDS_VER.tar.gz" "$WP_CODING_STANDARDS_SHA1SUM" && \
-	tar -zxvf "$WP_CODING_STANDARDS_VER.tar.gz"  && \
-	rm -fv "$WP_CODING_STANDARDS_VER.tar.gz" && \
-	mv WordPress-Coding-Standards-$WP_CODING_STANDARDS_VER/WordPress* phpcs/src/Standards/ && \
-	touch $TMP_FOLDER/wp-coding-standards-$WP_CODING_STANDARDS_VER.txt && \
-	wget "https://github.com/Automattic/VIP-Coding-Standards/archive/$VIP_CODING_STANDARDS_VER.tar.gz" && \
-	sha1sum_check "$VIP_CODING_STANDARDS_VER.tar.gz" "$VIP_CODING_STANDARDS_SHA1SUM" && \
-	tar -zxvf "$VIP_CODING_STANDARDS_VER.tar.gz" && \
-	mv "VIP-Coding-Standards-$VIP_CODING_STANDARDS_VER/WordPressVIPMinimum/" phpcs/src/Standards/  && \
-	mv "VIP-Coding-Standards-$VIP_CODING_STANDARDS_VER/WordPress-VIP-Go/" phpcs/src/Standards/  && \
-	rm -f "$VIP_CODING_STANDARDS_VER".tar.gz && \
-	touch $TMP_FOLDER/vip-coding-standards-$VIP_CODING_STANDARDS_VER.txt && \
-	wget "https://github.com/sirbrillig/phpcs-variable-analysis/archive/v$PHPCS_VARIABLE_ANALYSIS_VER.tar.gz" && \
-	mv "v$PHPCS_VARIABLE_ANALYSIS_VER.tar.gz" "$PHPCS_VARIABLE_ANALYSIS_VER.tar.gz" && \
-	sha1sum_check "$PHPCS_VARIABLE_ANALYSIS_VER.tar.gz" "$PHPCS_VARIABLE_ANALYSIS_SHA1SUM" && \
-	tar -zxvf "$PHPCS_VARIABLE_ANALYSIS_VER.tar.gz" && \
-	mv "phpcs-variable-analysis-$PHPCS_VARIABLE_ANALYSIS_VER/VariableAnalysis/" phpcs/src/Standards/  && \
-	rm -f "$PHPCS_VARIABLE_ANALYSIS_VER".tar.gz && \
-	touch $TMP_FOLDER/phpcs-variable-analysis-$PHPCS_VARIABLE_ANALYSIS_VER.txt && \
-	wget "https://github.com/PHPCompatibility/PHPCompatibility/archive/$PHP_COMPATIBILITY_VER.tar.gz" && \
-	sha1sum_check "$PHP_COMPATIBILITY_VER.tar.gz" "$PHP_COMPATIBILITY_SHA1SUM" && \
-	tar -zxvf "$PHP_COMPATIBILITY_VER.tar.gz" && \
-	mv "PHPCompatibility-$PHP_COMPATIBILITY_VER/PHPCompatibility" phpcs/src/Standards/ && \
-	mv "PHPCompatibility-$PHP_COMPATIBILITY_VER/PHPCSAliases.php" phpcs/src/Standards/ && \
-	touch "$TMP_FOLDER/php-compatibility-$PHP_COMPATIBILITY_VER.txt" && \
-	rm -f "$PHP_COMPATIBILITY_VER.tar.gz" && \
-	wget "https://github.com/PHPCompatibility/PHPCompatibilityWP/archive/$PHP_COMPATIBILITY_WP_VER.tar.gz" && \
-	sha1sum_check "$PHP_COMPATIBILITY_WP_VER.tar.gz" "$PHP_COMPATIBILITY_WP_SHA1SUM" && \
-	tar -zxvf "$PHP_COMPATIBILITY_WP_VER.tar.gz" && \
-	mv "PHPCompatibilityWP-$PHP_COMPATIBILITY_WP_VER/PHPCompatibilityWP" phpcs/src/Standards/ && \
-	touch $TMP_FOLDER/php-compatibility-wp-$PHP_COMPATIBILITY_WP_VER.txt && \
-	rm -f "$PHP_COMPATIBILITY_WP_VER.tar.gz" && \
-	wget "https://github.com/PHPCompatibility/PHPCompatibilityParagonie/archive/$PHP_COMPATIBILITY_PARAGONIE_VER.tar.gz" && \
-	sha1sum_check "$PHP_COMPATIBILITY_PARAGONIE_VER.tar.gz" "$PHP_COMPATIBILITY_PARAGONIE_SHA1SUM" && \
-	tar -zxvf "$PHP_COMPATIBILITY_PARAGONIE_VER.tar.gz" && \
-	mv PHPCompatibilityParagonie-$PHP_COMPATIBILITY_PARAGONIE_VER/PHPCompatibilityParagonie* phpcs/src/Standards/ && \
-	touch $TMP_FOLDER/php-compatibility-paragonie-$PHP_COMPATIBILITY_PARAGONIE_VER.txt && \
-	rm -f "$PHP_COMPATIBILITY_PARAGONIE_VER.tar.gz" && \
-	wget "https://github.com/Automattic/vip-go-svg-sanitizer/archive/$VIP_GO_SVG_SANITIZER_VER.tar.gz" && \
-	sha1sum_check "$VIP_GO_SVG_SANITIZER_VER.tar.gz" "$VIP_GO_SVG_SANITIZER_SHA1SUM" && \
-	tar -zxvf "$VIP_GO_SVG_SANITIZER_VER.tar.gz" && \
-	mv "vip-go-svg-sanitizer-$VIP_GO_SVG_SANITIZER_VER" vip-go-svg-sanitizer && \
-	touch "$TMP_FOLDER/vip-go-svg-sanitizer-$VIP_GO_SVG_SANITIZER_VER.txt" && \
-	rm -f "$VIP_GO_SVG_SANITIZER_VER.tar.gz" && \
-	wget "https://github.com/Automattic/vip-go-ci/archive/$VIP_GO_CI_VER.tar.gz" && \
-	tar -zxvf "$VIP_GO_CI_VER.tar.gz" && \
+	cd $TMP_FOLDER || exit "Unable to change to dir $TMP_FOLDER"
+	
+	gh_fetch_and_verify "$PHP_CODESNIFFER_REPO" $PHP_CODESNIFFER_VER "$TMP_FOLDER/$PHP_CODESNIFFER_VER_FILE" $PHP_CODESNIFFER_SHA1SUM "PHP_CodeSniffer-$PHP_CODESNIFFER_VER/" "$TMP_FOLDER/phpcs" && \
+	\
+	gh_fetch_and_verify "$WP_CODING_STANDARDS_REPO" $WP_CODING_STANDARDS_VER "$TMP_FOLDER/$WP_CODING_STANDARDS_VER_FILE" $WP_CODING_STANDARDS_SHA1SUM "WordPress-Coding-Standards-$WP_CODING_STANDARDS_VER/WordPress*" $TMP_FOLDER/phpcs/src/Standards/ && \
+	\
+	gh_fetch_and_verify "$VIP_CODING_STANDARDS_REPO" "$VIP_CODING_STANDARDS_VER" "$TMP_FOLDER/$VIP_CODING_STANDARDS_VER_FILE" $VIP_CODING_STANDARDS_SHA1SUM "VIP-Coding-Standards-$VIP_CODING_STANDARDS_VER/WordPressVIPMinimum/ VIP-Coding-Standards-$VIP_CODING_STANDARDS_VER/WordPress-VIP-Go/" "$TMP_FOLDER/phpcs/src/Standards/" && \
+	\
+	gh_fetch_and_verify "$PHPCS_VARIABLE_ANALYSIS_REPO" "$PHPCS_VARIABLE_ANALYSIS_VER" "$TMP_FOLDER/$PHPCS_VARIABLE_ANALYSIS_VER_FILE" "$PHPCS_VARIABLE_ANALYSIS_SHA1SUM" "phpcs-variable-analysis-*/VariableAnalysis/" "$TMP_FOLDER/phpcs/src/Standards/" && \
+	\
+	gh_fetch_and_verify "$PHP_COMPATIBILITY_REPO" "$PHP_COMPATIBILITY_VER" "$TMP_FOLDER/$PHP_COMPATIBILITY_VER_FILE" "$PHP_COMPATIBILITY_SHA1SUM" "PHPCompatibility-$PHP_COMPATIBILITY_VER/PHPCompatibility PHPCompatibility-$PHP_COMPATIBILITY_VER/PHPCSAliases.php" "$TMP_FOLDER/phpcs/src/Standards/" && \
+	\
+	gh_fetch_and_verify "$PHP_COMPATIBILITY_WP_REPO" "$PHP_COMPATIBILITY_WP_VER" "$TMP_FOLDER/$PHP_COMPATIBILITY_WP_VER_FILE" "$PHP_COMPATIBILITY_WP_SHA1SUM" "PHPCompatibilityWP-$PHP_COMPATIBILITY_WP_VER/PHPCompatibilityWP" "$TMP_FOLDER/phpcs/src/Standards/" && \
+	\
+	gh_fetch_and_verify "$PHP_COMPATIBILITY_PARAGONIE_REPO" "$PHP_COMPATIBILITY_PARAGONIE_VER" "$TMP_FOLDER/$PHP_COMPATIBILITY_PARAGONIE_VER_FILE" "$PHP_COMPATIBILITY_PARAGONIE_SHA1SUM" "PHPCompatibilityParagonie-$PHP_COMPATIBILITY_PARAGONIE_VER/PHPCompatibilityParagonie*" "$TMP_FOLDER/phpcs/src/Standards/" && \
+	\
+	gh_fetch_and_verify "$PHPCS_UTILS_REPO" "$PHPCS_UTILS_VER" "$TMP_FOLDER/$PHPCS_UTILS_VER_FILE" "$PHPCS_UTILS_SHA1SUM" "PHPCSUtils-$PHPCS_UTILS_VER/PHPCS* PHPCSUtils-$PHPCS_UTILS_VER/phpcsutils-autoload.php" "$TMP_FOLDER/phpcs/src/Standards/" && \
+	\
+	gh_fetch_and_verify "$VIP_GO_SVG_SANITIZER_REPO" "$VIP_GO_SVG_SANITIZER_VER" "$TMP_FOLDER/$VIP_GO_SVG_SANITIZER_VER_FILE" "$VIP_GO_SVG_SANITIZER_SHA1SUM" "vip-go-svg-sanitizer-$VIP_GO_SVG_SANITIZER_VER" "$TMP_FOLDER/vip-go-svg-sanitizer" && \
+	\
+	( wget "https://github.com/Automattic/vip-go-ci/archive/$VIP_GO_CI_VER.tar.gz" && \
+	tar -zxf "$VIP_GO_CI_VER.tar.gz" && \
 	mv "vip-go-ci-$VIP_GO_CI_VER" vip-go-ci && \
 	rm -f "$VIP_GO_CI_VER.tar.gz" && \
 	touch "$TMP_FOLDER/vip-go-ci-$VIP_GO_CI_VER.txt" && \
-	mv $TMP_FOLDER ~/vip-go-ci-tools && \
-
-	# Note that the last action above is atomic:
-	# Either moving the folder succeeds, and the tools
-	# are all installed, or it fails and no tools are installed.
-
-	echo "$0: Installation of tools finished"
+	echo "$0: Installation of tools finished" && \
+	mv $TMP_FOLDER ~/vip-go-ci-tools ) \
+	|| \
+	( echo "$0: Unable to install tools" ; \
+	rm -rf "$TMP_FOLDER" ; \
+	lock_remove ; \
+	exit 1 )
 fi
 
 lock_remove
