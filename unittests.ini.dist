@@ -32,6 +32,9 @@ phpcs-validate-sniffs-and-report-include-valid=WordPressVIPMinimum.Functions.Str
 phpcs-validate-sniffs-and-report-exclude-commit=fa1b1a695a0c25895ed8ccb3c0d475e077f396f8
 phpcs-validate-sniffs-and-report-exclude-invalid=MyInvalidSniff.SniffName
 phpcs-validate-sniffs-and-report-exclude-valid=WordPressVIPMinimum.Functions.StripTags,WordPress.PHP.IniSet
+phpcs-validate-sniffs-and-report-standard-ignore=PHPCSUtils
+phpcs-validate-sniffs-and-report-sniff-valid-for-selected-standards=WordPressVIPMinimum.Classes.DeclarationCompatibility
+phpcs-validate-sniffs-and-report-sniff-valid-for-all-valid-standards=PHPCS23Utils.Load.LoadUtils
 
 [svg-scan]
 svg-php-path=/usr/bin/php
@@ -120,7 +123,4 @@ commit-test-options-read-repo-file-with-file=7604b5c54a736d58678de0c5bf18de1c66f
 commit-test-options-read-repo-file-with-file-2=fe24a89ee9e9184681c6482ca60af57cc4c0b1be
 commit-test-options-read-repo-file-with-file-3=1615b03f6997878feb1a25926631c4165e2efeec
 commit-test-options-read-repo-file-with-file-5=9a13bbec0cc2c7557539076f0125cc396fab22c1
-
-[repo-meta-api]
-commit-support-level-set-test=4e56c433e2e7c0de62e333cdf719949ea0a1ccb5
 
