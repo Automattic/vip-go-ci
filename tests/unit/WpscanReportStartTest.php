@@ -25,8 +25,12 @@ final class WpscanReportStartTest extends TestCase {
 	 */
 	protected function setUp() :void {
 		require_once __DIR__ . '/../../defines.php';
-		require_once __DIR__ . '/../../wpscan-reports.php';
 		require_once __DIR__ . '/../../github-misc.php';
+		require_once __DIR__ . '/../../log.php';
+		require_once __DIR__ . '/../../wpscan-reports.php';
+
+		require_once __DIR__ . '/../integration/IncludesForTestsOutputControl.php';
+		require_once __DIR__ . '/helper/IndicateTestId.php';
 	}
 
 	/**
@@ -97,5 +101,37 @@ final class WpscanReportStartTest extends TestCase {
 		);
 	}
 
+	/**
+	 * Test invalid usage of the function.
+	 *
+	 * @covers ::vipgoci_wpscan_report_start
+	 *
+	 * @return void
+	 */
+	public function testWpscanReportStartInvalid(): void {
+		vipgoci_unittests_indicate_test_id( 'WpscanReportStartTest' );
 
+		ob_start();
+
+		vipgoci_wpscan_report_start(
+			'invalid' // Invalid usage.
+		);
+
+		vipgoci_unittests_remove_indication_for_test_id( 'WpscanReportStartTest' );
+
+		// String should have been printed.
+		$printed_data = ob_get_contents();
+
+		ob_end_clean();
+
+		if ( true === vipgoci_unittests_debug_mode_on() ) {
+			echo $printed_data;
+		}
+
+		// Check if expected string was printed.
+		$this->assertStringContainsString(
+			'Internal error: Invalid $issue_type in ',
+			$printed_data,
+		);
+	}
 }
