@@ -371,8 +371,8 @@ function vipgoci_wpscan_scan_save_for_submission(
 
 					$commit_issues_submit[ $pr_key ][] = array(
 						'type'      => VIPGOCI_STATS_WPSCAN_API,
-						'file_name' => $dir_with_problem_addons . DIRECTORY_SEPARATOR . $problem_addon_file_name,
-						'file_line' => 1,
+						'file_name' => $dir_with_problem_addons . DIRECTORY_SEPARATOR . $problem_addon_file_name, // Required field.
+						'file_line' => 1, // Required field, even if not used.
 						'issue'     => array(
 							'addon_type' => $issue_details['addon_data_for_dir']['type'],
 							'message'    => $problem_addon_files[ $problem_addon_file_name ]['wpscan_results']['friendly_name'],
