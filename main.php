@@ -48,8 +48,8 @@ function vipgoci_help_print() :void {
 		"\t" . '                               some branches never get scanned. Separate branches' . PHP_EOL .
 		"\t" . '                               with commas.' . PHP_EOL .
 		"\t" . '--local-git-repo=FILE          The local git repository to use for direct access to code.' . PHP_EOL .
-		"\t" . '--name-to-use                  Name to use for the program in GitHub reviews and comments.' . PHP_EOL .
-		"\t" . '                               Default is "' . VIPGOCI_DEFAULT_NAME_TO_USE . '".' . PHP_EOL .
+		"\t" . '--name-to-use                  Name to use for the program in GitHub reviews and comments' . PHP_EOL .
+		"\t" . '                               to identify the bot. Default is "' . VIPGOCI_DEFAULT_NAME_TO_USE . '".' . PHP_EOL .
 		PHP_EOL .
 		'Environmental & repo configuration:' . PHP_EOL .
 		"\t" . '--env-options=STRING           Specifies configuration options to be read from environmental' . PHP_EOL .
