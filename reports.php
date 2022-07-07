@@ -339,6 +339,65 @@ function vipgoci_report_create_scan_details_phpcs_configuration(
 
 /**
  * Create scan report detail message for
+ * WPScan API configuration section.
+ *
+ * @param array $options_copy Options needed.
+ *
+ * @return string Detail message for section.
+ */
+function vipgoci_report_create_scan_details_wpscan_configuration(
+	array $options_copy
+) :string {
+	$details = '<h4>WPScan API configuration</h4>' . PHP_EOL;
+
+	$details .= '<p>WPScan API scanning enabled: ' . PHP_EOL;
+
+	$details .= vipgoci_report_create_scan_details_list(
+		'<code>',
+		'</code>',
+		$options_copy['wpscan-api'],
+		'None'
+	);
+
+	$details .= '</p>';
+
+	if ( true === $options_copy['wpscan-api'] ) {
+		$details .= '<p>WPScan API URL: ' . PHP_EOL;
+
+		$details .= vipgoci_report_create_scan_details_list(
+			'<code>',
+			'</code>',
+			array( $options_copy['wpscan-api-url'] ),
+			'None'
+		);
+
+		$details .= '</p>';
+
+		foreach (
+			array(
+				'wpscan-api-paths'        => 'Directories scanned',
+				'wpscan-api-skip-folders' => 'Directories not scanned',
+			) as $key => $value
+		) {
+			$details .= '<p>' . vipgoci_output_html_escape( $value ) . ':</p>' . PHP_EOL;
+			$details .= '<ul>' . PHP_EOL;
+
+			$details .= vipgoci_report_create_scan_details_list(
+				'<li><code>',
+				'</code></li>',
+				$options_copy[ $key ],
+				'<li>None</li>'
+			);
+
+			$details .= '</ul>' . PHP_EOL;
+		}
+	}
+
+	return $details;
+}
+
+/**
+ * Create scan report detail message for
  * SVG configuration section.
  *
  * @param array $options_copy Options needed.
@@ -456,6 +515,7 @@ function vipgoci_report_create_scan_details(
 
 	$details .= '<td valign="top" width="30%">' . PHP_EOL;
 	$details .= vipgoci_report_create_scan_details_phpcs_configuration( $options_copy );
+	$details .= vipgoci_report_create_scan_details_wpscan_configuration( $options_copy );
 	$details .= '</td>' . PHP_EOL;
 
 	$details .= '</tr>' . PHP_EOL;
