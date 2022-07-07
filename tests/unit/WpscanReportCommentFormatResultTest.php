@@ -170,16 +170,6 @@ final class WpscanReportCommentFormatResultTest extends TestCase {
 			VIPGOCI_WPSCAN_BASE_URL . '/vulnerability/0100100',
 			$report_str
 		);
-
-		$this->assertStringContainsString(
-			'Severity',
-			$report_str
-		);
-
-		$this->assertStringContainsString(
-			'MEDIUM',
-			$report_str
-		);
 	}
 
 	/**
@@ -316,16 +306,6 @@ final class WpscanReportCommentFormatResultTest extends TestCase {
 
 		$this->assertStringContainsString(
 			VIPGOCI_WPSCAN_BASE_URL . '/vulnerability/0100100',
-			$report_str
-		);
-
-		$this->assertStringContainsString(
-			'Severity',
-			$report_str
-		);
-
-		$this->assertStringContainsString(
-			'MEDIUM',
 			$report_str
 		);
 	}
