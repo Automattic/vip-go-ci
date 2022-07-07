@@ -10,28 +10,34 @@ declare(strict_types=1);
 /**
  * Returns beginning of a PHP lint report comment.
  *
- * @param string $repo_owner Repository owner.
- * @param string $repo_name  Repository name.
- * @param string $commit_id  Current commit-ID.
+ * @param string $repo_owner  Repository owner.
+ * @param string $repo_name   Repository name.
+ * @param string $commit_id   Current commit-ID.
+ * @param string $name_to_use Name to use in reports to identify the bot.
  *
  * @return string Beginning of comment.
  */
 function vipgoci_lint_report_comment_start(
 	string $repo_owner,
 	string $repo_name,
-	string $commit_id
+	string $commit_id,
+	string $name_to_use
 ) :string {
-	$comment_start =
-		'**' . VIPGOCI_SYNTAX_ERROR_STR . '**' .
-		"\n\r\n\r" .
-		'PHP linting performed at commit ' . vipgoci_output_html_escape( $commit_id ) .
-		' ([view code](' .
+	$view_code_url = 
 		VIPGOCI_GITHUB_WEB_BASE_URL . '/' .
 		rawurlencode( $repo_owner ) . '/' .
 		rawurlencode( $repo_name ) . '/' .
 		'tree/' .
-		rawurlencode( $commit_id ) .
-		')).' .
+		rawurlencode( $commit_id );
+
+	$comment_start =
+		'# ' . VIPGOCI_SYNTAX_ERROR_STR . PHP_EOL .
+		sprintf(
+			VIPGOCI_LINT_REPORT_START,
+			vipgoci_output_html_escape( $name_to_use ),
+			vipgoci_output_html_escape( $commit_id ),
+			$view_code_url
+		) .
 		"\n\r";
 
 	vipgoci_markdown_comment_add_pagebreak(
