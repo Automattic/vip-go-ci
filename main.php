@@ -707,6 +707,16 @@ function vipgoci_run_init_options_wpscan( array &$options ) :void {
 			VIPGOCI_EXIT_USAGE_ERROR
 		);
 	}
+
+	/*
+	 * Hide WPScan API token from printed options output.
+	 */
+	vipgoci_options_sensitive_clean(
+		null,
+		array(
+			'wpscan-api-token',
+		)
+	);
 }
 
 /**
