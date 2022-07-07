@@ -27,6 +27,7 @@ final class WpscanReportEndTest extends TestCase {
 		require_once __DIR__ . '/../../defines.php';
 		require_once __DIR__ . '/../../github-misc.php';
 		require_once __DIR__ . '/../../log.php';
+		require_once __DIR__ . '/../../output-security.php';
 		require_once __DIR__ . '/../../wpscan-reports.php';
 
 		require_once __DIR__ . '/../integration/IncludesForTestsOutputControl.php';
@@ -43,16 +44,17 @@ final class WpscanReportEndTest extends TestCase {
 	 */
 	public function testWpscanReportEndPlugin(): void {
 		$report_end = vipgoci_wpscan_report_end(
-			VIPGOCI_WPSCAN_PLUGIN
-		);
-
-		$this->assertStringContainsString(
-			'Incorrect plugins?',
-			$report_end
+			VIPGOCI_WPSCAN_PLUGIN,
+			'Message ends.'
 		);
 
 		$this->assertStringNotContainsString(
 			'themes',
+			$report_end
+		);
+
+		$this->assertStringEndsWith(
+			'Message ends.' . "\n\r",
 			$report_end
 		);
 	}
@@ -67,16 +69,17 @@ final class WpscanReportEndTest extends TestCase {
 	 */
 	public function testWpscanReportEndTheme(): void {
 		$report_end = vipgoci_wpscan_report_end(
-			VIPGOCI_WPSCAN_THEME
-		);
-
-		$this->assertStringContainsString(
-			'Incorrect themes?',
-			$report_end
+			VIPGOCI_WPSCAN_THEME,
+			'Message ends.',
 		);
 
 		$this->assertStringNotContainsString(
 			'plugins',
+			$report_end
+		);
+
+		$this->assertStringEndsWith(
+			'Message ends.' . "\n\r",
 			$report_end
 		);
 	}
@@ -94,7 +97,8 @@ final class WpscanReportEndTest extends TestCase {
 		ob_start();
 
 		vipgoci_wpscan_report_end(
-			'invalid' // Invalid usage.
+			'invalid', // Invalid usage.
+			'Message ends.'
 		);
 
 		vipgoci_unittests_remove_indication_for_test_id( 'WpscanReportEndTest' );

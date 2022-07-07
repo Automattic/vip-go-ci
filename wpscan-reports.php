@@ -10,12 +10,14 @@ declare(strict_types=1);
 /**
  * Returns beginning of a WPScan API report comment.
  *
- * @param string $issue_type Type of result being processed; VIPGOCI_WPSCAN_PLUGIN or VIPGOCI_WPSCAN_THEME.
+ * @param string $issue_type  Type of result being processed; VIPGOCI_WPSCAN_PLUGIN or VIPGOCI_WPSCAN_THEME.
+ * @param string $name_to_use Name to use in reports to identify the bot.
  *
  * @return string Returns beginning of comment.
  */
 function vipgoci_wpscan_report_start(
-	string $issue_type
+	string $issue_type,
+	string $name_to_use
 ) :string {
 	if ( VIPGOCI_WPSCAN_PLUGIN === $issue_type ) {
 		$comment_type = 'plugin';
@@ -35,7 +37,11 @@ function vipgoci_wpscan_report_start(
 	$comment_start =
 		'# ' . VIPGOCI_WPSCAN_API_ERROR .
 		"\n\r" .
-		'Automated scanning has identified one or more insecure or obsolete ' . $comment_type . 's being submitted in this pull request. Updating the ' . $comment_type . 's before merging into the target branch is strongly recommended.' .
+		sprintf(
+			VIPGOCI_WPSCAN_REPORT_START,
+			vipgoci_output_html_escape( $name_to_use ),
+			$comment_type
+		) .
 		"\n\r";
 
 	vipgoci_markdown_comment_add_pagebreak(
@@ -48,12 +54,14 @@ function vipgoci_wpscan_report_start(
 /**
  * Returns end of a WPScan API report comment.
  *
- * @param string $issue_type Type of result being processed; VIPGOCI_WPSCAN_PLUGIN or VIPGOCI_WPSCAN_THEME.
+ * @param string $issue_type               Type of result being processed; VIPGOCI_WPSCAN_PLUGIN or VIPGOCI_WPSCAN_THEME.
+ * @param string wpscan_api_report_end_msg Message to append to end of WPScan API report.
  *
  * @return string Returns end of comment.
  */
 function vipgoci_wpscan_report_end(
-	string $issue_type
+	string $issue_type,
+	string $wpscan_api_report_end_msg
 ) :string {
 	if ( VIPGOCI_WPSCAN_PLUGIN === $issue_type ) {
 		$comment_type = 'plugin';
@@ -70,33 +78,7 @@ function vipgoci_wpscan_report_end(
 		return ''; // For unit-test.
 	}
 
-	return '##### Incorrect ' . $comment_type . 's? [Learn how to prevent false-positive matches.](https://docs.wpvip.com/technical-references/codebase-manager/#h-preventing-false-positive-plugin-matches)' . // @todo: Should be configurable.
-		"\n\r";
-}
-
-/**
- * Returns severity number as readable string, such as 'MEDIUM'.
- *
- * @param float $severity Severity rating number to be rendered as a string.
- *
- * @todo: Missing test.
- *
- * @return string
- */
-function vipgoci_wpscan_report_format_severity(
-	float $severity
-) :string {
-
-	foreach ( VIPGOCI_WPSCAN_SEVERITY_RATING as $severity_info ) {
-		if (
-			( $severity >= $severity_info['value_low'] ) &&
-			( $severity <= $severity_info['value_high'] )
-		) {
-			return $severity_info['severity'];
-		}
-	}
-
-	return 'UNKNOWN';
+	return vipgoci_output_html_escape( $wpscan_api_report_end_msg ) . "\n\r";
 }
 
 /**
@@ -175,8 +157,7 @@ function vipgoci_wpscan_report_comment_format_result(
 		foreach ( $issue['details']['vulnerabilities'] as $vuln_item ) {
 			$res .= '### &#x1f512; Security information' . "\n" . // Header markup and lock sign.
 			'**Title**: ' . vipgoci_output_html_escape( $vuln_item['title'] ) . "\n" .
-			'**Details**: ' . vipgoci_output_html_escape( VIPGOCI_WPSCAN_BASE_URL . '/vulnerability/' . $vuln_item['id'] ) . "\n" .
-			'**Severity**:  ' . vipgoci_output_html_escape( (string) $severity ) . '/10 (' . vipgoci_output_html_escape( vipgoci_wpscan_report_format_severity( $severity ) ) . ") \n";
+			'**Details**: ' . vipgoci_output_html_escape( VIPGOCI_WPSCAN_BASE_URL . '/vulnerability/' . $vuln_item['id'] ) . "\n";
 		}
 	}
 

@@ -27,6 +27,7 @@ final class WpscanReportStartTest extends TestCase {
 		require_once __DIR__ . '/../../defines.php';
 		require_once __DIR__ . '/../../github-misc.php';
 		require_once __DIR__ . '/../../log.php';
+		require_once __DIR__ . '/../../output-security.php';
 		require_once __DIR__ . '/../../wpscan-reports.php';
 
 		require_once __DIR__ . '/../integration/IncludesForTestsOutputControl.php';
@@ -43,7 +44,8 @@ final class WpscanReportStartTest extends TestCase {
 	 */
 	public function testWpscanReportStartPlugin(): void {
 		$report_start = vipgoci_wpscan_report_start(
-			VIPGOCI_WPSCAN_PLUGIN
+			VIPGOCI_WPSCAN_PLUGIN,
+			'my-internal-name'
 		);
 
 		$this->assertStringContainsString(
@@ -52,12 +54,12 @@ final class WpscanReportStartTest extends TestCase {
 		);
 
 		$this->assertStringContainsString(
-			'Automated scanning has identified',
+			'my-internal-name has identified',
 			$report_start
 		);
 
 		$this->assertStringContainsString(
-			'plugins',
+			'plugin(s)',
 			$report_start
 		);
 
@@ -77,7 +79,8 @@ final class WpscanReportStartTest extends TestCase {
 	 */
 	public function testWpscanReportStartTheme(): void {
 		$report_start = vipgoci_wpscan_report_start(
-			VIPGOCI_WPSCAN_THEME
+			VIPGOCI_WPSCAN_THEME,
+			'my-internal-name'
 		);
 
 		$this->assertStringContainsString(
@@ -86,12 +89,12 @@ final class WpscanReportStartTest extends TestCase {
 		);
 
 		$this->assertStringContainsString(
-			'Automated scanning has identified',
+			'my-internal-name has identified',
 			$report_start
 		);
 
 		$this->assertStringContainsString(
-			'themes',
+			'theme(s)',
 			$report_start
 		);
 
@@ -114,7 +117,8 @@ final class WpscanReportStartTest extends TestCase {
 		ob_start();
 
 		vipgoci_wpscan_report_start(
-			'invalid' // Invalid usage.
+			'invalid', // Invalid usage.
+			'my-internal-name'
 		);
 
 		vipgoci_unittests_remove_indication_for_test_id( 'WpscanReportStartTest' );
