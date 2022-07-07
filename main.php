@@ -2184,10 +2184,11 @@ function vipgoci_run_init_options(
 
 	if (
 		( false === $options['lint'] ) &&
-		( false === $options['phpcs'] )
+		( false === $options['phpcs'] ) &&
+		( false === $options['wpscan-api'] )
 	) {
 		vipgoci_sysexit(
-			'Both --lint and --phpcs set to false, cannot continue.',
+			'--lint, --phpcs and --wpscan-api are all set to false, cannot continue.',
 			array(),
 			VIPGOCI_EXIT_USAGE_ERROR
 		);
@@ -2375,12 +2376,6 @@ function vipgoci_run_scan_find_prs( array &$options ) :array {
  * Make sure we are working with the latest
  * commit with each implicated PR.
  *
- * If we detect that we are only performing linting,
- * and the commit is not the latest, skip linting
- * as it becomes useless if this is not the
- * latest commit: There is no use in linting
- * an obsolete commit.
- *
  * @param array $options        Array of options.
  * @param array $prs_implicated Pull requests implicated.
  *
@@ -2423,45 +2418,17 @@ function vipgoci_run_scan_check_latest_commit(
 		 * to the pull request, and we have to deal with that.
 		 */
 
-		if (
-			( true === $options['lint'] ) &&
-			( false === $options['phpcs'] )
-		) {
-			vipgoci_sysexit(
-				'The current commit is not the latest one ' .
-					'to the pull request, skipping ' .
-					'linting, and not doing PHPCS ' .
-					'-- nothing to do',
-				array(
-					'repo_owner' => $options['repo-owner'],
-					'repo_name'  => $options['repo-name'],
-					'pr_number'  => $pr_item->number,
-				),
-				VIPGOCI_EXIT_NORMAL
-			);
-		} elseif (
-			( true === $options['lint'] ) &&
-			( true === $options['phpcs'] )
-		) {
-			// Skip linting, useless if not latest commit.
-			$options['lint'] = false;
-
-			vipgoci_log(
-				'The current commit is not the latest ' .
-					'one to the pull request, ' .
-					'skipping linting',
-				array(
-					'repo_owner' => $options['repo-owner'],
-					'repo_name'  => $options['repo-name'],
-					'pr_number'  => $pr_item->number,
-				)
-			);
-		}
-
-		/*
-		 * As for lint === false && true === phpcs,
-		 * we do not care, as then we will not be linting.
-		 */
+		vipgoci_sysexit(
+			'The current commit is not the latest one ' .
+				'to the pull request. Unable to continue.',
+			array(
+				'repo_owner' => $options['repo-owner'],
+				'repo_name'  => $options['repo-name'],
+				'pr_number'  => $pr_item->number,
+			),
+			VIPGOCI_EXIT_COMMIT_NOT_LATEST,
+			true // Log to IRC.
+		);
 	}
 }
 
