@@ -789,6 +789,10 @@ elif [ "$VIPGOCI_EXIT_CODE" == "230" ] ; then
 	export BUILD_STATE="failure"
 	export BUILD_DESCRIPTION="Pull request not found for commit"
 
+elif [ "$VIPGOCI_EXIT_CODE" == "248" ] ; then
+	export BUILD_STATE="failure"
+	export BUILD_DESCRIPTION="Commit not latest in PR"
+
 elif [ "$VIPGOCI_EXIT_CODE" == "249" ] ; then
 	export BUILD_STATE="failure"
 	export BUILD_DESCRIPTION="Build timed out, PR may be too large"
