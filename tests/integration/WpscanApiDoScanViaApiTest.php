@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class WpscanDoScanViaApiTest extends TestCase {
+final class WpscanApiDoScanViaApiTest extends TestCase {
 	/**
 	 * WPScan API options.
 	 *

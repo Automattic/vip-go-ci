@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class WpscanFilterFixedVulnerabilitiesTest extends TestCase {
+final class WpscanApiFilterFixedVulnerabilitiesTest extends TestCase {
 	/**
 	 * Setup function. Require file.
 	 *
