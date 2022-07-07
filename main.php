@@ -48,6 +48,8 @@ function vipgoci_help_print() :void {
 		"\t" . '                               some branches never get scanned. Separate branches' . PHP_EOL .
 		"\t" . '                               with commas.' . PHP_EOL .
 		"\t" . '--local-git-repo=FILE          The local git repository to use for direct access to code.' . PHP_EOL .
+		"\t" . '--name-to-use                  Name to use for the program in GitHub reviews and comments.' . PHP_EOL .
+		"\t" . '                               Default is "' . VIPGOCI_DEFAULT_NAME_TO_USE . '".' . PHP_EOL .
 		PHP_EOL .
 		'Environmental & repo configuration:' . PHP_EOL .
 		"\t" . '--env-options=STRING           Specifies configuration options to be read from environmental' . PHP_EOL .
@@ -131,14 +133,15 @@ function vipgoci_help_print() :void {
 		"\t" . '                               as PHPCS.' . PHP_EOL .
 		PHP_EOL .
 		'WPScan API scanning configuration:' . PHP_EOL .
-		"\t" . '--wpscan-api=BOOL         Enable or disable WPScan API scanning. Disabled by default.' . PHP_EOL .
-		"\t" . '--wpscan-api-url=STRING   URL to WPScan API. If nothing is specified, will use the ' . PHP_EOL .
-		"\t" . '                          default (' . VIPGOCI_WPSCAN_API_BASE_URL . ').' . PHP_EOL .
-		"\t" . '--wpscan-api-token=STRING Access token to use to communicate with WPScan API.' . PHP_EOL .
-		"\t" . '--wpscan-api-paths=ARRAY  Directories to scan using WPScan API scanning. Should be an array' . PHP_EOL .
-		"\t" . '                          with items separated by commas.' . PHP_EOL .
-		"\t" . '--wpscan-api-skip-folders Directories not to scan using WPScan API scanning. Should be an' . PHP_EOL .
-		"\t" . '                          array with items separated by commas.' . PHP_EOL .
+		"\t" . '--wpscan-api=BOOL                  Enable or disable WPScan API scanning. Disabled by default.' . PHP_EOL .
+		"\t" . '--wpscan-api-url=STRING            URL to WPScan API. If nothing is specified, will use the ' . PHP_EOL .
+		"\t" . '                                   default (' . VIPGOCI_WPSCAN_API_BASE_URL . ').' . PHP_EOL .
+		"\t" . '--wpscan-api-token=STRING          Access token to use to communicate with WPScan API.' . PHP_EOL .
+		"\t" . '--wpscan-api-paths=ARRAY           Directories to scan using WPScan API scanning. Should be an array' . PHP_EOL .
+		"\t" . '                                   with items separated by commas.' . PHP_EOL .
+		"\t" . '--wpscan-api-skip-folders=ARRAY    Directories not to scan using WPScan API scanning. Should be an' . PHP_EOL .
+		"\t" . '                                   array with items separated by commas.' . PHP_EOL .
+		"\t" . '--wpscan-api-report-end-msg=STRING Message to append to end of WPScan API reports.' . PHP_EOL .
 		PHP_EOL .
 		'Auto approve configuration:' . PHP_EOL .
 		"\t" . '--autoapprove=BOOL             Whether to auto-approve pull requests that fulfil' . PHP_EOL .
@@ -256,6 +259,7 @@ function vipgoci_options_recognized() :array {
 		'local-git-repo:',
 		'skip-large-files:',
 		'skip-large-files-limit:',
+		'name-to-use:',
 
 		/*
 		 * Environmental & repo configuration.
@@ -314,6 +318,7 @@ function vipgoci_options_recognized() :array {
 		'wpscan-api-token:',
 		'wpscan-api-paths:',
 		'wpscan-api-skip-folders:',
+		'wpscan-api-report-end-msg:',
 
 		/*
 		 * Auto approve configuration
@@ -698,6 +703,13 @@ function vipgoci_run_init_options_wpscan( array &$options ) :void {
 		'wpscan-api-url',
 		VIPGOCI_WPSCAN_API_BASE_URL
 	);
+
+	/*
+	 * Process --wpscan-api-report-end-msg -- expected to be a string.
+	 */
+	if ( empty( $options['wpscan-api-report-end-msg'] ) ) {
+		$options['wpscan-api-report-end-msg'] = '';
+	}
 
 	if (
 		( true === $options['wpscan-api'] ) &&
@@ -2132,6 +2144,17 @@ function vipgoci_run_init_options(
 		array()
 	);
 
+	/*
+	 * Process the --name-to-use parameter,
+	 * expected to be a string. If not, set default.
+	 */
+	if (
+		( empty( $options['name-to-use'] ) ) || 
+		( ! is_string( $options['name-to-use'] ) )
+	) {
+		$options['name-to-use'] = VIPGOCI_DEFAULT_NAME_TO_USE;
+	}
+
 	// Validate args.
 	if (
 		( ! isset( $options['repo-owner'] ) ) ||
@@ -2922,7 +2945,9 @@ function vipgoci_run_scan(
 		$options['commit'],
 		$results,
 		$options['informational-msg'],
-		$scan_details_msg
+		$scan_details_msg,
+		$options['wpscan-api-report-end-msg'],
+		$options['name-to-use']
 	);
 
 	vipgoci_report_submit_pr_review_from_results(
@@ -2935,7 +2960,8 @@ function vipgoci_run_scan(
 		$scan_details_msg,
 		$options['review-comments-max'],
 		$options['review-comments-include-severity'],
-		$options['skip-large-files-limit']
+		$options['skip-large-files-limit'],
+		$options['name-to-use']
 	);
 
 	/*
