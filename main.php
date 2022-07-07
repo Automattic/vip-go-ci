@@ -130,6 +130,16 @@ function vipgoci_help_print() :void {
 		"\t" . '--svg-scanner-path=FILE        Path to SVG scanning tool. Should return similar output' . PHP_EOL .
 		"\t" . '                               as PHPCS.' . PHP_EOL .
 		PHP_EOL .
+		'WPScan API scanning configuration:' . PHP_EOL .
+		"\t" . '--wpscan-api=BOOL         Enable or disable WPScan API scanning. Disabled by default.' . PHP_EOL .
+		"\t" . '--wpscan-api-url=STRING   URL to WPScan API. If nothing is specified, will use the ' . PHP_EOL .
+		"\t" . '                          default (' . VIPGOCI_WPSCAN_API_BASE_URL . ').' . PHP_EOL .
+		"\t" . '--wpscan-api-token=STRING Access token to use to communicate with WPScan API.' . PHP_EOL .
+		"\t" . '--wpscan-api-paths=ARRAY  Directories to scan using WPScan API scanning. Should be an array' . PHP_EOL .
+		"\t" . '                          with items separated by commas.' . PHP_EOL .
+		"\t" . '--wpscan-api-skip-folders Directories not to scan using WPScan API scanning. Should be an' . PHP_EOL .
+		"\t" . '                          array with items separated by commas.' . PHP_EOL .
+		PHP_EOL .
 		'Auto approve configuration:' . PHP_EOL .
 		"\t" . '--autoapprove=BOOL             Whether to auto-approve pull requests that fulfil' . PHP_EOL .
 		"\t" . '                               certain conditions -- see README.md for details.' . PHP_EOL .
@@ -300,10 +310,10 @@ function vipgoci_options_recognized() :array {
 		 * WPScan API scanning configuration
 		 */
 		'wpscan-api:',
-		'wpscan-api-paths:',
-		'wpscan-api-skip-folders:',
 		'wpscan-api-url:',
 		'wpscan-api-token:',
+		'wpscan-api-paths:',
+		'wpscan-api-skip-folders:',
 
 		/*
 		 * Auto approve configuration
