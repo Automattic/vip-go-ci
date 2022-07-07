@@ -27,7 +27,7 @@ define( 'VIPGOCI_CLIENT_ID', 'automattic-vip-go-ci' );
 /*
  * Strings for generic messages.
  */
-define( 'VIPGOCI_CODE_ANLYSIS_ISSUES', 'Code analysis identified issues' );
+define( 'VIPGOCI_CODE_ANALYSIS_ISSUES', 'Code analysis identified issues' );
 define( 'VIPGOCI_SYNTAX_ERROR_STR', 'PHP Syntax Errors Found' );
 define( 'VIPGOCI_WPSCAN_API_ERROR', 'Automated Addon Security Scanning' );
 define( 'VIPGOCI_GITHUB_ERROR_STR', 'GitHub API communication error. Please contact a human.' );

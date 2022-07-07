@@ -1219,7 +1219,7 @@ function vipgoci_report_submit_pr_review_from_results(
 			// Add heading.
 			if ( empty( $github_postfields['body'] ) ) {
 				$github_postfields['body'] .=
-					'# ' . VIPGOCI_CODE_ANLYSIS_ISSUES . PHP_EOL .
+					'# ' . VIPGOCI_CODE_ANALYSIS_ISSUES . PHP_EOL .
 					sprintf(
 						VIPGOCI_PHPCS_SCAN_REVIEW_START,
 						vipgoci_output_html_escape( $name_to_use )
