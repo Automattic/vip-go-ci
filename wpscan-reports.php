@@ -152,8 +152,6 @@ function vipgoci_wpscan_report_comment_format_result(
 	if ( ! empty( $issue['details']['vulnerabilities'] ) ) {
 		$res .= "\n\r";
 
-		$severity = 4.5; // @todo
-
 		foreach ( $issue['details']['vulnerabilities'] as $vuln_item ) {
 			$res .= '### &#x1f512; Security information' . "\n" . // Header markup and lock sign.
 			'**Title**: ' . vipgoci_output_html_escape( $vuln_item['title'] ) . "\n" .
