@@ -673,13 +673,15 @@ function vipgoci_report_maybe_no_issues_found(
  * reporting any issues found within $results, if any relevant issues were
  * found.
  *
- * @param string $repo_owner        Repository owner.
- * @param string $repo_name         Repository name.
- * @param string $github_token      GitHub token to use to make GitHub API requests.
- * @param string $commit_id         Commit-ID of current commit.
- * @param array  $results           Results of scanning.
- * @param string $informational_msg Informational message for end-users.
- * @param string $scan_details_msg  Details of scan message for end-users.
+ * @param string $repo_owner               Repository owner.
+ * @param string $repo_name                Repository name.
+ * @param string $github_token             GitHub token to use to make GitHub API requests.
+ * @param string $commit_id                Commit-ID of current commit.
+ * @param array  $results                  Results of scanning.
+ * @param string $informational_msg        Informational message for end-users.
+ * @param string $scan_details_msg         Details of scan message for end-users.
+ * @param string wpscan_api_report_end_msg Message to append to end of WPScan API report.
+ * @param string $name_to_use              Name to use in reports to identify the bot.
  *
  * @return void
  */
@@ -690,7 +692,9 @@ function vipgoci_report_submit_pr_generic_comment_from_results(
 	string $commit_id,
 	array $results,
 	string $informational_msg,
-	string $scan_details_msg
+	string $scan_details_msg,
+	string $wpscan_api_report_end_msg,
+	string $name_to_use,
 ) :void {
 	vipgoci_log(
 		'About to submit generic PR comment to GitHub about issues',
@@ -821,17 +825,20 @@ function vipgoci_report_submit_pr_generic_comment_from_results(
 				$postfields_body_start = vipgoci_lint_report_comment_start(
 					$repo_owner,
 					$repo_name,
-					$commit_id
+					$commit_id,
+					$name_to_use
 				);
 
 				$postfields_body_end = '';
 			} elseif ( 'wpscan_api_plugins_body' === $key ) {
 				$postfields_body_start = vipgoci_wpscan_report_start(
-					VIPGOCI_WPSCAN_PLUGIN
+					VIPGOCI_WPSCAN_PLUGIN,
+					$name_to_use
 				);
 
 				$postfields_body_end = vipgoci_wpscan_report_end(
-					VIPGOCI_WPSCAN_PLUGIN
+					VIPGOCI_WPSCAN_PLUGIN,
+					$wpscan_api_report_end_msg
 				);
 			} elseif ( 'wpscan_api_themes_body' === $key ) {
 				$postfields_body_start = vipgoci_wpscan_report_start(
@@ -839,7 +846,8 @@ function vipgoci_report_submit_pr_generic_comment_from_results(
 				);
 
 				$postfields_body_end = vipgoci_wpscan_report_end(
-					VIPGOCI_WPSCAN_THEME
+					VIPGOCI_WPSCAN_THEME,
+					$wpscan_api_report_end_msg
 				);
 			}
 
@@ -909,6 +917,7 @@ function vipgoci_report_submit_pr_generic_comment_from_results(
  * @param int    $github_review_comments_max               How many comments to submit in each GitHub review.
  * @param bool   $github_review_comments_include_severity  If to include severity in GitHub review comments.
  * @param int    $skip_large_files_limit                   The maximum number of lines of files we scan.
+ * @param string $name_to_use                              Name to use in reports to identify the bot.
  *
  * @return void
  */
@@ -922,7 +931,8 @@ function vipgoci_report_submit_pr_review_from_results(
 	string $scan_details_msg,
 	int $github_review_comments_max,
 	bool $github_review_comments_include_severity,
-	int $skip_large_files_limit
+	int $skip_large_files_limit,
+	string $name_to_use
 ) :void {
 	$stats_types_to_process = array(
 		VIPGOCI_STATS_PHPCS,
@@ -1205,6 +1215,17 @@ function vipgoci_report_submit_pr_review_from_results(
 			}
 
 			unset( $found_stats_to_ignore );
+
+			// Add heading.
+			if ( empty( $github_postfields['body'] ) ) {
+				$github_postfields['body'] .=
+					'# ' . VIPGOCI_CODE_ANLYSIS_ISSUES . PHP_EOL .
+					sprintf(
+						VIPGOCI_PHPCS_SCAN_REVIEW_START,
+						vipgoci_output_html_escape( $name_to_use )
+					) .
+					PHP_EOL . PHP_EOL;
+		}
 
 			$github_postfields['body'] .=
 				'**' . $stats_type . '**' .
