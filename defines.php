@@ -8,9 +8,10 @@
 declare(strict_types=1);
 
 /*
- * Version number.
+ * Version number and default name to use.
  */
 define( 'VIPGOCI_VERSION', '1.2.3' );
+define( 'VIPGOCI_DEFAULT_NAME_TO_USE', 'vip-go-ci' );
 
 /*
  * Define minimum version requirements.
@@ -26,6 +27,7 @@ define( 'VIPGOCI_CLIENT_ID', 'automattic-vip-go-ci' );
 /*
  * Strings for generic messages.
  */
+define( 'VIPGOCI_CODE_ANLYSIS_ISSUES', 'Code analysis identified issues' );
 define( 'VIPGOCI_SYNTAX_ERROR_STR', 'PHP Syntax Errors Found' );
 define( 'VIPGOCI_WPSCAN_API_ERROR', 'Automated Addon Security Scanning' );
 define( 'VIPGOCI_GITHUB_ERROR_STR', 'GitHub API communication error. Please contact a human.' );
@@ -114,6 +116,12 @@ define(
 );
 
 define(
+	'VIPGOCI_LINT_REPORT_START',
+	'%1$s has identified PHP syntax errors during automated linting.' .
+	"\n\r\n\r" . 'PHP linting performed at commit %2$s ([view code](%3$s)).'
+);
+
+define(
 	'VIPGOCI_LINT_FAILED_MSG_START',
 	'Unable to PHP lint one or more files due to error running PHP linter: '
 );
@@ -121,6 +129,13 @@ define(
 define(
 	'VIPGOCI_LINT_FAILED_MSG_END',
 	'The error may be temporary. If the error persists, please contact a human'
+);
+
+define(
+	'VIPGOCI_PHPCS_SCAN_REVIEW_START',
+	'%1$s has identified potential problems in this pull request ' .
+	'during automated scanning. We recommend reviewing the issues ' .
+	'noted and that they are resolved.'
 );
 
 define(
@@ -254,38 +269,9 @@ define( 'VIPGOCI_WPSCAN_VULNERABLE', 'vulnerable' );
 define( 'VIPGOCI_WPSCAN_OBSOLETE', 'obsolete' );
 
 define(
-	'VIPGOCI_WPSCAN_SEVERITY_RATING',
-	array(
-		array(
-			'severity'   => 'UNKNOWN',
-			'value_low'  => -1,
-			'value_high' => -1,
-		),
-		array(
-			'severity'   => 'NONE',
-			'value_low'  => 0.0,
-			'value_high' => 0.0,
-		),
-		array(
-			'severity'   => 'LOW',
-			'value_low'  => 0.1,
-			'value_high' => 3.9,
-		),
-		array(
-			'severity'   => 'MEDIUM',
-			'value_low'  => 4.0,
-			'value_high' => 6.9,
-		),
-		array(
-			'severity'   => 'HIGH',
-			'value_low'  => 7.0,
-			'value_high' => 8.9,
-		),
-		array(
-			'severity'   => 'CRITICAL',
-			'value_low'  => 9.0,
-			'value_high' => 10.0,
-		),
-	)
+	'VIPGOCI_WPSCAN_REPORT_START',
+	'%1$s has identified one or more insecure or obsolete %2$s(s) being ' .
+	'submitted in this pull request. Updating the %2$s(s) before merging ' .
+	'into the target branch is strongly recommended.'
 );
 
