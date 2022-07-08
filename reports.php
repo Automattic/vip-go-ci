@@ -673,15 +673,15 @@ function vipgoci_report_maybe_no_issues_found(
  * reporting any issues found within $results, if any relevant issues were
  * found.
  *
- * @param string $repo_owner               Repository owner.
- * @param string $repo_name                Repository name.
- * @param string $github_token             GitHub token to use to make GitHub API requests.
- * @param string $commit_id                Commit-ID of current commit.
- * @param array  $results                  Results of scanning.
- * @param string $informational_msg        Informational message for end-users.
- * @param string $scan_details_msg         Details of scan message for end-users.
- * @param string wpscan_api_report_end_msg Message to append to end of WPScan API report.
- * @param string $name_to_use              Name to use in reports to identify the bot.
+ * @param string $repo_owner                Repository owner.
+ * @param string $repo_name                 Repository name.
+ * @param string $github_token              GitHub token to use to make GitHub API requests.
+ * @param string $commit_id                 Commit-ID of current commit.
+ * @param array  $results                   Results of scanning.
+ * @param string $informational_msg         Informational message for end-users.
+ * @param string $scan_details_msg          Details of scan message for end-users.
+ * @param string $wpscan_api_report_end_msg Message to append to end of WPScan API report.
+ * @param string $name_to_use               Name to use in reports to identify the bot.
  *
  * @return void
  */
@@ -842,7 +842,8 @@ function vipgoci_report_submit_pr_generic_comment_from_results(
 				);
 			} elseif ( 'wpscan_api_themes_body' === $key ) {
 				$postfields_body_start = vipgoci_wpscan_report_start(
-					VIPGOCI_WPSCAN_THEME
+					VIPGOCI_WPSCAN_THEME,
+					$name_to_use
 				);
 
 				$postfields_body_end = vipgoci_wpscan_report_end(
@@ -1225,7 +1226,7 @@ function vipgoci_report_submit_pr_review_from_results(
 						vipgoci_output_html_escape( $name_to_use )
 					) .
 					PHP_EOL . PHP_EOL;
-		}
+			}
 
 			$github_postfields['body'] .=
 				'**' . $stats_type . '**' .
