@@ -108,7 +108,6 @@ function vipgoci_wpcore_misc_cleanup_header_comment(
  * Name, AuthorName, Version, and so forth from a file.
  * Also attempts to determine if file is part of a theme or a plugin.
  *
- * @param array  $options   Options needed.
  * @param string $file_name Path to file to try to fetch headers from.
  *
  * @return null|array Null on failure to get headers.
@@ -116,7 +115,6 @@ function vipgoci_wpcore_misc_cleanup_header_comment(
  * plugin/theme headers.
  */
 function vipgoci_wpcore_misc_get_addon_headers_and_type(
-	array $options,
 	string $file_name
 ) :null|array {
 	vipgoci_log(
@@ -227,7 +225,6 @@ function vipgoci_wpcore_misc_get_addon_headers_and_type(
  * This functionality aims for compatibility with get_plugins() in WordPress.
  * The function is adopted from WordPress: https://core.trac.wordpress.org/browser/tags/6.0/src/wp-admin/includes/plugin.php#L254
  *
- * @param array  $options Options array for the program.
  * @param string $path    Path to scan for plugins and themes. Usually this would point a structure similar to wp-content/plugins.
  *
  * @link https://developer.wordpress.org/reference/functions/get_plugins/
@@ -253,7 +250,6 @@ function vipgoci_wpcore_misc_get_addon_headers_and_type(
  * )
  */
 function vipgoci_wpcore_misc_scan_directory_for_addons(
-	array $options,
 	string $path
 ): array {
 	$plugins_dir  = @opendir( $path ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
@@ -333,7 +329,6 @@ function vipgoci_wpcore_misc_scan_directory_for_addons(
 		}
 
 		$plugin_data = vipgoci_wpcore_misc_get_addon_headers_and_type(
-			$options,
 			$tmp_path
 		);
 
@@ -496,8 +491,7 @@ function vipgoci_wpcore_api_determine_slug_and_other_for_addons(
  * to determine slugs and fetch other information from WordPress.org
  * API about the plugins/themes, return the information after processing.
  *
- * @param array  $options Options array for the program.
- * @param string $path    Path to directory to analyze.
+ * @param string $path Path to directory to analyze.
  *
  * @return array Information about plugins or themes found. Includes
  *               headers found in the plugin/theme, version number of
@@ -528,11 +522,9 @@ function vipgoci_wpcore_api_determine_slug_and_other_for_addons(
  * )
  */
 function vipgoci_wpcore_misc_get_addon_data_and_slugs_for_directory(
-	array $options,
 	string $path
 ) :array {
 	$plugins_found = vipgoci_wpcore_misc_scan_directory_for_addons(
-		$options,
 		$path
 	);
 
