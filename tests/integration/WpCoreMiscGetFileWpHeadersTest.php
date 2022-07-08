@@ -92,7 +92,7 @@ final class WpCoreMiscGetFileWpHeadersTest extends TestCase {
 		$this->assertSame(
 			$expected_result,
 			$actual_result
-		);			
+		);
 	}
 
 	/**
@@ -159,7 +159,7 @@ final class WpCoreMiscGetFileWpHeadersTest extends TestCase {
 		$this->assertSame(
 			$expected_result,
 			$actual_result
-		);			
+		);
 	}
 
 	/**
@@ -223,6 +223,6 @@ final class WpCoreMiscGetFileWpHeadersTest extends TestCase {
 		$this->assertSame(
 			$expected_result,
 			$actual_result
-		);			
+		);
 	}
 }
