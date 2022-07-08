@@ -22,7 +22,7 @@ phpcs-sniffs-existing=WordPressVIPMinimum.Functions.StripTags,WordPressVIPMinimu
 commit-test-phpcs-scan-commit-1=9882d7da670f8f45f3431e3c7da80a00d6af4b5e
 commit-test-phpcs-scan-commit-2=1c63fd89388e3f5563869ca5dc54ae7d4da9f1a4
 commit-test-phpcs-scan-commit-3=ba678917a65855a3129ff4f95de3b2ede3d76f4b
-commit-test-phpcs-scan-commit-4=4702a1416ee36510a3cc43c68e631be572acddfe
+commit-test-phpcs-scan-commit-4=62adb9b6cd459c086fc10bdc98d57891fb9e55d4
 commit-test-phpcs-scan-commit-5=dd60c66a7c1e27fc78c400f0c5160c9a80c4bd49
 commit-test-phpcs-scan-commit-6=84985c25706e83dada8c40061e6f1496cfe3c522
 
