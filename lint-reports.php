@@ -23,7 +23,7 @@ function vipgoci_lint_report_comment_start(
 	string $commit_id,
 	string $name_to_use
 ) :string {
-	$view_code_url = 
+	$view_code_url =
 		VIPGOCI_GITHUB_WEB_BASE_URL . '/' .
 		rawurlencode( $repo_owner ) . '/' .
 		rawurlencode( $repo_name ) . '/' .

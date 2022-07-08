@@ -2149,7 +2149,7 @@ function vipgoci_run_init_options(
 	 * expected to be a string. If not, set default.
 	 */
 	if (
-		( empty( $options['name-to-use'] ) ) || 
+		( empty( $options['name-to-use'] ) ) ||
 		( ! is_string( $options['name-to-use'] ) )
 	) {
 		$options['name-to-use'] = VIPGOCI_DEFAULT_NAME_TO_USE;
