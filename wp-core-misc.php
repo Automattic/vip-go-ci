@@ -294,7 +294,10 @@ function vipgoci_wpcore_misc_scan_directory_for_addons(
 						continue;
 					}
 
-					if ( '.php' === substr( $subfile, -4 ) ) {
+					if (
+						( '.php' === substr( $subfile, -4 ) ) ||
+						( '.css' === substr( $subfile, -4 ) )
+					) {
 						$plugin_files[] = $file . DIRECTORY_SEPARATOR . $subfile;
 					}
 				}
@@ -302,7 +305,10 @@ function vipgoci_wpcore_misc_scan_directory_for_addons(
 				closedir( $plugins_subdir );
 			}
 		} else {
-			if ( '.php' === substr( $file, -4 ) ) {
+			if (
+				( '.php' === substr( $file, -4 ) ) ||
+				( '.css' === substr( $file, -4 ) )
+			) {
 				$plugin_files[] = $file;
 			}
 		}
