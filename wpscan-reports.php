@@ -54,8 +54,8 @@ function vipgoci_wpscan_report_start(
 /**
  * Returns end of a WPScan API report comment.
  *
- * @param string $issue_type               Type of result being processed; VIPGOCI_WPSCAN_PLUGIN or VIPGOCI_WPSCAN_THEME.
- * @param string wpscan_api_report_end_msg Message to append to end of WPScan API report.
+ * @param string $issue_type                Type of result being processed; VIPGOCI_WPSCAN_PLUGIN or VIPGOCI_WPSCAN_THEME.
+ * @param string $wpscan_api_report_end_msg Message to append to end of WPScan API report.
  *
  * @return string Returns end of comment.
  */
@@ -78,7 +78,13 @@ function vipgoci_wpscan_report_end(
 		return ''; // For unit-test.
 	}
 
-	return vipgoci_output_html_escape( $wpscan_api_report_end_msg ) . "\n\r";
+	return vipgoci_output_html_escape(
+		str_replace(
+			'%addon_type%',
+			$comment_type,
+			$wpscan_api_report_end_msg
+		)
+	) . "\n\r";
 }
 
 /**

@@ -45,11 +45,16 @@ final class WpscanReportEndTest extends TestCase {
 	public function testWpscanReportEndPlugin(): void {
 		$report_end = vipgoci_wpscan_report_end(
 			VIPGOCI_WPSCAN_PLUGIN,
-			'Message ends.'
+			'Type: %addon_type%. Message ends.'
+		);
+
+		$this->assertStringContainsString(
+			'Type: plugin.',
+			$report_end
 		);
 
 		$this->assertStringNotContainsString(
-			'themes',
+			'theme',
 			$report_end
 		);
 
@@ -70,11 +75,16 @@ final class WpscanReportEndTest extends TestCase {
 	public function testWpscanReportEndTheme(): void {
 		$report_end = vipgoci_wpscan_report_end(
 			VIPGOCI_WPSCAN_THEME,
-			'Message ends.',
+			'Type: %addon_type%. Message ends.'
+		);
+
+		$this->assertStringContainsString(
+			'Type: theme.',
+			$report_end
 		);
 
 		$this->assertStringNotContainsString(
-			'plugins',
+			'plugin',
 			$report_end
 		);
 
