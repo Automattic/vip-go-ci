@@ -167,11 +167,18 @@ function vipgoci_wpcore_misc_get_addon_headers_and_type(
 			$file_name,
 			array(
 				'Name'        => 'Theme Name',
-				'Version'     => 'Version',
+				'ThemeURI'    => 'Theme URI',
+				'Description' => 'Description',
 				'Author'      => 'Author',
+				'AuthorURI'   => 'Author URI',
+				'Version'     => 'Version',
 				'Template'    => 'Template',
+				'Status'      => 'Status',
+				'TextDomain'  => 'Text Domain',
+				'DomainPath'  => 'Domain Path',
 				'RequiresWP'  => 'Requires at least',
 				'RequiresPHP' => 'Requires PHP',
+				'UpdateURI'   => 'Update URI',
 			),
 		);
 
