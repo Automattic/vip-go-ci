@@ -123,7 +123,11 @@ final class WpcoreMiscScanDirectoryForAdddonsTest extends TestCase {
 			return;
 		}
 
-		$this->assertSame(
+		/*
+		 * Different systems will return files in different
+		 * order; use assertEquals() to avoid failures due to this.
+		 */
+		$this->assertEquals(
 			$results_expected,
 			$results_actual
 		);
