@@ -503,7 +503,7 @@ function vipgoci_wpcore_api_determine_slug_and_other_for_addons(
 	/*
 	 * The API will return with more than one potential
 	 * result array; search both for data.
-	 */ 
+	 */
 	foreach ( $api_data['no_update'] as $key => $data_item ) {
 		$slugs_by_plugin[ $key ] = $data_item;
 	}
