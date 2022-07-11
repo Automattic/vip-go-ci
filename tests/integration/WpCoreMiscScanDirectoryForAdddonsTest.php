@@ -50,7 +50,7 @@ final class WpCoreMiscScanDirectoryForAdddonsTest extends TestCase {
 
 		$cp_cmd = escapeshellcmd( 'cp' ) .
 			' -R ' .
-			escapeshellarg( __DIR__ . '/helper-files/WpcoreMiscScanDirectoryForAdddonsTest' ) .
+			escapeshellarg( __DIR__ . '/helper-files/WpCoreMiscScanDirectoryForAdddonsTest' ) .
 			' ' .
 			escapeshellarg( $temp_dir );
 
@@ -84,7 +84,7 @@ final class WpCoreMiscScanDirectoryForAdddonsTest extends TestCase {
 				),
 				'name'             => 'My Package',
 				'version_detected' => '1.0.0',
-				'file_name'        => $temp_dir . '/WpcoreMiscScanDirectoryForAdddonsTest/addon2/style.css',
+				'file_name'        => $temp_dir . '/WpCoreMiscScanDirectoryForAdddonsTest/addon2/style.css',
 			),
 			'addon1/file2.php' => array(
 				'type'             => 'vipgoci-wpscan-plugin',
@@ -106,14 +106,14 @@ final class WpCoreMiscScanDirectoryForAdddonsTest extends TestCase {
 				),
 				'name'             => 'My <h1>Other</h1> Package',
 				'version_detected' => '1.1.0',
-				'file_name'        => $temp_dir . '/WpcoreMiscScanDirectoryForAdddonsTest/addon1/file2.php',
+				'file_name'        => $temp_dir . '/WpCoreMiscScanDirectoryForAdddonsTest/addon1/file2.php',
 			),
 		);
 
 		vipgoci_unittests_output_suppress();
 
 		$results_actual = vipgoci_wpcore_misc_scan_directory_for_addons(
-			$temp_dir . '/WpcoreMiscScanDirectoryForAdddonsTest'
+			$temp_dir . '/WpCoreMiscScanDirectoryForAdddonsTest'
 		);
 
 		vipgoci_unittests_output_unsuppress();

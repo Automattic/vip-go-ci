@@ -49,7 +49,7 @@ final class WpCoreMiscGetAddonDataAndSlugsForDirectoryTest extends TestCase {
 
 		$cp_cmd = escapeshellcmd( 'cp' ) .
 			' -R ' .
-			escapeshellarg( __DIR__ . '/helper-files/WpcoreMiscGetAddonDataAndSlugsForDirectoryTest' ) .
+			escapeshellarg( __DIR__ . '/helper-files/WpCoreMiscGetAddonDataAndSlugsForDirectoryTest' ) .
 			' ' .
 			escapeshellarg( $temp_dir );
 
@@ -64,7 +64,7 @@ final class WpCoreMiscGetAddonDataAndSlugsForDirectoryTest extends TestCase {
 		vipgoci_unittests_output_suppress();
 
 		$actual_results = vipgoci_wpcore_misc_get_addon_data_and_slugs_for_directory(
-			$temp_dir . '/WpcoreMiscGetAddonDataAndSlugsForDirectoryTest'
+			$temp_dir . '/WpCoreMiscGetAddonDataAndSlugsForDirectoryTest'
 		);
 
 		vipgoci_unittests_output_unsuppress();
