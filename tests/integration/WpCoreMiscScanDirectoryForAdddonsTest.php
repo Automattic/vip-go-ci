@@ -50,7 +50,7 @@ final class WpCoreMiscScanDirectoryForAdddonsTest extends TestCase {
 			return;
 		}
 
-		$cp_cmd = escapeshellcmd( 'cp' ) . 
+		$cp_cmd = escapeshellcmd( 'cp' ) .
 			' -R ' .
 			escapeshellarg( __DIR__ . '/helper-files/WpcoreMiscScanDirectoryForAdddonsTest' ) .
 			' ' .
