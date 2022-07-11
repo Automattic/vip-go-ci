@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class WpcoreApiDetermineSlugAndOtherForAddonsTest extends TestCase {
+final class WpCoreApiDetermineSlugAndOtherForAddonsTest extends TestCase {
 	/**
 	 * Setup function. Require files.
 	 *
