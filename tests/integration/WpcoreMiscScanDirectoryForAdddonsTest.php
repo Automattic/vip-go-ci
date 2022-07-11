@@ -52,7 +52,7 @@ final class WpcoreMiscScanDirectoryForAdddonsTest extends TestCase {
 
 		$tar_cmd = 'tar -C ' .
 			escapeshellarg( $temp_dir ) .
-			' -zxf ' .
+			' -zxsf ' .
 			escapeshellarg( __DIR__ . '/helper-files/WpcoreMiscScanDirectoryForAdddonsTest.tar.gz' );
 
 		if ( false === exec( $tar_cmd ) ) {
