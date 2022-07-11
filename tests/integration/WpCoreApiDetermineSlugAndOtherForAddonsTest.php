@@ -92,13 +92,13 @@ final class WpCoreApiDetermineSlugAndOtherForAddonsTest extends TestCase {
 	}
 
 	/**
-	 * Test invalid usage of the function.
+	 * Test when no results are expected.
 	 *
 	 * @covers ::vipgoci_wpcore_api_determine_slug_and_other_for_addons
 	 *
 	 * @return void
 	 */
-	public function testInvalidUsage(): void {
+	public function testNoResults(): void {
 		$actual_results = vipgoci_wpcore_api_determine_slug_and_other_for_addons(
 			array(
 				'my-test/invalid.php' => array(
