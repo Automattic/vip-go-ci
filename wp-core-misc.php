@@ -386,9 +386,6 @@ function vipgoci_wpcore_misc_scan_directory_for_addons(
  *       [Title] => Hello Dolly
  *       [AuthorName] => Matt Mullenweg
  *     )
- *     [name] => Getty Images
- *     [version_detected] => 3.0.5
- *     [filename] => /tmp/plugins/getty-images/getty-images.php
  *   )
  * ) // End of array.
  *
@@ -430,6 +427,19 @@ function vipgoci_wpcore_api_determine_slug_and_other_for_addons(
 	}
 
 	foreach ( $addons_data as $key => $data_item ) {
+		if ( empty( $data_item['addon_headers'] ) ) {
+			vipgoci_log(
+				'No addon headers found for key, unable to query WordPress.org API, skipping',
+				array(
+					'key' => $key,
+				),
+				0,
+				true // Log to IRC.
+			);
+
+			continue;
+		}
+
 		$addon_data_to_send[ $key ] = $data_item['addon_headers'];
 
 		$slugs_by_plugin[ $key ] = null;
