@@ -42,21 +42,24 @@ final class WpCoreMiscGetAddonHeadersAndTypeTest extends TestCase {
 			'vipgoci-wp-header-file'
 		);
 
-		$this->assertNotFalse(
-			$temp_file_name,
-			'Unable to create temporary file'
-		);
+		if ( false === $temp_file_name ) {
+			$this->markTestSkipped(
+				'Unable to create temporary file'
+			);
+
+			return;
+		}
 
 		$temp_file_name_new =
 			$temp_file_name . '.php';
 
-		$this->assertNotFalse(
-			rename(
-				$temp_file_name,
-				$temp_file_name_new
-			),
-			'Unable to rename file'
-		);
+		if ( false === rename( $temp_file_name, $temp_file_name_new ) ) {
+			$this->markTestSkipped(
+				'Unable to rename file'
+			);
+
+			return;
+		}
 
 		$temp_file_name = $temp_file_name_new;
 
@@ -110,7 +113,13 @@ final class WpCoreMiscGetAddonHeadersAndTypeTest extends TestCase {
 			$temp_file_name
 		);
 
-		unlink( $temp_file_name );
+		if ( true !== unlink( $temp_file_name ) ) {
+			$this->markTestSkipped(
+				'Unable to remove temporary file'
+			);
+
+			return;
+		}
 
 		$this->assertSame(
 			$expected_result,
@@ -131,21 +140,24 @@ final class WpCoreMiscGetAddonHeadersAndTypeTest extends TestCase {
 			'vipgoci-wp-header-file'
 		);
 
-		$this->assertNotFalse(
-			$temp_file_name,
-			'Unable to create temporary file'
-		);
+		if ( false === $temp_file_name ) {
+			$this->markTestSkipped(
+				'Unable to create temporary file'
+			);
+
+			return;
+		}
 
 		$temp_file_name_new =
 			$temp_file_name . '.css';
 
-		$this->assertNotFalse(
-			rename(
-				$temp_file_name,
-				$temp_file_name_new
-			),
-			'Unable to rename file'
-		);
+		if ( false === rename( $temp_file_name, $temp_file_name_new ) ) {
+			$this->markTestSkipped(
+				'Unable to rename file'
+			);
+
+			return;
+		}
 
 		$temp_file_name = $temp_file_name_new;
 
@@ -199,7 +211,13 @@ final class WpCoreMiscGetAddonHeadersAndTypeTest extends TestCase {
 			$temp_file_name
 		);
 
-		unlink( $temp_file_name );
+		if ( true !== unlink( $temp_file_name ) ) {
+			$this->markTestSkipped(
+				'Unable to remove temporary file'
+			);
+
+			return;
+		}
 
 		$this->assertSame(
 			$expected_result,
@@ -220,21 +238,24 @@ final class WpCoreMiscGetAddonHeadersAndTypeTest extends TestCase {
 			'vipgoci-wp-header-file'
 		);
 
-		$this->assertNotFalse(
-			$temp_file_name,
-			'Unable to create temporary file'
-		);
+		if ( false === $temp_file_name ) {
+			$this->markTestSkipped(
+				'Unable to create temporary file'
+			);
+
+			return;
+		}
 
 		$temp_file_name_new =
 			$temp_file_name . '.txt';
 
-		$this->assertNotFalse(
-			rename(
-				$temp_file_name,
-				$temp_file_name_new
-			),
-			'Unable to rename file'
-		);
+		if ( false === rename( $temp_file_name, $temp_file_name_new ) ) {
+			$this->markTestSkipped(
+				'Unable to rename file'
+			);
+
+			return;
+		}
 
 		$temp_file_name = $temp_file_name_new;
 
@@ -266,7 +287,13 @@ final class WpCoreMiscGetAddonHeadersAndTypeTest extends TestCase {
 			$temp_file_name
 		);
 
-		unlink( $temp_file_name );
+		if ( true !== unlink( $temp_file_name ) ) {
+			$this->markTestSkipped(
+				'Unable to remove temporary file'
+			);
+
+			return;
+		}
 
 		$this->assertSame(
 			$expected_result,
