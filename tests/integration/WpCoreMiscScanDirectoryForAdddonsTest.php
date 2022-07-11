@@ -18,7 +18,6 @@ use PHPUnit\Framework\TestCase;
  * @preserveGlobalState disabled
  */
 final class WpCoreMiscScanDirectoryForAdddonsTest extends TestCase {
-        
 	/**
 	 * Temporary directory.
 	 *
@@ -46,25 +45,24 @@ final class WpCoreMiscScanDirectoryForAdddonsTest extends TestCase {
 		}
 	}
 
-
-        /**
-         * Tear down function. Clean up temporary files.
-         *
-         * @return void
-         */
-        protected function tearDown() :void {
-                if ( ! empty( $this->temp_dir ) ) {
+	/**
+	 * Tear down function. Clean up temporary files.
+	 *
+	 * @return void
+	 */
+	protected function tearDown() :void {
+		if ( ! empty( $this->temp_dir ) ) {
 			if ( false === exec(
 				escapeshellcmd( 'rm' ) .
 				' -rf ' .
-				escapeshellarg( $this->temp_dir
-			) ) ) {
+				escapeshellarg( $this->temp_dir )
+			) ) {
 				echo 'Unable to remove temporary directory';
 
 				return;
 			}
 		}
-       }
+	}
 
 	/**
 	 * Check if function detects plugins and themes.
@@ -81,7 +79,6 @@ final class WpCoreMiscScanDirectoryForAdddonsTest extends TestCase {
 
 			return;
 		}
-
 
 		$cp_cmd = escapeshellcmd( 'cp' ) .
 			' -R ' .
