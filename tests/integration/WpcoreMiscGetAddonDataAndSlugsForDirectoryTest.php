@@ -61,37 +61,41 @@ final class WpcoreMiscGetAddonDataAndSlugsForDirectoryTest extends TestCase {
 			return;
 		}
 
+		vipgoci_unittests_output_suppress();
+
 		$actual_results = vipgoci_wpcore_misc_get_addon_data_and_slugs_for_directory(
 			$temp_dir . '/WpcoreMiscGetAddonDataAndSlugsForDirectoryTest'
 		);
 
+		vipgoci_unittests_output_unsuppress();
+
 		$this->assertNotEmpty(
-			$actual_results['hello.php']
+			$actual_results['hello/hello.php']
 		);
 
 		$this->assertSame(
 			'w.org/plugins/hello-dolly',
-			$actual_results['hello.php']['id']
+			$actual_results['hello/hello.php']['id']
 		);
 
 		$this->assertSame(
 			'Hello Dolly',
-			$actual_results['hello.php']['name']
+			$actual_results['hello/hello.php']['name']
 		);
 
 		$this->assertSame(
 			'hello-dolly',
-			$actual_results['hello.php']['slug']
+			$actual_results['hello/hello.php']['slug']
 		);
 
 		$this->assertSame(
-			'hello.php',
-			$actual_results['hello.php']['plugin']
+			'hello/hello.php',
+			$actual_results['hello/hello.php']['plugin']
 		);
 
 		$this->assertTrue(
 			version_compare(
-				$actual_results['hello.php']['new_version'],
+				$actual_results['hello/hello.php']['new_version'],
 				'0.0.0',
 				'>='
 			)
@@ -99,12 +103,12 @@ final class WpcoreMiscGetAddonDataAndSlugsForDirectoryTest extends TestCase {
 
 		$this->assertStringContainsString(
 			'/plugins/hello-dolly',
-			$actual_results['hello.php']['url']
+			$actual_results['hello/hello.php']['url']
 		);
 
 		$this->assertStringContainsString(
 			'/hello-dolly.',
-			$actual_results['hello.php']['package']
+			$actual_results['hello/hello.php']['package']
 		);
 
 		if ( false === exec(
