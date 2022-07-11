@@ -18,6 +18,14 @@ use PHPUnit\Framework\TestCase;
  * @preserveGlobalState disabled
  */
 final class WpCoreMiscScanDirectoryForAdddonsTest extends TestCase {
+        
+	/**
+	 * Temporary directory.
+	 *
+	 * @var $temp_dir
+	 */
+	private $temp_dir = '';
+
 	/**
 	 * Setup function. Require files.
 	 *
@@ -25,7 +33,38 @@ final class WpCoreMiscScanDirectoryForAdddonsTest extends TestCase {
 	 */
 	protected function setUp() :void {
 		require_once __DIR__ . '/IncludesForTests.php';
+
+		$this->temp_dir =
+			sys_get_temp_dir() .
+			'/directory_for_addons-' .
+			hash( 'sha256', random_bytes( 2048 ) );
+
+		if ( true !== mkdir( $this->temp_dir ) ) {
+			echo 'Unable to create temporary directory.' . PHP_EOL;
+
+			return;
+		}
 	}
+
+
+        /**
+         * Tear down function. Clean up temporary files.
+         *
+         * @return void
+         */
+        protected function tearDown() :void {
+                if ( ! empty( $this->temp_dir ) ) {
+			if ( false === exec(
+				escapeshellcmd( 'rm' ) .
+				' -rf ' .
+				escapeshellarg( $this->temp_dir
+			) ) ) {
+				echo 'Unable to remove temporary directory';
+
+				return;
+			}
+		}
+       }
 
 	/**
 	 * Check if function detects plugins and themes.
@@ -35,24 +74,20 @@ final class WpCoreMiscScanDirectoryForAdddonsTest extends TestCase {
 	 * @return void
 	 */
 	public function testWpcoreMiscScanDirectoryForAdddons(): void {
-		$temp_dir =
-			sys_get_temp_dir() .
-			'/directory_for_addons-' .
-			hash( 'sha256', random_bytes( 2048 ) );
-
-		if ( true !== mkdir( $temp_dir ) ) {
+		if ( empty( $this->temp_dir ) ) {
 			$this->markTestSkipped(
-				'Unable to create temporary directory.'
+				'Temporary directory not existing.'
 			);
 
 			return;
 		}
 
+
 		$cp_cmd = escapeshellcmd( 'cp' ) .
 			' -R ' .
 			escapeshellarg( __DIR__ . '/helper-files/WpCoreMiscScanDirectoryForAdddonsTest' ) .
 			' ' .
-			escapeshellarg( $temp_dir );
+			escapeshellarg( $this->temp_dir );
 
 		if ( false === exec( $cp_cmd ) ) {
 			$this->markTestSkipped(
@@ -84,7 +119,7 @@ final class WpCoreMiscScanDirectoryForAdddonsTest extends TestCase {
 				),
 				'name'             => 'My Package',
 				'version_detected' => '1.0.0',
-				'file_name'        => $temp_dir . '/WpCoreMiscScanDirectoryForAdddonsTest/addon2/style.css',
+				'file_name'        => $this->temp_dir . '/WpCoreMiscScanDirectoryForAdddonsTest/addon2/style.css',
 			),
 			'addon1/file2.php'     => array(
 				'type'             => 'vipgoci-wpscan-plugin',
@@ -106,7 +141,7 @@ final class WpCoreMiscScanDirectoryForAdddonsTest extends TestCase {
 				),
 				'name'             => 'My <h1>Other</h1> Package',
 				'version_detected' => '1.1.0',
-				'file_name'        => $temp_dir . '/WpCoreMiscScanDirectoryForAdddonsTest/addon1/file2.php',
+				'file_name'        => $this->temp_dir . '/WpCoreMiscScanDirectoryForAdddonsTest/addon1/file2.php',
 			),
 			'this-is-a-plugin.php' => array(
 				'type'             => 'vipgoci-wpscan-plugin',
@@ -128,25 +163,17 @@ final class WpCoreMiscScanDirectoryForAdddonsTest extends TestCase {
 				),
 				'name'             => 'This is a plugin.',
 				'version_detected' => '15.1.0',
-				'file_name'        => $temp_dir . '/WpCoreMiscScanDirectoryForAdddonsTest/this-is-a-plugin.php',
+				'file_name'        => $this->temp_dir . '/WpCoreMiscScanDirectoryForAdddonsTest/this-is-a-plugin.php',
 			),
 		);
 
 		vipgoci_unittests_output_suppress();
 
 		$results_actual = vipgoci_wpcore_misc_scan_directory_for_addons(
-			$temp_dir . '/WpCoreMiscScanDirectoryForAdddonsTest'
+			$this->temp_dir . '/WpCoreMiscScanDirectoryForAdddonsTest'
 		);
 
 		vipgoci_unittests_output_unsuppress();
-
-		if ( false === exec( 'rm -rf ' . escapeshellarg( $temp_dir ) ) ) {
-			$this->markTestSkipped(
-				'Unable to remove temporary directory'
-			);
-
-			return;
-		}
 
 		/*
 		 * Different systems will return files in different

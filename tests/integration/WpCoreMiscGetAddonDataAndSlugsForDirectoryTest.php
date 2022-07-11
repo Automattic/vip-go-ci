@@ -19,12 +19,47 @@ use PHPUnit\Framework\TestCase;
  */
 final class WpCoreMiscGetAddonDataAndSlugsForDirectoryTest extends TestCase {
 	/**
+	 * Temporary directory.
+	 *
+	 * @var $temp_dir
+	 */
+	private $temp_dir = '';
+
+	/**
 	 * Setup function. Require files.
 	 *
 	 * @return void
 	 */
 	protected function setUp() :void {
 		require_once __DIR__ . '/IncludesForTests.php';
+	
+		$this->temp_dir = sys_get_temp_dir() .
+			'/directory_for_addons-' .
+			hash( 'sha256', random_bytes( 2048 ) );
+
+		if ( true !== mkdir( $this->temp_dir ) ) {
+			echo 'Unable to create temporary directory.';
+
+			$this->temp_dir = '';
+		}
+	}
+
+
+	/**
+	 * Tear down function. Clean up temporary files.
+	 *
+	 * @return void
+	 */
+	protected function tearDown() :void {
+		if ( ! empty( $this->temp_dir ) ) {
+			if ( false === exec(
+				escapeshellcmd( 'rm' ) .
+				' -rf ' .
+				escapeshellarg( $this->temp_dir )
+			) ) {
+				echo 'Unable to remove temporary directory' . PHP_EOL;
+			}
+		}
 	}
 
 	/**
@@ -35,13 +70,9 @@ final class WpCoreMiscGetAddonDataAndSlugsForDirectoryTest extends TestCase {
 	 * @return void
 	 */
 	public function testGetAddonDataAndSlugsForDirectory(): void {
-		$temp_dir = sys_get_temp_dir() .
-			'/directory_for_addons-' .
-			hash( 'sha256', random_bytes( 2048 ) );
-
-		if ( true !== mkdir( $temp_dir ) ) {
+		if ( empty( $this->temp_dir ) ) {
 			$this->markTestSkipped(
-				'Unable to create temporary directory.'
+				'Temporary directory not existing.'
 			);
 
 			return;
@@ -51,7 +82,7 @@ final class WpCoreMiscGetAddonDataAndSlugsForDirectoryTest extends TestCase {
 			' -R ' .
 			escapeshellarg( __DIR__ . '/helper-files/WpCoreMiscGetAddonDataAndSlugsForDirectoryTest' ) .
 			' ' .
-			escapeshellarg( $temp_dir );
+			escapeshellarg( $this->temp_dir );
 
 		if ( false === exec( $cp_cmd ) ) {
 			$this->markTestSkipped(
@@ -64,11 +95,14 @@ final class WpCoreMiscGetAddonDataAndSlugsForDirectoryTest extends TestCase {
 		vipgoci_unittests_output_suppress();
 
 		$actual_results = vipgoci_wpcore_misc_get_addon_data_and_slugs_for_directory(
-			$temp_dir . '/WpCoreMiscGetAddonDataAndSlugsForDirectoryTest'
+			$this->temp_dir . '/WpCoreMiscGetAddonDataAndSlugsForDirectoryTest'
 		);
 
 		vipgoci_unittests_output_unsuppress();
 
+		/*
+		 * Ensure hello/hello.php is in results.
+		 */
 		$this->assertNotEmpty(
 			$actual_results['hello/hello.php']
 		);
@@ -111,16 +145,46 @@ final class WpCoreMiscGetAddonDataAndSlugsForDirectoryTest extends TestCase {
 			$actual_results['hello/hello.php']['package']
 		);
 
-		if ( false === exec(
-			escapeshellcmd( 'rm' ) .
-			' -rf ' .
-			escapeshellarg( $temp_dir )
-		) ) {
-			$this->markTestSkipped(
-				'Unable to remove temporary directory'
-			);
+		/*
+		 * Ensure this-is-a-plugin.php is in results.
+		 */
+		$this->assertNotEmpty(
+			$actual_results['this-is-a-plugin.php']
+		);
 
-			return;
-		}
+		$this->assertFalse(
+			isset( $actual_results['this-is-a-plugin.php']['id'] )
+		);
+
+		$this->assertSame(
+			'This is a plugin.',
+			$actual_results['this-is-a-plugin.php']['name']
+		);
+
+		$this->assertFalse(
+			isset( $actual_results['his-is-a-plugin.php']['slug'] )
+		);
+
+		$this->assertFalse(
+			isset( $actual_results['this-is-a-plugin.php']['plugin'] )
+		);
+
+		$this->assertSame(
+			'15.1.0',
+			$actual_results['this-is-a-plugin.php']['version_detected']
+		);
+
+
+		$this->assertFalse(
+			isset( $actual_results['this-is-a-plugin.php']['new_version'] )
+		);
+
+		$this->assertFalse(
+			isset( $actual_results['this-is-a-plugin.php']['url'] )
+		);
+
+		$this->assertFalse(
+			isset( $actual_results['this-is-a-plugin.php']['package'] )
+		);
 	}
 }
