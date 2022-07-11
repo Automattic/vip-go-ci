@@ -41,9 +41,13 @@ final class WpCoreMiscGetFileWpHeadersTest extends TestCase {
 			'vipgoci-wp-header-file'
 		);
 
-		$this->assertNotFalse(
-			$temp_file_name
-		);
+		if ( false === $temp_file_name ) {
+			$this->markTestSkipped(
+				'Unable to create temporary file'
+			);
+
+			return;
+		}
 
 		$this->assertNotFalse(
 			file_put_contents(
@@ -87,7 +91,13 @@ final class WpCoreMiscGetFileWpHeadersTest extends TestCase {
 			)
 		);
 
-		unlink( $temp_file_name );
+		if ( true !== unlink( $temp_file_name ) ) {
+			$this->markTestSkipped(
+				'Unable to remove temporary file'
+			);
+
+			return;
+		}
 
 		$this->assertSame(
 			$expected_result,
@@ -108,9 +118,13 @@ final class WpCoreMiscGetFileWpHeadersTest extends TestCase {
 			'vipgoci-wp-header-file'
 		);
 
-		$this->assertNotFalse(
-			$temp_file_name
-		);
+		if ( false === $temp_file_name ) {
+			$this->markTestSkipped(
+				'Unable to create temporary file'
+			);
+
+			return;
+		}
 
 		$this->assertNotFalse(
 			file_put_contents(
@@ -154,7 +168,13 @@ final class WpCoreMiscGetFileWpHeadersTest extends TestCase {
 			)
 		);
 
-		unlink( $temp_file_name );
+		if ( true !== unlink( $temp_file_name ) ) {
+			$this->markTestSkipped(
+				'Unable to remove temporary file'
+			);
+
+			return;
+		}
 
 		$this->assertSame(
 			$expected_result,
@@ -175,9 +195,13 @@ final class WpCoreMiscGetFileWpHeadersTest extends TestCase {
 			'vipgoci-wp-header-file'
 		);
 
-		$this->assertNotFalse(
-			$temp_file_name
-		);
+		if ( false === $temp_file_name ) {
+			$this->markTestSkipped(
+				'Unable to create temporary file'
+			);
+
+			return;
+		}
 
 		$this->assertNotFalse(
 			file_put_contents(
@@ -218,7 +242,13 @@ final class WpCoreMiscGetFileWpHeadersTest extends TestCase {
 			)
 		);
 
-		unlink( $temp_file_name );
+		if ( true !== unlink( $temp_file_name ) ) {
+			$this->markTestSkipped(
+				'Unable to remove temporary file'
+			);
+
+			return;
+		}
 
 		$this->assertSame(
 			$expected_result,
