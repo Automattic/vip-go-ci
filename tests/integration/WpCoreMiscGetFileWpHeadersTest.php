@@ -79,6 +79,8 @@ final class WpCoreMiscGetFileWpHeadersTest extends TestCase {
 			'AuthorName'  => 'Author Name',
 		);
 
+		vipgoci_unittests_output_suppress();
+
 		$actual_result = vipgoci_wpcore_misc_get_file_wp_headers(
 			$temp_file_name,
 			array(
@@ -90,6 +92,8 @@ final class WpCoreMiscGetFileWpHeadersTest extends TestCase {
 				'AuthorURI'   => 'Author URI',
 			)
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		if ( true !== unlink( $temp_file_name ) ) {
 			$this->markTestSkipped(
@@ -156,6 +160,8 @@ final class WpCoreMiscGetFileWpHeadersTest extends TestCase {
 			'AuthorName'  => 'Author Name',
 		);
 
+		vipgoci_unittests_output_suppress();
+
 		$actual_result = vipgoci_wpcore_misc_get_file_wp_headers(
 			$temp_file_name,
 			array(
@@ -167,6 +173,8 @@ final class WpCoreMiscGetFileWpHeadersTest extends TestCase {
 				'AuthorURI'   => 'Author URI',
 			)
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		if ( true !== unlink( $temp_file_name ) ) {
 			$this->markTestSkipped(
@@ -230,6 +238,8 @@ final class WpCoreMiscGetFileWpHeadersTest extends TestCase {
 			'AuthorName'  => '',
 		);
 
+		vipgoci_unittests_output_suppress();
+
 		$actual_result = vipgoci_wpcore_misc_get_file_wp_headers(
 			$temp_file_name,
 			array(
@@ -241,6 +251,8 @@ final class WpCoreMiscGetFileWpHeadersTest extends TestCase {
 				'AuthorURI'   => 'Author URI',
 			)
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		if ( true !== unlink( $temp_file_name ) ) {
 			$this->markTestSkipped(
