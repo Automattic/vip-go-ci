@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class WpcoreMiscScanDirectoryForAdddonsTest extends TestCase {
+final class WpCoreMiscScanDirectoryForAdddonsTest extends TestCase {
 	/**
 	 * Setup function. Require files.
 	 *
