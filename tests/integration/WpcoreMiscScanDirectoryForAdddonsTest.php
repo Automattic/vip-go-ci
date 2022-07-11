@@ -50,13 +50,12 @@ final class WpcoreMiscScanDirectoryForAdddonsTest extends TestCase {
 			return;
 		}
 
-		$tar_cmd = 'tar -C ' .
-			escapeshellarg( $temp_dir ) .
-			' -zxsf ' .
-			escapeshellarg( __DIR__ . '/helper-files/WpcoreMiscScanDirectoryForAdddonsTest.tar.gz' ) .
-			' --atime-preserve=system';
+		$cp_cmd = 'cp -R ' .
+			escapeshellarg( __DIR__ . '/helper-files/WpcoreMiscScanDirectoryForAdddonsTest' ) .
+			' ' .
+			escapeshellarg( $temp_dir );
 
-		if ( false === exec( $tar_cmd ) ) {
+		if ( false === exec( $cp_cmd ) ) {
 			$this->markTestSkipped(
 				'Unable to extract tar file'
 			);
