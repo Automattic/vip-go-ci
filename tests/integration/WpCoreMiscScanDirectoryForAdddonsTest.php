@@ -63,7 +63,7 @@ final class WpCoreMiscScanDirectoryForAdddonsTest extends TestCase {
 		}
 
 		$results_expected = array(
-			'addon2/style.css' => array(
+			'addon2/style.css'     => array(
 				'type'             => 'vipgoci-wpscan-theme',
 				'addon_headers'    => array(
 					'Name'        => 'My Package',
@@ -86,7 +86,7 @@ final class WpCoreMiscScanDirectoryForAdddonsTest extends TestCase {
 				'version_detected' => '1.0.0',
 				'file_name'        => $temp_dir . '/WpCoreMiscScanDirectoryForAdddonsTest/addon2/style.css',
 			),
-			'addon1/file2.php' => array(
+			'addon1/file2.php'     => array(
 				'type'             => 'vipgoci-wpscan-plugin',
 				'addon_headers'    => array(
 					'Name'        => 'My <h1>Other</h1> Package',
@@ -107,6 +107,28 @@ final class WpCoreMiscScanDirectoryForAdddonsTest extends TestCase {
 				'name'             => 'My <h1>Other</h1> Package',
 				'version_detected' => '1.1.0',
 				'file_name'        => $temp_dir . '/WpCoreMiscScanDirectoryForAdddonsTest/addon1/file2.php',
+			),
+			'this-is-a-plugin.php' => array(
+				'type'             => 'vipgoci-wpscan-plugin',
+				'addon_headers'    => array(
+					'Name'        => 'This is a plugin.',
+					'PluginURI'   => 'http://wordpress.org/test/my-other-package/',
+					'Version'     => '15.1.0',
+					'Description' => 'This is indeed <b>a plugin</b>..',
+					'Author'      => 'Test author.',
+					'AuthorURI'   => 'http://wordpress.org/author/test124',
+					'TextDomain'  => '',
+					'DomainPath'  => '',
+					'Network'     => '',
+					'RequiresWP'  => '',
+					'RequiresPHP' => '',
+					'UpdateURI'   => '',
+					'Title'       => 'This is a plugin.',
+					'AuthorName'  => 'Test author.',
+				),
+				'name'             => 'This is a plugin.',
+				'version_detected' => '15.1.0',
+				'file_name'        => $temp_dir . '/WpCoreMiscScanDirectoryForAdddonsTest/this-is-a-plugin.php',
 			),
 		);
 
