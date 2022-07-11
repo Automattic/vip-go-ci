@@ -53,7 +53,8 @@ final class WpcoreMiscScanDirectoryForAdddonsTest extends TestCase {
 		$tar_cmd = 'tar -C ' .
 			escapeshellarg( $temp_dir ) .
 			' -zxsf ' .
-			escapeshellarg( __DIR__ . '/helper-files/WpcoreMiscScanDirectoryForAdddonsTest.tar.gz' );
+			escapeshellarg( __DIR__ . '/helper-files/WpcoreMiscScanDirectoryForAdddonsTest.tar.gz' ) .
+			' --atime-preserve=system';
 
 		if ( false === exec( $tar_cmd ) ) {
 			$this->markTestSkipped(
