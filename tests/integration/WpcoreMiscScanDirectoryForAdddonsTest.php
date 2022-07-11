@@ -65,7 +65,7 @@ final class WpcoreMiscScanDirectoryForAdddonsTest extends TestCase {
 		}
 
 		$results_expected = array(
-			'style.css' => array(
+			'addon2/style.css' => array(
 				'type'             => 'vipgoci-wpscan-theme',
 				'addon_headers'    => array(
 					'Name'        => 'My Package',
@@ -88,7 +88,7 @@ final class WpcoreMiscScanDirectoryForAdddonsTest extends TestCase {
 				'version_detected' => '1.0.0',
 				'file_name'        => $temp_dir . '/WpcoreMiscScanDirectoryForAdddonsTest/addon2/style.css',
 			),
-			'file2.php' => array(
+			'addon1/file2.php' => array(
 				'type'             => 'vipgoci-wpscan-plugin',
 				'addon_headers'    => array(
 					'Name'        => 'My Other Package',
@@ -112,9 +112,13 @@ final class WpcoreMiscScanDirectoryForAdddonsTest extends TestCase {
 			),
 		);
 
+		vipgoci_unittests_output_suppress();
+
 		$results_actual = vipgoci_wpcore_misc_scan_directory_for_addons(
 			$temp_dir . '/WpcoreMiscScanDirectoryForAdddonsTest'
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		if ( false === exec( 'rm -rf ' . escapeshellarg( $temp_dir ) ) ) {
 			$this->markTestSkipped(
