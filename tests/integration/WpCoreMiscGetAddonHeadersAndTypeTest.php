@@ -109,9 +109,13 @@ final class WpCoreMiscGetAddonHeadersAndTypeTest extends TestCase {
 			'file_name'        => $temp_file_name,
 		);
 
+		vipgoci_unittests_output_suppress();
+
 		$actual_result = vipgoci_wpcore_misc_get_addon_headers_and_type(
 			$temp_file_name
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		if ( true !== unlink( $temp_file_name ) ) {
 			$this->markTestSkipped(
@@ -207,9 +211,13 @@ final class WpCoreMiscGetAddonHeadersAndTypeTest extends TestCase {
 			'file_name'        => $temp_file_name,
 		);
 
+		vipgoci_unittests_output_suppress();
+
 		$actual_result = vipgoci_wpcore_misc_get_addon_headers_and_type(
 			$temp_file_name
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		if ( true !== unlink( $temp_file_name ) ) {
 			$this->markTestSkipped(
@@ -283,9 +291,13 @@ final class WpCoreMiscGetAddonHeadersAndTypeTest extends TestCase {
 
 		$expected_result = null;
 
+		vipgoci_unittests_output_suppress();
+
 		$actual_result = vipgoci_wpcore_misc_get_addon_headers_and_type(
 			$temp_file_name
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		if ( true !== unlink( $temp_file_name ) ) {
 			$this->markTestSkipped(
