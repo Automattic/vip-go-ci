@@ -35,6 +35,8 @@ final class WpCoreApiDetermineSlugAndOtherForAddonsTest extends TestCase {
 	 * @return void
 	 */
 	public function testCommonUsage(): void {
+		vipgoci_unittests_output_suppress();
+
 		$actual_results = vipgoci_wpcore_api_determine_slug_and_other_for_addons(
 			array(
 				'hello/hello.php' => array(
@@ -52,6 +54,8 @@ final class WpCoreApiDetermineSlugAndOtherForAddonsTest extends TestCase {
 				),
 			),
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertNotEmpty(
 			$actual_results['hello/hello.php']
@@ -99,6 +103,8 @@ final class WpCoreApiDetermineSlugAndOtherForAddonsTest extends TestCase {
 	 * @return void
 	 */
 	public function testNoResults(): void {
+		vipgoci_unittests_output_suppress();
+
 		$actual_results = vipgoci_wpcore_api_determine_slug_and_other_for_addons(
 			array(
 				'my-test/invalid.php' => array(
@@ -115,9 +121,72 @@ final class WpCoreApiDetermineSlugAndOtherForAddonsTest extends TestCase {
 			),
 		);
 
+		vipgoci_unittests_output_unsuppress();
+
 		$this->assertSame(
 			array( 'my-test/invalid.php' => null ),
 			$actual_results,
 		);
 	}
+
+	/**
+	 * Test invalid usage.
+	 *
+	 * @covers ::vipgoci_wpcore_api_determine_slug_and_other_for_addons
+	 *
+	 * @return void
+	 */
+	public function testInvalidUsage1(): void {
+		vipgoci_unittests_output_suppress();
+
+		$actual_results = vipgoci_wpcore_api_determine_slug_and_other_for_addons(
+			array()
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		$this->assertSame(
+			array(),
+			$actual_results,
+		);
+	}
+
+
+	/**
+	 * Test invalid usage.
+	 *
+	 * @covers ::vipgoci_wpcore_api_determine_slug_and_other_for_addons
+	 *
+	 * @return void
+	 */
+	public function testInvalidUsage2(): void {
+		vipgoci_unittests_output_suppress();
+
+		$actual_results = vipgoci_wpcore_api_determine_slug_and_other_for_addons(
+			array(
+				'my-test/invalid.php'  => array(),
+				'my-test/invalid2.php' => array(
+					'type'          => 'vipgoci-wpscan-plugin',
+					'addon_headers' => array(
+						'Name'        => 'This is invalid, 123',
+						'PluginURI'   => 'http://wordpress.org/INVALID/invalid-1234/',
+						'Version'     => '999.0',
+						'Description' => 'This is invalid',
+						'Author'      => 'No author',
+						'AuthorURI '  => 'http://wordpress.org',
+					),
+				),
+			),
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		$this->assertSame(
+			array(
+				'my-test/invalid2.php' => null,
+			),
+			$actual_results,
+		);
+	}
+
 }
