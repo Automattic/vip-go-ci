@@ -250,9 +250,9 @@ function vipgoci_wpcore_misc_get_addon_headers_and_type(
  *       [Title] => Hello Dolly
  *       [AuthorName] => Matt Mullenweg
  *     )
- *     [name] => Getty Images
- *     [version_detected] => 3.0.5
- *     [filename] => /tmp/plugins/getty-images/getty-images.php
+ *     [name] => Hello Dolly
+ *     [version_detected] => 1.6
+ *     [filename] => /tmp/plugins/hello/hello.php
  *   )
  * )
  */
@@ -350,6 +350,7 @@ function vipgoci_wpcore_misc_scan_directory_for_addons(
 			continue;
 		}
 
+		// Calculate 'local slug'.
 		if ( str_contains( $plugin_file, '/' ) ) {
 			$wp_plugin_key = dirname( $plugin_file ) . '/' . basename( $plugin_file );
 		} else {
