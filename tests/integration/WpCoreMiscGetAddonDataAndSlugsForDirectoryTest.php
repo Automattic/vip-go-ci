@@ -32,7 +32,7 @@ final class WpCoreMiscGetAddonDataAndSlugsForDirectoryTest extends TestCase {
 	 */
 	protected function setUp() :void {
 		require_once __DIR__ . '/IncludesForTests.php';
-	
+
 		$this->temp_dir = sys_get_temp_dir() .
 			'/directory_for_addons-' .
 			hash( 'sha256', random_bytes( 2048 ) );
@@ -43,7 +43,6 @@ final class WpCoreMiscGetAddonDataAndSlugsForDirectoryTest extends TestCase {
 			$this->temp_dir = '';
 		}
 	}
-
 
 	/**
 	 * Tear down function. Clean up temporary files.
@@ -173,7 +172,6 @@ final class WpCoreMiscGetAddonDataAndSlugsForDirectoryTest extends TestCase {
 			'15.1.0',
 			$actual_results['this-is-a-plugin.php']['version_detected']
 		);
-
 
 		$this->assertFalse(
 			isset( $actual_results['this-is-a-plugin.php']['new_version'] )
