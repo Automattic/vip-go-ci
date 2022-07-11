@@ -47,7 +47,7 @@ final class WpcoreMiscGetAddonDataAndSlugsForDirectoryTest extends TestCase {
 			return;
 		}
 
-		$cp_cmd = escapeshellcmd( 'cp' )
+		$cp_cmd = escapeshellcmd( 'cp' ) .
 			' -R ' .
 			escapeshellarg( __DIR__ . '/helper-files/WpcoreMiscGetAddonDataAndSlugsForDirectoryTest' ) .
 			' ' .
@@ -107,7 +107,11 @@ final class WpcoreMiscGetAddonDataAndSlugsForDirectoryTest extends TestCase {
 			$actual_results['hello.php']['package']
 		);
 
-		if ( false === exec( 'rm -rf ' . escapeshellarg( $temp_dir ) ) ) {
+		if ( false === exec(
+			escapeshellcmd( 'rm' ) .
+			' -rf ' .
+			escapeshellarg( $temp_dir )
+		) ) {
 			$this->markTestSkipped(
 				'Unable to remove temporary directory'
 			);
