@@ -89,7 +89,7 @@ final class WpCoreMiscScanDirectoryForAdddonsTest extends TestCase {
 			'addon1/file2.php' => array(
 				'type'             => 'vipgoci-wpscan-plugin',
 				'addon_headers'    => array(
-					'Name'        => 'My Other Package',
+					'Name'        => 'My <h1>Other</h1> Package',
 					'PluginURI'   => 'http://wordpress.org/test/my-other-package/',
 					'Version'     => '1.1.0',
 					'Description' => 'My text.',
@@ -101,10 +101,10 @@ final class WpCoreMiscScanDirectoryForAdddonsTest extends TestCase {
 					'RequiresWP'  => '',
 					'RequiresPHP' => '',
 					'UpdateURI'   => '',
-					'Title'       => 'My Other Package',
+					'Title'       => 'My <h1>Other</h1> Package',
 					'AuthorName'  => 'Author Name',
 				),
-				'name'             => 'My Other Package',
+				'name'             => 'My <h1>Other</h1> Package',
 				'version_detected' => '1.1.0',
 				'file_name'        => $temp_dir . '/WpcoreMiscScanDirectoryForAdddonsTest/addon1/file2.php',
 			),
