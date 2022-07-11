@@ -350,7 +350,14 @@ function vipgoci_wpcore_misc_scan_directory_for_addons(
 			continue;
 		}
 
-		$wp_plugins[ basename( $plugin_file ) ] = $plugin_data; // @todo: plugin_basename() is used in WordPress.
+		if ( str_contains( $plugin_file, '/' ) ) {
+			$wp_plugin_key = dirname( $plugin_file ) . '/' . basename( $plugin_file );
+		} else {
+			$wp_plugin_key = basename( $plugin_file );
+	
+		}
+
+		$wp_plugins[ $wp_plugin_key ] = $plugin_data;
 	}
 
 	vipgoci_log(
