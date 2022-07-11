@@ -38,8 +38,8 @@ final class WpcoreApiDetermineSlugAndOtherForAddonsTest extends TestCase {
 		$actual_results = vipgoci_wpcore_api_determine_slug_and_other_for_addons(
 			array(
 				'hello/hello.php' => array(
-					'type'             => 'vipgoci-wpscan-plugin',
-					'addon_headers'    => array(
+					'type'          => 'vipgoci-wpscan-plugin',
+					'addon_headers' => array(
 						'Name'        => 'Hello Dolly',
 						'PluginURI'   => 'http://wordpress.org/plugins/hello-dolly/',
 						'Version'     => '1.6',
