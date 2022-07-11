@@ -41,7 +41,7 @@ final class WpCoreMiscScanDirectoryForAdddonsTest extends TestCase {
 		if ( true !== mkdir( $this->temp_dir ) ) {
 			echo 'Unable to create temporary directory.' . PHP_EOL;
 
-			return;
+			$this->temp_dir = '';
 		}
 	}
 
@@ -57,7 +57,7 @@ final class WpCoreMiscScanDirectoryForAdddonsTest extends TestCase {
 				' -rf ' .
 				escapeshellarg( $this->temp_dir )
 			) ) {
-				echo 'Unable to remove temporary directory';
+				echo 'Unable to remove temporary directory' . PHP_EOL;
 
 				return;
 			}
