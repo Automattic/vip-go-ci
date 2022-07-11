@@ -493,8 +493,18 @@ function vipgoci_wpcore_api_determine_slug_and_other_for_addons(
 		return null;
 	}
 
-	foreach ( $api_data['plugins'] as $key => $data_item ) {
+	/*
+	 * The API will return with more than one potential
+	 * result array; search both for data.
+	 */ 
+	foreach ( $api_data['no_update'] as $key => $data_item ) {
 		$slugs_by_plugin[ $key ] = $data_item;
+	}
+
+	foreach ( $api_data['plugins'] as $key => $data_item ) {
+		if ( ! isset( $slugs_by_plugin[ $key ] ) ) {
+			$slugs_by_plugin[ $key ] = $data_item;
+		}
 	}
 
 	vipgoci_log(
@@ -537,7 +547,8 @@ function vipgoci_wpcore_api_determine_slug_and_other_for_addons(
  *     )
  *   [name] => Hello Dolly
  *   [version_detected] => 1.6
- *   [filename] => /tmp/plugins/hello.php
+ *   [file_name] => /tmp/plugins/hello.php
+ *   [id] => w.org/plugins/hello-dolly
  *   [slug] => hello-dolly
  *   [new_version] => 1.7.2
  *   [package] => https://downloads.wordpress.org/plugin/hello-dolly.1.7.2.zip
@@ -563,7 +574,7 @@ function vipgoci_wpcore_misc_get_addon_data_and_slugs_for_directory(
 	 * Look through plugins found, assign slug found, version numbers, etc.
 	 */
 	foreach ( $plugins_found as $plugin_key => $plugin_item ) {
-		foreach ( array( 'slug', 'new_version', 'package', 'url' ) as $_field_id ) {
+		foreach ( array( 'id', 'slug', 'new_version', 'plugin', 'package', 'url', 'package' ) as $_field_id ) {
 			if ( isset( $plugin_details[ $plugin_key ][ $_field_id ] ) ) {
 				$plugins_found[ $plugin_key ][ $_field_id ] = $plugin_details[ $plugin_key ][ $_field_id ];
 			}
