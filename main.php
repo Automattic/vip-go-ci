@@ -2775,7 +2775,7 @@ function vipgoci_run_scan(
 		$options['branches-ignore'],
 		$options['skip-draft-prs'],
 		array(
-			VIPGOCI_SYNTAX_ERROR_STR,
+			VIPGOCI_LINT_ERROR_STR,
 			VIPGOCI_WPSCAN_API_ERROR,
 			VIPGOCI_GITHUB_ERROR_STR,
 			VIPGOCI_REVIEW_COMMENTS_TOTAL_MAX,
