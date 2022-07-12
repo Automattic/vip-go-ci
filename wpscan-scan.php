@@ -331,6 +331,8 @@ function vipgoci_wpscan_scan_save_for_submission(
 		false
 	);
 
+	$pr_labels_found_and_reported = array();
+
 	/*
 	 * Loop through each plugin/theme that is vulnerable/obsolete;
 	 * key is the base path and value is information about each plugin/theme.
@@ -350,10 +352,54 @@ function vipgoci_wpscan_scan_save_for_submission(
 			 */
 			foreach (
 				$files_affected_by_commit_by_pr as
-					$pr_key => $pr_changed_files
+					$pr_number => $pr_changed_files
 			) {
-				if ( 'all' === $pr_key ) {
+				if ( 'all' === $pr_number ) {
 					// Ignore the special 'all' key.
+					continue;
+				}
+
+				/*
+				 * Check if to skip posting results according to label.
+				 */
+				$pr_label_skip_wpscan = vipgoci_github_pr_labels_get(
+					$options['repo-owner'],
+					$options['repo-name'],
+					$options['token'],
+					$pr_number,
+					'skip-wpscan-scan'
+				);
+
+				if (
+					( ! empty( $pr_label_skip_wpscan ) ) &&
+					( ! isset( $pr_labels_found_and_reported[ $pr_number ] ) )
+				) {
+					/*
+					 * Skip scanning requested; do not save results, log.
+					 */
+					vipgoci_log(
+						'Label on pull request indicated ' .
+						'to skip WPScan API scanning; not ' .
+						'posting results',
+						array(
+							'repo_owner'           => $options['repo-owner'],
+							'repo_name'            => $options['repo-name'],
+							'commit_id'            => $options['commit'],
+							'pr_number'            => $pr_number,
+							'pr_label_skip_wpscan' => $pr_label_skip_wpscan,
+						)
+					);
+
+					$pr_labels_found_and_reported[ $pr_number ] = true;
+
+					continue;
+				} elseif (
+					( ! empty( $pr_label_skip_wpscan ) ) &&
+					( isset( $pr_labels_found_and_reported[ $pr_number ] ) )
+				) {
+					/*
+					 * Skip scanning requested. Don't log again.
+					 */
 					continue;
 				}
 
@@ -368,7 +414,7 @@ function vipgoci_wpscan_scan_save_for_submission(
 
 					$issue_details = $problem_addon_files[ $problem_addon_file_name ];
 
-					$commit_issues_submit[ $pr_key ][] = array(
+					$commit_issues_submit[ $pr_number ][] = array(
 						'type'      => VIPGOCI_STATS_WPSCAN_API,
 						'file_name' => $dir_with_problem_addons . DIRECTORY_SEPARATOR . $problem_addon_file_name, // Required field.
 						'file_line' => 1, // Required field, even if not used.
@@ -393,7 +439,7 @@ function vipgoci_wpscan_scan_save_for_submission(
 					 * Collect statistics on
 					 * number of warnings/errors
 					 */
-					$commit_issues_stats[ $pr_key ][ $level ]++;
+					$commit_issues_stats[ $pr_number ][ $level ]++;
 				}
 			}
 		}
