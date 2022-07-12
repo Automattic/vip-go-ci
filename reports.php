@@ -1064,8 +1064,8 @@ function vipgoci_report_submit_pr_review_from_results(
 		/*
 		 * Figure out what to report to GitHub.
 		 *
-		 * If there are any 'error'-level issues, make sure the submission
-		 * asks for changes to be made, otherwise only comment.
+		 * If there are any VIPGOCI_ISSUE_TYPE_ERROR issues, make sure the
+		 * submission asks for changes to be made, otherwise only comment.
 		 *
 		 * If there are no issues at all -- warning, error, info -- do not
 		 * submit anything.
@@ -1083,7 +1083,7 @@ function vipgoci_report_submit_pr_review_from_results(
 		) {
 			if ( ! empty(
 				$results['stats']
-					[ $stats_type ][ $pr_number ]['error']
+					[ $stats_type ][ $pr_number ][ VIPGOCI_ISSUE_TYPE_ERROR ]
 			) ) {
 				$github_postfields['event'] = 'REQUEST_CHANGES';
 				$github_errors              = true;
@@ -1091,14 +1091,14 @@ function vipgoci_report_submit_pr_review_from_results(
 
 			if ( ! empty(
 				$results['stats']
-					[ $stats_type ][ $pr_number ]['warning']
+					[ $stats_type ][ $pr_number ][ VIPGOCI_ISSUE_TYPE_WARNING ]
 			) ) {
 				$github_warnings = true;
 			}
 
 			if ( ! empty(
 				$results['stats']
-					[ $stats_type ][ $pr_number ]['info']
+					[ $stats_type ][ $pr_number ][ VIPGOCI_ISSUE_TYPE_INFO ]
 			) ) {
 				$github_info = true;
 			}

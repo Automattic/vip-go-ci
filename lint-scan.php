@@ -690,7 +690,7 @@ function vipgoci_lint_scan_commit(
 
 			vipgoci_lint_set_file_issues_result(
 				$commit_issues_submit[ $pr_number ],
-				$commit_issues_stats[ $pr_number ]['error'],
+				$commit_issues_stats[ $pr_number ][ VIPGOCI_ISSUE_TYPE_ERROR ],
 				$file_name,
 				$scanning_results[ $file_name ]
 			);
