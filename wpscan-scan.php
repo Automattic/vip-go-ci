@@ -431,12 +431,16 @@ function vipgoci_wpscan_scan_save_for_submission(
 					continue;
 				}
 
-				// @todo: Ensure that only one file needs to be changed, not the specific plugin file.
-				if ( true === in_array(
-					$dir_with_problem_addons . DIRECTORY_SEPARATOR . $problem_addon_file_name,
+				/*
+				 * Ensure we report only about directories
+				 * which are in list of changed files.
+				 */
+				$should_add_file = vipgoci_directory_found_in_file_list(
 					$pr_changed_files,
-					true
-				) ) {
+					$dir_with_problem_addons
+				);
+
+				if ( true === $should_add_file ) {
 					$level = 'vulnerable' === $problem_addon_files[ $problem_addon_file_name ]['type'] ?
 						VIPGOCI_ISSUE_TYPE_ERROR : VIPGOCI_ISSUE_TYPE_WARNING;
 
