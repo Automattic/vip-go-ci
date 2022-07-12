@@ -232,7 +232,8 @@ function vipgoci_wpcore_misc_get_addon_headers_and_type(
  * This functionality aims for compatibility with get_plugins() in WordPress.
  * The function is adopted from WordPress: https://core.trac.wordpress.org/browser/tags/6.0/src/wp-admin/includes/plugin.php#L254
  *
- * @param string $path    Path to scan for plugins and themes. Usually this would point a structure similar to wp-content/plugins.
+ * @param string $path                   Path to scan for plugins and themes. Usually this would point a structure similar to wp-content/plugins.
+ * @param bool   $process_subdirectories If to process sub-directories.
  *
  * @link https://developer.wordpress.org/reference/functions/get_plugins/
  *
@@ -257,7 +258,8 @@ function vipgoci_wpcore_misc_get_addon_headers_and_type(
  * )
  */
 function vipgoci_wpcore_misc_scan_directory_for_addons(
-	string $path
+	string $path,
+	bool $process_subdirectories = true
 ): array {
 	$plugins_dir  = @opendir( $path ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
 	$plugin_files = array();
@@ -285,7 +287,9 @@ function vipgoci_wpcore_misc_scan_directory_for_addons(
 
 		$tmp_subdir = $path . DIRECTORY_SEPARATOR . $file;
 
-		if ( is_dir( $tmp_subdir ) ) {
+		if ( ( is_dir( $tmp_subdir ) ) && ( false === $process_subdirectories ) ) {
+			continue; // Should not process subdirectories.
+		} elseif ( ( is_dir( $tmp_subdir ) ) && ( true === $process_subdirectories ) ) {
 			$plugins_subdir = @opendir( $tmp_subdir ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
 
 			if ( false !== $plugins_subdir ) {
@@ -355,7 +359,6 @@ function vipgoci_wpcore_misc_scan_directory_for_addons(
 			$wp_plugin_key = dirname( $plugin_file ) . '/' . basename( $plugin_file );
 		} else {
 			$wp_plugin_key = basename( $plugin_file );
-	
 		}
 
 		$wp_plugins[ $wp_plugin_key ] = $plugin_data;
@@ -532,7 +535,8 @@ function vipgoci_wpcore_api_determine_slug_and_other_for_addons(
  * to determine slugs and fetch other information from WordPress.org
  * API about the plugins/themes, return the information after processing.
  *
- * @param string $path Path to directory to analyze.
+ * @param string $path                   Path to directory to analyze.
+ * @param bool   $process_subdirectories If to process sub-directories.
  *
  * @return array Information about plugins or themes found. Includes
  *               headers found in the plugin/theme, version number of
@@ -564,10 +568,12 @@ function vipgoci_wpcore_api_determine_slug_and_other_for_addons(
  * )
  */
 function vipgoci_wpcore_misc_get_addon_data_and_slugs_for_directory(
-	string $path
+	string $path,
+	bool $process_subdirectories = true
 ) :array {
 	$plugins_found = vipgoci_wpcore_misc_scan_directory_for_addons(
-		$path
+		$path,
+		$process_subdirectories
 	);
 
 	$plugin_details = vipgoci_wpcore_api_determine_slug_and_other_for_addons(
