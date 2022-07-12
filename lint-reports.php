@@ -31,7 +31,7 @@ function vipgoci_lint_report_comment_start(
 		rawurlencode( $commit_id );
 
 	$comment_start =
-		'# ' . VIPGOCI_SYNTAX_ERROR_STR . PHP_EOL .
+		'# ' . VIPGOCI_LINT_ERROR_STR . PHP_EOL .
 		sprintf(
 			VIPGOCI_LINT_REPORT_START,
 			vipgoci_output_html_escape( $name_to_use ),

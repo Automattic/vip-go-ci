@@ -212,13 +212,13 @@ function vipgoci_blame_filter_commits(
  */
 function vipgoci_github_transform_to_emojis( $text_string ) {
 	switch ( strtolower( $text_string ) ) {
-		case 'warning':
+		case VIPGOCI_ISSUE_TYPE_WARNING:
 			return ':warning:';
 
-		case 'error':
+		case VIPGOCI_ISSUE_TYPE_ERROR:
 			return ':no_entry_sign:';
 
-		case 'info':
+		case VIPGOCI_ISSUE_TYPE_INFO:
 			return ':information_source:';
 	}
 

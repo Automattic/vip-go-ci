@@ -37,67 +37,51 @@ function vipgoci_ap_file_types(
 		)
 	);
 
-	$prs_implicated = vipgoci_github_prs_implicated(
-		$options['repo-owner'],
-		$options['repo-name'],
+	$commit_skipped_files = array();
+
+	$pr_item_files_changed = vipgoci_github_files_affected_by_commit(
+		$options,
 		$options['commit'],
-		$options['token'],
-		$options['branches-ignore'],
-		$options['skip-draft-prs']
+		$commit_skipped_files,
+		true, // Renamed files included.
+		true, // Removed files included.
+		true, // Permission changes included.
+		null
 	);
 
-	foreach ( $prs_implicated as $pr_item ) {
-		$pr_diff = vipgoci_git_diffs_fetch(
-			$options['local-git-repo'],
-			$options['repo-owner'],
-			$options['repo-name'],
-			$options['token'],
-			$pr_item->base->sha,
-			$options['commit'],
-			true, // Renamed files included.
-			true, // Removed files included.
-			true, // Permission changes included.
-			null
+	/*
+	 * Loop through files renamed, removed, had
+	 * permissions changed, or content modified
+	 * -- and auto-approve them if their file-type
+	 * is auto-approvable.
+	 */
+	foreach ( $pr_item_files_changed['all'] as $pr_diff_file_name ) {
+		/*
+		 * If the file is already in the array
+		 * of approved files, do not do anything.
+		 */
+		if ( isset(
+			$auto_approved_files_arr[ $pr_diff_file_name ]
+		) ) {
+			continue;
+		}
+
+		$pr_diff_file_extension = vipgoci_file_extension_get(
+			$pr_diff_file_name
 		);
 
 		/*
-		 * Note: We will here loop through files
-		 * that have been renamed, removed, had their
-		 * permission changed, or had their contents
-		 * modified -- and then we might auto-approve
-		 * them (if their file-type is auto-approvable).
+		 * Check if the extension of the file
+		 * is in a list of auto-approvable
+		 * file extensions.
 		 */
-
-		foreach ( $pr_diff['files'] as
-			$pr_diff_file_name => $pr_diff_contents
-		) {
-			/*
-			 * If the file is already in the array
-			 * of approved files, do not do anything.
-			 */
-			if ( isset(
-				$auto_approved_files_arr[ $pr_diff_file_name ]
-			) ) {
-				continue;
-			}
-
-			$pr_diff_file_extension = vipgoci_file_extension_get(
-				$pr_diff_file_name
-			);
-
-			/*
-			 * Check if the extension of the file
-			 * is in a list of auto-approvable
-			 * file extensions.
-			 */
-			if ( in_array(
-				$pr_diff_file_extension,
-				$options['autoapprove-filetypes'],
-				true
-			) ) {
-				$auto_approved_files_arr[ $pr_diff_file_name ]
-					= 'autoapprove-filetypes';
-			}
+		if ( in_array(
+			$pr_diff_file_extension,
+			$options['autoapprove-filetypes'],
+			true
+		) ) {
+			$auto_approved_files_arr[ $pr_diff_file_name ]
+				= 'autoapprove-filetypes';
 		}
 	}
 

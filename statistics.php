@@ -61,9 +61,9 @@ function vipgoci_stats_init(
 
 			$results['stats'][ $stats_type ]
 				[ $pr_item->number ] = array(
-					'error'   => 0,
-					'warning' => 0,
-					'info'    => 0,
+					VIPGOCI_ISSUE_TYPE_ERROR   => 0,
+					VIPGOCI_ISSUE_TYPE_WARNING => 0,
+					VIPGOCI_ISSUE_TYPE_INFO    => 0,
 				);
 		}
 	}

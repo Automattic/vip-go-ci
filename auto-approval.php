@@ -20,7 +20,7 @@ declare(strict_types=1);
  *
  * @param array       $options                 Options needed.
  * @param array       $results                 Results of scanning.
- * @param object      $pr_item                 Pull request item.
+ * @param int         $pr_number               Pull request number.
  * @param object|bool $pr_label                Pull request label found, false when none is found.
  * @param array       $auto_approved_files_arr Array of auto-approved files.
  * @param array       $files_seen              Files processed during auto-approval.
@@ -31,7 +31,7 @@ declare(strict_types=1);
 function vipgoci_auto_approval_non_approval(
 	array $options,
 	array &$results,
-	object $pr_item,
+	int $pr_number,
 	object|bool $pr_label,
 	array &$auto_approved_files_arr,
 	array $files_seen,
@@ -49,11 +49,11 @@ function vipgoci_auto_approval_non_approval(
 		VIPGOCI_GITHUB_WEB_BASE_URL . '/' .
 		rawurlencode( $options['repo-owner'] ) . '/' .
 		rawurlencode( $options['repo-name'] ) . '/' .
-		'pull/' . (int) $pr_item->number;
+		'pull/' . (int) $pr_number;
 
 	vipgoci_log(
 		'Will not auto-approve pull request #' .
-			(int) $pr_item->number . ' ' .
+			(int) $pr_number . ' ' .
 			'as it contains ' .
 			'files which are not ' .
 			'automatically approvable' .
@@ -61,7 +61,7 @@ function vipgoci_auto_approval_non_approval(
 		array(
 			'repo_owner'              => $options['repo-owner'],
 			'repo_name'               => $options['repo-name'],
-			'pr_number'               => $pr_item->number,
+			'pr_number'               => $pr_number,
 			'autoapprove-filetypes'   => $options['autoapprove-filetypes'],
 			'auto_approved_files_arr' => $auto_approved_files_arr,
 			'files_seen'              => $files_seen,
@@ -78,7 +78,7 @@ function vipgoci_auto_approval_non_approval(
 			array(
 				'repo_owner' => $options['repo-owner'],
 				'repo_name'  => $options['repo-name'],
-				'pr_number'  => $pr_item->number,
+				'pr_number'  => $pr_number,
 				'label_name' => $options['autoapprove-label'],
 			)
 		);
@@ -90,7 +90,7 @@ function vipgoci_auto_approval_non_approval(
 			$options['repo-owner'],
 			$options['repo-name'],
 			$options['token'],
-			(int) $pr_item->number,
+			(int) $pr_number,
 			$pr_label->name
 		);
 	}
@@ -104,14 +104,14 @@ function vipgoci_auto_approval_non_approval(
 			'the pull request, as it is not ' .
 			'approved anymore',
 		array(
-			'pr_number' => $pr_item->number,
+			'pr_number' => $pr_number,
 		)
 	);
 
 	$pr_item_reviews = vipgoci_github_pr_reviews_get(
 		$options['repo-owner'],
 		$options['repo-name'],
-		(int) $pr_item->number,
+		(int) $pr_number,
 		$options['token'],
 		array(
 			'login' => 'myself',
@@ -127,7 +127,7 @@ function vipgoci_auto_approval_non_approval(
 		vipgoci_github_pr_review_dismiss(
 			$options['repo-owner'],
 			$options['repo-name'],
-			(int) $pr_item->number,
+			(int) $pr_number,
 			(int) $pr_item_review->id,
 			'Dismissing obsolete review; not approved any longer',
 			$options['token']
@@ -149,7 +149,7 @@ function vipgoci_auto_approval_non_approval(
  * @codeCoverageIgnore
  *
  * @param array       $options                 Options needed.
- * @param object      $pr_item                 Pull request item.
+ * @param int         $pr_number               Pull request item.
  * @param object|bool $pr_label                Pull request label found, false when none is found.
  * @param array       $auto_approved_files_arr Array of auto-approved files.
  * @param array       $files_seen              Files processed during auto-approval.
@@ -158,7 +158,7 @@ function vipgoci_auto_approval_non_approval(
  */
 function vipgoci_autoapproval_do_approve(
 	array $options,
-	object $pr_item,
+	int $pr_number,
 	object|bool $pr_label,
 	array &$auto_approved_files_arr,
 	array $files_seen
@@ -169,7 +169,7 @@ function vipgoci_autoapproval_do_approve(
 		vipgoci_github_pr_reviews_get(
 			$options['repo-owner'],
 			$options['repo-name'],
-			$pr_item->number,
+			$pr_number,
 			$options['token'],
 			array(
 				'login' => 'myself',
@@ -189,11 +189,11 @@ function vipgoci_autoapproval_do_approve(
 			VIPGOCI_GITHUB_WEB_BASE_URL . '/' .
 			rawurlencode( $options['repo-owner'] ) . '/' .
 			rawurlencode( $options['repo-name'] ) . '/' .
-			'pull/' . (int) $pr_item->number;
+			'pull/' . (int) $pr_number;
 
 		vipgoci_log(
 			'Will auto-approve pull request #' .
-				(int) $pr_item->number . ' ' .
+				(int) $pr_number . ' ' .
 				'as it alters or creates ' .
 				'only files that can be ' .
 				'automatically approved' .
@@ -201,7 +201,7 @@ function vipgoci_autoapproval_do_approve(
 			array(
 				'repo_owner'              => $options['repo-owner'],
 				'repo_name'               => $options['repo-name'],
-				'pr_number'               => (int) $pr_item->number,
+				'pr_number'               => (int) $pr_number,
 				'commit_id'               => $options['commit'],
 				'autoapprove-filetypes'   => $options['autoapprove-filetypes'],
 				'auto_approved_files_arr' => $auto_approved_files_arr,
@@ -219,10 +219,10 @@ function vipgoci_autoapproval_do_approve(
 			$options['repo-owner'],
 			$options['repo-name'],
 			$options['token'],
-			$pr_item->number,
+			$pr_number,
 			$options['commit'],
 			'Auto-approved pull request #' .
-				(int) $pr_item->number . ' as it ' .
+				(int) $pr_number . ' as it ' .
 				'contains only auto-approvable files -- ' .
 				(
 					true === $options['autoapprove-php-nonfunctional-changes'] ?
@@ -246,18 +246,18 @@ function vipgoci_autoapproval_do_approve(
 		vipgoci_report_feedback_to_github_was_submitted(
 			$options['repo-owner'],
 			$options['repo-name'],
-			$pr_item->number,
+			$pr_number,
 			true
 		);
 	} else {
 		vipgoci_log(
 			'Will not actually approve pull request #' .
-				(int) $pr_item->number .
+				(int) $pr_number .
 				', as it is already approved by us',
 			array(
 				'repo_owner'              => $options['repo-owner'],
 				'repo_name'               => $options['repo-name'],
-				'pr_number'               => $pr_item->number,
+				'pr_number'               => $pr_number,
 				'commit_id'               => $options['commit'],
 				'autoapprove-filetypes'   => $options['autoapprove-filetypes'],
 				'auto_approved_files_arr' => $auto_approved_files_arr,
@@ -278,7 +278,7 @@ function vipgoci_autoapproval_do_approve(
 			$options['repo-owner'],
 			$options['repo-name'],
 			$options['token'],
-			$pr_item->number,
+			$pr_number,
 			$options['autoapprove-label']
 		);
 	} else {
@@ -288,7 +288,7 @@ function vipgoci_autoapproval_do_approve(
 			array(
 				'repo_owner' => $options['repo-owner'],
 				'repo_name'  => $options['repo-name'],
-				'pr_number'  => $pr_item->number,
+				'pr_number'  => $pr_number,
 				'label_name' => $options['autoapprove-label'],
 			)
 		);
@@ -325,27 +325,25 @@ function vipgoci_auto_approval_scan_commit(
 		)
 	);
 
-	$prs_implicated = vipgoci_github_prs_implicated(
-		$options['repo-owner'],
-		$options['repo-name'],
+	$commit_skipped_files = array();
+
+	$pr_item_files_changed = vipgoci_github_files_affected_by_commit(
+		$options,
 		$options['commit'],
-		$options['token'],
-		$options['branches-ignore'],
-		$options['skip-draft-prs']
+		$commit_skipped_files,
+		true, // Renamed files included.
+		true, // Removed files included.
+		true, // Permission changes included.
+		null
 	);
 
-	foreach ( $prs_implicated as $pr_item ) {
-		$pr_diff = vipgoci_git_diffs_fetch(
-			$options['local-git-repo'],
-			$options['repo-owner'],
-			$options['repo-name'],
-			$options['token'],
-			$pr_item->base->sha,
-			$options['commit'],
-			true, // Include renamed files.
-			true, // Include removed files.
-			true  // Include permission changes.
-		);
+	foreach (
+		$pr_item_files_changed as
+			$pr_number => $pr_files_changed
+	) {
+		if ( 'all' === $pr_number ) {
+			continue;
+		}
 
 		$did_foreach      = false;
 		$can_auto_approve = true;
@@ -357,9 +355,7 @@ function vipgoci_auto_approval_scan_commit(
 		 * altered by the pull request, look for
 		 * files that can be auto-approved.
 		 */
-		foreach ( $pr_diff['files'] as
-			$pr_diff_file_name => $pr_diff_contents
-		) {
+		foreach ( $pr_files_changed as $pr_diff_file_name ) {
 			$did_foreach  = true;
 			$files_seen[] = $pr_diff_file_name;
 
@@ -384,7 +380,7 @@ function vipgoci_auto_approval_scan_commit(
 			$options['repo-owner'],
 			$options['repo-name'],
 			$options['token'],
-			(int) $pr_item->number,
+			(int) $pr_number,
 			$options['autoapprove-label'],
 			true
 		);
@@ -394,17 +390,17 @@ function vipgoci_auto_approval_scan_commit(
 				VIPGOCI_GITHUB_WEB_BASE_URL . '/' .
 				rawurlencode( $options['repo-owner'] ) . '/' .
 				rawurlencode( $options['repo-name'] ) . '/' .
-				'pull/' . (int) $pr_item->number;
+				'pull/' . (int) $pr_number;
 
 			vipgoci_log(
 				'No action taken with pull request #' .
-					(int) $pr_item->number . ' ' .
+					(int) $pr_number . ' ' .
 					'since no files were found' .
 					' -- PR URL: ' . $tmp_github_url,
 				array(
 					'auto_approved_files_arr' => $auto_approved_files_arr,
 					'files_seen'              => $files_seen,
-					'pr_number'               => (int) $pr_item->number,
+					'pr_number'               => (int) $pr_number,
 					'pr_diff'                 => $pr_diff,
 				),
 				0
@@ -416,11 +412,11 @@ function vipgoci_auto_approval_scan_commit(
 			vipgoci_auto_approval_non_approval(
 				$options,
 				$results,
-				$pr_item,
+				$pr_number,
 				$pr_label,
 				$auto_approved_files_arr,
 				$files_seen,
-				array_keys( $pr_diff['files'] )
+				$pr_files_changed
 			);
 		} elseif (
 			( true === $did_foreach ) &&
@@ -428,7 +424,7 @@ function vipgoci_auto_approval_scan_commit(
 		) {
 			vipgoci_autoapproval_do_approve(
 				$options,
-				$pr_item,
+				$pr_number,
 				$pr_label,
 				$auto_approved_files_arr,
 				$files_seen
