@@ -65,13 +65,13 @@ final class WpCoreMiscScanDirectoryForAdddonsTest extends TestCase {
 	}
 
 	/**
-	 * Check if function detects plugins and themes.
+	 * Check if function detects plugins and themes. Scans subdirectories.
 	 *
 	 * @covers ::vipgoci_wpcore_misc_scan_directory_for_addons
 	 *
 	 * @return void
 	 */
-	public function testWpcoreMiscScanDirectoryForAdddons(): void {
+	public function testWpcoreMiscScanDirectoryForAdddonsScanSubdirectories(): void {
 		if ( empty( $this->temp_dir ) ) {
 			$this->markTestSkipped(
 				'Temporary directory not existing.'
@@ -167,7 +167,8 @@ final class WpCoreMiscScanDirectoryForAdddonsTest extends TestCase {
 		vipgoci_unittests_output_suppress();
 
 		$results_actual = vipgoci_wpcore_misc_scan_directory_for_addons(
-			$this->temp_dir . '/WpCoreMiscScanDirectoryForAdddonsTest'
+			$this->temp_dir . '/WpCoreMiscScanDirectoryForAdddonsTest',
+			true
 		);
 
 		vipgoci_unittests_output_unsuppress();
@@ -181,5 +182,81 @@ final class WpCoreMiscScanDirectoryForAdddonsTest extends TestCase {
 			$results_actual
 		);
 	}
+
+	/**
+	 * Check if function detects plugins and themes. Does not scan
+	 * subdirectories.
+	 *
+	 * @covers ::vipgoci_wpcore_misc_scan_directory_for_addons
+	 *
+	 * @return void
+	 */
+	public function testWpcoreMiscScanDirectoryForAdddonsSkipSubdirectories(): void {
+		if ( empty( $this->temp_dir ) ) {
+			$this->markTestSkipped(
+				'Temporary directory not existing.'
+			);
+
+			return;
+		}
+
+		$cp_cmd = escapeshellcmd( 'cp' ) .
+			' -R ' .
+			escapeshellarg( __DIR__ . '/helper-files/WpCoreMiscScanDirectoryForAdddonsTest' ) .
+			' ' .
+			escapeshellarg( $this->temp_dir );
+
+		if ( false === exec( $cp_cmd ) ) {
+			$this->markTestSkipped(
+				'Unable to extract tar file'
+			);
+
+			return;
+		}
+
+		$results_expected = array(
+			'this-is-a-plugin.php' => array(
+				'type'             => 'vipgoci-wpscan-plugin',
+				'addon_headers'    => array(
+					'Name'        => 'This is a plugin.',
+					'PluginURI'   => 'http://wordpress.org/test/my-other-package/',
+					'Version'     => '15.1.0',
+					'Description' => 'This is indeed <b>a plugin</b>..',
+					'Author'      => 'Test author.',
+					'AuthorURI'   => 'http://wordpress.org/author/test124',
+					'TextDomain'  => '',
+					'DomainPath'  => '',
+					'Network'     => '',
+					'RequiresWP'  => '',
+					'RequiresPHP' => '',
+					'UpdateURI'   => '',
+					'Title'       => 'This is a plugin.',
+					'AuthorName'  => 'Test author.',
+				),
+				'name'             => 'This is a plugin.',
+				'version_detected' => '15.1.0',
+				'file_name'        => $this->temp_dir . '/WpCoreMiscScanDirectoryForAdddonsTest/this-is-a-plugin.php',
+			),
+		);
+
+		vipgoci_unittests_output_suppress();
+
+		$results_actual = vipgoci_wpcore_misc_scan_directory_for_addons(
+			$this->temp_dir . '/WpCoreMiscScanDirectoryForAdddonsTest',
+			false
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		/*
+		 * Different systems will return files in different
+		 * order; use assertEquals() to avoid failures due to this.
+		 */
+		$this->assertEquals(
+			$results_expected,
+			$results_actual
+		);
+	}
+
 }
 
