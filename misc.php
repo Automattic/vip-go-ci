@@ -401,6 +401,47 @@ function vipgoci_file_extension_get(
 }
 
 /**
+ * Check if directory $dir matches one of the directories
+ * found in $files_arr.
+ * 
+ * @param array  $files_arr List of paths to files.
+ * @param string $dir_name  Directory path to check if matches $files_arr.
+ * 
+ * @return bool True when directory is found, else false.
+ */
+function vipgoci_directory_found_in_file_list(
+	array $files_arr,
+	string $dir_path
+) :bool {
+	/*
+	 * We get list of file paths; convert to
+	 * directory paths.
+	 */
+	$dirs_arr = array_unique(
+		array_map(
+			'dirname',
+			$files_arr
+		)
+	);
+
+	$res = array_filter(
+		$dirs_arr,
+		function ( $item ) use ( $dir_path ) {
+			if ( $item === $dir_path ) {
+				return true;
+			} else {
+				return str_starts_with(
+					$item,
+					$dir_path . '/'
+				);
+			}
+		}
+	);
+
+	return ( ! empty( $res ) );
+}
+
+/**
  * Get "base" path of target directory along with the
  * directory-name itself, skip any sub-directories.
  *
