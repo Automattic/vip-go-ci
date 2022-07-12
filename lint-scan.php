@@ -518,50 +518,6 @@ function vipgoci_lint_scan_multiple_files(
 }
 
 /**
- * Get list of modified files.
- *
- * @param array $options        Options array.
- * @param array $prs_implicated Array of PRs implicated.
- *
- * @return array Array of all files modified and per PR.
- */
-function vipgoci_lint_get_prs_modified_files(
-	array $options,
-	array $prs_implicated
-): array {
-	$prs_modified_files = array();
-	$all_modified_files = array();
-
-	foreach ( $prs_implicated as $pr_number => $pr ) {
-		// vipgoci_git_diffs_fetch will return a cached value at this point.
-		$pr_modified_files = vipgoci_git_diffs_fetch(
-			$options['local-git-repo'],
-			$options['repo-owner'],
-			$options['repo-name'],
-			$options['token'],
-			$pr->base->sha,
-			$options['commit'],
-			false, // Exclude renamed files.
-			false, // Exclude removed files.
-			false, // Exclude permission changes.
-			array(
-				'file_extensions' => array( 'php' ),
-				'skip_folders'    => $options['phpcs-skip-folders'],
-			)
-		);
-
-		$modified_files                   = array_keys( $pr_modified_files['files'] );
-		$all_modified_files               = array_merge( $modified_files, $all_modified_files );
-		$prs_modified_files[ $pr_number ] = $modified_files;
-	}
-
-	return array(
-		'all'            => array_unique( $all_modified_files ),
-		'prs_implicated' => $prs_modified_files,
-	);
-}
-
-/**
  * Loop through each issue for the particular
  * line.
  *
@@ -657,14 +613,31 @@ function vipgoci_lint_scan_commit(
 	);
 
 	if ( true === $options['lint-modified-files-only'] ) {
-		// Fetch list of files that exist in the commit.
-		$modified_files = vipgoci_lint_get_prs_modified_files(
+		/*
+		 * Fetch list of all files altered and by pull request.
+		 */
+
+		$commit_skipped_files_empty = array();
+
+		$pr_item_files_changed = vipgoci_github_files_affected_by_commit(
 			$options,
-			$prs_implicated
+			$options['commit'],
+			$commit_skipped_files_empty,
+			false, // Exclude renamed files.
+			false, // Exclude removed files.
+			false, // Exclude permission changes.
+			array(
+				'file_extensions' => array( 'php' ),
+				'skip_folders'    => $options['lint-skip-folders'],
+			),
+			true
 		);
 
-		$files_to_be_scanned = $modified_files['all'];
-		$files_changed_in_pr = $modified_files['prs_implicated'];
+		$files_to_be_scanned = $pr_item_files_changed['all'];
+
+		unset( $pr_item_files_changed['all'] );
+
+		$files_changed_in_pr = $pr_item_files_changed;
 	} else {
 		// Fetch list of files that exist in the repository.
 		$files_to_be_scanned = vipgoci_gitrepo_fetch_tree(
