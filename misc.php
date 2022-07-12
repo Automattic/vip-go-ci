@@ -403,10 +403,10 @@ function vipgoci_file_extension_get(
 /**
  * Check if directory $dir matches one of the directories
  * found in $files_arr.
- * 
+ *
  * @param array  $files_arr List of paths to files.
- * @param string $dir_name  Directory path to check if matches $files_arr.
- * 
+ * @param string $dir_path  Directory path to check if matches $files_arr.
+ *
  * @return bool True when directory is found, else false.
  */
 function vipgoci_directory_found_in_file_list(
