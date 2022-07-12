@@ -282,7 +282,7 @@ define( 'VIPGOCI_WPSCAN_API_ERROR', 'Automated Addon Security Scanning' );
 define(
 	'VIPGOCI_WPSCAN_REPORT_START',
 	'%1$s has identified one or more insecure or obsolete %2$s(s) being ' .
-	'submitted in this pull request. Updating the %2$s(s) before merging ' .
+	'submitted or altered in this pull request. Updating the %2$s(s) before merging ' .
 	'into the target branch is strongly recommended.'
 );
 
