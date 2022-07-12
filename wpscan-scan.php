@@ -351,7 +351,7 @@ function vipgoci_wpscan_scan_save_for_submission(
 		$options['commit'],
 		$commit_skipped_files,
 		true,
-		true,
+		false, // Do not give list of removed files.
 		true,
 		array(
 			'skip_folders' => $options['wpscan-api-skip-folders'],
