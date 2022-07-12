@@ -32,6 +32,9 @@ phpcs-validate-sniffs-and-report-include-valid=WordPressVIPMinimum.Functions.Str
 phpcs-validate-sniffs-and-report-exclude-commit=fa1b1a695a0c25895ed8ccb3c0d475e077f396f8
 phpcs-validate-sniffs-and-report-exclude-invalid=MyInvalidSniff.SniffName
 phpcs-validate-sniffs-and-report-exclude-valid=WordPressVIPMinimum.Functions.StripTags,WordPress.PHP.IniSet
+phpcs-validate-sniffs-and-report-standard-ignore=PHPCSUtils
+phpcs-validate-sniffs-and-report-sniff-valid-for-selected-standards=WordPressVIPMinimum.Classes.DeclarationCompatibility
+phpcs-validate-sniffs-and-report-sniff-valid-for-all-valid-standards=PHPCS23Utils.Load.LoadUtils
 
 [svg-scan]
 svg-php-path=/usr/bin/php
@@ -54,10 +57,8 @@ commit-test-svg-files-1=44ed02088a503d84522f6e9b40eb0788e0935c24
 commit-test-svg-files-2b=bc23e8530ad4881af447646c6e53f2acd1ef364d
 
 autoapprove-filetypes=txt,gif,jpg,png,md
-commit-test-ap-hashes-file-approved-1=3dc1135e4bc1dbc5c5a57cdf45c2ba2bd5690b51
-commit-test-ap-auto-approval-1=a96b12cc806fef600818085cf26dad61321ddc81
-pr-test-ap-auto-approval-1=40
-commit-test-hashes-api-scan-commit=f8a50f557b25dca72978854eae97bd8ba07f0a55
+commit-test-ap-auto-approval-1=5a891b161ec88bd885cd09e3fd370399921508d8
+pr-test-ap-auto-approval-1=46
 
 commit-test-ap-nonfunctionalchanges-1b=c4a3fe05f67f329cdf884392df29e55f5b8d4498
 
@@ -113,6 +114,13 @@ pr-test-run-scan-total-comments-max-warning-post=44
 commit-test-repo-get-file-at-commit-1=027de6d804e1d40dbe1b13a3ede7cfa758787b85
 commit-test-repo-get-file-at-commit-2=6d2f5e1ed861bb1691b37379229e101ecb61a4ad
 
+; For test-class GitHubFilesAffectedByCommitTest
+commit-test-github-files-affected-by-commit-2=a352abc8096492675790b61a42e6e66afc30165b
+commit-test-github-files-affected-by-commit-4=65e0233ba2270dad91d9bbacb2ec8eed8a6219cb
+pr-test-github-files-affected-by-commit-a=48
+pr-test-github-files-affected-by-commit-b=49
+pr-test-github-files-affected-by-commit-c=50
+
 [labels]
 labels-pr-to-modify=12
 
@@ -123,6 +131,7 @@ commit-test-options-read-repo-file-with-file-2=fe24a89ee9e9184681c6482ca60af57cc
 commit-test-options-read-repo-file-with-file-3=1615b03f6997878feb1a25926631c4165e2efeec
 commit-test-options-read-repo-file-with-file-5=9a13bbec0cc2c7557539076f0125cc396fab22c1
 
-[repo-meta-api]
-commit-support-level-set-test=4e56c433e2e7c0de62e333cdf719949ea0a1ccb5
-
+; For WPScan API tests. Plugin/theme known to API.
+[wpscan-api-scan]
+plugin-slug=classic-editor
+theme-slug=twentytwenty

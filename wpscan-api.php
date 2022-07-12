@@ -75,15 +75,52 @@ function vipgoci_wpscan_do_scan_via_api(
 		0
 	);
 
-	// @todo: Audit if any expected fields are missing.
-
-	if ( null === $wpscan_report_json ) {
-		return null;
-	} else {
-		return json_decode(
+	if ( null !== $wpscan_report_json ) {
+		$wpscan_report = json_decode(
 			$wpscan_report_json,
 			true
 		);
+	} else {
+		$wpscan_report = null;
+	}
+
+	/*
+	 * Return information collected, or error.
+	 */
+	$log_detail = array(
+		'wpscan_slug'         => $wpscan_slug,
+		'wpscan_type'         => $wpscan_type,
+		'wpscan_complete_url' => $wpscan_complete_url,
+		'wpscan_report_json'  => $wpscan_report_json,
+		'wpscan_report'       => $wpscan_report,
+	);
+
+	if ( null === $wpscan_report ) {
+		vipgoci_log(
+			'WPscan API returned with error',
+			$log_detail,
+			0,
+			true // Log to IRC.
+		);
+
+		return null;
+	} elseif (
+		// Check if all expected keys exist.
+		( ! isset( $wpscan_report[ $wpscan_slug ]['friendly_name'] ) ) ||
+		( ! isset( $wpscan_report[ $wpscan_slug ]['latest_version'] ) ) ||
+		( ! isset( $wpscan_report[ $wpscan_slug ]['last_updated'] ) ) ||
+		( ! isset( $wpscan_report[ $wpscan_slug ]['vulnerabilities'] ) )
+	) {
+		vipgoci_log(
+			'WPscan API returned unexpected data',
+			$log_detail,
+			0,
+			true // Log to IRC.
+		);
+
+		return null;
+	} else {
+		return $wpscan_report;
 	}
 }
 
@@ -117,7 +154,7 @@ function vipgoci_wpscan_filter_fixed_vulnerabilities(
 			return version_compare(
 				$version_number,
 				$vuln_item['fixed_in'],
-				'<='
+				'<'
 			);
 		}
 	);

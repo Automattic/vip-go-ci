@@ -8,9 +8,10 @@
 declare(strict_types=1);
 
 /*
- * Version number.
+ * Version number and default name to use.
  */
 define( 'VIPGOCI_VERSION', '1.2.3' );
+define( 'VIPGOCI_DEFAULT_NAME_TO_USE', 'vip-go-ci' );
 
 /*
  * Define minimum version requirements.
@@ -26,6 +27,7 @@ define( 'VIPGOCI_CLIENT_ID', 'automattic-vip-go-ci' );
 /*
  * Strings for generic messages.
  */
+define( 'VIPGOCI_CODE_ANALYSIS_ISSUES', 'Code analysis identified issues' );
 define( 'VIPGOCI_SYNTAX_ERROR_STR', 'PHP Syntax Errors Found' );
 define( 'VIPGOCI_WPSCAN_API_ERROR', 'Automated Addon Security Scanning' );
 define( 'VIPGOCI_GITHUB_ERROR_STR', 'GitHub API communication error. Please contact a human.' );
@@ -54,8 +56,6 @@ define( 'VIPGOCI_HTTP_API_SHORT_TIMEOUT', 5 );
 /*
  * Various messages.
  */
-define( 'VIPGOCI_FILE_IS_APPROVED_MSG', 'File is approved in review database (hashes-to-hashes).' );
-
 define(
 	'VIPGOCI_REVIEW_COMMENTS_TOTAL_MAX',
 	'Total number of active review comments per ' .
@@ -116,6 +116,12 @@ define(
 );
 
 define(
+	'VIPGOCI_LINT_REPORT_START',
+	'%1$s has identified PHP syntax errors during automated linting.' .
+	"\n\r\n\r" . 'PHP linting performed at commit %2$s ([view code](%3$s)).'
+);
+
+define(
 	'VIPGOCI_LINT_FAILED_MSG_START',
 	'Unable to PHP lint one or more files due to error running PHP linter: '
 );
@@ -123,6 +129,13 @@ define(
 define(
 	'VIPGOCI_LINT_FAILED_MSG_END',
 	'The error may be temporary. If the error persists, please contact a human'
+);
+
+define(
+	'VIPGOCI_PHPCS_SCAN_REVIEW_START',
+	'%1$s has identified potential problems in this pull request ' .
+	'during automated scanning. We recommend reviewing the issues ' .
+	'noted and that they are resolved.'
 );
 
 define(
@@ -155,6 +168,7 @@ define(
 define( 'VIPGOCI_EXIT_NORMAL', 0 );
 define( 'VIPGOCI_EXIT_INTERNAL_ERROR', 220 );
 define( 'VIPGOCI_EXIT_COMMIT_NOT_PART_OF_PR', 230 );
+define( 'VIPGOCI_EXIT_COMMIT_NOT_LATEST', 248 );
 define( 'VIPGOCI_EXIT_EXEC_TIME', 249 );
 define( 'VIPGOCI_EXIT_CODE_ISSUES', 250 );
 define( 'VIPGOCI_EXIT_SYSTEM_PROBLEM', 251 );
@@ -170,7 +184,6 @@ define( 'VIPGOCI_EXIT_USAGE_ERROR', 253 );
  */
 define( 'VIPGOCI_STATS_PHPCS', 'phpcs' );
 define( 'VIPGOCI_STATS_LINT', 'lint' );
-define( 'VIPGOCI_STATS_HASHES_API', 'hashes-api' );
 define( 'VIPGOCI_STATS_WPSCAN_API', 'wpscan-api' );
 
 /*
@@ -184,7 +197,6 @@ define( 'VIPGOCI_ISSUE_TYPE_ERROR', 'error' );
  * Define auto-approval types
  */
 define( 'VIPGOCI_APPROVAL_AUTOAPPROVE', 'auto-approval' );
-define( 'VIPGOCI_APPROVAL_HASHES_API', 'hashes-api' );
 
 /*
  * Defines for vipgoci_runtime_measure() function.
@@ -251,15 +263,16 @@ define( 'VIPGOCI_VALIDATION_MAXIMUM_DETAIL_MSG', 'Note that the above file(s) we
  */
 define( 'VIPGOCI_WPSCAN_PLUGIN', 'vipgoci-wpscan-plugin' );
 define( 'VIPGOCI_WPSCAN_THEME', 'vipgoci-wpscan-theme' );
-define( 'VIPGOCI_WPSCAN_BASE_URL', 'https://wpscan.com/api/v3' );
+define( 'VIPGOCI_WPSCAN_BASE_URL', 'https://wpscan.com' );
+define( 'VIPGOCI_WPSCAN_API_BASE_URL', VIPGOCI_WPSCAN_BASE_URL . '/api/v3' );
 
 define( 'VIPGOCI_WPSCAN_VULNERABLE', 'vulnerable' );
 define( 'VIPGOCI_WPSCAN_OBSOLETE', 'obsolete' );
 
-define( 'VIPGOCI_WPSCAN_SEVERITY_UNKNOWN', -1 );
-define( 'VIPGOCI_WPSCAN_SEVERITY_NONE', 0.0 );
-define( 'VIPGOCI_WPSCAN_SEVERITY_LOW', 3.9 ); // 0.1-3.9.
-define( 'VIPGOCI_WPSCAN_SEVERITY_MEDIUM', 6.9 ); // 4.0-6.9.
-define( 'VIPGOCI_WPSCAN_SEVERITY_HIGH', 8.9 ); // 7.0-8.9.
-define( 'VIPGOCI_WPSCAN_SEVERITY_CRITICAL', 10.0 ); // 9.0-10.
+define(
+	'VIPGOCI_WPSCAN_REPORT_START',
+	'%1$s has identified one or more insecure or obsolete %2$s(s) being ' .
+	'submitted in this pull request. Updating the %2$s(s) before merging ' .
+	'into the target branch is strongly recommended.'
+);
 

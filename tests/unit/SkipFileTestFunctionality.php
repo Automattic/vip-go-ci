@@ -487,7 +487,7 @@ This bot provides automated PHP linting and [PHPCS scanning](https://docs.wpvip.
 	 */
 	private function getSkippedFilesCommentMock(): string {
 		$mock =
-			'**hashes-api**-scanning skipped
+			'**test-api**-scanning skipped
 ***
 
 **skipped-files**
@@ -510,7 +510,7 @@ Note that the above file(s) were not analyzed due to their length.';
 	 */
 	private function getCommentMock(): string {
 		$commentMock =
-			'**hashes-api**';
+			'**test-api**';
 
 		return $commentMock;
 	}

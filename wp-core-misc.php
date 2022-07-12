@@ -108,7 +108,6 @@ function vipgoci_wpcore_misc_cleanup_header_comment(
  * Name, AuthorName, Version, and so forth from a file.
  * Also attempts to determine if file is part of a theme or a plugin.
  *
- * @param array  $options   Options needed.
  * @param string $file_name Path to file to try to fetch headers from.
  *
  * @return null|array Null on failure to get headers.
@@ -116,7 +115,6 @@ function vipgoci_wpcore_misc_cleanup_header_comment(
  * plugin/theme headers.
  */
 function vipgoci_wpcore_misc_get_addon_headers_and_type(
-	array $options,
 	string $file_name
 ) :null|array {
 	vipgoci_log(
@@ -169,11 +167,18 @@ function vipgoci_wpcore_misc_get_addon_headers_and_type(
 			$file_name,
 			array(
 				'Name'        => 'Theme Name',
-				'Version'     => 'Version',
+				'ThemeURI'    => 'Theme URI',
+				'Description' => 'Description',
 				'Author'      => 'Author',
+				'AuthorURI'   => 'Author URI',
+				'Version'     => 'Version',
 				'Template'    => 'Template',
+				'Status'      => 'Status',
+				'TextDomain'  => 'Text Domain',
+				'DomainPath'  => 'Domain Path',
 				'RequiresWP'  => 'Requires at least',
 				'RequiresPHP' => 'Requires PHP',
+				'UpdateURI'   => 'Update URI',
 			),
 		);
 
@@ -227,7 +232,6 @@ function vipgoci_wpcore_misc_get_addon_headers_and_type(
  * This functionality aims for compatibility with get_plugins() in WordPress.
  * The function is adopted from WordPress: https://core.trac.wordpress.org/browser/tags/6.0/src/wp-admin/includes/plugin.php#L254
  *
- * @param array  $options Options array for the program.
  * @param string $path    Path to scan for plugins and themes. Usually this would point a structure similar to wp-content/plugins.
  *
  * @link https://developer.wordpress.org/reference/functions/get_plugins/
@@ -246,14 +250,13 @@ function vipgoci_wpcore_misc_get_addon_headers_and_type(
  *       [Title] => Hello Dolly
  *       [AuthorName] => Matt Mullenweg
  *     )
- *     [name] => Getty Images
- *     [version_detected] => 3.0.5
- *     [filename] => /tmp/plugins/getty-images/getty-images.php
+ *     [name] => Hello Dolly
+ *     [version_detected] => 1.6
+ *     [filename] => /tmp/plugins/hello/hello.php
  *   )
  * )
  */
 function vipgoci_wpcore_misc_scan_directory_for_addons(
-	array $options,
 	string $path
 ): array {
 	$plugins_dir  = @opendir( $path ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
@@ -291,7 +294,10 @@ function vipgoci_wpcore_misc_scan_directory_for_addons(
 						continue;
 					}
 
-					if ( '.php' === substr( $subfile, -4 ) ) {
+					if (
+						( '.php' === substr( $subfile, -4 ) ) ||
+						( '.css' === substr( $subfile, -4 ) )
+					) {
 						$plugin_files[] = $file . DIRECTORY_SEPARATOR . $subfile;
 					}
 				}
@@ -299,7 +305,10 @@ function vipgoci_wpcore_misc_scan_directory_for_addons(
 				closedir( $plugins_subdir );
 			}
 		} else {
-			if ( '.php' === substr( $file, -4 ) ) {
+			if (
+				( '.php' === substr( $file, -4 ) ) ||
+				( '.css' === substr( $file, -4 ) )
+			) {
 				$plugin_files[] = $file;
 			}
 		}
@@ -333,7 +342,6 @@ function vipgoci_wpcore_misc_scan_directory_for_addons(
 		}
 
 		$plugin_data = vipgoci_wpcore_misc_get_addon_headers_and_type(
-			$options,
 			$tmp_path
 		);
 
@@ -342,7 +350,15 @@ function vipgoci_wpcore_misc_scan_directory_for_addons(
 			continue;
 		}
 
-		$wp_plugins[ basename( $plugin_file ) ] = $plugin_data; // @todo: plugin_basename() is used in WordPress.
+		// Calculate 'local slug'.
+		if ( str_contains( $plugin_file, '/' ) ) {
+			$wp_plugin_key = dirname( $plugin_file ) . '/' . basename( $plugin_file );
+		} else {
+			$wp_plugin_key = basename( $plugin_file );
+	
+		}
+
+		$wp_plugins[ $wp_plugin_key ] = $plugin_data;
 	}
 
 	vipgoci_log(
@@ -378,9 +394,6 @@ function vipgoci_wpcore_misc_scan_directory_for_addons(
  *       [Title] => Hello Dolly
  *       [AuthorName] => Matt Mullenweg
  *     )
- *     [name] => Getty Images
- *     [version_detected] => 3.0.5
- *     [filename] => /tmp/plugins/getty-images/getty-images.php
  *   )
  * ) // End of array.
  *
@@ -422,6 +435,19 @@ function vipgoci_wpcore_api_determine_slug_and_other_for_addons(
 	}
 
 	foreach ( $addons_data as $key => $data_item ) {
+		if ( empty( $data_item['addon_headers'] ) ) {
+			vipgoci_log(
+				'No addon headers found for key, unable to query WordPress.org API, skipping',
+				array(
+					'key' => $key,
+				),
+				0,
+				true // Log to IRC.
+			);
+
+			continue;
+		}
+
 		$addon_data_to_send[ $key ] = $data_item['addon_headers'];
 
 		$slugs_by_plugin[ $key ] = null;
@@ -475,8 +501,18 @@ function vipgoci_wpcore_api_determine_slug_and_other_for_addons(
 		return null;
 	}
 
-	foreach ( $api_data['plugins'] as $key => $data_item ) {
+	/*
+	 * The API will return with more than one potential
+	 * result array; search both for data.
+	 */
+	foreach ( $api_data['no_update'] as $key => $data_item ) {
 		$slugs_by_plugin[ $key ] = $data_item;
+	}
+
+	foreach ( $api_data['plugins'] as $key => $data_item ) {
+		if ( ! isset( $slugs_by_plugin[ $key ] ) ) {
+			$slugs_by_plugin[ $key ] = $data_item;
+		}
 	}
 
 	vipgoci_log(
@@ -496,8 +532,7 @@ function vipgoci_wpcore_api_determine_slug_and_other_for_addons(
  * to determine slugs and fetch other information from WordPress.org
  * API about the plugins/themes, return the information after processing.
  *
- * @param array  $options Options array for the program.
- * @param string $path    Path to directory to analyze.
+ * @param string $path Path to directory to analyze.
  *
  * @return array Information about plugins or themes found. Includes
  *               headers found in the plugin/theme, version number of
@@ -520,7 +555,8 @@ function vipgoci_wpcore_api_determine_slug_and_other_for_addons(
  *     )
  *   [name] => Hello Dolly
  *   [version_detected] => 1.6
- *   [filename] => /tmp/plugins/hello.php
+ *   [file_name] => /tmp/plugins/hello.php
+ *   [id] => w.org/plugins/hello-dolly
  *   [slug] => hello-dolly
  *   [new_version] => 1.7.2
  *   [package] => https://downloads.wordpress.org/plugin/hello-dolly.1.7.2.zip
@@ -528,11 +564,9 @@ function vipgoci_wpcore_api_determine_slug_and_other_for_addons(
  * )
  */
 function vipgoci_wpcore_misc_get_addon_data_and_slugs_for_directory(
-	array $options,
 	string $path
 ) :array {
 	$plugins_found = vipgoci_wpcore_misc_scan_directory_for_addons(
-		$options,
 		$path
 	);
 
@@ -548,7 +582,7 @@ function vipgoci_wpcore_misc_get_addon_data_and_slugs_for_directory(
 	 * Look through plugins found, assign slug found, version numbers, etc.
 	 */
 	foreach ( $plugins_found as $plugin_key => $plugin_item ) {
-		foreach ( array( 'slug', 'new_version', 'package', 'url' ) as $_field_id ) {
+		foreach ( array( 'id', 'slug', 'new_version', 'plugin', 'package', 'url', 'package' ) as $_field_id ) {
 			if ( isset( $plugin_details[ $plugin_key ][ $_field_id ] ) ) {
 				$plugins_found[ $plugin_key ][ $_field_id ] = $plugin_details[ $plugin_key ][ $_field_id ];
 			}

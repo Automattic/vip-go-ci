@@ -48,6 +48,8 @@ function vipgoci_help_print() :void {
 		"\t" . '                               some branches never get scanned. Separate branches' . PHP_EOL .
 		"\t" . '                               with commas.' . PHP_EOL .
 		"\t" . '--local-git-repo=FILE          The local git repository to use for direct access to code.' . PHP_EOL .
+		"\t" . '--name-to-use                  Name to use for the program in GitHub reviews and comments' . PHP_EOL .
+		"\t" . '                               to identify the bot. Default is "' . VIPGOCI_DEFAULT_NAME_TO_USE . '".' . PHP_EOL .
 		PHP_EOL .
 		'Environmental & repo configuration:' . PHP_EOL .
 		"\t" . '--env-options=STRING           Specifies configuration options to be read from environmental' . PHP_EOL .
@@ -96,6 +98,8 @@ function vipgoci_help_print() :void {
 		"\t" . '--phpcs-path=FILE              Full path to PHPCS script.' . PHP_EOL .
 		"\t" . '--phpcs-standard=STRING        Specify which PHPCS standard(s) to use. Separate by commas.' . PHP_EOL .
 		"\t" . '                               If nothing is specified, the \'WordPress\' standard is used.' . PHP_EOL .
+		"\t" . '--phpcs-standards-to-ignore    PHPCS standards to ignore when searching for PHPCS standards/sniffs' . PHP_EOL .
+		"\t" . '                               available during startup. See details in README.md.' . PHP_EOL .
 		"\t" . '--phpcs-severity=NUMBER        Specify severity for PHPCS.' . PHP_EOL .
 		"\t" . '--phpcs-sniffs-include=ARRAY   Specify which sniffs to include when PHPCS scanning,' . PHP_EOL .
 		"\t" . '                               should be an array with items separated by commas.' . PHP_EOL .
@@ -128,6 +132,18 @@ function vipgoci_help_print() :void {
 		"\t" . '--svg-scanner-path=FILE        Path to SVG scanning tool. Should return similar output' . PHP_EOL .
 		"\t" . '                               as PHPCS.' . PHP_EOL .
 		PHP_EOL .
+		'WPScan API scanning configuration:' . PHP_EOL .
+		"\t" . '--wpscan-api=BOOL                  Enable or disable WPScan API scanning. Disabled by default.' . PHP_EOL .
+		"\t" . '--wpscan-api-url=STRING            URL to WPScan API. If nothing is specified, will use the ' . PHP_EOL .
+		"\t" . '                                   default (' . VIPGOCI_WPSCAN_API_BASE_URL . ').' . PHP_EOL .
+		"\t" . '--wpscan-api-token=STRING          Access token to use to communicate with WPScan API.' . PHP_EOL .
+		"\t" . '--wpscan-api-paths=ARRAY           Directories to scan using WPScan API scanning. Should be an array' . PHP_EOL .
+		"\t" . '                                   with items separated by commas.' . PHP_EOL .
+		"\t" . '--wpscan-api-skip-folders=ARRAY    Directories not to scan using WPScan API scanning. Should be an' . PHP_EOL .
+		"\t" . '                                   array with items separated by commas.' . PHP_EOL .
+		"\t" . '--wpscan-api-report-end-msg=STRING Message to append to end of WPScan API reports. The "%addon_type%" placeholder' . PHP_EOL .
+		"\t" . '                                   will be replaced by either "plugin" or "theme", depending on the report.' . PHP_EOL .
+		PHP_EOL .
 		'Auto approve configuration:' . PHP_EOL .
 		"\t" . '--autoapprove=BOOL             Whether to auto-approve pull requests that fulfil' . PHP_EOL .
 		"\t" . '                               certain conditions -- see README.md for details.' . PHP_EOL .
@@ -138,21 +154,6 @@ function vipgoci_help_print() :void {
 		"\t" . '                                                only non-functional changes, such as' . PHP_EOL .
 		"\t" . '                                                whitespacing and comment changes.' . PHP_EOL .
 		"\t" . '--autoapprove-label=STRING     String to use for labels when auto-approving.' . PHP_EOL .
-		PHP_EOL .
-		'Hashes API configuration:' . PHP_EOL .
-		"\t" . '--hashes-api=BOOL              Whether to do hashes-to-hashes API verfication with' . PHP_EOL .
-		"\t" . '                               individual PHP files found to be altered in' . PHP_EOL .
-		"\t" . '                               scanned pull requests.' . PHP_EOL .
-		"\t" . '--hashes-api-url=STRING        URL to hashes-to-hashes HTTP API root' . PHP_EOL .
-		"\t" . '                               -- note that it should not include any specific' . PHP_EOL .
-		"\t" . '                               paths to individual parts of the API.' . PHP_EOL .
-		"\t" . '--hashes-oauth-token=STRING,' . PHP_EOL .
-		"\t" . '--hashes-oauth-token-secret=STRING,' . PHP_EOL .
-		"\t" . '--hashes-oauth-consumer-key=STRING,' . PHP_EOL .
-		"\t" . '--hashes-oauth-consumer-secret=STRING' . PHP_EOL .
-		"\t" . '                               OAuth 1.0 token, token secret, consumer key and' . PHP_EOL .
-		"\t" . '                               consumer secret needed for hashes-to-hashes HTTP requests.' . PHP_EOL .
-		"\t" . '                               All required for hashes-to-hashes requests.' . PHP_EOL .
 		PHP_EOL .
 		'GitHub reviews & generic comments configuration:' . PHP_EOL .
 		"\t" . '--report-no-issues-found=BOOL  Post message indicating no issues were found during scanning.' . PHP_EOL .
@@ -218,12 +219,6 @@ function vipgoci_help_print() :void {
 		"\t" . '                                                           matches the criteria specified here.' . PHP_EOL .
 		"\t" . '                                                           See README.md for usage.' . PHP_EOL .
 		PHP_EOL .
-		'Support level configuration:' . PHP_EOL .
-		"\t" . '--set-support-level-label=BOOL       Whether to attach support level labels to pull requests.' . PHP_EOL .
-		"\t" . '                                     Will fetch information on support levels from repo-meta API.' . PHP_EOL .
-		"\t" . '--set-support-level-label-prefix=STRING    Prefix to use for support level labels. Should be longer than five letters.' . PHP_EOL .
-		"\t" . '--set-support-level-field=STRING     Field in responses from repo-meta API which we use to extract support level.' . PHP_EOL .
-		PHP_EOL .
 		'Repo meta API configuration:' . PHP_EOL .
 		"\t" . '--repo-meta-api-base-url=STRING      Base URL to repo-meta API, containing support level and other' . PHP_EOL .
 		"\t" . '                                     information.' . PHP_EOL .
@@ -265,6 +260,7 @@ function vipgoci_options_recognized() :array {
 		'local-git-repo:',
 		'skip-large-files:',
 		'skip-large-files-limit:',
+		'name-to-use:',
 
 		/*
 		 * Environmental & repo configuration.
@@ -298,6 +294,7 @@ function vipgoci_options_recognized() :array {
 		'phpcs-php-path:',
 		'phpcs-path:',
 		'phpcs-standard:',
+		'phpcs-standards-to-ignore:',
 		'phpcs-severity:',
 		'phpcs-sniffs-include:',
 		'phpcs-sniffs-exclude:',
@@ -318,10 +315,11 @@ function vipgoci_options_recognized() :array {
 		 * WPScan API scanning configuration
 		 */
 		'wpscan-api:',
-		'wpscan-api-paths:',
-		'wpscan-api-skip-folders:',
 		'wpscan-api-url:',
 		'wpscan-api-token:',
+		'wpscan-api-paths:',
+		'wpscan-api-skip-folders:',
+		'wpscan-api-report-end-msg:',
 
 		/*
 		 * Auto approve configuration
@@ -330,16 +328,6 @@ function vipgoci_options_recognized() :array {
 		'autoapprove-filetypes:',
 		'autoapprove-php-nonfunctional-changes:',
 		'autoapprove-label:',
-
-		/*
-		 * Hashes API configuration
-		 */
-		'hashes-api:',
-		'hashes-api-url:',
-		'hashes-oauth-token:',
-		'hashes-oauth-token-secret:',
-		'hashes-oauth-consumer-key:',
-		'hashes-oauth-consumer-secret:',
 
 		/*
 		 * GitHub reviews & generic comments configuration
@@ -365,13 +353,6 @@ function vipgoci_options_recognized() :array {
 		'post-generic-pr-support-comments-skip-if-label-exists:',
 		'post-generic-pr-support-comments-branches:',
 		'post-generic-pr-support-comments-repo-meta-match:',
-
-		/*
-		 * Support level configuration
-		 */
-		'set-support-level-label:',
-		'set-support-level-label-prefix:',
-		'set-support-level-field:',
 
 		/*
 		 * Repo meta API configuration.
@@ -571,7 +552,7 @@ function vipgoci_run_init_options_phpcs( array &$options ) :void {
 
 	/*
 	 * Process --phpcs-standard -- expected to be
-	 * a string
+	 * a string.
 	 */
 	if ( empty( $options['phpcs-standard'] ) ) {
 		$options['phpcs-standard'] = array(
@@ -585,6 +566,42 @@ function vipgoci_run_init_options_phpcs( array &$options ) :void {
 			array(),
 			',',
 			false
+		);
+	}
+
+	/*
+	 * Process --phpcs-standards-to-ignore -- expected to be
+	 * a string.
+	 */
+	if ( empty( $options['phpcs-standards-to-ignore'] ) ) {
+		$options['phpcs-standards-to-ignore'] = array();
+	} else {
+		vipgoci_option_array_handle(
+			$options,
+			'phpcs-standards-to-ignore',
+			array(),
+			array(),
+			',',
+			false
+		);
+	}
+
+	/*
+	 * Ensure that --phpcs-standard and --phpcs-standards-to-ignore
+	 * do not intersect.
+	 */
+	if ( ! empty(
+		array_intersect(
+			$options['phpcs-standard'],
+			$options['phpcs-standards-to-ignore']
+		)
+	) ) {
+		vipgoci_sysexit(
+			'--phpcs-standard and --phpcs-standards-to-ignore cannot share values',
+			array(
+				'phpcs-standard'            => $options['phpcs-standard'],
+				'phpcs-standards-to-ignore' => $options['phpcs-standards-to-ignore'],
+			)
 		);
 	}
 
@@ -685,8 +702,15 @@ function vipgoci_run_init_options_wpscan( array &$options ) :void {
 	vipgoci_option_url_handle(
 		$options,
 		'wpscan-api-url',
-		VIPGOCI_WPSCAN_BASE_URL
+		VIPGOCI_WPSCAN_API_BASE_URL
 	);
+
+	/*
+	 * Process --wpscan-api-report-end-msg -- expected to be a string.
+	 */
+	if ( empty( $options['wpscan-api-report-end-msg'] ) ) {
+		$options['wpscan-api-report-end-msg'] = '';
+	}
 
 	if (
 		( true === $options['wpscan-api'] ) &&
@@ -706,6 +730,16 @@ function vipgoci_run_init_options_wpscan( array &$options ) :void {
 			VIPGOCI_EXIT_USAGE_ERROR
 		);
 	}
+
+	/*
+	 * Hide WPScan API token from printed options output.
+	 */
+	vipgoci_options_sensitive_clean(
+		null,
+		array(
+			'wpscan-api-token',
+		)
+	);
 }
 
 /**
@@ -892,107 +926,6 @@ function vipgoci_run_init_options_autoapprove( array &$options ) :void {
 			'SVG files cannot be auto-approved on file-type basis, as they ' .
 				'can contain problematic code. Use --svg-checks=true to ' .
 				'allow auto-approval of SVG files',
-			array(),
-			VIPGOCI_EXIT_USAGE_ERROR
-		);
-	}
-}
-
-/**
- * Process hashes-to-hashes options.
- *
- * @param array $options                Array of options.
- * @param array $hashes_oauth_arguments OAuth 1.0a options for hashes-to-hashes API.
- *
- * @return void
- *
- * @codeCoverageIgnore
- */
-function vipgoci_run_init_options_hashes_options(
-	array &$options,
-	array $hashes_oauth_arguments
-) :void {
-	/*
-	 * Process --hashes-api -- expected to be a boolean.
-	*/
-	vipgoci_option_bool_handle( $options, 'hashes-api', 'false' );
-
-	/*
-	 * Process --hashes-api-url -- expected to
-	 * be an URL to a webservice.
-	 */
-	vipgoci_option_url_handle( $options, 'hashes-api-url', null );
-
-	$options['hashes-api-url'] = trim(
-		$options['hashes-api-url'],
-		'/'
-	);
-
-	/*
-	 * Sanity check: Can only use --hashes-api=true with a URL
-	 * configured.
-	 */
-	if (
-		( true === $options['hashes-api'] ) &&
-		( empty( $options['hashes-api-url'] ) )
-	) {
-		vipgoci_sysexit(
-			'Cannot run with --hashes-api set to true and without --hashes-api-url set',
-			array(),
-			VIPGOCI_EXIT_USAGE_ERROR
-		);
-	}
-
-	/*
-	 * Process hashes-oauth arguments
-	 */
-	foreach ( $hashes_oauth_arguments as $tmp_key ) {
-		if ( ! isset( $options[ $tmp_key ] ) ) {
-			vipgoci_sysexit(
-				'Asking to use --hashes-api-url without --hashes-oauth-* parameters, but that is not possible, as authorization is needed for hashes-to-hashes API',
-				array(),
-				VIPGOCI_EXIT_USAGE_ERROR
-			);
-		}
-
-		$options[ $tmp_key ] = trim(
-			$options[ $tmp_key ]
-		);
-
-		unset( $tmp_key );
-	}
-
-	/*
-	 * Ask for the hashes-oauth-* arguments
-	 * to be considered as sensitive options
-	 * when cleaning options for printing.
-	 */
-	vipgoci_options_sensitive_clean(
-		null,
-		$hashes_oauth_arguments
-	);
-}
-
-/**
- * Sanity-checks for hashes-to-hashes options.
- *
- * @param array $options Array of options.
- *
- * @return void
- */
-function vipgoci_run_init_options_autoapprove_hashes_overlap(
-	array &$options
-) :void {
-	/*
-	 * Do sanity-checking with --autoapprove parameter
-	 * and --hashes-api-url parameter.
-	 */
-	if (
-		( isset( $options['hashes-api-url'] ) ) &&
-		( false === $options['autoapprove'] )
-	) {
-		vipgoci_sysexit(
-			'Asking to use --hashes-api-url without --autoapproval set to true, but for hashes-to-hashes functionality to be useful, --autoapprove must be enabled. Otherwise the functionality will not really be used',
 			array(),
 			VIPGOCI_EXIT_USAGE_ERROR
 		);
@@ -1869,50 +1802,6 @@ function vipgoci_run_cleanup_irc( array &$options ) :void {
 }
 
 /**
- * Set support level label options.
- *
- * @param array $options Array of options.
- *
- * @return void
- */
-function vipgoci_run_init_options_set_support_level_label(
-	array &$options
-) :void {
-	/*
-	 * Handle option for setting support
-	 * labels. Handle prefix and field too.
-	 */
-
-	vipgoci_option_bool_handle(
-		$options,
-		'set-support-level-label',
-		'false'
-	);
-
-	if (
-		( isset( $options['set-support-level-label-prefix'] ) ) &&
-		( strlen( $options['set-support-level-label-prefix'] ) > 5 )
-	) {
-		$options['set-support-level-label-prefix'] = trim(
-			$options['set-support-level-label-prefix']
-		);
-	} else {
-		$options['set-support-level-label-prefix'] = null;
-	}
-
-	if (
-		( isset( $options['set-support-level-field'] ) ) &&
-		( strlen( $options['set-support-level-field'] ) > 1 )
-	) {
-		$options['set-support-level-field'] = trim(
-			$options['set-support-level-field']
-		);
-	} else {
-		$options['set-support-level-field'] = null;
-	}
-}
-
-/**
  * Set repo-meta API options.
  *
  * @param array $options Array of options.
@@ -2096,11 +1985,6 @@ function vipgoci_run_init_options_repo_options( array &$options ):void {
 			'valid_values' => array( true, false ),
 		),
 
-		'hashes-api'                            => array(
-			'type'         => 'boolean',
-			'valid_values' => array( true, false ),
-		),
-
 		'lint-modified-files-only'              => array(
 			'type'         => 'boolean',
 			'valid_values' => array( true, false ),
@@ -2167,6 +2051,11 @@ function vipgoci_run_init_options_repo_options( array &$options ):void {
 			'type'         => 'boolean',
 			'valid_values' => array( true, false ),
 		),
+
+		'wpscan-api'                            => array(
+			'type'         => 'boolean',
+			'valid_values' => array( true, false ),
+		),
 	);
 
 	/*
@@ -2223,14 +2112,6 @@ function vipgoci_run_init_options(
 	array &$options,
 	array $options_recognized
 ):void {
-	$hashes_oauth_arguments =
-		array(
-			'hashes-oauth-token',
-			'hashes-oauth-token-secret',
-			'hashes-oauth-consumer-key',
-			'hashes-oauth-consumer-secret',
-		);
-
 	/*
 	 * Handle --enforce-https-urls absolutely first,
 	 * as that is used in processing parameters expecting
@@ -2263,6 +2144,17 @@ function vipgoci_run_init_options(
 		'branches-ignore',
 		array()
 	);
+
+	/*
+	 * Process the --name-to-use parameter,
+	 * expected to be a string. If not, set default.
+	 */
+	if (
+		( empty( $options['name-to-use'] ) ) ||
+		( ! is_string( $options['name-to-use'] ) )
+	) {
+		$options['name-to-use'] = VIPGOCI_DEFAULT_NAME_TO_USE;
+	}
 
 	// Validate args.
 	if (
@@ -2302,12 +2194,6 @@ function vipgoci_run_init_options(
 	// Process autoapprove options.
 	vipgoci_run_init_options_autoapprove( $options );
 
-	// Process hashes-to-hashes options.
-	vipgoci_run_init_options_hashes_options(
-		$options,
-		$hashes_oauth_arguments
-	);
-
 	// Set SVG options.
 	vipgoci_run_init_options_svg( $options );
 
@@ -2323,9 +2209,6 @@ function vipgoci_run_init_options(
 	// Set options relating to generic PR support comments.
 	vipgoci_run_init_options_post_generic_pr_support_comments( $options );
 
-	// Set options relating to support level labels.
-	vipgoci_run_init_options_set_support_level_label( $options );
-
 	// Set options relating to the repo-meta API.
 	vipgoci_run_init_options_repo_meta_api( $options );
 
@@ -2339,22 +2222,17 @@ function vipgoci_run_init_options(
 	vipgoci_run_init_options_output( $options );
 
 	/*
-	 * Process autoapprove and hashes-to-hashes
-	 * options that overlap.
-	 */
-	vipgoci_run_init_options_autoapprove_hashes_overlap( $options );
-
-	/*
 	 * Handle --repo-options and related parameters.
 	 */
 	vipgoci_run_init_options_repo_options( $options );
 
 	if (
 		( false === $options['lint'] ) &&
-		( false === $options['phpcs'] )
+		( false === $options['phpcs'] ) &&
+		( false === $options['wpscan-api'] )
 	) {
 		vipgoci_sysexit(
-			'Both --lint and --phpcs set to false, cannot continue.',
+			'--lint, --phpcs and --wpscan-api are all set to false, cannot continue.',
 			array(),
 			VIPGOCI_EXIT_USAGE_ERROR
 		);
@@ -2542,12 +2420,6 @@ function vipgoci_run_scan_find_prs( array &$options ) :array {
  * Make sure we are working with the latest
  * commit with each implicated PR.
  *
- * If we detect that we are only performing linting,
- * and the commit is not the latest, skip linting
- * as it becomes useless if this is not the
- * latest commit: There is no use in linting
- * an obsolete commit.
- *
  * @param array $options        Array of options.
  * @param array $prs_implicated Pull requests implicated.
  *
@@ -2590,45 +2462,17 @@ function vipgoci_run_scan_check_latest_commit(
 		 * to the pull request, and we have to deal with that.
 		 */
 
-		if (
-			( true === $options['lint'] ) &&
-			( false === $options['phpcs'] )
-		) {
-			vipgoci_sysexit(
-				'The current commit is not the latest one ' .
-					'to the pull request, skipping ' .
-					'linting, and not doing PHPCS ' .
-					'-- nothing to do',
-				array(
-					'repo_owner' => $options['repo-owner'],
-					'repo_name'  => $options['repo-name'],
-					'pr_number'  => $pr_item->number,
-				),
-				VIPGOCI_EXIT_NORMAL
-			);
-		} elseif (
-			( true === $options['lint'] ) &&
-			( true === $options['phpcs'] )
-		) {
-			// Skip linting, useless if not latest commit.
-			$options['lint'] = false;
-
-			vipgoci_log(
-				'The current commit is not the latest ' .
-					'one to the pull request, ' .
-					'skipping linting',
-				array(
-					'repo_owner' => $options['repo-owner'],
-					'repo_name'  => $options['repo-name'],
-					'pr_number'  => $pr_item->number,
-				)
-			);
-		}
-
-		/*
-		 * As for lint === false && true === phpcs,
-		 * we do not care, as then we will not be linting.
-		 */
+		vipgoci_sysexit(
+			'The current commit is not the latest one ' .
+				'to the pull request. Unable to continue.',
+			array(
+				'repo_owner' => $options['repo-owner'],
+				'repo_name'  => $options['repo-name'],
+				'pr_number'  => $pr_item->number,
+			),
+			VIPGOCI_EXIT_COMMIT_NOT_LATEST,
+			true // Log to IRC.
+		);
 	}
 }
 
@@ -2955,13 +2799,6 @@ function vipgoci_run_scan(
 		$prs_implicated
 	);
 
-	/*
-	 * Add support level label, if:
-	 * - configured to do so
-	 * - data is available in repo-meta API
-	 */
-	vipgoci_support_level_label_set( $options );
-
 	if ( true === $options['phpcs'] ) {
 		/*
 		 * Verify that sniffs specified on command line
@@ -2969,9 +2806,15 @@ function vipgoci_run_scan(
 		 * invalid sniffs from the options on the fly and
 		 * post a message to users about the invalid sniffs.
 		 */
+
+		$debug_phpcs_info = array(); // Needed for reference, not used here.
+
 		vipgoci_phpcs_validate_sniffs_in_options_and_report(
-			$options
+			$options,
+			$debug_phpcs_info
 		);
+
+		unset( $debug_phpcs_info );
 
 		/*
 		 * Set to use new PHPCS standard if needed.
@@ -3026,7 +2869,7 @@ function vipgoci_run_scan(
 	 * approvable.
 	 *
 	 * Will also remove from $results any files
-	 * auto-approved in hashes-to-hashes API.
+	 * auto-approved.
 	 */
 	vipgoci_auto_approval_process(
 		$options,
@@ -3103,7 +2946,9 @@ function vipgoci_run_scan(
 		$options['commit'],
 		$results,
 		$options['informational-msg'],
-		$scan_details_msg
+		$scan_details_msg,
+		$options['wpscan-api-report-end-msg'],
+		$options['name-to-use']
 	);
 
 	vipgoci_report_submit_pr_review_from_results(
@@ -3116,7 +2961,8 @@ function vipgoci_run_scan(
 		$scan_details_msg,
 		$options['review-comments-max'],
 		$options['review-comments-include-severity'],
-		$options['skip-large-files-limit']
+		$options['skip-large-files-limit'],
+		$options['name-to-use']
 	);
 
 	/*
@@ -3241,7 +3087,6 @@ function vipgoci_run_init_vars() :array {
 		'stats'  => array(
 			VIPGOCI_STATS_PHPCS      => null,
 			VIPGOCI_STATS_LINT       => null,
-			VIPGOCI_STATS_HASHES_API => null,
 			VIPGOCI_STATS_WPSCAN_API => null,
 		),
 	);

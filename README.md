@@ -43,7 +43,6 @@ Here is an example auto approval by `vip-go-ci`:
 `vip-go-ci` has support for a number of other features in addition to the above, such as:
 * Publishing a <a href="#setting-github-build-status">GitHub build status</a>.
 * Automatic submission of <a href="#general-support-messages">support messages to pull requests</a>.
-* Auto approval of files via <a href="#hashes-api">Hashes API</a>.
 * Dismissing <a href="#dismissing-stale-reviews">stale reviews</a>.
 * Logging messages to a <a href="#irc-support">IRC gateway</a>.
 
@@ -431,6 +430,8 @@ Any number of PHPCS standards can be specified, and any number of runtime settin
 
 To use a different PHP interpreter than the system default to run PHPCS, use `--phpcs-php-path`. This should point to a PHP binary.
 
+PHPCS standards can be ignored while searching for PHPCS standards and sniffs during startup by using the `--phpcs-standards-to-ignore` parameter. This is useful for example when a PHPCS standard available does not implement any sniffs, which can cause PHPCS to exit with error when asked to provide sniffs for such a standard. Sniffs implemented by ignored PHPCS standards are not available via `--phpcs-sniffs-include` or `--phpcs-sniffs-exclude` (unless they are included by other PHPCS standards available) and `vip-go-ci` will not attempt to search for sniffs implemented by ignored PHPCS standards.
+
 The following PHPCS-related options can be configured via repository config-file:
 
 #### Options `--phpcs` and `--phpcs-severity`
@@ -495,7 +496,7 @@ With this setting, any PHP files having only whitespacing changes or updating to
 
 Note also that if set up to auto-approve, and the Hases API feature (see below) is configured, it will be utilised.
 
-If _all_ files altered by a pull request have been found to be auto-approvable -- for example, by the non-functional changes or Hashes API --, the whole pull request will be approved automatically.
+If _all_ files altered by a pull request have been found to be auto-approvable -- for example, by the non-functional changes mechanism --, the whole pull request will be approved automatically.
 
 The following Autoapprovals-related options can be configured via repository config-file:
 
@@ -507,38 +508,6 @@ For instance:
 
 ```
 {"autoapprove": false, "autoapprove-php-nonfunctional-changes": false}
-```
-
-### Hashes API
-
-This feature is useful when you want to automatically approve pull requests containing PHP or JavaScript files that are already known to be good and are approved already, so no manual reviewing is needed. To make use of this feature, you will need a database of files already approved. You will also have to be using the auto-approvals feature. 
-
-The feature can be activated using the `--hashes-api` parameter and by specifying a HTTP API endpoint. For instance:
-
-> ./vip-go-ci.php --autoapprove=true --hashes-api=true --hashes-api-url=https://myservice.mycompany.is/wp-json/viphash/
-
-Configured this way, `vip-go-ci` will make HTTP API requests for any PHP or JavaScript file it sees being altered in pull requests it scans. The HTTP API requests would look like this:
-
-> https://myservice.mycompany.is/wp-json/viphash/v1/hashes/id/[HASH]
-
-where `[HASH]` is a SHA1 hash of a particular PHP or JavaScript file, after it all comments and whitespaces have been removed from them. `vip-go-ci` expects a JSON result like this from the HTTP API:
-
-```
-[{"status":"true"},{"status":"true"}]
-```
-
-The JSON result can contain other fields, but they are not used. Note that a single "false" status is enough to make sure a file is considered _not_ approved.
-
-An open-source tool to label files as approved or non-approved is available [here](https://github.com/Automattic/vip-hash/). It requires a HTTP API service that `vip-go-ci` communicates with as well.
-
-The following Hashes-API related option can be configured via repository config-file:
-
-#### Option `--hashes-api`
-
-Specifies if to check for approved files in Hashes-API. For instance:
-
-```
-{"hashes-api":true}
 ```
 
 ### Ignore certain branches
@@ -676,16 +645,6 @@ For example:
 {"post-generic-pr-support-comments":false}
 ```
 
-### Support labels
-
-`vip-go-ci` can put labels on pull requests indicating level of support provided. With this feature configured, `vip-go-ci` will attach a label to every new pull request that does not have it. For this to work, it will need access to a `repo-meta API` that needs to be available and `vip-go-ci` has to be configured to work with.
-
-This feature can be used in the following way:
-
-> ./vip-go-ci.php --set-support-level-label=true --set-support-level-field="support-level" --repo-meta-api-base-url="http://myrepometa-api.mycompany.is" --repo-meta-api-user-id=7334005 --repo-meta-api-access-token="MY-TOKEN"
-
-Note that by default, all support level labels have a prefix: `[Support Level]`. This can be changed by using the `--set-support-level-label-prefix` option.
-
 ### IRC support
 
 `vip-go-ci` supports posting certain logged messages to a HTTP API that will eventually relay the information to a IRC channel. This can of course be any IRC-like system, as long as the HTTP API behaves the same. This is useful if you need to have some information submitted to a monitoring system, for instance.
@@ -762,20 +721,15 @@ Start with preparing the `unittests.ini` file:
 
 Alter any options in the file as needed to match the setup of your system. Note that in some cases, you may have to use different PHP versions for PHPCS or the SVG scanner, than `vip-go-ci` itself.
 
-Note that some tests will require a GitHub token to submit POST/PUT requests to GitHub in order to complete, need access to the hashes-to-hashes database, or to a repo-meta API. 
+#### Test suite secrets file
+
+Note that some tests will require a GitHub token to submit POST/PUT requests to GitHub in order to complete, and some will need access to a repo-meta API. 
 
 To skip these tests, simply place an empty `unittests-secrets.ini` file in the root directory of `vip-go-ci` and skip the rest of this section. 
 
 To enable the testing of these, you need to set up a `unittests-secrets.ini` file in the root directory of `vip-go-ci`. This file should include the following fields:
 
 ```
-[auto-approvals-secrets]
-hashes-api-url=
-hashes-oauth-consumer-key=
-hashes-oauth-consumer-secret=
-hashes-oauth-token=
-hashes-oauth-token-secret=
-
 [git-secrets]
 github-token= ; Personal access token from GitHub
 team-slug=    ; Team slug to test if present, is a string.
@@ -787,8 +741,11 @@ repo-meta-api-user-id=          ; User ID for the meta API
 repo-meta-api-access-token=     ; Access token for the meta API
 repo-owner=                     ; Repository owner for the test, should be found in meta API
 repo-name=                      ; Repository name for the test
-support-level=                  ; Name of support level given by meta API
-support-level-field-name=       ; Support level field name in meta API
+support-level=                  ; Name of support level given by meta API (only used in tests)
+support-level-field-name=       ; Support level field name in meta API (only used in tests)
+
+[wpscan-api-scan]
+access-token= ; Access token for WPScan API.
 ```
 
 This file is not included, and needs to be configured manually.
@@ -831,6 +788,10 @@ if [ "$VIPGOCI_EXIT_CODE" == "0" ] ; then
 elif [ "$VIPGOCI_EXIT_CODE" == "230" ] ; then
 	export BUILD_STATE="failure"
 	export BUILD_DESCRIPTION="Pull request not found for commit"
+
+elif [ "$VIPGOCI_EXIT_CODE" == "248" ] ; then
+	export BUILD_STATE="failure"
+	export BUILD_DESCRIPTION="Commit not latest in PR"
 
 elif [ "$VIPGOCI_EXIT_CODE" == "249" ] ; then
 	export BUILD_STATE="failure"
