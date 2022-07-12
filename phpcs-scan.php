@@ -532,58 +532,28 @@ function vipgoci_phpcs_scan_commit(
 		)
 	);
 
-	$pr_item_files_changed        = array();
-	$pr_item_files_changed['all'] = array();
+	$commit_skipped_files_empty = array();
 
-	foreach ( $prs_implicated as $pr_item ) {
-		/*
-		 * Make sure that the PR is defined in the array
-		 */
-		if ( ! isset( $pr_item_files_changed[ $pr_item->number ] ) ) {
-			$pr_item_files_changed[ $pr_item->number ] = array();
-		}
-
-		/*
-		 * Get list of all files changed
-		 * in this pull request.
-		 */
-
-		$pr_item_files_tmp = vipgoci_git_diffs_fetch(
-			$options['local-git-repo'],
-			$options['repo-owner'],
-			$options['repo-name'],
-			$options['token'],
-			$pr_item->base->sha,
-			$commit_id,
-			false, // Exclude renamed files.
-			false, // Exclude removed files.
-			false, // Exclude permission changes.
-			array(
-				'file_extensions' =>
-					// If SVG-checks are enabled, include it in the file-extensions.
-					array_merge(
-						array( 'php', 'js', 'twig' ),
-						( $options['svg-checks'] ?
-							array( 'svg' ) :
-							array()
-						)
-					),
-				'skip_folders'    => $options['phpcs-skip-folders'],
-			)
-		);
-
-		foreach ( $pr_item_files_tmp['files'] as $pr_item_file_name => $_tmp ) {
-			vipgoci_array_push_uniquely(
-				$pr_item_files_changed['all'],
-				$pr_item_file_name
-			);
-
-			vipgoci_array_push_uniquely(
-				$pr_item_files_changed[ $pr_item->number ],
-				$pr_item_file_name
-			);
-		}
-	}
+	$pr_item_files_changed = vipgoci_github_files_affected_by_commit(
+		$options,
+		$commit_id,
+		$commit_skipped_files_empty,
+		false, // Exclude renamed files.
+		false, // Exclude removed files.
+		false, // Exclude permission changes.
+		array(
+			// If SVG-checks are enabled, include it in the file-extensions.
+			'file_extensions' => array_merge(
+				array( 'php', 'js', 'twig' ),
+				( $options['svg-checks'] ?
+					array( 'svg' ) :
+					array()
+				)
+			),
+			'skip_folders'    => $options['phpcs-skip-folders'],
+		),
+		true
+	);
 
 	$files_issues_arr = array();
 
@@ -611,6 +581,14 @@ function vipgoci_phpcs_scan_commit(
 	 * or SVG scanned.
 	 */
 	$files_failed_phpcs_scanning = array();
+
+	/*
+	 * Get first PR array item found. Needed
+	 * for skipped files logic below.
+	 */
+	foreach ( $prs_implicated as $pr_item ) {
+		break;
+	}
 
 	foreach ( $pr_item_files_changed['all'] as $file_name ) {
 		if (
