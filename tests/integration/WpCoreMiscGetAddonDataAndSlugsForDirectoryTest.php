@@ -62,13 +62,13 @@ final class WpCoreMiscGetAddonDataAndSlugsForDirectoryTest extends TestCase {
 	}
 
 	/**
-	 * Test common usage of the function.
+	 * Test common usage of the function. Scans subdirectories.
 	 *
 	 * @covers ::vipgoci_wpcore_misc_get_addon_data_and_slugs_for_directory
 	 *
 	 * @return void
 	 */
-	public function testGetAddonDataAndSlugsForDirectory(): void {
+	public function testGetAddonDataAndSlugsForDirectoryWithSubdirectories(): void {
 		if ( empty( $this->temp_dir ) ) {
 			$this->markTestSkipped(
 				'Temporary directory not existing.'
@@ -94,7 +94,8 @@ final class WpCoreMiscGetAddonDataAndSlugsForDirectoryTest extends TestCase {
 		vipgoci_unittests_output_suppress();
 
 		$actual_results = vipgoci_wpcore_misc_get_addon_data_and_slugs_for_directory(
-			$this->temp_dir . '/WpCoreMiscGetAddonDataAndSlugsForDirectoryTest'
+			$this->temp_dir . '/WpCoreMiscGetAddonDataAndSlugsForDirectoryTest',
+			true
 		);
 
 		vipgoci_unittests_output_unsuppress();
@@ -142,6 +143,94 @@ final class WpCoreMiscGetAddonDataAndSlugsForDirectoryTest extends TestCase {
 		$this->assertStringContainsString(
 			'/hello-dolly.',
 			$actual_results['hello/hello.php']['package']
+		);
+
+		/*
+		 * Ensure this-is-a-plugin.php is in results.
+		 */
+		$this->assertNotEmpty(
+			$actual_results['this-is-a-plugin.php']
+		);
+
+		$this->assertFalse(
+			isset( $actual_results['this-is-a-plugin.php']['id'] )
+		);
+
+		$this->assertSame(
+			'This is a plugin.',
+			$actual_results['this-is-a-plugin.php']['name']
+		);
+
+		$this->assertFalse(
+			isset( $actual_results['his-is-a-plugin.php']['slug'] )
+		);
+
+		$this->assertFalse(
+			isset( $actual_results['this-is-a-plugin.php']['plugin'] )
+		);
+
+		$this->assertSame(
+			'15.1.0',
+			$actual_results['this-is-a-plugin.php']['version_detected']
+		);
+
+		$this->assertFalse(
+			isset( $actual_results['this-is-a-plugin.php']['new_version'] )
+		);
+
+		$this->assertFalse(
+			isset( $actual_results['this-is-a-plugin.php']['url'] )
+		);
+
+		$this->assertFalse(
+			isset( $actual_results['this-is-a-plugin.php']['package'] )
+		);
+	}
+
+	/**
+	 * Test common usage of the function. Does not scan subdirectories.
+	 *
+	 * @covers ::vipgoci_wpcore_misc_get_addon_data_and_slugs_for_directory
+	 *
+	 * @return void
+	 */
+	public function testGetAddonDataAndSlugsForDirectorySkipSubdirectories(): void {
+		if ( empty( $this->temp_dir ) ) {
+			$this->markTestSkipped(
+				'Temporary directory not existing.'
+			);
+
+			return;
+		}
+
+		$cp_cmd = escapeshellcmd( 'cp' ) .
+			' -R ' .
+			escapeshellarg( __DIR__ . '/helper-files/WpCoreMiscGetAddonDataAndSlugsForDirectoryTest' ) .
+			' ' .
+			escapeshellarg( $this->temp_dir );
+
+		if ( false === exec( $cp_cmd ) ) {
+			$this->markTestSkipped(
+				'Unable to extract tar file'
+			);
+
+			return;
+		}
+
+		vipgoci_unittests_output_suppress();
+
+		$actual_results = vipgoci_wpcore_misc_get_addon_data_and_slugs_for_directory(
+			$this->temp_dir . '/WpCoreMiscGetAddonDataAndSlugsForDirectoryTest',
+			false
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		/*
+		 * Ensure hello/hello.php is not in results.
+		 */
+		$this->assertFalse(
+			isset( $actual_results['hello/hello.php'] )
 		);
 
 		/*
