@@ -380,7 +380,7 @@ function vipgoci_options_recognized() :array {
 /**
  * Determine exit status.
  *
- * If any 'error'-type issues were submitted to
+ * If any VIPGOCI_ISSUE_TYPE_ERROR issues were submitted to
  * GitHub return with a non-zero exit-code. Same
  * if any files were skipped.
  *
@@ -416,7 +416,7 @@ function vipgoci_exit_status( array $results ) :int {
 				0 !== $results['stats']
 					[ $stats_type ]
 					[ $pr_number ]
-					['error']
+					[ VIPGOCI_ISSUE_TYPE_ERROR ]
 			) {
 				// Some errors were found, return non-zero.
 				return VIPGOCI_EXIT_CODE_ISSUES;
