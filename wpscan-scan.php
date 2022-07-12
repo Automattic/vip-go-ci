@@ -215,6 +215,19 @@ function vipgoci_wpscan_scan_dirs_altered(
 				$options['wpscan-api-token']
 			);
 
+			if ( empty(
+				$wpscan_results[ $addon_item_info['slug'] ]
+			) ) {
+				vipgoci_log(
+					'Unable to get information from WPScan API about slug',
+					array(
+						'slug' => $addon_item_info['slug'],
+					)
+				);
+
+				continue;
+			}
+
 			// Filter away vulnerabilities that have been fixed in the observed version.
 			$wpscan_results = vipgoci_wpscan_filter_fixed_vulnerabilities(
 				$addon_item_info['slug'],
