@@ -90,12 +90,26 @@ function vipgoci_wpscan_find_addon_dirs_altered(
 		foreach ( $options['wpscan-api-paths'] as $wpscan_path ) {
 			/*
 			 * Ensure we collect only base directory of plugins or themes,
-			 * not subdirectories.
+			 * not subdirectories. Also add $wpscan_path if a plugin or theme
+			 * is found there.
 			 */
 			$dir_changed_by_commit_relative = vipgoci_directory_path_get_dir_and_include_base(
 				$wpscan_path,
 				$directory_changed_by_commit
 			);
+
+			if (
+				( $wpscan_path === $directory_changed_by_commit ) &&
+				( null === $dir_changed_by_commit_relative )
+			) {
+				// Addon file found in root of plugin/theme directory, add directory.
+				vipgoci_array_push_uniquely(
+					$addon_dirs_relevant_to_scan,
+					$wpscan_path
+				);
+
+				continue;
+			}
 
 			if ( empty( $dir_changed_by_commit_relative ) ) {
 				continue;
@@ -185,7 +199,8 @@ function vipgoci_wpscan_scan_dirs_altered(
 
 	foreach ( $addon_dirs_relevant_to_scan as $addon_dir_relevant ) {
 		$addon_data_for_dir = vipgoci_wpcore_misc_get_addon_data_and_slugs_for_directory(
-			$options['local-git-repo'] . DIRECTORY_SEPARATOR . $addon_dir_relevant
+			$options['local-git-repo'] . DIRECTORY_SEPARATOR . $addon_dir_relevant,
+			( ! in_array( $addon_dir_relevant, $options['wpscan-api-paths'], true ) )
 		);
 
 		foreach ( $addon_data_for_dir as $addon_item_key => $addon_item_info ) {
