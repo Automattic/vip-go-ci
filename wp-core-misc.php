@@ -417,6 +417,14 @@ function vipgoci_wpcore_misc_scan_directory_for_addons(
 function vipgoci_wpcore_api_determine_slug_and_other_for_addons(
 	array $addons_data
 ) :array {
+	vipgoci_log(
+		'Preparing to query WordPress.org API about plugins/themes',
+		array(
+			'addons_data' => $addons_data,
+		),
+		0
+	);
+
 	// Data to send to WordPress.org API.
 	$addon_data_to_send = array();
 
@@ -449,6 +457,39 @@ function vipgoci_wpcore_api_determine_slug_and_other_for_addons(
 			);
 
 			continue;
+		}
+
+		if ( ! empty( $data_item['addon_headers']['UpdateURI'] ) ) {
+			$update_uri_host = parse_url(
+				$data_item['addon_headers']['UpdateURI'],
+				PHP_URL_HOST
+			);
+
+			if (
+				( 'false' === $data_item['addon_headers']['UpdateURI'] ) ||
+				(
+					( false !== $update_uri_host ) &&
+					( true !== vipgoci_string_found_in_substrings_array(
+						VIPGOCI_WPSCAN_UPDATEURI_WP_ORG_URLS,
+						$update_uri_host,
+						true
+					) )
+				)
+			) {
+				vipgoci_log(
+					'Skipping addon, UpdateURI header specified and does ' .
+						'not match WordPress.org URIs or is set to "false"',
+					array(
+						'data_item'             => $data_item,
+						'update_uri_host'       => $update_uri_host,
+						'UpdateURI_WP_org_URIs' => VIPGOCI_WPSCAN_UPDATEURI_WP_ORG_URLS,
+					),
+					0,
+					true // Log to IRC.
+				);
+
+				continue;
+			}
 		}
 
 		$addon_data_to_send[ $key ] = $data_item['addon_headers'];
