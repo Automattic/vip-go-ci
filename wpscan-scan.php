@@ -12,6 +12,10 @@ declare(strict_types=1);
  * altered by pull requests implicated by current commit and fall
  * within those paths that should be scanned using WPScan API. Paths
  * are relative to base of repository.
+ * 
+ * Note: Files are included in results across all pull requests; hence
+ * a file may be altered in context of one pull request and not another,
+ * yet it will appear in results.
  *
  * @param array $options              Options array for the program.
  * @param array $commit_skipped_files Information about skipped files (reference).
