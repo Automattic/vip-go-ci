@@ -214,6 +214,40 @@ function vipgoci_find_fields_in_array(
 }
 
 /**
+ * Check if any of the strings in $arr_items is a substring
+ * of $str. Comparison is case insensitive.
+ *
+ * @param array  $arr_items  Array of items to check against $str.
+ * @param string $str        String to use to check.
+ * @param bool   $start_only If to match at beginning of comparison string only.
+ *
+ * @return bool True when substring is found, else false.
+ */
+function vipgoci_string_found_in_substrings_array(
+	array $arr_items,
+	string $str,
+	bool $start_only = false
+) :bool {
+	$found = false;
+
+	foreach ( $arr_items as $arr_item ) {
+		if ( true === $start_only ) {
+			if ( 0 === stripos( $arr_item, $str ) ) {
+				$found = true;
+				break;
+			}
+		} else {
+			if ( false !== stripos( $arr_item, $str ) ) {
+				$found = true;
+				break;
+			}
+		}
+	}
+
+	return $found;
+}
+
+/**
  * Convert a string that contains "true", "false" or
  * "null" to a variable of that type.
  *
