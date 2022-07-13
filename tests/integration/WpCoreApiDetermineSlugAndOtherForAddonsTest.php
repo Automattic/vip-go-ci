@@ -50,6 +50,7 @@ final class WpCoreApiDetermineSlugAndOtherForAddonsTest extends TestCase {
 						'AuthorURI '  => 'http://ma.tt/',
 						'Title'       => 'Hello Dolly',
 						'AuthorName'  => 'Matt Mullenweg',
+						'Update URI'  => 'http://wordpress.org/plugins/hello-dolly/',
 					),
 				),
 			),
