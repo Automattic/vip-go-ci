@@ -441,7 +441,7 @@ function vipgoci_wpscan_scan_save_for_submission(
 				);
 
 				if ( true === $should_add_file ) {
-					$level = 'vulnerable' === $problem_addon_files[ $problem_addon_file_name ]['type'] ?
+					$level = 'vulnerable' === $problem_addon_files[ $problem_addon_file_name ]['security_type'] ?
 						VIPGOCI_ISSUE_TYPE_ERROR : VIPGOCI_ISSUE_TYPE_WARNING;
 
 					$issue_details = $problem_addon_files[ $problem_addon_file_name ];
