@@ -274,6 +274,8 @@ define( 'VIPGOCI_WPSCAN_THEME', 'vipgoci-wpscan-theme' );
 define( 'VIPGOCI_WPSCAN_BASE_URL', 'https://wpscan.com' );
 define( 'VIPGOCI_WPSCAN_API_BASE_URL', VIPGOCI_WPSCAN_BASE_URL . '/api/v3' );
 
+define( 'VIPGOCI_WPSCAN_UPDATEURI_WP_ORG_URLS', array( 'w.org', 'wordpress.org' ) );
+
 define( 'VIPGOCI_WPSCAN_VULNERABLE', 'vulnerable' );
 define( 'VIPGOCI_WPSCAN_OBSOLETE', 'obsolete' );
 
