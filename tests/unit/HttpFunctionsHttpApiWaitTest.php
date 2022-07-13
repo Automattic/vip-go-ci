@@ -24,6 +24,7 @@ final class HttpFunctionsHttpApiWaitTest extends TestCase {
 	protected function setUp() :void {
 		require_once __DIR__ . '/../../http-functions.php';
 		require_once __DIR__ . '/../../defines.php';
+		require_once __DIR__ . '/../../misc.php';
 
 		require_once __DIR__ . '/helper/RuntimeMeasure.php';
 	}
@@ -42,7 +43,7 @@ final class HttpFunctionsHttpApiWaitTest extends TestCase {
 			$time_start = time();
 
 			// Should wait in case of one of the APIs specified in this array constant.
-			vipgoci_http_api_wait( VIPGOCI_HTTP_API_WAIT_APIS_ARRAY[0] );
+			vipgoci_http_api_wait( 'https://' . VIPGOCI_HTTP_API_WAIT_APIS_ARRAY[0] . '/test' );
 
 			$time_end = time();
 
@@ -79,7 +80,7 @@ final class HttpFunctionsHttpApiWaitTest extends TestCase {
 			$time_start = time();
 
 			// Should not wait in this case.
-			vipgoci_http_api_wait( 'localhost-477-939-460-523.local' );
+			vipgoci_http_api_wait( 'https://localhost-477-939-460-523.local' );
 
 			$time_end = time();
 
