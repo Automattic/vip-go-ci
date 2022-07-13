@@ -295,13 +295,19 @@ function vipgoci_http_api_wait( string $http_api_url ) :void {
 	/*
 	 * Only wait in case of certain APIs being called.
 	 */
+	$http_api_host = parse_url(
+		$http_api_url,
+		PHP_URL_HOST
+	);
+
 	$maybe_wait = false;
 
-	foreach ( VIPGOCI_HTTP_API_WAIT_APIS_ARRAY as $http_api_should_wait_url ) {
-		if ( false !== stripos( $http_api_url, $http_api_should_wait_url ) ) {
-			$maybe_wait = true;
-			break;
-		}
+	if ( ! empty( $http_api_host ) ) {
+		$maybe_wait = vipgoci_substring_found_in_array(
+			VIPGOCI_HTTP_API_WAIT_APIS_ARRAY,
+			$http_api_host,
+			false
+		);
 	}
 
 	if ( false === $maybe_wait ) {
