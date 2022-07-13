@@ -287,7 +287,7 @@ function vipgoci_wpscan_scan_dirs_altered(
 				 * plugins/themes.
 				 */
 				$problematic_addons_found[ $addon_dir_relevant ][ $addon_item_key ] = array(
-					'type'               => VIPGOCI_WPSCAN_OBSOLETE,
+					'security_type'      => VIPGOCI_WPSCAN_OBSOLETE,
 					'wpscan_results'     => $wpscan_results[ $addon_item_info['slug'] ],
 					'addon_data_for_dir' => $addon_item_info,
 				);
@@ -297,7 +297,7 @@ function vipgoci_wpscan_scan_dirs_altered(
 				 * vulnerable, then add to vulnerable addons.
 				 */
 				$problematic_addons_found[ $addon_dir_relevant ][ $addon_item_key ] = array(
-					'type'               => VIPGOCI_WPSCAN_VULNERABLE,
+					'security_type'      => VIPGOCI_WPSCAN_VULNERABLE,
 					'wpscan_results'     => $wpscan_results[ $addon_item_info['slug'] ],
 					'addon_data_for_dir' => $addon_item_info,
 				);
@@ -454,7 +454,7 @@ function vipgoci_wpscan_scan_save_for_submission(
 							'addon_type' => $issue_details['addon_data_for_dir']['type'],
 							'message'    => $problem_addon_files[ $problem_addon_file_name ]['wpscan_results']['friendly_name'],
 							'level'      => $level,
-							'security'   => $problem_addon_files[ $problem_addon_file_name ]['type'], // @todo: Rename field.
+							'security'   => $problem_addon_files[ $problem_addon_file_name ]['security_type'],
 							'severity'   => 10,
 							'details'    => array(
 								'plugin_uri'          => $issue_details['addon_data_for_dir']['addon_headers']['PluginURI'],
