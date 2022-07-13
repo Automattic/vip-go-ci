@@ -303,7 +303,7 @@ function vipgoci_http_api_wait( string $http_api_url ) :void {
 	$maybe_wait = false;
 
 	if ( ! empty( $http_api_host ) ) {
-		$maybe_wait = vipgoci_substring_found_in_array(
+		$maybe_wait = vipgoci_string_found_in_substrings_array(
 			VIPGOCI_HTTP_API_WAIT_APIS_ARRAY,
 			$http_api_host,
 			false
