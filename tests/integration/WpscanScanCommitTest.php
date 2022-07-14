@@ -24,9 +24,12 @@ final class WpscanScanCommitTest extends TestCase {
 	 * @var $options_wpscan_api_scan
 	 */
 	private array $options_wpscan_api_scan = array(
-		'wpscan-pr-1-commit-id' => null,
-		'wpscan-pr-1-dirs-scan' => null,
-		'wpscan-pr-1-number'    => null,
+		'wpscan-pr-1-commit-id'   => null,
+		'wpscan-pr-1-dirs-scan'   => null,
+		'wpscan-pr-1-number'      => null,
+		'wpscan-pr-1-plugin-dir'  => null,
+		'wpscan-pr-1-plugin-key'  => null,
+		'wpscan-pr-1-plugin-name' => null,
 	);
 
 	/**
@@ -270,24 +273,37 @@ final class WpscanScanCommitTest extends TestCase {
 			( ! empty( $commit_issues_submit[ $this->options['wpscan-pr-1-number'] ][0]['issue']['details']['latest_download_uri'] ) )
 		);
 
+		$this->assertTrue(
+			str_contains(
+				$commit_issues_submit[ $this->options['wpscan-pr-1-number'] ][0]['issue']['details']['latest_download_uri'],
+				'wordpress.org'
+			)
+		);
+
 		unset( $commit_issues_submit[ $this->options['wpscan-pr-1-number'] ][0]['issue']['details']['latest_download_uri'] );
+
+		$this->assertStringContainsString(
+			'wordpress.org/plugins',
+			$commit_issues_submit[ $this->options['wpscan-pr-1-number'] ][0]['issue']['details']['plugin_uri']
+		);
+
+		unset( $commit_issues_submit[ $this->options['wpscan-pr-1-number'] ][0]['issue']['details']['plugin_uri'] );
 
 		$this->assertSame(
 			array(
 				$this->options['wpscan-pr-1-number'] => array(
 					array(
 						'type'      => 'wpscan-api',
-						'file_name' => 'plugins/hello/hello.php',
+						'file_name' => $this->options['wpscan-pr-1-plugin-dir'] . '/' . $this->options['wpscan-pr-1-plugin-key'],
 						'file_line' => 1,
 						'issue'     => array(
 							'addon_type' => 'vipgoci-wpscan-plugin',
-							'message'    => 'Hello Dolly',
+							'message'    => $this->options['wpscan-pr-1-plugin-name'],
 							'level'      => 'warning',
 							'security'   => 'obsolete',
 							'severity'   => 10,
 							'details'    => array(
-								'plugin_uri'         => 'http://wordpress.org/plugins/hello-dolly/',
-								'installed_location' => 'plugins/hello/hello.php',
+								'installed_location' => $this->options['wpscan-pr-1-plugin-dir'] . '/' . $this->options['wpscan-pr-1-plugin-key'],
 								'version_detected'   => '1.6',
 								'vulnerabilities'    => array(),
 							),
