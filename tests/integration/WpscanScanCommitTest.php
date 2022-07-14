@@ -85,8 +85,6 @@ final class WpscanScanCommitTest extends TestCase {
 
 		$this->options['skip-draft-prs'] = false;
 
-		$this->options['wpscan-api'] = true;
-
 		$this->options['wpscan-api-paths'] = explode(
 			',',
 			$this->options['wpscan-pr-1-dirs-scan']
@@ -128,13 +126,13 @@ final class WpscanScanCommitTest extends TestCase {
 	}
 
 	/**
-	 * Test common usage of the function.
+	 * Test when wpscan-api is disabled.
 	 *
 	 * @covers ::vipgoci_wpscan_scan_commit
 	 *
 	 * @return void
 	 */
-	public function testScanCommit(): void {
+	public function testScanCommitDisabled(): void {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
@@ -160,6 +158,79 @@ final class WpscanScanCommitTest extends TestCase {
 
 			return;
 		}
+
+		$this->options['wpscan-api'] = false;
+
+		vipgoci_unittests_output_unsuppress();
+
+		$commit_issues_submit = array();
+		$commit_issues_stats  = array();
+		$commit_skipped_files = array();
+
+		$commit_issues_submit[ $this->options['wpscan-pr-1-number'] ] = array();
+		$commit_issues_stats[ $this->options['wpscan-pr-1-number'] ]  = array(
+			'warning' => 0,
+		);
+
+		vipgoci_wpscan_scan_commit(
+			$this->options,
+			$commit_issues_submit,
+			$commit_issues_stats,
+			$commit_skipped_files
+		);
+
+		$this->assertSame(
+			array(
+				$this->options['wpscan-pr-1-number'] => array(
+					'warning' => 0,
+				),
+			),
+			$commit_issues_stats
+		);
+
+		$this->assertSame(
+			array(
+				$this->options['wpscan-pr-1-number'] => array(),
+			),
+			$commit_issues_submit
+		);
+	}
+
+	/**
+	 * Test when wpscan-api is enabled.
+	 *
+	 * @covers ::vipgoci_wpscan_scan_commit
+	 *
+	 * @return void
+	 */
+	public function testScanCommitEnabled(): void {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( 'github-token', 'token' ),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
+		vipgoci_unittests_output_suppress();
+
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped(
+				'Could not set up git repository: ' .
+				vipgoci_unittests_output_get()
+			);
+
+			return;
+		}
+
+		$this->options['wpscan-api'] = true;
 
 		vipgoci_unittests_output_unsuppress();
 
@@ -190,7 +261,7 @@ final class WpscanScanCommitTest extends TestCase {
 
 		$this->assertTrue(
 			( isset( $commit_issues_submit[ $this->options['wpscan-pr-1-number'] ][0]['issue']['details']['latest_version'] ) ) &&
-			( -1 === version_compare( '0.0.0', $commit_issues_submit[ $this->options['wpscan-pr-1-number'] ][0]['issue']['details']['latest_version'] )  )
+			( -1 === version_compare( '0.0.0', $commit_issues_submit[ $this->options['wpscan-pr-1-number'] ][0]['issue']['details']['latest_version'] ) )
 		);
 
 		unset( $commit_issues_submit[ $this->options['wpscan-pr-1-number'] ][0]['issue']['details']['latest_version'] );
@@ -200,7 +271,6 @@ final class WpscanScanCommitTest extends TestCase {
 		);
 
 		unset( $commit_issues_submit[ $this->options['wpscan-pr-1-number'] ][0]['issue']['details']['latest_download_uri'] );
-
 
 		$this->assertSame(
 			array(
@@ -216,10 +286,10 @@ final class WpscanScanCommitTest extends TestCase {
 							'security'   => 'obsolete',
 							'severity'   => 10,
 							'details'    => array(
-								'plugin_uri'          => 'http://wordpress.org/plugins/hello-dolly/',
-								'installed_location'  => 'plugins/hello/hello.php',
-								'version_detected'    => '1.6',
-								'vulnerabilities'     => array(),
+								'plugin_uri'         => 'http://wordpress.org/plugins/hello-dolly/',
+								'installed_location' => 'plugins/hello/hello.php',
+								'version_detected'   => '1.6',
+								'vulnerabilities'    => array(),
 							),
 						),
 					),
