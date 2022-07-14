@@ -87,6 +87,14 @@ final class WpscanApiDoScanViaApiTest extends TestCase {
 		);
 
 		$this->assertNotEmpty(
+			$actual_results
+		);
+
+		$this->assertNotEmpty(
+			$actual_results[ $this->options['theme-slug'] ]
+		);
+
+		$this->assertNotEmpty(
 			$actual_results[ $this->options['plugin-slug'] ]['friendly_name']
 		);
 
@@ -126,6 +134,14 @@ final class WpscanApiDoScanViaApiTest extends TestCase {
 			VIPGOCI_WPSCAN_THEME,
 			VIPGOCI_WPSCAN_API_BASE_URL,
 			$this->options['wpscan-api-token']
+		);
+
+		$this->assertNotEmpty(
+			$actual_results
+		);
+
+		$this->assertNotEmpty(
+			$actual_results[ $this->options['theme-slug'] ]
 		);
 
 		$this->assertNotEmpty(
