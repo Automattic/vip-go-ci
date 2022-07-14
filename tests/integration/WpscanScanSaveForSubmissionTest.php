@@ -213,7 +213,7 @@ final class WpscanScanSaveForSubmissionTest extends TestCase {
 			'warning' => 0,
 		);
 
-		$results_actual = vipgoci_wpscan_scan_save_for_submission(
+		vipgoci_wpscan_scan_save_for_submission(
 			$this->options,
 			$commit_issues_submit,
 			$commit_issues_stats,
