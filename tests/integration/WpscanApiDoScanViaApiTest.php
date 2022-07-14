@@ -91,7 +91,7 @@ final class WpscanApiDoScanViaApiTest extends TestCase {
 		);
 
 		$this->assertNotEmpty(
-			$actual_results[ $this->options['theme-slug'] ]
+			$actual_results[ $this->options['plugin-slug'] ]
 		);
 
 		$this->assertNotEmpty(
