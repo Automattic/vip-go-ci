@@ -215,13 +215,43 @@ final class WpscanScanDirsAlteredTest extends TestCase {
 		);
 
 		$this->assertTrue(
-			( isset( $results_actual['plugins/hello']['hello.php']['addon_data_for_dir']['name'] ) ) &&
-			( ! empty( $results_actual['plugins/hello']['hello.php']['addon_data_for_dir']['name'] ) )
+			( isset( $results_actual['plugins/hello']['hello.php']['addon_data_for_dir']['id'] ) ) &&
+			( ! empty( $results_actual['plugins/hello']['hello.php']['addon_data_for_dir']['id'] ) )
+		);
+
+		$this->assertTrue(
+			( isset( $results_actual['plugins/hello']['hello.php']['addon_data_for_dir']['slug'] ) ) &&
+			( ! empty( $results_actual['plugins/hello']['hello.php']['addon_data_for_dir']['slug'] ) )
+		);
+
+		$this->assertTrue(
+			( isset( $results_actual['plugins/hello']['hello.php']['addon_data_for_dir']['new_version'] ) ) &&
+			( ! empty( $results_actual['plugins/hello']['hello.php']['addon_data_for_dir']['new_version'] ) )
+		);
+
+		$this->assertTrue(
+			( isset( $results_actual['plugins/hello']['hello.php']['addon_data_for_dir']['plugin'] ) ) &&
+			( ! empty( $results_actual['plugins/hello']['hello.php']['addon_data_for_dir']['plugin'] ) )
+		);
+
+		$this->assertTrue(
+			( isset( $results_actual['plugins/hello']['hello.php']['addon_data_for_dir']['package'] ) ) &&
+			( ! empty( $results_actual['plugins/hello']['hello.php']['addon_data_for_dir']['package'] ) )
+		);
+
+		$this->assertTrue(
+			( isset( $results_actual['plugins/hello']['hello.php']['addon_data_for_dir']['url'] ) ) &&
+			( ! empty( $results_actual['plugins/hello']['hello.php']['addon_data_for_dir']['url'] ) )
 		);
 
 		$this->assertTrue(
 			( isset( $results_actual['plugins/hello']['hello.php']['addon_data_for_dir']['addon_headers']['Name'] ) ) &&
 			( ! empty( $results_actual['plugins/hello']['hello.php']['addon_data_for_dir']['addon_headers']['Name'] ) )
+		);
+
+		$this->assertTrue(
+			( isset( $results_actual['plugins/hello']['hello.php']['addon_data_for_dir']['addon_headers']['AuthorName'] ) ) &&
+			( ! empty( $results_actual['plugins/hello']['hello.php']['addon_data_for_dir']['addon_headers']['AuthorName'] ) )
 		);
 	}
 }
