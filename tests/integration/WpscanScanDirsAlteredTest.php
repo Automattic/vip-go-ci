@@ -158,8 +158,6 @@ final class WpscanScanDirsAlteredTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$commit_skipped_files = array();
-
 		$results_actual = vipgoci_wpscan_scan_dirs_altered(
 			$this->options,
 			array(
