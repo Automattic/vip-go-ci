@@ -137,4 +137,8 @@ plugin-slug=classic-editor
 theme-slug=twentytwenty
 wpscan-pr-1-commit-id=96fc4ac229889fcc12e2884a39b1ac1ec4929132
 wpscan-pr-1-dirs-scan=plugins,mu-plugins
-wpscan-pr-1-number=51
+wpscan-pr-1-number=52
+wpscan-pr-1-plugin-dir=plugins/hello
+wpscan-pr-1-plugin-key=hello.php
+wpscan-pr-1-plugin-name=Hello Dolly
+
