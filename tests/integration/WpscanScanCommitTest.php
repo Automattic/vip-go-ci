@@ -188,6 +188,20 @@ final class WpscanScanCommitTest extends TestCase {
 			$commit_issues_stats
 		);
 
+		$this->assertTrue(
+			( isset( $commit_issues_submit[ $this->options['wpscan-pr-1-number'] ][0]['issue']['details']['latest_version'] ) ) &&
+			( -1 === version_compare( '0.0.0', $commit_issues_submit[ $this->options['wpscan-pr-1-number'] ][0]['issue']['details']['latest_version'] )  )
+		);
+
+		unset( $commit_issues_submit[ $this->options['wpscan-pr-1-number'] ][0]['issue']['details']['latest_version'] );
+
+		$this->assertTrue(
+			( ! empty( $commit_issues_submit[ $this->options['wpscan-pr-1-number'] ][0]['issue']['details']['latest_download_uri'] ) )
+		);
+
+		unset( $commit_issues_submit[ $this->options['wpscan-pr-1-number'] ][0]['issue']['details']['latest_download_uri'] );
+
+
 		$this->assertSame(
 			array(
 				$this->options['wpscan-pr-1-number'] => array(
@@ -205,8 +219,6 @@ final class WpscanScanCommitTest extends TestCase {
 								'plugin_uri'          => 'http://wordpress.org/plugins/hello-dolly/',
 								'installed_location'  => 'plugins/hello/hello.php',
 								'version_detected'    => '1.6',
-								'latest_version'      => '1.7.2',
-								'latest_download_uri' => 'https://downloads.wordpress.org/plugin/hello-dolly.1.7.2.zip',
 								'vulnerabilities'     => array(),
 							),
 						),
