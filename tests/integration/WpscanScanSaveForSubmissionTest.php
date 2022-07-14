@@ -215,7 +215,7 @@ final class WpscanScanSaveForSubmissionTest extends TestCase {
 	public function testSaveForSubmissionWithLabel(): void {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
-			array( 'github-token', 'token' ),
+			array(),
 			$this
 		);
 
@@ -245,7 +245,6 @@ final class WpscanScanSaveForSubmissionTest extends TestCase {
 		$commit_issues_stats  = array();
 		$commit_skipped_files = array();
 
-
 		$commit_issues_submit[ $this->options['wpscan-pr-1-number'] ] = array();
 		$commit_issues_stats[ $this->options['wpscan-pr-1-number'] ]  = array(
 			'warning' => 0,
@@ -254,7 +253,8 @@ final class WpscanScanSaveForSubmissionTest extends TestCase {
 		// Add label.
 		$this->prLabelAdd();
 
-		sleep(10);
+		// Wait for a bit while updates take place on GitHub.
+		sleep( 10 );
 
 		vipgoci_wpscan_scan_save_for_submission(
 			$this->options,
@@ -295,7 +295,7 @@ final class WpscanScanSaveForSubmissionTest extends TestCase {
 	public function testSaveForSubmissionNoLabel(): void {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
-			array(),
+			array( 'github-token', 'token' ),
 			$this
 		);
 
@@ -324,7 +324,6 @@ final class WpscanScanSaveForSubmissionTest extends TestCase {
 		$commit_issues_submit = array();
 		$commit_issues_stats  = array();
 		$commit_skipped_files = array();
-
 
 		$commit_issues_submit[ $this->options['wpscan-pr-1-number'] ] = array();
 		$commit_issues_stats[ $this->options['wpscan-pr-1-number'] ]  = array(
