@@ -399,7 +399,7 @@ function vipgoci_wpscan_scan_save_for_submission(
 					$options['repo-name'],
 					$options['token'],
 					$pr_number,
-					'skip-wpscan-scan'
+					VIPGOCI_WPSCAN_SKIP_SCAN_PR_LABEL
 				);
 
 				if (

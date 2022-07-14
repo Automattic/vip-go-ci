@@ -271,6 +271,7 @@ define(
  */
 define( 'VIPGOCI_WPSCAN_PLUGIN', 'vipgoci-wpscan-plugin' );
 define( 'VIPGOCI_WPSCAN_THEME', 'vipgoci-wpscan-theme' );
+
 define( 'VIPGOCI_WPSCAN_BASE_URL', 'https://wpscan.com' );
 define( 'VIPGOCI_WPSCAN_API_BASE_URL', VIPGOCI_WPSCAN_BASE_URL . '/api/v3' );
 
@@ -288,3 +289,4 @@ define(
 	'into the target branch is strongly recommended.'
 );
 
+define( 'VIPGOCI_WPSCAN_SKIP_SCAN_PR_LABEL', 'skip-wpscan' );
