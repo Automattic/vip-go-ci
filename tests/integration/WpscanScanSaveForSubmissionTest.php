@@ -42,6 +42,54 @@ final class WpscanScanSaveForSubmissionTest extends TestCase {
 	);
 
 	/**
+	 * Variable for problematic addons.
+	 *
+	 * @var $problematic_addons_found
+	 */
+	private array $problematic_addons_found = array(
+		'plugins/hello' => array(
+			'hello.php' => array(
+				'security_type'      => 'obsolete',
+				'wpscan_results'     => array(
+					'friendly_name'   => 'Hello Dolly',
+					'latest_version'  => '1.7.2',
+					'last_updated'    => '2021-09-16T00:40:00.000Z',
+					'popular'         => true,
+					'vulnerabilities' => array(),
+				),
+				'addon_data_for_dir' => array(
+					'type'             => 'vipgoci-wpscan-plugin',
+					'addon_headers'    => array(
+						'Name'        => 'Hello Dolly',
+						'PluginURI'   => 'http://wordpress.org/plugins/hello-dolly/',
+						'Version'     => '1.6',
+						'Description' => 'This is not just a plugin, it symbolizes the hope and enthusiasm of an entire generation summed up in two words sung most famously by Louis Armstrong: Hello, Dolly. When activated you will randomly see a lyric from <cite>Hello, Dolly<\/cite> in the upper right of your admin screen on every page.',
+						'Author'      => 'Matt Mullenweg',
+						'AuthorURI'   => 'http://ma.tt\/',
+						'TextDomain'  => '',
+						'DomainPath'  => '',
+						'Network'     => '',
+						'RequiresWP'  => '',
+						'RequiresPHP' => '',
+						'UpdateURI'   => '',
+						'Title'       => 'Hello Dolly',
+						'AuthorName'  => 'Matt Mullenweg',
+					),
+					'name'             => 'Hello Dolly',
+					'version_detected' => '1.6',
+					'file_name'        => '/tmp/plugins/hello/hello.php',
+					'id'               => 'w.org/plugins/hello-dolly',
+					'slug'             => 'hello-dolly',
+					'new_version'      => '1.7.2',
+					'plugin'           => 'hello.php',
+					'package'          => 'https://downloads.wordpress.org/plugin/hello-dolly.1.7.2.zip',
+					'url'              => 'https://wordpress.org/plugins/hello-dolly/',
+				),
+			),
+		),
+	);
+
+	/**
 	 * Setup function. Require files, prepare repository, etc.
 	 *
 	 * @return void
@@ -126,13 +174,45 @@ final class WpscanScanSaveForSubmissionTest extends TestCase {
 	}
 
 	/**
-	 * Test common usage of the function.
+	 * Add 'skip-wpscan' label to pull request
+	 * used in scanning.
+	 *
+	 * @return void
+	 */
+	private function prLabelAdd() :void {
+		vipgoci_github_label_add_to_pr(
+			$this->options['repo-owner'],
+			$this->options['repo-name'],
+			$this->options['token'],
+			(int) $this->options['wpscan-pr-number'],
+			VIPGOCI_WPSCAN_SKIP_SCAN_PR_LABEL
+		);
+	}
+
+	/**
+	 * Remove 'skip-wpscan' label from pull request.
+	 *
+	 * @return void
+	 */
+	private function prLabelRemove() :void {
+		vipgoci_github_pr_label_remove(
+			$this->options['repo-owner'],
+			$this->options['repo-name'],
+			$this->options['token'],
+			(int) $this->options['wpscan-pr-number'],
+			VIPGOCI_WPSCAN_SKIP_SCAN_PR_LABEL
+		);
+	}
+
+	/**
+	 * Test function when a 'skip-wpscan' label is associated with
+	 * pull request, so results should not be added.
 	 *
 	 * @covers ::vipgoci_wpscan_scan_save_for_submission
 	 *
 	 * @return void
 	 */
-	public function testSaveForSubmission(): void {
+	public function testSaveForSubmissionWithLabel(): void {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
@@ -165,48 +245,86 @@ final class WpscanScanSaveForSubmissionTest extends TestCase {
 		$commit_issues_stats  = array();
 		$commit_skipped_files = array();
 
-		$problematic_addons_found = array(
-			'plugins/hello' => array(
-				'hello.php' => array(
-					'security_type'      => 'obsolete',
-					'wpscan_results'     => array(
-						'friendly_name'   => 'Hello Dolly',
-						'latest_version'  => '1.7.2',
-						'last_updated'    => '2021-09-16T00:40:00.000Z',
-						'popular'         => true,
-						'vulnerabilities' => array(),
-					),
-					'addon_data_for_dir' => array(
-						'type'             => 'vipgoci-wpscan-plugin',
-						'addon_headers'    => array(
-							'Name'        => 'Hello Dolly',
-							'PluginURI'   => 'http://wordpress.org/plugins/hello-dolly/',
-							'Version'     => '1.6',
-							'Description' => 'This is not just a plugin, it symbolizes the hope and enthusiasm of an entire generation summed up in two words sung most famously by Louis Armstrong: Hello, Dolly. When activated you will randomly see a lyric from <cite>Hello, Dolly<\/cite> in the upper right of your admin screen on every page.',
-							'Author'      => 'Matt Mullenweg',
-							'AuthorURI'   => 'http://ma.tt\/',
-							'TextDomain'  => '',
-							'DomainPath'  => '',
-							'Network'     => '',
-							'RequiresWP'  => '',
-							'RequiresPHP' => '',
-							'UpdateURI'   => '',
-							'Title'       => 'Hello Dolly',
-							'AuthorName'  => 'Matt Mullenweg',
-						),
-						'name'             => 'Hello Dolly',
-						'version_detected' => '1.6',
-						'file_name'        => '/tmp/plugins/hello/hello.php',
-						'id'               => 'w.org/plugins/hello-dolly',
-						'slug'             => 'hello-dolly',
-						'new_version'      => '1.7.2',
-						'plugin'           => 'hello.php',
-						'package'          => 'https://downloads.wordpress.org/plugin/hello-dolly.1.7.2.zip',
-						'url'              => 'https://wordpress.org/plugins/hello-dolly/',
-					),
+
+		$commit_issues_submit[ $this->options['wpscan-pr-1-number'] ] = array();
+		$commit_issues_stats[ $this->options['wpscan-pr-1-number'] ]  = array(
+			'warning' => 0,
+		);
+
+		// Add label.
+		$this->prLabelAdd();
+
+		sleep(10);
+
+		vipgoci_wpscan_scan_save_for_submission(
+			$this->options,
+			$commit_issues_submit,
+			$commit_issues_stats,
+			$commit_skipped_files,
+			$this->problematic_addons_found
+		);
+
+		// Remove label.
+		$this->prLabelRemove();
+
+		$this->assertSame(
+			array(
+				$this->options['wpscan-pr-1-number'] => array(
+					'warning' => 0,
 				),
 			),
+			$commit_issues_stats
 		);
+
+		$this->assertSame(
+			array(
+				$this->options['wpscan-pr-1-number'] => array(),
+			),
+			$commit_issues_submit
+		);
+	}
+
+	/**
+	 * Test function when 'skip-wpscan' label is not associated with
+	 * pull request, so results should be added.
+	 *
+	 * @covers ::vipgoci_wpscan_scan_save_for_submission
+	 *
+	 * @return void
+	 */
+	public function testSaveForSubmissionNoLabel(): void {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array(),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
+		vipgoci_unittests_output_suppress();
+
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped(
+				'Could not set up git repository: ' .
+				vipgoci_unittests_output_get()
+			);
+
+			return;
+		}
+
+		vipgoci_unittests_output_unsuppress();
+
+		$commit_issues_submit = array();
+		$commit_issues_stats  = array();
+		$commit_skipped_files = array();
+
 
 		$commit_issues_submit[ $this->options['wpscan-pr-1-number'] ] = array();
 		$commit_issues_stats[ $this->options['wpscan-pr-1-number'] ]  = array(
@@ -218,7 +336,7 @@ final class WpscanScanSaveForSubmissionTest extends TestCase {
 			$commit_issues_submit,
 			$commit_issues_stats,
 			$commit_skipped_files,
-			$problematic_addons_found
+			$this->problematic_addons_found
 		);
 
 		$this->assertSame(
