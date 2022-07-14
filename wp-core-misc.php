@@ -629,7 +629,7 @@ function vipgoci_wpcore_misc_get_addon_data_and_slugs_for_directory(
 	 * Look through plugins found, assign slug found, version numbers, etc.
 	 */
 	foreach ( $plugins_found as $plugin_key => $plugin_item ) {
-		foreach ( array( 'id', 'slug', 'new_version', 'plugin', 'package', 'url', 'package' ) as $_field_id ) {
+		foreach ( array( 'id', 'slug', 'new_version', 'plugin', 'package', 'url' ) as $_field_id ) {
 			if ( isset( $plugin_details[ $plugin_key ][ $_field_id ] ) ) {
 				$plugins_found[ $plugin_key ][ $_field_id ] = $plugin_details[ $plugin_key ][ $_field_id ];
 			}
