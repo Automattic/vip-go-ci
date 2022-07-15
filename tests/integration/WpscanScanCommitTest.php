@@ -24,12 +24,13 @@ final class WpscanScanCommitTest extends TestCase {
 	 * @var $options_wpscan_api_scan
 	 */
 	private array $options_wpscan_api_scan = array(
-		'wpscan-pr-1-commit-id'   => null,
-		'wpscan-pr-1-dirs-scan'   => null,
-		'wpscan-pr-1-number'      => null,
-		'wpscan-pr-1-plugin-dir'  => null,
-		'wpscan-pr-1-plugin-key'  => null,
-		'wpscan-pr-1-plugin-name' => null,
+		'wpscan-pr-1-commit-id'      => null,
+		'wpscan-pr-1-dirs-scan'      => null,
+		'wpscan-pr-1-number'         => null,
+		'wpscan-pr-1-plugin-dir'     => null,
+		'wpscan-pr-1-plugin-key'     => null,
+		'wpscan-pr-1-plugin-name'    => null,
+		'wpscan-pr-1-plugin-version' => null,
 	);
 
 	/**
@@ -289,6 +290,14 @@ final class WpscanScanCommitTest extends TestCase {
 
 		unset( $commit_issues_submit[ $this->options['wpscan-pr-1-number'] ][0]['issue']['details']['plugin_uri'] );
 
+		$this->assertTrue(
+			( ! empty( $commit_issues_submit[ $this->options['wpscan-pr-1-number'] ][0]['issue']['security'] ) ) &&
+			(
+				( 'obsolete' === $commit_issues_submit[ $this->options['wpscan-pr-1-number'] ][0]['issue']['security'] ) ||
+				( 'vulnerable' === $commit_issues_submit[ $this->options['wpscan-pr-1-number'] ][0]['issue']['security'] )
+			)
+		);
+
 		$this->assertSame(
 			array(
 				$this->options['wpscan-pr-1-number'] => array(
@@ -304,7 +313,7 @@ final class WpscanScanCommitTest extends TestCase {
 							'severity'   => 10,
 							'details'    => array(
 								'installed_location' => $this->options['wpscan-pr-1-plugin-dir'] . '/' . $this->options['wpscan-pr-1-plugin-key'],
-								'version_detected'   => '1.6',
+								'version_detected'   => $this->options['wpscan-pr-1-plugin-version'],
 								'vulnerabilities'    => array(),
 							),
 						),
