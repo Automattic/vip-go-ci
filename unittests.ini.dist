@@ -141,4 +141,4 @@ wpscan-pr-1-number=52
 wpscan-pr-1-plugin-dir=plugins/hello
 wpscan-pr-1-plugin-key=hello.php
 wpscan-pr-1-plugin-name=Hello Dolly
-
+wpscan-pr-1-plugin-version=1.6
