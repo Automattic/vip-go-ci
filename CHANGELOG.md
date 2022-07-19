@@ -10,6 +10,11 @@ All notable changes to this project will be documented in this file.
 ## Updated
 - [#281](https://github.com/Automattic/vip-go-ci/pull/281): Small updates: Use new functions introduced in #273; update HTTP wait function; update URL in README.md; update tests
 
+## [1.2.5](https://github.com/Automattic/vip-go-ci/releases/tag/1.2.5) - 2022-07-19
+
+## Fixed
+- [#287](https://github.com/Automattic/vip-go-ci/pull/287): Fix problem with removed files in non-functional auto-approvals and add sanity checks elsewhere
+
 ## [1.2.4](https://github.com/Automattic/vip-go-ci/releases/tag/1.2.4) - 2022-07-19
 
 ## Added
