@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.4](https://github.com/Automattic/vip-go-ci/releases/tag/1.2.4) - 2022-07-??
+
+## Added
+- [#285](https://github.com/Automattic/vip-go-ci/pull/285): Add support for ignoring PHPCS standards during startup
+
+## Updated
+- [#274](https://github.com/Automattic/vip-go-ci/pull/274): Update files to reflect that "main" branch is now named "trunk"
+- [#272](https://github.com/Automattic/vip-go-ci/pull/272): Apply WP CS and variable types to final files
+- [#276](https://github.com/Automattic/vip-go-ci/pull/276): Update phpcs-variable-analysis to version 2.11.3
+- [#278](https://github.com/Automattic/vip-go-ci/pull/278): Switch to GitHub Actions
+- [#279](https://github.com/Automattic/vip-go-ci/pull/279): Utilize 'latest' branch in documentation and in scripts
+- [#280](https://github.com/Automattic/vip-go-ci/pull/280): Re-enable auto-approval of removed SVG files
+- [#283](https://github.com/Automattic/vip-go-ci/pull/283): Update PHPCS, update PHPCompatibility and add PHPCSUtils, restructure tools-init.sh
+
+## Removed
+- [#282](https://github.com/Automattic/vip-go-ci/pull/282): Remove Hashes API support
+- [#284](https://github.com/Automattic/vip-go-ci/pull/284): Remove support level label feature
+
 ## [1.2.3](https://github.com/Automattic/vip-go-ci/releases/tag/1.2.3) - 2022-04-04
 
 ## Added
