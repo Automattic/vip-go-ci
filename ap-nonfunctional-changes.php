@@ -57,7 +57,7 @@ function vipgoci_ap_nonfunctional_changes(
 			$pr_item->base->sha,
 			$options['commit'],
 			true, // Renamed files included.
-			true, // Removed files included.
+			false, // Removed files excluded.
 			true, // Permission changes included.
 			null
 		);
@@ -154,7 +154,7 @@ function vipgoci_ap_nonfunctional_changes(
 				$options['local-git-repo']
 			);
 
-			if ( null === $pr_diff_file_new_contents ) {
+			if ( false === $pr_diff_file_new_contents ) {
 				/*
 				 * If we could not find the file
 				 * in this commit, skip and continue.

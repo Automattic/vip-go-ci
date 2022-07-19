@@ -213,6 +213,16 @@ function vipgoci_svg_scan_single_file(
 		$options['local-git-repo']
 	);
 
+	if ( false === $file_contents ) {
+		vipgoci_sysexit(
+			'Unable to fetch file from repository',
+			array(
+				'file_name' => $file_name,
+			),
+			VIPGOCI_EXIT_SYSTEM_PROBLEM
+		);
+	}
+
 	/*
 	 * Determine file-ending of the file,
 	 * then save it into temporary file

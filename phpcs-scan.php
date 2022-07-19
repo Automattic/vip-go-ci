@@ -319,6 +319,16 @@ function vipgoci_phpcs_scan_single_file(
 		$options['local-git-repo']
 	);
 
+	if ( false === $file_contents ) {
+		vipgoci_sysexit(
+			'Unable to fetch file from repository',
+			array(
+				'file_name' => $file_name,
+			),
+			VIPGOCI_EXIT_SYSTEM_PROBLEM
+		);
+	}
+
 	$file_extension = vipgoci_file_extension_get(
 		$file_name
 	);

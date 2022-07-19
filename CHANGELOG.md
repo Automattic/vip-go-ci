@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.2.4](https://github.com/Automattic/vip-go-ci/releases/tag/1.2.4) - 2022-07-??
+
+## [1.2.5](https://github.com/Automattic/vip-go-ci/releases/tag/1.2.5) - 2022-07-19
+
+## Fixed
+- [#287](https://github.com/Automattic/vip-go-ci/pull/287): Fix problem with removed files in non-functional auto-approvals and add sanity checks elsewhere
+
+## [1.2.4](https://github.com/Automattic/vip-go-ci/releases/tag/1.2.4) - 2022-07-19
 
 ## Added
 - [#285](https://github.com/Automattic/vip-go-ci/pull/285): Add support for ignoring PHPCS standards during startup
