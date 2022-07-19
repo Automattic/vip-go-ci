@@ -358,6 +358,16 @@ function vipgoci_lint_scan_multiple_files(
 			$options['local-git-repo']
 		);
 
+		if ( false === $file_contents ) {
+			vipgoci_sysexit(
+				'Unable to fetch file from repository',
+				array(
+					'filename' => $filename,
+				),
+				VIPGOCI_EXIT_SYSTEM_PROBLEM
+			);
+		}
+
 		// Save file contents in a temporary-file.
 		$temp_file_name = vipgoci_save_temp_file(
 			'vipgoci-lint-scan-',
