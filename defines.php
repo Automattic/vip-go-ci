@@ -10,7 +10,7 @@ declare(strict_types=1);
 /*
  * Version number.
  */
-define( 'VIPGOCI_VERSION', '1.2.4' );
+define( 'VIPGOCI_VERSION', '1.2.5' );
 
 /*
  * Define minimum version requirements.
