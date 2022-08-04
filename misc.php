@@ -354,8 +354,9 @@ function vipgoci_file_extension_get(
 
 /**
  * Determine if the presented file has an
- * allowable file-ending, and if the file presented
- * is in a directory that is can be scanned.
+ * allowable file-ending, if the file presented
+ * is in a directory that can be skipped or included
+ * for scanning.
  *
  * @param string     $filename File name; is expected to be a relative path to the git-repository root.
  * @param null|array $filter   Filter to apply.
@@ -433,10 +434,10 @@ function vipgoci_filter_file_path(
 				break;
 			}
 		}
-	} else if (
+	} elseif (
 		( null !== $filter ) &&
 		( isset( $filter['include_folders'] ) )
-	){
+	) {
 		/*
 		 * Loop through all include-folders.
 		 */
@@ -457,7 +458,7 @@ function vipgoci_filter_file_path(
 			/*
 			 * If it's a match, that folder is to be not skipped.
 			 * Otherwise, it's skipped.
-			 * 
+			 *
 			 * There can only be 1 match with the filename so the
 			 * moment that happens, we break out.
 			 */
