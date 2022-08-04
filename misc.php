@@ -433,6 +433,37 @@ function vipgoci_filter_file_path(
 				break;
 			}
 		}
+	} else if (
+		( null !== $filter ) &&
+		( isset( $filter['include_folders'] ) )
+	){
+		/*
+		 * Loop through all include-folders.
+		 */
+		foreach (
+			$filter['include_folders'] as $tmp_include_folder_item
+		) {
+			/*
+			 * Note: All 'include_folders' options should lack '/' at the
+			 * end and beginning.
+			 *
+			 * $filename we expect to be a relative path.
+			 */
+
+			$file_folders_match = strpos(
+				$filename,
+				$tmp_include_folder_item . '/'
+			);
+
+			/*
+			 * It's a match only if the path doesn't
+			 * contain the folder to include.
+			 */
+			if ( false === $file_folders_match ) {
+				$file_folders_match = true;
+				break;
+			}
+		}
 	}
 
 	/*
