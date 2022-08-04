@@ -449,19 +449,26 @@ function vipgoci_filter_file_path(
 			 *
 			 * $filename we expect to be a relative path.
 			 */
-
 			$file_folders_match = strpos(
 				$filename,
 				$tmp_include_folder_item . '/'
 			);
 
 			/*
-			 * It's a match only if the path doesn't
-			 * contain the folder to include.
+			 * If it's a match, that folder is to be not skipped.
+			 * Otherwise, it's skipped.
+			 * 
+			 * There can only be 1 match with the filename so the
+			 * moment that happens, we break out.
 			 */
-			if ( false === $file_folders_match ) {
-				$file_folders_match = true;
+			if (
+				( false !== $file_folders_match ) &&
+				( is_numeric( $file_folders_match ) )
+			) {
+				$file_folders_match = false;
 				break;
+			} else {
+				$file_folders_match = true;
 			}
 		}
 	}
