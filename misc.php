@@ -439,7 +439,7 @@ function vipgoci_filter_file_path(
 		( isset( $filter['include_folders'] ) )
 	) {
 		/*
-		 * Loop through all include-folders.
+		 * Loop through all include-folders specified.
 		 */
 		foreach (
 			$filter['include_folders'] as $tmp_include_folder_item
@@ -456,8 +456,7 @@ function vipgoci_filter_file_path(
 			);
 
 			/*
-			 * If it's a match, that folder is to be not skipped.
-			 * Otherwise, it's skipped.
+			 * If it's not a match, then that folder is to be skipped.
 			 *
 			 * There can only be 1 match with the filename so the
 			 * moment that happens, we break out.
