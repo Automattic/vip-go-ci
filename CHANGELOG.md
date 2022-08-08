@@ -10,6 +10,11 @@ All notable changes to this project will be documented in this file.
 ## Updated
 - [#281](https://github.com/Automattic/vip-go-ci/pull/281): Small updates: Use new functions introduced in #273; update HTTP wait function; update URL in README.md; update tests
 
+## [1.2.6](https://github.com/Automattic/vip-go-ci/releases/tag/1.2.6) - 2022-08-08
+
+## Added
+ - [#289](https://github.com/Automattic/vip-go-ci/pull/289): Add allow list for file filtering function
+
 ## [1.2.5](https://github.com/Automattic/vip-go-ci/releases/tag/1.2.5) - 2022-07-19
 
 ## Fixed
