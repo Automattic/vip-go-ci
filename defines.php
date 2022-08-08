@@ -10,8 +10,8 @@ declare(strict_types=1);
 /*
  * Version number and default name to use.
  */
-define( 'VIPGOCI_VERSION', '1.2.5' );
 define( 'VIPGOCI_DEFAULT_NAME_TO_USE', 'vip-go-ci' );
+define( 'VIPGOCI_VERSION', '1.2.6' );
 
 /*
  * Define minimum version requirements.

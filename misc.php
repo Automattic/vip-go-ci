@@ -548,8 +548,9 @@ function vipgoci_directory_path_get_dir_and_include_base(
 
 /**
  * Determine if the presented file has an
- * allowable file-ending, and if the file presented
- * is in a directory that is can be scanned.
+ * allowable file-ending, if the file presented
+ * is in a directory that can be skipped or included
+ * for scanning.
  *
  * @param string     $filename File name; is expected to be a relative path to the git-repository root.
  * @param null|array $filter   Filter to apply.
@@ -625,6 +626,43 @@ function vipgoci_filter_file_path(
 			) {
 				$file_folders_match = true;
 				break;
+			}
+		}
+	} elseif (
+		( null !== $filter ) &&
+		( isset( $filter['include_folders'] ) )
+	) {
+		/*
+		 * Loop through all include-folders specified.
+		 */
+		foreach (
+			$filter['include_folders'] as $tmp_include_folder_item
+		) {
+			/*
+			 * Note: All 'include_folders' options should lack '/' at the
+			 * end and beginning.
+			 *
+			 * $filename we expect to be a relative path.
+			 */
+			$file_folders_match = strpos(
+				$filename,
+				$tmp_include_folder_item . '/'
+			);
+
+			/*
+			 * If it's not a match, then that folder is to be skipped.
+			 *
+			 * There can only be 1 match with the filename so the
+			 * moment that happens, we break out.
+			 */
+			if (
+				( false !== $file_folders_match ) &&
+				( is_numeric( $file_folders_match ) )
+			) {
+				$file_folders_match = false;
+				break;
+			} else {
+				$file_folders_match = true;
 			}
 		}
 	}

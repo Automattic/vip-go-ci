@@ -222,6 +222,100 @@ final class MiscFilterFilePathTest extends TestCase {
 
 	}
 
+	/**
+	  * @covers ::vipgoci_filter_file_path
+	  */
+	  public function testFilterFilePath6() {
+		$file_name = 'folder1/file1.txt';
 
+		$this->assertFalse(
+			vipgoci_filter_file_path(
+				$file_name,
+				array(
+					'include_folders' => array(
+						'folder2',
+					)
+				)
+			)
+		);
 
+		$this->assertTrue(
+			vipgoci_filter_file_path(
+				$file_name,
+				array(
+					'include_folders' => array(
+						'folder1',
+					)
+				)
+			)
+		);
+	}
+
+		/**
+	  * @covers ::vipgoci_filter_file_path
+	  */
+	  public function testFilterFilePath7() {
+		$file_name = 'my/unit-tests/folder1/subfolder/file1.txt';
+
+		$this->assertFalse(
+			vipgoci_filter_file_path(
+				$file_name,
+				array(
+					'include_folders' => array(
+						'folder200',
+						'folder3000',
+						'folder4000/folder5000/folder6000',
+						'SubFolder' // Note: capital 'F'
+					),
+				)
+			)
+		);
+
+		$this->assertTrue(
+			vipgoci_filter_file_path(
+				$file_name,
+				array(
+					'include_folders' => array(
+						'unit-tests/folder1/subfolder', // Note: Unlike skip_folders, this is allowed when it's not at root level
+					),
+				)
+			)
+		);
+
+		$this->assertTrue(
+			vipgoci_filter_file_path(
+				$file_name,
+				array(
+					'include_folders' => array(
+						'somefoldertesting/otherfolder/foobar123',
+						'somefoldertesting/otherfolder/foobar321',
+						'my/unit-tests/folder1/subfolder',
+					),
+				)
+			)
+		);
+
+		$this->assertTrue(
+			vipgoci_filter_file_path(
+				$file_name,
+				array(
+					'include_folders' => array(
+						'my/unit-tests',
+					),
+				)
+			)
+		);
+
+		$this->assertFalse(
+			vipgoci_filter_file_path(
+				$file_name,
+				array(
+					'include_folders' => array(
+						'test',
+					),
+				)
+			)
+		);
+
+	}
 }
