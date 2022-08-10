@@ -10,6 +10,10 @@ All notable changes to this project will be documented in this file.
 ## Updated
 - [#281](https://github.com/Automattic/vip-go-ci/pull/281): Small updates: Use new functions introduced in #273; update HTTP wait function; update URL in README.md; update tests
 
+## Fixed
+- [#291](https://github.com/Automattic/vip-go-ci/pull/291): Fix problem with spaces in filenames
+- [#292](https://github.com/Automattic/vip-go-ci/pull/292): Rename test class to match file name
+
 ## [1.2.6](https://github.com/Automattic/vip-go-ci/releases/tag/1.2.6) - 2022-08-08
 
 ## Added
