@@ -1109,7 +1109,7 @@ function vipgoci_gitrepo_diffs_fetch_unfiltered(
 	 * as that is what GitHub uses: https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/about-comparing-branches-in-pull-requests#three-dot-and-two-dot-git-diff-comparisons
 	 */
 	$git_diff_cmd = sprintf(
-		'%s -C %s diff %s',
+		'%s --no-pager -C %s diff --no-color %s',
 		escapeshellcmd( 'git' ),
 		escapeshellarg( $local_git_repo ),
 		escapeshellarg( $commit_id_a . '...' . $commit_id_b )
@@ -1256,10 +1256,20 @@ function vipgoci_gitrepo_diffs_fetch_unfiltered(
 
 			$cur_file_status = null;
 
-			$cur_file_minus              = $git_result_item_arr[2];
+			if ( 4 === count( $git_result_item_arr ) ) {
+				$cur_file_minus = $git_result_item_arr[2];
+			} else {
+				$cur_file_minus = null;
+			}
+
 			$cur_file_minus_path_cleaned = false;
 
-			$cur_file_plus              = $git_result_item_arr[3];
+			if ( 4 === count( $git_result_item_arr ) ) {
+				$cur_file_plus = $git_result_item_arr[3];
+			} else {
+				$cur_file_plus = null;
+			}
+
 			$cur_file_plus_path_cleaned = false;
 
 			$cur_file_previous_filename = null;
@@ -1280,11 +1290,21 @@ function vipgoci_gitrepo_diffs_fetch_unfiltered(
 			) {
 				$cur_file_previous_filename = $git_result_item_arr[2];
 			} elseif ( '---' === $git_result_item_arr[0] ) {
-				$cur_file_minus = $git_result_item_arr[1];
+				$cur_file_minus = vipgoci_gitrepo_get_file_path_from_diff(
+					vipgoci_gitrepo_diffs_clean_extra_whitespace(
+						$git_result_item_arr
+					),
+					1
+				);
 
 				$cur_file_minus_path_cleaned = false;
 			} elseif ( '+++' === $git_result_item_arr[0] ) {
-				$cur_file_plus = $git_result_item_arr[1];
+				$cur_file_plus = vipgoci_gitrepo_get_file_path_from_diff(
+					vipgoci_gitrepo_diffs_clean_extra_whitespace(
+						$git_result_item_arr
+					),
+					1
+				);
 
 				$cur_file_plus_path_cleaned = false;
 			} elseif (
@@ -1391,7 +1411,10 @@ function vipgoci_gitrepo_diffs_fetch_unfiltered(
 			);
 		}
 
-		if ( null !== $cur_file_status ) {
+		if (
+			( null !== $cur_file ) &&
+			( null !== $cur_file_status )
+		) {
 			/*
 			 * Update file-status each time we loop
 			 * as the calculated status might change.
@@ -1400,7 +1423,10 @@ function vipgoci_gitrepo_diffs_fetch_unfiltered(
 				$cur_file_status;
 		}
 
-		if ( null !== $cur_file_previous_filename ) {
+		if (
+			( null !== $cur_file ) &&
+			( null !== $cur_file_previous_filename )
+		) {
 			$diff_results['files'][ $cur_file ]['previous_filename'] =
 				$cur_file_previous_filename;
 		}
@@ -1503,6 +1529,74 @@ function vipgoci_gitrepo_diffs_fetch_unfiltered(
 	vipgoci_cache( $cached_id, $diff_results );
 
 	return $diff_results;
+}
+
+/**
+ * Join path array into string and return. Remove first array
+ * items if specified.
+ *
+ * @param array $path_arr       Path as array.
+ * @param int   $index_to_start From what element in the array to start the join.
+ *
+ * @return string File path.
+ */
+function vipgoci_gitrepo_get_file_path_from_diff(
+	array $path_arr,
+	int $index_to_start = 0,
+) :string {
+	$removed_items = false;
+
+	$path_arr_length = count( $path_arr );
+
+	for (
+		$i = 0;
+		$i < $index_to_start && $index_to_start < $path_arr_length;
+		$i++
+	) {
+		unset( $path_arr[ $i ] );
+
+		$removed_items = true;
+	}
+
+	if ( true === $removed_items ) {
+		$path_arr = array_values( $path_arr );
+	}
+
+	$path = join( ' ', $path_arr );
+
+	return $path;
+}
+
+/**
+ * Git and/or a pager may leave a "\t" at the end of a file path,
+ * even though we request no such pager, but only when spaces are in
+ * file names. The source of this issue is unknown despite
+ * experimentation and research.
+ *
+ * Here we remove the extra "\t".
+ *
+ * @param array $path_arr Path to file to clean as array.
+ *
+ * @return array Cleaned path.
+ */
+function vipgoci_gitrepo_diffs_clean_extra_whitespace(
+	array $path_arr
+) :array {
+	$path_arr_length = count( $path_arr );
+
+	if ( $path_arr_length <= 1 ) {
+		return $path_arr;
+	}
+
+	$last_string = $path_arr[ $path_arr_length - 1 ];
+
+	if ( true === str_ends_with( $last_string, "\t" ) ) {
+		$last_string = rtrim( $last_string, "\t" );
+
+		$path_arr[ $path_arr_length - 1 ] = $last_string;
+	}
+
+	return $path_arr;
 }
 
 /**
