@@ -38,7 +38,7 @@ final class GitRepoDiffsCleanExtraWhitespaceTest extends TestCase {
 		$this->assertSame(
 			array( "a\t" ),
 			vipgoci_gitrepo_diffs_clean_extra_whitespace(
-				array( "a\t")
+				array( "a\t" )
 			)
 		);
 	}
@@ -52,9 +52,9 @@ final class GitRepoDiffsCleanExtraWhitespaceTest extends TestCase {
 	 */
 	public function testCleanExtraWhitespace2(): void {
 		$this->assertSame(
-			array( "a\t", "b\t", "c.php" ),
+			array( "a\t", "b\t", 'c.php' ),
 			vipgoci_gitrepo_diffs_clean_extra_whitespace(
-				array( "a\t", "b\t", "c.php\t")
+				array( "a\t", "b\t", "c.php\t" )
 			)
 		);
 	}
