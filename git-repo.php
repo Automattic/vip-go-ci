@@ -1386,7 +1386,14 @@ function vipgoci_gitrepo_diffs_fetch_unfiltered(
 					 */
 
 					$cur_file        = $cur_file_plus;
-					$cur_file_status = 'renamed';
+
+					/*
+					 * Avoid resetting status if determined
+					 * that content has been modified elsewhere.
+					 */
+					if ( 'modified' !== $cur_file_status ) {
+						$cur_file_status = 'renamed';
+					}
 				}
 			}
 		}
@@ -1478,6 +1485,19 @@ function vipgoci_gitrepo_diffs_fetch_unfiltered(
 			$diff_results['statistics'][ VIPGOCI_GIT_DIFF_CALC_CHANGES[ $git_result_item[0] ] ]++;
 
 			$diff_results['statistics']['changes']++;
+
+			/*
+			 * Avoid incorrect status for file when file has been
+			 * renamed and modified.
+			 */
+			if (
+				( $diff_results['files'][ $cur_file ]['changes'] > 0 ) &&
+				( 'renamed' === $cur_file_status )
+			) {
+				$cur_file_status = 'modified';
+
+				$diff_results['files'][ $cur_file ]['status'] = $cur_file_status;
+			}
 		}
 
 		/*
