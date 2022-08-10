@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class VipgociOptionsBoolHandleTest extends TestCase {
+final class OptionsBoolHandleTest extends TestCase {
 	/**
 	 * Setup function. Require files.
 	 *
