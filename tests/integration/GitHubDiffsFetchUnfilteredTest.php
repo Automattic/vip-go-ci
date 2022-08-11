@@ -284,10 +284,12 @@ final class GitHubDiffsFetchUnfilteredTest extends TestCase {
 			$this->_dataGitDiffsAssert6(),
 			$diff
 		);
-	
+
 		/*
 		 * As an additional check, verify that caching is OK.
 		 */
+		vipgoci_unittests_output_suppress();
+
 		$diff_same = vipgoci_github_diffs_fetch_unfiltered(
 			$this->options['repo-owner'],
 			$this->options['repo-name'],
@@ -295,6 +297,8 @@ final class GitHubDiffsFetchUnfilteredTest extends TestCase {
 			$this->options['commit-test-repo-pr-diffs-2-a'],
 			$this->options['commit-test-repo-pr-diffs-2-b']
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertSame(
 			$diff,
