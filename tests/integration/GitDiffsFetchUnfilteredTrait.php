@@ -145,6 +145,19 @@ trait GitDiffsFetchUnfilteredTrait {
 	private function _dataGitDiffsAssert6() {
 		return array(
 			'files' => array(
+				/* File renamed, content added */
+				'README file.md'                   => array(
+					'filename'          => 'README file.md',
+					'patch'             => "@@ -1,2 +1,5 @@\n" .
+						' # vip-go-ci-testing' . PHP_EOL .
+						' Pull-Requests, commits and data to test <a href="https://github.com/automattic/vip-go-ci/">vip-go-ci</a>\'s functionality. Please do not remove or alter unless you\'ve contacted the VIP Team first. ' . PHP_EOL . '+' . PHP_EOL . '+' . PHP_EOL . '+',
+					'status'            => 'modified',
+					'additions'         => 3,
+					'deletions'         => 0,
+					'changes'           => 3,
+					'previous_filename' => 'README.md',
+				),
+
 				'a/new-file.txt'		=> array(
 					/* File added, starting with name 'a/' */
 					'filename'	=> 'a/new-file.txt',
@@ -155,6 +168,16 @@ trait GitDiffsFetchUnfilteredTrait {
 					'changes'	=> 2,
 				),
 
+				'b/new file 2.txt'                 => array(
+					/* File added, starting with name 'b/', with spaces in file name */
+					'filename'  => 'b/new file 2.txt',
+					'patch'     => '@@ -0,0 +1 @@' . PHP_EOL . '+This is a new file.',
+					'status'    => 'added',
+					'additions' => 1,
+					'deletions' => 0,
+					'changes'   => 1,
+				),
+
 				'b/new-file.txt'		=> array(
 					/* File added, starting with name 'b/' */
 					'filename'	=> 'b/new-file.txt',
@@ -163,6 +186,16 @@ trait GitDiffsFetchUnfilteredTrait {
 					'additions'	=> 3,
 					'deletions'	=> 0,
 					'changes'	=> 3,
+				),
+
+				'new file 2.txt'                   => array(
+					/* File added, starting with name 'b/', with spaces in file name */
+					'filename'  => 'new file 2.txt',
+					'patch'     => '@@ -0,0 +1 @@' . PHP_EOL . '+This is a new test file.',
+					'status'    => 'added',
+					'additions' => 1,
+					'deletions' => 0,
+					'changes'   => 1,
 				),
 
 				'new-file-permissions-changed.txt'	=> array(
@@ -238,9 +271,9 @@ trait GitDiffsFetchUnfilteredTrait {
 			),
 	
 			'statistics' => array(
-				'additions'	=> 15,
+				'additions'	=> 20,
 				'deletions'	=> 6,
-				'changes'	=> 21,
+				'changes'	=> 26,
 			)
 		);
 	}
