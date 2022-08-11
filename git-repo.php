@@ -1488,7 +1488,8 @@ function vipgoci_gitrepo_diffs_fetch_unfiltered(
 
 			/*
 			 * Avoid incorrect status for file when file has been
-			 * renamed and modified.
+			 * renamed and modified. See similar logic in
+			 * vipgoci_github_diffs_fetch_unfiltered().
 			 */
 			if (
 				( $diff_results['files'][ $cur_file ]['changes'] > 0 ) &&
