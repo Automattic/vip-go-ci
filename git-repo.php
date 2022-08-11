@@ -1382,10 +1382,10 @@ function vipgoci_gitrepo_diffs_fetch_unfiltered(
 				} else {
 					/*
 					 * No match and no mention of /dev/null,
-					 * so the file must have been renamed.
+					 * so the file must have been renamed
+					 * (with exceptions, see below).
 					 */
-
-					$cur_file        = $cur_file_plus;
+					$cur_file = $cur_file_plus;
 
 					/*
 					 * Avoid resetting status if determined
