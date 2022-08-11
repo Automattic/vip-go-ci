@@ -86,7 +86,7 @@ commit-test-repo-pr-diffs-1-e=26227c626b265a5256bedfb7a0edb068dcfc8014
 commit-test-repo-pr-diffs-1-f=12fed31bf1758113cecb01e309c03286bbe2bcf0
 commit-test-repo-pr-diffs-1-g=6148a7b4193dfa42bcc9d3cce0d4a09221fb8a6b
 commit-test-repo-pr-diffs-2-a=1efcdedefa1dbdbb067e7aca56f1458da0026a65
-commit-test-repo-pr-diffs-2-b=3b27c4267c23846c20030d91531bfe2ec71e95d2
+commit-test-repo-pr-diffs-2-b=f3545e389e8ef569ca0eb28061b293d4d4b8ef75
 commit-test-repo-pr-diffs-3-a=ac10d1f29e64504d7741cd8ca22981c426c26e9a
 
 ; The following commit is from outside of the repository,
