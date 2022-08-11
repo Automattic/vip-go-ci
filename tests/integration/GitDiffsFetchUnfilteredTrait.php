@@ -271,9 +271,9 @@ trait GitDiffsFetchUnfilteredTrait {
 			),
 	
 			'statistics' => array(
-				'additions'	=> 20,
-				'deletions'	=> 6,
-				'changes'	=> 26,
+				'additions' => 20,
+				'deletions' => 6,
+				'changes'   => 26,
 			)
 		);
 	}
