@@ -416,7 +416,7 @@ function vipgoci_wpcore_misc_scan_directory_for_addons(
  */
 function vipgoci_wpcore_api_determine_slug_and_other_for_addons(
 	array $addons_data
-) :array {
+) :null|array {
 	vipgoci_log(
 		'Preparing to query WordPress.org API about plugins/themes',
 		array(
@@ -508,6 +508,7 @@ function vipgoci_wpcore_api_determine_slug_and_other_for_addons(
 		null, // No access token required.
 		false, // HTTP POST.
 		false, // Do not JSON encode.
+		CURL_HTTP_VERSION_1_1, // Use HTTP version 1.1 due to problems with HTTP 2.
 		'application/x-www-form-urlencoded' // Custom HTTP Content-Type.
 	);
 
