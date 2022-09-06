@@ -19,7 +19,6 @@ declare(strict_types=1);
  * @codeCoverageIgnore
  *
  * @param array       $options                 Options needed.
- * @param array       $results                 Results of scanning.
  * @param int         $pr_number               Pull request number.
  * @param object|bool $pr_label                Pull request label found, false when none is found.
  * @param array       $auto_approved_files_arr Array of auto-approved files.
@@ -30,7 +29,6 @@ declare(strict_types=1);
  */
 function vipgoci_auto_approval_non_approval(
 	array $options,
-	array &$results,
 	int $pr_number,
 	object|bool $pr_label,
 	array &$auto_approved_files_arr,
@@ -373,6 +371,25 @@ function vipgoci_auto_approval_scan_commit(
 		}
 
 		/*
+		 * If WPScan API is enabled, dry-run mode is disabled, and problems
+		 * were identified by WPScan API, do not auto-approve.
+		 */
+		if (
+			( true === $options['wpscan-api'] ) &&
+			( false === $options['wpscan-api-dry-mode'] ) &&
+			(
+				( $results['stats'][ VIPGOCI_STATS_WPSCAN_API ][ (int) $pr_number ][ VIPGOCI_ISSUE_TYPE_ERROR ] > 0 ) ||
+				( $results['stats'][ VIPGOCI_STATS_WPSCAN_API ][ (int) $pr_number ][ VIPGOCI_ISSUE_TYPE_WARNING ] > 0 )
+			)
+		) {
+			vipgoci_log(
+				'Not auto-approving pull request as WPScan API noted issues'
+			);
+
+			$can_auto_approve = false;
+		}
+
+		/*
 		 * Get label associated, but
 		 * only our auto-approved one
 		 */
@@ -401,7 +418,7 @@ function vipgoci_auto_approval_scan_commit(
 					'auto_approved_files_arr' => $auto_approved_files_arr,
 					'files_seen'              => $files_seen,
 					'pr_number'               => (int) $pr_number,
-					'pr_diff'                 => $pr_diff,
+					'pr_files_changed'        => $pr_files_changed,
 				),
 				0
 			);
@@ -411,7 +428,6 @@ function vipgoci_auto_approval_scan_commit(
 		) {
 			vipgoci_auto_approval_non_approval(
 				$options,
-				$results,
 				$pr_number,
 				$pr_label,
 				$auto_approved_files_arr,
