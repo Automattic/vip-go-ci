@@ -841,7 +841,9 @@ function vipgoci_results_comment_match(
 		 * The comment might contain formatting, such
 		 * as "Warning: ..." -- remove all of that.
 		 *
-		 * Handle special case (/**) so that it is preserved.
+		 * Handle special case when "/**" is included in comments.
+		 * Ensure to preserve comments with this pattern, as otherwise
+		 * strings that include them will be re-posted during re-runs.
 		 */
 		$comment_made_body = str_replace(
 			array( '/**', '**', 'Warning', 'Error', 'Info', ':no_entry_sign:', ':warning:', ':information_source:', '/\*\*' ),
