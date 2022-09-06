@@ -35,45 +35,45 @@ final class ResultsCommentMatchTest extends TestCase {
 	public function testCommentMatch1() :void {
 		$prs_comments = array(
 			'file-8.php:3'   => array(
-				json_decode(
-					'{"body":":no_entry_sign: **Error**: All output should be ..., found \'mysql_query\'."}'
+				(object) array(
+					'body' => ':no_entry_sign: **Error**: All output should be ..., found \'mysql_query\'.',
 				),
-				json_decode(
-					'{"body":":no_entry_sign: **Error**: Extension \'mysql_\' is deprecated since PHP 5.5 and removed since PHP 7.0; Use mysqli instead"}'
+				(object) array(
+					'body' => ':no_entry_sign: **Error**: Extension \'mysql_\' is deprecated since PHP 5.5 and removed since PHP 7.0; Use mysqli instead',
 				),
-				json_decode(
-					'{"body":":no_entry_sign: **Error**: Any HTML passed to `innerHTML` gets executed. Consider using `.textContent` or make sure that used variables are properly escaped (*WordPressVIPMinimum.JS.InnerHTML.innerHTML*)."}'
+				(object) array(
+					'body' => ':no_entry_sign: **Error**: Any HTML passed to `innerHTML` gets executed. Consider using `.textContent` or make sure that used variables are properly escaped (*WordPressVIPMinimum.JS.InnerHTML.innerHTML*).',
 				),
 			),
 
 			'file-10.php:3'  => array(
-				json_decode(
-					'{"body":":no_entry_sign: **Error**: Extension \'mysql_\' is deprecated since PHP 5.5 and removed since PHP 7.0; Use mysqli instead"}'
+				(object) array(
+					'body' => ':no_entry_sign: **Error**: Extension \'mysql_\' is deprecated since PHP 5.5 and removed since PHP 7.0; Use mysqli instead',
 				),
 			),
 
 			'file-11.php:5'  => array(
-				json_decode(
-					'{"body":":no_entry_sign: **Error( severity 11 )**: Extension \'mysql_\' is deprecated since PHP 5.5 and removed since PHP 7.0; Use mysqli instead"}'
+				(object) array(
+					'body' => ':no_entry_sign: **Error( severity 11 )**: Extension \'mysql_\' is deprecated since PHP 5.5 and removed since PHP 7.0; Use mysqli instead',
 				),
 			),
 
 			'file-12.php:70' => array(
-				json_decode(
-					'{"body":":no_entry_sign: **Error( severity 11 )**: /** cannot be used"}'
+				(object) array(
+					'body' => ':no_entry_sign: **Error( severity 11 )**: /** cannot be used',
 				),
 			),
 
 			// Do not test against these; they are here to make sure nothing bogus is matched.
 			'file-8.php:90'  => array(
-				json_decode(
-					'{"body":":no_entry_sign: **Error**: All output should be run ..., found \'mysql_query\'."}'
+				(object) array(
+					'body' => ':no_entry_sign: **Error**: All output should be run ..., found \'mysql_query\'.',
 				),
 			),
 
 			'file-9.php:90'  => array(
-				json_decode(
-					'{"body":":no_entry_sign: **Error**: Extension \'mysql_\' is deprecated since PHP 5.5 and removed since PHP 7.0; Use mysqli instead"}'
+				(object) array(
+					'body' => ':no_entry_sign: **Error**: Extension \'mysql_\' is deprecated since PHP 5.5 and removed since PHP 7.0; Use mysqli instead',
 				),
 			),
 		);
