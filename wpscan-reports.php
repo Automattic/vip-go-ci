@@ -105,7 +105,7 @@ function vipgoci_wpscan_report_comment_format_result(
 	string $commit_id,
 	array $issue,
 	string $issue_type,
-	bool $dry_mode
+	bool $dry_mode = false
 ) :string {
 	$res = '## &#x2139;&#xfe0f;&#x20; '; // Header markup and information sign.
 
