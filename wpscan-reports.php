@@ -95,6 +95,7 @@ function vipgoci_wpscan_report_end(
  * @param string $commit_id  Commit-ID of current commit.
  * @param array  $issue      Array with issue details to report.
  * @param string $issue_type Type of result being processed; VIPGOCI_WPSCAN_PLUGIN or VIPGOCI_WPSCAN_THEME.
+ * @param bool   $dry_mode   If WPScan API dry mode is enabled.
  *
  * @return string Formatted result.
  */
@@ -103,7 +104,8 @@ function vipgoci_wpscan_report_comment_format_result(
 	string $repo_name,
 	string $commit_id,
 	array $issue,
-	string $issue_type
+	string $issue_type,
+	bool $wpscan_api_dry_mode
 ) :string {
 	$res = '## &#x2139;&#xfe0f;&#x20; '; // Header markup and information sign.
 
@@ -168,6 +170,18 @@ function vipgoci_wpscan_report_comment_format_result(
 	vipgoci_markdown_comment_add_pagebreak(
 		$res
 	);
+
+	// If dry-run mode is enabled, report to IRC only. Temporary feature.
+	if ( true === $wpscan_api_dry_mode ) {
+		vipgoci_log(
+			'WPScan API found issues with add-on: ' . $issue['message'] . ', ' . $issue['security'] . ', ' . $issue['details']['version_detected'] . ', ' . $issue['details']['latest_version'],
+			array(),
+			0,
+			true
+		);
+
+		return '';
+	}
 
 	return $res;
 }
