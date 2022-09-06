@@ -844,8 +844,8 @@ function vipgoci_results_comment_match(
 		 * Handle special case (/**) so that it is preserved.
 		 */
 		$comment_made_body = str_replace(
-			array( '/**', '**', 'Warning', 'Error', 'Info', ':no_entry_sign:', ':warning:', ':information_source:', '/\*\*', ),
-			array( '/\*\*', '', '', '', '', '', '', '', '/**', ),
+			array( '/**', '**', 'Warning', 'Error', 'Info', ':no_entry_sign:', ':warning:', ':information_source:', '/\*\*' ),
+			array( '/\*\*', '', '', '', '', '', '', '', '/**' ),
 			$comment_made->body
 		);
 
