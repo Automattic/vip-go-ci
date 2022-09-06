@@ -134,6 +134,7 @@ function vipgoci_help_print() :void {
 		PHP_EOL .
 		'WPScan API scanning configuration:' . PHP_EOL .
 		"\t" . '--wpscan-api=BOOL                  Enable or disable WPScan API scanning. Disabled by default.' . PHP_EOL .
+		"\t" . '--wpscan-api-dry-mode=BOOL         Report WPScan API results to IRC only, not pull requests. Temporary feature.' . PHP_EOL .
 		"\t" . '--wpscan-api-url=STRING            URL to WPScan API. If nothing is specified, will use the ' . PHP_EOL .
 		"\t" . '                                   default (' . VIPGOCI_WPSCAN_API_BASE_URL . ').' . PHP_EOL .
 		"\t" . '--wpscan-api-token=STRING          Access token to use to communicate with WPScan API.' . PHP_EOL .
@@ -315,6 +316,7 @@ function vipgoci_options_recognized() :array {
 		 * WPScan API scanning configuration
 		 */
 		'wpscan-api:',
+		'wpscan-api-dry-mode:',
 		'wpscan-api-url:',
 		'wpscan-api-token:',
 		'wpscan-api-paths:',
@@ -677,6 +679,8 @@ function vipgoci_run_init_options_wpscan( array &$options ) :void {
 	 * Handle boolean options related to WPScan API.
 	 */
 	vipgoci_option_bool_handle( $options, 'wpscan-api', 'false' );
+
+	vipgoci_option_bool_handle( $options, 'wpscan-api-dry-mode', 'true' );
 
 	/*
 	 * Process --wpscan-folders -- expected to be an
