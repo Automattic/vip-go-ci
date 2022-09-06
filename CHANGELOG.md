@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file.
 ## Fixed
 - [#291](https://github.com/Automattic/vip-go-ci/pull/291): Fix two problems with local git diffs
 - [#292](https://github.com/Automattic/vip-go-ci/pull/292): Rename test class to match file name
+- [#293](https://github.com/Automattic/vip-go-ci/pull/293): Fix re-posted comments that contain "/**" 
 
 ## [1.2.6](https://github.com/Automattic/vip-go-ci/releases/tag/1.2.6) - 2022-08-08
 
