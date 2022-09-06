@@ -105,7 +105,7 @@ function vipgoci_wpscan_report_comment_format_result(
 	string $commit_id,
 	array $issue,
 	string $issue_type,
-	bool $wpscan_api_dry_mode
+	bool $dry_mode
 ) :string {
 	$res = '## &#x2139;&#xfe0f;&#x20; '; // Header markup and information sign.
 
@@ -172,7 +172,7 @@ function vipgoci_wpscan_report_comment_format_result(
 	);
 
 	// If dry-run mode is enabled, report to IRC only. Temporary feature.
-	if ( true === $wpscan_api_dry_mode ) {
+	if ( true === $dry_mode ) {
 		vipgoci_log(
 			'WPScan API found issues with add-on: ' . $issue['message'] . ', ' . $issue['security'] . ', ' . $issue['details']['version_detected'] . ', ' . $issue['details']['latest_version'],
 			array(),
