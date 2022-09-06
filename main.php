@@ -134,7 +134,7 @@ function vipgoci_help_print() :void {
 		PHP_EOL .
 		'WPScan API scanning configuration:' . PHP_EOL .
 		"\t" . '--wpscan-api=BOOL                  Enable or disable WPScan API scanning. Disabled by default.' . PHP_EOL .
-		"\t" . '--wpscan-api-dry-mode=BOOL         Report WPScan API results to IRC only, not pull requests. Temporary feature.' . PHP_EOL .
+		"\t" . '--wpscan-api-dry-mode=BOOL         When enabled, report WPScan API results to IRC only, not pull requests. Temporary feature.' . PHP_EOL .
 		"\t" . '--wpscan-api-url=STRING            URL to WPScan API. If nothing is specified, will use the ' . PHP_EOL .
 		"\t" . '                                   default (' . VIPGOCI_WPSCAN_API_BASE_URL . ').' . PHP_EOL .
 		"\t" . '--wpscan-api-token=STRING          Access token to use to communicate with WPScan API.' . PHP_EOL .
