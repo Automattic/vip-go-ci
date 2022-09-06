@@ -794,6 +794,8 @@ function vipgoci_results_sort_by_severity(
  * this is used to understand if the specific
  * comment has already been submitted earlier.
  *
+ * Handles special case as well.
+ *
  * @param string $file_issue_path    Path to file.
  * @param int    $file_issue_line    Line number in file.
  * @param string $file_issue_comment Comment to look for.
@@ -838,10 +840,12 @@ function vipgoci_results_comment_match(
 		/*
 		 * The comment might contain formatting, such
 		 * as "Warning: ..." -- remove all of that.
+		 *
+		 * Handle special case (/**) so that it is preserved.
 		 */
 		$comment_made_body = str_replace(
-			array( '**', 'Warning', 'Error', 'Info', ':no_entry_sign:', ':warning:', ':information_source:' ),
-			array( '', '', '', '', '' ),
+			array( '/**', '**', 'Warning', 'Error', 'Info', ':no_entry_sign:', ':warning:', ':information_source:', '/\*\*', ),
+			array( '/\*\*', '', '', '', '', '', '', '', '/**', ),
 			$comment_made->body
 		);
 
