@@ -770,6 +770,7 @@ function vipgoci_http_api_fetch_url(
  * @param bool        $json_encode         If true, will JSON encode $http_api_postfields using json_encode()
  *                                         before sending request, else uses http_build_query() to
  *                                         generate URL-encoded query-string from $http_api_postfields.
+ * @param int         $http_version        What HTTP protocol version to use with cURL, by default lets cURL decide.
  * @param string      $http_content_type   The HTTP Content-Type header value to use. 'application/json' is the default.
  *
  * @return string|int Request body as string on success, -1 on failure. Failures will be logged.
@@ -782,6 +783,7 @@ function vipgoci_http_api_post_url(
 	null|string $http_api_token,
 	bool $http_delete = false,
 	bool $json_encode = true,
+	int $http_version = CURL_HTTP_VERSION_NONE,
 	string $http_content_type = 'application/json'
 ) :string|int {
 	/*
@@ -829,6 +831,12 @@ function vipgoci_http_api_post_url(
 			$ch,
 			CURLOPT_USERAGENT,
 			VIPGOCI_CLIENT_ID
+		);
+
+		curl_setopt(
+			$ch,
+			CURLOPT_HTTP_VERSION,
+			$http_version
 		);
 
 		if ( false === $http_delete ) {
