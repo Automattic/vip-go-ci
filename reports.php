@@ -681,6 +681,7 @@ function vipgoci_report_maybe_no_issues_found(
  * @param string $informational_msg         Informational message for end-users.
  * @param string $scan_details_msg          Details of scan message for end-users.
  * @param string $wpscan_api_report_end_msg Message to append to end of WPScan API report.
+ * @param bool   $wpscan_api_dry_mode       If WPScan API dry mode is enabled.
  * @param string $name_to_use               Name to use in reports to identify the bot.
  *
  * @return void
@@ -694,14 +695,20 @@ function vipgoci_report_submit_pr_generic_comment_from_results(
 	string $informational_msg,
 	string $scan_details_msg,
 	string $wpscan_api_report_end_msg,
+	bool $wpscan_api_dry_mode,
 	string $name_to_use,
 ) :void {
 	vipgoci_log(
 		'About to submit generic PR comment to GitHub about issues',
 		array(
-			'repo_owner' => $repo_owner,
-			'repo_name'  => $repo_name,
-			'commit_id'  => $commit_id,
+			'repo_owner'                => $repo_owner,
+			'repo_name'                 => $repo_name,
+			'commit_id'                 => $commit_id,
+			'informational_msg'         => $informational_msg,
+			'scan_details_msg'          => $scan_details_msg,
+			'wpscan_api_report_end_msg' => $wpscan_api_report_end_msg,
+			'wpscan_api_dry_mode'       => $wpscan_api_dry_mode,
+			'name_to_use'               => $name_to_use,
 		)
 	);
 
@@ -800,7 +807,8 @@ function vipgoci_report_submit_pr_generic_comment_from_results(
 						$repo_name,
 						$commit_id,
 						$commit_issue['issue'],
-						$commit_issue['issue']['addon_type']
+						$commit_issue['issue']['addon_type'],
+						$wpscan_api_dry_mode
 					);
 
 				vipgoci_markdown_comment_add_pagebreak(
