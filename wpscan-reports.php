@@ -174,8 +174,13 @@ function vipgoci_wpscan_report_comment_format_result(
 	// If dry-run mode is enabled, report to IRC only. Temporary feature.
 	if ( true === $dry_mode ) {
 		vipgoci_log(
-			'WPScan API found issues with add-on: ' . $issue['message'] . ', ' . $issue['security'] . ', ' . $issue['details']['version_detected'] . ', ' . $issue['details']['latest_version'],
-			array(),
+			'WPScan API found issues with addon',
+			array(
+				'msg'     => $issue['message'],
+				'level'   => $issue['security'],
+				'version' => $issue['details']['version_detected'],
+				'latest'  => $issue['details']['latest_version']
+			),
 			0,
 			true
 		);

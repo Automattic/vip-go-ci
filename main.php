@@ -2952,6 +2952,7 @@ function vipgoci_run_scan(
 		$options['informational-msg'],
 		$scan_details_msg,
 		$options['wpscan-api-report-end-msg'],
+		$options['wpscan-api-dry-mode'],
 		$options['name-to-use']
 	);
 
