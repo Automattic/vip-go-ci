@@ -261,10 +261,9 @@ function vipgoci_wpcore_misc_scan_directory_for_addons(
 	string $path,
 	bool $process_subdirectories = true
 ): array {
-	$plugins_dir  = @opendir( $path ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
-	$plugin_files = array();
+	$addons_dir = @opendir( $path ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
 
-	if ( false === $plugins_dir ) {
+	if ( false === $addons_dir ) {
 		vipgoci_log(
 			'Unable to scan directory for plugins/themes, skipping',
 			array(
@@ -273,14 +272,16 @@ function vipgoci_wpcore_misc_scan_directory_for_addons(
 			2
 		);
 
-		return $plugin_files;
+		return array();
 	}
+
+	$addon_files = array();
 
 	/*
 	 * Loop through files/directories in $path and compile
 	 * an array of files found.
 	 */
-	while ( ( $file = readdir( $plugins_dir ) ) !== false ) { // phpcs:ignore WordPress.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition
+	while ( ( $file = readdir( $addons_dir ) ) !== false ) { // phpcs:ignore WordPress.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition
 		if ( '.' === substr( $file, 0, 1 ) ) {
 			continue;
 		}
@@ -302,7 +303,7 @@ function vipgoci_wpcore_misc_scan_directory_for_addons(
 						( '.php' === substr( $subfile, -4 ) ) ||
 						( '.css' === substr( $subfile, -4 ) )
 					) {
-						$plugin_files[] = $file . DIRECTORY_SEPARATOR . $subfile;
+						$addon_files[] = $file . DIRECTORY_SEPARATOR . $subfile;
 					}
 				}
 
@@ -313,20 +314,19 @@ function vipgoci_wpcore_misc_scan_directory_for_addons(
 				( '.php' === substr( $file, -4 ) ) ||
 				( '.css' === substr( $file, -4 ) )
 			) {
-				$plugin_files[] = $file;
+				$addon_files[] = $file;
 			}
 		}
 	}
 
-	closedir( $plugins_dir );
+	closedir( $addons_dir );
 
 	/*
-	 * Compile list of plugins based on $plugin_files
+	 * Compile list of plugins based on $addon_files
 	 * and return the result.
 	 */
-	$wp_plugins = array();
 
-	if ( empty( $plugin_files ) ) {
+	if ( empty( $addon_files ) ) {
 		vipgoci_log(
 			'No plugins/themes found while scanning directory',
 			array(
@@ -335,11 +335,13 @@ function vipgoci_wpcore_misc_scan_directory_for_addons(
 			2
 		);
 
-		return $wp_plugins;
+		return array();
 	}
 
-	foreach ( $plugin_files as $plugin_file ) {
-		$tmp_path = $path . DIRECTORY_SEPARATOR . $plugin_file;
+	$wp_addons = array();
+
+	foreach ( $addon_files as $addon_file ) {
+		$tmp_path = $path . DIRECTORY_SEPARATOR . $addon_file;
 
 		if ( ! is_readable( $tmp_path ) ) {
 			continue;
@@ -355,25 +357,25 @@ function vipgoci_wpcore_misc_scan_directory_for_addons(
 		}
 
 		// Calculate 'local slug'.
-		if ( str_contains( $plugin_file, '/' ) ) {
-			$wp_plugin_key = dirname( $plugin_file ) . '/' . basename( $plugin_file );
+		if ( str_contains( $addon_file, '/' ) ) {
+			$wp_addon_key = dirname( $addon_file ) . '/' . basename( $addon_file );
 		} else {
-			$wp_plugin_key = basename( $plugin_file );
+			$wp_addon_key = basename( $addon_file );
 		}
 
-		$wp_plugins[ $wp_plugin_key ] = $plugin_data;
+		$wp_addons[ $wp_addon_key ] = $plugin_data;
 	}
 
 	vipgoci_log(
 		'Scanned directory for plugins/themes',
 		array(
-			'path'       => $path,
-			'wp_plugins' => $wp_plugins,
+			'path'      => $path,
+			'wp_addons' => $wp_addons,
 		),
 		2
 	);
 
-	return $wp_plugins;
+	return $wp_addons;
 }
 
 /**
