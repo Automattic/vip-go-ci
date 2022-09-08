@@ -127,11 +127,11 @@ function vipgoci_wpscan_report_comment_format_result(
 	if ( VIPGOCI_WPSCAN_PLUGIN === $issue_type ) {
 		$res .= ' Plugin information' . "\n" .
 			'**Plugin Name**: ' . vipgoci_output_html_escape( $issue['message'] ) . "\n" .
-			'**Plugin URI**: ' . vipgoci_output_html_escape( $issue['details']['plugin_uri'] ) . "\n";
+			'**Plugin URI**: ' . vipgoci_output_html_escape( $issue['details']['uri'] ) . "\n";
 	} elseif ( VIPGOCI_WPSCAN_THEME === $issue_type ) {
 		$res .= ' Theme information' . "\n" .
 			'**Theme Name**: ' . vipgoci_output_html_escape( $issue['message'] ) . "\n" .
-			'**Theme URI**: ' . vipgoci_output_html_escape( $issue['details']['theme_uri'] ) . "\n";
+			'**Theme URI**: ' . vipgoci_output_html_escape( $issue['details']['uri'] ) . "\n";
 	} else {
 		vipgoci_sysexit(
 			'Internal error: Invalid $issue_type in ' . __FUNCTION__,
@@ -179,7 +179,7 @@ function vipgoci_wpscan_report_comment_format_result(
 				'msg'     => $issue['message'],
 				'level'   => $issue['security'],
 				'version' => $issue['details']['version_detected'],
-				'latest'  => $issue['details']['latest_version']
+				'latest'  => $issue['details']['latest_version'],
 			),
 			0,
 			true
