@@ -285,10 +285,10 @@ final class WpscanScanCommitTest extends TestCase {
 
 		$this->assertStringContainsString(
 			'wordpress.org/plugins',
-			$commit_issues_submit[ $this->options['wpscan-pr-1-number'] ][0]['issue']['details']['plugin_uri']
+			$commit_issues_submit[ $this->options['wpscan-pr-1-number'] ][0]['issue']['details']['url']
 		);
 
-		unset( $commit_issues_submit[ $this->options['wpscan-pr-1-number'] ][0]['issue']['details']['plugin_uri'] );
+		unset( $commit_issues_submit[ $this->options['wpscan-pr-1-number'] ][0]['issue']['details']['url'] );
 
 		$this->assertTrue(
 			( ! empty( $commit_issues_submit[ $this->options['wpscan-pr-1-number'] ][0]['issue']['security'] ) ) &&
