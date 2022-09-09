@@ -208,6 +208,12 @@ function vipgoci_wpscan_scan_dirs_altered(
 		);
 
 		foreach ( $addon_data_for_dir as $addon_item_key => $addon_item_info ) {
+			$addon_item_key = str_replace(
+				array( VIPGOCI_WPSCAN_PLUGIN . '-', VIPGOCI_WPSCAN_THEME . '-' ),
+				array( '', '' ),
+				$addon_item_key
+			);
+
 			if ( empty( $addon_item_info['slug'] ) ) {
 				continue;
 			}
@@ -241,7 +247,9 @@ function vipgoci_wpscan_scan_dirs_altered(
 					'Unable to get information from WPScan API about slug',
 					array(
 						'slug' => $addon_item_info['slug'],
-					)
+					),
+					0,
+					true // Log to IRC.
 				);
 
 				continue;
@@ -461,7 +469,7 @@ function vipgoci_wpscan_scan_save_for_submission(
 							'security'   => $problem_addon_files[ $problem_addon_file_name ]['security_type'],
 							'severity'   => 10,
 							'details'    => array(
-								'plugin_uri'          => $issue_details['addon_data_for_dir']['addon_headers']['PluginURI'],
+								'url'                 => $issue_details['addon_data_for_dir']['url'],
 								'installed_location'  => $dir_with_problem_addons . DIRECTORY_SEPARATOR . $problem_addon_file_name,
 								'version_detected'    => $issue_details['addon_data_for_dir']['version_detected'],
 								'latest_version'      => $issue_details['wpscan_results']['latest_version'],
