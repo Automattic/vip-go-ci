@@ -19,6 +19,13 @@ use PHPUnit\Framework\TestCase;
  */
 final class WpCoreApiDetermineSlugAndOtherForAddonsTest extends TestCase {
 	/**
+	 * Prefix for array keys indicating plugin.
+	 *
+	 * @var KEY_PLUGIN_PREFIX
+	 */
+	private const KEY_PLUGIN_PREFIX = 'vipgoci-wpscan-plugin';
+
+	/**
 	 * Setup function. Require files.
 	 *
 	 * @return void
@@ -39,7 +46,7 @@ final class WpCoreApiDetermineSlugAndOtherForAddonsTest extends TestCase {
 
 		$actual_results = vipgoci_wpcore_api_determine_slug_and_other_for_addons(
 			array(
-				'hello/hello.php'   => array(
+				self::KEY_PLUGIN_PREFIX . '-hello/hello.php'   => array(
 					'type'          => 'vipgoci-wpscan-plugin',
 					'addon_headers' => array(
 						'Name'        => 'Hello Dolly',
@@ -53,7 +60,7 @@ final class WpCoreApiDetermineSlugAndOtherForAddonsTest extends TestCase {
 						'UpdateURI'   => 'http://wordpress.org/plugins/hello-dolly/',
 					),
 				),
-				'hello2/hello2.php' => array(
+				self::KEY_PLUGIN_PREFIX . '-hello2/hello2.php' => array(
 					'type'          => 'vipgoci-wpscan-plugin',
 					'addon_headers' => array(
 						'Name'        => 'Hello Dolly',
@@ -67,7 +74,7 @@ final class WpCoreApiDetermineSlugAndOtherForAddonsTest extends TestCase {
 						'UpdateURI'   => 'http://wordpress.org/plugins/hello-dolly/',
 					),
 				),
-				'hello3/hello3.php' => array(
+				self::KEY_PLUGIN_PREFIX . '-hello3/hello3.php' => array(
 					'type'          => 'vipgoci-wpscan-plugin',
 					'addon_headers' => array(
 						'Name'        => 'Hello Dolly',
@@ -81,7 +88,7 @@ final class WpCoreApiDetermineSlugAndOtherForAddonsTest extends TestCase {
 						'UpdateURI'   => 'http://INVALID.INVALID/plugins/hello-dolly/',  // Non-WordPress.org plugin.
 					),
 				),
-				'hello4/hello4.php' => array(
+				self::KEY_PLUGIN_PREFIX . '-hello4/hello4.php' => array(
 					'type'          => 'vipgoci-wpscan-plugin',
 					'addon_headers' => array(
 						'Name'        => 'Hello Dolly',
@@ -104,11 +111,10 @@ final class WpCoreApiDetermineSlugAndOtherForAddonsTest extends TestCase {
 		 * Ensure only hello/hello.php and hello2/hello2.php
 		 * are returned in results.
 		 */
-
 		$this->assertSame(
 			array(
-				'hello/hello.php',
-				'hello2/hello2.php',
+				self::KEY_PLUGIN_PREFIX . '-hello/hello.php',
+				self::KEY_PLUGIN_PREFIX . '-hello2/hello2.php',
 			),
 			array_keys( $actual_results )
 		);
@@ -118,27 +124,27 @@ final class WpCoreApiDetermineSlugAndOtherForAddonsTest extends TestCase {
 		 */
 
 		$this->assertNotEmpty(
-			$actual_results['hello/hello.php']
+			$actual_results[ self::KEY_PLUGIN_PREFIX . '-hello/hello.php' ]
 		);
 
 		$this->assertSame(
 			'w.org/plugins/hello-dolly',
-			$actual_results['hello/hello.php']['id']
+			$actual_results[ self::KEY_PLUGIN_PREFIX . '-hello/hello.php' ]['id']
 		);
 
 		$this->assertSame(
 			'hello-dolly',
-			$actual_results['hello/hello.php']['slug']
+			$actual_results[ self::KEY_PLUGIN_PREFIX . '-hello/hello.php' ]['slug']
 		);
 
 		$this->assertSame(
 			'hello/hello.php',
-			$actual_results['hello/hello.php']['plugin']
+			$actual_results[ self::KEY_PLUGIN_PREFIX . '-hello/hello.php' ]['plugin']
 		);
 
 		$this->assertTrue(
 			version_compare(
-				$actual_results['hello/hello.php']['new_version'],
+				$actual_results[ self::KEY_PLUGIN_PREFIX . '-hello/hello.php' ]['new_version'],
 				'0.0.0',
 				'>='
 			)
@@ -146,32 +152,32 @@ final class WpCoreApiDetermineSlugAndOtherForAddonsTest extends TestCase {
 
 		$this->assertStringContainsString(
 			'/plugins/hello-dolly',
-			$actual_results['hello/hello.php']['url']
+			$actual_results[ self::KEY_PLUGIN_PREFIX . '-hello/hello.php' ]['url']
 		);
 
 		$this->assertStringContainsString(
 			'/hello-dolly.',
-			$actual_results['hello/hello.php']['package']
+			$actual_results[ self::KEY_PLUGIN_PREFIX . '-hello/hello.php' ]['package']
 		);
 
 		/*
 		 * Test hello2/hello2.php
 		 */
 		$this->assertTrue(
-			isset( $actual_results['hello2/hello2.php']['plugin'] )
+			isset( $actual_results[ self::KEY_PLUGIN_PREFIX . '-hello2/hello2.php' ]['plugin'] )
 		);
 
 		$this->assertSame(
 			'hello2/hello2.php',
-			$actual_results['hello2/hello2.php']['plugin']
+			$actual_results[ self::KEY_PLUGIN_PREFIX . '-hello2/hello2.php' ]['plugin']
 		);
 
-		unset( $actual_results['hello/hello.php']['plugin'] );
-		unset( $actual_results['hello2/hello2.php']['plugin'] );
+		unset( $actual_results[ self::KEY_PLUGIN_PREFIX . '-hello/hello.php' ]['plugin'] );
+		unset( $actual_results[ self::KEY_PLUGIN_PREFIX . '-hello2/hello2.php' ]['plugin'] );
 
 		$this->assertSame(
-			$actual_results['hello/hello.php'],
-			$actual_results['hello2/hello2.php']
+			$actual_results[ self::KEY_PLUGIN_PREFIX . '-hello/hello.php' ],
+			$actual_results[ self::KEY_PLUGIN_PREFIX . '-hello2/hello2.php' ]
 		);
 	}
 
@@ -187,7 +193,7 @@ final class WpCoreApiDetermineSlugAndOtherForAddonsTest extends TestCase {
 
 		$actual_results = vipgoci_wpcore_api_determine_slug_and_other_for_addons(
 			array(
-				'my-test/invalid.php' => array(
+				self::KEY_PLUGIN_PREFIX . '-my-test/invalid.php' => array(
 					'type'          => 'vipgoci-wpscan-plugin',
 					'addon_headers' => array(
 						'Name'        => 'This is invalid, 123',
@@ -204,7 +210,7 @@ final class WpCoreApiDetermineSlugAndOtherForAddonsTest extends TestCase {
 		vipgoci_unittests_output_unsuppress();
 
 		$this->assertSame(
-			array( 'my-test/invalid.php' => null ),
+			array( self::KEY_PLUGIN_PREFIX . '-my-test/invalid.php' => null ),
 			$actual_results,
 		);
 	}
@@ -244,8 +250,8 @@ final class WpCoreApiDetermineSlugAndOtherForAddonsTest extends TestCase {
 
 		$actual_results = vipgoci_wpcore_api_determine_slug_and_other_for_addons(
 			array(
-				'my-test/invalid.php'  => array(),
-				'my-test/invalid2.php' => array(
+				self::KEY_PLUGIN_PREFIX . '-my-test/invalid.php'  => array(),
+				self::KEY_PLUGIN_PREFIX . '-my-test/invalid2.php' => array(
 					'type'          => 'vipgoci-wpscan-plugin',
 					'addon_headers' => array(
 						'Name'        => 'This is invalid, 123',
@@ -263,7 +269,7 @@ final class WpCoreApiDetermineSlugAndOtherForAddonsTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				'my-test/invalid2.php' => null,
+				self::KEY_PLUGIN_PREFIX . '-my-test/invalid2.php' => null,
 			),
 			$actual_results,
 		);
