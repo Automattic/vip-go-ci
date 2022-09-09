@@ -95,7 +95,7 @@ final class WpCoreMiscScanDirectoryForAdddonsTest extends TestCase {
 		}
 
 		$results_expected = array(
-			'addon2/style.css'     => array(
+			'vipgoci-wpscan-theme-addon2'     => array(
 				'type'             => 'vipgoci-wpscan-theme',
 				'addon_headers'    => array(
 					'Name'        => 'My Package',
@@ -118,7 +118,7 @@ final class WpCoreMiscScanDirectoryForAdddonsTest extends TestCase {
 				'version_detected' => '1.0.0',
 				'file_name'        => $this->temp_dir . '/WpCoreMiscScanDirectoryForAdddonsTest/addon2/style.css',
 			),
-			'addon1/file2.php'     => array(
+			'vipgoci-wpscan-plugin-addon1/file2.php'     => array(
 				'type'             => 'vipgoci-wpscan-plugin',
 				'addon_headers'    => array(
 					'Name'        => 'My <h1>Other</h1> Package',
@@ -140,7 +140,7 @@ final class WpCoreMiscScanDirectoryForAdddonsTest extends TestCase {
 				'version_detected' => '1.1.0',
 				'file_name'        => $this->temp_dir . '/WpCoreMiscScanDirectoryForAdddonsTest/addon1/file2.php',
 			),
-			'this-is-a-plugin.php' => array(
+			'vipgoci-wpscan-plugin-this-is-a-plugin.php' => array(
 				'type'             => 'vipgoci-wpscan-plugin',
 				'addon_headers'    => array(
 					'Name'        => 'This is a plugin.',
@@ -215,7 +215,7 @@ final class WpCoreMiscScanDirectoryForAdddonsTest extends TestCase {
 		}
 
 		$results_expected = array(
-			'this-is-a-plugin.php' => array(
+			'vipgoci-wpscan-plugin-this-is-a-plugin.php' => array(
 				'type'             => 'vipgoci-wpscan-plugin',
 				'addon_headers'    => array(
 					'Name'        => 'This is a plugin.',
