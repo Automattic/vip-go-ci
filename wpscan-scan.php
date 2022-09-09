@@ -131,7 +131,7 @@ function vipgoci_wpscan_find_addon_dirs_altered(
 			) ) {
 				continue;
 			}
-	
+
 			vipgoci_array_push_uniquely(
 				$addon_dirs_relevant_to_scan,
 				$dir_changed_by_commit_relative
