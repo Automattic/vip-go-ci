@@ -50,7 +50,7 @@ final class WpscanReportCommentFormatResultTest extends TestCase {
 				'security' => VIPGOCI_WPSCAN_OBSOLETE,
 				'message'  => 'My Plugin',
 				'details'  => array(
-					'uri'                 => 'https://wordpress.org/plugins/my-plugin',
+					'url'                 => 'https://wordpress.org/plugins/my-plugin',
 					'installed_location'  => 'plugins/my-plugin',
 					'version_detected'    => '1.0.0',
 					'latest_version'      => '2.0.0',
@@ -188,7 +188,7 @@ final class WpscanReportCommentFormatResultTest extends TestCase {
 				'security' => VIPGOCI_WPSCAN_VULNERABLE,
 				'message'  => 'My Theme',
 				'details'  => array(
-					'uri'                 => 'https://wordpress.org/themes/my-theme',
+					'url'                 => 'https://wordpress.org/themes/my-theme',
 					'installed_location'  => 'themes/my-theme',
 					'version_detected'    => '1.0.0',
 					'latest_version'      => '2.0.0',
@@ -330,7 +330,7 @@ final class WpscanReportCommentFormatResultTest extends TestCase {
 				'security' => 'invalid', // Invalid.
 				'message'  => 'My Theme',
 				'details'  => array(
-					'uri'                 => 'https://wordpress.org/themes/my-theme',
+					'url'                 => 'https://wordpress.org/themes/my-theme',
 					'installed_location'  => 'themes/my-theme',
 					'version_detected'    => '1.0.0',
 					'latest_version'      => '2.0.0',
@@ -384,7 +384,7 @@ final class WpscanReportCommentFormatResultTest extends TestCase {
 				'security' => VIPGOCI_WPSCAN_OBSOLETE,
 				'message'  => 'My Theme',
 				'details'  => array(
-					'uri'                 => 'https://wordpress.org/themes/my-theme',
+					'url'                 => 'https://wordpress.org/themes/my-theme',
 					'installed_location'  => 'themes/my-theme',
 					'version_detected'    => '1.0.0',
 					'latest_version'      => '2.0.0',
