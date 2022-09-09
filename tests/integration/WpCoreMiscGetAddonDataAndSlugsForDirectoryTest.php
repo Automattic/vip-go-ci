@@ -26,6 +26,20 @@ final class WpCoreMiscGetAddonDataAndSlugsForDirectoryTest extends TestCase {
 	private $temp_dir = '';
 
 	/**
+	 * Constant for Hello plugin.
+	 *
+	 * @var $KEY_PLUGIN_HELLO
+	 */
+	private const KEY_PLUGIN_HELLO = 'vipgoci-wpscan-plugin-hello/hello.php';
+
+	/**
+	 * Constant for this-is-a-plugin.
+	 *
+	 * @var $KEY_PLUGIN_THIS_IS
+	 */
+	private const KEY_PLUGIN_THIS_IS = 'vipgoci-wpscan-plugin-this-is-a-plugin.php';
+
+	/**
 	 * Setup function. Require files.
 	 *
 	 * @return void
@@ -104,32 +118,32 @@ final class WpCoreMiscGetAddonDataAndSlugsForDirectoryTest extends TestCase {
 		 * Ensure hello/hello.php is in results.
 		 */
 		$this->assertNotEmpty(
-			$actual_results['hello/hello.php']
+			$actual_results[ self::KEY_PLUGIN_HELLO ]
 		);
 
 		$this->assertSame(
 			'w.org/plugins/hello-dolly',
-			$actual_results['hello/hello.php']['id']
+			$actual_results[ self::KEY_PLUGIN_HELLO ]['id']
 		);
 
 		$this->assertSame(
 			'Hello Dolly',
-			$actual_results['hello/hello.php']['name']
+			$actual_results[ self::KEY_PLUGIN_HELLO ]['name']
 		);
 
 		$this->assertSame(
 			'hello-dolly',
-			$actual_results['hello/hello.php']['slug']
+			$actual_results[ self::KEY_PLUGIN_HELLO ]['slug']
 		);
 
 		$this->assertSame(
 			'hello/hello.php',
-			$actual_results['hello/hello.php']['plugin']
+			$actual_results[ self::KEY_PLUGIN_HELLO ]['plugin']
 		);
 
 		$this->assertTrue(
 			version_compare(
-				$actual_results['hello/hello.php']['new_version'],
+				$actual_results[ self::KEY_PLUGIN_HELLO ]['new_version'],
 				'0.0.0',
 				'>='
 			)
@@ -137,53 +151,65 @@ final class WpCoreMiscGetAddonDataAndSlugsForDirectoryTest extends TestCase {
 
 		$this->assertStringContainsString(
 			'/plugins/hello-dolly',
-			$actual_results['hello/hello.php']['url']
+			$actual_results[ self::KEY_PLUGIN_HELLO ]['url']
 		);
 
 		$this->assertStringContainsString(
 			'/hello-dolly.',
-			$actual_results['hello/hello.php']['package']
+			$actual_results[ self::KEY_PLUGIN_HELLO ]['package']
 		);
 
 		/*
 		 * Ensure this-is-a-plugin.php is in results.
 		 */
+
 		$this->assertNotEmpty(
-			$actual_results['this-is-a-plugin.php']
+			$actual_results[ self::KEY_PLUGIN_THIS_IS ]
 		);
 
 		$this->assertFalse(
-			isset( $actual_results['this-is-a-plugin.php']['id'] )
+			isset( $actual_results[ self::KEY_PLUGIN_THIS_IS ]['id'] )
 		);
 
 		$this->assertSame(
 			'This is a plugin.',
-			$actual_results['this-is-a-plugin.php']['name']
+			$actual_results[ self::KEY_PLUGIN_THIS_IS ]['name']
 		);
 
 		$this->assertFalse(
-			isset( $actual_results['his-is-a-plugin.php']['slug'] )
+			isset( $actual_results[ self::KEY_PLUGIN_THIS_IS ]['slug'] )
 		);
 
 		$this->assertFalse(
-			isset( $actual_results['this-is-a-plugin.php']['plugin'] )
+			isset( $actual_results[ self::KEY_PLUGIN_THIS_IS ]['plugin'] )
 		);
 
 		$this->assertSame(
 			'15.1.0',
-			$actual_results['this-is-a-plugin.php']['version_detected']
+			$actual_results[ self::KEY_PLUGIN_THIS_IS ]['version_detected']
 		);
 
 		$this->assertFalse(
-			isset( $actual_results['this-is-a-plugin.php']['new_version'] )
+			isset( $actual_results[ self::KEY_PLUGIN_THIS_IS ]['new_version'] )
 		);
 
 		$this->assertFalse(
-			isset( $actual_results['this-is-a-plugin.php']['url'] )
+			isset( $actual_results[ self::KEY_PLUGIN_THIS_IS ]['url'] )
 		);
 
 		$this->assertFalse(
-			isset( $actual_results['this-is-a-plugin.php']['package'] )
+			isset( $actual_results[ self::KEY_PLUGIN_THIS_IS ]['package'] )
+		);
+
+		/*
+		 * Ensure only the two plugins are in results.
+		 */
+		$this->assertSame(
+			array(
+				self::KEY_PLUGIN_HELLO,
+				self::KEY_PLUGIN_THIS_IS,
+			),
+			array_keys( $actual_results )
 		);
 	}
 
@@ -227,51 +253,52 @@ final class WpCoreMiscGetAddonDataAndSlugsForDirectoryTest extends TestCase {
 		vipgoci_unittests_output_unsuppress();
 
 		/*
-		 * Ensure hello/hello.php is not in results.
+		 * Ensure only one plugin is in results.
 		 */
-		$this->assertFalse(
-			isset( $actual_results['hello/hello.php'] )
+		$this->assertSame(
+			array( self::KEY_PLUGIN_THIS_IS ),
+			array_keys( $actual_results )
 		);
 
 		/*
 		 * Ensure this-is-a-plugin.php is in results.
 		 */
 		$this->assertNotEmpty(
-			$actual_results['this-is-a-plugin.php']
+			$actual_results[ self::KEY_PLUGIN_THIS_IS ]
 		);
 
 		$this->assertFalse(
-			isset( $actual_results['this-is-a-plugin.php']['id'] )
+			isset( $actual_results[ self::KEY_PLUGIN_THIS_IS ]['id'] )
 		);
 
 		$this->assertSame(
 			'This is a plugin.',
-			$actual_results['this-is-a-plugin.php']['name']
+			$actual_results[ self::KEY_PLUGIN_THIS_IS ]['name']
 		);
 
 		$this->assertFalse(
-			isset( $actual_results['his-is-a-plugin.php']['slug'] )
+			isset( $actual_results[ self::KEY_PLUGIN_THIS_IS ]['slug'] )
 		);
 
 		$this->assertFalse(
-			isset( $actual_results['this-is-a-plugin.php']['plugin'] )
+			isset( $actual_results[ self::KEY_PLUGIN_THIS_IS ]['plugin'] )
 		);
 
 		$this->assertSame(
 			'15.1.0',
-			$actual_results['this-is-a-plugin.php']['version_detected']
+			$actual_results[ self::KEY_PLUGIN_THIS_IS ]['version_detected']
 		);
 
 		$this->assertFalse(
-			isset( $actual_results['this-is-a-plugin.php']['new_version'] )
+			isset( $actual_results[ self::KEY_PLUGIN_THIS_IS ]['new_version'] )
 		);
 
 		$this->assertFalse(
-			isset( $actual_results['this-is-a-plugin.php']['url'] )
+			isset( $actual_results[ self::KEY_PLUGIN_THIS_IS ]['url'] )
 		);
 
 		$this->assertFalse(
-			isset( $actual_results['this-is-a-plugin.php']['package'] )
+			isset( $actual_results[ self::KEY_PLUGIN_THIS_IS ]['package'] )
 		);
 	}
 }
