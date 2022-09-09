@@ -127,11 +127,11 @@ function vipgoci_wpscan_report_comment_format_result(
 	if ( VIPGOCI_WPSCAN_PLUGIN === $issue_type ) {
 		$res .= ' Plugin information' . "\n" .
 			'**Plugin Name**: ' . vipgoci_output_html_escape( $issue['message'] ) . "\n" .
-			'**Plugin URI**: ' . vipgoci_output_html_escape( $issue['details']['uri'] ) . "\n";
+			'**Plugin URI**: ' . vipgoci_output_html_escape( $issue['details']['url'] ) . "\n";
 	} elseif ( VIPGOCI_WPSCAN_THEME === $issue_type ) {
 		$res .= ' Theme information' . "\n" .
 			'**Theme Name**: ' . vipgoci_output_html_escape( $issue['message'] ) . "\n" .
-			'**Theme URI**: ' . vipgoci_output_html_escape( $issue['details']['uri'] ) . "\n";
+			'**Theme URI**: ' . vipgoci_output_html_escape( $issue['details']['url'] ) . "\n";
 	} else {
 		vipgoci_sysexit(
 			'Internal error: Invalid $issue_type in ' . __FUNCTION__,
