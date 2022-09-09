@@ -347,23 +347,28 @@ function vipgoci_wpcore_misc_scan_directory_for_addons(
 			continue;
 		}
 
-		$plugin_data = vipgoci_wpcore_misc_get_addon_headers_and_type(
+		$addon_data = vipgoci_wpcore_misc_get_addon_headers_and_type(
 			$tmp_path
 		);
 
 		// When no headers are found in file, ignore file.
-		if ( empty( $plugin_data['addon_headers']['Name'] ) ) {
+		if ( empty( $addon_data['addon_headers']['Name'] ) ) {
 			continue;
 		}
 
-		// Calculate 'local slug'.
-		if ( str_contains( $addon_file, '/' ) ) {
-			$wp_addon_key = dirname( $addon_file ) . '/' . basename( $addon_file );
+		/*
+		 * Calculate 'local slug'.
+		 */
+		if ( VIPGOCI_WPSCAN_THEME === $addon_data['type'] ) {
+			// Special case for themes.
+			$wp_addon_key = $addon_data['type'] . '-' . basename( dirname( $tmp_path ) );
+		} elseif ( str_contains( $addon_file, '/' ) ) {
+			$wp_addon_key = $addon_data['type'] . '-' . dirname( $addon_file ) . '/' . basename( $addon_file );
 		} else {
-			$wp_addon_key = basename( $addon_file );
+			$wp_addon_key = $addon_data['type'] . '-' . basename( $addon_file );
 		}
 
-		$wp_addons[ $wp_addon_key ] = $plugin_data;
+		$wp_addons[ $wp_addon_key ] = $addon_data;
 	}
 
 	vipgoci_log(
@@ -428,10 +433,13 @@ function vipgoci_wpcore_api_determine_slug_and_other_for_addons(
 	);
 
 	// Data to send to WordPress.org API.
-	$addon_data_to_send = array();
+	$addon_data_to_send = array(
+		VIPGOCI_WPSCAN_PLUGIN => array(),
+		VIPGOCI_WPSCAN_THEME  => array(),
+	);
 
 	// Data collected about addons.
-	$slugs_by_plugin = array();
+	$slugs_by_addon = array();
 
 	if ( empty( $addons_data ) ) {
 		// Got no plugins/themes to query API for, return empty array.
@@ -444,10 +452,16 @@ function vipgoci_wpcore_api_determine_slug_and_other_for_addons(
 			true // Log to IRC.
 		);
 
-		return $slugs_by_plugin;
+		return array();
 	}
 
 	foreach ( $addons_data as $key => $data_item ) {
+		$key = str_replace(
+			array( VIPGOCI_WPSCAN_PLUGIN . '-', VIPGOCI_WPSCAN_THEME . '-' ),
+			array( '', '' ),
+			$key
+		);
+
 		if ( empty( $data_item['addon_headers'] ) ) {
 			vipgoci_log(
 				'No addon headers found for key, unable to query WordPress.org API, skipping',
@@ -494,84 +508,111 @@ function vipgoci_wpcore_api_determine_slug_and_other_for_addons(
 			}
 		}
 
-		$addon_data_to_send[ $key ] = $data_item['addon_headers'];
+		$addon_data_to_send[ $data_item['type'] ][ $key ] = $data_item['addon_headers'];
 
-		$slugs_by_plugin[ $key ] = null;
+		$slugs_by_addon[ $data_item['type'] . '-' . $key ] = null;
 	}
 
-	$api_data_raw = vipgoci_http_api_post_url(
-		'https://api.wordpress.org/plugins/update-check/1.1/',
-		array(
-			'plugins' => json_encode(
-				array( 'plugins' => $addon_data_to_send )
-			),
-			'all'     => 'true',
-		),
-		null, // No access token required.
-		false, // HTTP POST.
-		false, // Do not JSON encode.
-		CURL_HTTP_VERSION_1_1, // Use HTTP version 1.1 due to problems with HTTP 2.
-		'application/x-www-form-urlencoded' // Custom HTTP Content-Type.
-	);
+	foreach ( array( VIPGOCI_WPSCAN_PLUGIN, VIPGOCI_WPSCAN_THEME ) as $addon_query_type ) {
+		if ( empty( $addon_data_to_send[ $addon_query_type ] ) ) {
+			continue;
+		}
 
-	if ( is_int( $api_data_raw ) ) {
-		vipgoci_log(
-			'Unable to get information from WordPress.org API about plugins/themes',
-			array(
-				'addon_data'   => $addon_data_to_send,
-				'api_data_raw' => $api_data_raw,
+		$addon_query_type_short = VIPGOCI_WPSCAN_PLUGIN === $addon_query_type ?
+			'plugins' : 'themes';
+
+		$api_url = 'https://api.wordpress.org/' . rawurlencode( $addon_query_type_short ) . '/update-check/1.1/';
+
+		$api_query_data = array(
+			$addon_query_type_short => json_encode(
+				array(
+					$addon_query_type_short =>
+						$addon_data_to_send[ $addon_query_type ],
+				)
 			),
-			0,
-			true // Log to IRC.
 		);
 
-		return null;
-	}
+		if ( VIPGOCI_WPSCAN_PLUGIN === $addon_query_type ) {
+			$api_query_data['all'] = 'true';
+		} elseif ( VIPGOCI_WPSCAN_THEME === $addon_query_type ) {
+			$api_query_data['translations'] = json_encode( array() );
+			$api_query_data['locale']       = json_encode( array() );
+		}
 
-	$api_data = json_decode(
-		$api_data_raw,
-		true
-	);
-
-	if ( ! is_array( $api_data ) ) {
-		vipgoci_log(
-			'Unable to JSON decode information from WordPress.org API about plugins/themes',
-			array(
-				'addon_data'   => $addon_data_to_send,
-				'api_data_raw' => $api_data_raw,
-				'api_data'     => $api_data,
-			),
-			0,
-			true // Log to IRC.
+		$api_data_raw = vipgoci_http_api_post_url(
+			$api_url,
+			$api_query_data,
+			null, // No access token required.
+			false, // HTTP POST.
+			false, // Do not JSON encode.
+			CURL_HTTP_VERSION_1_1, // Use HTTP version 1.1 due to problems with HTTP 2.
+			'application/x-www-form-urlencoded' // Custom HTTP Content-Type.
 		);
 
-		return null;
-	}
+		if ( is_int( $api_data_raw ) ) {
+			vipgoci_log(
+				'Unable to get information from WordPress.org API about ' . $addon_query_type_short,
+				array(
+					'addon_data'   => $addon_data_to_send[ $addon_query_type ],
+					'api_data_raw' => $api_data_raw,
+				),
+				0,
+				true // Log to IRC.
+			);
 
-	/*
-	 * The API will return with more than one potential
-	 * result array; search both for data.
-	 */
-	foreach ( $api_data['no_update'] as $key => $data_item ) {
-		$slugs_by_plugin[ $key ] = $data_item;
-	}
+			return null;
+		}
 
-	foreach ( $api_data['plugins'] as $key => $data_item ) {
-		if ( ! isset( $slugs_by_plugin[ $key ] ) ) {
-			$slugs_by_plugin[ $key ] = $data_item;
+		$api_data = json_decode(
+			$api_data_raw,
+			true
+		);
+
+		if ( ! is_array( $api_data ) ) {
+			vipgoci_log(
+				'Unable to JSON decode information from WordPress.org API about ' . $addon_query_type_short,
+				array(
+					'addon_data'   => $addon_data_to_send[ $addon_query_type ],
+					'api_data_raw' => $api_data_raw,
+					'api_data'     => $api_data,
+				),
+				0,
+				true // Log to IRC.
+			);
+
+			return null;
+		}
+
+		/*
+		 * The API will return with more than one potential
+		 * result array; search both for data.
+		 */
+		foreach ( $api_data['no_update'] as $key => $data_item ) {
+			$slugs_by_addon[ $addon_query_type . '-' . $key ] = $data_item;
+		}
+
+		foreach ( $api_data[ $addon_query_type_short ] as $key => $data_item ) {
+			if ( ! isset( $slugs_by_addon[ $addon_query_type . '-' . $key ] ) ) {
+				$slugs_by_addon[ $addon_query_type . '-' . $key ] = $data_item;
+			}
+		}
+
+		// API provides slug in 'theme' field, handle this.
+		if ( VIPGOCI_WPSCAN_THEME === $addon_query_type ) {
+			$slugs_by_addon[ $addon_query_type . '-' . $key ]['slug'] = $slugs_by_addon[ $addon_query_type . '-' . $key ]['theme'];
 		}
 	}
 
 	vipgoci_log(
 		'Got plugin/theme information from WordPress.org API',
 		array(
-			'addons_data'     => $addons_data,
-			'slugs_by_plugin' => $slugs_by_plugin,
+			'addons_data'    => $addons_data,
+			'slugs_by_addon' => $slugs_by_addon,
 		),
 		2
 	);
 
-	return $slugs_by_plugin;
+	return $slugs_by_addon;
 }
 
 /**
@@ -615,26 +656,27 @@ function vipgoci_wpcore_misc_get_addon_data_and_slugs_for_directory(
 	string $path,
 	bool $process_subdirectories = true
 ) :array {
-	$plugins_found = vipgoci_wpcore_misc_scan_directory_for_addons(
+	$addons_found = vipgoci_wpcore_misc_scan_directory_for_addons(
 		$path,
 		$process_subdirectories
 	);
 
-	$plugin_details = vipgoci_wpcore_api_determine_slug_and_other_for_addons(
-		$plugins_found
+	$addons_details = vipgoci_wpcore_api_determine_slug_and_other_for_addons(
+		$addons_found
 	);
 
-	if ( null === $plugin_details ) {
+	if ( null === $addons_details ) {
 		return null;
 	}
 
 	/*
 	 * Look through plugins found, assign slug found, version numbers, etc.
 	 */
-	foreach ( $plugins_found as $plugin_key => $plugin_item ) {
+	foreach ( $addons_found as $addon_key => $addon_item ) {
 		foreach ( array( 'id', 'slug', 'new_version', 'plugin', 'package', 'url' ) as $_field_id ) {
-			if ( isset( $plugin_details[ $plugin_key ][ $_field_id ] ) ) {
-				$plugins_found[ $plugin_key ][ $_field_id ] = $plugin_details[ $plugin_key ][ $_field_id ];
+			if ( isset( $addons_details[ $addon_key ][ $_field_id ] ) ) {
+				$addons_found[ $addon_key ][ $_field_id ] =
+					$addons_details[ $addon_key ][ $_field_id ];
 			}
 		}
 	}
@@ -642,12 +684,12 @@ function vipgoci_wpcore_misc_get_addon_data_and_slugs_for_directory(
 	vipgoci_log(
 		'Got plugin/theme information from directory scan and WordPress.org API request',
 		array(
-			'path'          => $path,
-			'plugins_found' => $plugins_found,
+			'path'         => $path,
+			'addons_found' => $addons_found,
 		),
 		2
 	);
 
-	return $plugins_found;
+	return $addons_found;
 }
 
