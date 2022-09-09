@@ -44,7 +44,7 @@ final class WpscanReportEndTest extends TestCase {
 	 */
 	public function testWpscanReportEndPlugin(): void {
 		$report_end = vipgoci_wpscan_report_end(
-			VIPGOCI_WPSCAN_PLUGIN,
+			VIPGOCI_ADDON_PLUGIN,
 			'Type: %addon_type%. Message ends.'
 		);
 
@@ -74,7 +74,7 @@ final class WpscanReportEndTest extends TestCase {
 	 */
 	public function testWpscanReportEndTheme(): void {
 		$report_end = vipgoci_wpscan_report_end(
-			VIPGOCI_WPSCAN_THEME,
+			VIPGOCI_ADDON_THEME,
 			'Type: %addon_type%. Message ends.'
 		);
 

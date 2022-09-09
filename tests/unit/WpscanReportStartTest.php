@@ -44,7 +44,7 @@ final class WpscanReportStartTest extends TestCase {
 	 */
 	public function testWpscanReportStartPlugin(): void {
 		$report_start = vipgoci_wpscan_report_start(
-			VIPGOCI_WPSCAN_PLUGIN,
+			VIPGOCI_ADDON_PLUGIN,
 			'my-internal-name'
 		);
 
@@ -79,7 +79,7 @@ final class WpscanReportStartTest extends TestCase {
 	 */
 	public function testWpscanReportStartTheme(): void {
 		$report_start = vipgoci_wpscan_report_start(
-			VIPGOCI_WPSCAN_THEME,
+			VIPGOCI_ADDON_THEME,
 			'my-internal-name'
 		);
 
