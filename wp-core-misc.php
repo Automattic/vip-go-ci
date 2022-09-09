@@ -155,7 +155,7 @@ function vipgoci_wpcore_misc_get_addon_headers_and_type(
 			( ! empty( $plugin_data['Author'] ) ) &&
 			( ! empty( $plugin_data['Version'] ) )
 		) {
-			$type             = VIPGOCI_WPSCAN_PLUGIN;
+			$type             = VIPGOCI_ADDON_PLUGIN;
 			$addon_headers    = $plugin_data;
 			$version_detected = $plugin_data['Version'];
 		}
@@ -187,7 +187,7 @@ function vipgoci_wpcore_misc_get_addon_headers_and_type(
 			( ! empty( $theme_data['Author'] ) ) &&
 			( ! empty( $theme_data['Version'] ) )
 		) {
-			$type             = VIPGOCI_WPSCAN_THEME;
+			$type             = VIPGOCI_ADDON_THEME;
 			$addon_headers    = $theme_data;
 			$version_detected = $theme_data['Version'];
 		}
@@ -240,7 +240,7 @@ function vipgoci_wpcore_misc_get_addon_headers_and_type(
  * @return array List of plugins, with array slug as key, value array with details. Example:
  * Array(
  *   [hello/hello.php] => Array(
- *     [type] => vipgoci-wpscan-plugin
+ *     [type] => vipgoci-addon-plugin
  *     [addon_headers] => Array(
  *       [Name] => Hello Dolly
  *       [PluginURI] => http://wordpress.org/plugins/hello-dolly/
@@ -359,7 +359,7 @@ function vipgoci_wpcore_misc_scan_directory_for_addons(
 		/*
 		 * Calculate 'local slug'.
 		 */
-		if ( VIPGOCI_WPSCAN_THEME === $addon_data['type'] ) {
+		if ( VIPGOCI_ADDON_THEME === $addon_data['type'] ) {
 			// Special case for themes.
 			$wp_addon_key = $addon_data['type'] . '-' . basename( dirname( $tmp_path ) );
 		} elseif ( str_contains( $addon_file, '/' ) ) {
@@ -393,7 +393,7 @@ function vipgoci_wpcore_misc_scan_directory_for_addons(
  * @param array $addons_data Information about plugins/themes. For example:
  * Array(
  *   [hello/hello.php] => Array(
- *     [type] => vipgoci-wpscan-plugin
+ *     [type] => vipgoci-addon-plugin
  *     [addon_headers] => Array(
  *       [Name] => Hello Dolly
  *       [PluginURI] => http://wordpress.org/plugins/hello-dolly/
@@ -434,8 +434,8 @@ function vipgoci_wpcore_api_determine_slug_and_other_for_addons(
 
 	// Data to send to WordPress.org API.
 	$addon_data_to_send = array(
-		VIPGOCI_WPSCAN_PLUGIN => array(),
-		VIPGOCI_WPSCAN_THEME  => array(),
+		VIPGOCI_ADDON_PLUGIN => array(),
+		VIPGOCI_ADDON_THEME  => array(),
 	);
 
 	// Data collected about addons.
@@ -457,7 +457,7 @@ function vipgoci_wpcore_api_determine_slug_and_other_for_addons(
 
 	foreach ( $addons_data as $key => $data_item ) {
 		$key = str_replace(
-			array( VIPGOCI_WPSCAN_PLUGIN . '-', VIPGOCI_WPSCAN_THEME . '-' ),
+			array( VIPGOCI_ADDON_PLUGIN . '-', VIPGOCI_ADDON_THEME . '-' ),
 			array( '', '' ),
 			$key
 		);
@@ -513,12 +513,12 @@ function vipgoci_wpcore_api_determine_slug_and_other_for_addons(
 		$slugs_by_addon[ $data_item['type'] . '-' . $key ] = null;
 	}
 
-	foreach ( array( VIPGOCI_WPSCAN_PLUGIN, VIPGOCI_WPSCAN_THEME ) as $addon_query_type ) {
+	foreach ( array( VIPGOCI_ADDON_PLUGIN, VIPGOCI_ADDON_THEME ) as $addon_query_type ) {
 		if ( empty( $addon_data_to_send[ $addon_query_type ] ) ) {
 			continue;
 		}
 
-		$addon_query_type_short = VIPGOCI_WPSCAN_PLUGIN === $addon_query_type ?
+		$addon_query_type_short = VIPGOCI_ADDON_PLUGIN === $addon_query_type ?
 			'plugins' : 'themes';
 
 		$api_url = 'https://api.wordpress.org/' . rawurlencode( $addon_query_type_short ) . '/update-check/1.1/';
@@ -532,9 +532,9 @@ function vipgoci_wpcore_api_determine_slug_and_other_for_addons(
 			),
 		);
 
-		if ( VIPGOCI_WPSCAN_PLUGIN === $addon_query_type ) {
+		if ( VIPGOCI_ADDON_PLUGIN === $addon_query_type ) {
 			$api_query_data['all'] = 'true';
-		} elseif ( VIPGOCI_WPSCAN_THEME === $addon_query_type ) {
+		} elseif ( VIPGOCI_ADDON_THEME === $addon_query_type ) {
 			$api_query_data['translations'] = json_encode( array() );
 			$api_query_data['locale']       = json_encode( array() );
 		}
@@ -598,7 +598,7 @@ function vipgoci_wpcore_api_determine_slug_and_other_for_addons(
 		}
 
 		// API provides slug in 'theme' field, handle this.
-		if ( VIPGOCI_WPSCAN_THEME === $addon_query_type ) {
+		if ( VIPGOCI_ADDON_THEME === $addon_query_type ) {
 			$slugs_by_addon[ $addon_query_type . '-' . $key ]['slug'] = $slugs_by_addon[ $addon_query_type . '-' . $key ]['theme'];
 		}
 	}
@@ -630,7 +630,7 @@ function vipgoci_wpcore_api_determine_slug_and_other_for_addons(
  *               For example:
  * Array(
  *   [hello/hello.php] => Array(
- *     [type] => vipgoci-wpscan-plugin
+ *     [type] => vipgoci-addon-plugin
  *     [addon_headers] => Array(
  *       [Name] => Hello Dolly
  *       [PluginURI] => http://wordpress.org/plugins/hello-dolly/

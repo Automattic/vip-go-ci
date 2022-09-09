@@ -85,7 +85,7 @@ final class WpCoreMiscGetAddonHeadersAndTypeTest extends TestCase {
 		);
 
 		$expected_result = array(
-			'type'             => 'vipgoci-wpscan-plugin',
+			'type'             => 'vipgoci-addon-plugin',
 			'addon_headers'    => array(
 				'Name'        => 'My Package',
 				'PluginURI'   => 'http://wordpress.org/test/my-package/',
@@ -186,7 +186,7 @@ final class WpCoreMiscGetAddonHeadersAndTypeTest extends TestCase {
 		);
 
 		$expected_result = array(
-			'type'             => 'vipgoci-wpscan-theme',
+			'type'             => 'vipgoci-addon-theme',
 			'addon_headers'    => array(
 				'Name'        => 'My Package',
 				'ThemeURI'    => 'http://wordpress.org/test/my-package/',

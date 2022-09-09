@@ -95,8 +95,8 @@ final class WpCoreMiscScanDirectoryForAdddonsTest extends TestCase {
 		}
 
 		$results_expected = array(
-			'vipgoci-wpscan-theme-addon2'                => array(
-				'type'             => 'vipgoci-wpscan-theme',
+			'vipgoci-addon-theme-addon2'                => array(
+				'type'             => 'vipgoci-addon-theme',
 				'addon_headers'    => array(
 					'Name'        => 'My Package',
 					'ThemeURI'    => 'http://wordpress.org/test/my-package/',
@@ -118,8 +118,8 @@ final class WpCoreMiscScanDirectoryForAdddonsTest extends TestCase {
 				'version_detected' => '1.0.0',
 				'file_name'        => $this->temp_dir . '/WpCoreMiscScanDirectoryForAdddonsTest/addon2/style.css',
 			),
-			'vipgoci-wpscan-plugin-addon1/file2.php'     => array(
-				'type'             => 'vipgoci-wpscan-plugin',
+			'vipgoci-addon-plugin-addon1/file2.php'     => array(
+				'type'             => 'vipgoci-addon-plugin',
 				'addon_headers'    => array(
 					'Name'        => 'My <h1>Other</h1> Package',
 					'PluginURI'   => 'http://wordpress.org/test/my-other-package/',
@@ -140,8 +140,8 @@ final class WpCoreMiscScanDirectoryForAdddonsTest extends TestCase {
 				'version_detected' => '1.1.0',
 				'file_name'        => $this->temp_dir . '/WpCoreMiscScanDirectoryForAdddonsTest/addon1/file2.php',
 			),
-			'vipgoci-wpscan-plugin-this-is-a-plugin.php' => array(
-				'type'             => 'vipgoci-wpscan-plugin',
+			'vipgoci-addon-plugin-this-is-a-plugin.php' => array(
+				'type'             => 'vipgoci-addon-plugin',
 				'addon_headers'    => array(
 					'Name'        => 'This is a plugin.',
 					'PluginURI'   => 'http://wordpress.org/test/my-other-package/',
@@ -215,8 +215,8 @@ final class WpCoreMiscScanDirectoryForAdddonsTest extends TestCase {
 		}
 
 		$results_expected = array(
-			'vipgoci-wpscan-plugin-this-is-a-plugin.php' => array(
-				'type'             => 'vipgoci-wpscan-plugin',
+			'vipgoci-addon-plugin-this-is-a-plugin.php' => array(
+				'type'             => 'vipgoci-addon-plugin',
 				'addon_headers'    => array(
 					'Name'        => 'This is a plugin.',
 					'PluginURI'   => 'http://wordpress.org/test/my-other-package/',

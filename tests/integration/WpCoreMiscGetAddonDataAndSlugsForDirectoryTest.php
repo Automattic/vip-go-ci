@@ -30,14 +30,14 @@ final class WpCoreMiscGetAddonDataAndSlugsForDirectoryTest extends TestCase {
 	 *
 	 * @var $KEY_PLUGIN_HELLO
 	 */
-	private const KEY_PLUGIN_HELLO = 'vipgoci-wpscan-plugin-hello/hello.php';
+	private const KEY_PLUGIN_HELLO = 'vipgoci-addon-plugin-hello/hello.php';
 
 	/**
 	 * Constant for this-is-a-plugin.
 	 *
 	 * @var $KEY_PLUGIN_THIS_IS
 	 */
-	private const KEY_PLUGIN_THIS_IS = 'vipgoci-wpscan-plugin-this-is-a-plugin.php';
+	private const KEY_PLUGIN_THIS_IS = 'vipgoci-addon-plugin-this-is-a-plugin.php';
 
 	/**
 	 * Setup function. Require files.
