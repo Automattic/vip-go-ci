@@ -12,7 +12,7 @@ declare(strict_types=1);
  *
  * @param string $wpscan_slug         Plugin or theme slug.
  * @param string $wpscan_type         Type of scan, plugin or theme
- *                                    -- use VIPGOCI_WPSCAN_PLUGIN or VIPGOCI_WPSCAN_THEME defines.
+ *                                    -- use VIPGOCI_ADDON_PLUGIN or VIPGOCI_ADDON_THEME defines.
  * @param string $wpscan_api_base_url Base WPScan API URL.
  * @param string $wpscan_access_token WPScan access token to use.
  *
@@ -30,9 +30,9 @@ function vipgoci_wpscan_do_scan_via_api(
 	$wpscan_complete_url =
 		$wpscan_api_base_url;
 
-	if ( VIPGOCI_WPSCAN_PLUGIN === $wpscan_type ) {
+	if ( VIPGOCI_ADDON_PLUGIN === $wpscan_type ) {
 		$wpscan_complete_url .= '/plugins';
-	} elseif ( VIPGOCI_WPSCAN_THEME === $wpscan_type ) {
+	} elseif ( VIPGOCI_ADDON_THEME === $wpscan_type ) {
 		$wpscan_complete_url .= '/themes';
 	} else {
 		vipgoci_sysexit(
