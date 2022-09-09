@@ -267,11 +267,14 @@ define(
 );
 
 /*
+ * Defines for addons generally.
+ */
+define( 'VIPGOCI_ADDON_PLUGIN', 'vipgoci-addon-plugin' );
+define( 'VIPGOCI_ADDON_THEME', 'vipgoci-addon-theme' );
+
+/*
  * Defines for WPScan API support.
  */
-define( 'VIPGOCI_WPSCAN_PLUGIN', 'vipgoci-wpscan-plugin' );
-define( 'VIPGOCI_WPSCAN_THEME', 'vipgoci-wpscan-theme' );
-
 define( 'VIPGOCI_WPSCAN_BASE_URL', 'https://wpscan.com' );
 define( 'VIPGOCI_WPSCAN_API_BASE_URL', VIPGOCI_WPSCAN_BASE_URL . '/api/v3' );
 

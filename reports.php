@@ -790,11 +790,11 @@ function vipgoci_report_submit_pr_generic_comment_from_results(
 			} elseif ( VIPGOCI_STATS_WPSCAN_API === $commit_issue['type'] ) {
 				/*
 				 * Determine key based on addon_type;
-				 * either VIPGOCI_WPSCAN_PLUGIN or VIPGOCI_WPSCAN_THEME.
+				 * either VIPGOCI_ADDON_PLUGIN or VIPGOCI_ADDON_THEME.
 				 */
-				if ( VIPGOCI_WPSCAN_PLUGIN === $commit_issue['issue']['addon_type'] ) {
+				if ( VIPGOCI_ADDON_PLUGIN === $commit_issue['issue']['addon_type'] ) {
 					$postfields_key = 'wpscan_api_plugins_body';
-				} elseif ( VIPGOCI_WPSCAN_THEME === $commit_issue['issue']['addon_type'] ) {
+				} elseif ( VIPGOCI_ADDON_THEME === $commit_issue['issue']['addon_type'] ) {
 					$postfields_key = 'wpscan_api_themes_body';
 				}
 
@@ -840,22 +840,22 @@ function vipgoci_report_submit_pr_generic_comment_from_results(
 				$postfields_body_end = '';
 			} elseif ( 'wpscan_api_plugins_body' === $key ) {
 				$postfields_body_start = vipgoci_wpscan_report_start(
-					VIPGOCI_WPSCAN_PLUGIN,
+					VIPGOCI_ADDON_PLUGIN,
 					$name_to_use
 				);
 
 				$postfields_body_end = vipgoci_wpscan_report_end(
-					VIPGOCI_WPSCAN_PLUGIN,
+					VIPGOCI_ADDON_PLUGIN,
 					$wpscan_api_report_end_msg
 				);
 			} elseif ( 'wpscan_api_themes_body' === $key ) {
 				$postfields_body_start = vipgoci_wpscan_report_start(
-					VIPGOCI_WPSCAN_THEME,
+					VIPGOCI_ADDON_THEME,
 					$name_to_use
 				);
 
 				$postfields_body_end = vipgoci_wpscan_report_end(
-					VIPGOCI_WPSCAN_THEME,
+					VIPGOCI_ADDON_THEME,
 					$wpscan_api_report_end_msg
 				);
 			}

@@ -23,7 +23,7 @@ final class WpCoreApiDetermineSlugAndOtherForAddonsTest extends TestCase {
 	 *
 	 * @var KEY_PLUGIN_PREFIX
 	 */
-	private const KEY_PLUGIN_PREFIX = 'vipgoci-wpscan-plugin';
+	private const KEY_PLUGIN_PREFIX = 'vipgoci-addon-plugin';
 
 	/**
 	 * Setup function. Require files.
@@ -47,7 +47,7 @@ final class WpCoreApiDetermineSlugAndOtherForAddonsTest extends TestCase {
 		$actual_results = vipgoci_wpcore_api_determine_slug_and_other_for_addons(
 			array(
 				self::KEY_PLUGIN_PREFIX . '-hello/hello.php'   => array(
-					'type'          => 'vipgoci-wpscan-plugin',
+					'type'          => 'vipgoci-addon-plugin',
 					'addon_headers' => array(
 						'Name'        => 'Hello Dolly',
 						'PluginURI'   => 'http://wordpress.org/plugins/hello-dolly/',
@@ -61,7 +61,7 @@ final class WpCoreApiDetermineSlugAndOtherForAddonsTest extends TestCase {
 					),
 				),
 				self::KEY_PLUGIN_PREFIX . '-hello2/hello2.php' => array(
-					'type'          => 'vipgoci-wpscan-plugin',
+					'type'          => 'vipgoci-addon-plugin',
 					'addon_headers' => array(
 						'Name'        => 'Hello Dolly',
 						'PluginURI'   => 'http://wordpress.org/plugins/hello-dolly/',
@@ -75,7 +75,7 @@ final class WpCoreApiDetermineSlugAndOtherForAddonsTest extends TestCase {
 					),
 				),
 				self::KEY_PLUGIN_PREFIX . '-hello3/hello3.php' => array(
-					'type'          => 'vipgoci-wpscan-plugin',
+					'type'          => 'vipgoci-addon-plugin',
 					'addon_headers' => array(
 						'Name'        => 'Hello Dolly',
 						'PluginURI'   => 'http://wordpress.org/plugins/hello-dolly/',
@@ -89,7 +89,7 @@ final class WpCoreApiDetermineSlugAndOtherForAddonsTest extends TestCase {
 					),
 				),
 				self::KEY_PLUGIN_PREFIX . '-hello4/hello4.php' => array(
-					'type'          => 'vipgoci-wpscan-plugin',
+					'type'          => 'vipgoci-addon-plugin',
 					'addon_headers' => array(
 						'Name'        => 'Hello Dolly',
 						'PluginURI'   => 'http://wordpress.org/plugins/hello-dolly/',
@@ -194,7 +194,7 @@ final class WpCoreApiDetermineSlugAndOtherForAddonsTest extends TestCase {
 		$actual_results = vipgoci_wpcore_api_determine_slug_and_other_for_addons(
 			array(
 				self::KEY_PLUGIN_PREFIX . '-my-test/invalid.php' => array(
-					'type'          => 'vipgoci-wpscan-plugin',
+					'type'          => 'vipgoci-addon-plugin',
 					'addon_headers' => array(
 						'Name'        => 'This is invalid, 123',
 						'PluginURI'   => 'http://wordpress.org/INVALID/invalid-1234/',
@@ -252,7 +252,7 @@ final class WpCoreApiDetermineSlugAndOtherForAddonsTest extends TestCase {
 			array(
 				self::KEY_PLUGIN_PREFIX . '-my-test/invalid.php'  => array(),
 				self::KEY_PLUGIN_PREFIX . '-my-test/invalid2.php' => array(
-					'type'          => 'vipgoci-wpscan-plugin',
+					'type'          => 'vipgoci-addon-plugin',
 					'addon_headers' => array(
 						'Name'        => 'This is invalid, 123',
 						'PluginURI'   => 'http://wordpress.org/INVALID/invalid-1234/',
