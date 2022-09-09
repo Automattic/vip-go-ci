@@ -58,7 +58,7 @@ final class WpscanScanSaveForSubmissionTest extends TestCase {
 					'vulnerabilities' => array(),
 				),
 				'addon_data_for_dir' => array(
-					'type'             => 'vipgoci-wpscan-plugin',
+					'type'             => 'vipgoci-addon-plugin',
 					'addon_headers'    => array(
 						'Name'        => 'Hello Dolly',
 						'PluginURI'   => 'http://wordpress.org/plugins/hello-dolly/',
@@ -355,7 +355,7 @@ final class WpscanScanSaveForSubmissionTest extends TestCase {
 						'file_name' => 'plugins/hello/hello.php',
 						'file_line' => 1,
 						'issue'     => array(
-							'addon_type' => 'vipgoci-wpscan-plugin',
+							'addon_type' => 'vipgoci-addon-plugin',
 							'message'    => 'Hello Dolly',
 							'level'      => 'warning',
 							'security'   => 'obsolete',

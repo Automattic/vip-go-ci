@@ -306,7 +306,7 @@ final class WpscanScanCommitTest extends TestCase {
 						'file_name' => $this->options['wpscan-pr-1-plugin-dir'] . '/' . $this->options['wpscan-pr-1-plugin-key'],
 						'file_line' => 1,
 						'issue'     => array(
-							'addon_type' => 'vipgoci-wpscan-plugin',
+							'addon_type' => 'vipgoci-addon-plugin',
 							'message'    => $this->options['wpscan-pr-1-plugin-name'],
 							'level'      => 'warning',
 							'security'   => 'obsolete',

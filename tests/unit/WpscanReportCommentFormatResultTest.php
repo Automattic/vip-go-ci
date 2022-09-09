@@ -63,7 +63,7 @@ final class WpscanReportCommentFormatResultTest extends TestCase {
 					),
 				),
 			),
-			VIPGOCI_WPSCAN_PLUGIN
+			VIPGOCI_ADDON_PLUGIN
 		);
 
 		$this->assertStringContainsString(
@@ -201,7 +201,7 @@ final class WpscanReportCommentFormatResultTest extends TestCase {
 					),
 				),
 			),
-			VIPGOCI_WPSCAN_THEME
+			VIPGOCI_ADDON_THEME
 		);
 
 		$this->assertStringContainsString(
@@ -343,7 +343,7 @@ final class WpscanReportCommentFormatResultTest extends TestCase {
 					),
 				),
 			),
-			VIPGOCI_WPSCAN_THEME
+			VIPGOCI_ADDON_THEME
 		);
 
 		vipgoci_unittests_remove_indication_for_test_id( 'WpscanReportCommentFormatResultTest' );

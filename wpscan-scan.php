@@ -172,7 +172,7 @@ function vipgoci_wpscan_find_addon_dirs_altered(
  *           [vulnerabilities] => Array()
  *         )
  *         [addon_data_for_dir] => Array(
- *           [type] => vipgoci-wpscan-plugin
+ *           [type] => vipgoci-addon-plugin
  *           [addon_headers] => Array(
  *             [Name] => My plugin
  *             [PluginURI] => http://wordpress.org/plugins/my-plugin
@@ -209,7 +209,7 @@ function vipgoci_wpscan_scan_dirs_altered(
 
 		foreach ( $addon_data_for_dir as $addon_item_key => $addon_item_info ) {
 			$addon_item_key = str_replace(
-				array( VIPGOCI_WPSCAN_PLUGIN . '-', VIPGOCI_WPSCAN_THEME . '-' ),
+				array( VIPGOCI_ADDON_PLUGIN . '-', VIPGOCI_ADDON_THEME . '-' ),
 				array( '', '' ),
 				$addon_item_key
 			);
