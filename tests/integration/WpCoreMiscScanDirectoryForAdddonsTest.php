@@ -95,7 +95,7 @@ final class WpCoreMiscScanDirectoryForAdddonsTest extends TestCase {
 		}
 
 		$results_expected = array(
-			'vipgoci-wpscan-theme-addon2'     => array(
+			'vipgoci-wpscan-theme-addon2'                => array(
 				'type'             => 'vipgoci-wpscan-theme',
 				'addon_headers'    => array(
 					'Name'        => 'My Package',
