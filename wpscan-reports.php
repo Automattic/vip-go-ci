@@ -10,7 +10,7 @@ declare(strict_types=1);
 /**
  * Returns beginning of a WPScan API report comment.
  *
- * @param string $issue_type  Type of result being processed; VIPGOCI_WPSCAN_PLUGIN or VIPGOCI_WPSCAN_THEME.
+ * @param string $issue_type  Type of result being processed; VIPGOCI_ADDON_PLUGIN or VIPGOCI_ADDON_THEME.
  * @param string $name_to_use Name to use in reports to identify the bot.
  *
  * @return string Returns beginning of comment.
@@ -19,9 +19,9 @@ function vipgoci_wpscan_report_start(
 	string $issue_type,
 	string $name_to_use
 ) :string {
-	if ( VIPGOCI_WPSCAN_PLUGIN === $issue_type ) {
+	if ( VIPGOCI_ADDON_PLUGIN === $issue_type ) {
 		$comment_type = 'plugin';
-	} elseif ( VIPGOCI_WPSCAN_THEME === $issue_type ) {
+	} elseif ( VIPGOCI_ADDON_THEME === $issue_type ) {
 		$comment_type = 'theme';
 	} else {
 		vipgoci_sysexit(
@@ -54,7 +54,7 @@ function vipgoci_wpscan_report_start(
 /**
  * Returns end of a WPScan API report comment.
  *
- * @param string $issue_type                Type of result being processed; VIPGOCI_WPSCAN_PLUGIN or VIPGOCI_WPSCAN_THEME.
+ * @param string $issue_type                Type of result being processed; VIPGOCI_ADDON_PLUGIN or VIPGOCI_ADDON_THEME.
  * @param string $wpscan_api_report_end_msg Message to append to end of WPScan API report.
  *
  * @return string Returns end of comment.
@@ -63,9 +63,9 @@ function vipgoci_wpscan_report_end(
 	string $issue_type,
 	string $wpscan_api_report_end_msg
 ) :string {
-	if ( VIPGOCI_WPSCAN_PLUGIN === $issue_type ) {
+	if ( VIPGOCI_ADDON_PLUGIN === $issue_type ) {
 		$comment_type = 'plugin';
-	} elseif ( VIPGOCI_WPSCAN_THEME === $issue_type ) {
+	} elseif ( VIPGOCI_ADDON_THEME === $issue_type ) {
 		$comment_type = 'theme';
 	} else {
 		vipgoci_sysexit(
@@ -94,7 +94,7 @@ function vipgoci_wpscan_report_end(
  * @param string $repo_name  Repository name.
  * @param string $commit_id  Commit-ID of current commit.
  * @param array  $issue      Array with issue details to report.
- * @param string $issue_type Type of result being processed; VIPGOCI_WPSCAN_PLUGIN or VIPGOCI_WPSCAN_THEME.
+ * @param string $issue_type Type of result being processed; VIPGOCI_ADDON_PLUGIN or VIPGOCI_ADDON_THEME.
  * @param bool   $dry_mode   If WPScan API dry mode is enabled.
  *
  * @return string Formatted result.
@@ -124,11 +124,11 @@ function vipgoci_wpscan_report_comment_format_result(
 	}
 
 	// Type of addon.
-	if ( VIPGOCI_WPSCAN_PLUGIN === $issue_type ) {
+	if ( VIPGOCI_ADDON_PLUGIN === $issue_type ) {
 		$res .= ' Plugin information' . "\n" .
 			'**Plugin Name**: ' . vipgoci_output_html_escape( $issue['message'] ) . "\n" .
 			'**Plugin URI**: ' . vipgoci_output_html_escape( $issue['details']['url'] ) . "\n";
-	} elseif ( VIPGOCI_WPSCAN_THEME === $issue_type ) {
+	} elseif ( VIPGOCI_ADDON_THEME === $issue_type ) {
 		$res .= ' Theme information' . "\n" .
 			'**Theme Name**: ' . vipgoci_output_html_escape( $issue['message'] ) . "\n" .
 			'**Theme URI**: ' . vipgoci_output_html_escape( $issue['details']['url'] ) . "\n";
