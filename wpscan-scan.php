@@ -102,9 +102,14 @@ function vipgoci_wpscan_find_addon_dirs_altered(
 				$directory_changed_by_commit
 			);
 
+			// Perform sanity checks before adding to results.
 			if (
 				( $wpscan_path === $directory_changed_by_commit ) &&
-				( null === $dir_changed_by_commit_relative )
+				( null === $dir_changed_by_commit_relative ) &&
+				( true === file_exists(
+					$options['local-git-repo'] . DIRECTORY_SEPARATOR .
+						$wpscan_path
+				) )
 			) {
 				// Addon file found in root of plugin/theme directory, add directory.
 				vipgoci_array_push_uniquely(
@@ -119,6 +124,14 @@ function vipgoci_wpscan_find_addon_dirs_altered(
 				continue;
 			}
 
+			// Ensure file/directory exists before adding to results.
+			if ( true !== file_exists(
+				$options['local-git-repo'] . DIRECTORY_SEPARATOR .
+					$dir_changed_by_commit_relative
+			) ) {
+				continue;
+			}
+	
 			vipgoci_array_push_uniquely(
 				$addon_dirs_relevant_to_scan,
 				$dir_changed_by_commit_relative
