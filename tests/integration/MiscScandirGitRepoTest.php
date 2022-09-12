@@ -94,7 +94,7 @@ final class MiscScandirGitRepoTest extends TestCase {
 	 *
 	 * @covers ::vipgoci_scandir_git_repo
 	 */
-	public function testScandirRepoTestWithSubdirectoriesAndNoFilter() {
+	public function testScandirRepoWithSubdirectoriesAndNoFilter() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
@@ -149,7 +149,7 @@ final class MiscScandirGitRepoTest extends TestCase {
 	 *
 	 * @covers ::vipgoci_scandir_git_repo
 	 */
-	public function testScandirRepoTestWithSubdirectoriesAndFilter() {
+	public function testScandirRepoWithSubdirectoriesAndFilter() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
@@ -205,7 +205,7 @@ final class MiscScandirGitRepoTest extends TestCase {
 	 *
 	 * @covers ::vipgoci_scandir_git_repo
 	 */
-	public function testScandirRepoTestWithoutSubdirectoriesAndNoFilter() {
+	public function testScandirRepoWithoutSubdirectoriesAndNoFilter() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
@@ -258,7 +258,7 @@ final class MiscScandirGitRepoTest extends TestCase {
 	 *
 	 * @covers ::vipgoci_scandir_git_repo
 	 */
-	public function testScandirRepoTestWithoutSubdirectoriesAndFilter() {
+	public function testScandirRepoWithoutSubdirectoriesAndFilter() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
