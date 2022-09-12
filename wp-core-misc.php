@@ -261,9 +261,10 @@ function vipgoci_wpcore_misc_scan_directory_for_addons(
 	string $path,
 	bool $process_subdirectories = true
 ): array {
-	$addons_dir = @opendir( $path ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
-
-	if ( false === $addons_dir ) {
+	if (
+		( false === is_dir( $path ) ) ||
+		( false === is_readable( $path ) )
+	) {
 		vipgoci_log(
 			'Unable to scan directory for plugins/themes, skipping',
 			array(
@@ -275,51 +276,16 @@ function vipgoci_wpcore_misc_scan_directory_for_addons(
 		return array();
 	}
 
-	$addon_files = array();
-
 	/*
-	 * Loop through files/directories in $path and compile
-	 * an array of files found.
+	 * Get an array of files in directories and subdirectories found in path.
 	 */
-	while ( ( $file = readdir( $addons_dir ) ) !== false ) { // phpcs:ignore WordPress.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition
-		if ( '.' === substr( $file, 0, 1 ) ) {
-			continue;
-		}
-
-		$tmp_subdir = $path . DIRECTORY_SEPARATOR . $file;
-
-		if ( ( is_dir( $tmp_subdir ) ) && ( false === $process_subdirectories ) ) {
-			continue; // Should not process subdirectories.
-		} elseif ( ( is_dir( $tmp_subdir ) ) && ( true === $process_subdirectories ) ) {
-			$plugins_subdir = @opendir( $tmp_subdir ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
-
-			if ( false !== $plugins_subdir ) {
-				while ( ( $subfile = readdir( $plugins_subdir ) ) !== false ) { // phpcs:ignore WordPress.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition
-					if ( '.' === substr( $subfile, 0, 1 ) ) {
-						continue;
-					}
-
-					if (
-						( '.php' === substr( $subfile, -4 ) ) ||
-						( '.css' === substr( $subfile, -4 ) )
-					) {
-						$addon_files[] = $file . DIRECTORY_SEPARATOR . $subfile;
-					}
-				}
-
-				closedir( $plugins_subdir );
-			}
-		} else {
-			if (
-				( '.php' === substr( $file, -4 ) ) ||
-				( '.css' === substr( $file, -4 ) )
-			) {
-				$addon_files[] = $file;
-			}
-		}
-	}
-
-	closedir( $addons_dir );
+	$addon_files = vipgoci_scandir_git_repo(
+		$path,
+		$process_subdirectories,
+		array(
+			'file_extensions' => array( 'php', 'css' ),
+		)
+	);
 
 	/*
 	 * Compile list of plugins based on $addon_files
