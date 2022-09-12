@@ -703,7 +703,7 @@ function vipgoci_filter_file_path(
  * it, making sure to filter the result
  *
  * @param string      $path                   Path to scan.
- * @param bool        $process_subdirectories If to process subdirectories. 
+ * @param bool        $process_subdirectories If to process subdirectories.
  * @param null|array  $filter                 Filter to apply.
  * @param null|string $base_path              Internal only, should be null normally.
  *
