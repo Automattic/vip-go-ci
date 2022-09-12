@@ -183,6 +183,115 @@ final class MiscScandirGitRepoTest extends TestCase {
 			$this->options['local-git-repo'],
 			true,
 			array(
+				'file_extensions' => array( 'txt' ),
+			)
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		$this->assertSame(
+			array(
+				'myfile1.txt',
+				'myfile2.txt',
+				'myfolder5/myotherfolder6/somefile2.txt',
+				'myfolder5/somefile1.txt',
+			),
+			$ret
+		);
+	}
+
+	/**
+	 * Test function with subdirectories disabled and no filter.
+	 *
+	 * @covers ::vipgoci_scandir_git_repo
+	 */
+	public function testScandirRepoTestWithoutSubdirectoriesAndNoFilter() {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( 'github-token', 'token' ),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
+		$this->options['commit'] =
+			$this->options['commit-test-scandir-repo-test-1'];
+
+		vipgoci_unittests_output_suppress();
+
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped(
+				'Could not set up git repository: ' .
+					vipgoci_unittests_output_get()
+			);
+
+			return;
+		}
+
+		$ret = vipgoci_scandir_git_repo(
+			$this->options['local-git-repo'],
+			false,
+			null
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		$this->assertSame(
+			array(
+				'README.md',
+				'myfile1.txt',
+				'myfile2.txt',
+			),
+			$ret
+		);
+	}
+
+	/**
+	 * Test function with subdirectories disabled and filter applied.
+	 *
+	 * @covers ::vipgoci_scandir_git_repo
+	 */
+	public function testScandirRepoTestWithoutSubdirectoriesAndFilter() {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( 'github-token', 'token' ),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
+		$this->options['commit'] =
+			$this->options['commit-test-scandir-repo-test-2'];
+
+		vipgoci_unittests_output_suppress();
+
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped(
+				'Could not set up git repository: ' .
+					vipgoci_unittests_output_get()
+			);
+
+			return;
+		}
+
+		$ret = vipgoci_scandir_git_repo(
+			$this->options['local-git-repo'],
+			false,
+			array(
 				'file_extensions' => array( 'md' ),
 			)
 		);
