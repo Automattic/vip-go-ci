@@ -710,7 +710,8 @@ function vipgoci_filter_file_path(
  */
 function vipgoci_scandir_git_repo(
 	string $path,
-	null|array $filter,
+	bool $process_subdirectories = true,
+	null|array $filter = null,
 	null|string $base_path = null
 ) :array {
 	$result = array();
@@ -755,12 +756,18 @@ function vipgoci_scandir_git_repo(
 		if ( is_dir(
 			$path . DIRECTORY_SEPARATOR . $value
 		) ) {
+			if ( false === $process_subdirectories ) {
+				// Not supposed to process subdirectories, skip.
+				continue;
+			}
+
 			/*
 			 * A directory, traverse into, get files,
 			 * amend the results
 			 */
 			$tmp_result = vipgoci_scandir_git_repo(
 				$path . DIRECTORY_SEPARATOR . $value,
+				$process_subdirectories,
 				$filter,
 				$base_path
 			);
