@@ -59,7 +59,7 @@ final class MiscScandirGitRepoTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_scandir_git_repo
 	 */
-	public function testScandirRepoTest1() {
+	public function testScandirRepoTestWithSubdirectoriesAndNoFilter() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
@@ -91,6 +91,7 @@ final class MiscScandirGitRepoTest extends TestCase {
 
 		$ret = vipgoci_scandir_git_repo(
 			$this->options['local-git-repo'],
+			true,
 			null
 		);
 
@@ -111,7 +112,7 @@ final class MiscScandirGitRepoTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_scandir_git_repo
 	 */
-	public function testScandirRepoTest2() {
+	public function testScandirRepoTestWithSubdirectoriesAndFilter() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
@@ -143,6 +144,7 @@ final class MiscScandirGitRepoTest extends TestCase {
 
 		$ret = vipgoci_scandir_git_repo(
 			$this->options['local-git-repo'],
+			true,
 			array(
 				'file_extensions'	=> array( 'md' )
 			)
