@@ -298,6 +298,8 @@ final class WpscanScanCommitTest extends TestCase {
 			)
 		);
 
+		unset( $commit_issues_submit[ $this->options['wpscan-pr-1-number'] ][0]['issue']['security'] );
+
 		$this->assertSame(
 			array(
 				$this->options['wpscan-pr-1-number'] => array(
@@ -309,7 +311,6 @@ final class WpscanScanCommitTest extends TestCase {
 							'addon_type' => 'vipgoci-addon-plugin',
 							'message'    => $this->options['wpscan-pr-1-plugin-name'],
 							'level'      => 'warning',
-							'security'   => 'obsolete',
 							'severity'   => 10,
 							'details'    => array(
 								'installed_location' => $this->options['wpscan-pr-1-plugin-dir'] . '/' . $this->options['wpscan-pr-1-plugin-key'],
