@@ -24,11 +24,15 @@ final class WpscanScanDirsAlteredTest extends TestCase {
 	 * @var $options_wpscan_api_scan
 	 */
 	private array $options_wpscan_api_scan = array(
-		'wpscan-pr-1-commit-id'   => null,
-		'wpscan-pr-1-dirs-scan'   => null,
-		'wpscan-pr-1-plugin-dir'  => null,
-		'wpscan-pr-1-plugin-key'  => null,
-		'wpscan-pr-1-plugin-name' => null,
+		'wpscan-pr-1-commit-id'    => null,
+		'wpscan-pr-1-dirs-scan'    => null,
+		'wpscan-pr-1-dirs-altered' => null,
+		'wpscan-pr-1-plugin-dir'   => null,
+		'wpscan-pr-1-plugin-key'   => null,
+		'wpscan-pr-1-plugin-name'  => null,
+		'wpscan-pr-1-theme-dir'    => null,
+		'wpscan-pr-1-theme-key'    => null,
+		'wpscan-pr-1-theme-name'   => null,
 	);
 
 	/**
@@ -163,107 +167,112 @@ final class WpscanScanDirsAlteredTest extends TestCase {
 
 		$results_actual = vipgoci_wpscan_scan_dirs_altered(
 			$this->options,
-			array(
-				'plugins',
-				'plugins/hello',
-				'plugins/not-a-plugin',
+			explode(
+				',',
+				$this->options['wpscan-pr-1-dirs-altered']
 			)
 		);
 
 		$this->assertSame(
 			array(
 				$this->options['wpscan-pr-1-plugin-dir'],
+				$this->options['wpscan-pr-1-theme-dir'],
 			),
 			array_keys( $results_actual )
 		);
 
-		$this->assertSame(
-			array(
-				$this->options['wpscan-pr-1-plugin-key'],
-			),
-			array_keys( $results_actual[ $this->options['wpscan-pr-1-plugin-dir'] ] )
-		);
+		foreach ( array( 'plugin', 'theme' ) as $addon_type ) {
+			$this->assertSame(
+				array(
+					$this->options[ 'wpscan-pr-1-' . $addon_type . '-key' ],
+				),
+				array_keys( $results_actual[ $this->options[ 'wpscan-pr-1-' . $addon_type . '-dir' ] ] )
+			);
 
-		$plugin_details = $results_actual[ $this->options['wpscan-pr-1-plugin-dir'] ][ $this->options['wpscan-pr-1-plugin-key'] ];
+			$addon_details = $results_actual[ $this->options[ 'wpscan-pr-1-' . $addon_type . '-dir' ] ][ $this->options[ 'wpscan-pr-1-' . $addon_type . '-key' ] ];
 
-		$this->assertSame(
-			array(
-				'security_type',
-				'wpscan_results',
-				'addon_data_for_dir',
-			),
-			array_keys( $plugin_details )
-		);
+			$this->assertSame(
+				array(
+					'security_type',
+					'wpscan_results',
+					'addon_data_for_dir',
+				),
+				array_keys( $addon_details )
+			);
 
-		$this->assertTrue(
-			isset( $plugin_details['security_type'] )
-		);
+			$this->assertTrue(
+				isset( $addon_details['security_type'] )
+			);
 
-		$this->assertTrue(
-			isset( $plugin_details['wpscan_results']['friendly_name'] )
-		);
+			$this->assertTrue(
+				isset( $addon_details['wpscan_results']['friendly_name'] )
+			);
 
-		$this->assertTrue(
-			isset( $plugin_details['wpscan_results']['latest_version'] )
-		);
+			$this->assertTrue(
+				isset( $addon_details['wpscan_results']['latest_version'] )
+			);
 
-		$this->assertTrue(
-			isset( $plugin_details['wpscan_results']['vulnerabilities'] )
-		);
+			$this->assertTrue(
+				isset( $addon_details['wpscan_results']['vulnerabilities'] )
+			);
 
-		$this->assertFalse(
-			empty( $plugin_details['addon_data_for_dir'] )
-		);
+			$this->assertFalse(
+				empty( $addon_details['addon_data_for_dir'] )
+			);
 
-		$this->assertFalse(
-			empty( $plugin_details['addon_data_for_dir']['type'] )
-		);
+			$this->assertFalse(
+				empty( $addon_details['addon_data_for_dir']['type'] )
+			);
 
-		$this->assertTrue(
-			( isset( $plugin_details['addon_data_for_dir']['id'] ) ) &&
-			( ! empty( $plugin_details['addon_data_for_dir']['id'] ) )
-		);
+			if ( 'plugin' === $addon_type ) {
+				$this->assertTrue(
+					( isset( $addon_details['addon_data_for_dir']['id'] ) ) &&
+					( ! empty( $addon_details['addon_data_for_dir']['id'] ) )
+				);
+			}
 
-		$this->assertTrue(
-			( isset( $plugin_details['addon_data_for_dir']['slug'] ) ) &&
-			( ! empty( $plugin_details['addon_data_for_dir']['slug'] ) )
-		);
+			$this->assertTrue(
+				( isset( $addon_details['addon_data_for_dir']['slug'] ) ) &&
+				( ! empty( $addon_details['addon_data_for_dir']['slug'] ) )
+			);
 
-		$this->assertTrue(
-			( isset( $plugin_details['addon_data_for_dir']['new_version'] ) ) &&
-			( ! empty( $plugin_details['addon_data_for_dir']['new_version'] ) )
-		);
+			$this->assertTrue(
+				( isset( $addon_details['addon_data_for_dir']['new_version'] ) ) &&
+				( ! empty( $addon_details['addon_data_for_dir']['new_version'] ) )
+			);
 
-		$this->assertTrue(
-			( isset( $plugin_details['addon_data_for_dir']['plugin'] ) ) &&
-			( ! empty( $plugin_details['addon_data_for_dir']['plugin'] ) )
-		);
+			if ( 'plugin' === $addon_type ) {
+				$this->assertTrue(
+					( isset( $addon_details['addon_data_for_dir']['plugin'] ) ) &&
+					( ! empty( $addon_details['addon_data_for_dir']['plugin'] ) )
+				);
+			}
 
-		$this->assertTrue(
-			( isset( $plugin_details['addon_data_for_dir']['package'] ) ) &&
-			( ! empty( $plugin_details['addon_data_for_dir']['package'] ) )
-		);
+			$this->assertTrue(
+				( isset( $addon_details['addon_data_for_dir']['package'] ) ) &&
+				( ! empty( $addon_details['addon_data_for_dir']['package'] ) )
+			);
 
-		$this->assertTrue(
-			( isset( $plugin_details['addon_data_for_dir']['url'] ) ) &&
-			( ! empty( $plugin_details['addon_data_for_dir']['url'] ) )
-		);
+			$this->assertTrue(
+				( isset( $addon_details['addon_data_for_dir']['url'] ) ) &&
+				( ! empty( $addon_details['addon_data_for_dir']['url'] ) )
+			);
 
-		$this->assertTrue(
-			( isset( $plugin_details['addon_data_for_dir']['addon_headers']['Name'] ) ) &&
-			( ! empty( $plugin_details['addon_data_for_dir']['addon_headers']['Name'] ) )
-		);
+			$this->assertTrue(
+				( isset( $addon_details['addon_data_for_dir']['addon_headers']['Name'] ) ) &&
+				( ! empty( $addon_details['addon_data_for_dir']['addon_headers']['Name'] ) )
+			);
 
-		$this->assertSame(
-			$this->options['wpscan-pr-1-plugin-name'],
-			$plugin_details['addon_data_for_dir']['addon_headers']['Name']
-		);
+			$this->assertSame(
+				$this->options[ 'wpscan-pr-1-' . $addon_type . '-name' ],
+				$addon_details['addon_data_for_dir']['addon_headers']['Name']
+			);
 
-		$this->assertTrue(
-			( isset( $plugin_details['addon_data_for_dir']['addon_headers']['AuthorName'] ) ) &&
-			( ! empty( $plugin_details['addon_data_for_dir']['addon_headers']['AuthorName'] ) )
-		);
-
+			$this->assertTrue(
+				( isset( $addon_details['addon_data_for_dir']['addon_headers']['AuthorName'] ) ) &&
+				( ! empty( $addon_details['addon_data_for_dir']['addon_headers']['AuthorName'] ) )
+			);
+		}
 	}
 }
 
