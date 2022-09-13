@@ -156,6 +156,7 @@ final class WpscanScanFindAddonDirsAlteredTest extends TestCase {
 			'plugins',
 			'plugins/hello',
 			'plugins/not-a-plugin',
+			'themes/twentytwentyone',
 		);
 
 		$this->assertSame(
