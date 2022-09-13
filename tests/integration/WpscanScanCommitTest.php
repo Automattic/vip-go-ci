@@ -31,6 +31,10 @@ final class WpscanScanCommitTest extends TestCase {
 		'wpscan-pr-1-plugin-key'     => null,
 		'wpscan-pr-1-plugin-name'    => null,
 		'wpscan-pr-1-plugin-version' => null,
+		'wpscan-pr-1-theme-dir'      => null,
+		'wpscan-pr-1-theme-key'      => null,
+		'wpscan-pr-1-theme-name'     => null,
+		'wpscan-pr-1-theme-version'  => null,
 	);
 
 	/**
@@ -257,48 +261,53 @@ final class WpscanScanCommitTest extends TestCase {
 		$this->assertSame(
 			array(
 				$this->options['wpscan-pr-1-number'] => array(
-					'warning' => 1,
+					'warning' => 2,
 				),
 			),
 			$commit_issues_stats
 		);
 
-		$this->assertTrue(
-			( isset( $commit_issues_submit[ $this->options['wpscan-pr-1-number'] ][0]['issue']['details']['latest_version'] ) ) &&
-			( -1 === version_compare( '0.0.0', $commit_issues_submit[ $this->options['wpscan-pr-1-number'] ][0]['issue']['details']['latest_version'] ) )
-		);
+		/*
+		 * Ensure plugin and theme details are valid.
+		 */
+		for ( $i = 0; $i <= 1; $i++ ) {
+			$this->assertTrue(
+				( isset( $commit_issues_submit[ $this->options['wpscan-pr-1-number'] ][ $i ]['issue']['details']['latest_version'] ) ) &&
+				( -1 === version_compare( '0.0.0', $commit_issues_submit[ $this->options['wpscan-pr-1-number'] ][ $i ]['issue']['details']['latest_version'] ) )
+			);
 
-		unset( $commit_issues_submit[ $this->options['wpscan-pr-1-number'] ][0]['issue']['details']['latest_version'] );
+			unset( $commit_issues_submit[ $this->options['wpscan-pr-1-number'] ][ $i ]['issue']['details']['latest_version'] );
 
-		$this->assertTrue(
-			( ! empty( $commit_issues_submit[ $this->options['wpscan-pr-1-number'] ][0]['issue']['details']['latest_download_uri'] ) )
-		);
+			$this->assertTrue(
+				( ! empty( $commit_issues_submit[ $this->options['wpscan-pr-1-number'] ][ $i ]['issue']['details']['latest_download_uri'] ) )
+			);
 
-		$this->assertTrue(
-			str_contains(
-				$commit_issues_submit[ $this->options['wpscan-pr-1-number'] ][0]['issue']['details']['latest_download_uri'],
-				'wordpress.org'
-			)
-		);
+			$this->assertTrue(
+				str_contains(
+					$commit_issues_submit[ $this->options['wpscan-pr-1-number'] ][ $i ]['issue']['details']['latest_download_uri'],
+					'wordpress.org'
+				)
+			);
 
-		unset( $commit_issues_submit[ $this->options['wpscan-pr-1-number'] ][0]['issue']['details']['latest_download_uri'] );
+			unset( $commit_issues_submit[ $this->options['wpscan-pr-1-number'] ][ $i ]['issue']['details']['latest_download_uri'] );
 
-		$this->assertStringContainsString(
-			'wordpress.org/plugins',
-			$commit_issues_submit[ $this->options['wpscan-pr-1-number'] ][0]['issue']['details']['url']
-		);
+			$this->assertStringContainsString(
+				0 === $i ? 'wordpress.org/plugins' : 'wordpress.org/themes',
+				$commit_issues_submit[ $this->options['wpscan-pr-1-number'] ][ $i ]['issue']['details']['url']
+			);
 
-		unset( $commit_issues_submit[ $this->options['wpscan-pr-1-number'] ][0]['issue']['details']['url'] );
+			unset( $commit_issues_submit[ $this->options['wpscan-pr-1-number'] ][ $i ]['issue']['details']['url'] );
 
-		$this->assertTrue(
-			( ! empty( $commit_issues_submit[ $this->options['wpscan-pr-1-number'] ][0]['issue']['security'] ) ) &&
-			(
-				( 'obsolete' === $commit_issues_submit[ $this->options['wpscan-pr-1-number'] ][0]['issue']['security'] ) ||
-				( 'vulnerable' === $commit_issues_submit[ $this->options['wpscan-pr-1-number'] ][0]['issue']['security'] )
-			)
-		);
+			$this->assertTrue(
+				( ! empty( $commit_issues_submit[ $this->options['wpscan-pr-1-number'] ][ $i ]['issue']['security'] ) ) &&
+				(
+					( 'obsolete' === $commit_issues_submit[ $this->options['wpscan-pr-1-number'] ][ $i ]['issue']['security'] ) ||
+					( 'vulnerable' === $commit_issues_submit[ $this->options['wpscan-pr-1-number'] ][ $i ]['issue']['security'] )
+				)
+			);
 
-		unset( $commit_issues_submit[ $this->options['wpscan-pr-1-number'] ][0]['issue']['security'] );
+			unset( $commit_issues_submit[ $this->options['wpscan-pr-1-number'] ][ $i ]['issue']['security'] );
+		}
 
 		$this->assertSame(
 			array(
@@ -315,6 +324,22 @@ final class WpscanScanCommitTest extends TestCase {
 							'details'    => array(
 								'installed_location' => $this->options['wpscan-pr-1-plugin-dir'] . '/' . $this->options['wpscan-pr-1-plugin-key'],
 								'version_detected'   => $this->options['wpscan-pr-1-plugin-version'],
+								'vulnerabilities'    => array(),
+							),
+						),
+					),
+					array(
+						'type'      => 'wpscan-api',
+						'file_name' => $this->options['wpscan-pr-1-theme-dir'] . '/' . $this->options['wpscan-pr-1-theme-key'],
+						'file_line' => 1,
+						'issue'     => array(
+							'addon_type' => 'vipgoci-addon-theme',
+							'message'    => $this->options['wpscan-pr-1-theme-name'],
+							'level'      => 'warning',
+							'severity'   => 10,
+							'details'    => array(
+								'installed_location' => $this->options['wpscan-pr-1-theme-dir'] . '/' . $this->options['wpscan-pr-1-theme-key'],
+								'version_detected'   => $this->options['wpscan-pr-1-theme-version'],
 								'vulnerabilities'    => array(),
 							),
 						),
