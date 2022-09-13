@@ -139,6 +139,7 @@ theme-slug=twentytwenty
 wpscan-pr-1-commit-id=efebeae510c5b56d73b0ed6167bcdd99238b3848
 wpscan-pr-1-dirs-scan=plugins,mu-plugins,themes
 wpscan-pr-1-number=52
+wpscan-pr-1-dirs-altered=plugins/hello,plugins/not-a-plugin,themes/twentytwentyone
 wpscan-pr-1-plugin-dir=plugins/hello
 wpscan-pr-1-plugin-key=hello.php
 wpscan-pr-1-plugin-name=Hello Dolly
