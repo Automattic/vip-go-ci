@@ -136,10 +136,15 @@ commit-test-options-read-repo-file-with-file-5=9a13bbec0cc2c7557539076f0125cc396
 [wpscan-api-scan]
 plugin-slug=classic-editor
 theme-slug=twentytwenty
-wpscan-pr-1-commit-id=96fc4ac229889fcc12e2884a39b1ac1ec4929132
-wpscan-pr-1-dirs-scan=plugins,mu-plugins
+wpscan-pr-1-commit-id=efebeae510c5b56d73b0ed6167bcdd99238b3848
+wpscan-pr-1-dirs-scan=plugins,mu-plugins,themes
 wpscan-pr-1-number=52
 wpscan-pr-1-plugin-dir=plugins/hello
 wpscan-pr-1-plugin-key=hello.php
 wpscan-pr-1-plugin-name=Hello Dolly
 wpscan-pr-1-plugin-version=1.6
+wpscan-pr-1-theme-dir=themes/twentytwentyone
+wpscan-pr-1-theme-key=twentytwentyone
+wpscan-pr-1-theme-name=Twenty Twenty-One
+wpscan-pr-1-theme-version=1.2
+
