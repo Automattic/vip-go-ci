@@ -47,7 +47,7 @@ final class WpscanScanSaveForSubmissionTest extends TestCase {
 	 * @var $problematic_addons_found
 	 */
 	private array $problematic_addons_found = array(
-		'plugins/hello' => array(
+		'plugins/hello'          => array(
 			'hello.php' => array(
 				'security_type'      => 'obsolete',
 				'wpscan_results'     => array(
@@ -84,6 +84,45 @@ final class WpscanScanSaveForSubmissionTest extends TestCase {
 					'plugin'           => 'hello.php',
 					'package'          => 'https://downloads.wordpress.org/plugin/hello-dolly.1.7.2.zip',
 					'url'              => 'https://wordpress.org/plugins/hello-dolly/',
+				),
+			),
+		),
+		'themes/twentytwentyone' => array(
+			'style.css' => array(
+				'security_type'      => 'vulnerable',
+				'wpscan_results'     => array(
+					'friendly_name'   => 'Twenty Twenty-One',
+					'latest_version'  => '1.6',
+					'last_updated'    => '2022-05-24T00:40:00.000Z',
+					'popular'         => true,
+					'vulnerabilities' => array(),
+				),
+				'addon_data_for_dir' => array(
+					'type'             => 'vipgoci-addon-theme',
+					'addon_headers'    => array(
+						'Name'        => 'Twenty Twenty-One',
+						'PluginURI'   => 'http://wordpress.org/themes/twentytwentyone/',
+						'Version'     => '1.6',
+						'Description' => 'Twenty Twenty-One is a blank canvas for your ideas and it makes the block editor your best brush. With new block patterns, which allow you to create a beautiful layout in a matter of seconds, this theme’s soft colors and eye-catching — yet timeless — design will let your work shine. Take it for a spin! See how Twenty Twenty-One elevates your portfolio, business website, or personal blog.',
+						'Author'      => 'WordPress.org',
+						'AuthorURI'   => 'https://wordpress.org',
+						'TextDomain'  => '',
+						'DomainPath'  => '',
+						'Network'     => '',
+						'RequiresWP'  => '',
+						'RequiresPHP' => '',
+						'UpdateURI'   => '',
+						'Title'       => 'Twenty Twenty-One',
+						'AuthorName'  => 'WordPress.org',
+					),
+					'name'             => 'Twenty Twenty-One',
+					'version_detected' => '1.0',
+					'file_name'        => '/tmp/themes/twentytwentyone/style.css',
+					'id'               => 'w.org/themes/twentytwentyone',
+					'slug'             => 'twentytwentyone',
+					'new_version'      => '1.6',
+					'package'          => 'https://downloads.wordpress.org/themes/twentytwentyone.1.6.zip',
+					'url'              => 'https://wordpress.org/themes/twentytwentyone/',
 				),
 			),
 		),
@@ -328,6 +367,7 @@ final class WpscanScanSaveForSubmissionTest extends TestCase {
 		$commit_issues_submit[ $this->options['wpscan-pr-1-number'] ] = array();
 		$commit_issues_stats[ $this->options['wpscan-pr-1-number'] ]  = array(
 			'warning' => 0,
+			'error'   => 0,
 		);
 
 		vipgoci_wpscan_scan_save_for_submission(
@@ -342,6 +382,7 @@ final class WpscanScanSaveForSubmissionTest extends TestCase {
 			array(
 				$this->options['wpscan-pr-1-number'] => array(
 					'warning' => 1,
+					'error'   => 1,
 				),
 			),
 			$commit_issues_stats
@@ -366,6 +407,26 @@ final class WpscanScanSaveForSubmissionTest extends TestCase {
 								'version_detected'    => '1.6',
 								'latest_version'      => '1.7.2',
 								'latest_download_uri' => 'https://downloads.wordpress.org/plugin/hello-dolly.1.7.2.zip',
+								'vulnerabilities'     => array(),
+							),
+						),
+					),
+					array(
+						'type'      => 'wpscan-api',
+						'file_name' => 'themes/twentytwentyone/style.css',
+						'file_line' => 1,
+						'issue'     => array(
+							'addon_type' => 'vipgoci-addon-theme',
+							'message'    => 'Twenty Twenty-One',
+							'level'      => 'error',
+							'security'   => 'vulnerable',
+							'severity'   => 10,
+							'details'    => array(
+								'url'                 => 'https://wordpress.org/themes/twentytwentyone/',
+								'installed_location'  => 'themes/twentytwentyone/style.css',
+								'version_detected'    => '1.0',
+								'latest_version'      => '1.6',
+								'latest_download_uri' => 'https://downloads.wordpress.org/themes/twentytwentyone.1.6.zip',
 								'vulnerabilities'     => array(),
 							),
 						),
