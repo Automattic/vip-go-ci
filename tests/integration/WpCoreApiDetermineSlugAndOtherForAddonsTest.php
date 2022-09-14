@@ -35,13 +35,13 @@ final class WpCoreApiDetermineSlugAndOtherForAddonsTest extends TestCase {
 	}
 
 	/**
-	 * Test common usage of the function.
+	 * Test common usage of the function with plugins.
 	 *
 	 * @covers ::vipgoci_wpcore_api_determine_slug_and_other_for_addons
 	 *
 	 * @return void
 	 */
-	public function testCommonUsage(): void {
+	public function testCommonPluginUsage(): void {
 		vipgoci_unittests_output_suppress();
 
 		$actual_results = vipgoci_wpcore_api_determine_slug_and_other_for_addons(
@@ -182,13 +182,13 @@ final class WpCoreApiDetermineSlugAndOtherForAddonsTest extends TestCase {
 	}
 
 	/**
-	 * Test when no results are expected.
+	 * Test when no results are expected with plugin data.
 	 *
 	 * @covers ::vipgoci_wpcore_api_determine_slug_and_other_for_addons
 	 *
 	 * @return void
 	 */
-	public function testNoResults(): void {
+	public function testPluginNoResults(): void {
 		vipgoci_unittests_output_suppress();
 
 		$actual_results = vipgoci_wpcore_api_determine_slug_and_other_for_addons(
@@ -216,13 +216,13 @@ final class WpCoreApiDetermineSlugAndOtherForAddonsTest extends TestCase {
 	}
 
 	/**
-	 * Test invalid usage.
+	 * Test invalid usage with plugin data.
 	 *
 	 * @covers ::vipgoci_wpcore_api_determine_slug_and_other_for_addons
 	 *
 	 * @return void
 	 */
-	public function testInvalidUsage1(): void {
+	public function testInvalidPluginUsage1(): void {
 		vipgoci_unittests_output_suppress();
 
 		$actual_results = vipgoci_wpcore_api_determine_slug_and_other_for_addons(
@@ -239,13 +239,13 @@ final class WpCoreApiDetermineSlugAndOtherForAddonsTest extends TestCase {
 
 
 	/**
-	 * Test invalid usage.
+	 * Test invalid usage with plugin data.
 	 *
 	 * @covers ::vipgoci_wpcore_api_determine_slug_and_other_for_addons
 	 *
 	 * @return void
 	 */
-	public function testInvalidUsage2(): void {
+	public function testInvalidPluginUsage2(): void {
 		vipgoci_unittests_output_suppress();
 
 		$actual_results = vipgoci_wpcore_api_determine_slug_and_other_for_addons(
