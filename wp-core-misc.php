@@ -564,7 +564,10 @@ function vipgoci_wpcore_api_determine_slug_and_other_for_addons(
 		}
 
 		// API provides slug in 'theme' field, handle this.
-		if ( VIPGOCI_ADDON_THEME === $addon_query_type ) {
+		if (
+			( VIPGOCI_ADDON_THEME === $addon_query_type ) &&
+			( isset( $slugs_by_addon[ $addon_query_type . '-' . $key ]['theme'] ) )
+		) {
 			$slugs_by_addon[ $addon_query_type . '-' . $key ]['slug'] = $slugs_by_addon[ $addon_query_type . '-' . $key ]['theme'];
 		}
 	}
