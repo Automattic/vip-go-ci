@@ -26,6 +26,14 @@ final class WpCoreApiDetermineSlugAndOtherForAddonsTest extends TestCase {
 	private const KEY_PLUGIN_PREFIX = 'vipgoci-addon-plugin';
 
 	/**
+	 * Prefix for array keys indicating theme.
+	 *
+	 * @var KEY_THEME_PREFIX
+	 */
+	private const KEY_THEME_PREFIX = 'vipgoci-addon-theme';
+
+
+	/**
 	 * Setup function. Require files.
 	 *
 	 * @return void
@@ -270,6 +278,177 @@ final class WpCoreApiDetermineSlugAndOtherForAddonsTest extends TestCase {
 		$this->assertSame(
 			array(
 				self::KEY_PLUGIN_PREFIX . '-my-test/invalid2.php' => null,
+			),
+			$actual_results,
+		);
+	}
+
+	/**
+	 * Test common usage of the function with themes.
+	 *
+	 * @covers ::vipgoci_wpcore_api_determine_slug_and_other_for_addons
+	 *
+	 * @return void
+	 */
+	public function testCommonThemeUsage(): void {
+		vipgoci_unittests_output_suppress();
+
+		$actual_results = vipgoci_wpcore_api_determine_slug_and_other_for_addons(
+			array(
+				self::KEY_THEME_PREFIX . '-twentytwentyone/style.css'   => array(
+					'type'          => 'vipgoci-addon-theme',
+					'addon_headers' => array(
+						'Name'        => 'Twenty Twenty-One',
+						'PluginURI'   => 'http://wordpress.org/themes/twentytwentyone/',
+						'Version'     => '1.6',
+						'Description' => 'Twenty Twenty-One is a blank canvas for your ideas and it makes the block editor your best brush. With new block patterns, which allow you to create a beautiful layout in a matter of seconds, this theme’s soft colors and eye-catching — yet timeless — design will let your work shine. Take it for a spin! See how Twenty Twenty-One elevates your portfolio, business website, or personal blog.',
+						'Author'      => 'WordPress.org',
+						'AuthorURI '  => 'http://wordpress.org',
+						'Title'       => 'Twenty Twenty-One',
+						'AuthorName'  => 'WordPress.org',
+						'UpdateURI'   => 'http://wordpress.org/themes/twentytwentyone/',
+					),
+				),
+			),
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		/*
+		 * Ensure only one theme is returned in results.
+		 */
+		$this->assertSame(
+			array(
+				self::KEY_THEME_PREFIX . '-twentytwentyone/style.css',
+			),
+			array_keys( $actual_results )
+		);
+
+		/*
+		 * Test themes/twentytwentyone
+		 */
+		$this->assertNotEmpty(
+			self::KEY_THEME_PREFIX . '-twentytwentyone/style.css',
+		);
+
+		$this->assertSame(
+			'twentytwentyone',
+			$actual_results[ self::KEY_THEME_PREFIX . '-twentytwentyone/style.css' ]['theme']
+		);
+
+		$this->assertTrue(
+			version_compare(
+				$actual_results[ self::KEY_THEME_PREFIX . '-twentytwentyone/style.css' ]['new_version'],
+				'0.0.0',
+				'>='
+			)
+		);
+
+		$this->assertStringContainsString(
+			'/themes/twentytwentyone',
+			$actual_results[ self::KEY_THEME_PREFIX . '-twentytwentyone/style.css' ]['url']
+		);
+
+		$this->assertStringContainsString(
+			'/theme/twentytwentyone',
+			$actual_results[ self::KEY_THEME_PREFIX . '-twentytwentyone/style.css' ]['package']
+		);
+
+		$this->assertSame(
+			'twentytwentyone',
+			$actual_results[ self::KEY_THEME_PREFIX . '-twentytwentyone/style.css' ]['slug']
+		);
+	}
+
+	/**
+	 * Test when no results are expected with theme data.
+	 *
+	 * @covers ::vipgoci_wpcore_api_determine_slug_and_other_for_addons
+	 *
+	 * @return void
+	 */
+	public function testThemeNoResults(): void {
+		vipgoci_unittests_output_suppress();
+
+		$actual_results = vipgoci_wpcore_api_determine_slug_and_other_for_addons(
+			array(
+				self::KEY_THEME_PREFIX . '-my-test/invalid.php' => array(
+					'type'          => 'vipgoci-addon-theme',
+					'addon_headers' => array(
+						'Name'        => 'This is invalid, 123',
+						'PluginURI'   => 'http://wordpress.org/INVALID/invalid-1234/',
+						'Version'     => '999.0',
+						'Description' => 'This is invalid',
+						'Author'      => 'No author',
+						'AuthorURI'   => 'http://wordpress.org',
+					),
+				),
+			),
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		$this->assertSame(
+			array( self::KEY_THEME_PREFIX . '-my-test/invalid.php' => null ),
+			$actual_results,
+		);
+	}
+
+	/**
+	 * Test invalid usage with theme data.
+	 *
+	 * @covers ::vipgoci_wpcore_api_determine_slug_and_other_for_addons
+	 *
+	 * @return void
+	 */
+	public function testInvalidThemeUsage1(): void {
+		vipgoci_unittests_output_suppress();
+
+		$actual_results = vipgoci_wpcore_api_determine_slug_and_other_for_addons(
+			array()
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		$this->assertSame(
+			array(),
+			$actual_results,
+		);
+	}
+
+
+	/**
+	 * Test invalid usage with theme data.
+	 *
+	 * @covers ::vipgoci_wpcore_api_determine_slug_and_other_for_addons
+	 *
+	 * @return void
+	 */
+	public function testInvalidThemeUsage2(): void {
+		vipgoci_unittests_output_suppress();
+
+		$actual_results = vipgoci_wpcore_api_determine_slug_and_other_for_addons(
+			array(
+				self::KEY_THEME_PREFIX . '-my-test/invalid.php'  => array(),
+				self::KEY_THEME_PREFIX . '-my-test/invalid2.php' => array(
+					'type'          => 'vipgoci-addon-theme',
+					'addon_headers' => array(
+						'Name'        => 'This is invalid, 123',
+						'PluginURI'   => 'http://wordpress.org/INVALID/invalid-1234/',
+						'Version'     => '999.0',
+						'Description' => 'This is invalid',
+						'Author'      => 'No author',
+						'AuthorURI'   => 'http://wordpress.org',
+					),
+				),
+			),
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		$this->assertSame(
+			array(
+				self::KEY_THEME_PREFIX . '-my-test/invalid2.php' => null,
 			),
 			$actual_results,
 		);
