@@ -124,7 +124,7 @@ function vipgoci_github_diffs_fetch_unfiltered(
 	foreach ( array_values( $resp_raw['files'] ) as $file_item ) {
 		/*
 		 * If there are content modifications to the file,
-		 * and GitHub indiciates file status is 'renamed',
+		 * and GitHub indicates file status is 'renamed',
 		 * override status as 'modified'. This is in line
 		 * with expectations elsewhere in the code. See
 		 * similar logic in vipgoci_gitrepo_diffs_fetch_unfiltered().
