@@ -81,9 +81,15 @@ jobs:
           ./tools-init.sh
           rm -rf ~/vip-go-ci-tools/vip-go-ci
 
+      - name: Clone vip-go-ci-testing repository
+        run: |
+          git clone https://github.com/Automattic/vip-go-ci-testing.git ~/vip-go-ci-tools/vip-go-ci-testing
+          git -C ~/vip-go-ci-tools/vip-go-ci-testing checkout ap-file-types-test-1 # Need to check this out so branch is known
+          git -C ~/vip-go-ci-tools/vip-go-ci-testing checkout master # Switch to default
+
       - name: Configure tools
         run: |
-          sed "s:/home/phpunit/:${HOME}/:; s:phpcs-php-path=/usr/bin/php:phpcs-php-path=/usr/bin/php7.4:g; s:svg-php-path=/usr/bin/php:svg-php-path=/usr/bin/php8.1:g" unittests.ini.dist > unittests.ini
+          sed "s:/home/phpunit/:${HOME}/:; s:phpcs-php-path=/usr/bin/php:phpcs-php-path=/usr/bin/php7.4:g; s:svg-php-path=/usr/bin/php:svg-php-path=/usr/bin/php8.1:g; s:github-repo-url=.*:github-repo-url=${HOME}/vip-go-ci-tools/vip-go-ci-testing:g;" unittests.ini.dist > unittests.ini
           touch unittests-secrets.ini
           sed "s:PROJECT_DIR:$(pwd):g" phpunit.xml.dist > phpunit.xml
 
