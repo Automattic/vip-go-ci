@@ -189,7 +189,6 @@ trait GitDiffsFetchUnfilteredTrait {
 				),
 
 				'new file 2.txt'                   => array(
-					/* File added, starting with name 'b/', with spaces in file name */
 					'filename'  => 'new file 2.txt',
 					'patch'     => '@@ -0,0 +1 @@' . PHP_EOL . '+This is a new test file.',
 					'status'    => 'added',
