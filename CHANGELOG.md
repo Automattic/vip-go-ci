@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 
 ## Updated
 - [#281](https://github.com/Automattic/vip-go-ci/pull/281): Small updates: Use new functions introduced in #273; update HTTP wait function; update URL in README.md; update tests
+- [#295](https://github.com/Automattic/vip-go-ci/pull/295): Use local git repository when running integration tests using GitHub Actions
 
 ## Fixed
 - [#291](https://github.com/Automattic/vip-go-ci/pull/291): Fix two problems with local git diffs
