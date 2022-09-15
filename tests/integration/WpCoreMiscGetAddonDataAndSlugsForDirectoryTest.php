@@ -40,6 +40,13 @@ final class WpCoreMiscGetAddonDataAndSlugsForDirectoryTest extends TestCase {
 	private const KEY_PLUGIN_THIS_IS = 'vipgoci-addon-plugin-this-is-a-plugin.php';
 
 	/**
+	 * Constant for twentytwentyone.
+	 *
+	 * @var $KEY_THEME_TWENTYTWENTYONE
+	 */
+	private const KEY_THEME_TWENTYTWENTYONE = 'vipgoci-addon-theme-twentytwentyone';
+
+	/**
 	 * Variable for WPScan API scanning.
 	 *
 	 * @var $options_wpscan_api_scan
@@ -47,9 +54,9 @@ final class WpCoreMiscGetAddonDataAndSlugsForDirectoryTest extends TestCase {
 	private array $options_wpscan_api_scan = array(
 		'wpscan-pr-1-plugin-name'     => null,
 		'wpscan-pr-1-plugin-slug'     => null,
-		'wpscan-pr-1-plugin-dir'      => null,
-		'wpscan-pr-1-plugin-key'      => null,
 		'wpscan-pr-1-plugin-name-api' => null,
+		'wpscan-pr-1-theme-name'      => null,
+		'wpscan-pr-1-theme-slug'      => null,
 	);
 
 	/**
@@ -178,12 +185,37 @@ final class WpCoreMiscGetAddonDataAndSlugsForDirectoryTest extends TestCase {
 
 		unset( $actual_results[ self::KEY_PLUGIN_THIS_IS ]['file_name'] );
 
+		// For twentytwentyone.
+		$this->assertTrue(
+			version_compare(
+				$actual_results[ self::KEY_THEME_TWENTYTWENTYONE ]['new_version'],
+				'0.0.0',
+				'>='
+			)
+		);
+
+		unset( $actual_results[ self::KEY_THEME_TWENTYTWENTYONE ]['new_version'] );
+
+		$this->assertStringContainsString(
+			'/twentytwentyone.',
+			$actual_results[ self::KEY_THEME_TWENTYTWENTYONE ]['package']
+		);
+
+		unset( $actual_results[ self::KEY_THEME_TWENTYTWENTYONE ]['package'] );
+
+		$this->assertStringContainsString(
+			'WpCoreMiscGetAddonDataAndSlugsForDirectoryTest/twentytwentyone/style.css',
+			$actual_results[ self::KEY_THEME_TWENTYTWENTYONE ]['file_name']
+		);
+
+		unset( $actual_results[ self::KEY_THEME_TWENTYTWENTYONE ]['file_name'] );
+
 		/*
 		 * Perform main assertion
 		 */
 		$this->assertSame(
 			array(
-				self::KEY_PLUGIN_HELLO   => array(
+				self::KEY_PLUGIN_HELLO          => array(
 					'type'             => 'vipgoci-addon-plugin',
 					'addon_headers'    => array(
 						'Name'        => 'Hello Dolly',
@@ -208,7 +240,7 @@ final class WpCoreMiscGetAddonDataAndSlugsForDirectoryTest extends TestCase {
 					'plugin'           => $this->options_wpscan_api_scan['wpscan-pr-1-plugin-name-api'],
 					'url'              => 'https://wordpress.org/plugins/' . $this->options_wpscan_api_scan['wpscan-pr-1-plugin-slug'] . '/',
 				),
-				self::KEY_PLUGIN_THIS_IS => array(
+				self::KEY_PLUGIN_THIS_IS        => array(
 					'type'             => 'vipgoci-addon-plugin',
 					'addon_headers'    => array(
 						'Name'        => 'This is a plugin.',
@@ -228,6 +260,30 @@ final class WpCoreMiscGetAddonDataAndSlugsForDirectoryTest extends TestCase {
 					),
 					'name'             => 'This is a plugin.',
 					'version_detected' => '15.1.0',
+				),
+				self::KEY_THEME_TWENTYTWENTYONE => array(
+					'type'             => 'vipgoci-addon-theme',
+					'addon_headers'    => array(
+						'Name'        => 'Twenty Twenty-One',
+						'ThemeURI'    => 'https://wordpress.org/themes/twentytwentyone/',
+						'Description' => 'Twenty Twenty-One is a blank canvas for your ideas and it makes the block editor your best brush. With new block patterns, which allow you to create a beautiful layout in a matter of seconds, this theme’s soft colors and eye-catching — yet timeless — design will let your work shine. Take it for a spin! See how Twenty Twenty-One elevates your portfolio, business website, or personal blog.',
+						'Author'      => 'the WordPress team',
+						'AuthorURI'   => 'https://wordpress.org/',
+						'Version'     => '1.2',
+						'Template'    => '',
+						'Status'      => '',
+						'TextDomain'  => 'twentytwentyone',
+						'DomainPath'  => '',
+						'RequiresWP'  => '5.3',
+						'RequiresPHP' => '5.6',
+						'UpdateURI'   => '',
+						'Title'       => 'Twenty Twenty-One',
+						'AuthorName'  => 'the WordPress team',
+					),
+					'name'             => $this->options_wpscan_api_scan['wpscan-pr-1-theme-name'],
+					'version_detected' => '1.2',
+					'slug'             => $this->options_wpscan_api_scan['wpscan-pr-1-theme-slug'],
+					'url'              => 'https://wordpress.org/themes/' . $this->options_wpscan_api_scan['wpscan-pr-1-theme-slug'] . '/',
 				),
 			),
 			$actual_results
@@ -273,53 +329,50 @@ final class WpCoreMiscGetAddonDataAndSlugsForDirectoryTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		/*
-		 * Ensure only one plugin is in results.
-		 */
-		$this->assertSame(
-			array( self::KEY_PLUGIN_THIS_IS ),
-			array_keys( $actual_results )
+		// For this-is-a-plugin.php.
+		foreach (
+			array( 'id', 'slug', 'plugin', 'new_version', 'url', 'package' ) as $field_name
+		) {
+			$this->assertFalse(
+				isset( $actual_results[ self::KEY_PLUGIN_THIS_IS ][ $field_name ] )
+			);
+		}
+
+		$this->assertStringContainsString(
+			'WpCoreMiscGetAddonDataAndSlugsForDirectoryTest/this-is-a-plugin.php',
+			$actual_results[ self::KEY_PLUGIN_THIS_IS ]['file_name']
 		);
+
+		unset( $actual_results[ self::KEY_PLUGIN_THIS_IS ]['file_name'] );
 
 		/*
-		 * Ensure this-is-a-plugin.php is in results.
+		 * Perform main assertion
 		 */
-		$this->assertNotEmpty(
-			$actual_results[ self::KEY_PLUGIN_THIS_IS ]
-		);
-
-		$this->assertFalse(
-			isset( $actual_results[ self::KEY_PLUGIN_THIS_IS ]['id'] )
-		);
-
 		$this->assertSame(
-			'This is a plugin.',
-			$actual_results[ self::KEY_PLUGIN_THIS_IS ]['name']
-		);
-
-		$this->assertFalse(
-			isset( $actual_results[ self::KEY_PLUGIN_THIS_IS ]['slug'] )
-		);
-
-		$this->assertFalse(
-			isset( $actual_results[ self::KEY_PLUGIN_THIS_IS ]['plugin'] )
-		);
-
-		$this->assertSame(
-			'15.1.0',
-			$actual_results[ self::KEY_PLUGIN_THIS_IS ]['version_detected']
-		);
-
-		$this->assertFalse(
-			isset( $actual_results[ self::KEY_PLUGIN_THIS_IS ]['new_version'] )
-		);
-
-		$this->assertFalse(
-			isset( $actual_results[ self::KEY_PLUGIN_THIS_IS ]['url'] )
-		);
-
-		$this->assertFalse(
-			isset( $actual_results[ self::KEY_PLUGIN_THIS_IS ]['package'] )
+			array(
+				self::KEY_PLUGIN_THIS_IS => array(
+					'type'             => 'vipgoci-addon-plugin',
+					'addon_headers'    => array(
+						'Name'        => 'This is a plugin.',
+						'PluginURI'   => 'http://wordpress.org/test/my-other-package/',
+						'Version'     => '15.1.0',
+						'Description' => 'This is indeed <b>a plugin</b>..',
+						'Author'      => 'Test author.',
+						'AuthorURI'   => 'http://wordpress.org/author/test124',
+						'TextDomain'  => '',
+						'DomainPath'  => '',
+						'Network'     => '',
+						'RequiresWP'  => '',
+						'RequiresPHP' => '',
+						'UpdateURI'   => '',
+						'Title'       => 'This is a plugin.',
+						'AuthorName'  => 'Test author.',
+					),
+					'name'             => 'This is a plugin.',
+					'version_detected' => '15.1.0',
+				),
+			),
+			$actual_results
 		);
 	}
 }
