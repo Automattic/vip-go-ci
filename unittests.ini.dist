@@ -151,4 +151,9 @@ wpscan-pr-1-theme-key=twentytwentyone
 wpscan-pr-1-theme-name=Twenty Twenty-One
 wpscan-pr-1-theme-slug=twentytwentyone
 wpscan-pr-1-theme-version=1.2
+wpscan-pr-2-commit-id=e60e9d9c746c350256de4d64747c0f7167f532ac
+wpscan-pr-2-dirs-scan=plugins,mu-plugins,themes
+wpscan-pr-3-commit-id=8801cc98f4ae097923089ac946ca69ba811ec6b1
+wpscan-pr-3-dirs-scan=plugins,mu-plugins,themes
+
 
