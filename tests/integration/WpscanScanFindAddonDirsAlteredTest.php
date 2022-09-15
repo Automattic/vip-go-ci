@@ -28,6 +28,8 @@ final class WpscanScanFindAddonDirsAlteredTest extends TestCase {
 		'wpscan-pr-1-dirs-scan' => null,
 		'wpscan-pr-2-commit-id' => null,
 		'wpscan-pr-2-dirs-scan' => null,
+		'wpscan-pr-3-commit-id' => null,
+		'wpscan-pr-3-dirs-scan' => null,
 	);
 
 	/**
@@ -163,6 +165,62 @@ final class WpscanScanFindAddonDirsAlteredTest extends TestCase {
 
 		$this->assertSame(
 			$results_expected,
+			$results_actual
+		);
+	}
+
+	/**
+	 * Test when addon is removed from pull request.
+	 *
+	 * @covers ::vipgoci_wpscan_find_addon_dirs_altered
+	 *
+	 * @return void
+	 */
+	public function testFindDirsAlteredAddonRemoved(): void {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( 'github-token', 'token' ),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
+		vipgoci_unittests_output_suppress();
+
+		$this->options['commit'] =
+			$this->options['wpscan-pr-3-commit-id'];
+
+		$this->options['wpscan-api-paths'] = explode(
+			',',
+			$this->options['wpscan-pr-3-dirs-scan']
+		);
+
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped(
+				'Could not set up git repository: ' .
+				vipgoci_unittests_output_get()
+			);
+
+			return;
+		}
+
+		vipgoci_unittests_output_unsuppress();
+
+		$commit_skipped_files = array();
+
+		$results_actual = vipgoci_wpscan_find_addon_dirs_altered(
+			$this->options,
+			$commit_skipped_files
+		);
+
+		$this->assertNull(
 			$results_actual
 		);
 	}
