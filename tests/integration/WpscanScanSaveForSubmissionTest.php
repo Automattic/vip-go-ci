@@ -287,6 +287,7 @@ final class WpscanScanSaveForSubmissionTest extends TestCase {
 		$commit_issues_submit[ $this->options['wpscan-pr-1-number'] ] = array();
 		$commit_issues_stats[ $this->options['wpscan-pr-1-number'] ]  = array(
 			'warning' => 0,
+			'error'   => 0,
 		);
 
 		// Add label.
@@ -400,7 +401,7 @@ final class WpscanScanSaveForSubmissionTest extends TestCase {
 							'message'    => 'Hello Dolly',
 							'level'      => 'warning',
 							'security'   => 'obsolete',
-							'severity'   => 10,
+							'severity'   => 7,
 							'details'    => array(
 								'url'                 => 'https://wordpress.org/plugins/hello-dolly/',
 								'installed_location'  => 'plugins/hello/hello.php',

@@ -471,6 +471,10 @@ function vipgoci_wpscan_scan_save_for_submission(
 
 					$issue_details = $problem_addon_files[ $problem_addon_file_name ];
 
+					// Calculate severity level.
+					$issue_severity = VIPGOCI_WPSCAN_VULNERABLE === $problem_addon_files[ $problem_addon_file_name ]['security_type'] ?
+						10 : 7;
+
 					$commit_issues_submit[ $pr_number ][] = array(
 						'type'      => VIPGOCI_STATS_WPSCAN_API,
 						'file_name' => $dir_with_problem_addons . DIRECTORY_SEPARATOR . $problem_addon_file_name, // Required field.
@@ -480,7 +484,7 @@ function vipgoci_wpscan_scan_save_for_submission(
 							'message'    => $problem_addon_files[ $problem_addon_file_name ]['wpscan_results']['friendly_name'],
 							'level'      => $level,
 							'security'   => $problem_addon_files[ $problem_addon_file_name ]['security_type'],
-							'severity'   => 10,
+							'severity'   => $issue_severity,
 							'details'    => array(
 								'url'                 => $issue_details['addon_data_for_dir']['url'],
 								'installed_location'  => $dir_with_problem_addons . DIRECTORY_SEPARATOR . $problem_addon_file_name,
