@@ -88,6 +88,45 @@ function vipgoci_wpscan_report_end(
 }
 
 /**
+ * Returns human-readable CVSS severity ranking.
+ *
+ * @param float|int $cvss_score CVSS score.
+ *
+ * @return string Severity ranking.
+ */
+function vipgoci_wpscan_report_format_cvss_score(
+	float|int $cvss_score
+) :string {
+	// Round to one precision point.
+	$cvss_score = round( (float) $cvss_score, 1 );
+
+	/*
+	 * Get CVSS ranking array, sort reverse by key.
+	 */
+	$cvss_ranking = VIPGOCI_WPSCAN_CVSS_RANKING;
+
+	krsort( $cvss_ranking );
+
+	/*
+	 * Loop through CVSS ranking, try
+	 * to determine ranking for value.
+	 */
+	foreach (
+		$cvss_ranking as $ranking_item
+	) {
+		if (
+			( $cvss_score >= (float) $ranking_item['lower_value'] ) &&
+			( $cvss_score <= (float) $ranking_item['upper_value'] )
+		) {
+			return $ranking_item['ranking'];
+		}
+	}
+
+	// Failure.
+	return 'UNKNOWN';
+}
+
+/**
  * Formats WPScan API results to submit to pull request.
  *
  * @param string $repo_owner Repository owner.
@@ -164,6 +203,12 @@ function vipgoci_wpscan_report_comment_format_result(
 			$res .= '### &#x1f512; Security information' . "\n" . // Header markup and lock sign.
 			'**Title**: ' . vipgoci_output_html_escape( $vuln_item['title'] ) . "\n" .
 			'**Details**: ' . vipgoci_output_html_escape( VIPGOCI_WPSCAN_BASE_URL . '/vulnerability/' . $vuln_item['id'] ) . "\n";
+
+			// May not be included, enterprise only feature.
+			if ( isset( $vuln_item['cvss']['score'] ) ) {
+				$res .= '**Severity**: ' . $vuln_item['cvss']['score'] . '/10 ' .
+					'(' . vipgoci_wpscan_report_format_cvss_score( $vuln_item['cvss']['score'] ) . ')' . "\n";
+			}
 		}
 	}
 
