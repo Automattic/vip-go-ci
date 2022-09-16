@@ -136,7 +136,7 @@ commit-test-options-read-repo-file-with-file-5=9a13bbec0cc2c7557539076f0125cc396
 [wpscan-api-scan]
 plugin-slug=classic-editor
 theme-slug=twentytwenty
-wpscan-pr-1-commit-id=efebeae510c5b56d73b0ed6167bcdd99238b3848
+wpscan-pr-1-commit-id=343d83dda119ef782ad66ad1db9e7f80b0630cc4
 wpscan-pr-1-dirs-scan=plugins,mu-plugins,themes
 wpscan-pr-1-number=52
 wpscan-pr-1-dirs-altered=plugins/hello,plugins/not-a-plugin,themes/twentytwentyone
@@ -151,9 +151,9 @@ wpscan-pr-1-theme-key=twentytwentyone
 wpscan-pr-1-theme-name=Twenty Twenty-One
 wpscan-pr-1-theme-slug=twentytwentyone
 wpscan-pr-1-theme-version=1.2
-wpscan-pr-2-commit-id=af6f34d88314c7c68b5c181b836ee5392f51ecd4
+wpscan-pr-2-commit-id=5dd9e528b02c294683812f49c10ec97f6cbeb706
 wpscan-pr-2-dirs-scan=plugins,mu-plugins,themes
-wpscan-pr-3-commit-id=0555da0fc5da671b9312b29524fef67c6bae47c4
+wpscan-pr-3-commit-id=fa1546344701b53ef4cb81e3b77584e6c2b8bb5f
 wpscan-pr-3-dirs-scan=plugins,mu-plugins,themes
 
 
