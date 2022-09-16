@@ -293,3 +293,35 @@ define(
 );
 
 define( 'VIPGOCI_WPSCAN_SKIP_SCAN_PR_LABEL', 'skip-wpscan' );
+
+define(
+	'VIPGOCI_WPSCAN_CVSS_RANKING',
+	array(
+		array(
+			'upper_value' => '10.0',
+			'lower_value' => '9.0',
+			'ranking'     => 'CRITICAL',
+		),
+		array(
+			'upper_value' => '8.9',
+			'lower_value' => '7.0',
+			'ranking'     => 'HIGH',
+		),
+		array(
+			'upper_value' => '6.9',
+			'lower_value' => '4.0',
+			'ranking'     => 'MEDIUM',
+		),
+		array(
+			'upper_value' => '3.9',
+			'lower_value' => '0.1',
+			'ranking'     => 'LOW',
+		),
+		array(
+			'upper_value' => '0.0',
+			'lower_value' => '0.0',
+			'ranking'     => 'NONE',
+		),
+	)
+);
+
