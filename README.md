@@ -22,7 +22,7 @@ Here is an example of the scanning results provided by `vip-go-ci`:
 * For PHP linting, it will loop through every modified file in the pull request (or, each file existing in the code-base), and post a generic pull request comment for any issues it finds with the PHP-code. 
 * With PHPCS scanning it will scan only the files affected by the pull request using PHPCS and post a GitHub review on the pull request.
 * SVG scanning behaves similar to PHPCS scanning. 
-* WPScan API scanning will loop through every added plugin or theme in a pull request, as well as any plugin or theme that is updated or has files removed, and check with the WPScan API if it is obsolete and vulnerable. A pull request comment is posted if that is the case. 
+* WPScan API scanning will loop through every added plugin or theme in a pull request, as well as any plugin or theme that is updated or has files removed, and check with the WPScan API if it is obsolete or vulnerable. A pull request comment is posted if that is the case. 
 
 In addition to the above scanning, `vip-go-ci` can also automatically approve pull requests that fulfill a certain criteria:
 
