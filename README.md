@@ -482,6 +482,28 @@ Specifies if to do SVG scanning. For instance:
 {"svg-checks": false}
 ```
 
+### WPScan API configuration
+
+`vip-go-ci` supports the utilization of the WPScan API to check if any plugins or themes submitted or altered in pull requests are either obsolete or vulnerable. `vip-go-ci` will call the WPScan API directly to obtain information on plugins or themes. It will also call the WordPress.org API to determine slugs for the relevant plugins or themes; the slug is used in WPScan API requests.
+
+To make use of this feature, a number of parameters must be configured. For instance:
+
+> ./vip-go-ci.php --wpscan-api=true --wpscan-api-dry-mode=false --wpscan-api-url=https://wpscan.com/api/v3 --wpscan-api-token=... --wpscan-api-paths=plugins,mu-plugins,themes 
+
+With this configuration, `vip-go-ci` will first gather available information about any plugins or themes located in the `plugins`, `mu-plugins` and `themes` directories at the root of the repository in the current branch, but only for those that were altered by any of the relevant pull requests affected by the current commit. It will then query the WordPress.org API about these to obtain their slugs and other information. Then the WPScan API will be queried about those plugins/themes that a slug could be determined for. At the end of the scan, information about obsolete or vulnerable plugins/themes will be posted to the relevant pull requests, but only if they were added to the pull request or altered in any way by the pull request. Nothing is posted when a plugin or a theme is deleted completely by a pull request.
+
+The following WPScan API related option can be configured via repository config-file:
+
+#### Option `--wpscan-api`
+
+This option is most useful if users want to disable WPScan API support. Setting it to `true` is not useful if other WPScan API parameters have not been configured.
+
+For instance:
+
+```
+{"wpscan-api": false}
+```
+
 ### Autoapprovals
 
 `vip-go-ci` can auto-approve pull requests that only alter particular types of files. The 'type' is based on file-ending, such as `.txt`. The idea is to allow faster approvals of pull requests that do not need to be reviewed or do not need any automated feedback.
