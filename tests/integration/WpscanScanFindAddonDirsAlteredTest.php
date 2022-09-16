@@ -106,7 +106,7 @@ final class WpscanScanFindAddonDirsAlteredTest extends TestCase {
 	}
 
 	/**
-	 * Test when addon is added to pull request.
+	 * Test when addons are added to pull request.
 	 *
 	 * @covers ::vipgoci_wpscan_find_addon_dirs_altered
 	 *
@@ -159,6 +159,7 @@ final class WpscanScanFindAddonDirsAlteredTest extends TestCase {
 		$results_expected = array(
 			'plugins',
 			'plugins/hello',
+			'plugins/hello2',
 			'plugins/not-a-plugin',
 			'themes/twentytwentyone',
 		);
@@ -170,7 +171,7 @@ final class WpscanScanFindAddonDirsAlteredTest extends TestCase {
 	}
 
 	/**
-	 * Test when addon is updated in pull request.
+	 * Test when addons are updated in pull request.
 	 *
 	 * @covers ::vipgoci_wpscan_find_addon_dirs_altered
 	 *
@@ -232,7 +233,7 @@ final class WpscanScanFindAddonDirsAlteredTest extends TestCase {
 	}
 
 	/**
-	 * Test when addon is removed from pull request.
+	 * Test when addons are removed from pull request.
 	 *
 	 * @covers ::vipgoci_wpscan_find_addon_dirs_altered
 	 *
@@ -282,7 +283,10 @@ final class WpscanScanFindAddonDirsAlteredTest extends TestCase {
 			$commit_skipped_files
 		);
 
-		$this->assertNull(
+		$this->assertSame(
+			array(
+				'plugins/hello',
+			),
 			$results_actual
 		);
 	}
