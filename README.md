@@ -492,6 +492,8 @@ To make use of this feature, a number of parameters must be configured. For inst
 
 With this configuration, `vip-go-ci` will first gather available information about any plugins or themes located in the `plugins`, `mu-plugins` and `themes` directories at the root of the repository in the current branch, but only for those that were altered by any of the relevant pull requests affected by the current commit. It will then query the WordPress.org API about these to obtain their slugs and other information. Then the WPScan API will be queried about those plugins/themes that a slug could be determined for. At the end of the scan, information about obsolete or vulnerable plugins/themes will be posted to the relevant pull requests, but only if they were added to the pull request or altered in any way by the pull request. Nothing is posted when a plugin or a theme is deleted completely by a pull request.
 
+Plugins or themes are exempt from this process when they include the `UpdateURI` header and its value matches `false` or it does not include either the `w.org` or `wordpress.org` hosts.
+
 The following WPScan API related option can be configured via repository config-file:
 
 #### Option `--wpscan-api`
