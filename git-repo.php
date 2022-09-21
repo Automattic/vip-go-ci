@@ -378,8 +378,7 @@ function vipgoci_gitrepo_fetch_tree(
 	$cached_data = vipgoci_cache( $cached_id );
 
 	vipgoci_log(
-		'Fetching tree info' .
-			( $cached_data ? ' (cached)' : '' ),
+		'Fetching tree info' . vipgoci_cached_indication_str( $cached_data ),
 		array(
 			'repo_owner' => $options['repo-owner'],
 			'repo_name'  => $options['repo-name'],
