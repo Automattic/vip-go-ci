@@ -53,7 +53,6 @@ final class ResultsFilterCommentsToMaxTest extends TestCase {
 							'source'	=> 'Squiz.PHP.CommentedOutCode.Found',
 							'severity'	=> 1,
 							'fixable'	=> false,
-							'type'		=> 'WARNING',
 							'line'		=> 9,
 							'column'	=> 1,
 							'level'	=> 'WARNING'
@@ -69,7 +68,6 @@ final class ResultsFilterCommentsToMaxTest extends TestCase {
 							'source'	=> 'Squiz.PHP.CommentedOutCode.Found',
 							'severity'	=> 10,
 							'fixable'	=> false,
-							'type'		=> 'WARNING',
 							'line'		=> 10,
 							'column'	=> 1,
 							'level'	=> 'WARNING'
@@ -213,7 +211,6 @@ final class ResultsFilterCommentsToMaxTest extends TestCase {
 								'source'	=> 'Squiz.PHP.CommentedOutCode.Found',
 								'severity'	=> 10,
 								'fixable'	=> false,
-								'type'		=> 'WARNING',
 								'line'		=> 10,
 								'column'	=> 1,
 								'level'	=> 'WARNING'
