@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class MiscApprovedFilesCommentsRemoveTest extends TestCase {
+final class ResultsApprovedFilesCommentsRemoveTest extends TestCase {
 	/**
 	 * Setup function. Require file.
 	 *
