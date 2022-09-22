@@ -931,8 +931,10 @@ function vipgoci_results_comment_match(
 			)
 			||
 			(
-				htmlentities( $file_issue_comment ) ===
-				$comment_made_body
+				htmlentities(
+					$file_issue_comment,
+					ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401 // PHP 8.1 default.
+				) === $comment_made_body
 			)
 		) {
 			/* Comment found, return true. */
