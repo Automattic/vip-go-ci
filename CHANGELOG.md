@@ -17,6 +17,7 @@ All notable changes to this project will be documented in this file.
 - [#292](https://github.com/Automattic/vip-go-ci/pull/292): Rename test class to match file name
 - [#293](https://github.com/Automattic/vip-go-ci/pull/293): Fix re-posted comments that contain "/**" 
 - [#297](https://github.com/Automattic/vip-go-ci/pull/297): Fix bug when filtering results array
+- [#298](https://github.com/Automattic/vip-go-ci/pull/298): Call htmlentities() with PHP 8.1 defaults
 
 ## [1.2.6](https://github.com/Automattic/vip-go-ci/releases/tag/1.2.6) - 2022-08-08
 
