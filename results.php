@@ -43,6 +43,8 @@ function vipgoci_results_remove_existing_github_comments(
 
 	$comments_removed = array();
 
+	print_r( $prs_implicated );
+
 	foreach ( $prs_implicated as $pr_item ) {
 		$prs_comments = array();
 
@@ -64,6 +66,8 @@ function vipgoci_results_remove_existing_github_comments(
 			$options['token']
 		);
 
+		print_r( $pr_item_commits );
+
 		/*
 		 * Loop through each commit, fetching all comments
 		 * made in relation to that commit
@@ -76,6 +80,8 @@ function vipgoci_results_remove_existing_github_comments(
 				$pr_item->created_at,
 				$prs_comments // Pointer used.
 			);
+
+			print_r( $prs_comments );
 
 			unset( $pr_item_commit_id );
 		}
@@ -234,6 +240,8 @@ function vipgoci_results_remove_existing_github_comments(
 			unset( $removed_comments );
 			unset( $dismissed_reviews );
 		}
+
+		print_r( $results );
 
 		foreach (
 			$results['issues'][ $pr_item->number ] as
