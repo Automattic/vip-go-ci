@@ -263,12 +263,15 @@ final class PhpcsScanScanCommitTest extends TestCase {
 		vipgoci_unittests_output_unsuppress();
 
 		/*
-		 * We should have found two PRs, and
+		 * We should have found three PRs, and
 		 * we should have initialised statistics
-		 * for both. Make sure it is so.
+		 * for all. Make sure it is so.
 		 */
 		$this->assertSame(
 			array(
+				56 => array(
+					'error' => 0,
+				),
 				22 => array(
 					'error' => 0,
 				),
