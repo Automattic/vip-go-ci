@@ -195,6 +195,7 @@ define(
 define(
 	'VIPGOCI_LINT_REPORT_START',
 	'%1$s has identified PHP syntax errors during automated linting.' .
+	'We recommend reviewing the issues noted and that they are resolved.' .
 	"\n\r\n\r" . 'PHP linting performed at commit %2$s ([view code](%3$s)).'
 );
 
