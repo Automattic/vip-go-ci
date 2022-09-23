@@ -272,6 +272,7 @@ final class PhpcsScanScanCommitTest extends TestCase {
 				56 => array(
 					'error' => 0,
 				),
+        
 				22 => array(
 					'error' => 0,
 				),
