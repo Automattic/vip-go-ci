@@ -478,10 +478,6 @@ function vipgoci_wpscan_scan_save_for_submission(
 					// Determine installed location.
 					$addon_installed_location = $dir_with_problem_addons;
 
-					if ( VIPGOCI_ADDON_PLUGIN === $issue_details['addon_data_for_dir']['type'] ) {
-						$addon_installed_location .= DIRECTORY_SEPARATOR . $problem_addon_file_name;
-					}
-
 					$commit_issues_submit[ $pr_number ][] = array(
 						'type'      => VIPGOCI_STATS_WPSCAN_API,
 						'file_name' => $dir_with_problem_addons . DIRECTORY_SEPARATOR . $problem_addon_file_name, // Required field.

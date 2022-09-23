@@ -404,7 +404,7 @@ final class WpscanScanSaveForSubmissionTest extends TestCase {
 							'severity'   => 7,
 							'details'    => array(
 								'url'                 => 'https://wordpress.org/plugins/hello-dolly/',
-								'installed_location'  => 'plugins/hello/hello.php',
+								'installed_location'  => 'plugins/hello',
 								'version_detected'    => '1.6',
 								'latest_version'      => '1.7.2',
 								'latest_download_uri' => 'https://downloads.wordpress.org/plugin/hello-dolly.1.7.2.zip',
