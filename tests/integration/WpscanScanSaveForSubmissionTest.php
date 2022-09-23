@@ -424,7 +424,7 @@ final class WpscanScanSaveForSubmissionTest extends TestCase {
 							'severity'   => 10,
 							'details'    => array(
 								'url'                 => 'https://wordpress.org/themes/twentytwentyone/',
-								'installed_location'  => 'themes/twentytwentyone/style.css',
+								'installed_location'  => 'themes/twentytwentyone',
 								'version_detected'    => '1.0',
 								'latest_version'      => '1.6',
 								'latest_download_uri' => 'https://downloads.wordpress.org/themes/twentytwentyone.1.6.zip',
