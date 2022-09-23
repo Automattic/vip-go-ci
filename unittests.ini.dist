@@ -51,6 +51,30 @@ lint-php1-version=7.4
 lint-php2-path=/usr/bin/php8.1
 lint-php2-version=8.1
 
+; For WPScan API tests. Plugin/theme known to API.
+[wpscan-api-scan]
+plugin-slug=classic-editor
+theme-slug=twentytwenty
+wpscan-pr-1-commit-id=343d83dda119ef782ad66ad1db9e7f80b0630cc4
+wpscan-pr-1-dirs-scan=plugins,mu-plugins,themes
+wpscan-pr-1-number=52
+wpscan-pr-1-dirs-altered=plugins/hello,plugins/not-a-plugin,themes/twentytwentyone
+wpscan-pr-1-plugin-dir=plugins/hello
+wpscan-pr-1-plugin-key=hello.php
+wpscan-pr-1-plugin-name=Hello Dolly
+wpscan-pr-1-plugin-slug=hello-dolly
+wpscan-pr-1-plugin-name-api=hello/hello.php
+wpscan-pr-1-plugin-version=1.6
+wpscan-pr-1-theme-dir=themes/twentytwentyone
+wpscan-pr-1-theme-key=twentytwentyone
+wpscan-pr-1-theme-name=Twenty Twenty-One
+wpscan-pr-1-theme-slug=twentytwentyone
+wpscan-pr-1-theme-version=1.2
+wpscan-pr-2-commit-id=5dd9e528b02c294683812f49c10ec97f6cbeb706
+wpscan-pr-2-dirs-scan=plugins,mu-plugins,themes
+wpscan-pr-3-commit-id=fa1546344701b53ef4cb81e3b77584e6c2b8bb5f
+wpscan-pr-3-dirs-scan=plugins,mu-plugins,themes
+
 [auto-approvals]
 commit-test-file-types-1=2d864e5dd9d89ea3362d965477432873bf970345
 commit-test-svg-files-1=44ed02088a503d84522f6e9b40eb0788e0935c24
@@ -132,28 +156,7 @@ commit-test-options-read-repo-file-with-file-2=fe24a89ee9e9184681c6482ca60af57cc
 commit-test-options-read-repo-file-with-file-3=1615b03f6997878feb1a25926631c4165e2efeec
 commit-test-options-read-repo-file-with-file-5=9a13bbec0cc2c7557539076f0125cc396fab22c1
 
-; For WPScan API tests. Plugin/theme known to API.
-[wpscan-api-scan]
-plugin-slug=classic-editor
-theme-slug=twentytwenty
-wpscan-pr-1-commit-id=343d83dda119ef782ad66ad1db9e7f80b0630cc4
-wpscan-pr-1-dirs-scan=plugins,mu-plugins,themes
-wpscan-pr-1-number=52
-wpscan-pr-1-dirs-altered=plugins/hello,plugins/not-a-plugin,themes/twentytwentyone
-wpscan-pr-1-plugin-dir=plugins/hello
-wpscan-pr-1-plugin-key=hello.php
-wpscan-pr-1-plugin-name=Hello Dolly
-wpscan-pr-1-plugin-slug=hello-dolly
-wpscan-pr-1-plugin-name-api=hello/hello.php
-wpscan-pr-1-plugin-version=1.6
-wpscan-pr-1-theme-dir=themes/twentytwentyone
-wpscan-pr-1-theme-key=twentytwentyone
-wpscan-pr-1-theme-name=Twenty Twenty-One
-wpscan-pr-1-theme-slug=twentytwentyone
-wpscan-pr-1-theme-version=1.2
-wpscan-pr-2-commit-id=5dd9e528b02c294683812f49c10ec97f6cbeb706
-wpscan-pr-2-dirs-scan=plugins,mu-plugins,themes
-wpscan-pr-3-commit-id=fa1546344701b53ef4cb81e3b77584e6c2b8bb5f
-wpscan-pr-3-dirs-scan=plugins,mu-plugins,themes
-
+[results]
+pr-number-1=56
+commit-test-results-remove-existing-1=1c63fd89388e3f5563869ca5dc54ae7d4da9f1a4
 

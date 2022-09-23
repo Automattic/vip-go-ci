@@ -784,7 +784,11 @@ function vipgoci_phpcs_scan_commit(
 		 */
 		$file_issues_arr_master = array_map(
 			function( $item ) {
-				$item['level'] = $item['type'];
+				if ( isset( $item['type'] ) ) {
+					$item['level'] = $item['type'];
+
+					unset( $item['type'] );
+				}
 
 				return $item;
 			},
