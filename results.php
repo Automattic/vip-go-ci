@@ -267,7 +267,7 @@ function vipgoci_results_remove_existing_github_comments(
 				 * Update statistics
 				 */
 				$results['stats'][ $tobe_submitted_cmt['type'] ][ $pr_item->number ][ strtolower(
-					$tobe_submitted_cmt['issue']['type']
+					$tobe_submitted_cmt['issue']['level']
 				) ]--;
 			}
 		}
@@ -361,7 +361,7 @@ function vipgoci_results_approved_files_comments_remove(
 			 */
 
 			if ( strtolower(
-				$issue_item['issue']['type']
+				$issue_item['issue']['level']
 			) === 'info' ) {
 				continue;
 			}
@@ -379,7 +379,7 @@ function vipgoci_results_approved_files_comments_remove(
 			 * Update statistics accordingly.
 			 */
 			$results['stats'][ $issue_item['type'] ][ $pr_number ][ strtolower(
-				$issue_item['issue']['type']
+				$issue_item['issue']['level']
 			) ]--;
 
 			/*
@@ -564,7 +564,7 @@ function vipgoci_results_filter_comments_to_max(
 				);
 
 				$results['stats'][ $pr_issue['type'] ][ $pr_number ][ strtolower(
-					$pr_issue['issue']['type']
+					$pr_issue['issue']['level']
 				) ]--;
 
 				/*
@@ -695,7 +695,7 @@ function vipgoci_results_filter_ignorable(
 				 * Keep statistics up-to-date
 				 */
 				$results['stats'][ $pr_issue['type'] ][ $pr_number ][ strtolower(
-					$pr_issue['issue']['type']
+					$pr_issue['issue']['level']
 				) ]--;
 			}
 		}
@@ -923,8 +923,10 @@ function vipgoci_results_comment_match(
 			)
 			||
 			(
-				htmlentities( $file_issue_comment ) ===
-				$comment_made_body
+				htmlentities(
+					$file_issue_comment,
+					ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401 // PHP 8.1 default.
+				) === $comment_made_body
 			)
 		) {
 			/* Comment found, return true. */
