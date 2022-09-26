@@ -13,7 +13,6 @@ declare(strict_types=1);
  * @param string $wpscan_slug         Plugin or theme slug.
  * @param string $wpscan_type         Type of scan, plugin or theme
  *                                    -- use VIPGOCI_ADDON_PLUGIN or VIPGOCI_ADDON_THEME defines.
- * @param string $wpscan_api_base_url Base WPScan API URL.
  * @param string $wpscan_access_token WPScan access token to use.
  *
  * @return null|array Results from WPScan API as array on success, null on failure.
@@ -21,14 +20,12 @@ declare(strict_types=1);
 function vipgoci_wpscan_do_scan_via_api(
 	string $wpscan_slug,
 	string $wpscan_type,
-	string $wpscan_api_base_url,
 	string $wpscan_access_token,
 ) :null|array {
 	/*
 	 * Construct WPScan API URL
 	 */
-	$wpscan_complete_url =
-		$wpscan_api_base_url;
+	$wpscan_complete_url = VIPGOCI_WPSCAN_API_BASE_URL;
 
 	if ( VIPGOCI_ADDON_PLUGIN === $wpscan_type ) {
 		$wpscan_complete_url .= '/plugins';
