@@ -57,7 +57,7 @@ final class WpscanReportCommentFormatResultTest extends TestCase {
 					'latest_download_uri' => 'https://downloads.wordpress.org/plugins/my-plugin-2.0.0.zip',
 					'vulnerabilities'     => array(
 						array(
-							'id'    => '0100100',
+							'id'    => '0100100 ;',
 							'title' => 'Security problem in My Plugin',
 						),
 					),
@@ -167,7 +167,7 @@ final class WpscanReportCommentFormatResultTest extends TestCase {
 		);
 
 		$this->assertStringContainsString(
-			VIPGOCI_WPSCAN_BASE_URL . '/vulnerability/0100100',
+			VIPGOCI_WPSCAN_BASE_URL . '/vulnerability/0100100%20%3B',
 			$report_str
 		);
 	}
