@@ -135,8 +135,6 @@ function vipgoci_help_print() :void {
 		'WPScan API scanning configuration:' . PHP_EOL .
 		"\t" . '--wpscan-api=BOOL                  Enable or disable WPScan API scanning. Disabled by default.' . PHP_EOL .
 		"\t" . '--wpscan-api-dry-mode=BOOL         When enabled, report WPScan API results to IRC only, not pull requests. Temporary feature.' . PHP_EOL .
-		"\t" . '--wpscan-api-url=STRING            URL to WPScan API. If nothing is specified, will use the ' . PHP_EOL .
-		"\t" . '                                   default (' . VIPGOCI_WPSCAN_API_BASE_URL . ').' . PHP_EOL .
 		"\t" . '--wpscan-api-token=STRING          Access token to use to communicate with WPScan API.' . PHP_EOL .
 		"\t" . '--wpscan-api-paths=ARRAY           Directories to scan using WPScan API scanning. Should be an array' . PHP_EOL .
 		"\t" . '                                   with items separated by commas.' . PHP_EOL .
@@ -317,7 +315,6 @@ function vipgoci_options_recognized() :array {
 		 */
 		'wpscan-api:',
 		'wpscan-api-dry-mode:',
-		'wpscan-api-url:',
 		'wpscan-api-token:',
 		'wpscan-api-paths:',
 		'wpscan-api-skip-folders:',
@@ -701,15 +698,6 @@ function vipgoci_run_init_options_wpscan( array &$options ) :void {
 	);
 
 	/*
-	 * Process --wpscan-api-url -- expected to be a base URL to WPScan API.
-	 */
-	vipgoci_option_url_handle(
-		$options,
-		'wpscan-api-url',
-		VIPGOCI_WPSCAN_API_BASE_URL
-	);
-
-	/*
 	 * Process --wpscan-api-report-end-msg -- expected to be a string.
 	 */
 	if ( empty( $options['wpscan-api-report-end-msg'] ) ) {
@@ -720,15 +708,13 @@ function vipgoci_run_init_options_wpscan( array &$options ) :void {
 		( true === $options['wpscan-api'] ) &&
 		(
 			( empty( $options['wpscan-api-paths'] ) ) ||
-			( empty( $options['wpscan-api-url'] ) ) ||
 			( empty( $options['wpscan-api-token'] ) )
 		)
 	) {
 		vipgoci_sysexit(
-			'--wpscan-api is set to true, but --wpscan-api-paths, --wpscan-api-url or --wpscan-api-token are not set or are empty',
+			'--wpscan-api is set to true, but --wpscan-api-paths, or --wpscan-api-token are not set or are empty',
 			array(
 				'wpscan-api-paths' => isset( $options['wpscan-api-paths'] ) ? $options['wpscan-api-paths'] : null,
-				'wpscan-api-url'   => isset( $options['wpscan-api-url'] ) ? $options['wpscan-api-url'] : null,
 				'wpscan-api-token' => isset( $options['wpscan-api-token'] ) ? $options['wpscan-api-token'] : null,
 			),
 			VIPGOCI_EXIT_USAGE_ERROR
