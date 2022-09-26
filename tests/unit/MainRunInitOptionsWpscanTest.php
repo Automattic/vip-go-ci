@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class MainRunInitOptionsWpscan extends TestCase {
+final class MainRunInitOptionsWpscanTest extends TestCase {
 	/**
 	 * Require files. Set up variable.
 	 */
@@ -44,30 +44,31 @@ final class MainRunInitOptionsWpscan extends TestCase {
 	 */
 	public function testRunInitOptionsWpscanOptionsDefault() :void {
 		$this->options = array(
-			'wpscan-api'              => null,
-			'wpscan-api-url'          => null,
-			'wpscan-api-token'        => '123456789',
-			'wpscan-api-paths'        => '/plugins/,themes/,/custom-path/custom-plugins',
-			'wpscan-api-skip-folders' => 'dir1,dir2,dir3',
+			'wpscan-api'                => null,
+			'wpscan-api-dry-mode'       => null,
+			'wpscan-api-token'          => '123456789',
+			'wpscan-api-paths'          => '/plugins/,themes/,/custom-path/custom-plugins',
+			'wpscan-api-skip-folders'   => 'dir1,dir2,dir3',
 		);
 
 		vipgoci_run_init_options_wpscan( $this->options );
 
 		$this->assertSame(
 			array(
-				'wpscan-api'              => false,
-				'wpscan-api-url'          => 'https://wpscan.com/api/v3',
-				'wpscan-api-token'        => '123456789',
-				'wpscan-api-paths'        => array(
+				'wpscan-api'                => false,
+				'wpscan-api-dry-mode'       => true,
+				'wpscan-api-token'          => '123456789',
+				'wpscan-api-paths'          => array(
 					'plugins',
 					'themes',
 					'custom-path/custom-plugins',
 				),
-				'wpscan-api-skip-folders' => array(
+				'wpscan-api-skip-folders'   => array(
 					'dir1',
 					'dir2',
 					'dir3',
 				),
+				'wpscan-api-report-end-msg' => '',
 			),
 			$this->options
 		);
@@ -81,30 +82,32 @@ final class MainRunInitOptionsWpscan extends TestCase {
 	 */
 	public function testRunInitOptionsWpscanOptionsCustom() :void {
 		$this->options = array(
-			'wpscan-api'              => 'true',
-			'wpscan-api-url'          => 'https://127.0.0.1/api',
-			'wpscan-api-token'        => '123456789',
-			'wpscan-api-paths'        => '/plugins/,themes/,/custom-path/custom-plugins',
-			'wpscan-api-skip-folders' => 'dir1,dir2,dir3',
+			'wpscan-api'                => 'true',
+			'wpscan-api-dry-mode'       => 'false',
+			'wpscan-api-token'          => '123456789',
+			'wpscan-api-paths'          => '/plugins/,themes/,/custom-path/custom-plugins',
+			'wpscan-api-skip-folders'   => 'dir1,dir2,dir3',
+			'wpscan-api-report-end-msg' => 'abc',
 		);
 
 		vipgoci_run_init_options_wpscan( $this->options );
 
 		$this->assertSame(
 			array(
-				'wpscan-api'              => true,
-				'wpscan-api-url'          => 'https://127.0.0.1/api',
-				'wpscan-api-token'        => '123456789',
-				'wpscan-api-paths'        => array(
+				'wpscan-api'                => true,
+				'wpscan-api-dry-mode'       => false,
+				'wpscan-api-token'          => '123456789',
+				'wpscan-api-paths'          => array(
 					'plugins',
 					'themes',
 					'custom-path/custom-plugins',
 				),
-				'wpscan-api-skip-folders' => array(
+				'wpscan-api-skip-folders'   => array(
 					'dir1',
 					'dir2',
 					'dir3',
 				),
+				'wpscan-api-report-end-msg' => 'abc',
 			),
 			$this->options
 		);
