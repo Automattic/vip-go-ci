@@ -249,7 +249,6 @@ function vipgoci_wpscan_scan_dirs_altered(
 			$wpscan_results = vipgoci_wpscan_do_scan_via_api(
 				$addon_item_info['slug'],
 				$addon_item_info['type'],
-				$options['wpscan-api-url'],
 				$options['wpscan-api-token']
 			);
 
