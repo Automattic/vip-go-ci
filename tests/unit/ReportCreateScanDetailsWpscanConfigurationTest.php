@@ -85,7 +85,6 @@ final class ReportCreateScanDetailsWpscanConfigurationTest extends TestCase {
 		$this->options['wpscan-api']              = true;
 		$this->options['wpscan-api-paths']        = array( 'plugins', 'themes' );
 		$this->options['wpscan-api-skip-folders'] = array( 'skip-dir1', 'skip-dir2' );
-		$this->options['wpscan-api-url']          = 'https://wpscan.com/v3/api';
 
 		$actual_output = vipgoci_report_create_scan_details_wpscan_configuration(
 			$this->options
@@ -104,18 +103,18 @@ final class ReportCreateScanDetailsWpscanConfigurationTest extends TestCase {
 
 		$this->assertStringContainsString(
 			'<p>WPScan API URL: ' . PHP_EOL .
-			'<code>https://wpscan.com/v3/api</code></p>',
+			'<code>https://wpscan.com/api/v3</code></p>',
 			$actual_output
 		);
 
 		$this->assertStringContainsString(
-			'<p>Directories scanned:</p>' . PHP_EOL . 
+			'<p>Directories scanned:</p>' . PHP_EOL .
 			'<ul>' . PHP_EOL . '<li><code>plugins</code></li><li><code>themes</code></li></ul>',
 			$actual_output
 		);
 
 		$this->assertStringContainsString(
-			'<p>Directories not scanned:</p>' . PHP_EOL . 
+			'<p>Directories not scanned:</p>' . PHP_EOL .
 			'<ul>' . PHP_EOL . '<li><code>skip-dir1</code></li><li><code>skip-dir2</code></li></ul>',
 			$actual_output
 		);
