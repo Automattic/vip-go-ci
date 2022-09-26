@@ -488,7 +488,7 @@ Specifies if to do SVG scanning. For instance:
 
 To make use of this feature, a number of parameters must be configured. For instance:
 
-> ./vip-go-ci.php --wpscan-api=true --wpscan-api-dry-mode=false --wpscan-api-url=https://wpscan.com/api/v3 --wpscan-api-token=... --wpscan-api-paths=plugins,mu-plugins,themes 
+> ./vip-go-ci.php --wpscan-api=true --wpscan-api-dry-mode=false --wpscan-api-token=... --wpscan-api-paths=plugins,mu-plugins,themes 
 
 With this configuration, `vip-go-ci` will first gather available information about any plugins or themes located in the `plugins`, `mu-plugins` and `themes` directories at the root of the repository in the current branch, but only for those that were altered by any of the relevant pull requests affected by the current commit. It will then query the WordPress.org API about these to obtain their slugs and other information. Then the WPScan API will be queried about those plugins/themes that a slug could be determined for. At the end of the scan, information about obsolete or vulnerable plugins/themes will be posted to the relevant pull requests, but only if they were added to the pull request or altered in any way by the pull request. Nothing is posted when a plugin or a theme is deleted completely by a pull request.
 
