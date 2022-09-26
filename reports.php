@@ -367,7 +367,7 @@ function vipgoci_report_create_scan_details_wpscan_configuration(
 		$details .= vipgoci_report_create_scan_details_list(
 			'<code>',
 			'</code>',
-			array( $options_copy['wpscan-api-url'] ),
+			array( VIPGOCI_WPSCAN_API_BASE_URL ),
 			'None'
 		);
 
