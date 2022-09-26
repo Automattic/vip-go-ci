@@ -526,7 +526,7 @@ function vipgoci_wpcore_api_determine_slug_and_other_for_addons(
 				true // Log to IRC.
 			);
 
-			return null;
+			continue;
 		}
 
 		$api_data = json_decode(
@@ -546,7 +546,7 @@ function vipgoci_wpcore_api_determine_slug_and_other_for_addons(
 				true // Log to IRC.
 			);
 
-			return null;
+			continue;
 		}
 
 		/*
@@ -569,6 +569,31 @@ function vipgoci_wpcore_api_determine_slug_and_other_for_addons(
 			( isset( $slugs_by_addon[ $addon_query_type . '-' . $key ]['theme'] ) )
 		) {
 			$slugs_by_addon[ $addon_query_type . '-' . $key ]['slug'] = $slugs_by_addon[ $addon_query_type . '-' . $key ]['theme'];
+		}
+
+		/*
+		 * Verify that slug is valid; if not skip result.
+		 */
+		if (
+			( isset(
+				$slugs_by_addon[ $addon_query_type . '-' . $key ]['slug']
+			) ) &&
+			( false === vipgoci_validate_slug(
+				$slugs_by_addon[ $addon_query_type . '-' . $key ]['slug']
+			) )
+		) {
+			vipgoci_log(
+				'Invalid slug received from WordPress.org API, skipping result',
+				array(
+					'addon_query_type_short' => $addon_query_type_short,
+					'api_data_raw'           => $api_data_raw,
+					'api_data'               => $api_data,
+				)
+			);
+
+			unset( $slugs_by_addon[ $addon_query_type . '-' . $key ] );
+
+			continue;
 		}
 	}
 
@@ -635,7 +660,7 @@ function vipgoci_wpcore_misc_get_addon_data_and_slugs_for_directory(
 	);
 
 	if ( null === $addons_details ) {
-		return null;
+		return array();
 	}
 
 	/*
