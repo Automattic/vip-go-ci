@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class OtherWebServicesIrcApiCleanIgnorableConstantsTests extends TestCase {
+final class OtherWebServicesIrcApiCleanIgnorableConstantsTest extends TestCase {
 	/**
 	 * Setup function. Require files.
 	 *
