@@ -861,3 +861,19 @@ function vipgoci_sanitize_path_prefix(
 
 	return $path;
 }
+
+/**
+ * Ensure string provided is in slug-format.
+ *
+ * @param string $str String to check.
+ *
+ * @return bool True when string is a valid slug, false otherwise.
+ */
+function vipgoci_validate_slug(
+	string $str
+): bool {
+	return 1 === preg_match(
+		'/^[a-z0-9]+(-?[a-z0-9]+)*$/i',
+		$str
+	);
+}
