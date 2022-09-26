@@ -202,7 +202,7 @@ function vipgoci_wpscan_report_comment_format_result(
 		foreach ( $issue['details']['vulnerabilities'] as $vuln_item ) {
 			$res .= '### &#x1f512; Security information' . "\n" . // Header markup and lock sign.
 			'**Title**: ' . vipgoci_output_html_escape( $vuln_item['title'] ) . "\n" .
-			'**Details**: ' . vipgoci_output_html_escape( VIPGOCI_WPSCAN_BASE_URL . '/vulnerability/' . $vuln_item['id'] ) . "\n";
+			'**Details**: ' . vipgoci_output_html_escape( VIPGOCI_WPSCAN_BASE_URL . '/vulnerability/' . rawurlencode( $vuln_item['id'] ) ) . "\n";
 
 			// May not be included, enterprise only feature.
 			if ( isset( $vuln_item['cvss']['score'] ) ) {
