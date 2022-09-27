@@ -39,7 +39,7 @@ function vipgoci_wpscan_report_start(
 		"\n\r" .
 		sprintf(
 			VIPGOCI_WPSCAN_REPORT_START,
-			vipgoci_output_html_escape( $name_to_use ),
+			vipgoci_output_markdown_escape( $name_to_use ),
 			$comment_type
 		) .
 		"\n\r";
@@ -79,10 +79,13 @@ function vipgoci_wpscan_report_end(
 	}
 
 	return vipgoci_output_html_escape(
-		str_replace(
-			'%addon_type%',
-			$comment_type,
-			$wpscan_api_report_end_msg
+		vipgoci_output_markdown_escape(
+			str_replace(
+				'%addon_type%',
+				$comment_type,
+				$wpscan_api_report_end_msg
+			),
+			array( '*', '(', ')', '[', ']' )
 		)
 	) . "\n\r";
 }
@@ -162,15 +165,25 @@ function vipgoci_wpscan_report_comment_format_result(
 		);
 	}
 
+	/*
+	 * Sanitize URL and escape -- do not escape "." and "-" as
+	 * these can exist in URLs and are ignored in this
+	 * Markdown context.
+	 */
+	$addon_url_escaped = vipgoci_output_markdown_escape(
+		vipgoci_output_sanitize_url( $issue['details']['url'] ),
+		array( '.', '-' )
+	);
+
 	// Type of addon.
 	if ( VIPGOCI_ADDON_PLUGIN === $issue_type ) {
 		$res .= ' Plugin information' . "\n" .
-			'**Plugin Name**: ' . vipgoci_output_html_escape( $issue['message'] ) . "\n" .
-			'**Plugin URI**: ' . vipgoci_output_html_escape( $issue['details']['url'] ) . "\n";
+			'**Plugin Name**: ' . vipgoci_output_markdown_escape( $issue['message'] ) . "\n" .
+			'**Plugin URI**: ' . $addon_url_escaped . "\n";
 	} elseif ( VIPGOCI_ADDON_THEME === $issue_type ) {
 		$res .= ' Theme information' . "\n" .
-			'**Theme Name**: ' . vipgoci_output_html_escape( $issue['message'] ) . "\n" .
-			'**Theme URI**: ' . vipgoci_output_html_escape( $issue['details']['url'] ) . "\n";
+			'**Theme Name**: ' . vipgoci_output_markdown_escape( $issue['message'] ) . "\n" .
+			'**Theme URI**: ' . $addon_url_escaped . "\n";
 	} else {
 		vipgoci_sysexit(
 			'Internal error: Invalid $issue_type in ' . __FUNCTION__,
@@ -180,6 +193,11 @@ function vipgoci_wpscan_report_comment_format_result(
 		);
 	}
 
+	// Sanitize URL.
+	$installed_location_sanitized = vipgoci_output_sanitize_url(
+		$issue['details']['installed_location']
+	);
+
 	// Construct URL to the relevant file.
 	$view_code_link = '([view code](' .
 		VIPGOCI_GITHUB_WEB_BASE_URL . '/' .
@@ -187,27 +205,68 @@ function vipgoci_wpscan_report_comment_format_result(
 		rawurlencode( $repo_name ) . '/' .
 		'tree/' .
 		rawurlencode( $commit_id ) . '/' .
-		$issue['details']['installed_location'] . // Internally constructed.
-		')).';
+		$installed_location_sanitized .
+		'))';
 
+	/*
+	 * Only escape backticks; this is safe, as in this Markdown
+	 * context every other Markdown is outputted as literal.
+	 */
+	$res .= '**Installed location**: `' . vipgoci_output_markdown_escape(
+		$issue['details']['installed_location'],
+		array(),
+		array( '`' => '\`' )
+	) . '` ' . $view_code_link . "\n";
+
+	/*
+	 * No need for further Markdown sanitization here;
+	 * version numbers are safe to output as they are
+	 * interpreted as literal.
+	 */
 	$res .=
-		'**Installed location**: `' . vipgoci_output_html_escape( $issue['details']['installed_location'] ) . '` ' . $view_code_link . "\n" .
 		'**Version observed**: ' . vipgoci_output_sanitize_version_number( $issue['details']['version_detected'] ) . "\n" .
-		'**Latest version available**: ' . vipgoci_output_sanitize_version_number( $issue['details']['latest_version'] ) . "\n" .
-		'**Latest version download URI**: ' . vipgoci_output_html_escape( $issue['details']['latest_download_uri'] ) . "\n";
+		'**Latest version available**: ' . vipgoci_output_sanitize_version_number( $issue['details']['latest_version'] ) . "\n";
+
+	// Sanitize URL and escape -- do not escape "." and "-", see above.
+	$res .= '**Latest version download URI**: ' . vipgoci_output_markdown_escape(
+		vipgoci_output_sanitize_url( $issue['details']['latest_download_uri'] ),
+		array( '.', '-' )
+	) . "\n";
 
 	if ( ! empty( $issue['details']['vulnerabilities'] ) ) {
 		$res .= "\n\r";
 
 		foreach ( $issue['details']['vulnerabilities'] as $vuln_item ) {
-			$res .= '### &#x1f512; Security information' . "\n" . // Header markup and lock sign.
-			'**Title**: ' . vipgoci_output_html_escape( $vuln_item['title'] ) . "\n" .
-			'**Details**: ' . vipgoci_output_html_escape( VIPGOCI_WPSCAN_BASE_URL . '/vulnerability/' . rawurlencode( $vuln_item['id'] ) ) . "\n";
+			$res .= '### &#x1f512; Security information' . "\n"; // Header markup and lock sign.
+
+			/*
+			 * Escape except for "#" and "&" -- these are sometimes
+			 * seen in "titles" and are ignored in this Markdown context.
+			 */
+			$res .= '**Title**: ' . vipgoci_output_markdown_escape(
+				$vuln_item['title'],
+				array( '#', '&' )
+			) . "\n";
+
+			/*
+			 * Escape URL. Do not escape "." and "-", see above.
+			 */
+			$res .= '**Details**: ' . vipgoci_output_markdown_escape(
+				vipgoci_output_sanitize_url( VIPGOCI_WPSCAN_BASE_URL . '/vulnerability/' . rawurlencode( $vuln_item['id'] ) ),
+				array( '.', '-' )
+			) . "\n";
 
 			// May not be included, enterprise only feature.
 			if ( isset( $vuln_item['cvss']['score'] ) ) {
-				$res .= '**Severity**: ' . $vuln_item['cvss']['score'] . '/10 ' .
-					'(' . vipgoci_wpscan_report_format_cvss_score( $vuln_item['cvss']['score'] ) . ')' . "\n";
+				// Escape severity as float.
+				$res .= '**Severity**: ' . ( (float) $vuln_item['cvss']['score'] ) . '/10 (';
+
+				// Escape output string.
+				$res .= vipgoci_output_markdown_escape(
+					vipgoci_wpscan_report_format_cvss_score( $vuln_item['cvss']['score'] )
+				);
+
+				$res .= ')' . "\n";
 			}
 		}
 	}
