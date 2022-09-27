@@ -24,17 +24,21 @@ final class WpscanScanCommitTest extends TestCase {
 	 * @var $options_wpscan_api_scan
 	 */
 	private array $options_wpscan_api_scan = array(
-		'wpscan-pr-1-commit-id'      => null,
-		'wpscan-pr-1-dirs-scan'      => null,
-		'wpscan-pr-1-number'         => null,
-		'wpscan-pr-1-plugin-dir'     => null,
-		'wpscan-pr-1-plugin-key'     => null,
-		'wpscan-pr-1-plugin-name'    => null,
-		'wpscan-pr-1-plugin-version' => null,
-		'wpscan-pr-1-theme-dir'      => null,
-		'wpscan-pr-1-theme-key'      => null,
-		'wpscan-pr-1-theme-name'     => null,
-		'wpscan-pr-1-theme-version'  => null,
+		'wpscan-pr-1-commit-id'       => null,
+		'wpscan-pr-1-dirs-scan'       => null,
+		'wpscan-pr-1-number'          => null,
+		'wpscan-pr-1-plugin-dir'      => null,
+		'wpscan-pr-1-plugin-key'      => null,
+		'wpscan-pr-1-plugin-name'     => null,
+		'wpscan-pr-1-plugin-version'  => null,
+		'wpscan-pr-1-plugin2-dir'     => null,
+		'wpscan-pr-1-plugin2-key'     => null,
+		'wpscan-pr-1-plugin2-name'    => null,
+		'wpscan-pr-1-plugin2-version' => null,
+		'wpscan-pr-1-theme-dir'       => null,
+		'wpscan-pr-1-theme-key'       => null,
+		'wpscan-pr-1-theme-name'      => null,
+		'wpscan-pr-1-theme-version'   => null,
 	);
 
 	/**
@@ -261,7 +265,7 @@ final class WpscanScanCommitTest extends TestCase {
 		$this->assertSame(
 			array(
 				$this->options['wpscan-pr-1-number'] => array(
-					'warning' => 2,
+					'warning' => 3,
 				),
 			),
 			$commit_issues_stats
@@ -270,7 +274,7 @@ final class WpscanScanCommitTest extends TestCase {
 		/*
 		 * Ensure plugin and theme details are valid.
 		 */
-		for ( $i = 0; $i <= 1; $i++ ) {
+		for ( $i = 0; $i <= 2; $i++ ) {
 			$this->assertTrue(
 				( isset( $commit_issues_submit[ $this->options['wpscan-pr-1-number'] ][ $i ]['issue']['details']['latest_version'] ) ) &&
 				( -1 === version_compare( '0.0.0', $commit_issues_submit[ $this->options['wpscan-pr-1-number'] ][ $i ]['issue']['details']['latest_version'] ) )
@@ -292,7 +296,7 @@ final class WpscanScanCommitTest extends TestCase {
 			unset( $commit_issues_submit[ $this->options['wpscan-pr-1-number'] ][ $i ]['issue']['details']['latest_download_uri'] );
 
 			$this->assertStringContainsString(
-				0 === $i ? 'wordpress.org/plugins' : 'wordpress.org/themes',
+				$i <= 1 ? 'wordpress.org/plugins' : 'wordpress.org/themes',
 				$commit_issues_submit[ $this->options['wpscan-pr-1-number'] ][ $i ]['issue']['details']['url']
 			);
 
@@ -320,10 +324,26 @@ final class WpscanScanCommitTest extends TestCase {
 							'addon_type' => 'vipgoci-addon-plugin',
 							'message'    => $this->options['wpscan-pr-1-plugin-name'],
 							'level'      => 'warning',
-							'severity'   => 10,
+							'severity'   => 7,
 							'details'    => array(
-								'installed_location' => $this->options['wpscan-pr-1-plugin-dir'] . '/' . $this->options['wpscan-pr-1-plugin-key'],
+								'installed_location' => $this->options['wpscan-pr-1-plugin-dir'],
 								'version_detected'   => $this->options['wpscan-pr-1-plugin-version'],
+								'vulnerabilities'    => array(),
+							),
+						),
+					),
+					array(
+						'type'      => 'wpscan-api',
+						'file_name' => $this->options['wpscan-pr-1-plugin2-dir'] . '/' . $this->options['wpscan-pr-1-plugin2-key'],
+						'file_line' => 1,
+						'issue'     => array(
+							'addon_type' => 'vipgoci-addon-plugin',
+							'message'    => $this->options['wpscan-pr-1-plugin2-name'],
+							'level'      => 'warning',
+							'severity'   => 7,
+							'details'    => array(
+								'installed_location' => $this->options['wpscan-pr-1-plugin2-dir'],
+								'version_detected'   => $this->options['wpscan-pr-1-plugin2-version'],
 								'vulnerabilities'    => array(),
 							),
 						),
@@ -336,9 +356,9 @@ final class WpscanScanCommitTest extends TestCase {
 							'addon_type' => 'vipgoci-addon-theme',
 							'message'    => $this->options['wpscan-pr-1-theme-name'],
 							'level'      => 'warning',
-							'severity'   => 10,
+							'severity'   => 7,
 							'details'    => array(
-								'installed_location' => $this->options['wpscan-pr-1-theme-dir'] . '/' . $this->options['wpscan-pr-1-theme-key'],
+								'installed_location' => $this->options['wpscan-pr-1-theme-dir'],
 								'version_detected'   => $this->options['wpscan-pr-1-theme-version'],
 								'vulnerabilities'    => array(),
 							),
