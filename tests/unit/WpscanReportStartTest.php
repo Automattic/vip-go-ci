@@ -54,7 +54,7 @@ final class WpscanReportStartTest extends TestCase {
 		);
 
 		$this->assertStringContainsString(
-			'my-internal-name has identified',
+			'my\-internal\-name has identified',
 			$report_start
 		);
 
@@ -89,7 +89,7 @@ final class WpscanReportStartTest extends TestCase {
 		);
 
 		$this->assertStringContainsString(
-			'my-internal-name has identified',
+			'my\-internal\-name has identified',
 			$report_start
 		);
 
