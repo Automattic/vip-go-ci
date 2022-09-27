@@ -655,7 +655,7 @@ function vipgoci_wpcore_misc_assign_addon_fields(
 				)
 			);
 
-			unset( $addons_details[ $addon_key ] );
+			unset( $addons_found[ $addon_key ] );
 
 			continue;
 		}
