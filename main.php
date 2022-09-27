@@ -141,7 +141,8 @@ function vipgoci_help_print() :void {
 		"\t" . '--wpscan-api-skip-folders=ARRAY    Directories not to scan using WPScan API scanning. Should be an' . PHP_EOL .
 		"\t" . '                                   array with items separated by commas.' . PHP_EOL .
 		"\t" . '--wpscan-api-report-end-msg=STRING Message to append to end of WPScan API reports. The "%addon_type%" placeholder' . PHP_EOL .
-		"\t" . '                                   will be replaced by either "plugin" or "theme", depending on the report.' . PHP_EOL .
+		"\t" . '                                   will be replaced by either "plugin" or "theme", depending on the report. Limited' . PHP_EOL .
+		"\t" . '                                   Markdown syntax allowed.' . PHP_EOL .
 		PHP_EOL .
 		'Auto approve configuration:' . PHP_EOL .
 		"\t" . '--autoapprove=BOOL             Whether to auto-approve pull requests that fulfil' . PHP_EOL .
