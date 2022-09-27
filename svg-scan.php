@@ -347,9 +347,8 @@ function vipgoci_svg_scan_single_file(
 	$results['files'][ $temp_file_name ]['messages'] = array_map(
 		function( $issue_item ) {
 			$issue_item['severity'] = 5;
-			$issue_item['type']     = 'ERROR';
 			$issue_item['source']   = 'VipgociInternal.SVG.DisallowedTags';
-			$issue_item['level']    = $issue_item['type'];
+			$issue_item['level']    = 'ERROR';
 			$issue_item['fixable']  = false;
 			$issue_item['column']   = 0;
 

@@ -165,7 +165,6 @@ final class PhpcsScanScanCommitTest extends TestCase {
 							'source' => 'WordPress.Security.EscapeOutput.OutputNotEscaped',
 							'severity' => 5,
 							'fixable' => false,
-							'type' => 'ERROR',
 							'line' => 3,
 							'column' => 20,
 							'level' => 'ERROR',
@@ -181,7 +180,6 @@ final class PhpcsScanScanCommitTest extends TestCase {
 							'source' => 'WordPress.Security.EscapeOutput.OutputNotEscaped',
 							'severity' => 5,
 							'fixable' => false,
-							'type' => 'ERROR',
 							'line' => 7,
 							'column' => 20,
 							'level' => 'ERROR',
@@ -197,7 +195,6 @@ final class PhpcsScanScanCommitTest extends TestCase {
 							'source' => 'WordPress.Security.EscapeOutput.OutputNotEscaped',
 							'severity' => 5,
 							'fixable' => false,
-							'type' => 'ERROR',
 							'line' => 11,
 							'column' => 20,
 							'level' => 'ERROR'
@@ -266,12 +263,16 @@ final class PhpcsScanScanCommitTest extends TestCase {
 		vipgoci_unittests_output_unsuppress();
 
 		/*
-		 * We should have found two PRs, and
+		 * We should have found three PRs, and
 		 * we should have initialised statistics
-		 * for both. Make sure it is so.
+		 * for all. Make sure it is so.
 		 */
 		$this->assertSame(
 			array(
+				56 => array(
+					'error' => 0,
+				),
+
 				22 => array(
 					'error' => 0,
 				),
@@ -320,7 +321,6 @@ final class PhpcsScanScanCommitTest extends TestCase {
 							'source' => 'WordPress.Security.EscapeOutput.OutputNotEscaped',
 							'severity' => 5,
 							'fixable' => false,
-							'type' => 'ERROR',
 							'line' => 3,
 							'column' => 20,
 							'level' => 'ERROR',
@@ -336,7 +336,6 @@ final class PhpcsScanScanCommitTest extends TestCase {
 							'source' => 'WordPress.Security.EscapeOutput.OutputNotEscaped',
 							'severity' => 5,
 							'fixable' => false,
-							'type' => 'ERROR',
 							'line' => 7,
 							'column' => 20,
 							'level' => 'ERROR',
@@ -458,7 +457,6 @@ final class PhpcsScanScanCommitTest extends TestCase {
 							'source' => 'WordPress.Security.EscapeOutput.OutputNotEscaped',
 							'severity' => 5,
 							'fixable' => false,
-							'type' => 'ERROR',
 							'line' => 3,
 							'column' => 20,
 							'level' => 'ERROR',
@@ -474,7 +472,6 @@ final class PhpcsScanScanCommitTest extends TestCase {
 							'source' => 'WordPress.Security.EscapeOutput.OutputNotEscaped',
 							'severity' => 5,
 							'fixable' => false,
-							'type' => 'ERROR',
 							'line' => 7,
 							'column' => 20,
 							'level' => 'ERROR',
@@ -490,7 +487,6 @@ final class PhpcsScanScanCommitTest extends TestCase {
 							'source' => 'WordPress.WP.EnqueuedResources.NonEnqueuedScript',
 							'severity' => 3,
 							'fixable' => false,
-							'type' => 'WARNING',
 							'line' => 10,
 							'column' => 6,
 							'level' => 'WARNING'
@@ -506,7 +502,6 @@ final class PhpcsScanScanCommitTest extends TestCase {
 							'source' => 'WordPress.Security.EscapeOutput.OutputNotEscaped',
 							'severity' => 5,
 							'fixable' => false,
-							'type' => 'ERROR',
 							'line' => 3,
 							'column' => 20,
 							'level' => 'ERROR'
@@ -640,7 +635,6 @@ final class PhpcsScanScanCommitTest extends TestCase {
 							'source' => 'WordPress.WP.EnqueuedResources.NonEnqueuedScript',
 							'severity' => 3,
 							'fixable' => false,
-							'type' => 'WARNING',
 							'line' => 10,
 							'column' => 6,
 							'level' => 'WARNING'
@@ -801,7 +795,6 @@ final class PhpcsScanScanCommitTest extends TestCase {
 							'source'   => 'WordPress.Security.EscapeOutput.OutputNotEscaped',
 							'severity' => 5,
 							'fixable'  => false,
-							'type'     => 'ERROR',
 							'line'     => 3,
 							'column'   => 20,
 							'level'    => 'ERROR',
@@ -817,7 +810,6 @@ final class PhpcsScanScanCommitTest extends TestCase {
 							'source'   => 'WordPress.Security.EscapeOutput.OutputNotEscaped',
 							'severity' => 5,
 							'fixable'  => false,
-							'type'     => 'ERROR',
 							'line'     => 7,
 							'column'   => 20,
 							'level'    => 'ERROR',
@@ -833,7 +825,6 @@ final class PhpcsScanScanCommitTest extends TestCase {
 							'source'   => 'WordPress.WP.EnqueuedResources.NonEnqueuedScript',
 							'severity' => 3,
 							'fixable'  => false,
-							'type'     => 'WARNING',
 							'line'     => 10,
 							'column'   => 6,
 							'level'    => 'WARNING'
@@ -849,7 +840,6 @@ final class PhpcsScanScanCommitTest extends TestCase {
 							'source'   => 'WordPress.Security.EscapeOutput.OutputNotEscaped',
 							'severity' => 5,
 							'fixable'  => false,
-							'type'     => 'ERROR',
 							'line'     => 3,
 							'column'   => 20,
 							'level'    => 'ERROR'
@@ -865,7 +855,6 @@ final class PhpcsScanScanCommitTest extends TestCase {
 							'source'   => 'WordPress.Security.EscapeOutput.OutputNotEscaped',
 							'severity' => 5,
 							'fixable'  => false,
-							'type'     => 'ERROR',
 							'line'     => 3,
 							'column'   => 20,
 							'level'    => 'ERROR',
@@ -1142,7 +1131,6 @@ final class PhpcsScanScanCommitTest extends TestCase {
 							'source' => 'WordPress.Security.ValidatedSanitizedInput.InputNotSanitized',
 							'severity' => 10,
 							'fixable' => false,
-							'type' => 'WARNING',
 							'line' => 3,
 							'column' => 6,
 							'level' => 'WARNING',
@@ -1159,7 +1147,6 @@ final class PhpcsScanScanCommitTest extends TestCase {
 							'source' => 'WordPress.Security.EscapeOutput.OutputNotEscaped',
 							'severity' => 5,
 							'fixable' => false,
-							'type' => 'ERROR',
 							'line' => 3,
 							'column' => 6,
 							'level' => 'ERROR',
@@ -1176,7 +1163,6 @@ final class PhpcsScanScanCommitTest extends TestCase {
 							'source' => 'WordPress.Security.NonceVerification.Missing',
 							'severity' => 5,
 							'fixable' => false,
-							'type' => 'ERROR',
 							'line' => 3,
 							'column' => 6,
 							'level' => 'ERROR',
@@ -1193,7 +1179,6 @@ final class PhpcsScanScanCommitTest extends TestCase {
 							'source' => 'WordPress.Security.ValidatedSanitizedInput.InputNotValidated',
 							'severity' => 5,
 							'fixable' => false,
-							'type' => 'ERROR',
 							'line' => 3,
 							'column' => 6,
 							'level' => 'ERROR',
@@ -1217,7 +1202,6 @@ final class PhpcsScanScanCommitTest extends TestCase {
 						'source'   => 'WordPress.Security.ValidatedSanitizedInput.InputNotSanitized',
 						'severity' => 10,
 						'fixable'  => false,
-						'type'     => 'WARNING',
 						'line'     => 3,
 						'column'   => 6,
 						'level'    => 'WARNING',
@@ -1233,7 +1217,6 @@ final class PhpcsScanScanCommitTest extends TestCase {
 						'source'   => 'WordPress.Security.ValidatedSanitizedInput.InputNotSanitized',
 						'severity' => 10,
 						'fixable'  => false,
-						'type'     => 'WARNING',
 						'line'     => 3,
 						'column'   => 6,
 						'level'    => 'WARNING',

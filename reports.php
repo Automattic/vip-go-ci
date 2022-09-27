@@ -958,12 +958,14 @@ function vipgoci_report_submit_pr_review_from_results(
 						rtrim(
 							$commit_issue['issue']['message'],
 							'.'
-						)
+						),
+						ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401 // PHP 8.1 default.
 					)
 
 					. ' (*' .
 					htmlentities(
-						$commit_issue['issue']['source']
+						$commit_issue['issue']['source'],
+						ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401 // PHP 8.1 default.
 					)
 					. '*).',
 
