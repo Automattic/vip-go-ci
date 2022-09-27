@@ -311,6 +311,7 @@ final class WpscanScanSaveForSubmissionTest extends TestCase {
 			array(
 				$this->options['wpscan-pr-1-number'] => array(
 					'warning' => 0,
+					'error'   => 0,
 				),
 			),
 			$commit_issues_stats
