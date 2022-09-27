@@ -42,3 +42,90 @@ function vipgoci_output_html_escape(
 	);
 }
 
+/**
+ * HTML encode characters '"<>& and ASCII
+ * values less than 32, encode/strip other
+ * special values.
+ *
+ * @param string $url URL to sanitize.
+ *
+ * @return string Sanitized URL.
+ */
+function vipgoci_output_sanitize_url(
+	string $url
+) :string {
+	return filter_var(
+		$url,
+		FILTER_SANITIZE_URL
+	);
+}
+
+/**
+ * Escape Markdown syntax characters so that they
+ * should be interpreted as literals. The function
+ * allows exceptions to be specified so that these
+ * are not escaped (use with caution).
+ *
+ * Callers can specify their own escape array. This is
+ * only intended when a very narrow portion of the
+ * Markdown syntax characters should be escaped.
+ *
+ * The function will attempt to encode HTML characters
+ * and/or remove any special characters, via the use of
+ * filter function.
+ *
+ * @param string $text_string   Text string to escape.
+ * @param array  $skip_chars    Characters not to escape.
+ * @param array  $replace_array Custom escaping array.
+ *
+ * @return string Escaped string.
+ */
+function vipgoci_output_markdown_escape(
+	string $text_string,
+	?array $skip_chars = array(),
+	?array $replace_array = array()
+) :string {
+	// Call filter function to sanitize special HTML characters.
+	$text_string = filter_var(
+		$text_string,
+		FILTER_SANITIZE_SPECIAL_CHARS
+	);
+
+	// If custom replace array is not specified, use the default one.
+	if ( empty( $replace_array ) ) {
+		$replace_array = array(
+			'\\' => '\\\\',
+			'-'  => '\-',
+			'#'  => '\#',
+			'*'  => '\*',
+			'+'  => '\+',
+			'`'  => '\`',
+			'.'  => '\.',
+			'['  => '\]',
+			']'  => '\]',
+			'('  => '\(',
+			')'  => '\)',
+			'!'  => '\!',
+			'&'  => '\&',
+			'<'  => '\<',
+			'>'  => '\>',
+			'_'  => '\_',
+			'{'  => '\{',
+			'}'  => '\}',
+		);
+	}
+
+	// Any characters not to escape?
+	foreach ( $skip_chars as $skip_char ) {
+		if ( isset( $replace_array[ $skip_char ] ) ) {
+			unset( $replace_array[ $skip_char ] );
+		}
+	}
+
+	// Do the escaping and return.
+	return str_replace(
+		array_keys( $replace_array ),
+		array_values( $replace_array ),
+		$text_string
+	);
+}
