@@ -48,7 +48,7 @@ final class WpscanReportCommentFormatResultTest extends TestCase {
 			'commit12345id',
 			array(
 				'security' => VIPGOCI_WPSCAN_OBSOLETE,
-				'message'  => 'My Plugin',
+				'message'  => 'My Plugin #',
 				'details'  => array(
 					'url'                 => 'https://wordpress.org/plugins/my-plugin',
 					'installed_location'  => 'plugins/my-plugin',
@@ -58,7 +58,7 @@ final class WpscanReportCommentFormatResultTest extends TestCase {
 					'vulnerabilities'     => array(
 						array(
 							'id'    => '0100100 ;',
-							'title' => 'Security problem in My Plugin',
+							'title' => 'Security problem in My Plugin < 1.9.0',
 						),
 					),
 				),
@@ -92,7 +92,7 @@ final class WpscanReportCommentFormatResultTest extends TestCase {
 		);
 
 		$this->assertStringContainsString(
-			'My Plugin',
+			'My Plugin \#',
 			$report_str
 		);
 
@@ -157,7 +157,7 @@ final class WpscanReportCommentFormatResultTest extends TestCase {
 		);
 
 		$this->assertStringContainsString(
-			'Security problem in My Plugin',
+			'Security problem in My Plugin &#60; 1\.9\.0',
 			$report_str
 		);
 
