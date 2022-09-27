@@ -235,10 +235,10 @@ final class WpCoreMiscGetAddonDataAndSlugsForDirectoryTest extends TestCase {
 					),
 					'name'             => $this->options_wpscan_api_scan['wpscan-pr-1-plugin-name'],
 					'version_detected' => '1.7.2',
-					'id'               => 'w.org/plugins/' . $this->options_wpscan_api_scan['wpscan-pr-1-plugin-slug'],
 					'slug'             => $this->options_wpscan_api_scan['wpscan-pr-1-plugin-slug'],
-					'plugin'           => $this->options_wpscan_api_scan['wpscan-pr-1-plugin-name-api'],
 					'url'              => 'https://wordpress.org/plugins/' . $this->options_wpscan_api_scan['wpscan-pr-1-plugin-slug'] . '/',
+					'id'               => 'w.org/plugins/' . $this->options_wpscan_api_scan['wpscan-pr-1-plugin-slug'],
+					'plugin'           => $this->options_wpscan_api_scan['wpscan-pr-1-plugin-name-api'],
 				),
 				self::KEY_PLUGIN_THIS_IS        => array(
 					'type'             => 'vipgoci-addon-plugin',
