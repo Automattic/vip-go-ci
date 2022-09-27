@@ -493,7 +493,7 @@ function vipgoci_filter_file_path(
 					'file_folders_match' => $file_folders_match,
 				),
 			),
-			2
+			0
 		);
 
 		return false;
@@ -528,7 +528,7 @@ function vipgoci_scandir_git_repo(
 			'filter'    => $filter,
 			'base_path' => $base_path,
 		),
-		2
+		-2
 	);
 
 	/*

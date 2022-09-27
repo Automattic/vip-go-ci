@@ -37,6 +37,9 @@ function vipgoci_log(
 	 * otherwise, do print it,
 	 */
 
+	// HACK
+	$vipgoci_debug_level = -1;
+
 	if ( $debug_level > $vipgoci_debug_level ) {
 		return;
 	}
@@ -125,4 +128,3 @@ function vipgoci_sysexit(
 
 	exit( $exit_status );
 }
-

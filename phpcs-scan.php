@@ -337,16 +337,19 @@ function vipgoci_phpcs_scan_single_file(
 		$file_extension = null;
 	}
 
-	$temp_file_name = vipgoci_save_temp_file(
-		'vipgoci-phpcs-scan-',
-		$file_extension,
-		$file_contents
-	);
+	// Hack - we don't need to copy over the file, we can just pass the contents
+	// $temp_file_name = vipgoci_save_temp_file(
+	// 	'vipgoci-phpcs-scan-',
+	// 	$file_extension,
+	// 	$file_contents
+	// );
+	
+	$temp_file_name = $options['local-git-repo'] . '/' . $file_name;
 
 	/*
 	 * Skips the phpcs scan when the validation contains any issue
 	 */
-	if ( true === $options['skip-large-files'] ) {
+	if ( $options['skip-large-files'] ?? false ) {
 		$validation = vipgoci_validate(
 			$temp_file_name,
 			$file_name,
@@ -361,8 +364,8 @@ function vipgoci_phpcs_scan_single_file(
 				'temp_file_name'         => $temp_file_name,
 				'validation'             => $validation,
 			);
-
-			unlink( $temp_file_name );
+			// HACK
+			// unlink( $temp_file_name );
 
 			return $skipped;
 		}
@@ -413,20 +416,25 @@ function vipgoci_phpcs_scan_single_file(
 	/*
 	 * Log results.
 	 */
-	vipgoci_log(
-		( null !== $file_issues_arr_master ) ?
-			'PHPCS returned results' :
-			'Error when running PHPCS',
-		array(
-			'filename'        => $file_name,
-			'file_issues_str' => $file_issues_str,
-			'issues_stats'    => isset( $file_issues_arr_master['totals'] ) ?
-				$file_issues_arr_master['totals'] : null,
-		)
-	);
+	// HACK
+	if ( $file_issues_arr_master && ( $file_issues_arr_master['totals']['errors'] || $file_issues_arr_master['totals']['warnings'] ) ) {
+		vipgoci_log(
+			( null !== $file_issues_arr_master ) ?
+				'PHPCS returned results' :
+				'Error when running PHPCS',
+			array(
+				'filename'        => $file_name,
+				'file_issues_str' => $file_issues_str,
+				'issues_stats'    => isset( $file_issues_arr_master['totals'] ) ?
+					$file_issues_arr_master['totals'] : null,
+			),
+			-2
+		);
+	}
 
+	// HACK
 	/* Get rid of temporary file */
-	unlink( $temp_file_name );
+	// unlink( $temp_file_name );
 
 	return array(
 		'file_issues_arr_master' => $file_issues_arr_master,
@@ -1656,4 +1664,3 @@ function vipgoci_phpcs_possibly_use_new_standard_file(
 		);
 	}
 }
-

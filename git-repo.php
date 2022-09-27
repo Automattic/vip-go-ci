@@ -1858,4 +1858,3 @@ function vipgoci_git_diffs_fetch(
 
 	return $results;
 }
-

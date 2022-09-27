@@ -2656,7 +2656,7 @@ function vipgoci_run_scan(
 			'repo-owner' => $options['repo-owner'],
 			'repo-name'  => $options['repo-name'],
 		),
-		0,
+		-2,
 		true // Log to IRC.
 	);
 
@@ -3228,4 +3228,3 @@ function vipgoci_shutdown_function(
 		);
 	}
 }
-
