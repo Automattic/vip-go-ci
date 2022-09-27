@@ -49,7 +49,7 @@ final class WpscanReportEndTest extends TestCase {
 		);
 
 		$this->assertStringContainsString(
-			'Type: plugin.',
+			'Type: plugin\.',
 			$report_end
 		);
 
@@ -59,7 +59,7 @@ final class WpscanReportEndTest extends TestCase {
 		);
 
 		$this->assertStringEndsWith(
-			'Message ends.' . "\n\r",
+			'Message ends\.' . "\n\r",
 			$report_end
 		);
 	}
@@ -79,7 +79,7 @@ final class WpscanReportEndTest extends TestCase {
 		);
 
 		$this->assertStringContainsString(
-			'Type: theme.',
+			'Type: theme\.',
 			$report_end
 		);
 
@@ -89,7 +89,7 @@ final class WpscanReportEndTest extends TestCase {
 		);
 
 		$this->assertStringEndsWith(
-			'Message ends.' . "\n\r",
+			'Message ends\.' . "\n\r",
 			$report_end
 		);
 	}
@@ -108,7 +108,7 @@ final class WpscanReportEndTest extends TestCase {
 
 		vipgoci_wpscan_report_end(
 			'invalid', // Invalid usage.
-			'Message ends.'
+			'Message ends\.'
 		);
 
 		vipgoci_unittests_remove_indication_for_test_id( 'WpscanReportEndTest' );
