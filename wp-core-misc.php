@@ -610,6 +610,77 @@ function vipgoci_wpcore_api_determine_slug_and_other_for_addons(
 }
 
 /**
+ * Loops through plugins found, assigns slugs found,
+ * version numbers, etc. Ensures that if must-have
+ * fields are missing, the addon is not included in
+ * results.
+ *
+ * @param array $addons_found   List of plugins, with array slug as key, value array with details.
+ * @param array $addons_details Array of plugins with info from WordPress.org API.
+ *
+ * @return array Addon information, with slugs etc assigned.
+ */
+function vipgoci_wpcore_misc_assign_addon_fields(
+	array $addons_found,
+	array $addons_details
+) :array {
+	$addon_fields_must_have = array(
+		'slug',
+		'new_version',
+		'package',
+		'url',
+	);
+
+	foreach ( $addons_found as $addon_key => $addon_item ) {
+		if ( ! isset( $addons_details[ $addon_key ] ) ) {
+			continue;
+		}
+
+		$addon_fields_missing = array_values(
+			array_diff(
+				$addon_fields_must_have,
+				array_keys(
+					$addons_details[ $addon_key ]
+				)
+			)
+		);
+
+		if ( count( $addon_fields_missing ) > 0 ) {
+			vipgoci_log(
+				'Skipping addon as some information was missing from API response',
+				array(
+					'addon_key'              => $addon_key,
+					'addon_fields_must_have' => $addon_fields_must_have,
+					'addon_fields_missing'   => $addon_fields_missing,
+				)
+			);
+
+			unset( $addons_details[ $addon_key ] );
+
+			continue;
+		}
+
+		/*
+		 * Save must-have and optional fields in results array.
+		 */
+		$addon_fields = array_merge(
+			$addon_fields_must_have,
+			array( 'id', 'plugin' )
+		);
+
+		foreach ( $addon_fields as $_field_id ) {
+			if ( isset( $addons_details[ $addon_key ][ $_field_id ] ) ) {
+				$addons_found[ $addon_key ][ $_field_id ] =
+					$addons_details[ $addon_key ][ $_field_id ];
+			}
+		}
+	}
+
+	return $addons_found;
+}
+
+
+/**
  * Get header data for plugins or themes in a directory ($path), attempt
  * to determine slugs and fetch other information from WordPress.org
  * API about the plugins/themes, return the information after processing.
@@ -666,14 +737,10 @@ function vipgoci_wpcore_misc_get_addon_data_and_slugs_for_directory(
 	/*
 	 * Look through plugins found, assign slug found, version numbers, etc.
 	 */
-	foreach ( $addons_found as $addon_key => $addon_item ) {
-		foreach ( array( 'id', 'slug', 'new_version', 'plugin', 'package', 'url' ) as $_field_id ) {
-			if ( isset( $addons_details[ $addon_key ][ $_field_id ] ) ) {
-				$addons_found[ $addon_key ][ $_field_id ] =
-					$addons_details[ $addon_key ][ $_field_id ];
-			}
-		}
-	}
+	$addons_found = vipgoci_wpcore_misc_assign_addon_fields(
+		$addons_found,
+		$addons_details
+	);
 
 	vipgoci_log(
 		'Got plugin/theme information from directory scan and WordPress.org API request',
