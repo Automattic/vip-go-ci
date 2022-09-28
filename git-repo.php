@@ -399,6 +399,7 @@ function vipgoci_gitrepo_fetch_tree(
 	// Actually get files.
 	$files_arr = vipgoci_scandir_git_repo(
 		$options['local-git-repo'],
+		true,
 		$filter
 	);
 

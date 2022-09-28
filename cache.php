@@ -91,14 +91,14 @@ function vipgoci_cache(
  * that use the internal cache and need to indicate
  * that information from the cache was used.
  *
- * @param mixed $cache_used If this evaluates to true, will return string
- *                          indicating that cache was used, else empty string.
+ * @param mixed $cache_used If non-false value, will return string indicating
+ *                          that cache was used, else empty string.
  *
  * @return string Indication of cache usage.
  */
 function vipgoci_cached_indication_str(
 	mixed $cache_used
 ) :string {
-	return $cache_used ? ' (cached)' : '';
+	return ( false !== $cache_used ) ? ' (cached)' : '';
 }
 

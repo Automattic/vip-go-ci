@@ -10,7 +10,7 @@ require_once( __DIR__ . './../../skip-file.php' );
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
-final class SkipFileTestFunctionality extends TestCase {
+final class SkipFileTestFunctionalityTest extends TestCase {
 
 	public $validationMessagePrefix = 'Maximum number of lines exceeded (15000):' . PHP_EOL . ' - ';
 

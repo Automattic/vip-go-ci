@@ -1078,12 +1078,14 @@ function vipgoci_option_skip_folder_handle(
 	 * Remove "/" from the beginning
 	 * and end of each element, as they
 	 * should be treated as relative paths.
+	 *
+	 * Also remove spaces.
 	 */
 	$options[ $option_name ] = array_map(
 		function( $skip_folder_item ) {
 			return trim(
 				$skip_folder_item,
-				'/'
+				'/ '
 			);
 		},
 		$options[ $option_name ]

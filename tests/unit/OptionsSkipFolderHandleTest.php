@@ -37,10 +37,10 @@ final class OptionsSkipFolderHandleTest extends TestCase {
 	 */
 	public function testOptionSkipFolderHandle1() {
 		$this->options['phpcs-skip-folders'] =
-			'var/tmp/,/client-mu-plugins/myplugin/,/plugins/myplugin/,/tmp/1,tmp/3';
+			' var/tmp/,/client-mu-plugins/myplugin/ ,/plugins/myplugin/, /tmp/1,tmp/3 ';
 
 		$this->options['lint-skip-folders'] =
-			'var/tmp2/,/client-mu-plugins/otherplugin/,/plugins/otherplugin/,/tmp/2,tmp/4';
+			'var/tmp2/ ,/client-mu-plugins/otherplugin/,/plugins/otherplugin/, /tmp/2,tmp/4';
 
 		vipgoci_option_skip_folder_handle(
 			$this->options,

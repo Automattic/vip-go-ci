@@ -95,6 +95,10 @@ final class AutoApprovalScanCommitTest extends TestCase {
 		// Same, not used, but needs to be defined.
 		$this->options['autoapprove-php-nonfunctional-changes'] = false;
 
+		// Settings for WPScan, disable by default, dry-mode disabled.
+		$this->options['wpscan-api']          = false;
+		$this->options['wpscan-api-dry-mode'] = false;
+
 		$this->options['skip-draft-prs'] = false;
 
 		$this->options['local-git-repo'] = false;
@@ -706,6 +710,269 @@ final class AutoApprovalScanCommitTest extends TestCase {
 		$this->assertSame(
 			1,
 			count( $pr_item_reviews )
+		);
+	}
+
+	/**
+	 * Test auto-approvals for pull request that should
+	 * be auto-appoved as WPScan is enabled and
+	 * no WPScan errors are present.
+	 *
+	 * @covers ::vipgoci_auto_approval_scan_commit
+	 */
+	public function testAutoApprovalWithoutWpscanIssues() {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array(),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
+		if ( false === $this->safe_to_run ) {
+			$this->markTestSkipped(
+				'Test not safe to run due to earlier warnings'
+			);
+		}
+
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped(
+				'Could not set up git repository: ' .
+					vipgoci_unittests_output_get()
+			);
+
+			return;
+		}
+
+		// Enable WPScan API for this test.
+		$this->options['wpscan-api'] = true;
+
+		// All files are approved.
+		$auto_approved_files_arr = array(
+			'file-1.php'  => 'autoapprove-approved-php-file', // Not a value used generally, only for testing.
+			'file-2.css'  => 'autoapprove-filetypes',
+			'file-3.txt'  => 'autoapprove-filetypes',
+			'file-4.json' => 'autoapprove-filetypes',
+			'README.md'   => 'autoapprove-filetypes',
+		);
+
+		$results_before = array(
+			'stats' => array(
+				VIPGOCI_STATS_WPSCAN_API => array(
+					$this->options['pr-test-ap-auto-approval-1'] => array(
+						VIPGOCI_ISSUE_TYPE_ERROR   => 0,
+						VIPGOCI_ISSUE_TYPE_WARNING => 0,
+					),
+				),
+			),
+		);
+
+		vipgoci_unittests_output_suppress();
+
+		$results = $results_before;
+
+		vipgoci_auto_approval_scan_commit(
+			$this->options,
+			$auto_approved_files_arr,
+			$results
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		$this->assertSame(
+			$results_before,
+			$results
+		);
+
+		vipgoci_unittests_output_suppress();
+
+		$prs_implicated = vipgoci_github_prs_implicated(
+			$this->options['repo-owner'],
+			$this->options['repo-name'],
+			$this->options['commit'],
+			$this->options['token'],
+			$this->options['branches-ignore']
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		$this->assertSame(
+			1,
+			count( $prs_implicated )
+		);
+
+		foreach ( $prs_implicated as $pr_item ) {
+			// Ensure the correct pull request was retrieved.
+			$this->assertSame(
+				$this->options['pr-test-ap-auto-approval-1'],
+				$pr_item->number
+			);
+
+			vipgoci_unittests_output_suppress();
+
+			$pr_item_reviews = vipgoci_github_pr_reviews_get(
+				$this->options['repo-owner'],
+				$this->options['repo-name'],
+				(int) $pr_item->number,
+				$this->options['token'],
+				array(
+					'login' => 'myself',
+					'state' => array( 'APPROVED' ),
+				),
+				true // Skip cache.
+			);
+
+			vipgoci_unittests_output_unsuppress();
+
+			$this->assertSame(
+				1,
+				count( $pr_item_reviews )
+			);
+		}
+
+		$label = $this->pr_get_labels();
+
+		$this->assertSame(
+			$this->options['autoapprove-label'],
+			$label->name
+		);
+	}
+
+	/**
+	 * Test auto-approvals for pull request that should
+	 * not be auto-appoved due to WPScan errors present.
+	 *
+	 * @covers ::vipgoci_auto_approval_scan_commit
+	 */
+	public function testAutoApprovalWithWpscanIssues() {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array(),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
+		if ( false === $this->safe_to_run ) {
+			$this->markTestSkipped(
+				'Test not safe to run due to earlier warnings'
+			);
+		}
+
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped(
+				'Could not set up git repository: ' .
+					vipgoci_unittests_output_get()
+			);
+
+			return;
+		}
+
+		// Enable WPScan API for this test.
+		$this->options['wpscan-api'] = true;
+
+		// All files are approved.
+		$auto_approved_files_arr = array(
+			'file-1.php'  => 'autoapprove-approved-php-file', // Not a value used generally, only for testing.
+			'file-2.css'  => 'autoapprove-filetypes',
+			'file-3.txt'  => 'autoapprove-filetypes',
+			'file-4.json' => 'autoapprove-filetypes',
+			'README.md'   => 'autoapprove-filetypes',
+		);
+
+		$results_before = array(
+			'stats' => array(
+				VIPGOCI_STATS_WPSCAN_API => array(
+					$this->options['pr-test-ap-auto-approval-1'] => array(
+						VIPGOCI_ISSUE_TYPE_ERROR   => 1,
+						VIPGOCI_ISSUE_TYPE_WARNING => 0,
+					),
+				),
+			),
+		);
+
+		vipgoci_unittests_output_suppress();
+
+		$results = $results_before;
+
+		vipgoci_auto_approval_scan_commit(
+			$this->options,
+			$auto_approved_files_arr,
+			$results
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		$this->assertSame(
+			$results_before,
+			$results
+		);
+
+		vipgoci_unittests_output_suppress();
+
+		$prs_implicated = vipgoci_github_prs_implicated(
+			$this->options['repo-owner'],
+			$this->options['repo-name'],
+			$this->options['commit'],
+			$this->options['token'],
+			$this->options['branches-ignore']
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		$this->assertSame(
+			1,
+			count( $prs_implicated )
+		);
+
+		foreach ( $prs_implicated as $pr_item ) {
+			// Ensure the correct pull request was retrieved.
+			$this->assertSame(
+				$this->options['pr-test-ap-auto-approval-1'],
+				$pr_item->number
+			);
+
+			vipgoci_unittests_output_suppress();
+
+			$pr_item_reviews = vipgoci_github_pr_reviews_get(
+				$this->options['repo-owner'],
+				$this->options['repo-name'],
+				(int) $pr_item->number,
+				$this->options['token'],
+				array(
+					'login' => 'myself',
+					'state' => array( 'APPROVED' ),
+				),
+				true // Skip cache.
+			);
+
+			vipgoci_unittests_output_unsuppress();
+
+			$this->assertSame(
+				0,
+				count( $pr_item_reviews )
+			);
+		}
+
+		$label = $this->pr_get_labels();
+
+		$this->assertSame(
+			false,
+			$label
 		);
 	}
 }

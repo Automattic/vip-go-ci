@@ -48,6 +48,8 @@ function vipgoci_help_print() :void {
 		"\t" . '                               some branches never get scanned. Separate branches' . PHP_EOL .
 		"\t" . '                               with commas.' . PHP_EOL .
 		"\t" . '--local-git-repo=FILE          The local git repository to use for direct access to code.' . PHP_EOL .
+		"\t" . '--name-to-use                  Name to use for the program in GitHub reviews and comments' . PHP_EOL .
+		"\t" . '                               to identify the bot. Default is "' . VIPGOCI_DEFAULT_NAME_TO_USE . '".' . PHP_EOL .
 		PHP_EOL .
 		'Environmental & repo configuration:' . PHP_EOL .
 		"\t" . '--env-options=STRING           Specifies configuration options to be read from environmental' . PHP_EOL .
@@ -129,6 +131,18 @@ function vipgoci_help_print() :void {
 		"\t" . '                               $PATH will be used instead.' . PHP_EOL .
 		"\t" . '--svg-scanner-path=FILE        Path to SVG scanning tool. Should return similar output' . PHP_EOL .
 		"\t" . '                               as PHPCS.' . PHP_EOL .
+		PHP_EOL .
+		'WPScan API scanning configuration:' . PHP_EOL .
+		"\t" . '--wpscan-api=BOOL                  Enable or disable WPScan API scanning. Disabled by default.' . PHP_EOL .
+		"\t" . '--wpscan-api-dry-mode=BOOL         When enabled, report WPScan API results to IRC only, not pull requests. Temporary feature.' . PHP_EOL .
+		"\t" . '--wpscan-api-token=STRING          Access token to use to communicate with WPScan API.' . PHP_EOL .
+		"\t" . '--wpscan-api-paths=ARRAY           Directories to scan using WPScan API scanning. Should be an array' . PHP_EOL .
+		"\t" . '                                   with items separated by commas.' . PHP_EOL .
+		"\t" . '--wpscan-api-skip-folders=ARRAY    Directories not to scan using WPScan API scanning. Should be an' . PHP_EOL .
+		"\t" . '                                   array with items separated by commas.' . PHP_EOL .
+		"\t" . '--wpscan-api-report-end-msg=STRING Message to append to end of WPScan API reports. The "%addon_type%" placeholder' . PHP_EOL .
+		"\t" . '                                   will be replaced by either "plugin" or "theme", depending on the report. Limited' . PHP_EOL .
+		"\t" . '                                   Markdown syntax allowed.' . PHP_EOL .
 		PHP_EOL .
 		'Auto approve configuration:' . PHP_EOL .
 		"\t" . '--autoapprove=BOOL             Whether to auto-approve pull requests that fulfil' . PHP_EOL .
@@ -246,6 +260,7 @@ function vipgoci_options_recognized() :array {
 		'local-git-repo:',
 		'skip-large-files:',
 		'skip-large-files-limit:',
+		'name-to-use:',
 
 		/*
 		 * Environmental & repo configuration.
@@ -295,6 +310,16 @@ function vipgoci_options_recognized() :array {
 		'svg-checks:',
 		'svg-php-path:',
 		'svg-scanner-path:',
+
+		/*
+		 * WPScan API scanning configuration
+		 */
+		'wpscan-api:',
+		'wpscan-api-dry-mode:',
+		'wpscan-api-token:',
+		'wpscan-api-paths:',
+		'wpscan-api-skip-folders:',
+		'wpscan-api-report-end-msg:',
 
 		/*
 		 * Auto approve configuration
@@ -355,7 +380,7 @@ function vipgoci_options_recognized() :array {
 /**
  * Determine exit status.
  *
- * If any 'error'-type issues were submitted to
+ * If any VIPGOCI_ISSUE_TYPE_ERROR issues were submitted to
  * GitHub return with a non-zero exit-code. Same
  * if any files were skipped.
  *
@@ -391,7 +416,7 @@ function vipgoci_exit_status( array $results ) :int {
 				0 !== $results['stats']
 					[ $stats_type ]
 					[ $pr_number ]
-					['error']
+					[ VIPGOCI_ISSUE_TYPE_ERROR ]
 			) {
 				// Some errors were found, return non-zero.
 				return VIPGOCI_EXIT_CODE_ISSUES;
@@ -637,6 +662,74 @@ function vipgoci_run_init_options_phpcs( array &$options ) :void {
 		'phpcs-severity',
 		1,
 		array( 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 )
+	);
+}
+
+/**
+ * Process WPScan API related options, such as --wpscan-api.
+ *
+ * @param array $options Array of options (reference).
+ *
+ * @return void
+ */
+function vipgoci_run_init_options_wpscan( array &$options ) :void {
+	/*
+	 * Handle boolean options related to WPScan API.
+	 */
+	vipgoci_option_bool_handle( $options, 'wpscan-api', 'false' );
+
+	vipgoci_option_bool_handle( $options, 'wpscan-api-dry-mode', 'true' );
+
+	/*
+	 * Process --wpscan-folders -- expected to be an
+	 * array of values.
+	 */
+	vipgoci_option_skip_folder_handle(
+		$options,
+		'wpscan-api-paths'
+	);
+
+	/*
+	 * Process --wpscan-api-skip-folders -- expected to be an
+	 * array of values.
+	 */
+	vipgoci_option_skip_folder_handle(
+		$options,
+		'wpscan-api-skip-folders'
+	);
+
+	/*
+	 * Process --wpscan-api-report-end-msg -- expected to be a string.
+	 */
+	if ( empty( $options['wpscan-api-report-end-msg'] ) ) {
+		$options['wpscan-api-report-end-msg'] = '';
+	}
+
+	if (
+		( true === $options['wpscan-api'] ) &&
+		(
+			( empty( $options['wpscan-api-paths'] ) ) ||
+			( empty( $options['wpscan-api-token'] ) )
+		)
+	) {
+		vipgoci_sysexit(
+			'--wpscan-api is set to true, but --wpscan-api-paths, or --wpscan-api-token are not set or are empty',
+			array(
+				'wpscan-api-paths' => isset( $options['wpscan-api-paths'] ) ? $options['wpscan-api-paths'] : null,
+				'wpscan-api-token' => isset( $options['wpscan-api-token'] ) ? $options['wpscan-api-token'] : null,
+			),
+			VIPGOCI_EXIT_USAGE_ERROR
+		);
+	}
+
+	/*
+	 * Hide WPScan API token from printed options output.
+	 */
+	vipgoci_options_sensitive_clean(
+		null,
+		array(
+			'wpscan-api-token',
+		)
 	);
 }
 
@@ -1949,6 +2042,11 @@ function vipgoci_run_init_options_repo_options( array &$options ):void {
 			'type'         => 'boolean',
 			'valid_values' => array( true, false ),
 		),
+
+		'wpscan-api'                            => array(
+			'type'         => 'boolean',
+			'valid_values' => array( true, false ),
+		),
 	);
 
 	/*
@@ -2038,6 +2136,17 @@ function vipgoci_run_init_options(
 		array()
 	);
 
+	/*
+	 * Process the --name-to-use parameter,
+	 * expected to be a string. If not, set default.
+	 */
+	if (
+		( empty( $options['name-to-use'] ) ) ||
+		( ! is_string( $options['name-to-use'] ) )
+	) {
+		$options['name-to-use'] = VIPGOCI_DEFAULT_NAME_TO_USE;
+	}
+
 	// Validate args.
 	if (
 		( ! isset( $options['repo-owner'] ) ) ||
@@ -2069,6 +2178,9 @@ function vipgoci_run_init_options(
 
 	// Set options relating to PHCPS.
 	vipgoci_run_init_options_phpcs( $options );
+
+	// Set options relating to WPScan API.
+	vipgoci_run_init_options_wpscan( $options );
 
 	// Process autoapprove options.
 	vipgoci_run_init_options_autoapprove( $options );
@@ -2107,10 +2219,11 @@ function vipgoci_run_init_options(
 
 	if (
 		( false === $options['lint'] ) &&
-		( false === $options['phpcs'] )
+		( false === $options['phpcs'] ) &&
+		( false === $options['wpscan-api'] )
 	) {
 		vipgoci_sysexit(
-			'Both --lint and --phpcs set to false, cannot continue.',
+			'--lint, --phpcs and --wpscan-api are all set to false, cannot continue.',
 			array(),
 			VIPGOCI_EXIT_USAGE_ERROR
 		);
@@ -2298,12 +2411,6 @@ function vipgoci_run_scan_find_prs( array &$options ) :array {
  * Make sure we are working with the latest
  * commit with each implicated PR.
  *
- * If we detect that we are only performing linting,
- * and the commit is not the latest, skip linting
- * as it becomes useless if this is not the
- * latest commit: There is no use in linting
- * an obsolete commit.
- *
  * @param array $options        Array of options.
  * @param array $prs_implicated Pull requests implicated.
  *
@@ -2346,45 +2453,17 @@ function vipgoci_run_scan_check_latest_commit(
 		 * to the pull request, and we have to deal with that.
 		 */
 
-		if (
-			( true === $options['lint'] ) &&
-			( false === $options['phpcs'] )
-		) {
-			vipgoci_sysexit(
-				'The current commit is not the latest one ' .
-					'to the pull request, skipping ' .
-					'linting, and not doing PHPCS ' .
-					'-- nothing to do',
-				array(
-					'repo_owner' => $options['repo-owner'],
-					'repo_name'  => $options['repo-name'],
-					'pr_number'  => $pr_item->number,
-				),
-				VIPGOCI_EXIT_NORMAL
-			);
-		} elseif (
-			( true === $options['lint'] ) &&
-			( true === $options['phpcs'] )
-		) {
-			// Skip linting, useless if not latest commit.
-			$options['lint'] = false;
-
-			vipgoci_log(
-				'The current commit is not the latest ' .
-					'one to the pull request, ' .
-					'skipping linting',
-				array(
-					'repo_owner' => $options['repo-owner'],
-					'repo_name'  => $options['repo-name'],
-					'pr_number'  => $pr_item->number,
-				)
-			);
-		}
-
-		/*
-		 * As for lint === false && true === phpcs,
-		 * we do not care, as then we will not be linting.
-		 */
+		vipgoci_sysexit(
+			'The current commit is not the latest one ' .
+				'to the pull request. Unable to continue.',
+			array(
+				'repo_owner' => $options['repo-owner'],
+				'repo_name'  => $options['repo-name'],
+				'pr_number'  => $pr_item->number,
+			),
+			VIPGOCI_EXIT_COMMIT_NOT_LATEST,
+			true // Log to IRC.
+		);
 	}
 }
 
@@ -2651,7 +2730,7 @@ function vipgoci_run_scan(
 	);
 
 	vipgoci_log(
-		'Starting scanning PRs; ' . $prs_urls,
+		'Starting scanning PRs; ' . $prs_urls . ' ', // Extra space for IRC logs.
 		array(
 			'repo-owner' => $options['repo-owner'],
 			'repo-name'  => $options['repo-name'],
@@ -2687,7 +2766,8 @@ function vipgoci_run_scan(
 		$options['branches-ignore'],
 		$options['skip-draft-prs'],
 		array(
-			VIPGOCI_SYNTAX_ERROR_STR,
+			VIPGOCI_LINT_ERROR_STR,
+			VIPGOCI_WPSCAN_API_ERROR,
 			VIPGOCI_GITHUB_ERROR_STR,
 			VIPGOCI_REVIEW_COMMENTS_TOTAL_MAX,
 			VIPGOCI_PHPCS_INVALID_SNIFFS,
@@ -2757,6 +2837,17 @@ function vipgoci_run_scan(
 			$options,
 			$results['issues'],
 			$results['stats'][ VIPGOCI_STATS_PHPCS ],
+			$results[ VIPGOCI_SKIPPED_FILES ]
+		);
+
+		gc_collect_cycles();
+	}
+
+	if ( true === $options['wpscan-api'] ) {
+		vipgoci_wpscan_scan_commit(
+			$options,
+			$results['issues'],
+			$results['stats'][ VIPGOCI_STATS_WPSCAN_API ],
 			$results[ VIPGOCI_SKIPPED_FILES ]
 		);
 
@@ -2846,7 +2937,10 @@ function vipgoci_run_scan(
 		$options['commit'],
 		$results,
 		$options['informational-msg'],
-		$scan_details_msg
+		$scan_details_msg,
+		$options['wpscan-api-report-end-msg'],
+		$options['wpscan-api-dry-mode'],
+		$options['name-to-use']
 	);
 
 	vipgoci_report_submit_pr_review_from_results(
@@ -2859,7 +2953,8 @@ function vipgoci_run_scan(
 		$scan_details_msg,
 		$options['review-comments-max'],
 		$options['review-comments-include-severity'],
-		$options['skip-large-files-limit']
+		$options['skip-large-files-limit'],
+		$options['name-to-use']
 	);
 
 	/*
@@ -2984,6 +3079,7 @@ function vipgoci_run_init_vars() :array {
 		'stats'  => array(
 			VIPGOCI_STATS_PHPCS      => null,
 			VIPGOCI_STATS_LINT       => null,
+			VIPGOCI_STATS_WPSCAN_API => null,
 		),
 	);
 
