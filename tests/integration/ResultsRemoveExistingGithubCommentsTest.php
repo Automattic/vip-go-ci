@@ -160,27 +160,19 @@ final class ResultsRemoveExistingGithubCommentsTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$prs_implicated = vipgoci_github_prs_implicated_with_retries(
-			$this->options['repo-owner'],
-			$this->options['repo-name'],
-			$this->options['commit'],
-			$this->options['token'],
-			$this->options['branches-ignore'],
-			$this->options['skip-draft-prs'],
-			2, // Attempt to get PRs maximum twice.
-			30 // Sleep time between attempts.
+		$prs_implicated = array(
+			$this->options['pr-number-1'] => (object) array(
+				'number'     => (int) $this->options['pr-number-1'],
+				'created_at' => '2020-01-01T00:00:01Z',
+			),
 		);
 
-		$results_actual   = array();
-		$results_expected = array();
+		$results_actual = array(
+			'issues' => array(),
+			'stats'  => array(),
+		);
 
-		foreach ( $prs_implicated as $pr_item ) {
-			$results_actual['issues'][ $pr_item->number ]                       = array();
-			$results_actual['stats'][ VIPGOCI_STATS_PHPCS ][ $pr_item->number ] = array();
-
-			$results_expected['issues'][ $pr_item->number ]                       = array();
-			$results_expected['stats'][ VIPGOCI_STATS_PHPCS ][ $pr_item->number ] = array();
-		}
+		$results_expected = $results_actual;
 
 		$results_actual['issues'][ $this->options['pr-number-1'] ] = array(
 			self::COMMENTS_DATA['comment_removable'],

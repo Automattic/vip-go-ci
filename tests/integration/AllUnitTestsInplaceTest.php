@@ -33,6 +33,7 @@ final class AllUnitTestsInplaceTest extends TestCase {
 					case '.':
 					case '..':
 					case 'helper':
+					case 'helper-files':
 					case 'helper-scripts':
 					case 'Skeleton.php':
 					case 'IncludesForTests.php':

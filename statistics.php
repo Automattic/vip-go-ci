@@ -44,6 +44,7 @@ function vipgoci_stats_init(
 			array(
 				VIPGOCI_STATS_PHPCS,
 				VIPGOCI_STATS_LINT,
+				VIPGOCI_STATS_WPSCAN_API,
 			)
 			as $stats_type
 		) {
@@ -60,9 +61,9 @@ function vipgoci_stats_init(
 
 			$results['stats'][ $stats_type ]
 				[ $pr_item->number ] = array(
-					'error'   => 0,
-					'warning' => 0,
-					'info'    => 0,
+					VIPGOCI_ISSUE_TYPE_ERROR   => 0,
+					VIPGOCI_ISSUE_TYPE_WARNING => 0,
+					VIPGOCI_ISSUE_TYPE_INFO    => 0,
 				);
 		}
 	}
