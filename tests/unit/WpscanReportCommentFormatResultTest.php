@@ -29,6 +29,7 @@ final class WpscanReportCommentFormatResultTest extends TestCase {
 		require_once __DIR__ . '/../../github-misc.php';
 		require_once __DIR__ . '/../../wpscan-reports.php';
 		require_once __DIR__ . '/../../log.php';
+		require_once __DIR__ . '/../../other-web-services.php';
 
 		require_once __DIR__ . '/../integration/IncludesForTestsOutputControl.php';
 		require_once __DIR__ . '/helper/IndicateTestId.php';
