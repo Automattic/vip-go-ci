@@ -98,6 +98,29 @@ function vipgoci_set_maximum_exec_time(
 }
 
 /**
+ * Add value to array, if not found there already.
+ *
+ * @param array $arr    Target array.
+ * @param mixed $value  Value to add, if not already exists in array.
+ * @param bool  $strict If to perform strict comparison, true by default.
+ *
+ * @return void
+ */
+function vipgoci_array_push_uniquely(
+	array &$arr,
+	mixed $value,
+	bool $strict = true
+) :void {
+	if ( false === in_array(
+		$value,
+		$arr, // phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
+		$strict
+	) ) {
+		$arr[] = $value;
+	}
+}
+
+/**
  * Check if a particular set of fields exist
  * in a target array and if their values match a set
  * given. Will return an array describing
@@ -191,6 +214,40 @@ function vipgoci_find_fields_in_array(
 }
 
 /**
+ * Check if any of the strings in $arr_items is a substring
+ * of $str. Comparison is case insensitive.
+ *
+ * @param array  $arr_items  Array of items to check against $str.
+ * @param string $str        String to use to check.
+ * @param bool   $start_only If to match at beginning of comparison string only.
+ *
+ * @return bool True when substring is found, else false.
+ */
+function vipgoci_string_found_in_substrings_array(
+	array $arr_items,
+	string $str,
+	bool $start_only = false
+) :bool {
+	$found = false;
+
+	foreach ( $arr_items as $arr_item ) {
+		if ( true === $start_only ) {
+			if ( 0 === stripos( $arr_item, $str ) ) {
+				$found = true;
+				break;
+			}
+		} else {
+			if ( false !== stripos( $arr_item, $str ) ) {
+				$found = true;
+				break;
+			}
+		}
+	}
+
+	return $found;
+}
+
+/**
  * Convert a string that contains "true", "false" or
  * "null" to a variable of that type.
  *
@@ -220,6 +277,31 @@ function vipgoci_convert_string_to_type(
 	}
 
 	return $ret;
+}
+
+/**
+ * Will return beginning of a string, or if not a string, the item
+ * unchanged. Useful for example in logging, when it is not
+ * suitable to log very long strings.
+ *
+ * @param mixed $data_for_preview String to shorten and return. If not a string, will return item unchanged.
+ * @param int   $preview_length   Length of string to return.
+ *
+ * @return mixed Shortened string, else unchanged data.
+ */
+function vipgoci_preview_string(
+	mixed $data_for_preview,
+	int $preview_length = 100
+): mixed {
+	if ( ! is_string( $data_for_preview ) ) {
+		return $data_for_preview;
+	}
+
+	return substr(
+		$data_for_preview,
+		0,
+		$preview_length
+	);
 }
 
 /**
@@ -350,6 +432,118 @@ function vipgoci_file_extension_get(
 	);
 
 	return $file_extension;
+}
+
+/**
+ * Check if directory $dir matches one of the directories
+ * found in $files_arr.
+ *
+ * @param array  $files_arr List of paths to files.
+ * @param string $dir_path  Directory path to check if matches $files_arr.
+ *
+ * @return bool True when directory is found, else false.
+ */
+function vipgoci_directory_found_in_file_list(
+	array $files_arr,
+	string $dir_path
+) :bool {
+	/*
+	 * We get list of file paths; convert to
+	 * directory paths.
+	 */
+	$dirs_arr = array_unique(
+		array_map(
+			'dirname',
+			$files_arr
+		)
+	);
+
+	$res = array_filter(
+		$dirs_arr,
+		function ( $item ) use ( $dir_path ) {
+			if ( $item === $dir_path ) {
+				return true;
+			} else {
+				return str_starts_with(
+					$item,
+					$dir_path . '/'
+				);
+			}
+		}
+	);
+
+	return ( ! empty( $res ) );
+}
+
+/**
+ * Get "base" path of target directory along with the
+ * directory-name itself, skip any sub-directories.
+ *
+ * @param string $base_dir_path   Base directory.
+ * @param string $target_dir_path Target directory - should include the base directory.
+ *
+ * @return null|string Returns null on failure, string with path on success.
+ * For example, when called with these parameters:
+ *  - $base_dir = 'plugins';
+ *  - $target_dir = 'plugins/my-plugin/dir1/subdir2';
+ * The function will return 'plugins/my-plugin'.
+ */
+function vipgoci_directory_path_get_dir_and_include_base(
+	string $base_dir_path,
+	string $target_dir_path
+) :null|string {
+	// Trim directory paths.
+	$base_dir_path   = trim( $base_dir_path, '/' );
+	$target_dir_path = trim( $target_dir_path, '/' );
+
+	// Ensure $target_dir starts with $base_dir.
+	if ( false === str_starts_with(
+		$target_dir_path,
+		$base_dir_path . '/'
+	) ) {
+		return null;
+	}
+
+	/*
+	 * Count "/" in paths.
+	 */
+	$base_dir_path_slashes = substr_count(
+		$base_dir_path,
+		'/'
+	);
+
+	$target_dir_path_slashes = substr_count(
+		$target_dir_path,
+		'/'
+	);
+
+	// Do a sanity check.
+	if ( $target_dir_path_slashes < $base_dir_path_slashes ) {
+		vipgoci_sysexit(
+			'Internal error: $target_dir_path_slashes < $base_dir_path_slashes',
+			array(
+				'base_dir_path'           => $base_dir_path,
+				'base_dir_path_slashes'   => $base_dir_path_slashes,
+				'target_dir_path'         => $target_dir_path,
+				'target_dir_path_slashes' => $target_dir_path_slashes,
+			),
+			VIPGOCI_EXIT_INTERNAL_ERROR
+		);
+	}
+
+	if ( 0 === $target_dir_path_slashes ) {
+		// No "/" found, return with error.
+		return null;
+	} elseif ( ( $target_dir_path_slashes - 1 ) <= $base_dir_path_slashes ) {
+		// Nothing to do.
+		return $target_dir_path;
+	} elseif ( ( $target_dir_path_slashes - 1 ) > $base_dir_path_slashes ) {
+		// Ensure we return base and plugin directory.
+		return dirname(
+			$target_dir_path,
+			( ( $target_dir_path_slashes - 1 ) - $base_dir_path_slashes )
+		);
+	}
 }
 
 /**
@@ -508,15 +702,17 @@ function vipgoci_filter_file_path(
  * returning list of files that exist in
  * it, making sure to filter the result
  *
- * @param string      $path      Path to scan.
- * @param null|array  $filter    Filter to apply.
- * @param null|string $base_path Internal only, should be null normally.
+ * @param string      $path                   Path to scan.
+ * @param bool        $process_subdirectories If to process subdirectories.
+ * @param null|array  $filter                 Filter to apply.
+ * @param null|string $base_path              Internal only, should be null normally.
  *
  * @return array Array of files found.
  */
 function vipgoci_scandir_git_repo(
 	string $path,
-	null|array $filter,
+	bool $process_subdirectories = true,
+	null|array $filter = null,
 	null|string $base_path = null
 ) :array {
 	$result = array();
@@ -561,12 +757,18 @@ function vipgoci_scandir_git_repo(
 		if ( is_dir(
 			$path . DIRECTORY_SEPARATOR . $value
 		) ) {
+			if ( false === $process_subdirectories ) {
+				// Not supposed to process subdirectories, skip.
+				continue;
+			}
+
 			/*
 			 * A directory, traverse into, get files,
 			 * amend the results
 			 */
 			$tmp_result = vipgoci_scandir_git_repo(
 				$path . DIRECTORY_SEPARATOR . $value,
+				$process_subdirectories,
 				$filter,
 				$base_path
 			);
@@ -658,4 +860,20 @@ function vipgoci_sanitize_path_prefix(
 	}
 
 	return $path;
+}
+
+/**
+ * Ensure string provided is in slug-format.
+ *
+ * @param string $str String to check.
+ *
+ * @return bool True when string is a valid slug, false otherwise.
+ */
+function vipgoci_validate_slug(
+	string $str
+): bool {
+	return 1 === preg_match(
+		'/^[a-z0-9]+(-?[a-z0-9]+)*$/i',
+		$str
+	);
 }

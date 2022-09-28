@@ -48,7 +48,19 @@ final class PhpcsScanDoScanTest extends TestCase {
 	}
 
 	protected function tearDown(): void {
-		$this->options_phpcs = null;
+		if (
+			( isset( $this->options_phpcs['phpcs-standard-file'] ) ) &&
+			( true === $this->options_phpcs['phpcs-standard-file'] ) &&
+			( file_exists(
+				$this->options_phpcs['phpcs-standard'][0]
+			) )
+		) {
+			unlink(
+				$this->options_phpcs['phpcs-standard'][0]
+			);
+		}
+
+		unset( $this->options_phpcs );
 	}
 
 	/**

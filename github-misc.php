@@ -212,13 +212,13 @@ function vipgoci_blame_filter_commits(
  */
 function vipgoci_github_transform_to_emojis( $text_string ) {
 	switch ( strtolower( $text_string ) ) {
-		case 'warning':
+		case VIPGOCI_ISSUE_TYPE_WARNING:
 			return ':warning:';
 
-		case 'error':
+		case VIPGOCI_ISSUE_TYPE_ERROR:
 			return ':no_entry_sign:';
 
-		case 'info':
+		case VIPGOCI_ISSUE_TYPE_INFO:
 			return ':information_source:';
 	}
 
@@ -312,3 +312,140 @@ function vipgoci_github_prs_urls_get(
 
 	return $prs_urls;
 }
+
+/**
+ * Construct array of files affected -- altered, added, deleted -- by
+ * each pull request implicated by the commit. Will also include list
+ * of all files affected.
+ *
+ * @param array      $options                 Options array for the program.
+ * @param string     $commit_id               Commit-ID of current commit.
+ * @param array      $commit_skipped_files    Information about skipped files (reference).
+ * @param bool       $renamed_files_also      If to include renamed files in results.
+ * @param bool       $removed_files_also      If to include removed files in results.
+ * @param bool       $permission_changes_also If to include files whose permissions were changed in results.
+ * @param null|array $filter                  Filter to apply.
+ * @param bool       $always_define_pr_number When true, will define array-key for a pull request in results even when no files are placed in the value.
+ *
+ * @return array Returns associative array with key as pull request number and value as array of affected files. Includes special key 'all' which includes all files altered by all pull requests. Example:
+ *  Array(
+ *    [all] => Array(
+ *      [0] => folder1/test.php
+ *      [1] => folder2/test2.php
+ *      [2] => testing/file.php
+ *    ),
+ *    [17] => Array(
+ *      [0] => folder1/test.php
+ *      [1] => testing/file.php
+ *    ),
+ *    [20] => Array(
+ *      [0] => folder1/test.php
+ *      [1] => folder2/test2.php
+ *    )
+ *  )
+ */
+function vipgoci_github_files_affected_by_commit(
+	array $options,
+	string $commit_id,
+	array &$commit_skipped_files,
+	bool $renamed_files_also = false,
+	bool $removed_files_also = true,
+	bool $permission_changes_also = false,
+	array $filter = null,
+	bool $always_define_pr_number = true
+) :array {
+	vipgoci_log(
+		'Fetching list of all files affected by each pull request ' .
+			'implicated by the commit',
+		array(
+			'repo_owner' => $options['repo-owner'],
+			'repo_name'  => $options['repo-name'],
+			'commit_id'  => $options['commit'],
+		)
+	);
+
+	// Fetch list of all pull requests which the commit is a part of.
+	$prs_implicated = vipgoci_github_prs_implicated(
+		$options['repo-owner'],
+		$options['repo-name'],
+		$commit_id,
+		$options['token'],
+		$options['branches-ignore'],
+		$options['skip-draft-prs']
+	);
+
+	$pr_item_files_changed = array(
+		'all' => array(),
+	);
+
+	foreach ( $prs_implicated as $pr_item ) {
+		/*
+		 * If requested, ensure that the PR is defined in the array.
+		 */
+		if (
+			( true === $always_define_pr_number ) &&
+			( ! isset( $pr_item_files_changed[ $pr_item->number ] ) )
+		) {
+			$pr_item_files_changed[ $pr_item->number ] = array();
+		}
+
+		/*
+		 * Get list of all files changed
+		 * in this pull request.
+		 */
+		$pr_item_files_tmp = vipgoci_git_diffs_fetch(
+			$options['local-git-repo'],
+			$options['repo-owner'],
+			$options['repo-name'],
+			$options['token'],
+			$pr_item->base->sha,
+			$options['commit'],
+			$renamed_files_also,
+			$removed_files_also,
+			$permission_changes_also,
+			$filter,
+		);
+
+		foreach (
+			array_keys( $pr_item_files_tmp['files'] ) as
+				$pr_item_file_name
+		) {
+			/*
+			 * Check for too long file.
+			 */
+			if (
+				( isset(
+					$commit_skipped_files[ $pr_item->number ]['issues'][ VIPGOCI_VALIDATION_MAXIMUM_LINES ]
+				) )
+				&&
+				( true === in_array(
+					$pr_item_file_name,
+					$commit_skipped_files[ $pr_item->number ]['issues'][ VIPGOCI_VALIDATION_MAXIMUM_LINES ],
+					true
+				) )
+			) {
+				continue;
+			}
+
+			/*
+			 * Add file to arrays, if not already there.
+			 */
+			vipgoci_array_push_uniquely(
+				$pr_item_files_changed['all'],
+				$pr_item_file_name
+			);
+
+			if ( ! isset( $pr_item_files_changed[ $pr_item->number ] ) ) {
+				$pr_item_files_changed[ $pr_item->number ] = array();
+			}
+
+			vipgoci_array_push_uniquely(
+				$pr_item_files_changed[ $pr_item->number ],
+				$pr_item_file_name
+			);
+		}
+	}
+
+	return $pr_item_files_changed;
+}
+

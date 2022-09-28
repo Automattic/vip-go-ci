@@ -298,7 +298,7 @@ function vipgoci_results_remove_existing_github_comments(
 /**
  * For each approved file, remove any issues
  * to be submitted against them. However,
- * do not do this for 'info' type messages,
+ * do not do this for VIPGOCI_ISSUE_TYPE_INFO messages
  * as they are informational, and not problems.
  *
  * We do this, because sometimes pull requests
@@ -356,13 +356,13 @@ function vipgoci_results_approved_files_comments_remove(
 			}
 
 			/*
-			 * We do not touch on 'info' type,
-			 * as that does not report any errors.
+			 * Skip VIPGOCI_ISSUE_TYPE_INFO as that
+			 * does not report any errors.
 			 */
 
 			if ( strtolower(
 				$issue_item['issue']['level']
-			) === 'info' ) {
+			) === VIPGOCI_ISSUE_TYPE_INFO ) {
 				continue;
 			}
 

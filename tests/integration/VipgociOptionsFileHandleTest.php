@@ -29,6 +29,6 @@ final class VipgociOptionsFileHandleTest extends TestCase {
 			$temp_file_name
 		);
 
-		unset( $temp_file_name );
+		unlink( $temp_file_name );
 	}
 }

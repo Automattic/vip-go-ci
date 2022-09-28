@@ -270,20 +270,54 @@ function vipgoci_http_api_rate_limits_check(
 }
 
 /**
- * Make sure to wait in between requests to
- * HTTP APIs. Only waits if it is really needed.
+ * Make sure to wait between requests to HTTP APIs,
+ * but only for certain APIs and when needed.
  *
- * This function should only be called just before
+ * This function should be called just before
  * sending a request to a HTTP API -- that is the most
- * effective usage.
+ * effective usage. Will only wait if not enough time
+ * has passed between calls to this function and if the
+ * HTTP API URL specified matches one of the URLs in
+ * VIPGOCI_HTTP_API_WAIT_APIS_ARRAY.
  *
- * See here for background:
+ * See here for background for GitHub API requests:
  * https://developer.github.com/v3/guides/best-practices-for-integrators/#dealing-with-abuse-rate-limits
+ *
+ * @param string $http_api_url The HTTP API URL being called.
+ *
+ * @return void
  */
-function vipgoci_http_api_wait() {
+function vipgoci_http_api_wait( string $http_api_url ) :void {
 	static $last_request_time = null;
 
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'http_api_forced_wait' );
+
+	/*
+	 * Only wait in case of certain APIs being called.
+	 */
+	$http_api_host = parse_url(
+		$http_api_url,
+		PHP_URL_HOST
+	);
+
+	$maybe_wait = false;
+
+	if ( ! empty( $http_api_host ) ) {
+		$maybe_wait = vipgoci_string_found_in_substrings_array(
+			VIPGOCI_HTTP_API_WAIT_APIS_ARRAY,
+			$http_api_host,
+			false
+		);
+	}
+
+	if ( false === $maybe_wait ) {
+		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'http_api_forced_wait' );
+		return;
+	}
+
+	/*
+	 * We should maybe wait.
+	 */
 
 	if ( null !== $last_request_time ) {
 		/*
@@ -586,6 +620,15 @@ function vipgoci_http_api_fetch_url(
 							$http_api_auth_header,
 					)
 				);
+			} elseif ( isset( $http_api_token['wpscan_token'] ) ) {
+				curl_setopt(
+					$ch,
+					CURLOPT_HTTPHEADER,
+					array(
+						'Authorization: Token token=' .
+							$http_api_token['wpscan_token'],
+					)
+				);
 			}
 		}
 
@@ -593,8 +636,8 @@ function vipgoci_http_api_fetch_url(
 			$ch
 		);
 
-		// Make sure to pause between API requests.
-		vipgoci_http_api_wait();
+		// Make sure to wait if needed.
+		vipgoci_http_api_wait( $http_api_url );
 
 		/*
 		 * Execute query to API, keep
@@ -720,21 +763,29 @@ function vipgoci_http_api_fetch_url(
  * Note that the '$http_delete' parameter will determine
  * if a POST or DELETE request will be sent.
  *
- * @param string $http_api_url        HTTP request URL.
- * @param array  $http_api_postfields HTTP request fields.
- * @param string $http_api_token      Access token to use.
- * @param bool   $http_delete         If to perform HTTP DELETE instead of POST.
+ * @param string      $http_api_url        HTTP request URL.
+ * @param array       $http_api_postfields HTTP request postfields.
+ * @param null|string $http_api_token      Access token to use as string, null to skip.
+ * @param bool        $http_delete         When true, performs HTTP DELETE instead of POST.
+ * @param bool        $json_encode         If true, will JSON encode $http_api_postfields using json_encode()
+ *                                         before sending request, else uses http_build_query() to
+ *                                         generate URL-encoded query-string from $http_api_postfields.
+ * @param int         $http_version        What HTTP protocol version to use with cURL, by default lets cURL decide.
+ * @param string      $http_content_type   The HTTP Content-Type header value to use. 'application/json' is the default.
  *
- * @return int Zero (0) on success, -1 on failure. Failures will be logged.
+ * @return string|int Request body as string on success, -1 on failure. Failures will be logged.
  *
  * @codeCoverageIgnore
  */
 function vipgoci_http_api_post_url(
 	string $http_api_url,
 	array $http_api_postfields,
-	string $http_api_token,
-	bool $http_delete = false
-) :null|int {
+	null|string $http_api_token,
+	bool $http_delete = false,
+	bool $json_encode = true,
+	int $http_version = CURL_HTTP_VERSION_NONE,
+	string $http_content_type = 'application/json'
+) :string|int {
 	/*
 	 * Actually send a request to HTTP API -- make sure
 	 * to retry if something fails.
@@ -782,6 +833,12 @@ function vipgoci_http_api_post_url(
 			VIPGOCI_CLIENT_ID
 		);
 
+		curl_setopt(
+			$ch,
+			CURLOPT_HTTP_VERSION,
+			$http_version
+		);
+
 		if ( false === $http_delete ) {
 			curl_setopt(
 				$ch,
@@ -796,10 +853,21 @@ function vipgoci_http_api_post_url(
 			);
 		}
 
+		// Encode postfields as JSON if requested, else generate URL-encoded query string.
+		if ( true === $json_encode ) {
+			$tmp_postfields = json_encode(
+				$http_api_postfields
+			);
+		} else {
+			$tmp_postfields = http_build_query(
+				$http_api_postfields
+			);
+		}
+
 		curl_setopt(
 			$ch,
 			CURLOPT_POSTFIELDS,
-			json_encode( $http_api_postfields )
+			$tmp_postfields
 		);
 
 		curl_setopt(
@@ -808,18 +876,36 @@ function vipgoci_http_api_post_url(
 			'vipgoci_curl_headers'
 		);
 
-		curl_setopt(
-			$ch,
-			CURLOPT_HTTPHEADER,
-			array( 'Authorization: token ' . $http_api_token )
-		);
+		// Construct HTTP headers to send with the request.
+		$tmp_http_headers_arr = array();
+
+		if (
+			( is_string( $http_api_token ) ) &&
+			( strlen( $http_api_token ) > 0 )
+		) {
+			$tmp_http_headers_arr[] = 'Authorization: token ' . $http_api_token;
+		}
+
+		if ( strlen( $http_content_type ) > 0 ) {
+			$tmp_http_headers_arr[] = 'Content-Type: ' . $http_content_type;
+		}
+
+		if ( ! empty( $tmp_http_headers_arr ) ) {
+			curl_setopt(
+				$ch,
+				CURLOPT_HTTPHEADER,
+				$tmp_http_headers_arr
+			);
+		}
+
+		unset( $tmp_http_headers_arr );
 
 		vipgoci_curl_set_security_options(
 			$ch
 		);
 
-		// Make sure to pause between HTTP API requests.
-		vipgoci_http_api_wait();
+		// Make sure to wait if needed.
+		vipgoci_http_api_wait( $http_api_url );
 
 		/*
 		 * Execute query to HTTP API, keep
@@ -922,6 +1008,7 @@ function vipgoci_http_api_post_url(
 			}
 		}
 
+		// On failure, log message.
 		if ( -1 === $ret_val ) {
 			vipgoci_log(
 				( false === $resp_data ?
@@ -973,7 +1060,11 @@ function vipgoci_http_api_post_url(
 		( $retry_cnt++ < $retry_max )
 	);
 
-	return $ret_val;
+	if ( 0 === $ret_val ) {
+		return $resp_data;
+	} else {
+		return $ret_val;
+	}
 }
 
 /**
@@ -1063,8 +1154,8 @@ function vipgoci_http_api_put_url(
 			$ch
 		);
 
-		// Make sure to pause between HTTP API requests.
-		vipgoci_http_api_wait();
+		// Make sure to wait if needed.
+		vipgoci_http_api_wait( $http_api_url );
 
 		/*
 		 * Execute query to HTTP API, keep

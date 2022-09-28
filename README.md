@@ -11,16 +11,18 @@ Currently, a number of types of scanners are supported:
 * PHP linting. Uses built in PHP linter (`php -l`). Intended to find syntax errors, can lint using multiple PHP versions.
 * [PHPCS](https://github.com/squizlabs/PHP_CodeSniffer/). Intended to find operational issues, etc.
 * [SVG scanner](https://github.com/Automattic/vip-go-svg-sanitizer). Intended to find suspicious elements, attributes or external references.
+* [WPScan API](https://wpscan.com/api). Intended to identify plugins or themes that are obsolete or vulnerable.
 
 Here is an example of the scanning results provided by `vip-go-ci`:
 
 ![Scanning results!](docs/vipgoci-scanning-feedback.png "Scanning results")
 
-`vip-go-ci` scans files differently depending on file type:
+`vip-go-ci` scans files differently depending on scan type:
 
-* For PHP linting, it will loop through every file existing in the code-base, and post a generic pull request comment for any issues it finds with the PHP-code. 
+* For PHP linting, it will loop through every modified file in the pull request (or, each file existing in the code-base), and post a generic pull request comment for any issues it finds with the PHP-code. 
 * With PHPCS scanning it will scan only the files affected by the pull request using PHPCS and post a GitHub review on the pull request.
 * SVG scanning behaves similar to PHPCS scanning. 
+* WPScan API scanning will loop through every added plugin or theme in a pull request, as well as any plugin or theme that is updated or has files removed, and check with the WPScan API if it is obsolete or vulnerable. A pull request comment is posted if that is the case. 
 
 In addition to the above scanning, `vip-go-ci` can also automatically approve pull requests that fulfill a certain criteria:
 
@@ -29,6 +31,8 @@ In addition to the above scanning, `vip-go-ci` can also automatically approve pu
 * With SVG scanning enabled, SVG files are approved if the scanner finds no issues in the scanned files.
 * Only CSS, images and other objects are altered and no PHP or JavaScript code. This is based on file-endings, and is configurable. For example, `.txt, .css, .gif, .jpg, .jpeg, .png`.
 * Any combination of the above that covers all the changes in the pull request submitted is automatically approved.
+
+A pull request with obsolete or vulnerable plugin or theme is not auto-approved.
 
 Here is an example auto approval by `vip-go-ci`:
 
@@ -269,7 +273,7 @@ To get `vip-go-ci` working, follow these steps:
 if [ -d ~/vip-go-ci-tools ] ; then
 	bash ~/vip-go-ci-tools/vip-go-ci/tools-init.sh
 else
-	wget https://raw.githubusercontent.com/Automattic/vip-go-ci/trunk/tools-init.sh -O tools-init.sh && \
+	wget https://raw.githubusercontent.com/Automattic/vip-go-ci/latest/tools-init.sh -O tools-init.sh && \
 	bash tools-init.sh && \
 	rm -f tools-init.sh
 fi
@@ -476,6 +480,30 @@ Specifies if to do SVG scanning. For instance:
 
 ```
 {"svg-checks": false}
+```
+
+### WPScan API configuration
+
+`vip-go-ci` supports the utilization of the WPScan API to check if any plugins or themes submitted or altered in pull requests are either obsolete or vulnerable. `vip-go-ci` will call the WPScan API directly to obtain information on plugins or themes. It will also call the WordPress.org API to determine slugs for the relevant plugins or themes; the slug is used in WPScan API requests.
+
+To make use of this feature, a number of parameters must be configured. For instance:
+
+> ./vip-go-ci.php --wpscan-api=true --wpscan-api-dry-mode=false --wpscan-api-token=... --wpscan-api-paths=plugins,mu-plugins,themes 
+
+With this configuration, `vip-go-ci` will first gather available information about any plugins or themes located in the `plugins`, `mu-plugins` and `themes` directories at the root of the repository in the current branch, but only for those that were altered by any of the relevant pull requests affected by the current commit. It will then query the WordPress.org API about these to obtain their slugs and other information. Then the WPScan API will be queried about those plugins/themes that a slug could be determined for. At the end of the scan, information about obsolete or vulnerable plugins/themes will be posted to the relevant pull requests, but only if they were added to the pull request or altered in any way by the pull request. Nothing is posted when a plugin or a theme is deleted completely by a pull request.
+
+Plugins or themes are exempt from this process when they include the `UpdateURI` header and its value matches `false` or it does not include either the `w.org` or `wordpress.org` hosts.
+
+The following WPScan API related option can be configured via repository config-file:
+
+#### Option `--wpscan-api`
+
+This option is most useful if users want to disable WPScan API support. Setting it to `true` is not useful if other WPScan API parameters have not been configured.
+
+For instance:
+
+```
+{"wpscan-api": false}
 ```
 
 ### Autoapprovals
@@ -743,6 +771,9 @@ repo-owner=                     ; Repository owner for the test, should be found
 repo-name=                      ; Repository name for the test
 support-level=                  ; Name of support level given by meta API (only used in tests)
 support-level-field-name=       ; Support level field name in meta API (only used in tests)
+
+[wpscan-api-scan]
+access-token= ; Access token for WPScan API.
 ```
 
 This file is not included, and needs to be configured manually.
@@ -785,6 +816,10 @@ if [ "$VIPGOCI_EXIT_CODE" == "0" ] ; then
 elif [ "$VIPGOCI_EXIT_CODE" == "230" ] ; then
 	export BUILD_STATE="failure"
 	export BUILD_DESCRIPTION="Pull request not found for commit"
+
+elif [ "$VIPGOCI_EXIT_CODE" == "248" ] ; then
+	export BUILD_STATE="failure"
+	export BUILD_DESCRIPTION="Commit not latest in PR"
 
 elif [ "$VIPGOCI_EXIT_CODE" == "249" ] ; then
 	export BUILD_STATE="failure"

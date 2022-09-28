@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.0](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.0) - 2022-09-??
+
+## Added
+- [#273](https://github.com/Automattic/vip-go-ci/pull/273): Add support for WPScan API scanning
+
+## Updated
+- [#281](https://github.com/Automattic/vip-go-ci/pull/281): Small updates: Use new functions introduced in #273; update HTTP wait function; update URL in README.md; update tests
+- [#295](https://github.com/Automattic/vip-go-ci/pull/295): Use local git repository when running integration tests using GitHub Actions
+- [#296](https://github.com/Automattic/vip-go-ci/pull/296): Use vipgoci_cached_indication_str() function
+
+## Fixed
+- [#291](https://github.com/Automattic/vip-go-ci/pull/291): Fix two problems with local git diffs
+- [#292](https://github.com/Automattic/vip-go-ci/pull/292): Rename test class to match file name
+- [#293](https://github.com/Automattic/vip-go-ci/pull/293): Fix re-posted comments that contain "/**" 
+- [#297](https://github.com/Automattic/vip-go-ci/pull/297): Fix bug when filtering results array
+- [#298](https://github.com/Automattic/vip-go-ci/pull/298): Call htmlentities() with PHP 8.1 defaults
+
 ## [1.2.6](https://github.com/Automattic/vip-go-ci/releases/tag/1.2.6) - 2022-08-08
 
 ## Added

@@ -269,10 +269,6 @@ final class PhpcsScanScanCommitTest extends TestCase {
 		 */
 		$this->assertSame(
 			array(
-				56 => array(
-					'error' => 0,
-				),
-
 				22 => array(
 					'error' => 0,
 				),
