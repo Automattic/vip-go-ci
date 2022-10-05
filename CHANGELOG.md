@@ -2,7 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.3.0](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.0) - 2022-09-??
+## [1.3.1](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.1) - 2022-10-05
+
+## Fixed
+- [#299](https://github.com/Automattic/vip-go-ci/pull/299): Fix: Do not report latest plugin/theme as obsolete
+
+## [1.3.0](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.0) - 2022-09-28
 
 ## Added
 - [#273](https://github.com/Automattic/vip-go-ci/pull/273): Add support for WPScan API scanning
