@@ -1896,28 +1896,33 @@ function vipgoci_run_cleanup_send_pixel_api(
 				array(
 					'github_pr_approval',
 					'github_pr_non_approval',
-					'github_api_request_get',
-					'github_api_request_post',
-					'github_api_request_put',
-					'github_api_request_fetch',
-					'github_api_request_delete',
+					'http_api_request_get',
+					'http_api_request_post',
+					'http_api_request_put',
+					'http_api_request_delete',
+					'github_pr_lint_issues',
+					'github_pr_phpcs_issues',
+					'github_pr_wpscan_api_issues',
 				),
 
 				/*
 				 * Repository-specific statistics.
 				 */
-				$options['pixel-api-groupprefix'] .
-					'-' .
+				$options['pixel-api-groupprefix'] . '-' .
+					$options['repo-owner'] . '-' .
 					$options['repo-name']
 				=> array(
 					'github_pr_approval',
 					'github_pr_non_approval',
-					'github_pr_files_scanned',
-					'github_pr_lines_scanned',
 					'github_pr_files_linted',
 					'github_pr_lines_linted',
-					'github_pr_phpcs_issues',
 					'github_pr_lint_issues',
+					'github_pr_files_phpcs_scanned',
+					'github_pr_lines_phpcs_scanned',
+					'github_pr_phpcs_issues',
+					'github_pr_files_wpscan_api_scanned',
+					'github_pr_lines_wpscan_api_scanned',
+					'github_pr_wpscan_api_issues',
 				),
 			),
 			$counter_report
