@@ -357,6 +357,11 @@ final class WpscanScanDirsAlteredTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
+
 		if ( false === $this->options['local-git-repo'] ) {
 			$this->markTestSkipped(
 				'Could not set up git repository: ' .
@@ -365,11 +370,6 @@ final class WpscanScanDirsAlteredTest extends TestCase {
 
 			return;
 		}
-
-		$this->options['local-git-repo'] =
-			vipgoci_unittests_setup_git_repo(
-				$this->options
-			);
 
 		vipgoci_unittests_output_unsuppress();
 
