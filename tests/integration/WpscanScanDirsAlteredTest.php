@@ -33,6 +33,8 @@ final class WpscanScanDirsAlteredTest extends TestCase {
 		'wpscan-pr-1-theme-dir'    => null,
 		'wpscan-pr-1-theme-key'    => null,
 		'wpscan-pr-1-theme-name'   => null,
+		'wpscan-pr-4-commit-id'    => null,
+		'wpscan-pr-4-dirs-altered' => null,
 	);
 
 	/**
@@ -69,9 +71,6 @@ final class WpscanScanDirsAlteredTest extends TestCase {
 			$this->options_wpscan_api_scan,
 			$this->options_git
 		);
-
-		$this->options['commit'] =
-			$this->options['wpscan-pr-1-commit-id'];
 
 		$this->options['github-token'] =
 			vipgoci_unittests_get_config_value(
@@ -146,6 +145,9 @@ final class WpscanScanDirsAlteredTest extends TestCase {
 		if ( -1 === $options_test ) {
 			return;
 		}
+
+		$this->options['commit'] =
+			$this->options['wpscan-pr-1-commit-id'];
 
 		vipgoci_unittests_output_suppress();
 
@@ -274,6 +276,58 @@ final class WpscanScanDirsAlteredTest extends TestCase {
 			);
 		}
 	}
+
+	/**
+	 * Test common usage of the function. No results expected
+	 * as plugin and theme is not obsolete or vulnerable.
+	 *
+	 * @covers ::vipgoci_wpscan_scan_dirs_altered
+	 *
+	 * @return void
+	 */
+	public function testFindDirsAlteredWithNoResultsFound(): void {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( 'github-token', 'token' ),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
+		$this->options['commit'] =
+			$this->options['wpscan-pr-4-commit-id'];
+
+		vipgoci_unittests_output_suppress();
+
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped(
+				'Could not set up git repository: ' .
+				vipgoci_unittests_output_get()
+			);
+
+			return;
+		}
+
+		vipgoci_unittests_output_unsuppress();
+
+		$results_actual = vipgoci_wpscan_scan_dirs_altered(
+			$this->options,
+			explode(
+				',',
+				$this->options['wpscan-pr-4-dirs-altered']
+			)
+		);
+
+		$this->assertSame(
+			array(),
+			$results_actual
+		);
+	}
 }
-
-
