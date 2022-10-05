@@ -136,7 +136,7 @@ final class WpscanScanDirsAlteredTest extends TestCase {
 	 *
 	 * @return void
 	 */
-	public function testFindDirsAltered(): void {
+	public function testFindDirsAlteredWithResultsFound(): void {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
