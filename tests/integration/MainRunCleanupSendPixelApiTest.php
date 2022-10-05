@@ -40,6 +40,7 @@ final class MainRunCleanupSendPixelApiTest extends TestCase {
 	protected function setUp(): void {
 		$this->options = array(
 			'pixel-api-groupprefix' => 'mystatistics',
+			'repo-owner'            => 'test-owner',
 			'repo-name'             => 'test-repo',
 		);
 
