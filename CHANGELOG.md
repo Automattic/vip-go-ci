@@ -7,6 +7,9 @@ All notable changes to this project will be documented in this file.
 ## Fixed
 - [#299](https://github.com/Automattic/vip-go-ci/pull/299): Fix: Do not report latest plugin/theme as obsolete
 
+## Updated
+- [#301](https://github.com/Automattic/vip-go-ci/pull/301): Update statistics logic
+
 ## [1.3.0](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.0) - 2022-09-28
 
 ## Added
