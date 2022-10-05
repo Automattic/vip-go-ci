@@ -81,12 +81,12 @@ final class WpscanScanDirsAlteredTest extends TestCase {
 				true // Fetch from secrets file.
 			);
 
-		$this->options['commit'] =
-			$this->options['wpscan-pr-1-commit-id'];
-
 		if ( empty( $this->options['github-token'] ) ) {
 			$this->options['github-token'] = '';
 		}
+
+		$this->options['commit'] =
+			$this->options['wpscan-pr-1-commit-id'];
 
 		$this->options['token'] =
 			$this->options['github-token'];
