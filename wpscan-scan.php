@@ -237,8 +237,12 @@ function vipgoci_wpscan_scan_dirs_altered(
 			 */
 			vipgoci_stats_per_file(
 				$options,
-				$addon_dir_relevant . DIRECTORY_SEPARATOR . $addon_item_key,
-				'scanned'
+				str_replace(
+					$options['local-git-repo'],
+					'',
+					$addon_item_info['file_name']
+				),
+				'wpscan_api_scanned'
 			);
 
 			/*

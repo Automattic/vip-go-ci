@@ -398,11 +398,13 @@ function vipgoci_send_stats_to_pixel_api(
 			'v=wpcom-no-pv' .
 			'&' .
 			'x_' . rawurlencode(
-				$stat_names_to_groups[ $stat_name ]
+				strtolower(
+					$stat_names_to_groups[ $stat_name ]
+				)
 			) .
 			'/' .
 			rawurlencode(
-				$stat_name
+				strtolower( $stat_name )
 			) . '=' .
 			rawurlencode(
 				(string) $stat_value

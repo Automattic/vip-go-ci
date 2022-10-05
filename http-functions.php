@@ -644,17 +644,17 @@ function vipgoci_http_api_fetch_url(
 		 * record of how long time it took,
 		 * and also keep count of how many we do.
 		 */
-		vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'http_api_api_get' );
+		vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'http_api_request_get' );
 
 		vipgoci_counter_report(
 			VIPGOCI_COUNTERS_DO,
-			'http_api_api_get',
+			'http_api_request_get',
 			1
 		);
 
 		$resp_data = curl_exec( $ch );
 
-		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'http_api_api_get' );
+		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'http_api_request_get' );
 
 		$resp_headers = vipgoci_curl_headers(
 			null,
@@ -913,13 +913,31 @@ function vipgoci_http_api_post_url(
 		 * and keep count of how many requests we do.
 		 */
 
-		vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'http_api_request_post' );
+		if ( false === $http_delete ) {
+			vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'http_api_request_post' );
 
-		vipgoci_counter_report( VIPGOCI_COUNTERS_DO, 'http_api_request_post', 1 );
+			vipgoci_counter_report(
+				VIPGOCI_COUNTERS_DO,
+				'http_api_request_post',
+				1
+			);
+		} else {
+			vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'http_api_request_delete' );
+
+			vipgoci_counter_report(
+				VIPGOCI_COUNTERS_DO,
+				'http_api_request_delete',
+				1
+			);
+		}
 
 		$resp_data = curl_exec( $ch );
 
-		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'http_api_request_post' );
+		if ( false === $http_delete ) {
+			vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'http_api_request_post' );
+		} else {
+			vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'http_api_request_delete' );
+		}
 
 		$resp_headers = vipgoci_curl_headers(
 			null,
@@ -1165,7 +1183,11 @@ function vipgoci_http_api_put_url(
 
 		vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'http_api_put' );
 
-		vipgoci_counter_report( VIPGOCI_COUNTERS_DO, 'github_api_request_put', 1 );
+		vipgoci_counter_report(
+			VIPGOCI_COUNTERS_DO,
+			'http_api_request_put',
+			1
+		);
 
 		$resp_data = curl_exec( $ch );
 
