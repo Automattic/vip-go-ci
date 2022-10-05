@@ -30,11 +30,13 @@ final class WpscanScanDirsAlteredTest extends TestCase {
 		'wpscan-pr-1-plugin-dir'   => null,
 		'wpscan-pr-1-plugin-key'   => null,
 		'wpscan-pr-1-plugin-name'  => null,
+		'wpscan-pr-1-plugin-slug'  => null,
+		'wpscan-pr-1-plugin-path'  => null,
 		'wpscan-pr-1-theme-dir'    => null,
 		'wpscan-pr-1-theme-key'    => null,
 		'wpscan-pr-1-theme-name'   => null,
-		'wpscan-pr-4-commit-id'    => null,
-		'wpscan-pr-4-dirs-altered' => null,
+		'wpscan-pr-1-theme-slug'   => null,
+		'wpscan-pr-1-theme-path'   => null,
 	);
 
 	/**
@@ -78,6 +80,9 @@ final class WpscanScanDirsAlteredTest extends TestCase {
 				'github-token',
 				true // Fetch from secrets file.
 			);
+
+		$this->options['commit'] =
+			$this->options['wpscan-pr-1-commit-id'];
 
 		if ( empty( $this->options['github-token'] ) ) {
 			$this->options['github-token'] = '';
@@ -145,9 +150,6 @@ final class WpscanScanDirsAlteredTest extends TestCase {
 		if ( -1 === $options_test ) {
 			return;
 		}
-
-		$this->options['commit'] =
-			$this->options['wpscan-pr-1-commit-id'];
 
 		vipgoci_unittests_output_suppress();
 
@@ -296,9 +298,6 @@ final class WpscanScanDirsAlteredTest extends TestCase {
 			return;
 		}
 
-		$this->options['commit'] =
-			$this->options['wpscan-pr-4-commit-id'];
-
 		vipgoci_unittests_output_suppress();
 
 		$this->options['local-git-repo'] =
@@ -317,17 +316,92 @@ final class WpscanScanDirsAlteredTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
+		/*
+		 * Update version numbers in plugin/theme files in
+		 * repository so they match the latest ones.
+		 */
+		$this->updateAddonVersionNumbers();
+
 		$results_actual = vipgoci_wpscan_scan_dirs_altered(
 			$this->options,
 			explode(
 				',',
-				$this->options['wpscan-pr-4-dirs-altered']
+				$this->options['wpscan-pr-1-dirs-altered']
 			)
 		);
 
 		$this->assertSame(
 			array(),
 			$results_actual
+		);
+	}
+
+	/**
+	 * Update version numbers of addons in repository so they match
+	 * the latest ones. Ask WPScan API for the latest version numbers.
+	 *
+	 * @return void
+	 */
+	private function updateAddonVersionNumbers() :void {
+		$wpscan_plugin_info = vipgoci_wpscan_do_scan_via_api(
+			$this->options['wpscan-pr-1-plugin-slug'],
+			VIPGOCI_ADDON_PLUGIN,
+			$this->options['wpscan-api-token']
+		);
+
+		$this->replaceVersionNumberForFile(
+			$this->options['local-git-repo'] . DIRECTORY_SEPARATOR .
+				$this->options['wpscan-pr-1-plugin-path'],
+			vipgoci_output_sanitize_version_number(
+				$wpscan_plugin_info[ $this->options['wpscan-pr-1-plugin-slug'] ]['latest_version']
+			)
+		);
+
+		$wpscan_theme_info = vipgoci_wpscan_do_scan_via_api(
+			$this->options['wpscan-pr-1-theme-slug'],
+			VIPGOCI_ADDON_THEME,
+			$this->options['wpscan-api-token']
+		);
+
+		$this->replaceVersionNumberForFile(
+			$this->options['local-git-repo'] . DIRECTORY_SEPARATOR .
+				$this->options['wpscan-pr-1-theme-path'],
+			vipgoci_output_sanitize_version_number(
+				$wpscan_theme_info[ $this->options['wpscan-pr-1-theme-slug'] ]['latest_version']
+			)
+		);
+
+	}
+
+	/**
+	 * Replace version number header in given file.
+	 *
+	 * @param string $file_path      Path to file.
+	 * @param string $version_number Version number.
+	 *
+	 * @return void
+	 */
+	private function replaceVersionNumberForFile(
+		string $file_path,
+		string $version_number
+	) :void {
+		$file_contents = file_get_contents(
+			$file_path
+		);
+
+		if ( false === $file_contents ) {
+			return;
+		}
+
+		$file_contents = preg_replace(
+			'/Version: .*/',
+			'Version: ' . $version_number,
+			$file_contents
+		);
+
+		file_put_contents(
+			$file_path,
+			$file_contents
 		);
 	}
 }
