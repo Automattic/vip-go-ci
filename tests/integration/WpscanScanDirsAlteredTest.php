@@ -74,15 +74,15 @@ final class WpscanScanDirsAlteredTest extends TestCase {
 			$this->options_git
 		);
 
+		$this->options['commit'] =
+			$this->options['wpscan-pr-1-commit-id'];
+
 		$this->options['github-token'] =
 			vipgoci_unittests_get_config_value(
 				'git-secrets',
 				'github-token',
 				true // Fetch from secrets file.
 			);
-
-		$this->options['commit'] =
-			$this->options['wpscan-pr-1-commit-id'];
 
 		if ( empty( $this->options['github-token'] ) ) {
 			$this->options['github-token'] = '';
