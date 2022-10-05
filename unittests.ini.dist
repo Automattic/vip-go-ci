@@ -80,6 +80,8 @@ wpscan-pr-2-commit-id=5dd9e528b02c294683812f49c10ec97f6cbeb706
 wpscan-pr-2-dirs-scan=plugins,mu-plugins,themes
 wpscan-pr-3-commit-id=fa1546344701b53ef4cb81e3b77584e6c2b8bb5f
 wpscan-pr-3-dirs-scan=plugins,mu-plugins,themes
+wpscan-pr-4-commit-id=f2fc632ed26ff50aa671264d6dfae7a1e7f4deef
+wpscan-pr-4-dirs-altered=plugins/hello,plugins/not-a-plugin,themes/twentytwentyone
 
 [auto-approvals]
 commit-test-file-types-1=2d864e5dd9d89ea3362d965477432873bf970345
