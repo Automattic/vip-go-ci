@@ -285,7 +285,7 @@ function vipgoci_wpscan_scan_dirs_altered(
 			$addon_obsolete = version_compare(
 				$wpscan_results[ $addon_item_info['slug'] ]['latest_version'],
 				$addon_item_info['version_detected'],
-				'>='
+				'>'
 			);
 
 			$addon_security_vulnerabilities = ( ! empty(
