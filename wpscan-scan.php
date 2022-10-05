@@ -238,7 +238,7 @@ function vipgoci_wpscan_scan_dirs_altered(
 			vipgoci_stats_per_file(
 				$options,
 				$addon_dir_relevant . DIRECTORY_SEPARATOR . $addon_item_key,
-				'scanned'
+				'wpscan_api_scanned'
 			);
 
 			/*

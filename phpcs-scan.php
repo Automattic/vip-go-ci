@@ -692,7 +692,7 @@ function vipgoci_phpcs_scan_commit(
 		vipgoci_stats_per_file(
 			$options,
 			$file_name,
-			'scanned'
+			'phpcs_scanned'
 		);
 
 		/*
