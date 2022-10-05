@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ## Fixed
 - [#299](https://github.com/Automattic/vip-go-ci/pull/299): Fix: Do not report latest plugin/theme as obsolete
+- [#302](https://github.com/Automattic/vip-go-ci/pull/302): Fix WPScan test
 
 ## Updated
 - [#301](https://github.com/Automattic/vip-go-ci/pull/301): Update statistics logic
