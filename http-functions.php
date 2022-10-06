@@ -253,7 +253,7 @@ function vipgoci_http_api_rate_limits_check(
 ) :void {
 	/*
 	 * Special case for WPScan API: Unlimited requests
-	 * are indicated with a negative number for 
+	 * are indicated with a negative number for
 	 * x-ratelimit-remaining header. Here we ignore
 	 * such headers for WPScan API responses.
 	 */
