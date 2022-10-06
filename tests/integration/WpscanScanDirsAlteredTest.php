@@ -30,9 +30,13 @@ final class WpscanScanDirsAlteredTest extends TestCase {
 		'wpscan-pr-1-plugin-dir'   => null,
 		'wpscan-pr-1-plugin-key'   => null,
 		'wpscan-pr-1-plugin-name'  => null,
+		'wpscan-pr-1-plugin-slug'  => null,
+		'wpscan-pr-1-plugin-path'  => null,
 		'wpscan-pr-1-theme-dir'    => null,
 		'wpscan-pr-1-theme-key'    => null,
 		'wpscan-pr-1-theme-name'   => null,
+		'wpscan-pr-1-theme-slug'   => null,
+		'wpscan-pr-1-theme-path'   => null,
 	);
 
 	/**
@@ -136,7 +140,7 @@ final class WpscanScanDirsAlteredTest extends TestCase {
 	 *
 	 * @return void
 	 */
-	public function testFindDirsAltered(): void {
+	public function testFindDirsAlteredWithResultsFound(): void {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( 'github-token', 'token' ),
@@ -274,6 +278,205 @@ final class WpscanScanDirsAlteredTest extends TestCase {
 			);
 		}
 	}
+
+	/**
+	 * Test common usage of the function. No results expected
+	 * as plugin and theme are of latest version.
+	 *
+	 * @covers ::vipgoci_wpscan_scan_dirs_altered
+	 *
+	 * @return void
+	 */
+	public function testFindDirsAlteredWithNoResultsFound1(): void {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( 'github-token', 'token' ),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
+		vipgoci_unittests_output_suppress();
+
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped(
+				'Could not set up git repository: ' .
+				vipgoci_unittests_output_get()
+			);
+
+			return;
+		}
+
+		vipgoci_unittests_output_unsuppress();
+
+		/*
+		 * Update version numbers in plugin/theme files in
+		 * repository so they match the latest ones.
+		 */
+		$this->updateAddonVersionNumbers( true );
+
+		$results_actual = vipgoci_wpscan_scan_dirs_altered(
+			$this->options,
+			explode(
+				',',
+				$this->options['wpscan-pr-1-dirs-altered']
+			)
+		);
+
+		$this->assertSame(
+			array(),
+			$results_actual
+		);
+	}
+
+	/**
+	 * Test common usage of the function. No results expected
+	 * as plugin and theme are more recent than latest.
+	 *
+	 * @covers ::vipgoci_wpscan_scan_dirs_altered
+	 *
+	 * @return void
+	 */
+	public function testFindDirsAlteredWithNoResultsFound2(): void {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( 'github-token', 'token' ),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
+		vipgoci_unittests_output_suppress();
+
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped(
+				'Could not set up git repository: ' .
+				vipgoci_unittests_output_get()
+			);
+
+			return;
+		}
+
+		vipgoci_unittests_output_unsuppress();
+
+		/*
+		 * Update version numbers in plugin/theme files in
+		 * repository so they are higher than the latest ones.
+		 */
+		$this->updateAddonVersionNumbers( false );
+
+		$results_actual = vipgoci_wpscan_scan_dirs_altered(
+			$this->options,
+			explode(
+				',',
+				$this->options['wpscan-pr-1-dirs-altered']
+			)
+		);
+
+		$this->assertSame(
+			array(),
+			$results_actual
+		);
+	}
+
+	/**
+	 * Update version numbers of addons in repository so they match
+	 * the latest ones or are higher than the latest ones. Will ask
+	 * WPScan API for the latest version numbers if applicable.
+	 *
+	 * @param bool $latest If to set to the latest version (true) or higher (false).
+	 *
+	 * @return void
+	 */
+	private function updateAddonVersionNumbers(
+		bool $latest = true
+	) :void {
+		if ( true === $latest ) {
+			$wpscan_plugin_info = vipgoci_wpscan_do_scan_via_api(
+				$this->options['wpscan-pr-1-plugin-slug'],
+				VIPGOCI_ADDON_PLUGIN,
+				$this->options['wpscan-api-token']
+			);
+
+			$wpscan_plugin_version =
+				$wpscan_plugin_info[ $this->options['wpscan-pr-1-plugin-slug'] ]['latest_version'];
+		} else {
+			$wpscan_plugin_version = '100.0';
+		}
+
+		$this->replaceVersionNumberForFile(
+			$this->options['local-git-repo'] . DIRECTORY_SEPARATOR .
+				$this->options['wpscan-pr-1-plugin-path'],
+			vipgoci_output_sanitize_version_number(
+				$wpscan_plugin_version
+			)
+		);
+
+		if ( true === $latest ) {
+			$wpscan_theme_info = vipgoci_wpscan_do_scan_via_api(
+				$this->options['wpscan-pr-1-theme-slug'],
+				VIPGOCI_ADDON_THEME,
+				$this->options['wpscan-api-token']
+			);
+
+			$wpscan_theme_version =
+				$wpscan_theme_info[ $this->options['wpscan-pr-1-theme-slug'] ]['latest_version'];
+		} else {
+			$wpscan_theme_version = '100.0';
+		}
+
+		$this->replaceVersionNumberForFile(
+			$this->options['local-git-repo'] . DIRECTORY_SEPARATOR .
+				$this->options['wpscan-pr-1-theme-path'],
+			vipgoci_output_sanitize_version_number(
+				$wpscan_theme_version
+			)
+		);
+	}
+
+	/**
+	 * Replace version number header in given file.
+	 *
+	 * @param string $file_path      Path to file.
+	 * @param string $version_number Version number.
+	 *
+	 * @return void
+	 */
+	private function replaceVersionNumberForFile(
+		string $file_path,
+		string $version_number
+	) :void {
+		$file_contents = file_get_contents(
+			$file_path
+		);
+
+		if ( false === $file_contents ) {
+			return;
+		}
+
+		$file_contents = preg_replace(
+			'/Version: .*/',
+			'Version: ' . $version_number,
+			$file_contents
+		);
+
+		file_put_contents(
+			$file_path,
+			$file_contents
+		);
+	}
 }
-
-
