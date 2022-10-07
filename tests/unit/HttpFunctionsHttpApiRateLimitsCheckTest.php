@@ -25,22 +25,22 @@ final class HttpFunctionsHttpApiRateLimitsCheckTest extends TestCase {
 	 */
 	private const TEST_DATA = array(
 		array(
-			'url'     => 'https://127.0.0.1/api/v1',
+			'url'     => 'https://api.github.com/v1',
 			'headers' => array(),
 			'output'  => '',
 		),
 		array(
-			'url'     => 'https://127.0.0.1/api/v1',
+			'url'     => 'https://api.github.com/v1',
 			'headers' => array( 'x-ratelimit-remaining' => array( '100' ) ),
 			'output'  => '',
 		),
 		array(
-			'url'     => 'https://127.0.0.1/api/v1',
+			'url'     => 'https://api.github.com/v1',
 			'headers' => array( 'x-ratelimit-remaining' => array( '0' ) ),
 			'output'  => '"Ran out of request limits for API, cannot continue without making further requests."' . PHP_EOL,
 		),
 		array(
-			'url'     => 'https://127.0.0.1/api/v1',
+			'url'     => 'https://api.github.com/v1',
 			'headers' => array( 'x-ratelimit-remaining' => array( '-1' ) ),
 			'output'  => '"Ran out of request limits for API, cannot continue without making further requests."' . PHP_EOL,
 		),
