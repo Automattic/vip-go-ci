@@ -244,8 +244,6 @@ function vipgoci_http_resp_sunset_header_check(
  * @param array  $resp_headers HTTP response headers.
  *
  * @return void
- *
- * @codeCoverageIgnore
  */
 function vipgoci_http_api_rate_limits_check(
 	string $http_api_url,
