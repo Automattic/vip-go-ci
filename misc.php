@@ -427,8 +427,9 @@ function vipgoci_filter_file_path(
 			 */
 			if (
 				( false !== $file_folders_match ) &&
-				( is_numeric( $file_folders_match ) ) &&
-				( 0 === $file_folders_match )
+				( is_numeric( $file_folders_match ) ) // &&
+				// HACK
+				// ( 0 === $file_folders_match )
 			) {
 				$file_folders_match = true;
 				break;

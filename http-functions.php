@@ -667,7 +667,7 @@ function vipgoci_http_api_fetch_url(
 					'http_response_headers' => $resp_headers,
 					'http_response_body'    => $resp_data,
 				),
-				0,
+				-2,
 				true // Log to IRC.
 			);
 
@@ -870,7 +870,7 @@ function vipgoci_http_api_post_url(
 			$ret_val = -1;
 
 			// Set wait period between requests. May be altered.
-			$retry_sleep = 10;
+			$retry_sleep = 15;
 
 			/*
 			 * Figure out if to retry.
@@ -950,7 +950,7 @@ function vipgoci_http_api_post_url(
 					'http_response_headers' => $resp_headers,
 					'http_response_body'    => $resp_data,
 				),
-				0,
+				-2,
 				true // Log to IRC.
 			);
 
@@ -1177,7 +1177,7 @@ function vipgoci_http_api_put_url(
 					'http_response_headers' => $resp_headers,
 					'http_reponse_body'     => $resp_data,
 				),
-				0,
+				-2,
 				true // Log to IRC.
 			);
 
@@ -1203,4 +1203,3 @@ function vipgoci_http_api_put_url(
 
 	return $ret_val;
 }
-

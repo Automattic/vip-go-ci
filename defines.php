@@ -187,7 +187,7 @@ define( 'VIPGOCI_CACHE_CLEAR', '--VIPGOCI-CACHE-CLEAR-0x321--' );
 /*
  * Define for vipgoci_http_api_wait() function.
  */
-define( 'VIPGOCI_HTTP_API_WAIT_TIME_SECONDS', 2 );
+define( 'VIPGOCI_HTTP_API_WAIT_TIME_SECONDS', 5 );
 
 /*
  * Defines for files.
