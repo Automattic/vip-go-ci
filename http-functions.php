@@ -590,7 +590,7 @@ function vipgoci_http_api_post_url(
 	bool $http_delete = false,
 	bool $json_encode = true,
 	int $http_version = CURL_HTTP_VERSION_NONE,
-	string $http_content_type = 'application/json'
+	string $http_content_type = VIPGOCI_HTTP_API_CONTENT_TYPE_APPLICATION_JSON
 ) :string|int {
 	/*
 	 * Actually send a request to HTTP API -- make sure
