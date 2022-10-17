@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 - [#304](https://github.com/Automattic/vip-go-ci/pull/304): WPScan API: Update x-ratelimit-remaining header functionality
 - [#303](https://github.com/Automattic/vip-go-ci/pull/303): Remove OAuth 1.0a functions
 - [#307](https://github.com/Automattic/vip-go-ci/pull/307): Update PULL_REQUEST_TEMPLATE
+- [#308](https://github.com/Automattic/vip-go-ci/pull/308): Add checks to WPScan API reporting logic, ensure CVSS outputted includes precision
 
 ## [1.3.1](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.1) - 2022-10-05
 
