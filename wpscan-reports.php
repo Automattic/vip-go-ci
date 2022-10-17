@@ -238,7 +238,7 @@ function vipgoci_wpscan_report_comment_format_result(
 
 		foreach ( $issue['details']['vulnerabilities'] as $vuln_item ) {
 			if (
-				( ! isset( $vuln_item['id'] ) ) || 
+				( ! isset( $vuln_item['id'] ) ) ||
 				( ! isset( $vuln_item['title'] ) )
 			) {
 				vipgoci_log(
