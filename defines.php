@@ -41,10 +41,11 @@ if ( ! defined( 'VIPGOCI_GITHUB_BASE_URL' ) ) {
 define( 'VIPGOCI_KB_IN_BYTES', 1024 );
 
 /*
- * Timeout constant for HTTP APIs.
+ * Constants for HTTP API functions.
  */
 define( 'VIPGOCI_HTTP_API_LONG_TIMEOUT', 20 );
 define( 'VIPGOCI_HTTP_API_SHORT_TIMEOUT', 5 );
+define( 'VIPGOCI_HTTP_API_CONTENT_TYPE_WWW_FORM_URLENCODED', 'application/x-www-form-urlencoded' );
 
 /*
  * Define exit-codes
