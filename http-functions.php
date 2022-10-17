@@ -244,15 +244,35 @@ function vipgoci_http_resp_sunset_header_check(
  * @param array  $resp_headers HTTP response headers.
  *
  * @return void
- *
- * @codeCoverageIgnore
  */
 function vipgoci_http_api_rate_limits_check(
 	string $http_api_url,
 	array $resp_headers
 ) :void {
+	/*
+	 * Special case for WPScan API: Unlimited requests
+	 * are indicated with a negative number for
+	 * x-ratelimit-remaining header. Here we ignore
+	 * such headers for WPScan API responses.
+	 */
+	if (
+		( true === str_starts_with(
+			$http_api_url,
+			VIPGOCI_WPSCAN_API_BASE_URL,
+		) ) &&
+		( isset( $resp_headers['x-ratelimit-remaining'][0] ) ) &&
+		( is_numeric( $resp_headers['x-ratelimit-remaining'][0] ) ) &&
+		( $resp_headers['x-ratelimit-remaining'][0] < 0 )
+	) {
+		return;
+	}
+
+	/*
+	 * Look for ratelimit header.
+	 */
 	if (
 		( isset( $resp_headers['x-ratelimit-remaining'][0] ) ) &&
+		( is_numeric( $resp_headers['x-ratelimit-remaining'][0] ) ) &&
 		( $resp_headers['x-ratelimit-remaining'][0] <= 1 )
 	) {
 		vipgoci_sysexit(
@@ -261,7 +281,8 @@ function vipgoci_http_api_rate_limits_check(
 			array(
 				'http_api_url'          => $http_api_url,
 				'x-ratelimit-remaining' => $resp_headers['x-ratelimit-remaining'][0],
-				'x-ratelimit-limit'     => $resp_headers['x-ratelimit-limit'][0],
+				'x-ratelimit-limit'     => isset( $resp_headers['x-ratelimit-limit'][0] )
+					?? $resp_headers['x-ratelimit-limit'][0],
 			),
 			VIPGOCI_EXIT_GITHUB_PROBLEM,
 			true // Log to IRC.

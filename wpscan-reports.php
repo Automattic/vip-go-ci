@@ -237,6 +237,20 @@ function vipgoci_wpscan_report_comment_format_result(
 		$res .= "\n\r";
 
 		foreach ( $issue['details']['vulnerabilities'] as $vuln_item ) {
+			if (
+				( ! isset( $vuln_item['id'] ) ) ||
+				( ! isset( $vuln_item['title'] ) )
+			) {
+				vipgoci_log(
+					'Vulnerability detail item from WPScan API is invalid, missing fields',
+					array(
+						'vuln_item' => $vuln_item,
+					)
+				);
+
+				continue;
+			}
+
 			$res .= '### &#x1f512; Security information' . "\n"; // Header markup and lock sign.
 
 			/*
@@ -257,13 +271,20 @@ function vipgoci_wpscan_report_comment_format_result(
 			) . "\n";
 
 			// May not be included, enterprise only feature.
-			if ( isset( $vuln_item['cvss']['score'] ) ) {
-				// Escape severity as float.
-				$res .= '**Severity**: ' . ( (float) $vuln_item['cvss']['score'] ) . '/10 (';
+			if (
+				( isset( $vuln_item['cvss']['score'] ) ) &&
+				( is_numeric( $vuln_item['cvss']['score'] ) )
+			) {
+				// Output severity as float.
+				$res .= '**Severity**: ';
+				$res .= sprintf( '%.1f', (float) $vuln_item['cvss']['score'] );
+				$res .= '/10 (';
 
 				// Escape output string.
 				$res .= vipgoci_output_markdown_escape(
-					vipgoci_wpscan_report_format_cvss_score( $vuln_item['cvss']['score'] )
+					vipgoci_wpscan_report_format_cvss_score(
+						(float) $vuln_item['cvss']['score']
+					)
 				);
 
 				$res .= ')' . "\n";
