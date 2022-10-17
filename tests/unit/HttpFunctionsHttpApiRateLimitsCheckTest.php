@@ -45,6 +45,11 @@ final class HttpFunctionsHttpApiRateLimitsCheckTest extends TestCase {
 			'output'  => '"Ran out of request limits for API, cannot continue without making further requests."' . PHP_EOL,
 		),
 		array(
+			'url'     => 'https://api.github.com/v1',
+			'headers' => array( 'x-ratelimit-remaining' => array( 'abc' ) ), // Invalid, not numeric.
+			'output'  => '',
+		),
+		array(
 			'url'     => 'https://wpscan.com/api/v3/plugins/test',
 			'headers' => array(),
 			'output'  => '',
@@ -62,6 +67,11 @@ final class HttpFunctionsHttpApiRateLimitsCheckTest extends TestCase {
 		array(
 			'url'     => 'https://wpscan.com/api/v3/plugins/test',
 			'headers' => array( 'x-ratelimit-remaining' => array( '-1' ) ),
+			'output'  => '',
+		),
+		array(
+			'url'     => 'https://wpscan.com/api/v3/plugins/test',
+			'headers' => array( 'x-ratelimit-remaining' => array( 'abc' ) ), // Invalid, not numeric.
 			'output'  => '',
 		),
 	);
