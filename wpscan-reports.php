@@ -297,9 +297,15 @@ function vipgoci_wpscan_report_comment_format_result(
 	);
 
 	// Report to IRC.
+	$commit_url = VIPGOCI_GITHUB_WEB_BASE_URL . '/' .
+		rawurlencode( $repo_owner ) . '/' .
+		rawurlencode( $repo_name ) . '/commit/' .
+		rawurlencode( $commit_id );
+
 	vipgoci_log(
 		'WPScan API found issues with addon',
 		array(
+			'url'     => $commit_url,
 			'msg'     => $issue['message'],
 			'level'   => $issue['security'],
 			'version' => $issue['details']['version_detected'],
