@@ -60,6 +60,9 @@ final class WpscanReportCommentFormatResultTest extends TestCase {
 						array(
 							'id'    => '0100100 ;',
 							'title' => 'Security problem in My Plugin < 1.9.0',
+							'cvss'  => array(
+								'score' => '7.3',
+							),
 						),
 					),
 				),
@@ -171,6 +174,16 @@ final class WpscanReportCommentFormatResultTest extends TestCase {
 			VIPGOCI_WPSCAN_BASE_URL . '/vulnerability/0100100%20%3B',
 			$report_str
 		);
+
+		$this->assertStringContainsString(
+			'Severity',
+			$report_str
+		);
+
+		$this->assertStringContainsString(
+			'7.3/10 (HIGH)',
+			$report_str
+		);
 	}
 
 	/**
@@ -198,6 +211,9 @@ final class WpscanReportCommentFormatResultTest extends TestCase {
 						array(
 							'id'    => '0100100',
 							'title' => 'Security problem in My Theme',
+							'cvss'  => array(
+								'score' => '5.0',
+							),
 						),
 					),
 				),
@@ -307,6 +323,16 @@ final class WpscanReportCommentFormatResultTest extends TestCase {
 
 		$this->assertStringContainsString(
 			VIPGOCI_WPSCAN_BASE_URL . '/vulnerability/0100100',
+			$report_str
+		);
+
+		$this->assertStringContainsString(
+			'Severity',
+			$report_str
+		);
+
+		$this->assertStringContainsString(
+			'5.0/10 (MEDIUM)',
 			$report_str
 		);
 	}
