@@ -237,7 +237,7 @@ function vipgoci_http_resp_sunset_header_check(
 }
 
 /**
- * Detect if we exceeded the API rate-limits,
+ * Detect if we exceeded the API ratelimit,
  * and if so, exit with error.
  *
  * @param string $http_api_url API URL used.
