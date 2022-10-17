@@ -305,11 +305,11 @@ function vipgoci_wpscan_report_comment_format_result(
 	vipgoci_log(
 		'WPScan API found issues with addon',
 		array(
-			'url'     => $commit_url,
-			'msg'     => $issue['message'],
-			'level'   => $issue['security'],
-			'version' => $issue['details']['version_detected'],
-			'latest'  => $issue['details']['latest_version'],
+			'commit_url' => $commit_url,
+			'msg'        => $issue['message'],
+			'level'      => $issue['security'],
+			'version'    => $issue['details']['version_detected'],
+			'latest'     => $issue['details']['latest_version'],
 		),
 		0,
 		true
