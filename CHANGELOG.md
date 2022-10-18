@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.3.2](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.2) - 2022-10-??
+## [1.3.3](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.3) - 2022-10-??
+
+## Updated
+- [#310](https://github.com/Automattic/vip-go-ci/pull/310): New exit status for HTTP API errors, update log message
+- [#311](https://github.com/Automattic/vip-go-ci/pull/311): Use constants for content-type headers
+
+## [1.3.2](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.2) - 2022-10-18
 
 ## Fixed
 - [#304](https://github.com/Automattic/vip-go-ci/pull/304): WPScan API: Update x-ratelimit-remaining header functionality
