@@ -282,7 +282,7 @@ function vipgoci_http_api_rate_limits_check(
 				'http_api_url'          => $http_api_url,
 				'x-ratelimit-remaining' => $resp_headers['x-ratelimit-remaining'][0],
 				'x-ratelimit-limit'     => isset( $resp_headers['x-ratelimit-limit'][0] )
-					?? $resp_headers['x-ratelimit-limit'][0],
+					? $resp_headers['x-ratelimit-limit'][0] : null,
 			),
 			VIPGOCI_EXIT_HTTP_API_ERROR,
 			true // Log to IRC.
