@@ -514,7 +514,7 @@ function vipgoci_wpcore_api_determine_slug_and_other_for_addons(
 			false, // HTTP POST.
 			false, // Do not JSON encode.
 			CURL_HTTP_VERSION_1_1, // Use HTTP version 1.1 due to problems with HTTP 2.
-			'application/x-www-form-urlencoded' // Custom HTTP Content-Type.
+			VIPGOCI_HTTP_API_CONTENT_TYPE_X_WWW_FORM_URLENCODED // Use custom HTTP content-type header.
 		);
 
 		if ( is_int( $api_data_raw ) ) {
