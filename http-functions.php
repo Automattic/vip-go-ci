@@ -328,7 +328,7 @@ function vipgoci_http_api_rate_limit_usage(
 	} else {
 		return null;
 	}
-	
+
 	foreach ( array(
 		'x-ratelimit-limit',
 		'x-ratelimit-remaining',
