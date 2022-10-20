@@ -311,7 +311,7 @@ function vipgoci_http_api_rate_limit_usage(
 		if ( empty( $ratelimit_usage ) ) {
 			return null;
 		} else {
-			return $cached;
+			return $ratelimit_usage;
 		}
 	}
 
