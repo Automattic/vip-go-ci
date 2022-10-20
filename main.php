@@ -3191,12 +3191,6 @@ function vipgoci_run() :int {
 	// Clear IRC queue.
 	vipgoci_run_cleanup_irc( $options );
 
-	// Collect GitHub rate-limit usage info.
-	$github_api_rate_limit_usage =
-		vipgoci_github_rate_limit_usage(
-			$options['token']
-		);
-
 	/*
 	 * Prepare to send statistics to external service,
 	 * also keep for exit-message.
@@ -3235,8 +3229,8 @@ function vipgoci_run() :int {
 				),
 			'counters_report'       => $counter_report,
 
-			'github_api_rate_limit' =>
-				$github_api_rate_limit_usage->resources->core,
+			'rate_limit_statistics' =>
+				vipgoci_github_rate_limit_usage(),
 
 			'results'               => $results,
 		),
