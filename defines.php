@@ -274,6 +274,11 @@ define( 'VIPGOCI_ADDON_PLUGIN', 'vipgoci-addon-plugin' );
 define( 'VIPGOCI_ADDON_THEME', 'vipgoci-addon-theme' );
 
 /*
+ * WordPress.org defines.
+ */
+define( 'VIPGOCI_WORDPRESS_ORG_API_BASE_URL', 'https://api.wordpress.org' );
+
+/*
  * Defines for WPScan API support.
  */
 define( 'VIPGOCI_WPSCAN_BASE_URL', 'https://wpscan.com' );
