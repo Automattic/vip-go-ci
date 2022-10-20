@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 ## Updated
 - [#310](https://github.com/Automattic/vip-go-ci/pull/310): New exit status for HTTP API errors, update log message
 - [#311](https://github.com/Automattic/vip-go-ci/pull/311): Use constants for content-type headers
+- [#313](https://github.com/Automattic/vip-go-ci/pull/313): Apply constant for WordPress.org API
 
 ## [1.3.2](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.2) - 2022-10-18
 
