@@ -487,7 +487,9 @@ function vipgoci_wpcore_api_determine_slug_and_other_for_addons(
 		$addon_query_type_short = VIPGOCI_ADDON_PLUGIN === $addon_query_type ?
 			'plugins' : 'themes';
 
-		$api_url = 'https://api.wordpress.org/' . rawurlencode( $addon_query_type_short ) . '/update-check/1.1/';
+		$api_url = VIPGOCI_WORDPRESS_ORG_API_BASE_URL . '/' .
+			rawurlencode( $addon_query_type_short ) . '/' .
+			'update-check/1.1/';
 
 		$api_query_data = array(
 			$addon_query_type_short => json_encode(
