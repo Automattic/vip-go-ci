@@ -237,7 +237,7 @@ function vipgoci_http_resp_sunset_header_check(
 }
 
 /**
- * Detect if we exceeded the API rate-limits,
+ * Detect if we exceeded the API rate limit,
  * and if so, exit with error.
  *
  * @param string $http_api_url API URL used.
@@ -276,15 +276,15 @@ function vipgoci_http_api_rate_limits_check(
 		( $resp_headers['x-ratelimit-remaining'][0] <= 1 )
 	) {
 		vipgoci_sysexit(
-			'Ran out of request limits for API, cannot ' .
+			'Exceeded rate limit for HTTP API, unable to ' .
 				'continue without making further requests.',
 			array(
 				'http_api_url'          => $http_api_url,
 				'x-ratelimit-remaining' => $resp_headers['x-ratelimit-remaining'][0],
 				'x-ratelimit-limit'     => isset( $resp_headers['x-ratelimit-limit'][0] )
-					?? $resp_headers['x-ratelimit-limit'][0],
+					? $resp_headers['x-ratelimit-limit'][0] : null,
 			),
-			VIPGOCI_EXIT_GITHUB_PROBLEM,
+			VIPGOCI_EXIT_HTTP_API_ERROR,
 			true // Log to IRC.
 		);
 	}
@@ -547,9 +547,9 @@ function vipgoci_http_api_fetch_url(
 		( false === $resp_data )
 	) {
 		vipgoci_sysexit(
-			'Gave up retrying request to HTTP API, cannot continue',
+			'Gave up retrying request to HTTP API, can not continue',
 			array(),
-			VIPGOCI_EXIT_GITHUB_PROBLEM,
+			VIPGOCI_EXIT_HTTP_API_ERROR,
 			true // Log to IRC.
 		);
 	} elseif (
