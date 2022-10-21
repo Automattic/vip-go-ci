@@ -106,8 +106,13 @@ define( 'VIPGOCI_CACHE_CLEAR', '--VIPGOCI-CACHE-CLEAR-0x321--' );
 /*
  * Define for vipgoci_http_api_wait() function.
  */
-define( 'VIPGOCI_HTTP_API_WAIT_TIME_SECONDS', 2 );
-define( 'VIPGOCI_HTTP_API_WAIT_APIS_ARRAY', array( 'api.github.com' ) );
+
+// This can be overridden in programs using vip-go-ci as library.
+if ( ! defined( 'VIPGOCI_HTTP_API_WAIT_TIME_SECONDS' ) ) {
+	define( 'VIPGOCI_HTTP_API_WAIT_TIME_SECONDS', 3 );
+}
+
+define( 'VIPGOCI_HTTP_API_WAIT_APIS_ARRAY', array( VIPGOCI_GITHUB_BASE_URL ) );
 
 /*
  * Defines for files.
