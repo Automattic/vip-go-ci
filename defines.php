@@ -220,8 +220,10 @@ define(
 define( 'VIPGOCI_LINT_ERROR_STR', 'PHP Syntax Errors Found' );
 
 /*
- * Messages relating to PHPCS scanning.
+ * Defines relating to PHPCS scanning.
  */
+define( 'VIPGOCI_PHPCS_FILE_EXTENSIONS_DEFAULT', array( 'php', 'js', 'twig' ) );
+
 define(
 	'VIPGOCI_PHPCS_SCAN_REVIEW_START',
 	'%1$s has identified potential problems in this pull request ' .
@@ -274,6 +276,11 @@ define(
 					'* Sniff(s) in duplicate: `%s`' . PHP_EOL .
 					'<br />'
 );
+
+/*
+ * Defines for SVG scanning.
+ */
+define( 'VIPGOCI_SVG_FILE_EXTENSIONS_DEFAULT', array( 'svg' ) );
 
 /*
  * Defines for addons generally.
