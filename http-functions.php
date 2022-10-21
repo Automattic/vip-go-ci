@@ -277,7 +277,7 @@ function vipgoci_http_api_rate_limits_check(
 	) {
 		vipgoci_counter_report(
 			VIPGOCI_COUNTERS_DO,
-			'http_api_request_limit_reached',
+			'http_api_request_ratelimit_reached',
 			1
 		);
 
