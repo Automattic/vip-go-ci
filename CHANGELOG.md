@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 - [#311](https://github.com/Automattic/vip-go-ci/pull/311): Use constants for content-type headers
 - [#313](https://github.com/Automattic/vip-go-ci/pull/313): Apply constant for WordPress.org API
 - [#315](https://github.com/Automattic/vip-go-ci/pull/315): Replace GitHub rate limit function with HTTP API rate limit functionality
+- [#316](https://github.com/Automattic/vip-go-ci/pull/316): Update two constants related to HTTP API
 
 ## [1.3.2](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.2) - 2022-10-18
 
