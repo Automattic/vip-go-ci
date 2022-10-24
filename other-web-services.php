@@ -343,8 +343,6 @@ function vipgoci_irc_api_alerts_send(
  * @param array  $statistics           Statistics array, associative array of keys and values.
  *
  * @return void
- *
- * @codeCoverageIgnore
  */
 function vipgoci_send_stats_to_pixel_api(
 	string $pixel_api_url,
