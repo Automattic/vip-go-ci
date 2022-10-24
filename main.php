@@ -3230,7 +3230,7 @@ function vipgoci_run() :int {
 			'counters_report'       => $counter_report,
 
 			'rate_limit_statistics' =>
-				vipgoci_github_rate_limit_usage(),
+				vipgoci_http_api_rate_limit_usage(),
 
 			'results'               => $results,
 		),
