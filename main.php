@@ -3252,20 +3252,11 @@ function vipgoci_run() :int {
 			$options['token']
 		);
 
-	/*
-	 * Prepare to send statistics to external service,
-	 * also keep for exit-message.
-	 */
+	// Get status of counters.
 	$counter_report = vipgoci_counter_report(
 		VIPGOCI_COUNTERS_DUMP,
 		null,
 		null
-	);
-
-	// Send statistics to external service.
-	vipgoci_run_cleanup_send_pixel_api(
-		$options,
-		$counter_report
 	);
 
 	/*
@@ -3400,6 +3391,10 @@ function vipgoci_shutdown_function(
 	vipgoci_run_cleanup_send_pixel_api(
 		$options,
 		$counter_report
+	);
+
+	vipgoci_log(
+		'Final exit'
 	);
 }
 
