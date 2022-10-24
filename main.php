@@ -3309,7 +3309,7 @@ function vipgoci_run() :int {
 
 /**
  * Shutdown function. Handle out of memory
- * situations, clear IRC queue.
+ * situations, clear IRC queue, send data to Pixel API.
  *
  * @param array $options Options array for the program.
  *
