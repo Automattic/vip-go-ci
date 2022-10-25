@@ -1898,7 +1898,6 @@ function vipgoci_run_cleanup_send_pixel_api(
 					'http_api_request_post',
 					'http_api_request_put',
 					'http_api_request_delete',
-					'http_api_request_ratelimit_reached',
 					'http_api_request_failure',
 					'github_pr_approval',
 					'github_pr_non_approval',
@@ -1914,7 +1913,6 @@ function vipgoci_run_cleanup_send_pixel_api(
 					$options['repo-owner'] . '-' .
 					$options['repo-name']
 				=> array(
-					'http_api_request_ratelimit_reached',
 					'http_api_request_failure',
 					'github_pr_approval',
 					'github_pr_non_approval',
