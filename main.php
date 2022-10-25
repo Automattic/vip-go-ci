@@ -1892,7 +1892,7 @@ function vipgoci_run_cleanup_send_pixel_api(
 				 * to all repositories.
 				 */
 				$options['pixel-api-groupprefix'] .
-					'-actions' =>
+					'-statistics' =>
 				array(
 					'http_api_request_get',
 					'http_api_request_post',
@@ -1904,6 +1904,10 @@ function vipgoci_run_cleanup_send_pixel_api(
 					'github_pr_lint_issues',
 					'github_pr_phpcs_issues',
 					'github_pr_wpscan_api_issues',
+					'vipgoci_runtime_short',
+					'vipgoci_runtime_medium',
+					'vipgoci_runtime_long',
+					'vipgoci_run',
 				),
 
 				/*
@@ -1925,6 +1929,10 @@ function vipgoci_run_cleanup_send_pixel_api(
 					'github_pr_files_wpscan_api_scanned',
 					'github_pr_lines_wpscan_api_scanned',
 					'github_pr_wpscan_api_issues',
+					'vipgoci_runtime_short',
+					'vipgoci_runtime_medium',
+					'vipgoci_runtime_long',
+					'vipgoci_run',
 				),
 			),
 			$counter_report
@@ -2718,6 +2726,13 @@ function vipgoci_run_scan(
 		),
 	);
 
+	// Count this run.
+	vipgoci_counter_report(
+		VIPGOCI_COUNTERS_DO,
+		'vipgoci_run',
+		1
+	);
+
 	// Quit here if to skip execution (configured via config file).
 	vipgoci_run_scan_skip_execution( $options );
 
@@ -3112,6 +3127,39 @@ function vipgoci_run_init_vars() :array {
 }
 
 /**
+ * Determine run time length; short, medium or long, and
+ * call counter function to record. This function should
+ * be called just before exit.
+ *
+ * @param int $run_time Run time in seconds.
+ *
+ * @return void
+ */
+function vipgoci_run_time_length_determine(
+	int $run_time
+) :void {
+	if ( $run_time < VIPGOCI_RUN_LENGTH_MEDIUM ) {
+		$length = 'short';
+	} elseif (
+		( $run_time >= VIPGOCI_RUN_LENGTH_MEDIUM ) &&
+		( $run_time < VIPGOCI_RUN_LENGTH_LONG )
+	) {
+		$length = 'medium';
+	} elseif ( $run_time >= VIPGOCI_RUN_LENGTH_LONG ) {
+		$length = 'long';
+	} else {
+		// Invalid, do nothing.
+		return;
+	}
+
+	vipgoci_counter_report(
+		VIPGOCI_COUNTERS_DO,
+		'vipgoci_runtime_' . $length,
+		1
+	);
+}
+
+/**
  * Main invocation function.
  *
  * @return int To-be exit status of program.
@@ -3193,20 +3241,14 @@ function vipgoci_run() :int {
 	// Clear IRC queue.
 	vipgoci_run_cleanup_irc( $options );
 
-	/*
-	 * Prepare to send statistics to external service,
-	 * also keep for exit-message.
-	 */
+	// Determine run time length, add to counters.
+	vipgoci_run_time_length_determine( time() - $startup_time );
+
+	// Get status of counters.
 	$counter_report = vipgoci_counter_report(
 		VIPGOCI_COUNTERS_DUMP,
 		null,
 		null
-	);
-
-	// Send statistics to external service.
-	vipgoci_run_cleanup_send_pixel_api(
-		$options,
-		$counter_report
 	);
 
 	/*
@@ -3250,7 +3292,7 @@ function vipgoci_run() :int {
 
 /**
  * Shutdown function. Handle out of memory
- * situations, clear IRC queue.
+ * situations, clear IRC queue, send data to Pixel API.
  *
  * @param array $options Options array for the program.
  *
@@ -3259,6 +3301,10 @@ function vipgoci_run() :int {
 function vipgoci_shutdown_function(
 	array $options
 ) :void {
+	vipgoci_log(
+		'Shutdown function invoked'
+	);
+
 	/*
 	 * Get last PHP error, if any.
 	 */
@@ -3324,5 +3370,23 @@ function vipgoci_shutdown_function(
 			$options['irc-api-room']
 		);
 	}
+
+	/*
+	 * Send statistics to external service.
+	 */
+	$counter_report = vipgoci_counter_report(
+		VIPGOCI_COUNTERS_DUMP,
+		null,
+		null
+	);
+
+	vipgoci_run_cleanup_send_pixel_api(
+		$options,
+		$counter_report
+	);
+
+	vipgoci_log(
+		'Final exit'
+	);
 }
 

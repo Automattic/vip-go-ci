@@ -291,8 +291,6 @@ function vipgoci_irc_api_alerts_send(
  * @param array  $statistics           Statistics array, associative array of keys and values.
  *
  * @return void
- *
- * @codeCoverageIgnore
  */
 function vipgoci_send_stats_to_pixel_api(
 	string $pixel_api_url,
@@ -315,7 +313,7 @@ function vipgoci_send_stats_to_pixel_api(
 		foreach (
 			$stat_names_to_report[ $statistic_group ] as $stat_name
 		) {
-			$stat_names_to_groups[ $stat_name ] = $statistic_group;
+			$stat_names_to_groups[ $stat_name ][] = $statistic_group;
 		}
 	}
 
@@ -328,9 +326,8 @@ function vipgoci_send_stats_to_pixel_api(
 		 * values, so skip those who we should
 		 * not report on.
 		 */
-		if ( false === array_key_exists(
-			$stat_name,
-			$stat_names_to_groups
+		if ( ! isset(
+			$stat_names_to_groups[ $stat_name ]
 		) ) {
 			/*
 			 * Not found, so nothing to report, skip.
@@ -339,56 +336,63 @@ function vipgoci_send_stats_to_pixel_api(
 		}
 
 		/*
-		 * Compose URL.
+		 * Do not report zero or lower.
 		 */
-		$url = $pixel_api_url .
-			'?' .
-			'v=wpcom-no-pv' .
-			'&' .
-			'x_' . rawurlencode(
-				strtolower(
-					$stat_names_to_groups[ $stat_name ]
-				)
-			) .
-			'/' .
-			rawurlencode(
-				strtolower( $stat_name )
-			) . '=' .
-			rawurlencode(
-				(string) $stat_value
-			);
-
-		/*
-		 * Call service, do nothing with output.
-		 * Specify a short timeout.
-		 */
-		$ctx = stream_context_create(
-			array(
-				'http' => array(
-					'timeout' => 5,
-				),
-			)
-		);
-
-		$ret = file_get_contents( $url, false, $ctx );
-
-		if ( false === $ret ) {
-			vipgoci_log(
-				'Unable to send data to Pixel API service',
-				array(),
-				0,
-				true // Send to IRC.
-			);
+		if ( 0 >= $stat_value ) {
+			continue;
 		}
 
 		/*
-		 * Sleep a short while between
-		 * requests.
+		 * Report statistic if it belongs to one of the groups.
 		 */
-		time_nanosleep(
-			0,
-			500000000
-		);
+		foreach (
+			$stat_names_to_groups[ $stat_name ] as $group_name
+		) {
+			/*
+			 * Compose URL.
+			 */
+			$url = $pixel_api_url .
+				'?' .
+				'v=wpcom-no-pv' .
+				'&' .
+				'x_' . rawurlencode( strtolower( $group_name ) ) .
+				'/' . rawurlencode( strtolower( $stat_name ) ) .
+				'=' . rawurlencode( (string) $stat_value );
+
+			/*
+			 * Call service, log if request failed.
+			 * Specify a short timeout, retry only once.
+			 */
+			$ret = vipgoci_http_api_fetch_url(
+				$url,
+				null, // No token needed.
+				false, // No fatal error when request fails.
+				1 // Retry once upon failure.
+			);
+
+			if ( null === $ret ) {
+				vipgoci_log(
+					'Unable to send data to Pixel API service',
+					array(),
+					0,
+					true // Send to IRC.
+				);
+			}
+
+			/*
+			 * Sleep a short while between
+			 * requests.
+			 */
+			time_nanosleep(
+				0,
+				500000000
+			);
+		}
 	}
+
+	vipgoci_log(
+		'Finished sending statistics to pixel API service',
+		array()
+	);
 }
 
