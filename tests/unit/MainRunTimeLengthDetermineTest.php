@@ -32,7 +32,7 @@ final class MainRunTimeLengthDetermineTest extends TestCase {
 	/**
 	 * Test common usage of the function.
 	 *
-	 * @dataProvider dataProvider1
+	 * @dataProvider dataDetermineRunTimeLength
 	 *
 	 * @covers ::vipgoci_run_time_length_determine
 	 *
@@ -64,7 +64,7 @@ final class MainRunTimeLengthDetermineTest extends TestCase {
 	 *
 	 * @return array
 	 */
-	public function dataProvider1(): array {
+	public function dataDetermineRunTimeLength(): array {
 		return array(
 			array( 1, 'short' ),
 			array( 60, 'short' ),
