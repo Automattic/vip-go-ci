@@ -15,15 +15,20 @@ All notable changes to this project will be documented in this file.
 - [#319](https://github.com/Automattic/vip-go-ci/pull/319): IRC API update: Replace cURL functionality with vipgoci_http_api_post_url()
 - [#321](https://github.com/Automattic/vip-go-ci/pull/321): Update Pixel API implementation
 - [#322](https://github.com/Automattic/vip-go-ci/pull/322): Increment counter when request limit is reached
+- [#323](https://github.com/Automattic/vip-go-ci/pull/323): Update GitHub Actions dependencies
 
 ## [1.3.2](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.2) - 2022-10-18
 
+## Added
+- [#309](https://github.com/Automattic/vip-go-ci/pull/309): WPScan API integration: Add URL to commit in IRC log
+
 ## Fixed
 - [#304](https://github.com/Automattic/vip-go-ci/pull/304): WPScan API: Update x-ratelimit-remaining header functionality
+- [#308](https://github.com/Automattic/vip-go-ci/pull/308): Add checks to WPScan API reporting logic, ensure CVSS outputted includes precision
+
+## Updated
 - [#303](https://github.com/Automattic/vip-go-ci/pull/303): Remove OAuth 1.0a functions
 - [#307](https://github.com/Automattic/vip-go-ci/pull/307): Update PULL_REQUEST_TEMPLATE
-- [#308](https://github.com/Automattic/vip-go-ci/pull/308): Add checks to WPScan API reporting logic, ensure CVSS outputted includes precision
-- [#309](https://github.com/Automattic/vip-go-ci/pull/309): WPScan API integration: Add URL to commit in IRC log
 
 ## [1.3.1](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.1) - 2022-10-05
 
