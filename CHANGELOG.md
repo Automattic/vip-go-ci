@@ -17,6 +17,7 @@ All notable changes to this project will be documented in this file.
 - [#322](https://github.com/Automattic/vip-go-ci/pull/322): Increment counter when request limit is reached
 - [#323](https://github.com/Automattic/vip-go-ci/pull/323): Update GitHub Actions dependencies
 - [#324](https://github.com/Automattic/vip-go-ci/pull/324): Update PHPCompatibilityWP and PHPCompatibilityParagonie dependencies
+- [#325](https://github.com/Automattic/vip-go-ci/pull/325): Do not display "No issues were found...." when maximum number of comments is reached
 
 ## [1.3.2](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.2) - 2022-10-18
 
