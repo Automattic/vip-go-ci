@@ -434,7 +434,7 @@ function vipgoci_counter_report(
 		return false;
 	}
 
-	// Dump all runtimes we have.
+	// Dump all counters we have.
 	if ( VIPGOCI_COUNTERS_DUMP === $action ) {
 		return $counters;
 	}
