@@ -1898,7 +1898,6 @@ function vipgoci_run_cleanup_send_pixel_api(
 					'http_api_request_post',
 					'http_api_request_put',
 					'http_api_request_delete',
-					'http_api_request_ratelimit_reached',
 					'http_api_request_failure',
 					'github_pr_approval',
 					'github_pr_non_approval',
@@ -1918,7 +1917,6 @@ function vipgoci_run_cleanup_send_pixel_api(
 					$options['repo-owner'] . '-' .
 					$options['repo-name']
 				=> array(
-					'http_api_request_ratelimit_reached',
 					'http_api_request_failure',
 					'github_pr_approval',
 					'github_pr_non_approval',
@@ -3246,12 +3244,6 @@ function vipgoci_run() :int {
 	// Determine run time length, add to counters.
 	vipgoci_run_time_length_determine( time() - $startup_time );
 
-	// Collect GitHub rate-limit usage info.
-	$github_api_rate_limit_usage =
-		vipgoci_github_rate_limit_usage(
-			$options['token']
-		);
-
 	// Get status of counters.
 	$counter_report = vipgoci_counter_report(
 		VIPGOCI_COUNTERS_DUMP,
@@ -3281,8 +3273,8 @@ function vipgoci_run() :int {
 				),
 			'counters_report'       => $counter_report,
 
-			'github_api_rate_limit' =>
-				$github_api_rate_limit_usage->resources->core,
+			'rate_limit_statistics' =>
+				vipgoci_http_api_rate_limit_usage(),
 
 			'results'               => $results,
 		),

@@ -245,7 +245,7 @@ function vipgoci_http_resp_sunset_header_check(
  *
  * @return void
  */
-function vipgoci_http_api_rate_limits_check(
+function vipgoci_http_api_rate_limit_check(
 	string $http_api_url,
 	array $resp_headers
 ) :void {
@@ -275,12 +275,6 @@ function vipgoci_http_api_rate_limits_check(
 		( is_numeric( $resp_headers['x-ratelimit-remaining'][0] ) ) &&
 		( $resp_headers['x-ratelimit-remaining'][0] <= 1 )
 	) {
-		vipgoci_counter_report(
-			VIPGOCI_COUNTERS_DO,
-			'http_api_request_ratelimit_reached',
-			1
-		);
-
 		vipgoci_sysexit(
 			'Exceeded rate limit for HTTP API, unable to ' .
 				'continue without making further requests.',
@@ -294,6 +288,72 @@ function vipgoci_http_api_rate_limits_check(
 			true // Log to IRC.
 		);
 	}
+}
+
+/**
+ * Save or get saved HTTP API rate limit information and return.
+ *
+ * @param string $http_api_url          HTTP request URL.
+ * @param array  $http_headers_response All HTTP headers from HTTP response as array.
+ *
+ * @return array|null Results as array, null when no results are cached or invalid HTTP URL is provided.
+ */
+function vipgoci_http_api_rate_limit_usage(
+	string $http_api_url = '',
+	array $http_headers_response = array()
+) :array|null {
+	static $ratelimit_usage = array();
+
+	if (
+		( empty( $http_api_url ) ) ||
+		( empty( $http_headers_response ) )
+	) {
+		if ( empty( $ratelimit_usage ) ) {
+			return null;
+		} else {
+			return $ratelimit_usage;
+		}
+	}
+
+	if ( true === str_starts_with(
+		$http_api_url,
+		VIPGOCI_GITHUB_BASE_URL
+	) ) {
+		$service = 'github';
+	} elseif ( true === str_starts_with(
+		$http_api_url,
+		VIPGOCI_WPSCAN_API_BASE_URL
+	) ) {
+		$service = 'wpscan';
+	} else {
+		return null;
+	}
+
+	foreach ( array(
+		'x-ratelimit-limit',
+		'x-ratelimit-remaining',
+		'x-ratelimit-reset',
+		'x-ratelimit-used',
+		'x-ratelimit-resource',
+	) as $key ) {
+		if ( isset( $http_headers_response[ $key ][0] ) ) {
+			$key_short = str_replace(
+				'x-ratelimit-',
+				'',
+				$key
+			);
+
+			if ( is_numeric( $http_headers_response[ $key ][0] ) ) {
+				$ratelimit_usage[ $service ][ $key_short ] =
+					(int) $http_headers_response[ $key ][0];
+			} else {
+				$ratelimit_usage[ $service ][ $key_short ] =
+					$http_headers_response[ $key ][0];
+			}
+		}
+	}
+
+	return $ratelimit_usage;
 }
 
 /**
@@ -538,7 +598,12 @@ function vipgoci_http_api_fetch_url(
 			sleep( $retry_sleep );
 		}
 
-		vipgoci_http_api_rate_limits_check(
+		vipgoci_http_api_rate_limit_usage(
+			$http_api_url,
+			$resp_headers
+		);
+
+		vipgoci_http_api_rate_limit_check(
 			$http_api_url,
 			$resp_headers
 		);
@@ -895,7 +960,12 @@ function vipgoci_http_api_post_url(
 			sleep( $retry_sleep );
 		}
 
-		vipgoci_http_api_rate_limits_check(
+		vipgoci_http_api_rate_limit_check(
+			$http_api_url,
+			$resp_headers
+		);
+
+		vipgoci_http_api_rate_limit_usage(
 			$http_api_url,
 			$resp_headers
 		);
@@ -1137,7 +1207,12 @@ function vipgoci_http_api_put_url(
 			sleep( $retry_sleep );
 		}
 
-		vipgoci_http_api_rate_limits_check(
+		vipgoci_http_api_rate_limit_check(
+			$http_api_url,
+			$resp_headers
+		);
+
+		vipgoci_http_api_rate_limit_usage(
 			$http_api_url,
 			$resp_headers
 		);
