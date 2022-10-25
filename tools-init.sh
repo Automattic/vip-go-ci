@@ -40,15 +40,15 @@ export PHP_COMPATIBILITY_SHA1SUM="3787a3f86edbfbc4881d2b123f17ca1e1bcbeb66"
 
 # https://github.com/phpcompatibility/phpcompatibilitywp
 export PHP_COMPATIBILITY_WP_REPO="phpcompatibility/phpcompatibilitywp"
-export PHP_COMPATIBILITY_WP_VER="2.1.3"
+export PHP_COMPATIBILITY_WP_VER="2.1.4"
 export PHP_COMPATIBILITY_WP_VER_FILE="php-compatibility-wp-$PHP_COMPATIBILITY_WP_VER.txt"
-export PHP_COMPATIBILITY_WP_SHA1SUM="671eb42d7a20008e9259755a72c28c94c0d04e9f"
+export PHP_COMPATIBILITY_WP_SHA1SUM="e1f90246005b6265428e6c7313cd7335a49b9ac6"
 
 # https://github.com/phpcompatibility/phpcompatibilityparagonie
 export PHP_COMPATIBILITY_PARAGONIE_REPO="phpcompatibility/phpcompatibilityparagonie"
-export PHP_COMPATIBILITY_PARAGONIE_VER="1.3.1"
+export PHP_COMPATIBILITY_PARAGONIE_VER="1.3.2"
 export PHP_COMPATIBILITY_PARAGONIE_VER_FILE="php-compatibility-paragonie-$PHP_COMPATIBILITY_PARAGONIE_VER.txt"
-export PHP_COMPATIBILITY_PARAGONIE_SHA1SUM="a51cf3a1af05e6192ce9db6fc90ccb7afd58cb22"
+export PHP_COMPATIBILITY_PARAGONIE_SHA1SUM="7aa800cf9b2737ad64082cb70b4b4113d8c19cdb"
 
 # https://github.com/PHPCSStandards/PHPCSUtils
 export PHPCS_UTILS_REPO="PHPCSStandards/PHPCSUtils"
