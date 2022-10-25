@@ -2689,6 +2689,14 @@ function vipgoci_run_scan_total_comments_max_warning_post(
 				VIPGOCI_REVIEW_COMMENTS_TOTAL_MAX,
 				$options['commit']
 			);
+
+			// Record that we submitted feedback to GitHub.
+			vipgoci_report_feedback_to_github_was_submitted(
+				$options['repo-owner'],
+				$options['repo-name'],
+				$pr_number,
+				true
+			);
 		}
 	}
 }
