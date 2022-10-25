@@ -1,6 +1,6 @@
 <?php
 /**
- * Test vipgoci_http_api_rate_limits_check() function.
+ * Test vipgoci_http_api_rate_limit_check() function.
  *
  * @package Automattic/vip-go-ci
  */
@@ -91,7 +91,7 @@ final class HttpFunctionsHttpApiRateLimitsCheckTest extends TestCase {
 	/**
 	 * Test different ratelimits headers when calling the function.
 	 *
-	 * @covers ::vipgoci_http_api_rate_limits_check
+	 * @covers ::vipgoci_http_api_rate_limit_check
 	 *
 	 * @return void
 	 */
@@ -99,7 +99,7 @@ final class HttpFunctionsHttpApiRateLimitsCheckTest extends TestCase {
 		foreach ( self::TEST_DATA as $test_item ) {
 			ob_start();
 
-			vipgoci_http_api_rate_limits_check(
+			vipgoci_http_api_rate_limit_check(
 				$test_item['url'],
 				$test_item['headers']
 			);
