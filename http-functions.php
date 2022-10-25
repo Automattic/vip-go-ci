@@ -437,19 +437,20 @@ function vipgoci_http_api_wait( string $http_api_url ) :void {
  * Will return the raw-data returned by the HTTP API,
  * or halt execution on repeated errors.
  *
- * @param string       $http_api_url           HTTP request URL.
- * @param string|array $http_api_token         Access token to use.
- * @param bool         $fatal_error_on_failure If to exit on failure or return.
+ * @param string            $http_api_url           HTTP request URL.
+ * @param null|string|array $http_api_token         Access token to use as string or array, null to skip.
+ * @param bool              $fatal_error_on_failure If to exit on failure or return.
+ * @param int               $curl_retries_max       How often to retry request in case of failure.
  *
  * @return string|null String containing results on success, null on failure (if set not to exit).
  */
 function vipgoci_http_api_fetch_url(
 	string $http_api_url,
-	string|array $http_api_token,
-	bool $fatal_error_on_failure = true
+	null|string|array $http_api_token,
+	bool $fatal_error_on_failure = true,
+	int $curl_retries_max = 4
 ) :string|null {
-	$curl_retries     = 0;
-	$curl_retries_max = 4;
+	$curl_retries = 0;
 
 	/*
 	 * Attempt to send request -- retry if
@@ -565,6 +566,12 @@ function vipgoci_http_api_fetch_url(
 				$retry_sleep = 10;
 			}
 
+			vipgoci_counter_report(
+				VIPGOCI_COUNTERS_DO,
+				'http_api_request_failure',
+				1
+			);
+
 			vipgoci_log(
 				'Sending GET request to HTTP API failed' .
 					( ( $curl_retries < $curl_retries_max ) ?
@@ -646,15 +653,17 @@ function vipgoci_http_api_fetch_url(
  * Note that the '$http_delete' parameter will determine
  * if a POST or DELETE request will be sent.
  *
- * @param string      $http_api_url        HTTP request URL.
- * @param array       $http_api_postfields HTTP request postfields.
- * @param null|string $http_api_token      Access token to use as string, null to skip.
- * @param bool        $http_delete         When true, performs HTTP DELETE instead of POST.
- * @param bool        $json_encode         If true, will JSON encode $http_api_postfields using json_encode()
- *                                         before sending request, else uses http_build_query() to
- *                                         generate URL-encoded query-string from $http_api_postfields.
- * @param int         $http_version        What HTTP protocol version to use with cURL, by default lets cURL decide.
- * @param string      $http_content_type   The HTTP Content-Type header value to use. 'application/json' is the default.
+ * @param string            $http_api_url        HTTP request URL.
+ * @param array             $http_api_postfields HTTP request postfields.
+ * @param null|string|array $http_api_token      Access token to use as string or array, null to skip.
+ * @param bool              $http_delete         When true, performs HTTP DELETE instead of POST.
+ * @param bool              $json_encode         If true, will JSON encode $http_api_postfields using json_encode()
+ *                                               before sending request, else uses http_build_query() to
+ *                                               generate URL-encoded query-string from $http_api_postfields.
+ * @param int               $http_version        What HTTP protocol version to use with cURL, by default lets cURL decide.
+ * @param string            $http_content_type   The HTTP Content-Type header value to use. 'application/json' is the default.
+ * @param int               $retry_max           How often to retry request in case of failure.
+ * @param int               $timeout             Connection timeout, by default VIPGOCI_HTTP_API_LONG_TIMEOUT.
  *
  * @return string|int Request body as string on success, -1 on failure. Failures will be logged.
  *
@@ -663,18 +672,19 @@ function vipgoci_http_api_fetch_url(
 function vipgoci_http_api_post_url(
 	string $http_api_url,
 	array $http_api_postfields,
-	null|string $http_api_token,
+	null|string|array $http_api_token,
 	bool $http_delete = false,
 	bool $json_encode = true,
 	int $http_version = CURL_HTTP_VERSION_NONE,
-	string $http_content_type = VIPGOCI_HTTP_API_CONTENT_TYPE_APPLICATION_JSON
+	string $http_content_type = VIPGOCI_HTTP_API_CONTENT_TYPE_APPLICATION_JSON,
+	int $retry_max = 4,
+	int $timeout = VIPGOCI_HTTP_API_LONG_TIMEOUT
 ) :string|int {
 	/*
 	 * Actually send a request to HTTP API -- make sure
 	 * to retry if something fails.
 	 */
 	$retry_cnt = 0;
-	$retry_max = 4;
 
 	do {
 		/*
@@ -707,7 +717,7 @@ function vipgoci_http_api_post_url(
 		curl_setopt(
 			$ch,
 			CURLOPT_CONNECTTIMEOUT,
-			VIPGOCI_HTTP_API_LONG_TIMEOUT
+			$timeout
 		);
 
 		curl_setopt(
@@ -767,6 +777,11 @@ function vipgoci_http_api_post_url(
 			( strlen( $http_api_token ) > 0 )
 		) {
 			$tmp_http_headers_arr[] = 'Authorization: token ' . $http_api_token;
+		} elseif (
+			( is_array( $http_api_token ) ) &&
+			( isset( $http_api_token['bearer'] ) )
+		) {
+			$tmp_http_headers_arr[] = 'Authorization: Bearer ' . $http_api_token['bearer'];
 		}
 
 		if ( strlen( $http_content_type ) > 0 ) {
@@ -911,6 +926,12 @@ function vipgoci_http_api_post_url(
 
 		// On failure, log message.
 		if ( -1 === $ret_val ) {
+			vipgoci_counter_report(
+				VIPGOCI_COUNTERS_DO,
+				'http_api_request_failure',
+				1
+			);
+
 			vipgoci_log(
 				( false === $resp_data ?
 					'Sending POST request to HTTP API failed' :
@@ -979,6 +1000,7 @@ function vipgoci_http_api_post_url(
  * @param string $http_api_url        HTTP request URL.
  * @param array  $http_api_postfields HTTP request fields.
  * @param string $http_api_token      Access token to use.
+ * @param int    $retry_max           How often to retry request in case of failure.
  *
  * @return int Returns zero (0) on success, -1 on failure.
  *
@@ -987,10 +1009,10 @@ function vipgoci_http_api_post_url(
 function vipgoci_http_api_put_url(
 	string $http_api_url,
 	array $http_api_postfields,
-	string $http_api_token
+	string $http_api_token,
+	int $retry_max = 4
 ) :int {
 	$retry_cnt = 0;
-	$retry_max = 4;
 
 	/*
 	 * Actually send a request to HTTP API -- make sure
@@ -1152,6 +1174,12 @@ function vipgoci_http_api_put_url(
 		}
 
 		if ( -1 === $ret_val ) {
+			vipgoci_counter_report(
+				VIPGOCI_COUNTERS_DO,
+				'http_api_request_failure',
+				1
+			);
+
 			vipgoci_log(
 				( false === $resp_data ?
 					'Sending PUT request to HTTP API failed' :
