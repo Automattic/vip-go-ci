@@ -28,9 +28,9 @@ export VIP_CODING_STANDARDS_SHA1SUM="44c6519c628d450be5330b2706ae9dbb09dbd6be"
 
 # https://github.com/sirbrillig/phpcs-variable-analysis
 export PHPCS_VARIABLE_ANALYSIS_REPO="sirbrillig/phpcs-variable-analysis"
-export PHPCS_VARIABLE_ANALYSIS_VER="v2.11.3"
+export PHPCS_VARIABLE_ANALYSIS_VER="v2.11.9"
 export PHPCS_VARIABLE_ANALYSIS_VER_FILE="phpcs-variable-analysis-$PHPCS_VARIABLE_ANALYSIS_VER.txt"
-export PHPCS_VARIABLE_ANALYSIS_SHA1SUM="4468db94e39598e616c113a658a69a6265da05d2"
+export PHPCS_VARIABLE_ANALYSIS_SHA1SUM="42bd1fd822e0326ef39522098a8ae3f5fb65146a"
 
 # https://github.com/phpcompatibility/phpcompatibility
 export PHP_COMPATIBILITY_REPO="phpcompatibility/phpcompatibility"
