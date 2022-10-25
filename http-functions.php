@@ -275,12 +275,6 @@ function vipgoci_http_api_rate_limits_check(
 		( is_numeric( $resp_headers['x-ratelimit-remaining'][0] ) ) &&
 		( $resp_headers['x-ratelimit-remaining'][0] <= 1 )
 	) {
-		vipgoci_counter_report(
-			VIPGOCI_COUNTERS_DO,
-			'http_api_request_ratelimit_reached',
-			1
-		);
-
 		vipgoci_sysexit(
 			'Exceeded rate limit for HTTP API, unable to ' .
 				'continue without making further requests.',
