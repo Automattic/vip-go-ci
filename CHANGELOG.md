@@ -14,6 +14,7 @@ All notable changes to this project will be documented in this file.
 - [#318](https://github.com/Automattic/vip-go-ci/pull/318): Update HTTP API request functions
 - [#319](https://github.com/Automattic/vip-go-ci/pull/319): IRC API update: Replace cURL functionality with vipgoci_http_api_post_url()
 - [#321](https://github.com/Automattic/vip-go-ci/pull/321): Update Pixel API implementation
+- [#322](https://github.com/Automattic/vip-go-ci/pull/322): Increment counter when request limit is reached
 
 ## [1.3.2](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.2) - 2022-10-18
 
