@@ -2667,6 +2667,8 @@ function vipgoci_run_scan_reviews_comments_enforce_maximum(
  * If we reached maximum number of
  * comments earlier, put a message out
  * so people actually know about it.
+ * Record as well that feedback has
+ * been submitted.
  *
  * @param array $options            Array of options.
  * @param array $prs_comments_maxed Array of PRs with maximum number of
