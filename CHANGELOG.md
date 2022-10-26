@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [1.3.3](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.3) - 2022-10-??
 
+## Added
+- [#320](https://github.com/Automattic/vip-go-ci/pull/320): Introduce custom file extensions with scanners
+
 ## Updated
 - [#310](https://github.com/Automattic/vip-go-ci/pull/310): New exit status for HTTP API errors, update log message
 - [#311](https://github.com/Automattic/vip-go-ci/pull/311): Use constants for content-type headers
