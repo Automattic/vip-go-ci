@@ -637,7 +637,7 @@ function vipgoci_lint_scan_commit(
 			false, // Exclude removed files.
 			false, // Exclude permission changes.
 			array(
-				'file_extensions' => array( 'php' ),
+				'file_extensions' => $options['lint-file-extensions'],
 				'skip_folders'    => $options['lint-skip-folders'],
 			),
 			true
@@ -654,7 +654,7 @@ function vipgoci_lint_scan_commit(
 			$options,
 			$commit_id,
 			array(
-				'file_extensions' => array( 'php' ),
+				'file_extensions' => $options['lint-file-extensions'],
 				'skip_folders'    => $options['lint-skip-folders'],
 			)
 		);
