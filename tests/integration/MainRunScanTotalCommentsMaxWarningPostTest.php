@@ -1,15 +1,18 @@
 <?php
+/**
+ * Test vipgoci_run_scan_total_comments_max_warning_post() function.
+ *
+ * @package Automattic/vip-go-ci
+ */
 
 declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
-require_once __DIR__ . '/IncludesForTests.php';
-
 use PHPUnit\Framework\TestCase;
 
 /**
- * Test vipgoci_run_scan_total_comments_max_warning_post() function.
+ * Class that implements the testing.
  *
  * @package Automattic/vip-go-ci
  *
@@ -39,8 +42,12 @@ final class MainRunScanTotalCommentsMaxWarningPostTest extends TestCase {
 
 	/**
 	 * Set up all variables, etc.
+	 *
+	 * @return void
 	 */
 	protected function setUp(): void {
+		require_once __DIR__ . '/IncludesForTests.php';
+
 		vipgoci_unittests_get_config_values(
 			'git',
 			$this->options_git
@@ -85,6 +92,8 @@ final class MainRunScanTotalCommentsMaxWarningPostTest extends TestCase {
 
 	/**
 	 * Clean up variables, comments, etc.
+	 *
+	 * @return void
 	 */
 	protected function tearDown(): void {
 		if ( ! empty( $this->options['token'] ) ) {
@@ -98,10 +107,35 @@ final class MainRunScanTotalCommentsMaxWarningPostTest extends TestCase {
 	}
 
 	/**
+	 * Fetch generic comments made to pull request.
+	 *
+	 * @return array Array with comments.
+	 */
+	private function fetchPrGenericComments(): array {
+		// Clear internal cache so comments are fetched each time.
+		vipgoci_cache( VIPGOCI_CACHE_CLEAR );
+
+		vipgoci_unittests_output_suppress();
+
+		$all_comments = vipgoci_github_pr_generic_comments_get_all(
+			$this->options['repo-owner'],
+			$this->options['repo-name'],
+			$this->options['pr_number'],
+			$this->options['token']
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		return $all_comments;
+	}
+
+	/**
 	 * Verify that the current item, $comment_item, is posted by the
 	 * current GitHub token holder.
 	 *
 	 * @param object $comment_item Current comment.
+	 *
+	 * @return bool
 	 */
 	private function verifyIsOurComment( object $comment_item ) :bool {
 		if ( ( strpos(
@@ -120,6 +154,8 @@ final class MainRunScanTotalCommentsMaxWarningPostTest extends TestCase {
 
 	/**
 	 * Clear old comments posted by us.
+	 *
+	 * @return void
 	 */
 	private function clearOldComments(): void {
 		// Clear internal cache so comments are fetched each time.
@@ -155,6 +191,8 @@ final class MainRunScanTotalCommentsMaxWarningPostTest extends TestCase {
 	 * Test function. Comments are expected to reach maximum.
 	 *
 	 * @covers ::vipgoci_run_scan_total_comments_max_warning_post
+	 *
+	 * @return void
 	 */
 	public function testTotalCommentsReachedMax(): void {
 		$options_test = vipgoci_unittests_options_test(
@@ -173,19 +211,7 @@ final class MainRunScanTotalCommentsMaxWarningPostTest extends TestCase {
 			$this->options['pr_number'] => array(),
 		);
 
-		// Clear internal cache so comments are fetched each time.
-		vipgoci_cache( VIPGOCI_CACHE_CLEAR );
-
-		vipgoci_unittests_output_suppress();
-
-		$all_comments = vipgoci_github_pr_generic_comments_get_all(
-			$this->options['repo-owner'],
-			$this->options['repo-name'],
-			$this->options['pr_number'],
-			$this->options['token']
-		);
-
-		vipgoci_unittests_output_unsuppress();
+		$all_comments = $this->fetchPrGenericComments();
 
 		$this->assertEmpty( $all_comments );
 
@@ -200,19 +226,7 @@ final class MainRunScanTotalCommentsMaxWarningPostTest extends TestCase {
 
 		sleep( 5 ); // Give API time to catch up.
 
-		// Clear internal cache so comments are fetched each time.
-		vipgoci_cache( VIPGOCI_CACHE_CLEAR );
-
-		vipgoci_unittests_output_suppress();
-
-		$all_comments = vipgoci_github_pr_generic_comments_get_all(
-			$this->options['repo-owner'],
-			$this->options['repo-name'],
-			$this->options['pr_number'],
-			$this->options['token']
-		);
-
-		vipgoci_unittests_output_unsuppress();
+		$all_comments = $this->fetchPrGenericComments();
 
 		$this->assertNotEmpty( $all_comments );
 
@@ -224,12 +238,22 @@ final class MainRunScanTotalCommentsMaxWarningPostTest extends TestCase {
 		}
 
 		$this->assertTrue( $i > 0 );
+
+		$this->assertTrue(
+			vipgoci_report_feedback_to_github_was_submitted(
+				$this->options['repo-owner'],
+				$this->options['repo-name'],
+				(int) $this->options['pr_number']
+			)
+		);
 	}
 
 	/**
 	 * Test function. Comments are not expected to reach maximum.
 	 *
 	 * @covers ::vipgoci_run_scan_total_comments_max_warning_post
+	 *
+	 * @return void
 	 */
 	public function testTotalCommentsDidNotReachMax(): void {
 		$options_test = vipgoci_unittests_options_test(
@@ -248,19 +272,7 @@ final class MainRunScanTotalCommentsMaxWarningPostTest extends TestCase {
 			$this->options['pr_number'] => array(),
 		);
 
-		// Clear internal cache so comments are fetched each time.
-		vipgoci_cache( VIPGOCI_CACHE_CLEAR );
-
-		vipgoci_unittests_output_suppress();
-
-		$all_comments = vipgoci_github_pr_generic_comments_get_all(
-			$this->options['repo-owner'],
-			$this->options['repo-name'],
-			$this->options['pr_number'],
-			$this->options['token']
-		);
-
-		vipgoci_unittests_output_unsuppress();
+		$all_comments = $this->fetchPrGenericComments();
 
 		$this->assertEmpty( $all_comments );
 
@@ -271,17 +283,20 @@ final class MainRunScanTotalCommentsMaxWarningPostTest extends TestCase {
 			$prs_comments_maxed
 		);
 
-		sleep( 5 ); // Give API time to catch up.
-
-		$all_comments = vipgoci_github_pr_generic_comments_get_all(
-			$this->options['repo-owner'],
-			$this->options['repo-name'],
-			$this->options['pr_number'],
-			$this->options['token']
-		);
-
 		vipgoci_unittests_output_unsuppress();
 
+		sleep( 5 ); // Give API time to catch up.
+
+		$all_comments = $this->fetchPrGenericComments();
+
 		$this->assertEmpty( $all_comments );
+
+		$this->assertFalse(
+			vipgoci_report_feedback_to_github_was_submitted(
+				$this->options['repo-owner'],
+				$this->options['repo-name'],
+				(int) $this->options['pr_number']
+			)
+		);
 	}
 }

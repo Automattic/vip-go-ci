@@ -2667,6 +2667,8 @@ function vipgoci_run_scan_reviews_comments_enforce_maximum(
  * If we reached maximum number of
  * comments earlier, put a message out
  * so people actually know about it.
+ * Record as well that feedback has
+ * been submitted.
  *
  * @param array $options            Array of options.
  * @param array $prs_comments_maxed Array of PRs with maximum number of
@@ -2688,6 +2690,14 @@ function vipgoci_run_scan_total_comments_max_warning_post(
 				$pr_number,
 				VIPGOCI_REVIEW_COMMENTS_TOTAL_MAX,
 				$options['commit']
+			);
+
+			// Record that we submitted feedback to GitHub.
+			vipgoci_report_feedback_to_github_was_submitted(
+				$options['repo-owner'],
+				$options['repo-name'],
+				$pr_number,
+				true
 			);
 		}
 	}
