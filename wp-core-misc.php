@@ -233,6 +233,7 @@ function vipgoci_wpcore_misc_get_addon_headers_and_type(
  * The function is adopted from WordPress: https://core.trac.wordpress.org/browser/tags/6.0/src/wp-admin/includes/plugin.php#L254
  *
  * @param string $path                   Path to scan for plugins and themes. Usually this would point a structure similar to wp-content/plugins.
+ * @param array  $file_extensions        File extensions to consider when determining what to analyze.
  * @param bool   $process_subdirectories If to process sub-directories.
  *
  * @link https://developer.wordpress.org/reference/functions/get_plugins/
@@ -259,6 +260,7 @@ function vipgoci_wpcore_misc_get_addon_headers_and_type(
  */
 function vipgoci_wpcore_misc_scan_directory_for_addons(
 	string $path,
+	array $file_extensions,
 	bool $process_subdirectories = true
 ): array {
 	if (
@@ -283,7 +285,7 @@ function vipgoci_wpcore_misc_scan_directory_for_addons(
 		$path,
 		$process_subdirectories,
 		array(
-			'file_extensions' => array( 'php', 'css' ),
+			'file_extensions' => $file_extensions,
 		)
 	);
 
@@ -688,6 +690,7 @@ function vipgoci_wpcore_misc_assign_addon_fields(
  * API about the plugins/themes, return the information after processing.
  *
  * @param string $path                   Path to directory to analyze.
+ * @param array  $file_extensions        File extensions to consider when determining what to analyze.
  * @param bool   $process_subdirectories If to process sub-directories.
  *
  * @return array Information about plugins or themes found. Includes
@@ -721,10 +724,13 @@ function vipgoci_wpcore_misc_assign_addon_fields(
  */
 function vipgoci_wpcore_misc_get_addon_data_and_slugs_for_directory(
 	string $path,
-	bool $process_subdirectories = true
+	array $file_extensions,
+	bool $process_subdirectories = true,
+	
 ) :array {
 	$addons_found = vipgoci_wpcore_misc_scan_directory_for_addons(
 		$path,
+		$file_extensions,
 		$process_subdirectories
 	);
 
