@@ -822,19 +822,22 @@ function vipgoci_option_array_handle(
 			$options[ $option_name ] = $default_value;
 		}
 
-		if ( ! empty( $forbidden_value ) ) {
-			if ( in_array(
-				$forbidden_value,
-				$options[ $option_name ],
-				true
+		if ( null !== $forbidden_value ) {
+			if ( is_string( $forbidden_value ) ) {
+				$forbidden_value = array( $forbidden_value );
+			}
+
+			if ( ! empty(
+				array_intersect(
+					$forbidden_value,
+					$options[ $option_name ],
+				)
 			) ) {
 				vipgoci_sysexit(
-					'Parameter --' .
-						$option_name . ' ' .
+					'Parameter --' . $option_name . ' ' .
 						'can not contain \'' .
-						$forbidden_value .
-						'\' as one of ' .
-						'the values',
+						'"' . implode( ',', $forbidden_value ) . '"' .
+						'\' as one of the values',
 					array(),
 					VIPGOCI_EXIT_USAGE_ERROR
 				);
