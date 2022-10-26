@@ -99,6 +99,12 @@ define( 'VIPGOCI_COUNTERS_DUMP', 'dump' );
 define( 'VIPGOCI_COUNTERS_DO', 'do' );
 
 /*
+ * Define for vipgoci_run_time_length_determine() function.
+ */
+define( 'VIPGOCI_RUN_LENGTH_MEDIUM', 120 );
+define( 'VIPGOCI_RUN_LENGTH_LONG', 240 );
+
+/*
  * Define for vipgoci_cache() function.
  */
 define( 'VIPGOCI_CACHE_CLEAR', '--VIPGOCI-CACHE-CLEAR-0x321--' );
