@@ -882,6 +882,7 @@ function vipgoci_run_init_options_autoapprove( array &$options ) :void {
 			$options,
 			'autoapprove-filetypes',
 			array(),
+
 			/*
 			 * Cross-reference: We disallow autoapproving PHP
 			 * linted and PHPCS scanned files here, because these
