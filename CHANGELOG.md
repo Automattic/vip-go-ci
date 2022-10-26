@@ -19,6 +19,9 @@ All notable changes to this project will be documented in this file.
 - [#324](https://github.com/Automattic/vip-go-ci/pull/324): Update PHPCompatibilityWP and PHPCompatibilityParagonie dependencies
 - [#325](https://github.com/Automattic/vip-go-ci/pull/325): Do not display "No issues were found...." when maximum number of comments is reached
 
+## Fixes
+- [#326](https://github.com/Automattic/vip-go-ci/pull/326): Rename test class, update function name in comments
+
 ## [1.3.2](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.2) - 2022-10-18
 
 ## Added
