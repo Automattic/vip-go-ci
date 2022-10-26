@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class GitHubRateLimitUsageTest extends TestCase {
+final class HttpApiRateLimitUsageTest extends TestCase {
 	/**
 	 * Setup function. Require files, etc.
 	 *

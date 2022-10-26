@@ -1,6 +1,6 @@
 <?php
 /**
- * Test vipgoci_directory_path_make_relative_to_base() function.
+ * Test vipgoci_directory_path_get_dir_and_include_base() function.
  *
  * @package Automattic/vip-go-ci
  */
@@ -30,7 +30,7 @@ final class MiscDirectoryPathMakeRelativeToBaseTest extends TestCase {
 	/**
 	 * Test various usage cases of the function.
 	 *
-	 * @covers ::vipgoci_directory_path_make_relative_to_base
+	 * @covers ::vipgoci_directory_path_get_dir_and_include_base
 	 *
 	 * @return void
 	 */
