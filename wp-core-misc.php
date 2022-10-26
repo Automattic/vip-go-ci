@@ -725,8 +725,7 @@ function vipgoci_wpcore_misc_assign_addon_fields(
 function vipgoci_wpcore_misc_get_addon_data_and_slugs_for_directory(
 	string $path,
 	array $file_extensions,
-	bool $process_subdirectories = true,
-	
+	bool $process_subdirectories = true
 ) :array {
 	$addons_found = vipgoci_wpcore_misc_scan_directory_for_addons(
 		$path,
