@@ -293,12 +293,12 @@ function vipgoci_options_recognized() :array {
 		 * PHP Linting configuration.
 		 */
 		'lint:',
+		'lint-php-version-paths:',
+		'lint-php-versions:',
 		'lint-modified-files-only:',
 		'lint-file-extensions:',
 		'lint-skip-folders:',
 		'lint-skip-folders-in-repo-options-file:',
-		'lint-php-version-paths:',
-		'lint-php-versions:',
 
 		/*
 		 * PHPCS configuration
