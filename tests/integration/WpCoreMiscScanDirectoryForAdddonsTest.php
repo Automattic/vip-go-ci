@@ -168,6 +168,7 @@ final class WpCoreMiscScanDirectoryForAdddonsTest extends TestCase {
 
 		$results_actual = vipgoci_wpcore_misc_scan_directory_for_addons(
 			$this->temp_dir . '/WpCoreMiscScanDirectoryForAdddonsTest',
+			array( 'php', 'css' ),
 			true
 		);
 
@@ -243,6 +244,7 @@ final class WpCoreMiscScanDirectoryForAdddonsTest extends TestCase {
 
 		$results_actual = vipgoci_wpcore_misc_scan_directory_for_addons(
 			$this->temp_dir . '/WpCoreMiscScanDirectoryForAdddonsTest',
+			array( 'php', 'css' ),
 			false
 		);
 
