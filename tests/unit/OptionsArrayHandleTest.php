@@ -20,9 +20,9 @@ use PHPUnit\Framework\TestCase;
  */
 final class OptionsArrayHandleTest extends TestCase {
 	/**
-	 * Setup function.
+	 * Setup function. Require file.
 	 *
-	 * All files should be required here. See README.md.
+	 * @return void
 	 */
 	protected function setUp() :void {
 		require_once __DIR__ . './../../options.php';
@@ -32,6 +32,8 @@ final class OptionsArrayHandleTest extends TestCase {
 	 * Test when option is an empty string.
 	 *
 	 * @covers ::vipgoci_option_array_handle
+	 *
+	 * @return void
 	 */
 	public function testOptionsArrayHandle1() :void {
 		$options = array(
@@ -56,6 +58,8 @@ final class OptionsArrayHandleTest extends TestCase {
 	 * Test when option is empty.
 	 *
 	 * @covers ::vipgoci_option_array_handle
+	 *
+	 * @return void
 	 */
 	public function testOptionsArrayHandle2() :void {
 		$options = array();
@@ -81,6 +85,8 @@ final class OptionsArrayHandleTest extends TestCase {
 	 * and comma is the separator.
 	 *
 	 * @covers ::vipgoci_option_array_handle
+	 *
+	 * @return void
 	 */
 	public function testOptionsArrayHandle3() :void {
 		$options = array(
@@ -111,6 +117,8 @@ final class OptionsArrayHandleTest extends TestCase {
 	 * not be transformed to lower case.
 	 *
 	 * @covers ::vipgoci_option_array_handle
+	 *
+	 * @return void
 	 */
 	public function testOptionsArrayHandle4() :void {
 		$options = array(
