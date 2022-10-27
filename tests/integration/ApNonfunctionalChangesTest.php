@@ -56,6 +56,8 @@ final class ApNonfunctionalChangesTest extends TestCase {
 		$this->options['branches-ignore'] = array();
 
 		$this->options['skip-draft-prs'] = false;
+
+		$this->options['autoapprove-php-nonfunctional-changes-file-extensions'] = array( 'php' );
 	}
 
 	protected function tearDown(): void {
