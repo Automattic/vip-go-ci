@@ -143,4 +143,36 @@ final class MainRunInitOptionsAutoapproveTest extends TestCase {
 			$error_msg
 		);
 	}
+
+	/**
+	 * Check if errors are correctly handled.
+	 *
+	 * @covers ::vipgoci_run_init_options_autoapprove
+	 */
+	public function testRunInitOptionsAutoapproveErrors2() :void {
+		$this->options = array(
+			'autoapprove'                           => 'true',
+			'autoapprove-php-nonfunctional-changes' => 'true',
+			'autoapprove-php-nonfunctional-changes-file-extensions' => 'php,inc',
+			'autoapprove-filetypes'                 => '', // Should not be empty.
+			'autoapprove-label'                     => false, // Should not be false.
+			'lint-file-extensions'                  => array( 'php' ),
+			'phpcs-file-extensions'                 => array( 'php', 'js', 'twig' ),
+			'svg-file-extensions'                   => array( 'svg' ),
+		);
+
+		try {
+			vipgoci_run_init_options_autoapprove(
+				$this->options
+			);
+		} catch( \ErrorException $error ) {
+			$error_msg = $error->getMessage();
+		}
+
+		$this->assertSame(
+			'vipgoci_sysexit() was called; message=To be able to auto-approve, file-types to approve must be specified, as well as a label; see --help for information',
+			$error_msg
+		);
+	}
+
 }
