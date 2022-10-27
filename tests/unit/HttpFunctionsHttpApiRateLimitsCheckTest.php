@@ -1,6 +1,6 @@
 <?php
 /**
- * Test vipgoci_http_api_rate_limits_check() function.
+ * Test vipgoci_http_api_rate_limit_check() function.
  *
  * @package Automattic/vip-go-ci
  */
@@ -19,98 +19,136 @@ use PHPUnit\Framework\TestCase;
  */
 final class HttpFunctionsHttpApiRateLimitsCheckTest extends TestCase {
 	/**
-	 * Data for the test.
-	 *
-	 * @var $TEST_DATA
-	 */
-	private const TEST_DATA = array(
-		array(
-			'url'     => 'https://api.github.com/v1',
-			'headers' => array(),
-			'output'  => '',
-		),
-		array(
-			'url'     => 'https://api.github.com/v1',
-			'headers' => array( 'x-ratelimit-remaining' => array( '100' ) ),
-			'output'  => '',
-		),
-		array(
-			'url'     => 'https://api.github.com/v1',
-			'headers' => array( 'x-ratelimit-remaining' => array( '0' ) ),
-			'output'  => '"Ran out of request limits for API, cannot continue without making further requests."' . PHP_EOL,
-		),
-		array(
-			'url'     => 'https://api.github.com/v1',
-			'headers' => array( 'x-ratelimit-remaining' => array( '-1' ) ),
-			'output'  => '"Ran out of request limits for API, cannot continue without making further requests."' . PHP_EOL,
-		),
-		array(
-			'url'     => 'https://api.github.com/v1',
-			'headers' => array( 'x-ratelimit-remaining' => array( 'abc' ) ), // Invalid, not numeric.
-			'output'  => '',
-		),
-		array(
-			'url'     => 'https://wpscan.com/api/v3/plugins/test',
-			'headers' => array(),
-			'output'  => '',
-		),
-		array(
-			'url'     => 'https://wpscan.com/api/v3/plugins/test',
-			'headers' => array( 'x-ratelimit-remaining' => array( '100' ) ),
-			'output'  => '',
-		),
-		array(
-			'url'     => 'https://wpscan.com/api/v3/plugins/test',
-			'headers' => array( 'x-ratelimit-remaining' => array( '0' ) ),
-			'output'  => '"Ran out of request limits for API, cannot continue without making further requests."' . PHP_EOL,
-		),
-		array(
-			'url'     => 'https://wpscan.com/api/v3/plugins/test',
-			'headers' => array( 'x-ratelimit-remaining' => array( '-1' ) ),
-			'output'  => '',
-		),
-		array(
-			'url'     => 'https://wpscan.com/api/v3/plugins/test',
-			'headers' => array( 'x-ratelimit-remaining' => array( 'abc' ) ), // Invalid, not numeric.
-			'output'  => '',
-		),
-	);
-
-	/**
 	 * Setup function. Require files.
 	 *
 	 * @return void
 	 */
 	protected function setUp() :void {
 		require_once __DIR__ . '/../../defines.php';
+		require_once __DIR__ . '/../../statistics.php';
 		require_once __DIR__ . '/../../http-functions.php';
+		require_once __DIR__ . '/../../statistics.php';
 		require_once __DIR__ . '/helper/HttpFunctionsHttpApiRateLimitsCheck.php';
+	}
+
+	/**
+	 * Data for the test.
+	 *
+	 * @return array
+	 */
+	public function dataRateLimits() :array {
+		return array(
+			array(
+				'https://api.github.com/v1', // Request URL (input).
+				array(), // HTTP response header (input).
+				'', // Expected log message outputted.
+				array(), // Expected counters result array.
+			),
+			array(
+				'https://api.github.com/v1',
+				array( 'x-ratelimit-remaining' => array( '100' ) ),
+				'',
+				array(),
+			),
+			array(
+				'https://api.github.com/v1',
+				array( 'x-ratelimit-remaining' => array( '0' ) ),
+				'"Exceeded rate limit for HTTP API, unable to continue without making further requests."' . PHP_EOL,
+				array( 'http_api_request_limit_reached' => 1 ),
+			),
+			array(
+				'https://api.github.com/v1',
+				array( 'x-ratelimit-remaining' => array( '-1' ) ),
+				'"Exceeded rate limit for HTTP API, unable to continue without making further requests."' . PHP_EOL,
+				array( 'http_api_request_limit_reached' => 1 ),
+			),
+			array(
+				'https://api.github.com/v1',
+				array( 'x-ratelimit-remaining' => array( 'abc' ) ), // Invalid, not numeric.
+				'',
+				array(),
+			),
+			array(
+				'https://wpscan.com/api/v3/plugins/test',
+				array(),
+				'',
+				array(),
+			),
+			array(
+				'https://wpscan.com/api/v3/plugins/test',
+				array( 'x-ratelimit-remaining' => array( '100' ) ),
+				'',
+				array(),
+			),
+			array(
+				'https://wpscan.com/api/v3/plugins/test',
+				array( 'x-ratelimit-remaining' => array( '0' ) ),
+				'"Exceeded rate limit for HTTP API, unable to continue without making further requests."' . PHP_EOL,
+				array( 'http_api_request_limit_reached' => 1 ),
+			),
+			array(
+				'https://wpscan.com/api/v3/plugins/test',
+				array( 'x-ratelimit-remaining' => array( '-1' ) ),
+				'',
+				array(),
+			),
+			array(
+				'https://wpscan.com/api/v3/plugins/test',
+				array( 'x-ratelimit-remaining' => array( 'abc' ) ), // Invalid, not numeric.
+				'',
+				array(),
+			),
+		);
 	}
 
 	/**
 	 * Test different ratelimits headers when calling the function.
 	 *
-	 * @covers ::vipgoci_http_api_rate_limits_check
+	 * @dataProvider dataRateLimits
+	 *
+	 * @covers ::vipgoci_http_api_rate_limit_check
 	 *
 	 * @return void
 	 */
-	public function testRateLimits(): void {
-		foreach ( self::TEST_DATA as $test_item ) {
-			ob_start();
+	public function testRateLimits(
+		string $url_input,
+		array $headers_input,
+		string $output_expected,
+		array $counters_expected
+	): void {
+		ob_start();
 
-			vipgoci_http_api_rate_limits_check(
-				$test_item['url'],
-				$test_item['headers']
-			);
+		vipgoci_http_api_rate_limit_check(
+			$url_input,
+			$headers_input
+		);
 
-			$printed_data = ob_get_contents();
-			ob_end_clean();
+		$output_actual = ob_get_contents();
+		ob_end_clean();
 
-			$this->assertSame(
-				$test_item['output'],
-				$printed_data,
-				'Failed verifying with data: ' . json_encode( $test_item )
-			);
-		}
+		$counters_actual = vipgoci_counter_report(
+			VIPGOCI_COUNTERS_DUMP,
+			null,
+			null
+		);
+
+		$log_detail = array(
+			'url_input'         => $url_input,
+			'headers_input'     => $headers_input,
+			'output_expected'   => $output_expected,
+			'counters_expected' => $counters_expected,
+		); 
+
+		$this->assertSame(
+			$output_expected,
+			$output_actual,
+			'Verification failed using data: ' . json_encode( $log_detail )
+		);
+
+		$this->assertSame(
+			$counters_expected,
+			$counters_actual,
+			'Failed verifying with data: ' . json_encode( $log_detail )
+		);
 	}
 }

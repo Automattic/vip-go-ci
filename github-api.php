@@ -8,30 +8,6 @@
 declare(strict_types=1);
 
 /**
- * Ask GitHub for API rate-limit information and
- * report that back to the user.
- *
- * The results are not cached, as we want fresh data
- * every time.
- *
- * @param string $github_token GitHub token to use to make GitHub API requests.
- *
- * @return object|bool|null Results as object, bool or null.
- */
-function vipgoci_github_rate_limit_usage(
-	string $github_token
-) :object|bool|null {
-	$rate_limit = vipgoci_http_api_fetch_url(
-		VIPGOCI_GITHUB_BASE_URL . '/rate_limit',
-		$github_token
-	);
-
-	return json_decode(
-		$rate_limit
-	);
-}
-
-/**
  * Fetch diffs between two commits from GitHub API,
  * cache results.
  *

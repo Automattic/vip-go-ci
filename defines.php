@@ -10,7 +10,7 @@ declare(strict_types=1);
 /*
  * Version number and default name to use.
  */
-define( 'VIPGOCI_VERSION', '1.3.1' );
+define( 'VIPGOCI_VERSION', '1.3.2' );
 define( 'VIPGOCI_DEFAULT_NAME_TO_USE', 'vip-go-ci' );
 
 /*
@@ -41,10 +41,12 @@ if ( ! defined( 'VIPGOCI_GITHUB_BASE_URL' ) ) {
 define( 'VIPGOCI_KB_IN_BYTES', 1024 );
 
 /*
- * Timeout constant for HTTP APIs.
+ * Constants for HTTP API functions.
  */
 define( 'VIPGOCI_HTTP_API_LONG_TIMEOUT', 20 );
 define( 'VIPGOCI_HTTP_API_SHORT_TIMEOUT', 5 );
+define( 'VIPGOCI_HTTP_API_CONTENT_TYPE_APPLICATION_JSON', 'application/json' );
+define( 'VIPGOCI_HTTP_API_CONTENT_TYPE_X_WWW_FORM_URLENCODED', 'application/x-www-form-urlencoded' );
 
 /*
  * Define exit-codes
@@ -52,6 +54,7 @@ define( 'VIPGOCI_HTTP_API_SHORT_TIMEOUT', 5 );
 define( 'VIPGOCI_EXIT_NORMAL', 0 );
 define( 'VIPGOCI_EXIT_INTERNAL_ERROR', 220 );
 define( 'VIPGOCI_EXIT_COMMIT_NOT_PART_OF_PR', 230 );
+define( 'VIPGOCI_EXIT_HTTP_API_ERROR', 247 );
 define( 'VIPGOCI_EXIT_COMMIT_NOT_LATEST', 248 );
 define( 'VIPGOCI_EXIT_EXEC_TIME', 249 );
 define( 'VIPGOCI_EXIT_CODE_ISSUES', 250 );
@@ -96,6 +99,12 @@ define( 'VIPGOCI_COUNTERS_DUMP', 'dump' );
 define( 'VIPGOCI_COUNTERS_DO', 'do' );
 
 /*
+ * Define for vipgoci_run_time_length_determine() function.
+ */
+define( 'VIPGOCI_RUN_LENGTH_MEDIUM', 120 );
+define( 'VIPGOCI_RUN_LENGTH_LONG', 240 );
+
+/*
  * Define for vipgoci_cache() function.
  */
 define( 'VIPGOCI_CACHE_CLEAR', '--VIPGOCI-CACHE-CLEAR-0x321--' );
@@ -103,8 +112,13 @@ define( 'VIPGOCI_CACHE_CLEAR', '--VIPGOCI-CACHE-CLEAR-0x321--' );
 /*
  * Define for vipgoci_http_api_wait() function.
  */
-define( 'VIPGOCI_HTTP_API_WAIT_TIME_SECONDS', 2 );
-define( 'VIPGOCI_HTTP_API_WAIT_APIS_ARRAY', array( 'api.github.com' ) );
+
+// This can be overridden in programs using vip-go-ci as library.
+if ( ! defined( 'VIPGOCI_HTTP_API_WAIT_TIME_SECONDS' ) ) {
+	define( 'VIPGOCI_HTTP_API_WAIT_TIME_SECONDS', 3 );
+}
+
+define( 'VIPGOCI_HTTP_API_WAIT_APIS_ARRAY', array( VIPGOCI_GITHUB_BASE_URL ) );
 
 /*
  * Defines for files.
@@ -272,6 +286,11 @@ define(
  */
 define( 'VIPGOCI_ADDON_PLUGIN', 'vipgoci-addon-plugin' );
 define( 'VIPGOCI_ADDON_THEME', 'vipgoci-addon-theme' );
+
+/*
+ * WordPress.org defines.
+ */
+define( 'VIPGOCI_WORDPRESS_ORG_API_BASE_URL', 'https://api.wordpress.org' );
 
 /*
  * Defines for WPScan API support.
