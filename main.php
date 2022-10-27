@@ -107,12 +107,12 @@ function vipgoci_help_print() :void {
 		"\t" . '                               should be an array with items separated by commas.' . PHP_EOL .
 		"\t" . '--phpcs-sniffs-exclude=ARRAY   Specify which sniffs to exclude from PHPCS scanning,' . PHP_EOL .
 		"\t" . '                               should be an array with items separated by commas.' . PHP_EOL .
-		"\t" . '--phpcs-file-extensions=ARRAY  Use specified file extensions to select which altered files to PHPCS scan.' . PHP_EOL .
-		"\t" . '                               Default is: "' . implode( ',', VIPGOCI_PHPCS_FILE_EXTENSIONS_DEFAULT ) . '"' . PHP_EOL .
 		"\t" . '--phpcs-runtime-set=STRING     Specify --runtime-set values passed on to PHPCS' . PHP_EOL .
 		"\t" . '                               -- expected to be a comma-separated value string of' . PHP_EOL .
 		"\t" . '                               key-value pairs.' . PHP_EOL .
 		"\t" . '                               For example: --phpcs-runtime-set="key1 value1,key2 value2"' . PHP_EOL .
+		"\t" . '--phpcs-file-extensions=ARRAY  Use specified file extensions to select which altered files to PHPCS scan.' . PHP_EOL .
+		"\t" . '                               Default is: "' . implode( ',', VIPGOCI_PHPCS_FILE_EXTENSIONS_DEFAULT ) . '"' . PHP_EOL .
 		"\t" . '--phpcs-skip-scanning-via-labels-allowed=BOOL    Whether to allow users to skip PHPCS' . PHP_EOL .
 		"\t" . '                                                 scanning of pull requests via labels' . PHP_EOL .
 		"\t" . '                                                 attached to them. The label should be' . PHP_EOL .
@@ -311,8 +311,8 @@ function vipgoci_options_recognized() :array {
 		'phpcs-severity:',
 		'phpcs-sniffs-include:',
 		'phpcs-sniffs-exclude:',
-		'phpcs-file-extensions:',
 		'phpcs-runtime-set:',
+		'phpcs-file-extensions:',
 		'phpcs-skip-scanning-via-labels-allowed:',
 		'phpcs-skip-folders:',
 		'phpcs-skip-folders-in-repo-options-file:',
