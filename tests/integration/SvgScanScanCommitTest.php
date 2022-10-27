@@ -75,7 +75,11 @@ final class SvgScanScanCommitTest extends TestCase {
 
 		$this->options['skip-draft-prs'] = false;
 
+		$this->options['phpcs-file-extensions'] = array( 'php', 'js' );
+
 		$this->options['phpcs-skip-scanning-via-labels-allowed'] = false;
+
+		$this->options['svg-file-extensions'] = array( 'svg' );
 
 		$this->options['skip-large-files'] = false;
 
