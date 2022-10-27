@@ -237,7 +237,7 @@ function vipgoci_svg_scan_single_file(
 	 * Could not determine? Return null.
 	 * We only process SVG files.
 	 */
-	if ( true === in_array(
+	if ( false === in_array(
 		$file_extension,
 		$options['svg-file-extensions'],
 		true
