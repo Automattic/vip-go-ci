@@ -717,15 +717,6 @@ function vipgoci_run_init_options_wpscan( array &$options ) :void {
 	);
 
 	/*
-	 * Process --wpscan-api-skip-folders -- expected to be an
-	 * array of values.
-	 */
-	vipgoci_option_skip_folder_handle(
-		$options,
-		'wpscan-api-skip-folders'
-	);
-
-	/*
 	 * Process --wpscan-api-file-extensions -- expected to be an
 	 * array of values.
 	 */
@@ -733,6 +724,15 @@ function vipgoci_run_init_options_wpscan( array &$options ) :void {
 		$options,
 		'wpscan-api-file-extensions',
 		VIPGOCI_WPSCAN_FILE_EXTENSIONS_DEFAULT
+	);
+
+	/*
+	 * Process --wpscan-api-skip-folders -- expected to be an
+	 * array of values.
+	 */
+	vipgoci_option_skip_folder_handle(
+		$options,
+		'wpscan-api-skip-folders'
 	);
 
 	/*
