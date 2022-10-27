@@ -99,6 +99,8 @@ final class LintScanCommitTest extends TestCase {
 
 		$this->options['lint-modified-files-only'] = false;
 
+		$this->options['lint-file-extensions'] = array( 'php' );
+
 		$this->options['lint-php-versions'] = array(
 			$this->options['lint-php1-version'],
 			$this->options['lint-php2-version'],
