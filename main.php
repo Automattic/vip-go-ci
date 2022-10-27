@@ -653,6 +653,15 @@ function vipgoci_run_init_options_phpcs( array &$options ) :void {
 	}
 
 	/*
+	 * Process --phpcs-runtime-set -- expected to be an
+	 * array of values.
+	 */
+	vipgoci_option_phpcs_runtime_set(
+		$options,
+		'phpcs-runtime-set'
+	);
+
+	/*
 	 * Process --phpcs-file-extensions -- expected to be
 	 * an array of strings.
 	 */
@@ -660,15 +669,6 @@ function vipgoci_run_init_options_phpcs( array &$options ) :void {
 		$options,
 		'phpcs-file-extensions',
 		VIPGOCI_PHPCS_FILE_EXTENSIONS_DEFAULT
-	);
-
-	/*
-	 * Process --phpcs-runtime-set -- expected to be an
-	 * array of values.
-	 */
-	vipgoci_option_phpcs_runtime_set(
-		$options,
-		'phpcs-runtime-set'
 	);
 
 	/*
