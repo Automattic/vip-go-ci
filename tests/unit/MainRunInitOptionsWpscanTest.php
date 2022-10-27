@@ -68,6 +68,10 @@ final class MainRunInitOptionsWpscanTest extends TestCase {
 					'dir2',
 					'dir3',
 				),
+				'wpscan-api-file-extensions' => array(
+					'php',
+					'css',
+				),
 				'wpscan-api-report-end-msg' => '',
 			),
 			$this->options
@@ -82,12 +86,13 @@ final class MainRunInitOptionsWpscanTest extends TestCase {
 	 */
 	public function testRunInitOptionsWpscanOptionsCustom() :void {
 		$this->options = array(
-			'wpscan-api'                => 'true',
-			'wpscan-api-dry-mode'       => 'false',
-			'wpscan-api-token'          => '123456789',
-			'wpscan-api-paths'          => '/plugins/,themes/,/custom-path/custom-plugins',
-			'wpscan-api-skip-folders'   => 'dir1,dir2,dir3',
-			'wpscan-api-report-end-msg' => 'abc',
+			'wpscan-api'                 => 'true',
+			'wpscan-api-dry-mode'        => 'false',
+			'wpscan-api-token'           => '123456789',
+			'wpscan-api-paths'           => '/plugins/,themes/,/custom-path/custom-plugins',
+			'wpscan-api-skip-folders'    => 'dir1,dir2,dir3',
+			'wpscan-api-file-extensions' => 'php,css,css2',
+			'wpscan-api-report-end-msg'  => 'abc',
 		);
 
 		vipgoci_run_init_options_wpscan( $this->options );
@@ -106,6 +111,11 @@ final class MainRunInitOptionsWpscanTest extends TestCase {
 					'dir1',
 					'dir2',
 					'dir3',
+				),
+				'wpscan-api-file-extensions' => array(
+					'php',
+					'css',
+					'css2',
 				),
 				'wpscan-api-report-end-msg' => 'abc',
 			),
