@@ -50,6 +50,8 @@ final class SvgScanScanSingleFileTest extends TestCase {
 
 		$this->options['svg-checks'] = true;
 
+		$this->options['svg-file-extensions'] = array( 'svg' );
+
 		$this->options['skip-large-files'] = true;
                 
 		$this->options['skip-large-files-limit'] = 15000;
