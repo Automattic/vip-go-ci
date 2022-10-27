@@ -27,7 +27,7 @@ function vipgoci_sysexit(
 	bool $irc = false
 ) {
 	throw new ErrorException(
-		'vipgoci_sysexit() was called.',
+		'vipgoci_sysexit() was called; message=' . $str,
 	);
 }
 
