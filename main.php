@@ -333,8 +333,8 @@ function vipgoci_options_recognized() :array {
 		'wpscan-api-dry-mode:',
 		'wpscan-api-token:',
 		'wpscan-api-paths:',
-		'wpscan-api-skip-folders:',
 		'wpscan-api-file-extensions:',
+		'wpscan-api-skip-folders:',
 		'wpscan-api-report-end-msg:',
 
 		/*
