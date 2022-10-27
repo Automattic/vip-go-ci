@@ -239,7 +239,7 @@ final class OptionsArrayHandleTest extends TestCase {
 		} 
 
 		$this->assertSame(
-			'vipgoci_sysexit() was called.',
+			'vipgoci_sysexit() was called; message=Parameter --mytestoption can not contain \'"myvalue3"\' as one of the values',
 			$error_msg,
 			'vipgoci_sysexit() not called when it should have'
 		);
