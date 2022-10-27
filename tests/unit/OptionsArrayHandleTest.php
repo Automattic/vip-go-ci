@@ -25,7 +25,18 @@ final class OptionsArrayHandleTest extends TestCase {
 	 * @return void
 	 */
 	protected function setUp() :void {
-		require_once __DIR__ . './../../options.php';
+		require_once __DIR__ . '/../../defines.php';
+		require_once __DIR__ . '/../../options.php';
+		require_once __DIR__ . '/helper/OptionsArrayHandle.php';
+	}
+
+	/**
+	 * Teardown function.
+	 *
+	 * @return void
+	 */
+	protected function tearDown() :void {
+		unset( $this->options );
 	}
 
 	/**
@@ -143,4 +154,95 @@ final class OptionsArrayHandleTest extends TestCase {
 			$options['mytestoption']
 		);
 	}
+
+	/**
+	 * Test forbidden values. No errors, as no forbidden value is used.
+	 *
+	 * @return void
+	 */
+	public function testOptionsArrayHandle5() :void {
+		$options = array(
+			'mytestoption' => 'myvalue1,myvalue2,MYVALUE3',
+		);
+
+		vipgoci_option_array_handle(
+			$options,
+			'mytestoption',
+			'myvalue',
+			array( 'myvalue4' ),
+			',',
+			true // To lower case.
+		);
+
+		$this->assertSame(
+			array(
+				'myvalue1',
+				'myvalue2',
+				'myvalue3',
+			),
+			$options['mytestoption']
+		);
+	}
+
+	/**
+	 * Test forbidden values. No errors, as no forbidden value is used.
+	 *
+	 * @return void
+	 */
+	public function testOptionsArrayHandle6() :void {
+		$options = array(
+			'mytestoption' => 'myvalue1,myvalue2,MYVALUE3',
+		);
+
+		vipgoci_option_array_handle(
+			$options,
+			'mytestoption',
+			'myvalue',
+			array( 'myvalue3' ), // Note: Different case than input, is allowed.
+			',',
+			false // Do not transform to lower case.
+		);
+
+		$this->assertSame(
+			array(
+				'myvalue1',
+				'myvalue2',
+				'MYVALUE3',
+			),
+			$options['mytestoption']
+		);
+	}
+
+	/**
+	 * Test forbidden values. Error, as forbidden value is used.
+	 *
+	 * @return void
+	 */
+	public function testOptionsArrayHandle7() :void {
+		$options = array(
+			'mytestoption' => 'myvalue1,myvalue2,MYVALUE3',
+		);
+
+		$error_msg = '';
+
+		try {
+			vipgoci_option_array_handle(
+				$options,
+				'mytestoption',
+				'myvalue',
+				array( 'myvalue3' ),
+				',',
+				true
+			);
+		} catch ( \ErrorException $error ) {
+			$error_msg = $error->getMessage();
+		} 
+
+		$this->assertSame(
+			'vipgoci_sysexit() was called.',
+			$error_msg,
+			'vipgoci_sysexit() not called when it should have'
+		);
+	}
 }
+
