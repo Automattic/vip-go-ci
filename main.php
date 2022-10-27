@@ -268,10 +268,10 @@ function vipgoci_options_recognized() :array {
 		'max-exec-time:',
 		'enforce-https-urls:',
 		'skip-draft-prs:',
-		'branches-ignore:',
-		'local-git-repo:',
 		'skip-large-files:',
 		'skip-large-files-limit:',
+		'branches-ignore:',
+		'local-git-repo:',
 		'name-to-use:',
 
 		/*
