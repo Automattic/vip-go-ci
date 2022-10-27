@@ -29,6 +29,7 @@ final class MainRunInitOptionsAutoapproveTest extends TestCase {
 		require_once __DIR__ . '/../../main.php';
 		require_once __DIR__ . '/../../options.php';
 		require_once __DIR__ . '/../../misc.php';
+		require_once __DIR__ . '/helper/MainRunInitOptionsAutoapprove.php';
 
 		$this->options = array();
 	}
@@ -109,6 +110,37 @@ final class MainRunInitOptionsAutoapproveTest extends TestCase {
 				'svg-file-extensions'                   => array( 'svg' ),
 			),
 			$this->options
+		);
+	}
+
+	/**
+	 * Check if errors are correctly handled.
+	 *
+	 * @covers ::vipgoci_run_init_options_autoapprove
+	 */
+	public function testRunInitOptionsAutoapproveErrors1() :void {
+		$this->options = array(
+			'autoapprove'                           => 'true',
+			'autoapprove-php-nonfunctional-changes' => 'true',
+			'autoapprove-php-nonfunctional-changes-file-extensions' => 'php,inc',
+			'autoapprove-filetypes'                 => 'txt,gif,png,pdf,php', // 'php' is not allowed.
+			'autoapprove-label'                     => 'MyText2',
+			'lint-file-extensions'                  => array( 'php' ),
+			'phpcs-file-extensions'                 => array( 'php', 'js', 'twig' ),
+			'svg-file-extensions'                   => array( 'svg' ),
+		);
+
+		try {
+			vipgoci_run_init_options_autoapprove(
+				$this->options
+			);
+		} catch( \ErrorException $error ) {
+			$error_msg = $error->getMessage();
+		}
+
+		$this->assertSame(
+			'vipgoci_sysexit() was called; message=Parameter --autoapprove-filetypes can not contain \'"php,js,twig,svg,inc"\' as one of the values',
+			$error_msg
 		);
 	}
 }
