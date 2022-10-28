@@ -8,6 +8,7 @@
 
 declare(strict_types=1);
 
+// phpcs:disable VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
 /**
  * Throws an exception indicating error when called.
  *
@@ -30,4 +31,4 @@ function vipgoci_sysexit(
 		'vipgoci_sysexit() was called; message=' . $str,
 	);
 }
-
+// phpcs:enable VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
