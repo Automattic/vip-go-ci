@@ -75,6 +75,13 @@ final class ReportCreateScanDetailsPhpLintOptionsTest extends TestCase {
 		$this->assertFalse(
 			strpos(
 				$actual_output,
+				'Lint files with file extensions'
+			)
+		);
+
+		$this->assertFalse(
+			strpos(
+				$actual_output,
 				'Directories not PHP linted'
 			)
 		);
@@ -88,6 +95,7 @@ final class ReportCreateScanDetailsPhpLintOptionsTest extends TestCase {
 	public function testCreateDetails2(): void {
 		$this->options['lint']                     = true;
 		$this->options['lint-modified-files-only'] = true;
+		$this->options['lint-file-extensions']     = array( 'php' );
 		$this->options['lint-skip-folders']        = array( 'path1', 'path2' );
 
 		$actual_output = vipgoci_report_create_scan_details_php_lint_options(
@@ -114,6 +122,13 @@ final class ReportCreateScanDetailsPhpLintOptionsTest extends TestCase {
 				$actual_output,
 				'<p>Lint modified files only: ' . PHP_EOL .
 				'<code>true</code></p>'
+			)
+		);
+
+		$this->assertNotFalse(
+			strpos(
+				$actual_output,
+				'Lint files with file extensions'
 			)
 		);
 
