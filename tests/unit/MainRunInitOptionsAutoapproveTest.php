@@ -81,6 +81,8 @@ final class MainRunInitOptionsAutoapproveTest extends TestCase {
 	 * correctly parsed.
 	 *
 	 * @covers ::vipgoci_run_init_options_autoapprove
+	 *
+	 * @return void
 	 */
 	public function testRunInitOptionsAutoapproveCustom() :void {
 		$this->options = array(
@@ -117,6 +119,8 @@ final class MainRunInitOptionsAutoapproveTest extends TestCase {
 	 * Check if errors are correctly handled.
 	 *
 	 * @covers ::vipgoci_run_init_options_autoapprove
+	 *
+	 * @return void
 	 */
 	public function testRunInitOptionsAutoapproveErrors1() :void {
 		$this->options = array(
@@ -134,7 +138,7 @@ final class MainRunInitOptionsAutoapproveTest extends TestCase {
 			vipgoci_run_init_options_autoapprove(
 				$this->options
 			);
-		} catch( \ErrorException $error ) {
+		} catch ( \ErrorException $error ) {
 			$error_msg = $error->getMessage();
 		}
 
@@ -148,6 +152,8 @@ final class MainRunInitOptionsAutoapproveTest extends TestCase {
 	 * Check if errors are correctly handled.
 	 *
 	 * @covers ::vipgoci_run_init_options_autoapprove
+	 *
+	 * @return void
 	 */
 	public function testRunInitOptionsAutoapproveErrors2() :void {
 		$this->options = array(
@@ -165,7 +171,7 @@ final class MainRunInitOptionsAutoapproveTest extends TestCase {
 			vipgoci_run_init_options_autoapprove(
 				$this->options
 			);
-		} catch( \ErrorException $error ) {
+		} catch ( \ErrorException $error ) {
 			$error_msg = $error->getMessage();
 		}
 
@@ -174,5 +180,4 @@ final class MainRunInitOptionsAutoapproveTest extends TestCase {
 			$error_msg
 		);
 	}
-
 }
