@@ -765,7 +765,7 @@ function vipgoci_option_integer_handle(
  *
  * @param array             $options               Options array for the program.
  * @param string            $option_name           Option name to process.
- * @param array|string      $default_value         Default value if nothing is set.
+ * @param array             $default_value         Default value if nothing is set.
  * @param string|array|null $forbidden_value       Values not permissible to use.
  * @param string            $array_separator       String separator between values.
  * @param bool              $strlower_option_value If to convert values to lower case.
@@ -777,8 +777,8 @@ function vipgoci_option_integer_handle(
 function vipgoci_option_array_handle(
 	array &$options,
 	string $option_name,
-	array|string $default_value = array(),
-	string|array|null $forbidden_value = null,
+	array $default_value = array(),
+	array|null $forbidden_value = null,
 	string $array_separator = ',',
 	bool $strlower_option_value = true
 ) :void {
