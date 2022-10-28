@@ -379,7 +379,7 @@ function vipgoci_report_create_scan_details_wpscan_configuration(
 			array(
 				'wpscan-api-paths'           => 'Directories scanned',
 				'wpscan-api-skip-folders'    => 'Directories not scanned',
-				'wpscan-api-file-extensions' => 'Scan added/modified files with file extensions',
+				'wpscan-api-file-extensions' => 'Select added/modified add-ons to scan based on headers present in files with file extensions',
 			) as $key => $value
 		) {
 			$details .= '<p>' . vipgoci_output_html_escape( $value ) . ':</p>' . PHP_EOL;
