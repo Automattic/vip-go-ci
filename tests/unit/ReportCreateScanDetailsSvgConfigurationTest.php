@@ -64,6 +64,13 @@ final class ReportCreateScanDetailsSvgConfigurationTest extends TestCase {
 				'<code>false</code></p>'
 			)
 		);
+
+		$this->assertFalse(
+			strpos(
+				$actual_output,
+				'Scan added/modified files with file extensions'
+			)
+		);
 	}
 
 	/**
@@ -73,6 +80,7 @@ final class ReportCreateScanDetailsSvgConfigurationTest extends TestCase {
 	 */
 	public function testCreateDetails2(): void {
 		$this->options['svg-checks'] = true;
+		$this->options['svg-file-extensions'] = array( 'svg' );
 
 		$actual_output = vipgoci_report_create_scan_details_svg_configuration(
 			$this->options
@@ -90,6 +98,14 @@ final class ReportCreateScanDetailsSvgConfigurationTest extends TestCase {
 				$actual_output,
 				'<p>SVG scanning enabled: ' . PHP_EOL .
 				'<code>true</code></p>'
+			)
+		);
+
+		$this->assertNotFalse(
+			strpos(
+				$actual_output,
+				'<p>Scan added/modified files with file extensions:</p>' . PHP_EOL .
+				'<ul>' . PHP_EOL . '<li><code>svg</code></li></ul>'
 			)
 		);
 	}
