@@ -75,6 +75,13 @@ final class ReportCreateScanDetailsAutoApproveConfigurationTest extends TestCase
 		$this->assertFalse(
 			strpos(
 				$actual_output,
+				'Files with file extensions to consider for non-functional change auto-approval'
+			)
+		);
+
+		$this->assertFalse(
+			strpos(
+				$actual_output,
 				'Auto-approved file-types'
 			)
 		);
@@ -88,6 +95,7 @@ final class ReportCreateScanDetailsAutoApproveConfigurationTest extends TestCase
 	public function testCreateDetails2(): void {
 		$this->options['autoapprove']                           = true;
 		$this->options['autoapprove-php-nonfunctional-changes'] = true;
+		$this->options['autoapprove-php-nonfunctional-changes-file-extensions'] = array( 'php' );
 		$this->options['autoapprove-filetypes']                 = array( 'txt', 'ini' );
 
 		$actual_output = vipgoci_report_create_scan_details_auto_approve_configuration(
@@ -114,6 +122,14 @@ final class ReportCreateScanDetailsAutoApproveConfigurationTest extends TestCase
 				$actual_output,
 				'<p>Non-functional changes auto-approved:' . PHP_EOL .
 				'<code>true</code></p>'
+			)
+		);
+
+		$this->assertNotFalse(
+			strpos(
+				$actual_output,
+				'<p>Files with file extensions to consider for non-functional change auto-approval:' . PHP_EOL .
+				'<code>php</code></p>'
 			)
 		);
 
