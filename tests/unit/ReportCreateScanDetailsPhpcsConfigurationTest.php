@@ -82,6 +82,13 @@ final class ReportCreateScanDetailsPhpcsConfigurationTest extends TestCase {
 		$this->assertFalse(
 			strpos(
 				$actual_output,
+				'Scan added/modified files with file extensions'
+			)
+		);
+
+		$this->assertFalse(
+			strpos(
+				$actual_output,
 				'Custom sniffs included'
 			)
 		);
@@ -107,14 +114,15 @@ final class ReportCreateScanDetailsPhpcsConfigurationTest extends TestCase {
 	 * @covers ::vipgoci_report_create_scan_details_phpcs_configuration
 	 */
 	public function testCreateDetails2(): void {
-		$this->options['phpcs']                = true;
-		$this->options['phpcs-severity']       = 3;
-		$this->options['phpcs-standard-file']  = false;
-		$this->options['phpcs-standard']       = array( 'WordPress', 'WordPress-VIP-Go' );
-		$this->options['phpcs-runtime-set']    = array( array( 'opt1', 'key1' ) );
-		$this->options['phpcs-sniffs-include'] = array();
-		$this->options['phpcs-sniffs-exclude'] = array();
-		$this->options['phpcs-skip-folders']   = array( 'path1', 'path2' );
+		$this->options['phpcs']                 = true;
+		$this->options['phpcs-severity']        = 3;
+		$this->options['phpcs-standard-file']   = false;
+		$this->options['phpcs-standard']        = array( 'WordPress', 'WordPress-VIP-Go' );
+		$this->options['phpcs-runtime-set']     = array( array( 'opt1', 'key1' ) );
+		$this->options['phpcs-file-extensions'] = array( 'php', 'js', 'twig' );
+		$this->options['phpcs-sniffs-include']  = array();
+		$this->options['phpcs-sniffs-exclude']  = array();
+		$this->options['phpcs-skip-folders']    = array( 'path1', 'path2' );
 
 		$actual_output = vipgoci_report_create_scan_details_phpcs_configuration(
 			$this->options
@@ -164,6 +172,15 @@ final class ReportCreateScanDetailsPhpcsConfigurationTest extends TestCase {
 		$this->assertNotFalse(
 			strpos(
 				$actual_output,
+				'<p>Scan added/modified files with file extensions:</p>' . PHP_EOL .
+				'<ul>' . PHP_EOL .
+				'<li><code>php</code></li><li><code>js</code></li><li><code>twig</code></li></ul>'
+			)
+		);
+
+		$this->assertNotFalse(
+			strpos(
+				$actual_output,
 				'<p>Custom sniffs included:</p>' . PHP_EOL .
 				'<ul>' . PHP_EOL .
 				'<li>None</li></ul>' . PHP_EOL
@@ -201,6 +218,7 @@ final class ReportCreateScanDetailsPhpcsConfigurationTest extends TestCase {
 		$this->options['phpcs-standard']          = array( 'WordPress', 'WordPress-VIP-Go' );
 		$this->options['phpcs-standard-original'] = $this->options['phpcs-standard'];
 		$this->options['phpcs-runtime-set']       = array( array( 'opt1', 'key1' ) );
+		$this->options['phpcs-file-extensions']   = array( 'php', 'js', 'twig' );
 		$this->options['phpcs-sniffs-include']    = array( 'AdditionalStandard1' );
 		$this->options['phpcs-sniffs-exclude']    = array( 'SniffExclude1' );
 		$this->options['phpcs-skip-folders']      = array( 'path1', 'path2' );
@@ -247,6 +265,15 @@ final class ReportCreateScanDetailsPhpcsConfigurationTest extends TestCase {
 				'<p>Runtime set:</p>' . PHP_EOL .
 				'<ul>' . PHP_EOL .
 				'<li><code>opt1 key1</code></li></ul>'
+			)
+		);
+
+		$this->assertNotFalse(
+			strpos(
+				$actual_output,
+				'<p>Scan added/modified files with file extensions:</p>' . PHP_EOL .
+				'<ul>' . PHP_EOL .
+				'<li><code>php</code></li><li><code>js</code></li><li><code>twig</code></li></ul>'
 			)
 		);
 
