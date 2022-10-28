@@ -548,6 +548,17 @@ For example:
 
 -- with this option in place, any pull requests targetting branches called `foo` or `bar` will be ignored and no feedback will be posted to them. 
 
+### Configuring file extensions
+
+Each scan type uses by default internally specified file extensions when considering which added or modified files to scan for a given pull request. This can be overridden by specifying command-line parameters for each scan type. The help message lists the available parameters and default file extensions for each scan type.
+
+Non-functional auto-approvals can be configured in similar way, impacting which files are considered when performing non-functional auto-approval.
+
+For example:
+
+> ./vip-go-ci.php --lint-file-extensions="php,inc"
+
+With this option configured, `.php` or `.inc` files will be linted using a PHP interpreter.
 
 ### Skipping certain folders
 
