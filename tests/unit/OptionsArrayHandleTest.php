@@ -107,7 +107,7 @@ final class OptionsArrayHandleTest extends TestCase {
 		vipgoci_option_array_handle(
 			$options,
 			'mytestoption',
-			'myvalue',
+			array( 'myvalue' ),
 			null,
 			','
 		);
@@ -139,7 +139,7 @@ final class OptionsArrayHandleTest extends TestCase {
 		vipgoci_option_array_handle(
 			$options,
 			'mytestoption',
-			'myvalue',
+			array( 'myvalue' ),
 			null,
 			',',
 			false // Do not strtolower() values.
@@ -168,7 +168,7 @@ final class OptionsArrayHandleTest extends TestCase {
 		vipgoci_option_array_handle(
 			$options,
 			'mytestoption',
-			'myvalue',
+			array( 'myvalue' ),
 			array( 'myvalue4' ),
 			',',
 			true // To lower case.
@@ -197,7 +197,7 @@ final class OptionsArrayHandleTest extends TestCase {
 		vipgoci_option_array_handle(
 			$options,
 			'mytestoption',
-			'myvalue',
+			array( 'myvalue' ),
 			array( 'myvalue3' ), // Note: Different case than input, is allowed.
 			',',
 			false // Do not transform to lower case.
@@ -229,10 +229,10 @@ final class OptionsArrayHandleTest extends TestCase {
 			vipgoci_option_array_handle(
 				$options,
 				'mytestoption',
-				'myvalue',
+				array( 'myvalue' ),
 				array( 'myvalue3' ),
 				',',
-				true
+				true // Transform to lower case.
 			);
 		} catch ( \ErrorException $error ) {
 			$error_msg = $error->getMessage();
