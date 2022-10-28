@@ -126,7 +126,7 @@ final class ReportCreateScanDetailsWpscanConfigurationTest extends TestCase {
 		);
 
 		$this->assertStringContainsString(
-			'<p>Select added/modified add-ons to scan based on headers present in files with file extensions:</p>' . PHP_EOL .
+			'<p>Scan added/modified add-ons based on headers present in files with file extensions:</p>' . PHP_EOL .
 			'<ul>' . PHP_EOL . '<li><code>php</code></li><li><code>css</code></li></ul>',
 			$actual_output
 		);
