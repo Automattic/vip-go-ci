@@ -731,6 +731,8 @@ All utilities in `tools-init.sh` follow the same pattern.
 * Code `251`: Exiting due to a system problem.
 * Code `252`: A fatal problem with GitHub was encountered leading to an exit.
 * Code `253`: A problem with usage options was detected, leading to an exit.
+* Code `247`: Fatal error when communicating with HTTP API.
+* Code `248`: Commit specified is not the latest one in pull request.
 
 ## Tests
 
