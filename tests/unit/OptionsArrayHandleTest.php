@@ -236,7 +236,7 @@ final class OptionsArrayHandleTest extends TestCase {
 			);
 		} catch ( \ErrorException $error ) {
 			$error_msg = $error->getMessage();
-		} 
+		}
 
 		$this->assertSame(
 			'vipgoci_sysexit() was called; message=Parameter --mytestoption can not contain \'"myvalue3"\' as one of the values',
