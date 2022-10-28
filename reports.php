@@ -243,7 +243,8 @@ function vipgoci_report_create_scan_details_php_lint_options(
 	if ( true === $options_copy['lint'] ) {
 		foreach (
 			array(
-				'lint-skip-folders' => 'Directories not PHP linted',
+				'lint-file-extensions' => 'Lint files with file extensions',
+				'lint-skip-folders'    => 'Directories not PHP linted',
 			) as $key => $value
 		) {
 			$details .= '<p>' . vipgoci_output_html_escape( $value ) . ':</p>' . PHP_EOL;
@@ -315,6 +316,7 @@ function vipgoci_report_create_scan_details_phpcs_configuration(
 			array(
 				'phpcs-standard'        => 'Standard(s) used',
 				'phpcs-runtime-set-tmp' => 'Runtime set',
+				'phpcs-file-extensions' => 'Scan added/modified files with file extensions',
 				'phpcs-sniffs-include'  => 'Custom sniffs included',
 				'phpcs-sniffs-exclude'  => 'Custom sniffs excluded',
 				'phpcs-skip-folders'    => 'Directories not PHPCS scanned',
@@ -375,8 +377,9 @@ function vipgoci_report_create_scan_details_wpscan_configuration(
 
 		foreach (
 			array(
-				'wpscan-api-paths'        => 'Directories scanned',
-				'wpscan-api-skip-folders' => 'Directories not scanned',
+				'wpscan-api-paths'           => 'Directories scanned',
+				'wpscan-api-skip-folders'    => 'Directories not scanned',
+				'wpscan-api-file-extensions' => 'Scan added/modified files with file extensions',
 			) as $key => $value
 		) {
 			$details .= '<p>' . vipgoci_output_html_escape( $value ) . ':</p>' . PHP_EOL;
@@ -420,6 +423,20 @@ function vipgoci_report_create_scan_details_svg_configuration(
 
 	$details .= '</p>';
 
+	if ( true === $options_copy['svg-checks'] ) {
+		$details .= '<p>Scan added/modified files with file extensions:</p>' . PHP_EOL;
+		$details .= '<ul>' . PHP_EOL;
+
+		$details .= vipgoci_report_create_scan_details_list(
+			'<li><code>',
+			'</code></li>',
+			$options_copy['svg-file-extensions'],
+			'<li>None</li>'
+		);
+
+		$details .= '</ul>' . PHP_EOL;
+	}
+
 	return $details;
 }
 
@@ -440,6 +457,7 @@ function vipgoci_report_create_scan_details_auto_approve_configuration(
 		array(
 			'autoapprove'                           => 'Auto-approvals enabled',
 			'autoapprove-php-nonfunctional-changes' => 'Non-functional changes auto-approved',
+			'autoapprove-php-nonfunctional-changes-file-extensions' => 'Files with file extensions to consider for non-functional change auto-approval',
 		) as $key => $value
 	) {
 		if (
