@@ -50,40 +50,30 @@ final class ReportCreateScanDetailsPhpLintOptionsTest extends TestCase {
 			$this->options
 		);
 
-		$this->assertNotFalse(
-			strpos(
-				$actual_output,
-				'PHP lint options'
-			)
+		$this->assertStringContainsString(
+			'PHP lint options',
+			$actual_output,
 		);
 
-		$this->assertNotFalse(
-			strpos(
-				$actual_output,
-				'<p>PHP lint files enabled: ' . PHP_EOL .
-				'<code>false</code></p>'
-			)
+		$this->assertStringContainsString(
+			'<p>PHP lint files enabled: ' . PHP_EOL .
+				'<code>false</code></p>',
+			$actual_output
 		);
 
-		$this->assertFalse(
-			strpos(
-				$actual_output,
-				'Lint modified files only'
-			)
+		$this->assertStringNotContainsString(
+			'Lint modified files only',
+			$actual_output
 		);
 
-		$this->assertFalse(
-			strpos(
-				$actual_output,
-				'Lint files with file extensions'
-			)
+		$this->assertStringNotContainsString(
+			'Lint files with file extensions',
+			$actual_output,
 		);
 
-		$this->assertFalse(
-			strpos(
-				$actual_output,
-				'Directories not PHP linted'
-			)
+		$this->assertStringNotContainsString(
+			'Directories not PHP linted',
+			$actual_output,
 		);
 	}
 
@@ -102,43 +92,33 @@ final class ReportCreateScanDetailsPhpLintOptionsTest extends TestCase {
 			$this->options
 		);
 
-		$this->assertNotFalse(
-			strpos(
-				$actual_output,
-				'PHP lint options'
-			)
+		$this->assertStringContainsString(
+			'PHP lint options',
+			$actual_output
 		);
 
-		$this->assertNotFalse(
-			strpos(
-				$actual_output,
-				'<p>PHP lint files enabled: ' . PHP_EOL .
-				'<code>true</code></p>'
-			)
+		$this->assertStringContainsString(
+			'<p>PHP lint files enabled: ' . PHP_EOL .
+				'<code>true</code></p>',
+			$actual_output
 		);
 
-		$this->assertNotFalse(
-			strpos(
-				$actual_output,
-				'<p>Lint modified files only: ' . PHP_EOL .
-				'<code>true</code></p>'
-			)
+		$this->assertStringContainsString(
+			'<p>Lint modified files only: ' . PHP_EOL .
+				'<code>true</code></p>',
+			$actual_output
 		);
 
-		$this->assertNotFalse(
-			strpos(
-				$actual_output,
-				'Lint files with file extensions'
-			)
+		$this->assertStringContainsString(
+			'Lint files with file extensions',
+			$actual_output
 		);
 
-		$this->assertNotFalse(
-			strpos(
-				$actual_output,
-				'<p>Directories not PHP linted:</p>' . PHP_EOL .
+		$this->assertStringContainsString(
+			'<p>Directories not PHP linted:</p>' . PHP_EOL .
 				'<ul>' . PHP_EOL .
-				'<li><code>path1</code></li><li><code>path2</code></li></ul>'
-			)
+				'<li><code>path1</code></li><li><code>path2</code></li></ul>',
+			$actual_output
 		);
 	}
 }
