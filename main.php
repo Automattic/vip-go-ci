@@ -146,8 +146,10 @@ function vipgoci_help_print() :void {
 		"\t" . '                                   with items separated by commas.' . PHP_EOL .
 		"\t" . '--wpscan-api-skip-folders=ARRAY    Directories not to scan using WPScan API scanning. Should be an' . PHP_EOL .
 		"\t" . '                                   array with items separated by commas.' . PHP_EOL .
-		"\t" . '--wpscan-api-file-extensions=ARRAY Use specified file extensions to select which altered files to scan with WPScan API.' . PHP_EOL .
-		"\t" . '                                   Default is: "' . implode( ',', VIPGOCI_WPSCAN_FILE_EXTENSIONS_DEFAULT ) . '"' . PHP_EOL .
+		"\t" . '--wpscan-api-plugin-file-extensions=ARRAY Use specified file extensions to select which altered plugin files to scan with WPScan API.' . PHP_EOL .
+		"\t" . '                                          Default is: "' . implode( ',', VIPGOCI_WPSCAN_PLUGIN_FILE_EXTENSIONS_DEFAULT ) . '"' . PHP_EOL .
+		"\t" . '--wpscan-api-theme-file-extensions=ARRAY  Use specified file extensions to select which altered theme files to scan with WPScan API.' . PHP_EOL .
+		"\t" . '                                          Default is: "' . implode( ',', VIPGOCI_WPSCAN_THEME_FILE_EXTENSIONS_DEFAULT ) . '"' . PHP_EOL .
 		"\t" . '--wpscan-api-report-end-msg=STRING Message to append to end of WPScan API reports. The "%addon_type%" placeholder' . PHP_EOL .
 		"\t" . '                                   will be replaced by either "plugin" or "theme", depending on the report. Limited' . PHP_EOL .
 		"\t" . '                                   Markdown syntax allowed.' . PHP_EOL .
@@ -333,7 +335,8 @@ function vipgoci_options_recognized() :array {
 		'wpscan-api-dry-mode:',
 		'wpscan-api-token:',
 		'wpscan-api-paths:',
-		'wpscan-api-file-extensions:',
+		'wpscan-api-plugin-file-extensions:',
+		'wpscan-api-theme-file-extensions:',
 		'wpscan-api-skip-folders:',
 		'wpscan-api-report-end-msg:',
 
@@ -717,13 +720,23 @@ function vipgoci_run_init_options_wpscan( array &$options ) :void {
 	);
 
 	/*
-	 * Process --wpscan-api-file-extensions -- expected to be an
+	 * Process --wpscan-api-plugin-file-extensions -- expected to be an
 	 * array of values.
 	 */
 	vipgoci_option_array_handle(
 		$options,
-		'wpscan-api-file-extensions',
-		VIPGOCI_WPSCAN_FILE_EXTENSIONS_DEFAULT
+		'wpscan-api-plugin-file-extensions',
+		VIPGOCI_WPSCAN_PLUGIN_FILE_EXTENSIONS_DEFAULT
+	);
+
+	/*
+	 * Process --wpscan-api-theme-file-extensions -- expected to be an
+	 * array of values.
+	 */
+	vipgoci_option_array_handle(
+		$options,
+		'wpscan-api-theme-file-extensions',
+		VIPGOCI_WPSCAN_THEME_FILE_EXTENSIONS_DEFAULT
 	);
 
 	/*
