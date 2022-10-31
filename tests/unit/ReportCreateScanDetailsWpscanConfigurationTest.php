@@ -76,7 +76,7 @@ final class ReportCreateScanDetailsWpscanConfigurationTest extends TestCase {
 		);
 
 		$this->assertStringNotContainsString(
-			'Scan added/modified files with file extensions',
+			'file extensions',
 			$actual_output
 		);
 	}
