@@ -50,40 +50,30 @@ final class ReportCreateScanDetailsAutoApproveConfigurationTest extends TestCase
 			$this->options
 		);
 
-		$this->assertNotFalse(
-			strpos(
-				$actual_output,
-				'Auto-approval configuration'
-			)
+		$this->assertStringContainsString(
+			'Auto-approval configuration',
+			$actual_output
 		);
 
-		$this->assertNotFalse(
-			strpos(
-				$actual_output,
-				'<p>Auto-approvals enabled:' . PHP_EOL .
-				'<code>false</code></p>'
-			)
+		$this->assertStringContainsString(
+			'<p>Auto-approvals enabled:' . PHP_EOL .
+				'<code>false</code></p>',
+			$actual_output
 		);
 
-		$this->assertFalse(
-			strpos(
-				$actual_output,
-				'Non-functional changes auto-approved'
-			)
+		$this->assertStringNotContainsString(
+			'Non-functional changes auto-approved',
+			$actual_output
 		);
 
-		$this->assertFalse(
-			strpos(
-				$actual_output,
-				'Files with file extensions to consider for non-functional change auto-approval'
-			)
+		$this->assertStringNotContainsString(
+			'Files with file extensions to consider for non-functional change auto-approval',
+			$actual_output,
 		);
 
-		$this->assertFalse(
-			strpos(
-				$actual_output,
-				'Auto-approved file-types'
-			)
+		$this->assertStringNotContainsString(
+			'Auto-approved file-types',
+			$actual_output
 		);
 	}
 
@@ -102,44 +92,34 @@ final class ReportCreateScanDetailsAutoApproveConfigurationTest extends TestCase
 			$this->options
 		);
 
-		$this->assertNotFalse(
-			strpos(
-				$actual_output,
-				'Auto-approval configuration'
-			)
+		$this->assertStringContainsString(
+			'Auto-approval configuration',
+			$actual_output,
 		);
 
-		$this->assertNotFalse(
-			strpos(
-				$actual_output,
-				'<p>Auto-approvals enabled:' . PHP_EOL .
-				'<code>true</code></p>'
-			)
+		$this->assertStringContainsString(
+			'<p>Auto-approvals enabled:' . PHP_EOL .
+				'<code>true</code></p>',
+			$actual_output
 		);
 
-		$this->assertNotFalse(
-			strpos(
-				$actual_output,
-				'<p>Non-functional changes auto-approved:' . PHP_EOL .
-				'<code>true</code></p>'
-			)
+		$this->assertStringContainsString(
+			'<p>Non-functional changes auto-approved:' . PHP_EOL .
+				'<code>true</code></p>',
+			$actual_output
 		);
 
-		$this->assertNotFalse(
-			strpos(
-				$actual_output,
-				'<p>Files with file extensions to consider for non-functional change auto-approval:' . PHP_EOL .
-				'<code>php</code></p>'
-			)
+		$this->assertStringContainsString(
+			'<p>Files with file extensions to consider for non-functional change auto-approval:' . PHP_EOL .
+				'<code>php</code></p>',
+			$actual_output
 		);
 
-		$this->assertNotFalse(
-			strpos(
-				$actual_output,
-				'<p>Auto-approved file-types:</p>' . PHP_EOL .
+		$this->assertStringContainsString(
+			'<p>Auto-approved file-types:</p>' . PHP_EOL .
 				'<ul>' . PHP_EOL .
-				'<li><code>txt</code></li><li><code>ini</code></li></ul>'
-			)
+				'<li><code>txt</code></li><li><code>ini</code></li></ul>',
+			$actual_output
 		);
 	}
 }
