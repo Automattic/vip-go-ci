@@ -308,7 +308,8 @@ define( 'VIPGOCI_WORDPRESS_ORG_API_BASE_URL', 'https://api.wordpress.org' );
 define( 'VIPGOCI_WPSCAN_BASE_URL', 'https://wpscan.com' );
 define( 'VIPGOCI_WPSCAN_API_BASE_URL', VIPGOCI_WPSCAN_BASE_URL . '/api/v3' );
 
-define( 'VIPGOCI_WPSCAN_FILE_EXTENSIONS_DEFAULT', array( 'php', 'css' ) );
+define( 'VIPGOCI_WPSCAN_PLUGIN_FILE_EXTENSIONS_DEFAULT', array( 'php' ) );
+define( 'VIPGOCI_WPSCAN_THEME_FILE_EXTENSIONS_DEFAULT', array( 'css' ) );
 
 define( 'VIPGOCI_WPSCAN_UPDATEURI_WP_ORG_URLS', array( 'w.org', 'wordpress.org' ) );
 
