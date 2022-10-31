@@ -548,9 +548,11 @@ function vipgoci_wpscan_scan_commit(
 		vipgoci_log(
 			'About to scan added/updated themes/plugins using WPScan API',
 			array(
-				'repo_owner' => $options['repo-owner'],
-				'repo_name'  => $options['repo-name'],
-				'commit_id'  => $options['commit'],
+				'repo_owner'             => $options['repo-owner'],
+				'repo_name'              => $options['repo-name'],
+				'commit_id'              => $options['commit'],
+				'plugin-file-extensions' => $options['wpscan-api-plugin-file-extensions'],
+				'theme-file-extensions'  => $options['wpscan-api-theme-file-extensions'],
 			)
 		);
 	}
@@ -576,9 +578,11 @@ function vipgoci_wpscan_scan_commit(
 		vipgoci_log(
 			'Will not scan added/updated themes/plugins using WPScan API, no plugins/themes added/updated',
 			array(
-				'repo_owner' => $options['repo-owner'],
-				'repo_name'  => $options['repo-name'],
-				'commit_id'  => $options['commit'],
+				'repo_owner'             => $options['repo-owner'],
+				'repo_name'              => $options['repo-name'],
+				'commit_id'              => $options['commit'],
+				'plugin-file-extensions' => $options['wpscan-api-plugin-file-extensions'],
+				'theme-file-extensions'  => $options['wpscan-api-theme-file-extensions'],
 			)
 		);
 
