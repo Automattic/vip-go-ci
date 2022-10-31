@@ -50,61 +50,45 @@ final class ReportCreateScanDetailsPhpcsConfigurationTest extends TestCase {
 			$this->options
 		);
 
-		$this->assertNotFalse(
-			strpos(
-				$actual_output,
-				'PHPCS configuration'
-			)
+		$this->assertStringContainsString(
+			'PHPCS configuration',
+			$actual_output,
 		);
 
-		$this->assertNotFalse(
-			strpos(
-				$actual_output,
-				'<p>PHPCS scanning enabled: ' . PHP_EOL .
-				'<code>false</code></p>'
-			)
+		$this->assertStringContainsString(
+			'<p>PHPCS scanning enabled: ' . PHP_EOL .
+				'<code>false</code></p>',
+			$actual_output
 		);
 
-		$this->assertFalse(
-			strpos(
-				$actual_output,
-				'Standard(s) used'
-			)
+		$this->assertStringNotContainsString(
+			'Standard(s) used',
+			$actual_output
 		);
 
-		$this->assertFalse(
-			strpos(
-				$actual_output,
-				'Runtime set'
-			)
+		$this->assertStringNotContainsString(
+			'Runtime set',
+			$actual_output
 		);
 
-		$this->assertFalse(
-			strpos(
-				$actual_output,
-				'Scan added/modified files with file extensions'
-			)
+		$this->assertStringNotContainsString(
+			'Scan added/modified files with file extensions',
+			$actual_output
 		);
 
-		$this->assertFalse(
-			strpos(
-				$actual_output,
-				'Custom sniffs included'
-			)
+		$this->assertStringNotContainsString(
+			'Custom sniffs included',
+			$actual_output
 		);
 
-		$this->assertFalse(
-			strpos(
-				$actual_output,
-				'Custom sniffs excluded'
-			)
+		$this->assertStringNotContainsString(
+			'Custom sniffs excluded',
+			$actual_output
 		);
 
-		$this->assertFalse(
-			strpos(
-				$actual_output,
-				'Directories not PHPCS scanned'
-			)
+		$this->assertStringNotContainsString(
+			'Directories not PHPCS scanned',
+			$actual_output
 		);
 	}
 
@@ -128,81 +112,63 @@ final class ReportCreateScanDetailsPhpcsConfigurationTest extends TestCase {
 			$this->options
 		);
 
-		$this->assertNotFalse(
-			strpos(
-				$actual_output,
-				'PHPCS configuration'
-			)
+		$this->assertStringContainsString(
+			'PHPCS configuration',
+			$actual_output
 		);
 
-		$this->assertNotFalse(
-			strpos(
-				$actual_output,
-				'<p>PHPCS scanning enabled: ' . PHP_EOL .
-				'<code>true</code></p>'
-			)
+		$this->assertStringContainsString(
+			'<p>PHPCS scanning enabled: ' . PHP_EOL .
+				'<code>true</code></p>',
+			$actual_output
 		);
 
-		$this->assertNotFalse(
-			strpos(
-				$actual_output,
-				'<p>PHPCS severity level: ' . PHP_EOL .
-				'<code>3</code></p>'
-			)
+		$this->assertStringContainsString(
+			'<p>PHPCS severity level: ' . PHP_EOL .
+				'<code>3</code></p>',
+			$actual_output
 		);
 
-		$this->assertNotFalse(
-			strpos(
-				$actual_output,
-				'<p>Standard(s) used:</p>' . PHP_EOL .
+		$this->assertStringContainsString(
+			'<p>Standard(s) used:</p>' . PHP_EOL .
 				'<ul>' . PHP_EOL .
-				'<li><code>WordPress</code></li><li><code>WordPress-VIP-Go</code></li></ul>'
-			)
+				'<li><code>WordPress</code></li><li><code>WordPress-VIP-Go</code></li></ul>',
+			$actual_output
 		);
 
-		$this->assertNotFalse(
-			strpos(
-				$actual_output,
-				'<p>Runtime set:</p>' . PHP_EOL .
+		$this->assertStringContainsString(
+			'<p>Runtime set:</p>' . PHP_EOL .
 				'<ul>' . PHP_EOL .
-				'<li><code>opt1 key1</code></li></ul>'
-			)
+				'<li><code>opt1 key1</code></li></ul>',
+			$actual_output
 		);
 
-		$this->assertNotFalse(
-			strpos(
-				$actual_output,
-				'<p>Scan added/modified files with file extensions:</p>' . PHP_EOL .
+		$this->assertStringContainsString(
+			'<p>Scan added/modified files with file extensions:</p>' . PHP_EOL .
 				'<ul>' . PHP_EOL .
-				'<li><code>php</code></li><li><code>js</code></li><li><code>twig</code></li></ul>'
-			)
+				'<li><code>php</code></li><li><code>js</code></li><li><code>twig</code></li></ul>',
+			$actual_output
 		);
 
-		$this->assertNotFalse(
-			strpos(
-				$actual_output,
-				'<p>Custom sniffs included:</p>' . PHP_EOL .
+		$this->assertStringContainsString(
+			'<p>Custom sniffs included:</p>' . PHP_EOL .
 				'<ul>' . PHP_EOL .
-				'<li>None</li></ul>' . PHP_EOL
-			)
+				'<li>None</li></ul>' . PHP_EOL,
+			$actual_output
 		);
 
-		$this->assertNotFalse(
-			strpos(
-				$actual_output,
-				'<p>Custom sniffs excluded:</p>' . PHP_EOL .
+		$this->assertStringContainsString(
+			'<p>Custom sniffs excluded:</p>' . PHP_EOL .
 				'<ul>' . PHP_EOL .
-				'<li>None</li></ul>'
-			)
+				'<li>None</li></ul>',
+			$actual_output
 		);
 
-		$this->assertNotFalse(
-			strpos(
-				$actual_output,
-				'<p>Directories not PHPCS scanned:</p>' . PHP_EOL .
+		$this->assertStringContainsString(
+			'<p>Directories not PHPCS scanned:</p>' . PHP_EOL .
 				'<ul>' . PHP_EOL .
-				'<li><code>path1</code></li><li><code>path2</code></li></ul>'
-			)
+				'<li><code>path1</code></li><li><code>path2</code></li></ul>',
+			$actual_output
 		);
 	}
 
@@ -227,81 +193,63 @@ final class ReportCreateScanDetailsPhpcsConfigurationTest extends TestCase {
 			$this->options
 		);
 
-		$this->assertNotFalse(
-			strpos(
-				$actual_output,
-				'PHPCS configuration'
-			)
+		$this->assertStringContainsString(
+			'PHPCS configuration',
+			$actual_output
 		);
 
-		$this->assertNotFalse(
-			strpos(
-				$actual_output,
-				'<p>PHPCS scanning enabled: ' . PHP_EOL .
-				'<code>true</code></p>'
-			)
+		$this->assertStringContainsString(
+			'<p>PHPCS scanning enabled: ' . PHP_EOL .
+				'<code>true</code></p>',
+			$actual_output
 		);
 
-		$this->assertNotFalse(
-			strpos(
-				$actual_output,
-				'<p>PHPCS severity level: ' . PHP_EOL .
-				'<code>3</code></p>'
-			)
+		$this->assertStringContainsString(
+			'<p>PHPCS severity level: ' . PHP_EOL .
+				'<code>3</code></p>',
+			$actual_output
 		);
 
-		$this->assertNotFalse(
-			strpos(
-				$actual_output,
-				'<p>Standard(s) used:</p>' . PHP_EOL .
+		$this->assertStringContainsString(
+			'<p>Standard(s) used:</p>' . PHP_EOL .
 				'<ul>' . PHP_EOL .
-				'<li><code>WordPress</code></li><li><code>WordPress-VIP-Go</code></li></ul>'
-			)
+				'<li><code>WordPress</code></li><li><code>WordPress-VIP-Go</code></li></ul>',
+			$actual_output
 		);
 
-		$this->assertNotFalse(
-			strpos(
-				$actual_output,
-				'<p>Runtime set:</p>' . PHP_EOL .
+		$this->assertStringContainsString(
+			'<p>Runtime set:</p>' . PHP_EOL .
 				'<ul>' . PHP_EOL .
-				'<li><code>opt1 key1</code></li></ul>'
-			)
+				'<li><code>opt1 key1</code></li></ul>',
+			$actual_output
 		);
 
-		$this->assertNotFalse(
-			strpos(
-				$actual_output,
-				'<p>Scan added/modified files with file extensions:</p>' . PHP_EOL .
+		$this->assertStringContainsString(
+			'<p>Scan added/modified files with file extensions:</p>' . PHP_EOL .
 				'<ul>' . PHP_EOL .
-				'<li><code>php</code></li><li><code>js</code></li><li><code>twig</code></li></ul>'
-			)
+				'<li><code>php</code></li><li><code>js</code></li><li><code>twig</code></li></ul>',
+			$actual_output
 		);
 
-		$this->assertNotFalse(
-			strpos(
-				$actual_output,
-				'<p>Custom sniffs included:</p>' . PHP_EOL .
+		$this->assertStringContainsString(
+			'<p>Custom sniffs included:</p>' . PHP_EOL .
 				'<ul>' . PHP_EOL .
-				'<li><code>AdditionalStandard1</code></li></ul>' . PHP_EOL
-			)
+				'<li><code>AdditionalStandard1</code></li></ul>' . PHP_EOL,
+				$actual_output
 		);
 
-		$this->assertNotFalse(
-			strpos(
-				$actual_output,
-				'<p>Custom sniffs excluded:</p>' . PHP_EOL .
+		$this->assertStringContainsString(
+			'<p>Custom sniffs excluded:</p>' . PHP_EOL .
 				'<ul>' . PHP_EOL .
-				'<li><code>SniffExclude1</code></li></ul>'
-			)
+				'<li><code>SniffExclude1</code></li></ul>',
+			$actual_output
 		);
 
-		$this->assertNotFalse(
-			strpos(
-				$actual_output,
-				'<p>Directories not PHPCS scanned:</p>' . PHP_EOL .
+		$this->assertStringContainsString(
+			'<p>Directories not PHPCS scanned:</p>' . PHP_EOL .
 				'<ul>' . PHP_EOL .
-				'<li><code>path1</code></li><li><code>path2</code></li></ul>'
-			)
+				'<li><code>path1</code></li><li><code>path2</code></li></ul>',
+			$actual_output
 		);
 	}
 }
