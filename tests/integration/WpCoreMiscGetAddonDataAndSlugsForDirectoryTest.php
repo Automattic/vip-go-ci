@@ -134,7 +134,8 @@ final class WpCoreMiscGetAddonDataAndSlugsForDirectoryTest extends TestCase {
 
 		$actual_results = vipgoci_wpcore_misc_get_addon_data_and_slugs_for_directory(
 			$this->temp_dir . '/WpCoreMiscGetAddonDataAndSlugsForDirectoryTest',
-			array( 'php', 'css' ),
+			array( 'php' ),
+			array( 'css' ),
 			true
 		);
 
@@ -325,7 +326,8 @@ final class WpCoreMiscGetAddonDataAndSlugsForDirectoryTest extends TestCase {
 
 		$actual_results = vipgoci_wpcore_misc_get_addon_data_and_slugs_for_directory(
 			$this->temp_dir . '/WpCoreMiscGetAddonDataAndSlugsForDirectoryTest',
-			array( 'php', 'css' ),
+			array( 'php' ),
+			array( 'css' ),
 			false
 		);
 
