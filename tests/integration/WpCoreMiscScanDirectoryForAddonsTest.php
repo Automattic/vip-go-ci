@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class WpCoreMiscScanDirectoryForAdddonsTest extends TestCase {
+final class WpCoreMiscScanDirectoryForAddonsTest extends TestCase {
 	/**
 	 * Temporary directory.
 	 *
