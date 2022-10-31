@@ -235,7 +235,7 @@ final class ReportCreateScanDetailsPhpcsConfigurationTest extends TestCase {
 			'<p>Custom sniffs included:</p>' . PHP_EOL .
 				'<ul>' . PHP_EOL .
 				'<li><code>AdditionalStandard1</code></li></ul>' . PHP_EOL,
-				$actual_output
+			$actual_output
 		);
 
 		$this->assertStringContainsString(
