@@ -106,6 +106,10 @@ final class WpscanScanCommitTest extends TestCase {
 
 		$this->options['wpscan-api-skip-folders'] = array();
 
+		$this->options['wpscan-api-plugin-file-extensions'] = array( 'php' );
+
+		$this->options['wpscan-api-theme-file-extensions'] = array( 'css' );
+
 		$this->options['wpscan-api-token'] =
 			vipgoci_unittests_get_config_value(
 				'wpscan-api-scan',
