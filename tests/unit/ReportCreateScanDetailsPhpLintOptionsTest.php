@@ -67,7 +67,7 @@ final class ReportCreateScanDetailsPhpLintOptionsTest extends TestCase {
 		);
 
 		$this->assertStringNotContainsString(
-			'Lint files with file extensions',
+			'file extensions',
 			$actual_output,
 		);
 
