@@ -765,18 +765,20 @@ function vipgoci_option_integer_handle(
  *
  * @param array             $options               Options array for the program.
  * @param string            $option_name           Option name to process.
- * @param array|string      $default_value         Default value if nothing is set.
+ * @param array             $default_value         Default value if nothing is set.
  * @param string|array|null $forbidden_value       Values not permissible to use.
  * @param string            $array_separator       String separator between values.
  * @param bool              $strlower_option_value If to convert values to lower case.
+ *                                                 If set to true, forbidden values are set
+ *                                                 to lower case as well before validation.
  *
  * @return void
  */
 function vipgoci_option_array_handle(
 	array &$options,
 	string $option_name,
-	array|string $default_value = array(),
-	string|array|null $forbidden_value = null,
+	array $default_value = array(),
+	array|null $forbidden_value = null,
 	string $array_separator = ',',
 	bool $strlower_option_value = true
 ) :void {
@@ -822,19 +824,30 @@ function vipgoci_option_array_handle(
 			$options[ $option_name ] = $default_value;
 		}
 
-		if ( ! empty( $forbidden_value ) ) {
-			if ( in_array(
-				$forbidden_value,
-				$options[ $option_name ],
-				true
+		if ( null !== $forbidden_value ) {
+			if ( is_string( $forbidden_value ) ) {
+				$forbidden_value = array( $forbidden_value );
+			}
+
+			if ( true === $strlower_option_value ) {
+				// Transform to lower case.
+				$forbidden_value = array_map(
+					'strtolower',
+					$forbidden_value
+				);
+			}
+
+			if ( ! empty(
+				array_intersect(
+					$forbidden_value,
+					$options[ $option_name ],
+				)
 			) ) {
 				vipgoci_sysexit(
-					'Parameter --' .
-						$option_name . ' ' .
+					'Parameter --' . $option_name . ' ' .
 						'can not contain \'' .
-						$forbidden_value .
-						'\' as one of ' .
-						'the values',
+						'"' . implode( ',', $forbidden_value ) . '"' .
+						'\' as one of the values',
 					array(),
 					VIPGOCI_EXIT_USAGE_ERROR
 				);

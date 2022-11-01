@@ -76,9 +76,10 @@ final class MainRunInitOptionsSvgTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				'svg-checks'       => false,
-				'svg-php-path'     => null,
-				'svg-scanner-path' => null,
+				'svg-checks'          => false,
+				'svg-php-path'        => null,
+				'svg-scanner-path'    => null,
+				'svg-file-extensions' => array( 'svg' ),
 			),
 			$this->options
 		);
@@ -98,9 +99,10 @@ final class MainRunInitOptionsSvgTest extends TestCase {
 			return;
 		}
 
-		$this->options['svg-checks']       = 'true';
-		$this->options['svg-php-path']     = $this->svg_php_path;
-		$this->options['svg-scanner-path'] = $this->svg_scanner_path;
+		$this->options['svg-checks']          = 'true';
+		$this->options['svg-php-path']        = $this->svg_php_path;
+		$this->options['svg-scanner-path']    = $this->svg_scanner_path;
+		$this->options['svg-file-extensions'] = 'svg,svg2';
 
 		vipgoci_run_init_options_svg(
 			$this->options
@@ -108,9 +110,10 @@ final class MainRunInitOptionsSvgTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				'svg-checks'       => true,
-				'svg-php-path'     => $this->svg_php_path,
-				'svg-scanner-path' => $this->svg_scanner_path,
+				'svg-checks'          => true,
+				'svg-php-path'        => $this->svg_php_path,
+				'svg-scanner-path'    => $this->svg_scanner_path,
+				'svg-file-extensions' => array( 'svg', 'svg2' ),
 			),
 			$this->options
 		);

@@ -110,7 +110,9 @@ final class WpCoreMiscGetAddonHeadersAndTypeTest extends TestCase {
 		vipgoci_unittests_output_suppress();
 
 		$actual_result = vipgoci_wpcore_misc_get_addon_headers_and_type(
-			$temp_file_name
+			$temp_file_name,
+			array( 'php' ),
+			array( 'css' ),
 		);
 
 		vipgoci_unittests_output_unsuppress();
@@ -212,7 +214,9 @@ final class WpCoreMiscGetAddonHeadersAndTypeTest extends TestCase {
 		vipgoci_unittests_output_suppress();
 
 		$actual_result = vipgoci_wpcore_misc_get_addon_headers_and_type(
-			$temp_file_name
+			$temp_file_name,
+			array( 'php' ),
+			array( 'css' )
 		);
 
 		vipgoci_unittests_output_unsuppress();
@@ -292,7 +296,9 @@ final class WpCoreMiscGetAddonHeadersAndTypeTest extends TestCase {
 		vipgoci_unittests_output_suppress();
 
 		$actual_result = vipgoci_wpcore_misc_get_addon_headers_and_type(
-			$temp_file_name
+			$temp_file_name,
+			array( 'php' ),
+			array( 'css' ),
 		);
 
 		vipgoci_unittests_output_unsuppress();
