@@ -134,6 +134,8 @@ final class MainRunInitOptionsAutoapproveTest extends TestCase {
 			'svg-file-extensions'                   => array( 'svg' ),
 		);
 
+		$error_msg = '';
+
 		try {
 			vipgoci_run_init_options_autoapprove(
 				$this->options
@@ -166,6 +168,8 @@ final class MainRunInitOptionsAutoapproveTest extends TestCase {
 			'phpcs-file-extensions'                 => array( 'php', 'js', 'twig' ),
 			'svg-file-extensions'                   => array( 'svg' ),
 		);
+
+		$error_msg = '';
 
 		try {
 			vipgoci_run_init_options_autoapprove(
