@@ -74,6 +74,11 @@ final class ReportCreateScanDetailsWpscanConfigurationTest extends TestCase {
 			'Directories not scanned',
 			$actual_output
 		);
+
+		$this->assertStringNotContainsString(
+			'file extensions',
+			$actual_output
+		);
 	}
 
 	/**
@@ -82,9 +87,11 @@ final class ReportCreateScanDetailsWpscanConfigurationTest extends TestCase {
 	 * @covers ::vipgoci_report_create_scan_details_wpscan_configuration
 	 */
 	public function testCreateDetails2(): void {
-		$this->options['wpscan-api']              = true;
-		$this->options['wpscan-api-paths']        = array( 'plugins', 'themes' );
-		$this->options['wpscan-api-skip-folders'] = array( 'skip-dir1', 'skip-dir2' );
+		$this->options['wpscan-api']                        = true;
+		$this->options['wpscan-api-paths']                  = array( 'plugins', 'themes' );
+		$this->options['wpscan-api-skip-folders']           = array( 'skip-dir1', 'skip-dir2' );
+		$this->options['wpscan-api-plugin-file-extensions'] = array( 'php' );
+		$this->options['wpscan-api-theme-file-extensions']  = array( 'css' );
 
 		$actual_output = vipgoci_report_create_scan_details_wpscan_configuration(
 			$this->options
@@ -116,6 +123,18 @@ final class ReportCreateScanDetailsWpscanConfigurationTest extends TestCase {
 		$this->assertStringContainsString(
 			'<p>Directories not scanned:</p>' . PHP_EOL .
 			'<ul>' . PHP_EOL . '<li><code>skip-dir1</code></li><li><code>skip-dir2</code></li></ul>',
+			$actual_output
+		);
+
+		$this->assertStringContainsString(
+			'<p>Scan added/modified plugins based on headers present in files with file extensions:</p>' . PHP_EOL .
+			'<ul>' . PHP_EOL . '<li><code>php</code></li></ul>',
+			$actual_output
+		);
+
+		$this->assertStringContainsString(
+			'<p>Scan added/modified themes based on headers present in files with file extensions:</p>' . PHP_EOL .
+			'<ul>' . PHP_EOL . '<li><code>css</code></li></ul>',
 			$actual_output
 		);
 	}

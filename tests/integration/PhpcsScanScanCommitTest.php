@@ -70,9 +70,13 @@ final class PhpcsScanScanCommitTest extends TestCase {
 
 		$this->options['phpcs'] = true;
 
+		$this->options['phpcs-file-extensions'] = array( 'php', 'js' );
+
 		$this->options['phpcs-skip-folders'] = array();
 
 		$this->options['phpcs-severity'] = (int) $this->options['phpcs-severity'];
+
+		$this->options['svg-file-extensions'] = array( 'svg' );
 
 		$this->options['skip-draft-prs'] = false;
 

@@ -81,9 +81,10 @@ define( 'VIPGOCI_ISSUE_TYPE_WARNING', 'warning' );
 define( 'VIPGOCI_ISSUE_TYPE_ERROR', 'error' );
 
 /*
- * Define auto-approval types
+ * Defines for auto-approvals.
  */
 define( 'VIPGOCI_APPROVAL_AUTOAPPROVE', 'auto-approval' );
+define( 'VIPGOCI_APPROVAL_AUTOAPPROVE_NON_FUNCTIONAL_CHANGES_FILE_EXTENSIONS_DEFAULT', array( 'php' ) );
 
 /*
  * Defines for vipgoci_runtime_measure() function.
@@ -204,8 +205,10 @@ define(
 );
 
 /*
- * Messages related to PHP linting.
+ * Defines related to PHP linting.
  */
+define( 'VIPGOCI_LINT_FILE_EXTENSIONS_DEFAULT', array( 'php' ) );
+
 define(
 	'VIPGOCI_LINT_REPORT_START',
 	'%1$s has identified PHP syntax errors during automated linting. ' .
@@ -226,8 +229,10 @@ define(
 define( 'VIPGOCI_LINT_ERROR_STR', 'PHP Syntax Errors Found' );
 
 /*
- * Messages relating to PHPCS scanning.
+ * Defines relating to PHPCS scanning.
  */
+define( 'VIPGOCI_PHPCS_FILE_EXTENSIONS_DEFAULT', array( 'php', 'js', 'twig' ) );
+
 define(
 	'VIPGOCI_PHPCS_SCAN_REVIEW_START',
 	'%1$s has identified potential problems in this pull request ' .
@@ -282,6 +287,11 @@ define(
 );
 
 /*
+ * Defines for SVG scanning.
+ */
+define( 'VIPGOCI_SVG_FILE_EXTENSIONS_DEFAULT', array( 'svg' ) );
+
+/*
  * Defines for addons generally.
  */
 define( 'VIPGOCI_ADDON_PLUGIN', 'vipgoci-addon-plugin' );
@@ -297,6 +307,9 @@ define( 'VIPGOCI_WORDPRESS_ORG_API_BASE_URL', 'https://api.wordpress.org' );
  */
 define( 'VIPGOCI_WPSCAN_BASE_URL', 'https://wpscan.com' );
 define( 'VIPGOCI_WPSCAN_API_BASE_URL', VIPGOCI_WPSCAN_BASE_URL . '/api/v3' );
+
+define( 'VIPGOCI_WPSCAN_PLUGIN_FILE_EXTENSIONS_DEFAULT', array( 'php' ) );
+define( 'VIPGOCI_WPSCAN_THEME_FILE_EXTENSIONS_DEFAULT', array( 'css' ) );
 
 define( 'VIPGOCI_WPSCAN_UPDATEURI_WP_ORG_URLS', array( 'w.org', 'wordpress.org' ) );
 

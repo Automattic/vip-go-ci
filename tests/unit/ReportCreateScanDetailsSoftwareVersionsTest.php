@@ -53,60 +53,44 @@ final class ReportCreateScanDetailsSoftwareVersionsTest extends TestCase {
 			$this->options
 		);
 
-		$this->assertNotFalse(
-			strpos(
-				$actual_output,
-				'Software versions'
-			)
+		$this->assertStringContainsString(
+			'Software versions',
+			$actual_output
 		);
 
-		$this->assertNotFalse(
-			strpos(
-				$actual_output,
-				'<li><a href="https://github.com/Automattic/vip-go-ci">vip-go-ci</a> version: <code>' . VIPGOCI_VERSION . '</code></li>'
-			)
+		$this->assertStringContainsString(
+			'<li><a href="https://github.com/Automattic/vip-go-ci">vip-go-ci</a> version: <code>' . VIPGOCI_VERSION . '</code></li>',
+			$actual_output
 		);
 
-		$this->assertNotFalse(
-			strpos(
-				$actual_output,
-				'<li>PHP runtime version for vip-go-ci: <code>' . phpversion() . '</code></li>'
-			)
+		$this->assertStringContainsString(
+			'<li>PHP runtime version for vip-go-ci: <code>' . phpversion() . '</code></li>',
+			$actual_output
 		);
 
-		$this->assertFalse(
-			strpos(
-				$actual_output,
-				'PHP runtime version for PHP linting'
-			)
+		$this->assertStringNotContainsString(
+			'PHP runtime version for PHP linting',
+			$actual_output
 		);
 
-		$this->assertFalse(
-			strpos(
-				$actual_output,
-				'PHP runtime version for PHPCS'
-			)
+		$this->assertStringNotContainsString(
+			'PHP runtime version for PHPCS',
+			$actual_output
 		);
 
-		$this->assertFalse(
-			strpos(
-				$actual_output,
-				'PHPCS version'
-			)
+		$this->assertStringNotContainsString(
+			'PHPCS version',
+			$actual_output
 		);
 
-		$this->assertFalse(
-			strpos(
-				$actual_output,
-				'SVG scanner'
-			)
+		$this->assertStringNotContainsString(
+			'SVG scanner',
+			$actual_output
 		);
 
-		$this->assertNotFalse(
-			strpos(
-				$actual_output,
-				'<p>Options file enabled: ' . PHP_EOL . '<code>false</code></p>'
-			)
+		$this->assertStringContainsString(
+			'<p>Options file enabled: ' . PHP_EOL . '<code>false</code></p>',
+			$actual_output
 		);
 	}
 
@@ -140,97 +124,71 @@ final class ReportCreateScanDetailsSoftwareVersionsTest extends TestCase {
 			$this->options
 		);
 
-		$this->assertNotFalse(
-			strpos(
-				$actual_output,
-				'<li>PHP runtime version for PHPCS: <code>7.3.1</code></li>'
-			)
+		$this->assertStringContainsString(
+			'<li>PHP runtime version for PHPCS: <code>7.3.1</code></li>',
+			$actual_output
 		);
 
-		$this->assertNotFalse(
-			strpos(
-				$actual_output,
-				'Software versions'
-			)
+		$this->assertStringContainsString(
+			'Software versions',
+			$actual_output
 		);
 
-		$this->assertNotFalse(
-			strpos(
-				$actual_output,
-				'<li><a href="https://github.com/Automattic/vip-go-ci">vip-go-ci</a> version: <code>' . VIPGOCI_VERSION . '</code></li>'
-			)
+		$this->assertStringContainsString(
+			'<li><a href="https://github.com/Automattic/vip-go-ci">vip-go-ci</a> version: <code>' . VIPGOCI_VERSION . '</code></li>',
+			$actual_output
 		);
 
-		$this->assertNotFalse(
-			strpos(
-				$actual_output,
-				'<li>PHP runtime version for vip-go-ci: <code>' . phpversion() . '</code></li>'
-			)
+		$this->assertStringContainsString(
+			'<li>PHP runtime version for vip-go-ci: <code>' . phpversion() . '</code></li>',
+			$actual_output
 		);
 
-		$this->assertNotFalse(
-			strpos(
-				$actual_output,
-				'<li>PHP runtime for linting:'
-			)
+		$this->assertStringContainsString(
+			'<li>PHP runtime for linting:',
+			$actual_output
 		);
 
-		$this->assertNotFalse(
-			strpos(
-				$actual_output,
-				'<li>PHP 7.4: <code>7.4.2</code></li>'
-			)
+		$this->assertStringContainsString(
+			'<li>PHP 7.4: <code>7.4.2</code></li>',
+			$actual_output
 		);
 
-		$this->assertFalse(
-			strpos(
-				$actual_output,
-				'PHP 8.0'
-			)
+		$this->assertStringNotContainsString(
+			'PHP 8.0',
+			$actual_output
 		);
 
-		$this->assertNotFalse(
-			strpos(
-				$actual_output,
-				'<li>PHP 8.1: <code>8.1.4</code></li>'
-			)
+		$this->assertStringContainsString(
+			'<li>PHP 8.1: <code>8.1.4</code></li>',
+			$actual_output
 		);
 
-		$this->assertNotFalse(
-			strpos(
-				$actual_output,
-				'<li>PHP runtime version for PHPCS: <code>7.3.1</code></li>'
-			)
+		$this->assertStringContainsString(
+			'<li>PHP runtime version for PHPCS: <code>7.3.1</code></li>',
+			$actual_output
 		);
 
-		$this->assertNotFalse(
-			strpos(
-				$actual_output,
-				'<li>PHPCS version: <code>3.5.5</code></li>'
-			)
+		$this->assertStringContainsString(
+			'<li>PHPCS version: <code>3.5.5</code></li>',
+			$actual_output
 		);
 
-		$this->assertNotFalse(
-			strpos(
-				$actual_output,
-				'<li>PHP runtime version for SVG scanner: <code>8.0.3</code></li>'
-			)
+		$this->assertStringContainsString(
+			'<li>PHP runtime version for SVG scanner: <code>8.0.3</code></li>',
+			$actual_output
 		);
 
-		$this->assertNotFalse(
-			strpos(
-				$actual_output,
-				'<p>Options file enabled: ' . PHP_EOL . '<code>true</code></p>'
-			)
+		$this->assertStringContainsString(
+			'<p>Options file enabled: ' . PHP_EOL . '<code>true</code></p>',
+			$actual_output
 		);
 
-		$this->assertNotFalse(
-			strpos(
-				$actual_output,
-				'<p>Options altered:</p>' . PHP_EOL .
+		$this->assertStringContainsString(
+			'<p>Options altered:</p>' . PHP_EOL .
 				'<ul>' . PHP_EOL .
-				'<li><code>a</code>set to<code>1</code></li><li><code>b</code>set to<code>2</code></li></ul>' . PHP_EOL
-			)
+				'<li><code>a</code>set to<code>1</code></li><li><code>b</code>set to<code>2</code></li></ul>' . PHP_EOL,
+			$actual_output
 		);
 	}
 }

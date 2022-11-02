@@ -50,19 +50,20 @@ final class ReportCreateScanDetailsSvgConfigurationTest extends TestCase {
 			$this->options
 		);
 
-		$this->assertNotFalse(
-			strpos(
-				$actual_output,
-				'SVG configuration'
-			)
+		$this->assertStringContainsString(
+			'SVG configuration',
+			$actual_output
 		);
 
-		$this->assertNotFalse(
-			strpos(
-				$actual_output,
-				'<p>SVG scanning enabled: ' . PHP_EOL .
-				'<code>false</code></p>'
-			)
+		$this->assertStringContainsString(
+			'<p>SVG scanning enabled: ' . PHP_EOL .
+				'<code>false</code></p>',
+			$actual_output
+		);
+
+		$this->assertStringNotContainsString(
+			'file extensions',
+			$actual_output
 		);
 	}
 
@@ -73,24 +74,27 @@ final class ReportCreateScanDetailsSvgConfigurationTest extends TestCase {
 	 */
 	public function testCreateDetails2(): void {
 		$this->options['svg-checks'] = true;
+		$this->options['svg-file-extensions'] = array( 'svg' );
 
 		$actual_output = vipgoci_report_create_scan_details_svg_configuration(
 			$this->options
 		);
 
-		$this->assertNotFalse(
-			strpos(
-				$actual_output,
-				'SVG configuration'
-			)
+		$this->assertStringContainsString(
+			'SVG configuration',
+			$actual_output
 		);
 
-		$this->assertNotFalse(
-			strpos(
-				$actual_output,
-				'<p>SVG scanning enabled: ' . PHP_EOL .
-				'<code>true</code></p>'
-			)
+		$this->assertStringContainsString(
+			'<p>SVG scanning enabled: ' . PHP_EOL .
+				'<code>true</code></p>',
+			$actual_output
+		);
+
+		$this->assertStringContainsString(
+			'<p>Scan added/modified files with file extensions:</p>' . PHP_EOL .
+				'<ul>' . PHP_EOL . '<li><code>svg</code></li></ul>',
+			$actual_output
 		);
 	}
 }
