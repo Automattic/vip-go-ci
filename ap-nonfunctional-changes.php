@@ -92,7 +92,7 @@ function vipgoci_ap_nonfunctional_changes(
 			 */
 			if ( in_array(
 				$pr_diff_file_extension,
-				array( 'php' ),
+				$options['autoapprove-php-nonfunctional-changes-file-extensions'],
 				true
 			) === false ) {
 				continue;

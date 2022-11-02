@@ -108,14 +108,18 @@ function vipgoci_wpcore_misc_cleanup_header_comment(
  * Name, AuthorName, Version, and so forth from a file.
  * Also attempts to determine if file is part of a theme or a plugin.
  *
- * @param string $file_name Path to file to try to fetch headers from.
+ * @param string $file_name              Path to file to try to fetch headers from.
+ * @param array  $plugin_file_extensions File extensions to consider when determining plugins to analyze.
+ * @param array  $theme_file_extensions  File extensions to consider when determining themes to analyze.
  *
  * @return null|array Null on failure to get headers.
  * On success, associative array with type, version, and
  * plugin/theme headers.
  */
 function vipgoci_wpcore_misc_get_addon_headers_and_type(
-	string $file_name
+	string $file_name,
+	array $plugin_file_extensions,
+	array $theme_file_extensions
 ) :null|array {
 	vipgoci_log(
 		'Attempting to determine plugin/theme headers for file',
@@ -128,7 +132,16 @@ function vipgoci_wpcore_misc_get_addon_headers_and_type(
 	// By default, assume no headers where found.
 	$type = null;
 
-	if ( str_ends_with( $file_name, '.php' ) ) {
+	$file_extension = pathinfo(
+		$file_name,
+		PATHINFO_EXTENSION
+	);
+
+	if ( true === in_array(
+		$file_extension,
+		$plugin_file_extensions,
+		true
+	) ) {
 		/*
 		 * Try to retrieve plugin headers.
 		 */
@@ -159,9 +172,13 @@ function vipgoci_wpcore_misc_get_addon_headers_and_type(
 			$addon_headers    = $plugin_data;
 			$version_detected = $plugin_data['Version'];
 		}
-	} elseif ( str_ends_with( $file_name, '.css' ) ) {
+	} elseif ( true === in_array(
+		$file_extension,
+		$theme_file_extensions,
+		true
+	) ) {
 		/*
-		 * If file is CSS, try fetching headers.
+		 * If theme file extension, try fetching headers.
 		 */
 		$theme_data = vipgoci_wpcore_misc_get_file_wp_headers(
 			$file_name,
@@ -233,6 +250,8 @@ function vipgoci_wpcore_misc_get_addon_headers_and_type(
  * The function is adopted from WordPress: https://core.trac.wordpress.org/browser/tags/6.0/src/wp-admin/includes/plugin.php#L254
  *
  * @param string $path                   Path to scan for plugins and themes. Usually this would point a structure similar to wp-content/plugins.
+ * @param array  $plugin_file_extensions File extensions to consider when determining plugins to analyze.
+ * @param array  $theme_file_extensions  File extensions to consider when determining themes to analyze.
  * @param bool   $process_subdirectories If to process sub-directories.
  *
  * @link https://developer.wordpress.org/reference/functions/get_plugins/
@@ -259,6 +278,8 @@ function vipgoci_wpcore_misc_get_addon_headers_and_type(
  */
 function vipgoci_wpcore_misc_scan_directory_for_addons(
 	string $path,
+	array $plugin_file_extensions,
+	array $theme_file_extensions,
 	bool $process_subdirectories = true
 ): array {
 	if (
@@ -283,7 +304,10 @@ function vipgoci_wpcore_misc_scan_directory_for_addons(
 		$path,
 		$process_subdirectories,
 		array(
-			'file_extensions' => array( 'php', 'css' ),
+			'file_extensions' => array_merge(
+				$plugin_file_extensions,
+				$theme_file_extensions
+			),
 		)
 	);
 
@@ -314,7 +338,9 @@ function vipgoci_wpcore_misc_scan_directory_for_addons(
 		}
 
 		$addon_data = vipgoci_wpcore_misc_get_addon_headers_and_type(
-			$tmp_path
+			$tmp_path,
+			$plugin_file_extensions,
+			$theme_file_extensions
 		);
 
 		// When no headers are found in file, ignore file.
@@ -688,6 +714,8 @@ function vipgoci_wpcore_misc_assign_addon_fields(
  * API about the plugins/themes, return the information after processing.
  *
  * @param string $path                   Path to directory to analyze.
+ * @param array  $plugin_file_extensions File extensions to consider when determining plugins to analyze.
+ * @param array  $theme_file_extensions  File extensions to consider when determining themes to analyze.
  * @param bool   $process_subdirectories If to process sub-directories.
  *
  * @return array Information about plugins or themes found. Includes
@@ -721,10 +749,14 @@ function vipgoci_wpcore_misc_assign_addon_fields(
  */
 function vipgoci_wpcore_misc_get_addon_data_and_slugs_for_directory(
 	string $path,
+	array $plugin_file_extensions,
+	array $theme_file_extensions,
 	bool $process_subdirectories = true
 ) :array {
 	$addons_found = vipgoci_wpcore_misc_scan_directory_for_addons(
 		$path,
+		$plugin_file_extensions,
+		$theme_file_extensions,
 		$process_subdirectories
 	);
 

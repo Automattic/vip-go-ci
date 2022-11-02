@@ -84,6 +84,8 @@ function vipgoci_help_print() :void {
 		"\t" . '                               files in the PR to be scanned. Default is true. It can be ' . PHP_EOL .
 		"\t" . '                               modified via options file ("' . VIPGOCI_OPTIONS_FILE_NAME . '") placed in' . PHP_EOL .
 		"\t" . '                               root of the repository.' . PHP_EOL .
+		"\t" . '--lint-file-extensions=ARRAY   Use specified file extensions to select which altered files to PHP lint.' . PHP_EOL .
+		"\t" . '                               Default is: "' . implode( ',', VIPGOCI_LINT_FILE_EXTENSIONS_DEFAULT ) . '"' . PHP_EOL .
 		"\t" . '--lint-skip-folders=STRING     Specify folders relative to root of the git repository in which' . PHP_EOL .
 		"\t" . '                               files should not be PHP linted. Values are comma separated.' . PHP_EOL .
 		"\t" . '--lint-skip-folders-in-repo-options-file=BOOL   Whether to allow specifying folders that are not' . PHP_EOL .
@@ -109,6 +111,8 @@ function vipgoci_help_print() :void {
 		"\t" . '                               -- expected to be a comma-separated value string of' . PHP_EOL .
 		"\t" . '                               key-value pairs.' . PHP_EOL .
 		"\t" . '                               For example: --phpcs-runtime-set="key1 value1,key2 value2"' . PHP_EOL .
+		"\t" . '--phpcs-file-extensions=ARRAY  Use specified file extensions to select which altered files to PHPCS scan.' . PHP_EOL .
+		"\t" . '                               Default is: "' . implode( ',', VIPGOCI_PHPCS_FILE_EXTENSIONS_DEFAULT ) . '"' . PHP_EOL .
 		"\t" . '--phpcs-skip-scanning-via-labels-allowed=BOOL    Whether to allow users to skip PHPCS' . PHP_EOL .
 		"\t" . '                                                 scanning of pull requests via labels' . PHP_EOL .
 		"\t" . '                                                 attached to them. The label should be' . PHP_EOL .
@@ -131,6 +135,8 @@ function vipgoci_help_print() :void {
 		"\t" . '                               $PATH will be used instead.' . PHP_EOL .
 		"\t" . '--svg-scanner-path=FILE        Path to SVG scanning tool. Should return similar output' . PHP_EOL .
 		"\t" . '                               as PHPCS.' . PHP_EOL .
+		"\t" . '--svg-file-extensions=ARRAY    Use specified file extensions to select which altered files to SVG scan. ' . PHP_EOL .
+		"\t" . '                               Default is: "' . implode( ',', VIPGOCI_SVG_FILE_EXTENSIONS_DEFAULT ) . '"' . PHP_EOL .
 		PHP_EOL .
 		'WPScan API scanning configuration:' . PHP_EOL .
 		"\t" . '--wpscan-api=BOOL                  Enable or disable WPScan API scanning. Disabled by default.' . PHP_EOL .
@@ -140,6 +146,10 @@ function vipgoci_help_print() :void {
 		"\t" . '                                   with items separated by commas.' . PHP_EOL .
 		"\t" . '--wpscan-api-skip-folders=ARRAY    Directories not to scan using WPScan API scanning. Should be an' . PHP_EOL .
 		"\t" . '                                   array with items separated by commas.' . PHP_EOL .
+		"\t" . '--wpscan-api-plugin-file-extensions=ARRAY Use specified file extensions to select which altered plugin files to scan with WPScan API.' . PHP_EOL .
+		"\t" . '                                          Default is: "' . implode( ',', VIPGOCI_WPSCAN_PLUGIN_FILE_EXTENSIONS_DEFAULT ) . '"' . PHP_EOL .
+		"\t" . '--wpscan-api-theme-file-extensions=ARRAY  Use specified file extensions to select which altered theme files to scan with WPScan API.' . PHP_EOL .
+		"\t" . '                                          Default is: "' . implode( ',', VIPGOCI_WPSCAN_THEME_FILE_EXTENSIONS_DEFAULT ) . '"' . PHP_EOL .
 		"\t" . '--wpscan-api-report-end-msg=STRING Message to append to end of WPScan API reports. The "%addon_type%" placeholder' . PHP_EOL .
 		"\t" . '                                   will be replaced by either "plugin" or "theme", depending on the report. Limited' . PHP_EOL .
 		"\t" . '                                   Markdown syntax allowed.' . PHP_EOL .
@@ -153,6 +163,9 @@ function vipgoci_help_print() :void {
 		"\t" . '                                                PHP files approved that contain' . PHP_EOL .
 		"\t" . '                                                only non-functional changes, such as' . PHP_EOL .
 		"\t" . '                                                whitespacing and comment changes.' . PHP_EOL .
+		"\t" . '--autoapprove-php-nonfunctional-changes-file-extensions=ARRAY Use specified file extensions to select which files' . PHP_EOL .
+		"\t" . '                                                              to consider for non-functional auto-approval.' . PHP_EOL .
+		"\t" . '                                                              Default is: "' . implode( ',', VIPGOCI_APPROVAL_AUTOAPPROVE_NON_FUNCTIONAL_CHANGES_FILE_EXTENSIONS_DEFAULT ) . '"' . PHP_EOL .
 		"\t" . '--autoapprove-label=STRING     String to use for labels when auto-approving.' . PHP_EOL .
 		PHP_EOL .
 		'GitHub reviews & generic comments configuration:' . PHP_EOL .
@@ -166,7 +179,8 @@ function vipgoci_help_print() :void {
 		"\t" . '                               will be submitted.' . PHP_EOL .
 		"\t" . '--review-comments-total-max=NUMBER  Maximum number of inline comments submitted to' . PHP_EOL .
 		"\t" . '                                    a single pull request by the program -- includes' . PHP_EOL .
-		"\t" . '                                    comments from previous executions. A value of' . PHP_EOL .
+		"\t" . '                                    comments from previous executions. Includes only' . PHP_EOL .
+		"\t" . '                                    "active" comments, not obsolete ones. A value of' . PHP_EOL .
 		"\t" . '                                    \'0\' indicates no limit.' . PHP_EOL .
 		"\t" . '--review-comments-ignore=STRING     Specify which result comments to ignore' . PHP_EOL .
 		"\t" . '                                    -- e.g. useful if one type of message is to be ignored' . PHP_EOL .
@@ -256,10 +270,10 @@ function vipgoci_options_recognized() :array {
 		'max-exec-time:',
 		'enforce-https-urls:',
 		'skip-draft-prs:',
-		'branches-ignore:',
-		'local-git-repo:',
 		'skip-large-files:',
 		'skip-large-files-limit:',
+		'branches-ignore:',
+		'local-git-repo:',
 		'name-to-use:',
 
 		/*
@@ -281,11 +295,12 @@ function vipgoci_options_recognized() :array {
 		 * PHP Linting configuration.
 		 */
 		'lint:',
-		'lint-skip-folders:',
-		'lint-skip-folders-in-repo-options-file:',
-		'lint-modified-files-only:',
 		'lint-php-version-paths:',
 		'lint-php-versions:',
+		'lint-modified-files-only:',
+		'lint-file-extensions:',
+		'lint-skip-folders:',
+		'lint-skip-folders-in-repo-options-file:',
 
 		/*
 		 * PHPCS configuration
@@ -299,6 +314,7 @@ function vipgoci_options_recognized() :array {
 		'phpcs-sniffs-include:',
 		'phpcs-sniffs-exclude:',
 		'phpcs-runtime-set:',
+		'phpcs-file-extensions:',
 		'phpcs-skip-scanning-via-labels-allowed:',
 		'phpcs-skip-folders:',
 		'phpcs-skip-folders-in-repo-options-file:',
@@ -310,6 +326,7 @@ function vipgoci_options_recognized() :array {
 		'svg-checks:',
 		'svg-php-path:',
 		'svg-scanner-path:',
+		'svg-file-extensions:',
 
 		/*
 		 * WPScan API scanning configuration
@@ -318,6 +335,8 @@ function vipgoci_options_recognized() :array {
 		'wpscan-api-dry-mode:',
 		'wpscan-api-token:',
 		'wpscan-api-paths:',
+		'wpscan-api-plugin-file-extensions:',
+		'wpscan-api-theme-file-extensions:',
 		'wpscan-api-skip-folders:',
 		'wpscan-api-report-end-msg:',
 
@@ -327,6 +346,7 @@ function vipgoci_options_recognized() :array {
 		'autoapprove:',
 		'autoapprove-filetypes:',
 		'autoapprove-php-nonfunctional-changes:',
+		'autoapprove-php-nonfunctional-changes-file-extensions:',
 		'autoapprove-label:',
 
 		/*
@@ -645,6 +665,16 @@ function vipgoci_run_init_options_phpcs( array &$options ) :void {
 	);
 
 	/*
+	 * Process --phpcs-file-extensions -- expected to be
+	 * an array of strings.
+	 */
+	vipgoci_option_array_handle(
+		$options,
+		'phpcs-file-extensions',
+		VIPGOCI_PHPCS_FILE_EXTENSIONS_DEFAULT
+	);
+
+	/*
 	 * Process --phpcs-skip-folders -- expected to be an
 	 * array of values.
 	 */
@@ -687,6 +717,26 @@ function vipgoci_run_init_options_wpscan( array &$options ) :void {
 	vipgoci_option_skip_folder_handle(
 		$options,
 		'wpscan-api-paths'
+	);
+
+	/*
+	 * Process --wpscan-api-plugin-file-extensions -- expected to be an
+	 * array of values.
+	 */
+	vipgoci_option_array_handle(
+		$options,
+		'wpscan-api-plugin-file-extensions',
+		VIPGOCI_WPSCAN_PLUGIN_FILE_EXTENSIONS_DEFAULT
+	);
+
+	/*
+	 * Process --wpscan-api-theme-file-extensions -- expected to be an
+	 * array of values.
+	 */
+	vipgoci_option_array_handle(
+		$options,
+		'wpscan-api-theme-file-extensions',
+		VIPGOCI_WPSCAN_THEME_FILE_EXTENSIONS_DEFAULT
 	);
 
 	/*
@@ -801,6 +851,16 @@ function vipgoci_run_init_options_svg( array &$options ) :void {
 	} else {
 		$options['svg-scanner-path'] = null;
 	}
+
+	/*
+	 * Process --svg-file-extensions -- expected to be
+	 * an array of strings.
+	 */
+	vipgoci_option_array_handle(
+		$options,
+		'svg-file-extensions',
+		VIPGOCI_SVG_FILE_EXTENSIONS_DEFAULT
+	);
 }
 
 /**
@@ -819,17 +879,43 @@ function vipgoci_run_init_options_autoapprove( array &$options ) :void {
 
 	vipgoci_option_bool_handle( $options, 'autoapprove-php-nonfunctional-changes', 'false' );
 
+	vipgoci_option_array_handle(
+		$options,
+		'autoapprove-php-nonfunctional-changes-file-extensions',
+		VIPGOCI_APPROVAL_AUTOAPPROVE_NON_FUNCTIONAL_CHANGES_FILE_EXTENSIONS_DEFAULT
+	);
+
 	/*
 	 * Process --autoapprove-filetypes, array option.
 	 *
 	 * Values will be converted to lowercase.
 	 */
-	vipgoci_option_array_handle(
-		$options,
-		'autoapprove-filetypes',
-		array(),
-		'php'
-	);
+	if ( true === $options['autoapprove'] ) {
+		vipgoci_option_array_handle(
+			$options,
+			'autoapprove-filetypes',
+			array(),
+			/**
+			 * Cross-reference: We disallow autoapproving PHP
+			 * linted and PHPCS scanned files here, because these
+			 * could contain dangerous code.
+			 *
+			 * Also disallow autoapproving SVG files here, as there
+			 * is a dedicated part of vip-go-ci to scan them and
+			 * autoapprove. Similar applies to non-functional changes.
+			 */
+			array_unique(
+				array_merge(
+					$options['lint-file-extensions'],
+					$options['phpcs-file-extensions'],
+					$options['svg-file-extensions'],
+					$options['autoapprove-php-nonfunctional-changes-file-extensions'],
+				)
+			)
+		);
+	} else {
+		$options['autoapprove-filetypes'] = array();
+	}
 
 	/*
 	 * Process --autoapprove-label. Set to boolean
@@ -860,63 +946,6 @@ function vipgoci_run_init_options_autoapprove( array &$options ) :void {
 			'To be able to auto-approve, file-types to approve ' .
 			'must be specified, as well as a label; see --help ' .
 			'for information',
-			array(),
-			VIPGOCI_EXIT_USAGE_ERROR
-		);
-	}
-
-	/*
-	 * More sanity checking; ensure PHP and JS files cannot
-	 * be specified for auto-approval.
-	 */
-	if (
-		( true === $options['autoapprove'] ) &&
-
-		/*
-		 * Cross-reference: We disallow autoapproving
-		 * PHP and JS files here, because they chould contain
-		 * contain dangerous code.
-		 */
-		(
-			( in_array(
-				'php',
-				$options['autoapprove-filetypes'],
-				true
-			) )
-		||
-			( in_array(
-				'js',
-				$options['autoapprove-filetypes'],
-				true
-			) )
-		)
-	) {
-		vipgoci_sysexit(
-			'PHP and JS files cannot be auto-approved on file-type basis, as they ' .
-				'can cause serious problems for execution',
-			array(),
-			VIPGOCI_EXIT_USAGE_ERROR
-		);
-	}
-
-	/*
-	 * Also, we disallow autoapproving SVG files here, as
-	 * we have a dedicated part of vip-go-ci to scan them
-	 * and autoapprove.
-	 */
-
-	if (
-		( true === $options['autoapprove'] ) &&
-		( in_array(
-			'svg',
-			$options['autoapprove-filetypes'],
-			true
-		) )
-	) {
-		vipgoci_sysexit(
-			'SVG files cannot be auto-approved on file-type basis, as they ' .
-				'can contain problematic code. Use --svg-checks=true to ' .
-				'allow auto-approval of SVG files',
 			array(),
 			VIPGOCI_EXIT_USAGE_ERROR
 		);
@@ -1089,6 +1118,12 @@ function vipgoci_run_init_options_lint( array &$options ) :void {
 		$options,
 		'lint-modified-files-only',
 		'true'
+	);
+
+	vipgoci_option_array_handle(
+		$options,
+		'lint-file-extensions',
+		VIPGOCI_LINT_FILE_EXTENSIONS_DEFAULT
 	);
 
 	vipgoci_option_bool_handle(
@@ -2199,11 +2234,11 @@ function vipgoci_run_init_options(
 	// Set options relating to WPScan API.
 	vipgoci_run_init_options_wpscan( $options );
 
-	// Process autoapprove options.
-	vipgoci_run_init_options_autoapprove( $options );
-
 	// Set SVG options.
 	vipgoci_run_init_options_svg( $options );
+
+	// Process autoapprove options.
+	vipgoci_run_init_options_autoapprove( $options );
 
 	// Set git repository options.
 	vipgoci_run_init_options_git_repo( $options );

@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class WpCoreMiscScanDirectoryForAdddonsTest extends TestCase {
+final class WpCoreMiscScanDirectoryForAddonsTest extends TestCase {
 	/**
 	 * Temporary directory.
 	 *
@@ -168,6 +168,8 @@ final class WpCoreMiscScanDirectoryForAdddonsTest extends TestCase {
 
 		$results_actual = vipgoci_wpcore_misc_scan_directory_for_addons(
 			$this->temp_dir . '/WpCoreMiscScanDirectoryForAdddonsTest',
+			array( 'php' ),
+			array( 'css' ),
 			true
 		);
 
@@ -243,6 +245,8 @@ final class WpCoreMiscScanDirectoryForAdddonsTest extends TestCase {
 
 		$results_actual = vipgoci_wpcore_misc_scan_directory_for_addons(
 			$this->temp_dir . '/WpCoreMiscScanDirectoryForAdddonsTest',
+			array( 'php' ),
+			array( 'css' ),
 			false
 		);
 

@@ -554,9 +554,9 @@ function vipgoci_phpcs_scan_commit(
 		array(
 			// If SVG-checks are enabled, include it in the file-extensions.
 			'file_extensions' => array_merge(
-				array( 'php', 'js', 'twig' ),
+				$options['phpcs-file-extensions'],
 				( $options['svg-checks'] ?
-					array( 'svg' ) :
+					$options['svg-file-extensions'] :
 					array()
 				)
 			),
@@ -632,7 +632,12 @@ function vipgoci_phpcs_scan_commit(
 		 */
 		$scanning_func =
 			(
-				( 'svg' === $file_extension ) &&
+				( true === in_array(
+					$file_extension,
+					$options['svg-file-extensions'],
+					true
+				) )
+				&&
 				( $options['svg-checks'] )
 			) ?
 				'vipgoci_svg_scan_single_file' :

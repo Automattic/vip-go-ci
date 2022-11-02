@@ -68,10 +68,13 @@ function vipgoci_ap_svg_files(
 			/*
 			 * If not a SVG file, do not do anything.
 			 */
-
 			if (
-				'svg' !==
-				$pr_diff_file_extension
+				( null === $pr_diff_file_extension ) ||
+				( false === in_array(
+					$pr_diff_file_extension,
+					$options['svg-file-extensions'],
+					true
+				) )
 			) {
 				continue;
 			}
