@@ -167,22 +167,10 @@ function vipgoci_wpscan_filter_unchanged_addons(
 ) :array {
 	$addon_data_and_slugs_for_addon_dirs = array();
 
-	$changed_files = $files_affected_by_commit_by_pr['all'];
-
-	$changes_dirs_only = array_unique(
-		array_map(
-			'dirname',
-			$changed_files
-		)
-	);
-
-	arsort( $changes_dirs_only );
-
 	foreach ( $addon_dirs_relevant_to_scan as $addon_dir_relevant ) {
 		$known_addons             = array();
 		$known_addons_file_to_key = array();
 		$known_addon_base_paths   = array();
-		$addons_matched           = array();
 
 		$addon_data_for_dir = vipgoci_wpcore_misc_get_addon_data_and_slugs_for_directory(
 			$options['local-git-repo'] . DIRECTORY_SEPARATOR . $addon_dir_relevant,
@@ -205,50 +193,11 @@ function vipgoci_wpscan_filter_unchanged_addons(
 			$known_addon_base_paths[ dirname( $path ) ] = $path;
 		}
 
-		$known_addon_base_paths_keys = array_keys(
-			$known_addon_base_paths
-		);
-
-		foreach ( $changed_files as $changed_file ) {
-			if ( in_array( $changed_file, $known_addons, true ) ) {
-				$addons_matched[ $changed_file ] = $changed_file;
-				continue;
-			}
-
-			$match = false;
-
-			$changed_file_dirname = $changed_file;
-
-			do {
-				$changed_file_dirname = dirname( $changed_file_dirname );
-
-				if ( in_array(
-					$changed_file_dirname,
-					$options['wpscan-api-paths'],
-					true
-				) ) {
-					break;
-				}
-
-				if ( true === vipgoci_string_found_in_substrings_array(
-					$known_addon_base_paths_keys,
-					$changed_file_dirname,
-					true
-				) ) {
-					$addons_matched[ $changed_file ] = $known_addon_base_paths[ $changed_file ];
-
-					$match = true;
-					break;
-				}
-			} while (
-				( str_contains( $changed_file_dirname, '/' ) ) &&
-				( false === $match )
-			);
-		}
-
-		$addons_not_matched = array_diff(
+		$addons_not_matched = vipgoci_wpcore_misc_get_addons_not_altered(
+			$options,
 			$known_addons,
-			array_values( $addons_matched )
+			$known_addon_base_paths,
+			$files_affected_by_commit_by_pr
 		);
 
 		foreach ( $addons_not_matched as $addon_not_matched_path ) {
