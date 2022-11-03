@@ -788,3 +788,71 @@ function vipgoci_wpcore_misc_get_addon_data_and_slugs_for_directory(
 	return $addons_found;
 }
 
+/**
+ * Returns a list of WordPress add-ons found in $known_addons that
+ * cannot be associated with changes in pull requests. Attempts to
+ * associate each changed file with an add-on, and returns
+ * those that cannot be associated.
+ *
+ * @param array $options                        Options array for the program.
+ * @param array $known_addons                   Array of paths to known add-ons (relative to repository base).
+ * @param array $files_affected_by_commit_by_pr Files affected by commit by pull request (relative to repository base).
+ *
+ * @return Array Paths to add-ons that could not be associated with changed files.
+ */
+function vipgoci_wpcore_misc_get_addons_not_altered(
+	array $options,
+	array $known_addons,
+	array $files_affected_by_commit_by_pr
+) :array {
+	$addons_matched = array();
+
+	$changed_files = $files_affected_by_commit_by_pr['all'];
+
+	$known_addon_base_paths = array();
+
+	foreach ( $known_addons as $addon_path ) {
+		$known_addon_base_paths[ dirname( $addon_path ) ] = $addon_path;
+	}
+
+	$known_addon_base_paths_keys = array_keys(
+		$known_addon_base_paths
+	);
+
+	foreach ( $changed_files as $changed_file ) {
+		if ( in_array( $changed_file, $known_addons, true ) ) {
+			$addons_matched[ $changed_file ] = $changed_file;
+			continue;
+		}
+
+		$changed_file_dirname = $changed_file;
+
+		do {
+			$changed_file_dirname = dirname( $changed_file_dirname );
+
+			if ( in_array(
+				$changed_file_dirname,
+				$options['wpscan-api-paths'],
+				true
+			) ) {
+				break;
+			}
+
+			if ( true === vipgoci_string_found_in_substrings_array(
+				$known_addon_base_paths_keys,
+				$changed_file_dirname,
+				true
+			) ) {
+				$addons_matched[ $changed_file ] = $known_addon_base_paths[ $changed_file ];
+
+				break;
+			}
+		} while ( str_contains( $changed_file_dirname, '/' ) );
+	}
+
+	return array_diff(
+		$known_addons,
+		array_values( $addons_matched )
+	);
+}
+
