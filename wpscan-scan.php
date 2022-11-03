@@ -170,7 +170,6 @@ function vipgoci_wpscan_filter_unchanged_addons(
 	foreach ( $addon_dirs_relevant_to_scan as $addon_dir_relevant ) {
 		$known_addons             = array();
 		$known_addons_file_to_key = array();
-		$known_addon_base_paths   = array();
 
 		$addon_data_for_dir = vipgoci_wpcore_misc_get_addon_data_and_slugs_for_directory(
 			$options['local-git-repo'] . DIRECTORY_SEPARATOR . $addon_dir_relevant,
@@ -189,14 +188,11 @@ function vipgoci_wpscan_filter_unchanged_addons(
 			$known_addons[] = $path;
 
 			$known_addons_file_to_key[ $path ] = $addon_item_key;
-
-			$known_addon_base_paths[ dirname( $path ) ] = $path;
 		}
 
 		$addons_not_matched = vipgoci_wpcore_misc_get_addons_not_altered(
 			$options,
 			$known_addons,
-			$known_addon_base_paths,
 			$files_affected_by_commit_by_pr
 		);
 
