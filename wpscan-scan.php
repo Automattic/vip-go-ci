@@ -17,10 +17,11 @@ declare(strict_types=1);
  * a file may be altered in context of one pull request and not another,
  * yet it will appear in results.
  *
- * @param array $options              Options array for the program.
- * @param array $commit_skipped_files Information about skipped files (reference).
+ * @param array $options                        Options array for the program.
+ * @param array $commit_skipped_files           Information about skipped files (reference).
+ * @param array $files_affected_by_commit_by_pr Files affected by commit by pull request.
  *
- * @return null|array Null when no altered files were identified. Otherwise, array containing paths to specific plugin/theme directories which were altered by any of the pull requests.
+ * @return null|array Null when no altered files were identified. Otherwise, array with paths to specific plugin/theme directories which may have been altered by any of the pull requests.
  */
 function vipgoci_wpscan_find_addon_dirs_altered(
 	array $options,
@@ -148,7 +149,16 @@ function vipgoci_wpscan_find_addon_dirs_altered(
 }
 
 /**
+ * Ensure all add-ons in $addon_dirs_relevant_to_scan can be associated with changes
+ * in code. Those that cannot will be removed. This ensures that no notifications are
+ * displayed for add-ons not touched, especially those placed within directories
+ * belonging to other add-ons.
  *
+ * @param array $options                        Options array for the program.
+ * @param array $addon_dirs_relevant_to_scan    Array of directories which contain plugins/themes altered to be scanned.
+ * @param array $files_affected_by_commit_by_pr Files affected by commit by pull request.
+ *
+ * @return Array Directories which contain plugins/themes altered to be scanned, with irrelevant ones removed.
  */
 function vipgoci_wpscan_associate_changes_with_addons(
 	array $options,
@@ -171,6 +181,7 @@ function vipgoci_wpscan_associate_changes_with_addons(
 	foreach ( $addon_dirs_relevant_to_scan as $addon_dir_relevant ) {
 		$known_addons             = array();
 		$known_addons_file_to_key = array();
+		$known_addon_base_paths   = array();
 		$addons_matched           = array();
 
 		$addon_data_for_dir = vipgoci_wpcore_misc_get_addon_data_and_slugs_for_directory(
@@ -179,7 +190,6 @@ function vipgoci_wpscan_associate_changes_with_addons(
 			$options['wpscan-api-theme-file-extensions'],
 			( ! in_array( $addon_dir_relevant, $options['wpscan-api-paths'], true ) )
 		);
-
 
 		foreach ( $addon_data_for_dir as $addon_item_key => $addon_item_info ) {
 			$path = str_replace(
@@ -225,21 +235,17 @@ function vipgoci_wpscan_associate_changes_with_addons(
 					$changed_file_dirname,
 					true
 				) ) {
-					$addons_matched[
-						$changed_file
-					] = $known_addon_base_paths[
-						$changed_file
-					];
+					$addons_matched[ $changed_file ] = $known_addon_base_paths[ $changed_file ];
 
 					$match = true;
-					break; 
+					break;
 				}
 			} while (
 				( str_contains( $changed_file_dirname, '/' ) ) &&
-				( $match === false )
+				( false === $match )
 			);
 		}
-	
+
 		$addons_not_matched = array_diff(
 			$known_addons,
 			array_values( $addons_matched )
@@ -249,14 +255,11 @@ function vipgoci_wpscan_associate_changes_with_addons(
 			unset( $addon_data_for_dir[ $known_addons_file_to_key[ $addon_not_matched_path ] ] );
 		}
 
-		$addon_data_and_slugs_for_addon_dirs[
-			$addon_dir_relevant
-		] = $addon_data_for_dir;
+		$addon_data_and_slugs_for_addon_dirs[ $addon_dir_relevant ] = $addon_data_for_dir;
 	}
 
 	return $addon_data_and_slugs_for_addon_dirs;
 }
-
 
 /**
  * Loop through plugin/theme directories altered by pull request, determine relevant
@@ -264,8 +267,9 @@ function vipgoci_wpscan_associate_changes_with_addons(
  * plugins/themes that are obsolete or have vulnerabilities via the WPScan
  * API. Save results for further processing.
  *
- * @param array $options                     Options array for the program.
- * @param array $addon_dirs_relevant_to_scan Array of directories which contain plugins/themes altered to be scanned.
+ * @param array $options                             Options array for the program.
+ * @param array $addon_dirs_relevant_to_scan         Array of directories which contain plugins/themes altered to be scanned.
+ * @param array $addon_data_and_slugs_for_addon_dirs Array with slugs and other information for addon directories.
  *
  * @return array Associative array with results. For example:
  *   Array(
@@ -311,9 +315,7 @@ function vipgoci_wpscan_scan_dirs_altered(
 	$problematic_addons_found = array();
 
 	foreach ( $addon_dirs_relevant_to_scan as $addon_dir_relevant ) {
-		$addon_data_for_dir = $addon_data_and_slugs_for_addon_dirs[
-			$addon_dir_relevant
-		];
+		$addon_data_for_dir = $addon_data_and_slugs_for_addon_dirs[ $addon_dir_relevant ];
 
 		foreach ( $addon_data_for_dir as $addon_item_key => $addon_item_info ) {
 			$addon_item_key = str_replace(
@@ -438,11 +440,12 @@ function vipgoci_wpscan_scan_dirs_altered(
  * Add information about plugins or themes which
  * are vulnerable or obsolete to results array.
  *
- * @param array $options                  Options array for the program.
- * @param array $commit_issues_submit     Results array for WPScan API scanning (reference).
- * @param array $commit_issues_stats      Result statistics for WPScan API scanning (reference).
- * @param array $commit_skipped_files     Information about skipped files (reference).
- * @param array $problematic_addons_found Array with problematic addons found, should include local information and WPScan API information.
+ * @param array $options                        Options array for the program.
+ * @param array $commit_issues_submit           Results array for WPScan API scanning (reference).
+ * @param array $commit_issues_stats            Result statistics for WPScan API scanning (reference).
+ * @param array $commit_skipped_files           Information about skipped files (reference).
+ * @param array $files_affected_by_commit_by_pr Files affected by commit by pull request.
+ * @param array $problematic_addons_found       Array with problematic addons found, should include local information and WPScan API information.
  *
  * @return void
  */
