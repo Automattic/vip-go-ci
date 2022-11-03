@@ -160,7 +160,7 @@ function vipgoci_wpscan_find_addon_dirs_altered(
  *
  * @return Array Directories which contain plugins/themes altered to be scanned, with irrelevant ones removed.
  */
-function vipgoci_wpscan_associate_changes_with_addons(
+function vipgoci_wpscan_filter_unchanged_addons(
 	array $options,
 	array $addon_dirs_relevant_to_scan,
 	array $files_affected_by_commit_by_pr
@@ -694,7 +694,7 @@ function vipgoci_wpscan_scan_commit(
 	 * remove any add-ons that cannot be associated
 	 * successfully.
 	 */
-	$addon_data_and_slugs_for_addon_dirs = vipgoci_wpscan_associate_changes_with_addons(
+	$addon_data_and_slugs_for_addon_dirs = vipgoci_wpscan_filter_unchanged_addons(
 		$options,
 		$addon_dirs_relevant_to_scan,
 		$files_affected_by_commit_by_pr
