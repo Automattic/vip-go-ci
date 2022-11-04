@@ -45,6 +45,13 @@ final class WpscanScanFindAddonDirsAlteredTest extends TestCase {
 	);
 
 	/**
+	 * Variable for skipped files.
+	 *
+	 * @var $commit_skipped_files
+	 */
+	private array $commit_skipped_files = array();
+
+	/**
 	 * Setup function. Require files, prepare repository, etc.
 	 *
 	 * @return void
@@ -86,8 +93,6 @@ final class WpscanScanFindAddonDirsAlteredTest extends TestCase {
 		$this->options['branches-ignore'] = array();
 
 		$this->options['skip-draft-prs'] = false;
-
-		$this->commit_skipped_files = array();
 	}
 
 	/**
