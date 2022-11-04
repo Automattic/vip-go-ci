@@ -815,10 +815,6 @@ function vipgoci_wpcore_misc_get_addons_not_altered(
 		$known_addon_base_paths[ dirname( $addon_path ) ] = $addon_path;
 	}
 
-	$known_addon_base_paths_keys = array_keys(
-		$known_addon_base_paths
-	);
-
 	foreach ( $changed_files as $changed_file ) {
 		if ( in_array( $changed_file, $known_addons, true ) ) {
 			$addons_matched[ $changed_file ] = $changed_file;
@@ -838,11 +834,7 @@ function vipgoci_wpcore_misc_get_addons_not_altered(
 				break;
 			}
 
-			if ( true === vipgoci_string_found_in_substrings_array(
-				$known_addon_base_paths_keys,
-				$changed_file_dirname,
-				true
-			) ) {
+			if ( isset( $known_addon_base_paths[ $changed_file_dirname ] ) ) {
 				$addons_matched[ $changed_file ] = $known_addon_base_paths[ $changed_file_dirname ];
 
 				break;
