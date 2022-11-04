@@ -86,6 +86,8 @@ final class WpscanScanFindAddonDirsAlteredTest extends TestCase {
 		$this->options['branches-ignore'] = array();
 
 		$this->options['skip-draft-prs'] = false;
+
+		$this->commit_skipped_files = array();
 	}
 
 	/**
@@ -103,6 +105,26 @@ final class WpscanScanFindAddonDirsAlteredTest extends TestCase {
 		unset( $this->options_wpscan_api_scan );
 		unset( $this->options_git );
 		unset( $this->options );
+	}
+
+	/**
+	 * Get files affected by commit by pull request.
+	 *
+	 * @return array
+	 */
+	private function getFilesAffectedByCommitByPR() :array {
+		return vipgoci_github_files_affected_by_commit(
+			$this->options,
+			$this->options['commit'],
+			$this->commit_skipped_files,
+			true,
+			true,
+			true,
+			array(
+				'skip_folders' => $this->options['wpscan-api-skip-folders'],
+			),
+			false
+		);
 	}
 
 	/**
@@ -149,11 +171,10 @@ final class WpscanScanFindAddonDirsAlteredTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$commit_skipped_files = array();
-
 		$results_actual = vipgoci_wpscan_find_addon_dirs_altered(
 			$this->options,
-			$commit_skipped_files
+			$this->commit_skipped_files,
+			$this->getFilesAffectedByCommitByPR()
 		);
 
 		$results_expected = array(
@@ -214,11 +235,10 @@ final class WpscanScanFindAddonDirsAlteredTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$commit_skipped_files = array();
-
 		$results_actual = vipgoci_wpscan_find_addon_dirs_altered(
 			$this->options,
-			$commit_skipped_files
+			$this->commit_skipped_files,
+			$this->getFilesAffectedByCommitByPR()
 		);
 
 		$results_expected = array(
@@ -276,11 +296,10 @@ final class WpscanScanFindAddonDirsAlteredTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$commit_skipped_files = array();
-
 		$results_actual = vipgoci_wpscan_find_addon_dirs_altered(
 			$this->options,
-			$commit_skipped_files
+			$this->commit_skipped_files,
+			$this->getFilesAffectedByCommitByPR()
 		);
 
 		$this->assertSame(
