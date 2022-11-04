@@ -843,16 +843,18 @@ function vipgoci_wpcore_misc_get_addons_not_altered(
 				$changed_file_dirname,
 				true
 			) ) {
-				$addons_matched[ $changed_file ] = $known_addon_base_paths[ $changed_file ];
+				$addons_matched[ $changed_file ] = $known_addon_base_paths[ $changed_file_dirname ];
 
 				break;
 			}
 		} while ( str_contains( $changed_file_dirname, '/' ) );
 	}
 
-	return array_diff(
-		$known_addons,
-		array_values( $addons_matched )
+	return array_values(
+		array_diff(
+			$known_addons,
+			array_values( $addons_matched )
+		)
 	);
 }
 
