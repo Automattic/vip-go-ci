@@ -38,7 +38,9 @@ final class WpCoreMiscGetAddonsNotAlteredTest extends TestCase {
 	public function testGetAddonsNotAltered(): void {
 		$options = array(
 			'wpscan-api-paths' => array(
-				'plugins', 'themes', 'client-mu-plugins',
+				'plugins',
+				'themes',
+				'client-mu-plugins',
 			),
 		);
 
@@ -66,11 +68,11 @@ final class WpCoreMiscGetAddonsNotAlteredTest extends TestCase {
 				'plugins/hello/hello.php',
 				'plugins/hello/docs/file.php',
 				'plugins/hello/docs/file.txt',
- 				'plugins/hello2/hello2.php',
+				'plugins/hello2/hello2.php',
 				'testing/test-plugin.php',
 				'themes/theme1/hello/hello.php',
 				'themes/theme2/style.css',
-			)
+			),
 		);
 
 		$addons_not_altered = vipgoci_wpcore_misc_get_addons_not_altered(
