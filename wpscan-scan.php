@@ -149,10 +149,11 @@ function vipgoci_wpscan_find_addon_dirs_altered(
 }
 
 /**
- * Ensure all add-ons in $addon_dirs_relevant_to_scan can be associated with changes
- * in code. Those that cannot will be removed. This ensures that no notifications are
- * displayed for add-ons not touched, especially those placed within directories
- * belonging to other add-ons.
+ * Get slugs and data for add-ons found in $addon_dirs_relevant_to_scan and ensure all
+ * add-ons found can be associated with changes in code. Those that cannot will be removed
+ * from the resulting array. This ensures only add-ons added or modified are scanned and
+ * reported about (if applicable), especially those placed within directories belonging
+ * to other add-ons.
  *
  * @param array $options                        Options array for the program.
  * @param array $addon_dirs_relevant_to_scan    Array of directories which contain plugins/themes altered to be scanned.
@@ -178,6 +179,7 @@ function vipgoci_wpscan_filter_unchanged_addons(
 			( ! in_array( $addon_dir_relevant, $options['wpscan-api-paths'], true ) )
 		);
 
+		// Construct list of known add-ons.
 		foreach ( $addon_data_for_dir as $addon_item_key => $addon_item_info ) {
 			$path = str_replace(
 				$options['local-git-repo'] . '/',
@@ -190,12 +192,14 @@ function vipgoci_wpscan_filter_unchanged_addons(
 			$known_addons_file_to_key[ $path ] = $addon_item_key;
 		}
 
+		// Get add-ons that do not match code changes.
 		$addons_not_matched = vipgoci_wpcore_misc_get_addons_not_altered(
 			$options,
 			$known_addons,
 			$files_affected_by_commit_by_pr
 		);
 
+		// Remove non-matched add-ons from results.
 		foreach ( $addons_not_matched as $addon_not_matched_path ) {
 			unset( $addon_data_for_dir[ $known_addons_file_to_key[ $addon_not_matched_path ] ] );
 		}
