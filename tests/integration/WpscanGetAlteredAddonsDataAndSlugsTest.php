@@ -33,6 +33,8 @@ final class WpscanGetAlteredAddonsDataAndSlugsTest extends TestCase {
 		'wpscan-pr-1-plugin-path'    => null,
 		'wpscan-pr-1-plugin-version' => null,
 		'wpscan-pr-1-theme-name'     => null,
+		'wpscan-pr-1-theme-key'      => null,
+		'wpscan-pr-1-theme-dir'      => null,
 		'wpscan-pr-1-theme-slug'     => null,
 		'wpscan-pr-1-theme-path'     => null,
 		'wpscan-pr-1-theme-version'  => null,
@@ -266,30 +268,24 @@ final class WpscanGetAlteredAddonsDataAndSlugsTest extends TestCase {
 		);
 
 		$results_expected = array(
-			'plugins/hello'          => array(),
-			'plugins/not-a-plugin'   => array(),
-			'themes/twentytwentyone' => array(
+			'plugins/hello'        => array(),
+			'plugins/not-a-plugin' => array(),
+			'themes/' . $this->options['wpscan-pr-1-theme-key'] => array(
 				'vipgoci-addon-theme-' . $this->options['wpscan-pr-1-theme-slug'] => array(
 					'type'             => 'vipgoci-addon-theme',
 					'addon_headers'    => array(
-						'Name'        => $this->options['wpscan-pr-1-theme-name'],
-						'ThemeURI'    => 'https://wordpress.org/themes/' . $this->options['wpscan-pr-1-theme-slug'] . '/',
-						'Description' => 'Twenty Twenty-One is a blank canvas for your ideas and it makes the block editor your best brush. With new block patterns, which allow you to create a beautiful layout in a matter of seconds, this theme’s soft colors and eye-catching — yet timeless — design will let your work shine. Take it for a spin! See how Twenty Twenty-One elevates your portfolio, business website, or personal blog.',
-						'Author'      => 'the WordPress team',
-						'AuthorURI'   => 'https://wordpress.org/',
-						'Version'     => $this->options['wpscan-pr-1-theme-version'],
-						'Template'    => '',
-						'Status'      => '',
-						'TextDomain'  => $this->options['wpscan-pr-1-theme-slug'],
-						'DomainPath'  => '',
-						'RequiresWP'  => '5.3',
-						'RequiresPHP' => '5.6',
-						'UpdateURI'   => '',
-						'Title'       => $this->options['wpscan-pr-1-theme-name'],
-						'AuthorName'  => 'the WordPress team',
+						'Name'       => $this->options['wpscan-pr-1-theme-name'],
+						'ThemeURI'   => 'https://wordpress.org/themes/' . $this->options['wpscan-pr-1-theme-slug'] . '/',
+						'Version'    => $this->options['wpscan-pr-1-theme-version'],
+						'Template'   => '',
+						'Status'     => '',
+						'TextDomain' => $this->options['wpscan-pr-1-theme-slug'],
+						'DomainPath' => '',
+						'UpdateURI'  => '',
+						'Title'      => $this->options['wpscan-pr-1-theme-name'],
 					),
 					'name'             => $this->options['wpscan-pr-1-theme-name'],
-					'version_detected' => '1.2',
+					'version_detected' => $this->options['wpscan-pr-1-theme-version'],
 					'file_name'        => $this->options['local-git-repo'] . '/' . $this->options['wpscan-pr-1-theme-path'],
 					'slug'             => $this->options['wpscan-pr-1-theme-slug'],
 					'new_version'      => '1.7',
@@ -300,6 +296,24 @@ final class WpscanGetAlteredAddonsDataAndSlugsTest extends TestCase {
 		);
 
 		vipgoci_unittests_output_unsuppress();
+
+		foreach ( array( 'Description', 'Author', 'AuthorURI', 'RequiresWP', 'RequiresPHP', 'AuthorName' ) as $field_name ) {
+			$this->assertIsString(
+				$results_actual
+					[ $this->options['wpscan-pr-1-theme-dir'] ]
+					[ 'vipgoci-addon-theme-' . $this->options['wpscan-pr-1-theme-slug'] ]
+					['addon_headers']
+					[ $field_name ]
+			);
+
+			unset(
+				$results_actual
+					[ $this->options['wpscan-pr-1-theme-dir'] ]
+					[ 'vipgoci-addon-theme-' . $this->options['wpscan-pr-1-theme-slug'] ]
+					['addon_headers']
+					[ $field_name ]
+			);
+		}
 
 		$this->assertSame(
 			$results_expected,
@@ -358,7 +372,7 @@ final class WpscanGetAlteredAddonsDataAndSlugsTest extends TestCase {
 			'all' => $files_affected_by_commit_by_pr['all'],
 		);
 
-		$addon_data_actual = vipgoci_wpscan_get_altered_addons_data_and_slugs(
+		$results_actual = vipgoci_wpscan_get_altered_addons_data_and_slugs(
 			$this->options,
 			explode(
 				',',
@@ -369,7 +383,7 @@ final class WpscanGetAlteredAddonsDataAndSlugsTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$addon_data_expected = array(
+		$results_expected = array(
 			'plugins/hello'          => array(
 				'vipgoci-addon-plugin-hello.php' => array(
 					'type'             => 'vipgoci-addon-plugin',
@@ -403,24 +417,18 @@ final class WpscanGetAlteredAddonsDataAndSlugsTest extends TestCase {
 			),
 			'plugins/not-a-plugin'   => array(),
 			'themes/twentytwentyone' => array(
-				'vipgoci-addon-theme-twentytwentyone' => array(
+				'vipgoci-addon-theme-' . $this->options['wpscan-pr-1-theme-key'] => array(
 					'type'             => 'vipgoci-addon-theme',
 					'addon_headers'    => array(
-						'Name'        => $this->options['wpscan-pr-1-theme-name'],
-						'ThemeURI'    => 'https://wordpress.org/themes/' . $this->options['wpscan-pr-1-theme-slug'] . '/',
-						'Description' => 'Twenty Twenty-One is a blank canvas for your ideas and it makes the block editor your best brush. With new block patterns, which allow you to create a beautiful layout in a matter of seconds, this theme’s soft colors and eye-catching — yet timeless — design will let your work shine. Take it for a spin! See how Twenty Twenty-One elevates your portfolio, business website, or personal blog.',
-						'Author'      => 'the WordPress team',
-						'AuthorURI'   => 'https://wordpress.org/',
-						'Version'     => $this->options['wpscan-pr-1-theme-version'],
-						'Template'    => '',
-						'Status'      => '',
-						'TextDomain'  => $this->options['wpscan-pr-1-theme-slug'],
-						'DomainPath'  => '',
-						'RequiresWP'  => '5.3',
-						'RequiresPHP' => '5.6',
-						'UpdateURI'   => '',
-						'Title'       => $this->options['wpscan-pr-1-theme-name'],
-						'AuthorName'  => 'the WordPress team',
+						'Name'       => $this->options['wpscan-pr-1-theme-name'],
+						'ThemeURI'   => 'https://wordpress.org/themes/' . $this->options['wpscan-pr-1-theme-slug'] . '/',
+						'Version'    => $this->options['wpscan-pr-1-theme-version'],
+						'Template'   => '',
+						'Status'     => '',
+						'TextDomain' => $this->options['wpscan-pr-1-theme-slug'],
+						'DomainPath' => '',
+						'UpdateURI'  => '',
+						'Title'      => $this->options['wpscan-pr-1-theme-name'],
 					),
 					'name'             => $this->options['wpscan-pr-1-theme-name'],
 					'version_detected' => $this->options['wpscan-pr-1-theme-version'],
@@ -433,9 +441,27 @@ final class WpscanGetAlteredAddonsDataAndSlugsTest extends TestCase {
 			),
 		);
 
+		foreach ( array( 'Description', 'Author', 'AuthorURI', 'RequiresWP', 'RequiresPHP', 'AuthorName' ) as $field_name ) {
+			$this->assertIsString(
+				$results_actual
+					[ $this->options['wpscan-pr-1-theme-dir'] ]
+					[ 'vipgoci-addon-theme-' . $this->options['wpscan-pr-1-theme-slug'] ]
+					['addon_headers']
+					[ $field_name ]
+			);
+
+			unset(
+				$results_actual
+					[ $this->options['wpscan-pr-1-theme-dir'] ]
+					[ 'vipgoci-addon-theme-' . $this->options['wpscan-pr-1-theme-slug'] ]
+					['addon_headers']
+					[ $field_name ]
+			);
+		}
+
 		$this->assertSame(
-			$addon_data_expected,
-			$addon_data_actual
+			$results_expected,
+			$results_actual
 		);
 	}
 }
