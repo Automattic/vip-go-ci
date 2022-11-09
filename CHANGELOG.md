@@ -24,6 +24,7 @@ All notable changes to this project will be documented in this file.
 
 ## Fixes
 - [#326](https://github.com/Automattic/vip-go-ci/pull/326): Rename test class, update function name in comments
+- [#327](https://github.com/Automattic/vip-go-ci/pull/327): WPScan API: Ensure comments are only submitted for changed add-ons
 
 ## [1.3.2](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.2) - 2022-10-18
 
