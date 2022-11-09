@@ -183,13 +183,13 @@ final class WpscanGetAlteredAddonsDataAndSlugsTest extends TestCase {
 			$files_affected_by_commit_by_pr
 		);
 
+		vipgoci_unittests_output_unsuppress();
+
 		$results_expected = array(
 			'plugins/hello'          => array(),
 			'plugins/not-a-plugin'   => array(),
 			'themes/twentytwentyone' => array(),
 		);
-
-		vipgoci_unittests_output_unsuppress();
 
 		$this->assertSame(
 			$results_expected,
@@ -267,6 +267,8 @@ final class WpscanGetAlteredAddonsDataAndSlugsTest extends TestCase {
 			$files_affected_by_commit_by_pr
 		);
 
+		vipgoci_unittests_output_unsuppress();
+
 		$results_expected = array(
 			'plugins/hello'        => array(),
 			'plugins/not-a-plugin' => array(),
@@ -292,8 +294,6 @@ final class WpscanGetAlteredAddonsDataAndSlugsTest extends TestCase {
 				),
 			),
 		);
-
-		vipgoci_unittests_output_unsuppress();
 
 		$this->assertIsString(
 			$results_actual
