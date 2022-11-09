@@ -211,10 +211,9 @@ function vipgoci_wpscan_get_altered_addons_data_and_slugs(
 }
 
 /**
- * Loop through plugin/theme directories altered by pull request, determine relevant
- * plugin/theme slugs via the WordPress.org API, and use that look for any
- * plugins/themes that are obsolete or have vulnerabilities via the WPScan
- * API. Save results for further processing.
+ * Loop through plugin/theme directories altered by pull request and use
+ * the information look for any plugins/themes that are obsolete or have
+ * vulnerabilities via the WPScan API. Save results for further processing.
  *
  * @param array $options                             Options array for the program.
  * @param array $addon_dirs_relevant_to_scan         Array of directories which contain plugins/themes altered to be scanned.
