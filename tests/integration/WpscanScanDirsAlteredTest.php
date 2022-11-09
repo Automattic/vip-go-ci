@@ -410,8 +410,8 @@ final class WpscanScanDirsAlteredTest extends TestCase {
 		vipgoci_unittests_output_unsuppress();
 
 		/*
-		 * Update version numbers in plugin/theme files in
-		 * repository so they are higher than the latest ones.
+		 * Version numbers for plugin and theme are higher
+		 * than the latest available ones.
 		 */
 		$addon_data_and_slugs_for_addon_dirs = array(
 			$this->options['wpscan-pr-1-plugin-dir'] => array(
