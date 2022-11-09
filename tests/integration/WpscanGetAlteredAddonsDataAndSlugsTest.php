@@ -288,14 +288,41 @@ final class WpscanGetAlteredAddonsDataAndSlugsTest extends TestCase {
 					'version_detected' => $this->options['wpscan-pr-1-theme-version'],
 					'file_name'        => $this->options['local-git-repo'] . '/' . $this->options['wpscan-pr-1-theme-path'],
 					'slug'             => $this->options['wpscan-pr-1-theme-slug'],
-					'new_version'      => '1.7',
-					'package'          => 'https://downloads.wordpress.org/theme/twentytwentyone.1.7.zip',
 					'url'              => 'https://wordpress.org/themes/' . $this->options['wpscan-pr-1-theme-slug'] . '/',
 				),
 			),
 		);
 
 		vipgoci_unittests_output_unsuppress();
+
+		$this->assertIsString(
+			$results_actual
+				[ $this->options['wpscan-pr-1-theme-dir'] ]
+				[ 'vipgoci-addon-theme-' . $this->options['wpscan-pr-1-theme-slug'] ]
+				['new_version']
+		);
+
+		unset(
+			$results_actual
+				[ $this->options['wpscan-pr-1-theme-dir'] ]
+				[ 'vipgoci-addon-theme-' . $this->options['wpscan-pr-1-theme-slug'] ]
+				['new_version']
+		);
+
+		$this->assertStringContainsString(
+			'.zip',
+			$results_actual
+				[ $this->options['wpscan-pr-1-theme-dir'] ]
+				[ 'vipgoci-addon-theme-' . $this->options['wpscan-pr-1-theme-slug'] ]
+				['package']
+		);
+
+		unset(
+			$results_actual
+				[ $this->options['wpscan-pr-1-theme-dir'] ]
+				[ 'vipgoci-addon-theme-' . $this->options['wpscan-pr-1-theme-slug'] ]
+				['package']
+		);
 
 		foreach ( array( 'Description', 'Author', 'AuthorURI', 'RequiresWP', 'RequiresPHP', 'AuthorName' ) as $field_name ) {
 			$this->assertIsString(
@@ -434,11 +461,38 @@ final class WpscanGetAlteredAddonsDataAndSlugsTest extends TestCase {
 					'version_detected' => $this->options['wpscan-pr-1-theme-version'],
 					'file_name'        => $this->options['local-git-repo'] . '/' . $this->options['wpscan-pr-1-theme-path'],
 					'slug'             => $this->options['wpscan-pr-1-theme-slug'],
-					'new_version'      => '1.7',
-					'package'          => 'https://downloads.wordpress.org/theme/twentytwentyone.1.7.zip',
 					'url'              => 'https://wordpress.org/themes/' . $this->options['wpscan-pr-1-theme-slug'] . '/',
 				),
 			),
+		);
+
+		$this->assertIsString(
+			$results_actual
+				[ $this->options['wpscan-pr-1-theme-dir'] ]
+				[ 'vipgoci-addon-theme-' . $this->options['wpscan-pr-1-theme-slug'] ]
+				['new_version']
+		);
+
+		unset(
+			$results_actual
+				[ $this->options['wpscan-pr-1-theme-dir'] ]
+				[ 'vipgoci-addon-theme-' . $this->options['wpscan-pr-1-theme-slug'] ]
+				['new_version']
+		);
+
+		$this->assertStringContainsString(
+			'.zip',
+			$results_actual
+				[ $this->options['wpscan-pr-1-theme-dir'] ]
+				[ 'vipgoci-addon-theme-' . $this->options['wpscan-pr-1-theme-slug'] ]
+				['package']
+		);
+
+		unset(
+			$results_actual
+				[ $this->options['wpscan-pr-1-theme-dir'] ]
+				[ 'vipgoci-addon-theme-' . $this->options['wpscan-pr-1-theme-slug'] ]
+				['package']
 		);
 
 		foreach ( array( 'Description', 'Author', 'AuthorURI', 'RequiresWP', 'RequiresPHP', 'AuthorName' ) as $field_name ) {
