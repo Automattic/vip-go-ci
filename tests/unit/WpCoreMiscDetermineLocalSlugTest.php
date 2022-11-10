@@ -26,7 +26,7 @@ final class WpCoreMiscDetermineLocalSlugTest extends TestCase {
 	private string $repo_path = '/tmp/git-repo-123';
 
 	/**
-	 * Setup function. Require file.
+	 * Setup function. Require files.
 	 *
 	 * @return void
 	 */
