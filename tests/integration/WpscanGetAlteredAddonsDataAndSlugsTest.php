@@ -259,6 +259,7 @@ final class WpscanGetAlteredAddonsDataAndSlugsTest extends TestCase {
 			return;
 		}
 
+		// Skip 'plugins' directory from results.
 		$this->options['wpscan-api-skip-folders'] = array( 'plugins' );
 
 		$files_affected_by_commit_by_pr = $this->getFilesAffectedByPR();
