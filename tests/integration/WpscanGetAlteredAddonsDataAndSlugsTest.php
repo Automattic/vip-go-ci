@@ -25,6 +25,7 @@ final class WpscanGetAlteredAddonsDataAndSlugsTest extends TestCase {
 	 */
 	private array $options_wpscan_api_scan = array(
 		'wpscan-pr-1-commit-id'      => null,
+		'wpscan-pr-1-branch-ref'     => null,
 		'wpscan-pr-1-dirs-scan'      => null,
 		'wpscan-pr-1-dirs-altered'   => null,
 		'wpscan-pr-1-plugin-key'     => null,
@@ -135,6 +136,32 @@ final class WpscanGetAlteredAddonsDataAndSlugsTest extends TestCase {
 	}
 
 	/**
+	 * Get array of altered files for pull request.
+	 *
+	 * @return array Files altered.
+	 */
+	private function getFilesAffectedByPR() :array {
+		$pr_git_diff = vipgoci_git_diffs_fetch(
+			$this->options['local-git-repo'],
+			$this->options['repo-owner'],
+			$this->options['repo-name'],
+			$this->options['token'],
+			$this->options['wpscan-pr-1-branch-ref'],
+			$this->options['commit'],
+			true,
+			false,
+			true,
+			array(
+				'skip_folders' => $this->options['wpscan-api-skip-folders'],
+			),
+		);
+
+		return array(
+			'all' => array_keys( $pr_git_diff['files'] ),
+		);
+	}
+
+	/**
 	 * Test common usage of the function. No results expected
 	 * as plugin and theme were not altered.
 	 *
@@ -232,31 +259,9 @@ final class WpscanGetAlteredAddonsDataAndSlugsTest extends TestCase {
 			return;
 		}
 
-		$files_affected_by_commit_by_pr = vipgoci_github_files_affected_by_commit(
-			$this->options,
-			$this->options['commit'],
-			$this->commit_skipped_files,
-			true,
-			false, // Do not give list of removed files.
-			true,
-			array(
-				'skip_folders' => $this->options['wpscan-api-skip-folders'],
-			),
-			false
-		);
+		$this->options['wpscan-api-skip-folders'] = array( 'plugins' );
 
-		// Filter plugin away from files altered.
-		$files_affected_by_commit_by_pr = array(
-			'all' => array_filter(
-				$files_affected_by_commit_by_pr['all'],
-				function ( $file_path ) {
-					return ! str_starts_with(
-						$file_path,
-						'plugins/'
-					);
-				}
-			),
-		);
+		$files_affected_by_commit_by_pr = $this->getFilesAffectedByPR();
 
 		$results_actual = vipgoci_wpscan_get_altered_addons_data_and_slugs(
 			$this->options,
@@ -382,22 +387,7 @@ final class WpscanGetAlteredAddonsDataAndSlugsTest extends TestCase {
 			return;
 		}
 
-		$files_affected_by_commit_by_pr = vipgoci_github_files_affected_by_commit(
-			$this->options,
-			$this->options['commit'],
-			$this->commit_skipped_files,
-			true,
-			false, // Do not give list of removed files.
-			true,
-			array(
-				'skip_folders' => $this->options['wpscan-api-skip-folders'],
-			),
-			false
-		);
-
-		$files_affected_by_commit_by_pr = array(
-			'all' => $files_affected_by_commit_by_pr['all'],
-		);
+		$files_affected_by_commit_by_pr = $this->getFilesAffectedByPR();
 
 		$results_actual = vipgoci_wpscan_get_altered_addons_data_and_slugs(
 			$this->options,
