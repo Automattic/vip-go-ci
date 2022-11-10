@@ -243,6 +243,66 @@ function vipgoci_wpcore_misc_get_addon_headers_and_type(
 }
 
 /**
+ * Determine "local" slug used when querying the WordPress.org API.
+ *
+ * @param string $addon_type    Addon type, plugin or theme.
+ * @param string $full_path     Full path to plugin or theme in git repository.
+ * @param string $relative_path Relative path to plugin or theme.
+ *
+ * @return string "local" slug.
+ */
+function vipgoci_wpcore_misc_determine_local_slug(
+	string $addon_type,
+	string $full_path,
+	string $relative_path
+) :string {
+	if ( VIPGOCI_ADDON_THEME === $addon_type ) {
+		// Special case for themes.
+		$key = basename( dirname( $full_path ) );
+	} elseif (
+		( VIPGOCI_ADDON_PLUGIN === $addon_type ) &&
+		( true === str_contains( $relative_path, '/' ) )
+	) {
+		$relative_path_dirname = dirname( $relative_path );
+
+		$relative_path_dirname_arr = array_reverse(
+			explode( '/', $relative_path_dirname )
+		);
+
+		$relative_path_dirname_dircount = count(
+			$relative_path_dirname_arr
+		);
+
+		/*
+		 * Only return "local" slug including directory if there are one or more
+		 * directories in path, but not when last directory name includes certain
+		 * names that will result in bogus results.
+		 */
+		if (
+			( $relative_path_dirname_dircount >= 1 ) &&
+			( false === in_array(
+				strtolower( $relative_path_dirname_arr[0] ),
+				array(
+					'plugins',
+					'themes',
+					'library',
+				),
+				true
+			) )
+		) {
+			$key = $relative_path_dirname_arr[0] . '/' .
+				basename( $relative_path );
+		} else {
+			$key = basename( $relative_path );
+		}
+	} else {
+		$key = basename( $relative_path );
+	}
+
+	return $addon_type . '-' . $key;
+}
+
+/**
  * Get list of plugins or themes found in $path, return as array of
  * key-value pairs.
  *
@@ -351,14 +411,11 @@ function vipgoci_wpcore_misc_scan_directory_for_addons(
 		/*
 		 * Calculate 'local slug'.
 		 */
-		if ( VIPGOCI_ADDON_THEME === $addon_data['type'] ) {
-			// Special case for themes.
-			$wp_addon_key = $addon_data['type'] . '-' . basename( dirname( $tmp_path ) );
-		} elseif ( str_contains( $addon_file, '/' ) ) {
-			$wp_addon_key = $addon_data['type'] . '-' . dirname( $addon_file ) . '/' . basename( $addon_file );
-		} else {
-			$wp_addon_key = $addon_data['type'] . '-' . basename( $addon_file );
-		}
+		$wp_addon_key = vipgoci_wpcore_misc_determine_local_slug(
+			$addon_data['type'],
+			$tmp_path,
+			$addon_file
+		);
 
 		$wp_addons[ $wp_addon_key ] = $addon_data;
 	}
