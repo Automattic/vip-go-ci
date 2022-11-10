@@ -29,6 +29,7 @@ final class WpscanGetAlteredAddonsDataAndSlugsTest extends TestCase {
 		'wpscan-pr-1-dirs-scan'      => null,
 		'wpscan-pr-1-dirs-altered'   => null,
 		'wpscan-pr-1-plugin-key'     => null,
+		'wpscan-pr-1-plugin-dir'     => null,
 		'wpscan-pr-1-plugin-name'    => null,
 		'wpscan-pr-1-plugin-slug'    => null,
 		'wpscan-pr-1-plugin-path'    => null,
@@ -402,39 +403,31 @@ final class WpscanGetAlteredAddonsDataAndSlugsTest extends TestCase {
 		vipgoci_unittests_output_unsuppress();
 
 		$results_expected = array(
-			'plugins/hello'          => array(
-				'vipgoci-addon-plugin-hello.php' => array(
+			$this->options['wpscan-pr-1-plugin-dir'] => array(
+				'vipgoci-addon-plugin-' . $this->options['wpscan-pr-1-plugin-key'] => array(
 					'type'             => 'vipgoci-addon-plugin',
 					'addon_headers'    => array(
-						'Name'        => $this->options['wpscan-pr-1-plugin-name'],
-						'PluginURI'   => 'http://wordpress.org/plugins/' . $this->options['wpscan-pr-1-plugin-slug'] . '/',
-						'Version'     => $this->options['wpscan-pr-1-plugin-version'],
-						'Description' => 'This is not just a plugin, it symbolizes the hope and enthusiasm of an entire generation summed up in two words sung most famously by Louis Armstrong: Hello, Dolly. When activated you will randomly see a lyric from <cite>Hello, Dolly</cite> in the upper right of your admin screen on every page.',
-						'Author'      => 'Matt Mullenweg',
-						'AuthorURI'   => 'http://ma.tt/',
-						'TextDomain'  => '',
-						'DomainPath'  => '',
-						'Network'     => '',
-						'RequiresWP'  => '',
-						'RequiresPHP' => '',
-						'UpdateURI'   => 'http://wordpress.org/plugins/' . $this->options['wpscan-pr-1-plugin-slug'] . '/',
-						'Title'       => $this->options['wpscan-pr-1-plugin-name'],
-						'AuthorName'  => 'Matt Mullenweg',
+						'Name'       => $this->options['wpscan-pr-1-plugin-name'],
+						'PluginURI'  => 'http://wordpress.org/plugins/' . $this->options['wpscan-pr-1-plugin-slug'] . '/',
+						'Version'    => $this->options['wpscan-pr-1-plugin-version'],
+						'TextDomain' => '',
+						'DomainPath' => '',
+						'Network'    => '',
+						'UpdateURI'  => 'http://wordpress.org/plugins/' . $this->options['wpscan-pr-1-plugin-slug'] . '/',
+						'Title'      => $this->options['wpscan-pr-1-plugin-name'],
 					),
 					'name'             => $this->options['wpscan-pr-1-plugin-name'],
 					'version_detected' => $this->options['wpscan-pr-1-plugin-version'],
 					'file_name'        => $this->options['local-git-repo'] . '/' . $this->options['wpscan-pr-1-plugin-path'],
 					'slug'             => $this->options['wpscan-pr-1-plugin-slug'],
-					'new_version'      => '1.7.2', // FIXME.
-					'package'          => 'https://downloads.wordpress.org/plugin/hello-dolly.1.7.2.zip',
 					'url'              => 'https://wordpress.org/plugins/' . $this->options['wpscan-pr-1-plugin-slug'] . '/',
 					'id'               => 'w.org/plugins/' . $this->options['wpscan-pr-1-plugin-slug'],
 					'plugin'           => $this->options['wpscan-pr-1-plugin-key'],
 					'file_name'        => $this->options['local-git-repo'] . '/' . $this->options['wpscan-pr-1-plugin-path'],
 				),
 			),
-			'plugins/not-a-plugin'   => array(),
-			'themes/twentytwentyone' => array(
+			'plugins/not-a-plugin'                   => array(),
+			$this->options['wpscan-pr-1-theme-dir']  => array(
 				'vipgoci-addon-theme-' . $this->options['wpscan-pr-1-theme-key'] => array(
 					'type'             => 'vipgoci-addon-theme',
 					'addon_headers'    => array(
@@ -456,6 +449,53 @@ final class WpscanGetAlteredAddonsDataAndSlugsTest extends TestCase {
 				),
 			),
 		);
+
+		$this->assertIsString(
+			$results_actual
+				[ $this->options['wpscan-pr-1-plugin-dir'] ]
+				[ 'vipgoci-addon-plugin-' . $this->options['wpscan-pr-1-plugin-key'] ]
+				['new_version']
+		);
+
+		unset(
+			$results_actual
+				[ $this->options['wpscan-pr-1-plugin-dir'] ]
+				[ 'vipgoci-addon-plugin-' . $this->options['wpscan-pr-1-plugin-key'] ]
+				['new_version']
+		);
+
+		$this->assertStringContainsString(
+			'.zip',
+			$results_actual
+				[ $this->options['wpscan-pr-1-plugin-dir'] ]
+				[ 'vipgoci-addon-plugin-' . $this->options['wpscan-pr-1-plugin-key'] ]
+				['package']
+		);
+
+		unset(
+			$results_actual
+				[ $this->options['wpscan-pr-1-plugin-dir'] ]
+				[ 'vipgoci-addon-plugin-' . $this->options['wpscan-pr-1-plugin-key'] ]
+				['package']
+		);
+
+		foreach ( array( 'Description', 'Author', 'AuthorURI', 'RequiresWP', 'RequiresPHP', 'AuthorName' ) as $field_name ) {
+			$this->assertIsString(
+				$results_actual
+					[ $this->options['wpscan-pr-1-plugin-dir'] ]
+					[ 'vipgoci-addon-plugin-' . $this->options['wpscan-pr-1-plugin-key'] ]
+					['addon_headers']
+					[ $field_name ]
+			);
+
+			unset(
+				$results_actual
+					[ $this->options['wpscan-pr-1-plugin-dir'] ]
+					[ 'vipgoci-addon-plugin-' . $this->options['wpscan-pr-1-plugin-key'] ]
+					['addon_headers']
+					[ $field_name ]
+			);
+		}
 
 		$this->assertIsString(
 			$results_actual
