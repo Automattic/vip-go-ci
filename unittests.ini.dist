@@ -56,6 +56,7 @@ lint-php2-version=8.1
 plugin-slug=classic-editor
 theme-slug=twentytwenty
 wpscan-pr-1-commit-id=343d83dda119ef782ad66ad1db9e7f80b0630cc4
+wpscan-pr-1-branch-ref=master
 wpscan-pr-1-dirs-scan=plugins,mu-plugins,themes
 wpscan-pr-1-number=52
 wpscan-pr-1-dirs-altered=plugins/hello,plugins/not-a-plugin,themes/twentytwentyone

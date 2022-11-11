@@ -243,6 +243,66 @@ function vipgoci_wpcore_misc_get_addon_headers_and_type(
 }
 
 /**
+ * Determine "local" slug used when querying the WordPress.org API.
+ *
+ * @param string $addon_type    Addon type, plugin or theme.
+ * @param string $full_path     Full path to plugin or theme in git repository.
+ * @param string $relative_path Relative path to plugin or theme.
+ *
+ * @return string "local" slug.
+ */
+function vipgoci_wpcore_misc_determine_local_slug(
+	string $addon_type,
+	string $full_path,
+	string $relative_path
+) :string {
+	if ( VIPGOCI_ADDON_THEME === $addon_type ) {
+		// Special case for themes.
+		$key = basename( dirname( $full_path ) );
+	} elseif (
+		( VIPGOCI_ADDON_PLUGIN === $addon_type ) &&
+		( true === str_contains( $relative_path, '/' ) )
+	) {
+		$relative_path_dirname = dirname( $relative_path );
+
+		$relative_path_dirname_arr = array_reverse(
+			explode( '/', $relative_path_dirname )
+		);
+
+		$relative_path_dirname_dircount = count(
+			$relative_path_dirname_arr
+		);
+
+		/*
+		 * Only return "local" slug including directory if there are one or more
+		 * directories in path, but not when last directory name includes certain
+		 * names that will result in bogus results.
+		 */
+		if (
+			( $relative_path_dirname_dircount >= 1 ) &&
+			( false === in_array(
+				strtolower( $relative_path_dirname_arr[0] ),
+				array(
+					'plugins',
+					'themes',
+					'library',
+				),
+				true
+			) )
+		) {
+			$key = $relative_path_dirname_arr[0] . '/' .
+				basename( $relative_path );
+		} else {
+			$key = basename( $relative_path );
+		}
+	} else {
+		$key = basename( $relative_path );
+	}
+
+	return $addon_type . '-' . $key;
+}
+
+/**
  * Get list of plugins or themes found in $path, return as array of
  * key-value pairs.
  *
@@ -351,14 +411,11 @@ function vipgoci_wpcore_misc_scan_directory_for_addons(
 		/*
 		 * Calculate 'local slug'.
 		 */
-		if ( VIPGOCI_ADDON_THEME === $addon_data['type'] ) {
-			// Special case for themes.
-			$wp_addon_key = $addon_data['type'] . '-' . basename( dirname( $tmp_path ) );
-		} elseif ( str_contains( $addon_file, '/' ) ) {
-			$wp_addon_key = $addon_data['type'] . '-' . dirname( $addon_file ) . '/' . basename( $addon_file );
-		} else {
-			$wp_addon_key = $addon_data['type'] . '-' . basename( $addon_file );
-		}
+		$wp_addon_key = vipgoci_wpcore_misc_determine_local_slug(
+			$addon_data['type'],
+			$tmp_path,
+			$addon_file
+		);
 
 		$wp_addons[ $wp_addon_key ] = $addon_data;
 	}
@@ -786,5 +843,67 @@ function vipgoci_wpcore_misc_get_addon_data_and_slugs_for_directory(
 	);
 
 	return $addons_found;
+}
+
+/**
+ * Returns a list of WordPress add-ons found in $known_addons that
+ * cannot be associated with changes in pull requests. Attempts to
+ * associate each changed file with an add-on, and returns
+ * those that cannot be associated.
+ *
+ * @param array $options                        Options array for the program.
+ * @param array $known_addons                   Array of paths to known add-ons (relative to repository base).
+ * @param array $files_affected_by_commit_by_pr Files affected by commit by pull request (relative to repository base).
+ *
+ * @return Array Paths to add-ons that could not be associated with changed files.
+ */
+function vipgoci_wpcore_misc_get_addons_not_altered(
+	array $options,
+	array $known_addons,
+	array $files_affected_by_commit_by_pr
+) :array {
+	$addons_matched = array();
+
+	$changed_files = $files_affected_by_commit_by_pr['all'];
+
+	$known_addon_base_paths = array();
+
+	foreach ( $known_addons as $addon_path ) {
+		$known_addon_base_paths[ dirname( $addon_path ) ] = $addon_path;
+	}
+
+	foreach ( $changed_files as $changed_file ) {
+		if ( in_array( $changed_file, $known_addons, true ) ) {
+			$addons_matched[ $changed_file ] = $changed_file;
+			continue;
+		}
+
+		$changed_file_dirname = $changed_file;
+
+		do {
+			$changed_file_dirname = dirname( $changed_file_dirname );
+
+			if ( in_array(
+				$changed_file_dirname,
+				$options['wpscan-api-paths'],
+				true
+			) ) {
+				break;
+			}
+
+			if ( isset( $known_addon_base_paths[ $changed_file_dirname ] ) ) {
+				$addons_matched[ $changed_file ] = $known_addon_base_paths[ $changed_file_dirname ];
+
+				break;
+			}
+		} while ( str_contains( $changed_file_dirname, '/' ) );
+	}
+
+	return array_values(
+		array_diff(
+			$known_addons,
+			array_values( $addons_matched )
+		)
+	);
 }
 

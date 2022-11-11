@@ -24,19 +24,21 @@ final class WpscanScanDirsAlteredTest extends TestCase {
 	 * @var $options_wpscan_api_scan
 	 */
 	private array $options_wpscan_api_scan = array(
-		'wpscan-pr-1-commit-id'    => null,
-		'wpscan-pr-1-dirs-scan'    => null,
-		'wpscan-pr-1-dirs-altered' => null,
-		'wpscan-pr-1-plugin-dir'   => null,
-		'wpscan-pr-1-plugin-key'   => null,
-		'wpscan-pr-1-plugin-name'  => null,
-		'wpscan-pr-1-plugin-slug'  => null,
-		'wpscan-pr-1-plugin-path'  => null,
-		'wpscan-pr-1-theme-dir'    => null,
-		'wpscan-pr-1-theme-key'    => null,
-		'wpscan-pr-1-theme-name'   => null,
-		'wpscan-pr-1-theme-slug'   => null,
-		'wpscan-pr-1-theme-path'   => null,
+		'wpscan-pr-1-commit-id'      => null,
+		'wpscan-pr-1-dirs-scan'      => null,
+		'wpscan-pr-1-dirs-altered'   => null,
+		'wpscan-pr-1-plugin-dir'     => null,
+		'wpscan-pr-1-plugin-key'     => null,
+		'wpscan-pr-1-plugin-name'    => null,
+		'wpscan-pr-1-plugin-slug'    => null,
+		'wpscan-pr-1-plugin-version' => null,
+		'wpscan-pr-1-plugin-path'    => null,
+		'wpscan-pr-1-theme-dir'      => null,
+		'wpscan-pr-1-theme-key'      => null,
+		'wpscan-pr-1-theme-name'     => null,
+		'wpscan-pr-1-theme-slug'     => null,
+		'wpscan-pr-1-theme-version'  => null,
+		'wpscan-pr-1-theme-path'     => null,
 	);
 
 	/**
@@ -91,6 +93,11 @@ final class WpscanScanDirsAlteredTest extends TestCase {
 		$this->options['token'] =
 			$this->options['github-token'];
 
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
+
 		$this->options['branches-ignore'] = array();
 
 		$this->options['skip-draft-prs'] = false;
@@ -138,7 +145,7 @@ final class WpscanScanDirsAlteredTest extends TestCase {
 	}
 
 	/**
-	 * Test common usage of the function.
+	 * Test common usage of the function. Expect results.
 	 *
 	 * @covers ::vipgoci_wpscan_scan_dirs_altered
 	 *
@@ -157,11 +164,6 @@ final class WpscanScanDirsAlteredTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
-		$this->options['local-git-repo'] =
-			vipgoci_unittests_setup_git_repo(
-				$this->options
-			);
-
 		if ( false === $this->options['local-git-repo'] ) {
 			$this->markTestSkipped(
 				'Could not set up git repository: ' .
@@ -173,114 +175,130 @@ final class WpscanScanDirsAlteredTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
+		$addon_data_and_slugs_for_addon_dirs = array(
+			$this->options['wpscan-pr-1-plugin-dir'] => array(
+				'vipgoci-addon-plugin-' . $this->options['wpscan-pr-1-plugin-dir'] => array(
+					'type'             => 'vipgoci-addon-plugin',
+					'slug'             => $this->options['wpscan-pr-1-plugin-slug'],
+					'version_detected' => $this->options['wpscan-pr-1-plugin-version'],
+					'file_name'        => $this->options['local-git-repo'] . '/' . $this->options['wpscan-pr-1-plugin-path'],
+				),
+			),
+			'plugins/not-a-plugin'                   => array(),
+			$this->options['wpscan-pr-1-theme-dir']  => array(
+				'vipgoci-addon-theme-' . $this->options['wpscan-pr-1-theme-key'] => array(
+					'type'             => 'vipgoci-addon-theme',
+					'slug'             => $this->options['wpscan-pr-1-theme-slug'],
+					'version_detected' => $this->options['wpscan-pr-1-theme-version'],
+					'file_name'        => $this->options['local-git-repo'] . '/' . $this->options['wpscan-pr-1-theme-path'],
+				),
+			),
+		);
+
 		$results_actual = vipgoci_wpscan_scan_dirs_altered(
 			$this->options,
 			explode(
 				',',
 				$this->options['wpscan-pr-1-dirs-altered']
+			),
+			$addon_data_and_slugs_for_addon_dirs
+		);
+
+		$results_expected = array(
+			$this->options['wpscan-pr-1-plugin-dir'] => array(
+				$this->options['wpscan-pr-1-plugin-dir'] => array(
+					'wpscan_results'     => array(
+						'friendly_name'  => $this->options['wpscan-pr-1-plugin-name'],
+						'latest_version' => $this->getAddonVersionNumber(
+							$this->options['wpscan-pr-1-plugin-slug'],
+							VIPGOCI_ADDON_PLUGIN
+						),
+					),
+					'addon_data_for_dir' => array(
+						'type'             => 'vipgoci-addon-plugin',
+						'slug'             => $this->options['wpscan-pr-1-plugin-slug'],
+						'version_detected' => $this->options['wpscan-pr-1-plugin-version'],
+						'file_name'        => $this->options['local-git-repo'] . '/' . $this->options['wpscan-pr-1-plugin-path'],
+					),
+				),
+			),
+			$this->options['wpscan-pr-1-theme-dir']  => array(
+				$this->options['wpscan-pr-1-theme-slug'] => array(
+					'wpscan_results'     => array(
+						'friendly_name'  => $this->options['wpscan-pr-1-theme-name'],
+						'latest_version' => $this->getAddonVersionNumber(
+							$this->options['wpscan-pr-1-theme-slug'],
+							VIPGOCI_ADDON_THEME
+						),
+					),
+					'addon_data_for_dir' => array(
+						'type'             => 'vipgoci-addon-theme',
+						'slug'             => $this->options['wpscan-pr-1-theme-slug'],
+						'version_detected' => $this->options['wpscan-pr-1-theme-version'],
+						'file_name'        => $this->options['local-git-repo'] . '/' . $this->options['wpscan-pr-1-theme-path'],
+					),
+				),
+			),
+		);
+
+		$this->assertIsString(
+			$results_actual[ $this->options['wpscan-pr-1-plugin-dir'] ][ $this->options['wpscan-pr-1-plugin-dir'] ]['security_type']
+		);
+
+		unset( $results_actual[ $this->options['wpscan-pr-1-plugin-dir'] ][ $this->options['wpscan-pr-1-plugin-dir'] ]['security_type'] );
+
+		$this->assertIsString(
+			$results_actual[ $this->options['wpscan-pr-1-plugin-dir'] ][ $this->options['wpscan-pr-1-plugin-dir'] ]['wpscan_results']['last_updated']
+		);
+
+		unset( $results_actual[ $this->options['wpscan-pr-1-plugin-dir'] ][ $this->options['wpscan-pr-1-plugin-dir'] ]['wpscan_results']['last_updated'] );
+
+		$this->assertIsArray(
+			$results_actual[ $this->options['wpscan-pr-1-plugin-dir'] ][ $this->options['wpscan-pr-1-plugin-dir'] ]['wpscan_results']['vulnerabilities']
+		);
+
+		unset( $results_actual[ $this->options['wpscan-pr-1-plugin-dir'] ][ $this->options['wpscan-pr-1-plugin-dir'] ]['wpscan_results']['vulnerabilities'] );
+
+		$this->assertIsString(
+			$results_actual[ $this->options['wpscan-pr-1-theme-dir'] ][ $this->options['wpscan-pr-1-theme-slug'] ]['security_type']
+		);
+
+		unset( $results_actual[ $this->options['wpscan-pr-1-theme-dir'] ][ $this->options['wpscan-pr-1-theme-slug'] ]['security_type'] );
+
+		$this->assertIsString(
+			$results_actual[ $this->options['wpscan-pr-1-theme-dir'] ][ $this->options['wpscan-pr-1-theme-slug'] ]['wpscan_results']['last_updated']
+		);
+
+		unset( $results_actual[ $this->options['wpscan-pr-1-theme-dir'] ][ $this->options['wpscan-pr-1-theme-slug'] ]['wpscan_results']['last_updated'] );
+
+		$this->assertIsArray(
+			$results_actual[ $this->options['wpscan-pr-1-theme-dir'] ][ $this->options['wpscan-pr-1-theme-slug'] ]['wpscan_results']['vulnerabilities']
+		);
+
+		unset( $results_actual[ $this->options['wpscan-pr-1-theme-dir'] ][ $this->options['wpscan-pr-1-theme-slug'] ]['wpscan_results']['vulnerabilities'] );
+
+		$this->assertSame(
+			$results_expected,
+			$results_actual
+		);
+
+		$this->assertTrue(
+			isset( $results_actual[ $this->options['wpscan-pr-1-plugin-dir'] ][ $this->options['wpscan-pr-1-plugin-dir'] ]['wpscan_results']['latest_version'] ) &&
+			version_compare(
+				$results_actual[ $this->options['wpscan-pr-1-plugin-dir'] ][ $this->options['wpscan-pr-1-plugin-dir'] ]['wpscan_results']['latest_version'],
+				$this->options['wpscan-pr-1-plugin-version'],
+				'>'
 			)
 		);
 
-		$this->assertSame(
-			array(
-				$this->options['wpscan-pr-1-plugin-dir'],
-				$this->options['wpscan-pr-1-theme-dir'],
-			),
-			array_keys( $results_actual )
+		$this->assertTrue(
+			isset( $results_actual[ $this->options['wpscan-pr-1-theme-dir'] ][ $this->options['wpscan-pr-1-theme-slug'] ]['wpscan_results']['latest_version'] ) &&
+			version_compare(
+				$results_actual[ $this->options['wpscan-pr-1-theme-dir'] ][ $this->options['wpscan-pr-1-theme-slug'] ]['wpscan_results']['latest_version'],
+				$this->options['wpscan-pr-1-theme-version'],
+				'>'
+			)
 		);
-
-		foreach ( array( 'plugin', 'theme' ) as $addon_type ) {
-			$this->assertSame(
-				array(
-					$this->options[ 'wpscan-pr-1-' . $addon_type . '-key' ],
-				),
-				array_keys( $results_actual[ $this->options[ 'wpscan-pr-1-' . $addon_type . '-dir' ] ] )
-			);
-
-			$addon_details = $results_actual[ $this->options[ 'wpscan-pr-1-' . $addon_type . '-dir' ] ][ $this->options[ 'wpscan-pr-1-' . $addon_type . '-key' ] ];
-
-			$this->assertSame(
-				array(
-					'security_type',
-					'wpscan_results',
-					'addon_data_for_dir',
-				),
-				array_keys( $addon_details )
-			);
-
-			$this->assertTrue(
-				isset( $addon_details['security_type'] )
-			);
-
-			$this->assertTrue(
-				isset( $addon_details['wpscan_results']['friendly_name'] )
-			);
-
-			$this->assertTrue(
-				isset( $addon_details['wpscan_results']['latest_version'] )
-			);
-
-			$this->assertTrue(
-				isset( $addon_details['wpscan_results']['vulnerabilities'] )
-			);
-
-			$this->assertFalse(
-				empty( $addon_details['addon_data_for_dir'] )
-			);
-
-			$this->assertFalse(
-				empty( $addon_details['addon_data_for_dir']['type'] )
-			);
-
-			if ( 'plugin' === $addon_type ) {
-				$this->assertTrue(
-					( isset( $addon_details['addon_data_for_dir']['id'] ) ) &&
-					( ! empty( $addon_details['addon_data_for_dir']['id'] ) )
-				);
-			}
-
-			$this->assertTrue(
-				( isset( $addon_details['addon_data_for_dir']['slug'] ) ) &&
-				( ! empty( $addon_details['addon_data_for_dir']['slug'] ) )
-			);
-
-			$this->assertTrue(
-				( isset( $addon_details['addon_data_for_dir']['new_version'] ) ) &&
-				( ! empty( $addon_details['addon_data_for_dir']['new_version'] ) )
-			);
-
-			if ( 'plugin' === $addon_type ) {
-				$this->assertTrue(
-					( isset( $addon_details['addon_data_for_dir']['plugin'] ) ) &&
-					( ! empty( $addon_details['addon_data_for_dir']['plugin'] ) )
-				);
-			}
-
-			$this->assertTrue(
-				( isset( $addon_details['addon_data_for_dir']['package'] ) ) &&
-				( ! empty( $addon_details['addon_data_for_dir']['package'] ) )
-			);
-
-			$this->assertTrue(
-				( isset( $addon_details['addon_data_for_dir']['url'] ) ) &&
-				( ! empty( $addon_details['addon_data_for_dir']['url'] ) )
-			);
-
-			$this->assertTrue(
-				( isset( $addon_details['addon_data_for_dir']['addon_headers']['Name'] ) ) &&
-				( ! empty( $addon_details['addon_data_for_dir']['addon_headers']['Name'] ) )
-			);
-
-			$this->assertSame(
-				$this->options[ 'wpscan-pr-1-' . $addon_type . '-name' ],
-				$addon_details['addon_data_for_dir']['addon_headers']['Name']
-			);
-
-			$this->assertTrue(
-				( isset( $addon_details['addon_data_for_dir']['addon_headers']['AuthorName'] ) ) &&
-				( ! empty( $addon_details['addon_data_for_dir']['addon_headers']['AuthorName'] ) )
-			);
-		}
 	}
 
 	/**
@@ -304,11 +322,6 @@ final class WpscanScanDirsAlteredTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
-		$this->options['local-git-repo'] =
-			vipgoci_unittests_setup_git_repo(
-				$this->options
-			);
-
 		if ( false === $this->options['local-git-repo'] ) {
 			$this->markTestSkipped(
 				'Could not set up git repository: ' .
@@ -321,17 +334,41 @@ final class WpscanScanDirsAlteredTest extends TestCase {
 		vipgoci_unittests_output_unsuppress();
 
 		/*
-		 * Update version numbers in plugin/theme files in
-		 * repository so they match the latest ones.
+		 * Ensure version numbers are the latest.
 		 */
-		$this->updateAddonVersionNumbers( true );
+		$addon_data_and_slugs_for_addon_dirs = array(
+			$this->options['wpscan-pr-1-plugin-dir'] => array(
+				'vipgoci-addon-plugin-' . $this->options['wpscan-pr-1-plugin-dir'] => array(
+					'type'             => 'vipgoci-addon-plugin',
+					'slug'             => $this->options['wpscan-pr-1-plugin-slug'],
+					'version_detected' => $this->getAddonVersionNumber(
+						$this->options['wpscan-pr-1-plugin-slug'],
+						VIPGOCI_ADDON_THEME
+					),
+					'file_name'        => $this->options['local-git-repo'] . '/' . $this->options['wpscan-pr-1-plugin-path'],
+				),
+			),
+			'plugins/not-a-plugin'                   => array(),
+			$this->options['wpscan-pr-1-theme-dir']  => array(
+				'vipgoci-addon-theme-' . $this->options['wpscan-pr-1-theme-key'] => array(
+					'type'             => 'vipgoci-addon-theme',
+					'slug'             => $this->options['wpscan-pr-1-theme-slug'],
+					'version_detected' => $this->getAddonVersionNumber(
+						$this->options['wpscan-pr-1-theme-slug'],
+						VIPGOCI_ADDON_THEME
+					),
+					'file_name'        => $this->options['local-git-repo'] . '/' . $this->options['wpscan-pr-1-theme-path'],
+				),
+			),
+		);
 
 		$results_actual = vipgoci_wpscan_scan_dirs_altered(
 			$this->options,
 			explode(
 				',',
 				$this->options['wpscan-pr-1-dirs-altered']
-			)
+			),
+			$addon_data_and_slugs_for_addon_dirs
 		);
 
 		$this->assertSame(
@@ -361,11 +398,6 @@ final class WpscanScanDirsAlteredTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
-		$this->options['local-git-repo'] =
-			vipgoci_unittests_setup_git_repo(
-				$this->options
-			);
-
 		if ( false === $this->options['local-git-repo'] ) {
 			$this->markTestSkipped(
 				'Could not set up git repository: ' .
@@ -378,17 +410,36 @@ final class WpscanScanDirsAlteredTest extends TestCase {
 		vipgoci_unittests_output_unsuppress();
 
 		/*
-		 * Update version numbers in plugin/theme files in
-		 * repository so they are higher than the latest ones.
+		 * Version numbers for plugin and theme are higher
+		 * than the latest available ones.
 		 */
-		$this->updateAddonVersionNumbers( false );
+		$addon_data_and_slugs_for_addon_dirs = array(
+			$this->options['wpscan-pr-1-plugin-dir'] => array(
+				'vipgoci-addon-plugin-' . $this->options['wpscan-pr-1-plugin-dir'] => array(
+					'type'             => 'vipgoci-addon-plugin',
+					'slug'             => $this->options['wpscan-pr-1-plugin-slug'],
+					'version_detected' => '100.0',
+					'file_name'        => $this->options['local-git-repo'] . '/' . $this->options['wpscan-pr-1-plugin-path'],
+				),
+			),
+			'plugins/not-a-plugin'                   => array(),
+			$this->options['wpscan-pr-1-theme-dir']  => array(
+				'vipgoci-addon-theme-' . $this->options['wpscan-pr-1-theme-key'] => array(
+					'type'             => 'vipgoci-addon-theme',
+					'slug'             => $this->options['wpscan-pr-1-theme-slug'],
+					'version_detected' => '100.0',
+					'file_name'        => $this->options['local-git-repo'] . '/' . $this->options['wpscan-pr-1-theme-path'],
+				),
+			),
+		);
 
 		$results_actual = vipgoci_wpscan_scan_dirs_altered(
 			$this->options,
 			explode(
 				',',
 				$this->options['wpscan-pr-1-dirs-altered']
-			)
+			),
+			$addon_data_and_slugs_for_addon_dirs
 		);
 
 		$this->assertSame(
@@ -398,89 +449,23 @@ final class WpscanScanDirsAlteredTest extends TestCase {
 	}
 
 	/**
-	 * Update version numbers of addons in repository so they match
-	 * the latest ones or are higher than the latest ones. Will ask
-	 * WPScan API for the latest version numbers if applicable.
+	 * Will ask the WPScan API for the latest version number of add-on.
 	 *
-	 * @param bool $latest If to set to the latest version (true) or higher (false).
+	 * @param string $addon_slug Add-on slug.
+	 * @param string $addon_type Add-on type.
 	 *
-	 * @return void
+	 * @return string Version number.
 	 */
-	private function updateAddonVersionNumbers(
-		bool $latest = true
-	) :void {
-		if ( true === $latest ) {
-			$wpscan_plugin_info = vipgoci_wpscan_do_scan_via_api(
-				$this->options['wpscan-pr-1-plugin-slug'],
-				VIPGOCI_ADDON_PLUGIN,
-				$this->options['wpscan-api-token']
-			);
-
-			$wpscan_plugin_version =
-				$wpscan_plugin_info[ $this->options['wpscan-pr-1-plugin-slug'] ]['latest_version'];
-		} else {
-			$wpscan_plugin_version = '100.0';
-		}
-
-		$this->replaceVersionNumberForFile(
-			$this->options['local-git-repo'] . DIRECTORY_SEPARATOR .
-				$this->options['wpscan-pr-1-plugin-path'],
-			vipgoci_output_sanitize_version_number(
-				$wpscan_plugin_version
-			)
+	private function getAddonVersionNumber(
+		string $addon_slug,
+		string $addon_type
+	) :string {
+		$wpscan_plugin_info = vipgoci_wpscan_do_scan_via_api(
+			$addon_slug,
+			$addon_type,
+			$this->options['wpscan-api-token']
 		);
 
-		if ( true === $latest ) {
-			$wpscan_theme_info = vipgoci_wpscan_do_scan_via_api(
-				$this->options['wpscan-pr-1-theme-slug'],
-				VIPGOCI_ADDON_THEME,
-				$this->options['wpscan-api-token']
-			);
-
-			$wpscan_theme_version =
-				$wpscan_theme_info[ $this->options['wpscan-pr-1-theme-slug'] ]['latest_version'];
-		} else {
-			$wpscan_theme_version = '100.0';
-		}
-
-		$this->replaceVersionNumberForFile(
-			$this->options['local-git-repo'] . DIRECTORY_SEPARATOR .
-				$this->options['wpscan-pr-1-theme-path'],
-			vipgoci_output_sanitize_version_number(
-				$wpscan_theme_version
-			)
-		);
-	}
-
-	/**
-	 * Replace version number header in given file.
-	 *
-	 * @param string $file_path      Path to file.
-	 * @param string $version_number Version number.
-	 *
-	 * @return void
-	 */
-	private function replaceVersionNumberForFile(
-		string $file_path,
-		string $version_number
-	) :void {
-		$file_contents = file_get_contents(
-			$file_path
-		);
-
-		if ( false === $file_contents ) {
-			return;
-		}
-
-		$file_contents = preg_replace(
-			'/Version: .*/',
-			'Version: ' . $version_number,
-			$file_contents
-		);
-
-		file_put_contents(
-			$file_path,
-			$file_contents
-		);
+		return (string) $wpscan_plugin_info[ $addon_slug ]['latest_version'];
 	}
 }

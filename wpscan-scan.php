@@ -17,32 +17,17 @@ declare(strict_types=1);
  * a file may be altered in context of one pull request and not another,
  * yet it will appear in results.
  *
- * @param array $options              Options array for the program.
- * @param array $commit_skipped_files Information about skipped files (reference).
+ * @param array $options                        Options array for the program.
+ * @param array $commit_skipped_files           Information about skipped files (reference).
+ * @param array $files_affected_by_commit_by_pr Files affected by commit by pull request.
  *
- * @return null|array Null when no altered files were identified. Otherwise, array containing paths to specific plugin/theme directories which were altered by any of the pull requests.
+ * @return null|array Null when no altered files were identified. Otherwise, array with paths to specific plugin/theme directories which may have been altered by any of the pull requests.
  */
 function vipgoci_wpscan_find_addon_dirs_altered(
 	array $options,
-	array &$commit_skipped_files
+	array &$commit_skipped_files,
+	array $files_affected_by_commit_by_pr
 ) :null|array {
-	/*
-	 * Get list of all files affected by
-	 * pull requests implicated by the commit.
-	 */
-	$files_affected_by_commit_by_pr = vipgoci_github_files_affected_by_commit(
-		$options,
-		$options['commit'],
-		$commit_skipped_files,
-		true,
-		true,
-		true,
-		array(
-			'skip_folders' => $options['wpscan-api-skip-folders'],
-		),
-		false
-	);
-
 	if ( empty( $files_affected_by_commit_by_pr['all'] ) ) {
 		vipgoci_log(
 			'No plugins/themes found to scan via WPScan API (empty list)',
@@ -164,13 +149,75 @@ function vipgoci_wpscan_find_addon_dirs_altered(
 }
 
 /**
- * Loop through plugin/theme directories altered by pull request, determine relevant
- * plugin/theme slugs via the WordPress.org API, and use that look for any
- * plugins/themes that are obsolete or have vulnerabilities via the WPScan
- * API. Save results for further processing.
+ * Get slugs and data for add-ons found in $addon_dirs_relevant_to_scan and ensure all
+ * add-ons found can be associated with changes in code. Those that cannot will be removed
+ * from the resulting array. This ensures only add-ons added or modified are scanned and
+ * reported about (if applicable), especially those placed within directories belonging
+ * to other add-ons.
  *
- * @param array $options                     Options array for the program.
- * @param array $addon_dirs_relevant_to_scan Array of directories which contain plugins/themes altered to be scanned.
+ * @param array $options                        Options array for the program.
+ * @param array $addon_dirs_relevant_to_scan    Array of directories which contain plugins/themes altered to be scanned.
+ * @param array $files_affected_by_commit_by_pr Files affected by commit by pull request.
+ *
+ * @return Array Directories which contain plugins/themes altered to be scanned, with irrelevant ones removed.
+ */
+function vipgoci_wpscan_get_altered_addons_data_and_slugs(
+	array $options,
+	array $addon_dirs_relevant_to_scan,
+	array $files_affected_by_commit_by_pr
+) :array {
+	$addon_data_and_slugs_for_addon_dirs = array();
+
+	foreach ( $addon_dirs_relevant_to_scan as $addon_dir_relevant ) {
+		$known_addons             = array();
+		$known_addons_file_to_key = array();
+
+		$addon_data_for_dir = vipgoci_wpcore_misc_get_addon_data_and_slugs_for_directory(
+			$options['local-git-repo'] . DIRECTORY_SEPARATOR . $addon_dir_relevant,
+			$options['wpscan-api-plugin-file-extensions'],
+			$options['wpscan-api-theme-file-extensions'],
+			( ! in_array( $addon_dir_relevant, $options['wpscan-api-paths'], true ) )
+		);
+
+		// Construct list of known add-ons.
+		foreach ( $addon_data_for_dir as $addon_item_key => $addon_item_info ) {
+			$path = str_replace(
+				$options['local-git-repo'] . '/',
+				'',
+				$addon_item_info['file_name']
+			);
+
+			$known_addons[] = $path;
+
+			$known_addons_file_to_key[ $path ] = $addon_item_key;
+		}
+
+		// Get add-ons that do not match code changes.
+		$addons_not_matched = vipgoci_wpcore_misc_get_addons_not_altered(
+			$options,
+			$known_addons,
+			$files_affected_by_commit_by_pr
+		);
+
+		// Remove non-matched add-ons from results.
+		foreach ( $addons_not_matched as $addon_not_matched_path ) {
+			unset( $addon_data_for_dir[ $known_addons_file_to_key[ $addon_not_matched_path ] ] );
+		}
+
+		$addon_data_and_slugs_for_addon_dirs[ $addon_dir_relevant ] = $addon_data_for_dir;
+	}
+
+	return $addon_data_and_slugs_for_addon_dirs;
+}
+
+/**
+ * Loop through plugin/theme directories altered by pull request and use
+ * the information look for any plugins/themes that are obsolete or have
+ * vulnerabilities via the WPScan API. Save results for further processing.
+ *
+ * @param array $options                             Options array for the program.
+ * @param array $addon_dirs_relevant_to_scan         Array of directories which contain plugins/themes altered to be scanned.
+ * @param array $addon_data_and_slugs_for_addon_dirs Array with slugs and other information for addon directories.
  *
  * @return array Associative array with results. For example:
  *   Array(
@@ -210,17 +257,13 @@ function vipgoci_wpscan_find_addon_dirs_altered(
  */
 function vipgoci_wpscan_scan_dirs_altered(
 	array $options,
-	array $addon_dirs_relevant_to_scan
+	array $addon_dirs_relevant_to_scan,
+	array $addon_data_and_slugs_for_addon_dirs
 ) :array {
 	$problematic_addons_found = array();
 
 	foreach ( $addon_dirs_relevant_to_scan as $addon_dir_relevant ) {
-		$addon_data_for_dir = vipgoci_wpcore_misc_get_addon_data_and_slugs_for_directory(
-			$options['local-git-repo'] . DIRECTORY_SEPARATOR . $addon_dir_relevant,
-			$options['wpscan-api-plugin-file-extensions'],
-			$options['wpscan-api-theme-file-extensions'],
-			( ! in_array( $addon_dir_relevant, $options['wpscan-api-paths'], true ) )
-		);
+		$addon_data_for_dir = $addon_data_and_slugs_for_addon_dirs[ $addon_dir_relevant ];
 
 		foreach ( $addon_data_for_dir as $addon_item_key => $addon_item_info ) {
 			$addon_item_key = str_replace(
@@ -345,11 +388,12 @@ function vipgoci_wpscan_scan_dirs_altered(
  * Add information about plugins or themes which
  * are vulnerable or obsolete to results array.
  *
- * @param array $options                  Options array for the program.
- * @param array $commit_issues_submit     Results array for WPScan API scanning (reference).
- * @param array $commit_issues_stats      Result statistics for WPScan API scanning (reference).
- * @param array $commit_skipped_files     Information about skipped files (reference).
- * @param array $problematic_addons_found Array with problematic addons found, should include local information and WPScan API information.
+ * @param array $options                        Options array for the program.
+ * @param array $commit_issues_submit           Results array for WPScan API scanning (reference).
+ * @param array $commit_issues_stats            Result statistics for WPScan API scanning (reference).
+ * @param array $commit_skipped_files           Information about skipped files (reference).
+ * @param array $files_affected_by_commit_by_pr Files affected by commit by pull request.
+ * @param array $problematic_addons_found       Array with problematic addons found, should include local information and WPScan API information.
  *
  * @return void
  */
@@ -358,6 +402,7 @@ function vipgoci_wpscan_scan_save_for_submission(
 	array &$commit_issues_submit,
 	array &$commit_issues_stats,
 	array &$commit_skipped_files,
+	array $files_affected_by_commit_by_pr,
 	array $problematic_addons_found
 ) :void {
 	vipgoci_log(
@@ -370,23 +415,6 @@ function vipgoci_wpscan_scan_save_for_submission(
 			'problematic_addons_found' => $problematic_addons_found,
 		),
 		2
-	);
-
-	/*
-	 * Get list of all files affected by
-	 * pull requests implicated by the commit.
-	 */
-	$files_affected_by_commit_by_pr = vipgoci_github_files_affected_by_commit(
-		$options,
-		$options['commit'],
-		$commit_skipped_files,
-		true,
-		false, // Do not give list of removed files.
-		true,
-		array(
-			'skip_folders' => $options['wpscan-api-skip-folders'],
-		),
-		false
 	);
 
 	$pr_labels_found_and_reported = array();
@@ -560,6 +588,23 @@ function vipgoci_wpscan_scan_commit(
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'wpscan_scan_commit' );
 
 	/*
+	 * Get list of all files affected by
+	 * pull requests implicated by the commit.
+	 */
+	$files_affected_by_commit_by_pr = vipgoci_github_files_affected_by_commit(
+		$options,
+		$options['commit'],
+		$commit_skipped_files,
+		true,
+		false, // Do not give list of removed files.
+		true,
+		array(
+			'skip_folders' => $options['wpscan-api-skip-folders'],
+		),
+		false
+	);
+
+	/*
 	 * Get paths to added/altered plugins or themes.
 	 * Paths are relative to base of repository.
 	 */
@@ -568,7 +613,8 @@ function vipgoci_wpscan_scan_commit(
 
 	$addon_dirs_relevant_to_scan = vipgoci_wpscan_find_addon_dirs_altered(
 		$options,
-		$commit_skipped_files
+		$commit_skipped_files,
+		$files_affected_by_commit_by_pr
 	);
 
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'wpscan_find_addon_dirs_altered' );
@@ -592,13 +638,25 @@ function vipgoci_wpscan_scan_commit(
 	}
 
 	/*
+	 * Associate all changed files with add-ons found,
+	 * remove any add-ons that cannot be associated
+	 * successfully.
+	 */
+	$addon_data_and_slugs_for_addon_dirs = vipgoci_wpscan_get_altered_addons_data_and_slugs(
+		$options,
+		$addon_dirs_relevant_to_scan,
+		$files_affected_by_commit_by_pr
+	);
+
+	/*
 	 * Scan all directories with added/altered plugins or themes.
 	 */
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'wpscan_scan_get_addon_data_and_slugs_for_directories' );
 
 	$problematic_addons_found = vipgoci_wpscan_scan_dirs_altered(
 		$options,
-		$addon_dirs_relevant_to_scan
+		$addon_dirs_relevant_to_scan,
+		$addon_data_and_slugs_for_addon_dirs
 	);
 
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'wpscan_scan_get_addon_data_and_slugs_for_directories' );
@@ -611,6 +669,7 @@ function vipgoci_wpscan_scan_commit(
 		$commit_issues_submit,
 		$commit_issues_stats,
 		$commit_skipped_files,
+		$files_affected_by_commit_by_pr,
 		$problematic_addons_found
 	);
 

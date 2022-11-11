@@ -45,6 +45,13 @@ final class WpscanScanFindAddonDirsAlteredTest extends TestCase {
 	);
 
 	/**
+	 * Variable for skipped files.
+	 *
+	 * @var $commit_skipped_files
+	 */
+	private array $commit_skipped_files = array();
+
+	/**
 	 * Setup function. Require files, prepare repository, etc.
 	 *
 	 * @return void
@@ -106,6 +113,26 @@ final class WpscanScanFindAddonDirsAlteredTest extends TestCase {
 	}
 
 	/**
+	 * Get files affected by commit by pull request.
+	 *
+	 * @return array
+	 */
+	private function getFilesAffectedByCommitByPR() :array {
+		return vipgoci_github_files_affected_by_commit(
+			$this->options,
+			$this->options['commit'],
+			$this->commit_skipped_files,
+			true,
+			true,
+			true,
+			array(
+				'skip_folders' => $this->options['wpscan-api-skip-folders'],
+			),
+			false
+		);
+	}
+
+	/**
 	 * Test when addons are added to pull request.
 	 *
 	 * @covers ::vipgoci_wpscan_find_addon_dirs_altered
@@ -149,11 +176,10 @@ final class WpscanScanFindAddonDirsAlteredTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$commit_skipped_files = array();
-
 		$results_actual = vipgoci_wpscan_find_addon_dirs_altered(
 			$this->options,
-			$commit_skipped_files
+			$this->commit_skipped_files,
+			$this->getFilesAffectedByCommitByPR()
 		);
 
 		$results_expected = array(
@@ -214,11 +240,10 @@ final class WpscanScanFindAddonDirsAlteredTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$commit_skipped_files = array();
-
 		$results_actual = vipgoci_wpscan_find_addon_dirs_altered(
 			$this->options,
-			$commit_skipped_files
+			$this->commit_skipped_files,
+			$this->getFilesAffectedByCommitByPR()
 		);
 
 		$results_expected = array(
@@ -276,11 +301,10 @@ final class WpscanScanFindAddonDirsAlteredTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$commit_skipped_files = array();
-
 		$results_actual = vipgoci_wpscan_find_addon_dirs_altered(
 			$this->options,
-			$commit_skipped_files
+			$this->commit_skipped_files,
+			$this->getFilesAffectedByCommitByPR()
 		);
 
 		$this->assertSame(
