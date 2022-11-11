@@ -42,6 +42,13 @@ final class WpscanScanSaveForSubmissionTest extends TestCase {
 	);
 
 	/**
+	 * Variable for skipped files.
+	 *
+	 * @var $commit_skipped_files
+	 */
+	private array $commit_skipped_files = array();
+
+	/**
 	 * Variable for problematic addons.
 	 *
 	 * @var $problematic_addons_found
@@ -244,6 +251,26 @@ final class WpscanScanSaveForSubmissionTest extends TestCase {
 	}
 
 	/**
+	 * Get files affected by commit by pull request.
+	 *
+	 * @return array
+	 */
+	private function getFilesAffectedByCommitByPR() :array {
+		return vipgoci_github_files_affected_by_commit(
+			$this->options,
+			$this->options['commit'],
+			$this->commit_skipped_files,
+			true,
+			true,
+			true,
+			array(
+				'skip_folders' => $this->options['wpscan-api-skip-folders'],
+			),
+			false
+		);
+	}
+
+	/**
 	 * Test function when a 'skip-wpscan' label is associated with
 	 * pull request, so results should not be added.
 	 *
@@ -282,7 +309,6 @@ final class WpscanScanSaveForSubmissionTest extends TestCase {
 
 		$commit_issues_submit = array();
 		$commit_issues_stats  = array();
-		$commit_skipped_files = array();
 
 		$commit_issues_submit[ $this->options['wpscan-pr-1-number'] ] = array();
 		$commit_issues_stats[ $this->options['wpscan-pr-1-number'] ]  = array(
@@ -300,7 +326,8 @@ final class WpscanScanSaveForSubmissionTest extends TestCase {
 			$this->options,
 			$commit_issues_submit,
 			$commit_issues_stats,
-			$commit_skipped_files,
+			$this->commit_skipped_files,
+			$this->getFilesAffectedByCommitByPR(),
 			$this->problematic_addons_found
 		);
 
@@ -364,7 +391,6 @@ final class WpscanScanSaveForSubmissionTest extends TestCase {
 
 		$commit_issues_submit = array();
 		$commit_issues_stats  = array();
-		$commit_skipped_files = array();
 
 		$commit_issues_submit[ $this->options['wpscan-pr-1-number'] ] = array();
 		$commit_issues_stats[ $this->options['wpscan-pr-1-number'] ]  = array(
@@ -376,7 +402,8 @@ final class WpscanScanSaveForSubmissionTest extends TestCase {
 			$this->options,
 			$commit_issues_submit,
 			$commit_issues_stats,
-			$commit_skipped_files,
+			$this->commit_skipped_files,
+			$this->getFilesAffectedByCommitByPR(),
 			$this->problematic_addons_found
 		);
 
