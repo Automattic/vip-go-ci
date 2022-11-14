@@ -22,6 +22,7 @@ All notable changes to this project will be documented in this file.
 - [#324](https://github.com/Automattic/vip-go-ci/pull/324): Update PHPCompatibilityWP and PHPCompatibilityParagonie dependencies
 - [#325](https://github.com/Automattic/vip-go-ci/pull/325): Do not display "No issues were found...." when maximum number of comments is reached
 - [#328](https://github.com/Automattic/vip-go-ci/pull/328): Update shivammathur/setup-php dependency to use @v2
+- [#330](https://github.com/Automattic/vip-go-ci/pull/330): Updating references to build management software
 
 ## Fixes
 - [#314](https://github.com/Automattic/vip-go-ci/pull/314): WPScan API: Add function to determine "local" slug
