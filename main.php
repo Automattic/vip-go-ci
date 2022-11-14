@@ -57,9 +57,8 @@ function vipgoci_help_print() :void {
 		"\t" . '                               --env-options="repo-owner=U_ROWNER,output=U_FOUTPUT" specified' . PHP_EOL .
 		"\t" . '                               vip-go-ci will attempt to read the --repo-owner and --output' . PHP_EOL .
 		"\t" . '                               from the $U_ROWNER and $U_FOUTPUT environmental variables,' . PHP_EOL .
-		"\t" . '                               respectively. This is useful for environments, such as' . PHP_EOL .
-		"\t" . '                               TeamCity or GitHub Actions, where vital configuration.' . PHP_EOL .
-		"\t" . '                               are specified via environmental variables.' . PHP_EOL .
+		"\t" . '                               respectively. This is useful for environments which provide' . PHP_EOL .
+		"\t" . '                               information via environmental variables.' . PHP_EOL .
 		"\t" . '                               --enforce-https-urls parameter is not configurable via environment.' . PHP_EOL .
 		"\t" . '--repo-options=BOOL            Whether to allow configuring of certain configuration parameters' . PHP_EOL .
 		"\t" . '                               via options file ("' . VIPGOCI_OPTIONS_FILE_NAME . '") placed in' . PHP_EOL .
