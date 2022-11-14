@@ -89,7 +89,7 @@ fi
 
 ### Running on the console, standalone
 
-`vip-go-ci` can be run standalone on the console. This is mainly useful for debugging purposes and to understand if everything is correctly configured, but for production purposes it should ideally be run via some kind of build management software (for instance TeamCity or GitHub Actions). To run `vip-go-ci` on the console, a few tools are required. The `tools-init.sh` script that is included will install the tools needed.
+`vip-go-ci` can be run standalone on the console. This is mainly useful for debugging purposes and to understand if everything is correctly configured, but for production purposes it should ideally be run via some kind of build management software. To run `vip-go-ci` on the console, a few tools are required. The `tools-init.sh` script that is included will install the tools needed.
 
 First install the utilities using `tools-init.sh`. Then clone the repository that should be scanned, check out the branch that should be scanned and ensure it is up to date.
 
@@ -242,80 +242,9 @@ While running, `vip-go-ci` will output log of its actions. Here is an example --
 }
 ```
 
-### Running using TeamCity runner
+### Running vip-go-ci with build management software
 
-You can set up `vip-go-ci` with TeamCity, so that when a commit gets pushed to GitHub, `vip-go-ci` will run and scan the commit automatically. Any other similar build management software can be used. 
-
-This flowchart shows how `vip-go-ci` interacts with TeamCity, git, GitHub, and the utilities it uses:
-
-![Flowchart](https://raw.githubusercontent.com/Automattic/vip-go-ci/trunk/docs/vipgoci-flow.png)
-
-To get `vip-go-ci` working, follow these steps:
-
-* Create a project, and link it to the GitHub repository you wish to scan
-* Create a build-runner by clicking on `Create build configuration` on the project
-* Define a build-feature, by clicking on `Add Build Feature` (located in `Build Features`, found in the project-settings). Define the type of the build-feature as `Commit status publisher`, `VCS Root` as `All attached VCS Roots`, and `Publisher` as `GitHub`.
-* Click on `Version Control Settings` (in the project-settings), make sure to do the following:
-  - Checkout directory as `Custom path`, and path as something unique and unreadable from other users (local-directory for the build-runner user would be optimal).
-  - Click on `Clean all files in the checkout directory before the build`.
-* Define parameters for the build. In the project-settings, click on`Parameters`, then click 'Add Parameter' and follow the on-screen instructions. The parameters that need to be added are `REPO_ORG`, `REPO_NAME`, and `REPO_TOKEN` and with values appropriate with for the repository which is to be scanned.
-
-* Make sure the build-runner is of the `Command Line` type, that `If all previous steps finished successfully` is chosen, and that `Custom Script` is chosen for the run `Run` field.
-* Add a shell-script into the `Custom Script` field, the script should look something like the following:
-
-```
-#
-# If vip-go-ci-tools does not exist, get it in place.
-# by fetching and running tools-init. If it does exist,
-# run tools-init.sh anyway to check for updates.
-#
-
-if [ -d ~/vip-go-ci-tools ] ; then
-	bash ~/vip-go-ci-tools/vip-go-ci/tools-init.sh
-else
-	wget https://raw.githubusercontent.com/Automattic/vip-go-ci/latest/tools-init.sh -O tools-init.sh && \
-	bash tools-init.sh && \
-	rm -f tools-init.sh
-fi
-
-
-#
-# Make sure to disable PHPCS-scanning by default
-#
-
-PHPCS_ENABLED=${PHPCS_ENABLED:-false}
-
-#
-# Actually run vip-go-ci
-#
-
-php ~/vip-go-ci-tools/vip-go-ci/vip-go-ci.php --repo-owner="$REPO_ORG" --repo-name="$REPO_NAME" --commit="$BUILD_VCS_NUMBER"  --token="$REPO_TOKEN" --local-git-repo="%system.teamcity.build.checkoutDir%" --phpcs="$PHPCS_ENABLED" --lint="$LINTING_ENABLED"  --phpcs-path="$HOME/vip-go-ci-tools/phpcs/bin/phpcs"
-```
-
-Note that the above script calls `tools-init.sh` to automatically update the utilities needed. See <a href="#installing">installing</a> for details. Also possible, but not shown in the example, is <a href="#setting-github-build-status">setting GitHub build status</a>.
-
-
-The parameters above should be self-explanatory. Note that --commit should be left exactly as shown above, as `$BUILD_VCS_NUMBER` is populated by TeamCity. Other variables, `$REPO_ORG`, `$REPO_NAME` and `$REPO_TOKEN` are populated by TeamCity on run-time according to your settings (see above).
-
-That is it. Now TeamCity should run `vip-go-ci.php` for every incoming commit to any pull request associated with the repository.
-
-
-### Starting a local instance of TeamCity
-
-You can start a local instance of TeamCity in Docker if you like.
-
-```
-docker-compose up -d
-open http://localhost:8111
-```
-
-To start with multiple agents (for example, three):
-
-```
-docker-compose up -d --scale agent=3
-```
-
-Alternatively, if you do not wish to run TeamCity in a Docker-instance, you can download it and set it up manually.
+vip-go-ci should be compatible with most build management software available. Execution is similar to running it standalone on the console. However, using the [environmental variables](#configuring-via-environmental-variables) to configure it is recommended in production. It is also recommended to run `tools-init.sh` on regular intervals.
 
 ## Features overview
 
@@ -325,7 +254,7 @@ Note: To make it easier to read the documentation below, some required parameter
 
 ### Configuring via environmental variables
 
-If you run `vip-go-ci` in an environment such as `TeamCity` or `GitHub Actions`, it can be useful to configure certain parameters via environmental variables. This way, the parameters are not visible in any logs and cannot be seen in the process-tree during run-time. With `vip-go-ci`, this can easily be done by running it this way:
+With `vip-go-ci` it is possible to configure almost any parameter via environmental variable (see --help for exceptions). This way, the parameters are not visible in logs and cannot be seen in the process-tree during run-time. For example:
 
 > ./vip-go-ci.php --commit="$COMMIT_ID" --phpcs=true --lint=true --autoapprove=true --autoapprove-filetypes="css,txt,pdf" --env-options="repo-owner=GH_REPO_OWNER,repo-name=GH_REPO_NAME,token=GH_TOKEN"
 
