@@ -28,6 +28,7 @@ All notable changes to this project will be documented in this file.
 - [#314](https://github.com/Automattic/vip-go-ci/pull/314): WPScan API: Add function to determine "local" slug
 - [#326](https://github.com/Automattic/vip-go-ci/pull/326): Rename test class, update function name in comments
 - [#327](https://github.com/Automattic/vip-go-ci/pull/327): WPScan API: Ensure comments are only submitted for changed add-ons
+- [#331](https://github.com/Automattic/vip-go-ci/pull/331): Update tests/integration/WpscanScanDirsAlteredTest.php due to new fields from API
 
 ## [1.3.2](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.2) - 2022-10-18
 
