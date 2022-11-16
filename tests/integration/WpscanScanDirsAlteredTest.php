@@ -347,7 +347,7 @@ final class WpscanScanDirsAlteredTest extends TestCase {
 					'slug'             => $this->options['wpscan-pr-1-plugin-slug'],
 					'version_detected' => $this->getAddonVersionNumber(
 						$this->options['wpscan-pr-1-plugin-slug'],
-						VIPGOCI_ADDON_THEME
+						VIPGOCI_ADDON_PLUGIN
 					),
 					'file_name'        => $this->options['local-git-repo'] . '/' . $this->options['wpscan-pr-1-plugin-path'],
 				),
