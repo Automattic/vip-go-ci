@@ -2,14 +2,46 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.3.2](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.2) - 2022-10-??
+## [1.3.3](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.3) - 2022-10-??
+
+## Added
+- [#320](https://github.com/Automattic/vip-go-ci/pull/320): Introduce custom file extensions with scanners
+
+## Updated
+- [#310](https://github.com/Automattic/vip-go-ci/pull/310): New exit status for HTTP API errors, update log message
+- [#311](https://github.com/Automattic/vip-go-ci/pull/311): Use constants for content-type headers
+- [#313](https://github.com/Automattic/vip-go-ci/pull/313): Apply constant for WordPress.org API
+- [#315](https://github.com/Automattic/vip-go-ci/pull/315): Replace GitHub rate limit function with HTTP API rate limit functionality
+- [#316](https://github.com/Automattic/vip-go-ci/pull/316): Update two constants related to HTTP API
+- [#317](https://github.com/Automattic/vip-go-ci/pull/317): Update phpcs-variable-analysis to version 2.11.9
+- [#318](https://github.com/Automattic/vip-go-ci/pull/318): Update HTTP API request functions
+- [#319](https://github.com/Automattic/vip-go-ci/pull/319): IRC API update: Replace cURL functionality with vipgoci_http_api_post_url()
+- [#321](https://github.com/Automattic/vip-go-ci/pull/321): Update Pixel API implementation
+- [#322](https://github.com/Automattic/vip-go-ci/pull/322): Increment counter when request limit is reached
+- [#323](https://github.com/Automattic/vip-go-ci/pull/323): Update GitHub Actions dependencies
+- [#324](https://github.com/Automattic/vip-go-ci/pull/324): Update PHPCompatibilityWP and PHPCompatibilityParagonie dependencies
+- [#325](https://github.com/Automattic/vip-go-ci/pull/325): Do not display "No issues were found...." when maximum number of comments is reached
+- [#328](https://github.com/Automattic/vip-go-ci/pull/328): Update shivammathur/setup-php dependency to use @v2
+- [#330](https://github.com/Automattic/vip-go-ci/pull/330): Updating references to build management software
+
+## Fixes
+- [#314](https://github.com/Automattic/vip-go-ci/pull/314): WPScan API: Add function to determine "local" slug
+- [#326](https://github.com/Automattic/vip-go-ci/pull/326): Rename test class, update function name in comments
+- [#327](https://github.com/Automattic/vip-go-ci/pull/327): WPScan API: Ensure comments are only submitted for changed add-ons
+- [#331](https://github.com/Automattic/vip-go-ci/pull/331): Update tests/integration/WpscanScanDirsAlteredTest.php due to new fields from API
+
+## [1.3.2](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.2) - 2022-10-18
+
+## Added
+- [#309](https://github.com/Automattic/vip-go-ci/pull/309): WPScan API integration: Add URL to commit in IRC log
 
 ## Fixed
 - [#304](https://github.com/Automattic/vip-go-ci/pull/304): WPScan API: Update x-ratelimit-remaining header functionality
+- [#308](https://github.com/Automattic/vip-go-ci/pull/308): Add checks to WPScan API reporting logic, ensure CVSS outputted includes precision
+
+## Updated
 - [#303](https://github.com/Automattic/vip-go-ci/pull/303): Remove OAuth 1.0a functions
 - [#307](https://github.com/Automattic/vip-go-ci/pull/307): Update PULL_REQUEST_TEMPLATE
-- [#308](https://github.com/Automattic/vip-go-ci/pull/308): Add checks to WPScan API reporting logic, ensure CVSS outputted includes precision
-- [#309](https://github.com/Automattic/vip-go-ci/pull/309): WPScan API integration: Add URL to commit in IRC log
 
 ## [1.3.1](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.1) - 2022-10-05
 
