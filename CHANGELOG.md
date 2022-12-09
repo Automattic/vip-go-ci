@@ -2,7 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.3.3](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.3) - 2022-10-??
+## [1.3.4](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.4) - 2022-12-??
+
+## Updated
+- [#332](https://github.com/Automattic/vip-go-ci/pull/332): Improve WPScan logging
+
+## [1.3.3](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.3) - 2022-11-21
 
 ## Added
 - [#320](https://github.com/Automattic/vip-go-ci/pull/320): Introduce custom file extensions with scanners
