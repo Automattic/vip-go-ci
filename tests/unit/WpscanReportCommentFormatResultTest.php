@@ -71,22 +71,17 @@ final class WpscanReportCommentFormatResultTest extends TestCase {
 		);
 
 		$this->assertStringContainsString(
-			'Obsolete',
+			'Plugin with update available',
 			$report_str
 		);
 
 		$this->assertStringNotContainsString(
-			'Vulnerable',
+			'with known vulnerability',
 			$report_str
 		);
 
 		$this->assertStringNotContainsString(
 			'Theme',
-			$report_str
-		);
-
-		$this->assertStringContainsString(
-			'Plugin information',
 			$report_str
 		);
 
@@ -222,22 +217,17 @@ final class WpscanReportCommentFormatResultTest extends TestCase {
 		);
 
 		$this->assertStringContainsString(
-			'Vulnerable',
+			'Theme with known vulnerability',
 			$report_str
 		);
 
 		$this->assertStringNotContainsString(
-			'Obsolete',
+			'with update available',
 			$report_str
 		);
 
 		$this->assertStringNotContainsString(
 			'Plugin',
-			$report_str
-		);
-
-		$this->assertStringContainsString(
-			'Theme information',
 			$report_str
 		);
 
