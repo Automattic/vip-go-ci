@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ## Updated
 - [#332](https://github.com/Automattic/vip-go-ci/pull/332): Improve WPScan logging
+- [#334](https://github.com/Automattic/vip-go-ci/pull/334): Update WPScan API results wording
 
 ## [1.3.3](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.3) - 2022-11-21
 
