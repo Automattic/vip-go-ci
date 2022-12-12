@@ -3004,6 +3004,7 @@ function vipgoci_run_scan(
 		$options['token'],
 		$options['commit'],
 		$results,
+		array_keys( $prs_implicated ),
 		$options['informational-msg'],
 		$scan_details_msg,
 		$options['wpscan-api-report-end-msg'],

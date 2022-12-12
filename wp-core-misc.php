@@ -688,7 +688,7 @@ function vipgoci_wpcore_api_determine_slug_and_other_for_addons(
 			'addons_data'    => $addons_data,
 			'slugs_by_addon' => $slugs_by_addon,
 		),
-		2
+		0
 	);
 
 	return $slugs_by_addon;

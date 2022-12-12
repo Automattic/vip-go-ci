@@ -137,6 +137,7 @@ function vipgoci_wpscan_report_format_cvss_score(
  * @param string $commit_id  Commit-ID of current commit.
  * @param array  $issue      Array with issue details to report.
  * @param string $issue_type Type of result being processed; VIPGOCI_ADDON_PLUGIN or VIPGOCI_ADDON_THEME.
+ * @param array  $pr_ids     IDs of pull requests implicated.
  * @param bool   $dry_mode   If WPScan API dry mode is enabled.
  *
  * @return string Formatted result.
@@ -147,6 +148,7 @@ function vipgoci_wpscan_report_comment_format_result(
 	string $commit_id,
 	array $issue,
 	string $issue_type,
+	array $pr_ids,
 	bool $dry_mode = false
 ) :string {
 	/*
@@ -318,9 +320,11 @@ function vipgoci_wpscan_report_comment_format_result(
 		rawurlencode( $commit_id );
 
 	vipgoci_log(
-		'WPScan API found issues with addon',
+		'WPScan API results',
 		array(
 			'commit_url' => $commit_url,
+			'pr_ids'     => $pr_ids,
+			'slug'       => $issue['details']['slug'],
 			'msg'        => $issue['message'],
 			'level'      => $issue['security'],
 			'version'    => $issue['details']['version_detected'],
