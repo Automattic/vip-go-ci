@@ -137,6 +137,7 @@ function vipgoci_wpscan_report_format_cvss_score(
  * @param string $commit_id  Commit-ID of current commit.
  * @param array  $issue      Array with issue details to report.
  * @param string $issue_type Type of result being processed; VIPGOCI_ADDON_PLUGIN or VIPGOCI_ADDON_THEME.
+ * @param array  $pr_ids     IDs of pull requests implicated.
  * @param bool   $dry_mode   If WPScan API dry mode is enabled.
  *
  * @return string Formatted result.
@@ -147,15 +148,40 @@ function vipgoci_wpscan_report_comment_format_result(
 	string $commit_id,
 	array $issue,
 	string $issue_type,
+	array $pr_ids,
 	bool $dry_mode = false
 ) :string {
-	$res = '## &#x2139;&#xfe0f;&#x20; '; // Header markup and information sign.
+	/*
+	 * Determine addon-type and construct string.
+	 */
+	$issue_type_string = '';
 
-	// Determine if obsolete or vulnerable.
+	if ( VIPGOCI_ADDON_PLUGIN === $issue_type ) {
+		$issue_type_string = 'Plugin';
+	} elseif ( VIPGOCI_ADDON_THEME === $issue_type ) {
+		$issue_type_string = 'Theme';
+	} else {
+		vipgoci_sysexit(
+			'Internal error: Invalid $issue_type in ' . __FUNCTION__,
+			array(
+				'$issue_type' => $issue_type,
+			)
+		);
+	}
+
+	/*
+	 * Start markup for header and determine text.
+	 */
+	$res = '## '; // Header markup.
+
 	if ( VIPGOCI_WPSCAN_OBSOLETE === $issue['security'] ) {
-		$res .= 'Obsolete';
+		$res .= vipgoci_github_transform_to_emojis( VIPGOCI_ISSUE_TYPE_INFO ) . // Information sign.
+			' ' . $issue_type_string .
+			' with update available' . "\n";
 	} elseif ( VIPGOCI_WPSCAN_VULNERABLE === $issue['security'] ) {
-		$res .= 'Vulnerable';
+		$res .= vipgoci_github_transform_to_emojis( VIPGOCI_ISSUE_TYPE_WARNING ) . // Exclamation mark.
+			' ' . $issue_type_string .
+			' with known vulnerability' . "\n";
 	} else {
 		vipgoci_sysexit(
 			'Internal error: Invalid $issue[security] in ' . __FUNCTION__,
@@ -177,20 +203,11 @@ function vipgoci_wpscan_report_comment_format_result(
 
 	// Type of addon.
 	if ( VIPGOCI_ADDON_PLUGIN === $issue_type ) {
-		$res .= ' Plugin information' . "\n" .
-			'**Plugin Name**: ' . vipgoci_output_markdown_escape( $issue['message'] ) . "\n" .
+		$res .= '**Plugin Name**: ' . vipgoci_output_markdown_escape( $issue['message'] ) . "\n" .
 			'**Plugin URI**: ' . $addon_url_escaped . "\n";
 	} elseif ( VIPGOCI_ADDON_THEME === $issue_type ) {
-		$res .= ' Theme information' . "\n" .
-			'**Theme Name**: ' . vipgoci_output_markdown_escape( $issue['message'] ) . "\n" .
+		$res .= '**Theme Name**: ' . vipgoci_output_markdown_escape( $issue['message'] ) . "\n" .
 			'**Theme URI**: ' . $addon_url_escaped . "\n";
-	} else {
-		vipgoci_sysexit(
-			'Internal error: Invalid $issue_type in ' . __FUNCTION__,
-			array(
-				'$issue_type' => $issue_type,
-			)
-		);
 	}
 
 	// Sanitize URL.
@@ -303,9 +320,11 @@ function vipgoci_wpscan_report_comment_format_result(
 		rawurlencode( $commit_id );
 
 	vipgoci_log(
-		'WPScan API found issues with addon',
+		'WPScan API results',
 		array(
 			'commit_url' => $commit_url,
+			'pr_ids'     => $pr_ids,
+			'slug'       => $issue['details']['slug'],
 			'msg'        => $issue['message'],
 			'level'      => $issue['security'],
 			'version'    => $issue['details']['version_detected'],

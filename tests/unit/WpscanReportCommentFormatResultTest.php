@@ -51,6 +51,7 @@ final class WpscanReportCommentFormatResultTest extends TestCase {
 				'security' => VIPGOCI_WPSCAN_OBSOLETE,
 				'message'  => 'My Plugin #',
 				'details'  => array(
+					'slug'                => 'my-plugin',
 					'url'                 => 'https://wordpress.org/plugins/my-plugin',
 					'installed_location'  => 'plugins/my-plugin',
 					'version_detected'    => '1.0.0',
@@ -67,26 +68,25 @@ final class WpscanReportCommentFormatResultTest extends TestCase {
 					),
 				),
 			),
-			VIPGOCI_ADDON_PLUGIN
+			VIPGOCI_ADDON_PLUGIN,
+			array(
+				10,
+				20,
+			)
 		);
 
 		$this->assertStringContainsString(
-			'Obsolete',
+			'Plugin with update available',
 			$report_str
 		);
 
 		$this->assertStringNotContainsString(
-			'Vulnerable',
+			'with known vulnerability',
 			$report_str
 		);
 
 		$this->assertStringNotContainsString(
 			'Theme',
-			$report_str
-		);
-
-		$this->assertStringContainsString(
-			'Plugin information',
 			$report_str
 		);
 
@@ -202,6 +202,7 @@ final class WpscanReportCommentFormatResultTest extends TestCase {
 				'security' => VIPGOCI_WPSCAN_VULNERABLE,
 				'message'  => 'My Theme',
 				'details'  => array(
+					'slug'                => 'my-plugin',
 					'url'                 => 'https://wordpress.org/themes/my-theme',
 					'installed_location'  => 'themes/my-theme',
 					'version_detected'    => '1.0.0',
@@ -218,26 +219,25 @@ final class WpscanReportCommentFormatResultTest extends TestCase {
 					),
 				),
 			),
-			VIPGOCI_ADDON_THEME
+			VIPGOCI_ADDON_THEME,
+			array(
+				30,
+				40,
+			)
 		);
 
 		$this->assertStringContainsString(
-			'Vulnerable',
+			'Theme with known vulnerability',
 			$report_str
 		);
 
 		$this->assertStringNotContainsString(
-			'Obsolete',
+			'with update available',
 			$report_str
 		);
 
 		$this->assertStringNotContainsString(
 			'Plugin',
-			$report_str
-		);
-
-		$this->assertStringContainsString(
-			'Theme information',
 			$report_str
 		);
 
@@ -357,6 +357,7 @@ final class WpscanReportCommentFormatResultTest extends TestCase {
 				'security' => 'invalid', // Invalid.
 				'message'  => 'My Theme',
 				'details'  => array(
+					'slug'                => 'my-plugin',
 					'url'                 => 'https://wordpress.org/themes/my-theme',
 					'installed_location'  => 'themes/my-theme',
 					'version_detected'    => '1.0.0',
@@ -370,7 +371,11 @@ final class WpscanReportCommentFormatResultTest extends TestCase {
 					),
 				),
 			),
-			VIPGOCI_ADDON_THEME
+			VIPGOCI_ADDON_THEME,
+			array(
+				50,
+				60,
+			)
 		);
 
 		vipgoci_unittests_remove_indication_for_test_id( 'WpscanReportCommentFormatResultTest' );
@@ -411,6 +416,7 @@ final class WpscanReportCommentFormatResultTest extends TestCase {
 				'security' => VIPGOCI_WPSCAN_OBSOLETE,
 				'message'  => 'My Theme',
 				'details'  => array(
+					'slug'                => 'my-plugin',
 					'url'                 => 'https://wordpress.org/themes/my-theme',
 					'installed_location'  => 'themes/my-theme',
 					'version_detected'    => '1.0.0',
@@ -424,7 +430,11 @@ final class WpscanReportCommentFormatResultTest extends TestCase {
 					),
 				),
 			),
-			'invalid' // Invalid.
+			'invalid', // Invalid.
+			array(
+				70,
+				80,
+			)
 		);
 
 		vipgoci_unittests_remove_indication_for_test_id( 'WpscanReportCommentFormatResultTest' );

@@ -699,6 +699,7 @@ function vipgoci_report_maybe_no_issues_found(
  * @param string $github_token              GitHub token to use to make GitHub API requests.
  * @param string $commit_id                 Commit-ID of current commit.
  * @param array  $results                   Results of scanning.
+ * @param array  $pr_ids                    IDs of pull requests implicated.
  * @param string $informational_msg         Informational message for end-users.
  * @param string $scan_details_msg          Details of scan message for end-users.
  * @param string $wpscan_api_report_end_msg Message to append to end of WPScan API report.
@@ -713,6 +714,7 @@ function vipgoci_report_submit_pr_generic_comment_from_results(
 	string $github_token,
 	string $commit_id,
 	array $results,
+	array $pr_ids,
 	string $informational_msg,
 	string $scan_details_msg,
 	string $wpscan_api_report_end_msg,
@@ -725,6 +727,7 @@ function vipgoci_report_submit_pr_generic_comment_from_results(
 			'repo_owner'                => $repo_owner,
 			'repo_name'                 => $repo_name,
 			'commit_id'                 => $commit_id,
+			'pr_ids'                    => $pr_ids,
 			'informational_msg'         => $informational_msg,
 			'scan_details_msg'          => $scan_details_msg,
 			'wpscan_api_report_end_msg' => $wpscan_api_report_end_msg,
@@ -829,6 +832,7 @@ function vipgoci_report_submit_pr_generic_comment_from_results(
 						$commit_id,
 						$commit_issue['issue'],
 						$commit_issue['issue']['addon_type'],
+						$pr_ids,
 						$wpscan_api_dry_mode
 					);
 
@@ -1413,7 +1417,7 @@ function vipgoci_report_submit_pr_review_from_results(
 			 */
 			if (
 				( ! isset( $github_post_res ) ||
-				( -1 !== $github_post_res ) )
+				( -1 !== $github_post_res ) ) // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis
 			) {
 				$github_post_res = $github_post_res_tmp;
 			}

@@ -360,6 +360,7 @@ function vipgoci_wpscan_scan_dirs_altered(
 				 * plugins/themes.
 				 */
 				$problematic_addons_found[ $addon_dir_relevant ][ $addon_item_key ] = array(
+					'slug'               => $addon_item_info['slug'],
 					'security_type'      => VIPGOCI_WPSCAN_OBSOLETE,
 					'wpscan_results'     => $wpscan_results[ $addon_item_info['slug'] ],
 					'addon_data_for_dir' => $addon_item_info,
@@ -370,6 +371,7 @@ function vipgoci_wpscan_scan_dirs_altered(
 				 * vulnerable, then add to vulnerable addons.
 				 */
 				$problematic_addons_found[ $addon_dir_relevant ][ $addon_item_key ] = array(
+					'slug'               => $addon_item_info['slug'],
 					'security_type'      => VIPGOCI_WPSCAN_VULNERABLE,
 					'wpscan_results'     => $wpscan_results[ $addon_item_info['slug'] ],
 					'addon_data_for_dir' => $addon_item_info,
@@ -522,6 +524,7 @@ function vipgoci_wpscan_scan_save_for_submission(
 							'security'   => $problem_addon_files[ $problem_addon_file_name ]['security_type'],
 							'severity'   => $issue_severity,
 							'details'    => array(
+								'slug'                => $issue_details['slug'],
 								'url'                 => $issue_details['addon_data_for_dir']['url'],
 								'installed_location'  => $addon_installed_location,
 								'version_detected'    => $issue_details['addon_data_for_dir']['version_detected'],
