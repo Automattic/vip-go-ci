@@ -24,22 +24,23 @@ final class WpscanGetAlteredAddonsDataAndSlugsTest extends TestCase {
 	 * @var $options_wpscan_api_scan
 	 */
 	private array $options_wpscan_api_scan = array(
-		'wpscan-pr-1-commit-id'      => null,
-		'wpscan-pr-1-branch-ref'     => null,
-		'wpscan-pr-1-dirs-scan'      => null,
-		'wpscan-pr-1-dirs-altered'   => null,
-		'wpscan-pr-1-plugin-key'     => null,
-		'wpscan-pr-1-plugin-dir'     => null,
-		'wpscan-pr-1-plugin-name'    => null,
-		'wpscan-pr-1-plugin-slug'    => null,
-		'wpscan-pr-1-plugin-path'    => null,
-		'wpscan-pr-1-plugin-version' => null,
-		'wpscan-pr-1-theme-name'     => null,
-		'wpscan-pr-1-theme-key'      => null,
-		'wpscan-pr-1-theme-dir'      => null,
-		'wpscan-pr-1-theme-slug'     => null,
-		'wpscan-pr-1-theme-path'     => null,
-		'wpscan-pr-1-theme-version'  => null,
+		'wpscan-pr-1-commit-id'       => null,
+		'wpscan-pr-1-branch-ref'      => null,
+		'wpscan-pr-1-dirs-scan'       => null,
+		'wpscan-pr-1-dirs-altered'    => null,
+		'wpscan-pr-1-plugin-key'      => null,
+		'wpscan-pr-1-plugin-dir'      => null,
+		'wpscan-pr-1-plugin-name-api' => null,
+		'wpscan-pr-1-plugin-name'     => null,
+		'wpscan-pr-1-plugin-slug'     => null,
+		'wpscan-pr-1-plugin-path'     => null,
+		'wpscan-pr-1-plugin-version'  => null,
+		'wpscan-pr-1-theme-name'      => null,
+		'wpscan-pr-1-theme-key'       => null,
+		'wpscan-pr-1-theme-dir'       => null,
+		'wpscan-pr-1-theme-slug'      => null,
+		'wpscan-pr-1-theme-path'      => null,
+		'wpscan-pr-1-theme-version'   => null,
 	);
 
 	/**
@@ -404,7 +405,7 @@ final class WpscanGetAlteredAddonsDataAndSlugsTest extends TestCase {
 
 		$results_expected = array(
 			$this->options['wpscan-pr-1-plugin-dir'] => array(
-				'vipgoci-addon-plugin-' . $this->options['wpscan-pr-1-plugin-key'] => array(
+				'vipgoci-addon-plugin-' . $this->options['wpscan-pr-1-plugin-name-api'] => array(
 					'type'             => 'vipgoci-addon-plugin',
 					'addon_headers'    => array(
 						'Name'       => $this->options['wpscan-pr-1-plugin-name'],
@@ -422,7 +423,7 @@ final class WpscanGetAlteredAddonsDataAndSlugsTest extends TestCase {
 					'slug'             => $this->options['wpscan-pr-1-plugin-slug'],
 					'url'              => 'https://wordpress.org/plugins/' . $this->options['wpscan-pr-1-plugin-slug'] . '/',
 					'id'               => 'w.org/plugins/' . $this->options['wpscan-pr-1-plugin-slug'],
-					'plugin'           => $this->options['wpscan-pr-1-plugin-key'],
+					'plugin'           => $this->options['wpscan-pr-1-plugin-name-api'],
 					'file_name'        => $this->options['local-git-repo'] . '/' . $this->options['wpscan-pr-1-plugin-path'],
 				),
 			),
@@ -453,14 +454,14 @@ final class WpscanGetAlteredAddonsDataAndSlugsTest extends TestCase {
 		$this->assertIsString(
 			$results_actual
 				[ $this->options['wpscan-pr-1-plugin-dir'] ]
-				[ 'vipgoci-addon-plugin-' . $this->options['wpscan-pr-1-plugin-key'] ]
+				[ 'vipgoci-addon-plugin-' . $this->options['wpscan-pr-1-plugin-name-api'] ]
 				['new_version']
 		);
 
 		unset(
 			$results_actual
 				[ $this->options['wpscan-pr-1-plugin-dir'] ]
-				[ 'vipgoci-addon-plugin-' . $this->options['wpscan-pr-1-plugin-key'] ]
+				[ 'vipgoci-addon-plugin-' . $this->options['wpscan-pr-1-plugin-name-api'] ]
 				['new_version']
 		);
 
@@ -468,14 +469,14 @@ final class WpscanGetAlteredAddonsDataAndSlugsTest extends TestCase {
 			'.zip',
 			$results_actual
 				[ $this->options['wpscan-pr-1-plugin-dir'] ]
-				[ 'vipgoci-addon-plugin-' . $this->options['wpscan-pr-1-plugin-key'] ]
+				[ 'vipgoci-addon-plugin-' . $this->options['wpscan-pr-1-plugin-name-api'] ]
 				['package']
 		);
 
 		unset(
 			$results_actual
 				[ $this->options['wpscan-pr-1-plugin-dir'] ]
-				[ 'vipgoci-addon-plugin-' . $this->options['wpscan-pr-1-plugin-key'] ]
+				[ 'vipgoci-addon-plugin-' . $this->options['wpscan-pr-1-plugin-name-api'] ]
 				['package']
 		);
 
@@ -483,7 +484,7 @@ final class WpscanGetAlteredAddonsDataAndSlugsTest extends TestCase {
 			$this->assertIsString(
 				$results_actual
 					[ $this->options['wpscan-pr-1-plugin-dir'] ]
-					[ 'vipgoci-addon-plugin-' . $this->options['wpscan-pr-1-plugin-key'] ]
+					[ 'vipgoci-addon-plugin-' . $this->options['wpscan-pr-1-plugin-name-api'] ]
 					['addon_headers']
 					[ $field_name ]
 			);
@@ -491,7 +492,7 @@ final class WpscanGetAlteredAddonsDataAndSlugsTest extends TestCase {
 			unset(
 				$results_actual
 					[ $this->options['wpscan-pr-1-plugin-dir'] ]
-					[ 'vipgoci-addon-plugin-' . $this->options['wpscan-pr-1-plugin-key'] ]
+					[ 'vipgoci-addon-plugin-' . $this->options['wpscan-pr-1-plugin-name-api'] ]
 					['addon_headers']
 					[ $field_name ]
 			);
