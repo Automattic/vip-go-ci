@@ -133,12 +133,12 @@ final class WpCoreMiscGetAddonDataAndSlugsForDirectoryTest extends TestCase {
 		vipgoci_unittests_output_suppress();
 
 		$actual_results = vipgoci_wpcore_misc_get_addon_data_and_slugs_for_directory(
-			$this->temp_dir . '/WpCoreMiscGetAddonDataAndSlugsForDirectoryTest',
+			$this->temp_dir . DIRECTORY_SEPARATOR . 'WpCoreMiscGetAddonDataAndSlugsForDirectoryTest',
+			'mu-plugins',
 			array( 'php' ),
 			array( 'css' ),
 			true
 		);
-
 		vipgoci_unittests_output_unsuppress();
 
 		/*
@@ -148,7 +148,7 @@ final class WpCoreMiscGetAddonDataAndSlugsForDirectoryTest extends TestCase {
 
 		// For hello/hello.php.
 		$this->assertStringContainsString(
-			'WpCoreMiscGetAddonDataAndSlugsForDirectoryTest/hello/hello.php',
+			'WpCoreMiscGetAddonDataAndSlugsForDirectoryTest/mu-plugins/hello/hello.php',
 			$actual_results[ self::KEY_PLUGIN_HELLO ]['file_name']
 		);
 
@@ -181,7 +181,7 @@ final class WpCoreMiscGetAddonDataAndSlugsForDirectoryTest extends TestCase {
 		}
 
 		$this->assertStringContainsString(
-			'WpCoreMiscGetAddonDataAndSlugsForDirectoryTest/this-is-a-plugin.php',
+			'WpCoreMiscGetAddonDataAndSlugsForDirectoryTest/mu-plugins/this-is-a-plugin.php',
 			$actual_results[ self::KEY_PLUGIN_THIS_IS ]['file_name']
 		);
 
@@ -206,7 +206,7 @@ final class WpCoreMiscGetAddonDataAndSlugsForDirectoryTest extends TestCase {
 		unset( $actual_results[ self::KEY_THEME_TWENTYTWENTYONE ]['package'] );
 
 		$this->assertStringContainsString(
-			'WpCoreMiscGetAddonDataAndSlugsForDirectoryTest/twentytwentyone/style.css',
+			'WpCoreMiscGetAddonDataAndSlugsForDirectoryTest/mu-plugins/twentytwentyone/style.css',
 			$actual_results[ self::KEY_THEME_TWENTYTWENTYONE ]['file_name']
 		);
 
@@ -325,7 +325,8 @@ final class WpCoreMiscGetAddonDataAndSlugsForDirectoryTest extends TestCase {
 		vipgoci_unittests_output_suppress();
 
 		$actual_results = vipgoci_wpcore_misc_get_addon_data_and_slugs_for_directory(
-			$this->temp_dir . '/WpCoreMiscGetAddonDataAndSlugsForDirectoryTest',
+			$this->temp_dir . DIRECTORY_SEPARATOR . 'WpCoreMiscGetAddonDataAndSlugsForDirectoryTest',
+			'mu-plugins',
 			array( 'php' ),
 			array( 'css' ),
 			false
@@ -343,7 +344,7 @@ final class WpCoreMiscGetAddonDataAndSlugsForDirectoryTest extends TestCase {
 		}
 
 		$this->assertStringContainsString(
-			'WpCoreMiscGetAddonDataAndSlugsForDirectoryTest/this-is-a-plugin.php',
+			'WpCoreMiscGetAddonDataAndSlugsForDirectoryTest/mu-plugins/this-is-a-plugin.php',
 			$actual_results[ self::KEY_PLUGIN_THIS_IS ]['file_name']
 		);
 
