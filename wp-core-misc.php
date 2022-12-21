@@ -279,7 +279,7 @@ function vipgoci_wpcore_misc_determine_local_slug(
 		 * names that will result in bogus results.
 		 */
 		if (
-			( $relative_path_dirname_dircount >= 1 ) &&
+			( $relative_path_dirname_dircount >= 2 ) &&
 			( false === in_array(
 				strtolower( $relative_path_dirname_arr[0] ),
 				array(
@@ -309,7 +309,8 @@ function vipgoci_wpcore_misc_determine_local_slug(
  * This functionality aims for compatibility with get_plugins() in WordPress.
  * The function is adopted from WordPress: https://core.trac.wordpress.org/browser/tags/6.0/src/wp-admin/includes/plugin.php#L254
  *
- * @param string $path                   Path to scan for plugins and themes. Usually this would point a structure similar to wp-content/plugins.
+ * @param string $local_git_repo         Local git repository.
+ * @param string $relative_path          Relative path to scan for plugins and themes. Usually this would point a structure similar to wp-content/plugins.
  * @param array  $plugin_file_extensions File extensions to consider when determining plugins to analyze.
  * @param array  $theme_file_extensions  File extensions to consider when determining themes to analyze.
  * @param bool   $process_subdirectories If to process sub-directories.
@@ -337,19 +338,22 @@ function vipgoci_wpcore_misc_determine_local_slug(
  * )
  */
 function vipgoci_wpcore_misc_scan_directory_for_addons(
-	string $path,
+	string $local_git_repo,
+	string $relative_path,
 	array $plugin_file_extensions,
 	array $theme_file_extensions,
 	bool $process_subdirectories = true
 ): array {
+	$scan_path = $local_git_repo . DIRECTORY_SEPARATOR . $relative_path;
+
 	if (
-		( false === is_dir( $path ) ) ||
-		( false === is_readable( $path ) )
+		( false === is_dir( $scan_path ) ) ||
+		( false === is_readable( $scan_path ) )
 	) {
 		vipgoci_log(
 			'Unable to scan directory for plugins/themes, skipping',
 			array(
-				'path' => $path,
+				'scan_path' => $scan_path,
 			),
 			2
 		);
@@ -361,7 +365,7 @@ function vipgoci_wpcore_misc_scan_directory_for_addons(
 	 * Get an array of files in directories and subdirectories found in path.
 	 */
 	$addon_files = vipgoci_scandir_git_repo(
-		$path,
+		$scan_path,
 		$process_subdirectories,
 		array(
 			'file_extensions' => array_merge(
@@ -380,7 +384,7 @@ function vipgoci_wpcore_misc_scan_directory_for_addons(
 		vipgoci_log(
 			'No plugins/themes found while scanning directory',
 			array(
-				'path' => $path,
+				'relative_path' => $relative_path,
 			),
 			2
 		);
@@ -391,7 +395,7 @@ function vipgoci_wpcore_misc_scan_directory_for_addons(
 	$wp_addons = array();
 
 	foreach ( $addon_files as $addon_file ) {
-		$tmp_path = $path . DIRECTORY_SEPARATOR . $addon_file;
+		$tmp_path = $scan_path . DIRECTORY_SEPARATOR . $addon_file;
 
 		if ( ! is_readable( $tmp_path ) ) {
 			continue;
@@ -414,7 +418,7 @@ function vipgoci_wpcore_misc_scan_directory_for_addons(
 		$wp_addon_key = vipgoci_wpcore_misc_determine_local_slug(
 			$addon_data['type'],
 			$tmp_path,
-			$addon_file
+			$relative_path . DIRECTORY_SEPARATOR . $addon_file
 		);
 
 		$wp_addons[ $wp_addon_key ] = $addon_data;
@@ -423,8 +427,9 @@ function vipgoci_wpcore_misc_scan_directory_for_addons(
 	vipgoci_log(
 		'Scanned directory for plugins/themes',
 		array(
-			'path'      => $path,
-			'wp_addons' => $wp_addons,
+			'local_git_repo' => $local_git_repo,
+			'relative_path'  => $relative_path,
+			'wp_addons'      => $wp_addons,
 		),
 		2
 	);
@@ -770,7 +775,8 @@ function vipgoci_wpcore_misc_assign_addon_fields(
  * to determine slugs and fetch other information from WordPress.org
  * API about the plugins/themes, return the information after processing.
  *
- * @param string $path                   Path to directory to analyze.
+ * @param string $local_git_repo         Path to local git repository.
+ * @param string $relative_path          Relative path to directory to analyze.
  * @param array  $plugin_file_extensions File extensions to consider when determining plugins to analyze.
  * @param array  $theme_file_extensions  File extensions to consider when determining themes to analyze.
  * @param bool   $process_subdirectories If to process sub-directories.
@@ -805,13 +811,15 @@ function vipgoci_wpcore_misc_assign_addon_fields(
  * )
  */
 function vipgoci_wpcore_misc_get_addon_data_and_slugs_for_directory(
-	string $path,
+	string $local_git_repo,
+	string $relative_path,
 	array $plugin_file_extensions,
 	array $theme_file_extensions,
 	bool $process_subdirectories = true
 ) :array {
 	$addons_found = vipgoci_wpcore_misc_scan_directory_for_addons(
-		$path,
+		$local_git_repo,
+		$relative_path,
 		$plugin_file_extensions,
 		$theme_file_extensions,
 		$process_subdirectories
@@ -836,8 +844,9 @@ function vipgoci_wpcore_misc_get_addon_data_and_slugs_for_directory(
 	vipgoci_log(
 		'Got plugin/theme information from directory scan and WordPress.org API request',
 		array(
-			'path'         => $path,
-			'addons_found' => $addons_found,
+			'local_git_repo' => $local_git_repo,
+			'relative_path'  => $relative_path,
+			'addons_found'   => $addons_found,
 		),
 		2
 	);
