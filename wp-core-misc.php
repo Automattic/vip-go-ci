@@ -274,7 +274,7 @@ function vipgoci_wpcore_misc_determine_local_slug(
 		);
 
 		/*
-		 * Only return "local" slug including directory if there are one or more
+		 * Only return "local" slug including directory if there are two or more
 		 * directories in path, but not when last directory name includes certain
 		 * names that will result in bogus results.
 		 */
