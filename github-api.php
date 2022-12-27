@@ -8,6 +8,22 @@
 declare(strict_types=1);
 
 /**
+ * Add GitHub API version header to provided
+ * array if URL is GitHub.
+ */
+function vipgoci_github_api_version_header_maybe_add(
+	string $http_api_url,
+	array &$http_headers_arr
+) {
+	if ( true === str_starts_with(
+		$http_api_url,
+		VIPGOCI_GITHUB_BASE_URL
+	) ) {
+		$http_headers_arr[] = 'X-GitHub-Api-Version: ' . VIPGOCI_GITHUB_API_VERSION;
+	}
+}
+
+/**
  * Fetch diffs between two commits from GitHub API,
  * cache results.
  *
