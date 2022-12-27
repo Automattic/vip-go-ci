@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [1.3.4](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.4) - 2022-12-??
 
+## Added
+- [#336](https://github.com/Automattic/vip-go-ci/pull/336): Add GitHub API version HTTP header
+
 ## Updated
 - [#332](https://github.com/Automattic/vip-go-ci/pull/332): Improve WPScan logging
 - [#334](https://github.com/Automattic/vip-go-ci/pull/334): Update WPScan API results wording
