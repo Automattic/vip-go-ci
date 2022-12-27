@@ -10,6 +10,11 @@ declare(strict_types=1);
 /**
  * Add GitHub API version header to provided
  * array if URL is GitHub.
+ *
+ * @param string $http_api_url     Request URL to consider.
+ * @param array  $http_headers_arr HTTP headers array.
+ *
+ * @return void
  */
 function vipgoci_github_api_version_header_maybe_add(
 	string $http_api_url,
