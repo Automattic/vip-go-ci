@@ -26,7 +26,7 @@ define( 'VIPGOCI_CLIENT_ID', 'automattic-vip-go-ci' );
 
 
 /*
- * Base URLs for GitHub
+ * GitHub defines.
  */
 define( 'VIPGOCI_GITHUB_WEB_BASE_URL', 'https://github.com' );
 
@@ -34,6 +34,8 @@ define( 'VIPGOCI_GITHUB_WEB_BASE_URL', 'https://github.com' );
 if ( ! defined( 'VIPGOCI_GITHUB_BASE_URL' ) ) {
 	define( 'VIPGOCI_GITHUB_BASE_URL', 'https://api.github.com' );
 }
+
+define( 'VIPGOCI_GITHUB_API_VERSION', '2022-11-28' );
 
 /*
  * Defines for various sizes, such as KB.
