@@ -173,7 +173,8 @@ function vipgoci_wpscan_get_altered_addons_data_and_slugs(
 		$known_addons_file_to_key = array();
 
 		$addon_data_for_dir = vipgoci_wpcore_misc_get_addon_data_and_slugs_for_directory(
-			$options['local-git-repo'] . DIRECTORY_SEPARATOR . $addon_dir_relevant,
+			$options['local-git-repo'],
+			$addon_dir_relevant,
 			$options['wpscan-api-plugin-file-extensions'],
 			$options['wpscan-api-theme-file-extensions'],
 			( ! in_array( $addon_dir_relevant, $options['wpscan-api-paths'], true ) )
