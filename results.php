@@ -367,6 +367,18 @@ function vipgoci_results_approved_files_comments_remove(
 			}
 
 			/*
+			 * Skip VIPGOCI_STATS_WPSCAN_API items as they
+			 * should always be displayed.
+			 */
+
+			if (
+				VIPGOCI_STATS_WPSCAN_API ===
+				$issue_item['type']
+			) {
+				continue;
+			}
+
+			/*
 			 * We have found an item that is approved,
 			 * and has non-info issues -- remove it
 			 * from the array of submittable issues.
