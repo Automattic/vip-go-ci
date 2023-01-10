@@ -71,7 +71,6 @@ wpscan-pr-1-plugin2-dir=plugins/hello2
 wpscan-pr-1-plugin2-key=hello.php
 wpscan-pr-1-plugin2-name=Hello Dolly
 wpscan-pr-1-plugin2-slug=hello-dolly
-wpscan-pr-1-plugin2-name-api=hello/hello.php
 wpscan-pr-1-plugin2-version=1.6
 wpscan-pr-1-theme-dir=themes/twentytwentyone
 wpscan-pr-1-theme-key=twentytwentyone
