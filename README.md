@@ -27,7 +27,7 @@ Here is an example of the scanning results provided by `vip-go-ci`:
 In addition to the above scanning, `vip-go-ci` can also automatically approve pull requests that fulfill a certain criteria:
 
 * Only non-functional changes are made in PHP code submitted (e.g., white-space changes only, comments added, etc).
-  * Plugins or themes that are vulnerable or are obsolete -- as determined by WPScan API -- are not auto-approved, even if the changes are non-functional.
+  * Plugins or themes that are vulnerable or are obsolete — as determined by WPScan API — are not auto-approved, even if the changes are non-functional.
 * With SVG scanning enabled, SVG files are approved if the scanner finds no issues in the scanned files.
 * Only CSS, images and other objects are altered and no PHP or JavaScript code. This is based on file-endings, and is configurable. For example, `.txt, .css, .gif, .jpg, .jpeg, .png`.
 * Any combination of the above that covers all the changes in the pull request submitted is automatically approved.
