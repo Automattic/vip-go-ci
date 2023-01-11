@@ -359,20 +359,10 @@ function vipgoci_results_approved_files_comments_remove(
 			 * Skip VIPGOCI_ISSUE_TYPE_INFO as that
 			 * does not report any errors.
 			 */
+
 			if ( strtolower(
 				$issue_item['issue']['level']
 			) === VIPGOCI_ISSUE_TYPE_INFO ) {
-				continue;
-			}
-
-			/*
-			 * Skip VIPGOCI_STATS_WPSCAN_API items as they
-			 * should always be displayed.
-			 */
-			if (
-				VIPGOCI_STATS_WPSCAN_API ===
-				$issue_item['type']
-			) {
 				continue;
 			}
 
