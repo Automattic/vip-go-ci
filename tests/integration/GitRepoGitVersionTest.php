@@ -12,7 +12,11 @@ final class GitRepoGitVersionTest extends TestCase {
 	 * @covers ::vipgoci_git_version
 	 */
 	public function testVersion1() {
+		vipgoci_unittests_output_suppress();
+
 		$git_version = vipgoci_git_version();
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertSame(
 			0,
@@ -22,8 +26,12 @@ final class GitRepoGitVersionTest extends TestCase {
 			)
 		);
 
+		vipgoci_unittests_output_suppress();
+
 		// Verify second call returns same results (should be cached).
 		$git_version_2 = vipgoci_git_version();
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertSame(
 			$git_version,
