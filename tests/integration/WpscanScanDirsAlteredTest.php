@@ -207,6 +207,7 @@ final class WpscanScanDirsAlteredTest extends TestCase {
 		$results_expected = array(
 			$this->options['wpscan-pr-1-plugin-dir'] => array(
 				$this->options['wpscan-pr-1-plugin-dir'] => array(
+					'slug'               => $this->options['wpscan-pr-1-plugin-slug'],
 					'wpscan_results'     => array(
 						'friendly_name'  => $this->options['wpscan-pr-1-plugin-name'],
 						'latest_version' => $this->getAddonVersionNumber(
@@ -224,6 +225,7 @@ final class WpscanScanDirsAlteredTest extends TestCase {
 			),
 			$this->options['wpscan-pr-1-theme-dir']  => array(
 				$this->options['wpscan-pr-1-theme-slug'] => array(
+					'slug'               => $this->options['wpscan-pr-1-theme-slug'],
 					'wpscan_results'     => array(
 						'friendly_name'  => $this->options['wpscan-pr-1-theme-name'],
 						'latest_version' => $this->getAddonVersionNumber(
