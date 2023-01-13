@@ -188,12 +188,16 @@ final class WpscanScanCommitTest extends TestCase {
 			'warning' => 0,
 		);
 
+		vipgoci_unittests_output_suppress();
+
 		vipgoci_wpscan_scan_commit(
 			$this->options,
 			$commit_issues_submit,
 			$commit_issues_stats,
 			$commit_skipped_files
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertSame(
 			array(
@@ -246,9 +250,9 @@ final class WpscanScanCommitTest extends TestCase {
 			return;
 		}
 
-		$this->options['wpscan-api'] = true;
-
 		vipgoci_unittests_output_unsuppress();
+
+		$this->options['wpscan-api'] = true;
 
 		$commit_issues_submit = array();
 		$commit_issues_stats  = array();
@@ -259,12 +263,16 @@ final class WpscanScanCommitTest extends TestCase {
 			'warning' => 0,
 		);
 
+		vipgoci_unittests_output_suppress();
+
 		vipgoci_wpscan_scan_commit(
 			$this->options,
 			$commit_issues_submit,
 			$commit_issues_stats,
 			$commit_skipped_files
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertSame(
 			array(
