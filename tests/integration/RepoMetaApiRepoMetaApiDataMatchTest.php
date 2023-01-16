@@ -91,14 +91,19 @@ final class RepoMetaApiRepoMetaApiDataMatchTest extends TestCase {
 
 		$option_key_no = null;
 
+		vipgoci_unittests_output_suppress();
+
+		$repo_meta_api_data_match = vipgoci_repo_meta_api_data_match(
+			$this->options,
+			'',
+			$option_key_no
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
 		$this->assertSame(
 			false,
-
-			vipgoci_repo_meta_api_data_match(
-				$this->options,
-				'',
-				$option_key_no
-			)
+			$repo_meta_api_data_match
 		);
 
 		$this->assertSame(
@@ -123,14 +128,19 @@ final class RepoMetaApiRepoMetaApiDataMatchTest extends TestCase {
 
 		$option_key_no = null;
 
+		vipgoci_unittests_output_suppress();
+
+		$repo_meta_api_data_match = vipgoci_repo_meta_api_data_match(
+			$this->options,
+			'data_match0',
+			$option_key_no
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
 		$this->assertSame(
 			false,
-
-			vipgoci_repo_meta_api_data_match(
-				$this->options,
-				'data_match0',
-				$option_key_no
-			)
+			$repo_meta_api_data_match
 		);
 
 		$this->assertSame(
@@ -155,14 +165,19 @@ final class RepoMetaApiRepoMetaApiDataMatchTest extends TestCase {
 
 		$option_key_no = null;
 
+		vipgoci_unittests_output_suppress();
+
+		$repo_meta_api_data_match = vipgoci_repo_meta_api_data_match(
+			$this->options,
+			'data_match1',
+			$option_key_no
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
 		$this->assertSame(
 			false,
-
-			vipgoci_repo_meta_api_data_match(
-				$this->options,
-				'data_match1',
-				$option_key_no
-			)
+			$repo_meta_api_data_match
 		);
 	
 		$this->assertSame(
@@ -187,14 +202,19 @@ final class RepoMetaApiRepoMetaApiDataMatchTest extends TestCase {
 
 		$option_key_no = null;
 
+		vipgoci_unittests_output_suppress();
+
+		$repo_meta_api_data_match = vipgoci_repo_meta_api_data_match(
+			$this->options,
+			'data_match2',
+			$option_key_no
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
 		$this->assertSame(
 			true,
-
-			vipgoci_repo_meta_api_data_match(
-				$this->options,
-				'data_match2',
-				$option_key_no
-			)
+			$repo_meta_api_data_match
 		);
 
 		$this->assertSame(
