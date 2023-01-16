@@ -41,9 +41,13 @@ final class GitHubAuthenticatedUserGetTest extends TestCase {
 			return;
 		}
 
+		vipgoci_unittests_output_suppress();
+
 		$gh_result = vipgoci_github_authenticated_user_get(
 			$this->options['github-token']
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertTrue(
 			isset(
