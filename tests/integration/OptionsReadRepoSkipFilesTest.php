@@ -113,9 +113,13 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 
 		$this->setUpLocalGitRepo();
 
+		vipgoci_unittests_output_suppress();
+
 		vipgoci_options_read_repo_skip_files(
 			$this->options
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertSame(
 			array(
@@ -146,9 +150,13 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 
 		$this->setUpLocalGitRepo();
 
+		vipgoci_unittests_output_suppress();
+
 		vipgoci_options_read_repo_skip_files(
 			$this->options
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertSame(
 			array(
@@ -179,9 +187,13 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 
 		$this->setUpLocalGitRepo();
 
+		vipgoci_unittests_output_suppress();
+
 		vipgoci_options_read_repo_skip_files(
 			$this->options
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertSame(
 			array(
@@ -214,9 +226,13 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 
 		$this->setUpLocalGitRepo();
 
+		vipgoci_unittests_output_suppress();
+
 		vipgoci_options_read_repo_skip_files(
 			$this->options
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertSame(
 			array(
@@ -247,9 +263,13 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 
 		$this->setUpLocalGitRepo();
 
+		vipgoci_unittests_output_suppress();
+
 		vipgoci_options_read_repo_skip_files(
 			$this->options
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertSame(
 			array(
@@ -280,9 +300,13 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 
 		$this->setUpLocalGitRepo();
 
+		vipgoci_unittests_output_suppress();
+
 		vipgoci_options_read_repo_skip_files(
 			$this->options
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertSame(
 			array(
