@@ -1,7 +1,5 @@
 # Tests
 
-Information on automated testing of `vip-go-ci` can be found in [TESTING.md](TESTING.md).
-
 To run the tests for `vip-go-ci`, you will need to install `phpunit` and any dependencies needed (this would include `xdebug`).
 
 Note that the test suite uses the `@runTestsInSeparateProcesses` and `@preserveGlobalState` PHPUnit flags to avoid any influence of one test on another. Further, tests should include all required files in `setUp()` function to avoid the same function being defined multiple times across multiple tests during the same run. Combining the usage of `@runTestsInSeparateProcesses` and the inclusion of required files in `setUp()` means each test is independent of other tests, which enables functions to be defined for each test easily.
@@ -10,10 +8,10 @@ Note that the test suite uses the `@runTestsInSeparateProcesses` and `@preserveG
 
 To be able run the test suite, a few steps will need to be taken.
 
-1) run the following command:
+1) Run the following command:
 > mv phpunit.xml.dist phpunit.xml
 
-2) replace the string `PROJECT_DIR` in `phpunit.xml` with your local project directory.
+2) Replace the string `PROJECT_DIR` in `phpunit.xml` with your local project directory.
 
 For example:
 > <directory>PROJECT_DIR/tests/integration</directory>
