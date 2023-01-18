@@ -1,12 +1,14 @@
 # Tests
 
-To run the tests for `vip-go-ci`, you will need to install `phpunit` and any dependencies needed (this would include `xdebug`).
+## Introduction 
 
-Note that the test suite uses the `@runTestsInSeparateProcesses` and `@preserveGlobalState` PHPUnit flags to avoid any influence of one test on another. Further, tests should include all required files in `setUp()` function to avoid the same function being defined multiple times across multiple tests during the same run. Combining the usage of `@runTestsInSeparateProcesses` and the inclusion of required files in `setUp()` means each test is independent of other tests, which enables functions to be defined for each test easily.
+`vip-go-ci` relies on both manual and automated testing. Much of the functionality it provides is automatically tested using it's extensive unit and integration test suite. _Most_ of these tests are run automatically when code is committed and pushed to the repository, though _some_ tests need to be run manually (due to secrets, see below). The manual testing that should be performed is functional, testing the final behaviour of the software. We aim to eliminate the need for manual testing by automating them. 
 
-## Setting up test suite
+## Setting up test suites
 
-To be able run the test suite, a few steps will need to be taken.
+First ensure that you have `phpunit` installed along with any dependencies needed (this would include `xdebug`).
+
+Follow these steps to run the test suites.
 
 1) Run the following command:
 > mv phpunit.xml.dist phpunit.xml
@@ -73,4 +75,10 @@ Integration tests will execute the scanning utilities — PHPCS, SVG scanner and
 
 By using this command, you will run the tests of the test-suite which can be run (depending on tokens and other detail), and get feedback on any errors or warnings. Note that when run, requests will be made to the GitHub API, but using anonymous calls (unless configured as shown above). It can happen that the GitHub API returns with an error indicating that the maximum limit of API requests has been reached; the solution is to wait and re-run or use authenticated calls (see above). 
 
+## Details on tests
 
+Note that the test suite uses the `@runTestsInSeparateProcesses` and `@preserveGlobalState` PHPUnit flags to avoid any influence of one test on another. Further, tests should include all required files in `setUp()` function to avoid the same function being defined multiple times across multiple tests during the same run. Combining the usage of `@runTestsInSeparateProcesses` and the inclusion of required files in `setUp()` means each test is independent of other tests, which enables functions to be defined for each test easily.
+
+## Manual testing
+
+Some functionality still needs to be tested manually.
