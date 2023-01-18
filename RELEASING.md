@@ -8,7 +8,7 @@ A few steps need to be completed to define a new version of `vip-go-ci` and have
 
  * Select a version number. Version numbers follow this pattern: `X.Y.Z`.
  * Commit the new version number to [defines.php](defines.php) into a branch named `add-changelog-X-Y-Z` where `X`, `Y` and `Z` form the version number.
- * Open up a [new pull request](https://github.com/Automattic/vip-go-ci/compare) in the code repository for the version. This pull request should be used to update the version number in `defines.php` and to append to the (changelog)[CHANGELOG.md].
+ * Open up a [new pull request](https://github.com/Automattic/vip-go-ci/compare) in the code repository. This pull request should be used to update the version number in `defines.php` and to append to the (changelog)[CHANGELOG.md].
    * Use the TODO list template that is automatically provided in the pull request (defined [https://github.com/Automattic/vip-go-ci/blob/trunk/.github/PULL_REQUEST_TEMPLATE](here)). Use the section of the template intended for use as a changelog pull request. An example pull request can be found [here](https://github.com/Automattic/vip-go-ci/pull/312/).
    * Assign a milestone to the newly created pull request that matches the version number selected.
    * Use the new pull request to add items to the [CHANGELOG.md](https://github.com/Automattic/vip-go-ci/blob/trunk/CHANGELOG.md) file.
@@ -21,10 +21,10 @@ Follow these steps to test the new version before a release:
 
  * Ensure all pull requests that update the code have been merged. Do _not_ merge the changelog/version number pull request yet.
  * Ensure that all TODO items in the pull request created for changelog and version number have been completed.
- * Some of the TODO items involve running the individual test suites included. The test suites should be run against the main branch of the repository. See more about testing [here](TESTS.md).
+ * Some of the TODO items involve running the individual test suites included. The test suites should be run against the main branch of the repository when all pull requests have been merged (except for the changelog version/number pull request). See more about testing [here](TESTS.md).
  * Manually test `vip-go-ci` against common code patterns, using this [script](). Note that a few environmental variables have to be adjusted before using the script. Note that the script has many different branches to select from, run the script against each branch at least once. You can fork [this repository](https://github.com/gudmdharalds-a8c/vip-go-ci-manual-testing) and use it to test; note that you will have to re-create the pull requests manually. The repository and the script work in tandem.
  * If any problems are found in the steps above, fix those before continuing.
- * When all pull requests with new or modified code have been merged, ensure that the pull request that modifies the version number and changelog is merged.
+ * When all pull requests with new or modified code have been merged, ensure that the pull request that modifies the version number and changelog is merged. Ensure all tests pass when this pull request has been merged.
 
 By now, everything is ready for the release itself.
 
