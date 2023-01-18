@@ -700,9 +700,9 @@ Here is an example GitHub build status:
 
 ![Example build statusl!](docs/vipgoci-github-build-status-success.png "Example build status")
 
-## Tests
+## Testing
 
-Information on automated testing of `vip-go-ci` can be found in [TESTS.md](TESTS.md).
+Information on automated and manual testing of `vip-go-ci` can be found in [TESTING.md](TESTING.md).
 
 ## Releasing new versions
 
