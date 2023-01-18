@@ -79,11 +79,15 @@ final class WpscanApiDoScanViaApiTest extends TestCase {
 			return;
 		}
 
+		vipgoci_unittests_output_suppress();
+
 		$actual_results = vipgoci_wpscan_do_scan_via_api(
 			$this->options['plugin-slug'],
 			VIPGOCI_ADDON_PLUGIN,
 			$this->options['wpscan-api-token']
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertNotEmpty(
 			$actual_results
@@ -128,11 +132,15 @@ final class WpscanApiDoScanViaApiTest extends TestCase {
 			return;
 		}
 
+		vipgoci_unittests_output_suppress();
+
 		$actual_results = vipgoci_wpscan_do_scan_via_api(
 			$this->options['theme-slug'],
 			VIPGOCI_ADDON_THEME,
 			$this->options['wpscan-api-token']
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertNotEmpty(
 			$actual_results
@@ -177,11 +185,15 @@ final class WpscanApiDoScanViaApiTest extends TestCase {
 			return;
 		}
 
+		vipgoci_unittests_output_suppress();
+
 		$actual_results = vipgoci_wpscan_do_scan_via_api(
 			'my-invalid-theme',
 			VIPGOCI_ADDON_THEME,
 			'invalid-token'
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertNull(
 			$actual_results

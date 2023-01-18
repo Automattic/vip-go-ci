@@ -174,13 +174,13 @@ final class WpscanScanFindAddonDirsAlteredTest extends TestCase {
 			return;
 		}
 
-		vipgoci_unittests_output_unsuppress();
-
 		$results_actual = vipgoci_wpscan_find_addon_dirs_altered(
 			$this->options,
 			$this->commit_skipped_files,
 			$this->getFilesAffectedByCommitByPR()
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		$results_expected = array(
 			'plugins',
@@ -238,13 +238,13 @@ final class WpscanScanFindAddonDirsAlteredTest extends TestCase {
 			return;
 		}
 
-		vipgoci_unittests_output_unsuppress();
-
 		$results_actual = vipgoci_wpscan_find_addon_dirs_altered(
 			$this->options,
 			$this->commit_skipped_files,
 			$this->getFilesAffectedByCommitByPR()
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		$results_expected = array(
 			'plugins/hello',
@@ -299,13 +299,13 @@ final class WpscanScanFindAddonDirsAlteredTest extends TestCase {
 			return;
 		}
 
-		vipgoci_unittests_output_unsuppress();
-
 		$results_actual = vipgoci_wpscan_find_addon_dirs_altered(
 			$this->options,
 			$this->commit_skipped_files,
 			$this->getFilesAffectedByCommitByPR()
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertSame(
 			array(

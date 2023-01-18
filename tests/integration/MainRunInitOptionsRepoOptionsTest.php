@@ -162,7 +162,11 @@ final class MainRunInitOptionsRepoOptionsTest extends TestCase {
 		$this->options['post-generic-pr-support-comments'] = false;
 		$this->options['skip-draft-prs']                   = false;
 
+		vipgoci_unittests_output_suppress();
+
 		vipgoci_run_init_options_repo_options( $this->options );
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertTrue(
 			$this->options['post-generic-pr-support-comments'],
@@ -211,7 +215,11 @@ final class MainRunInitOptionsRepoOptionsTest extends TestCase {
 		$this->options['post-generic-pr-support-comments'] = false;
 		$this->options['skip-draft-prs']                   = true;
 
+		vipgoci_unittests_output_suppress();
+
 		vipgoci_run_init_options_repo_options( $this->options );
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertFalse(
 			$this->options['post-generic-pr-support-comments'],
