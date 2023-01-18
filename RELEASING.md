@@ -37,11 +37,11 @@ Follow these steps to release a new version of `vip-go-ci`:
  * Ensure final testing is complete.
  * Visit the [releases section of the vip-go-ci repository](https://github.com/Automattic/vip-go-ci/releases).
  * Press _Draft a new release_, enter a version number in the _Tag version_ field and ensure that the _Release title_ field contains the same value. Then press _Publish release_.
- * Update the [latest tag](https://github.com/Automattic/vip-go-ci/releases/tag/latest) so that it's commit-ID matches the one of the latest released version. This tag is used by [tools-init.sh](https://github.com/Automattic/vip-go-ci/blob/trunk/tools-init.sh) and referred to in the [README.md](https://github.com/Automattic/vip-go-ci/blob/trunk/README.md). Replace the latest tag by using the git command line: `git pull ; git tag -d latest ; git tag latest X.Y.Z &amp;&amp; git push --force origin latest`. Then ensure that the latest tag refers to the same commit-ID as the release itself, [here](https://github.com/Automattic/vip-go-ci/tags).
+ * Update the [latest tag](https://github.com/Automattic/vip-go-ci/releases/tag/latest) so that it's commit-ID matches the one of the latest released version. This tag is used by [tools-init.sh](https://github.com/Automattic/vip-go-ci/blob/trunk/tools-init.sh) (more information available in [TOOLS-UPDATE.md](https://github.com/Automattic/vip-go-ci/blob/trunk/TOOLS-UPDATE.md). Replace the latest tag by using the git command line: `git checkout trunk && git pull && git tag -d latest && git tag latest X.Y.Z && git push --force origin latest`. Then ensure that the latest tag refers to the same commit-ID as the release itself, [here](https://github.com/Automattic/vip-go-ci/tags).
  * The new version will be automatically deployed by the `tools-init.sh` script where it is used.
- * _Ensure internal steps are followed for this section._
+ * _VIP: Ensure internal steps are followed for this section._
 
-_When new release is ready, ensure to follow all internal post-release steps._
+_VIP: When new release is ready, ensure to follow all internal post-release steps._
 
 ## Rolling back a release
 
@@ -50,4 +50,3 @@ In some cases, it may be necessary to roll back a release. Follow this list to d
  * Simply issue a _new release_ that points to an older commit-ID which an older, stable release is based on.
   * For example, if problems are found in the (imaginary) `2.0.7` version, we would release version `2.0.8` which would point to `490c36892a0309988386e6c8d3fbbdb05bcf0244` (which would also be tagged as `2.0.6`). In the end, two releases would point to the same commit-ID, and hence would be identical.
  * Removing the latest release on GitHub will _not_ ensure a revert to an older version automatically; a new version should be released.
-
