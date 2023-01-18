@@ -8,7 +8,7 @@ A few steps need to be completed to define a new version of `vip-go-ci` and have
 
  * Select a version number. Version numbers follow this pattern: `X.Y.Z`.
  * Commit the new version number to [defines.php](defines.php) into a branch named `add-changelog-X-Y-Z` where `X`, `Y` and `Z` form the version number.
- * Open up a [new pull request](https://github.com/Automattic/vip-go-ci/compare) in the code repository. This pull request should be used to update the version number in `defines.php` and to append to the (changelog)[CHANGELOG.md].
+ * Open up a [new pull request](https://github.com/Automattic/vip-go-ci/compare) in the code repository. This pull request should be used to update the version number in `defines.php` and to append to the [changelog](CHANGELOG.md).
    * Use the TODO list template that is automatically provided in the pull request (defined [here](https://github.com/Automattic/vip-go-ci/blob/trunk/.github/PULL_REQUEST_TEMPLATE)). Use the section of the template intended for use as a changelog pull request. An example pull request can be found [here](https://github.com/Automattic/vip-go-ci/pull/312/).
    * Assign a milestone to the newly created pull request that matches the version number selected.
    * Use the new pull request to add items to the [CHANGELOG.md](https://github.com/Automattic/vip-go-ci/blob/trunk/CHANGELOG.md) file.
