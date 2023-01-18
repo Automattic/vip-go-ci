@@ -43,6 +43,8 @@ final class WpscanReportCommentFormatResultTest extends TestCase {
 	 * @return void
 	 */
 	public function testReportResultPlugin(): void {
+		vipgoci_unittests_output_suppress();
+
 		$report_str = vipgoci_wpscan_report_comment_format_result(
 			'repo_owner',
 			'repo_name',
@@ -74,6 +76,8 @@ final class WpscanReportCommentFormatResultTest extends TestCase {
 				20,
 			)
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertStringContainsString(
 			'Plugin with update available',
@@ -194,6 +198,8 @@ final class WpscanReportCommentFormatResultTest extends TestCase {
 	 * @return void
 	 */
 	public function testReportResultTheme(): void {
+		vipgoci_unittests_output_suppress();
+
 		$report_str = vipgoci_wpscan_report_comment_format_result(
 			'repo_owner',
 			'repo_name',
@@ -225,6 +231,8 @@ final class WpscanReportCommentFormatResultTest extends TestCase {
 				40,
 			)
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertStringContainsString(
 			'Theme with known vulnerability',

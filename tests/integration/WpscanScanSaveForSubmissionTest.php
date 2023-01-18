@@ -318,6 +318,8 @@ final class WpscanScanSaveForSubmissionTest extends TestCase {
 			'error'   => 0,
 		);
 
+		vipgoci_unittests_output_suppress();
+
 		// Add label.
 		$this->prLabelAdd();
 
@@ -335,6 +337,8 @@ final class WpscanScanSaveForSubmissionTest extends TestCase {
 
 		// Remove label.
 		$this->prLabelRemove();
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertSame(
 			array(
@@ -414,6 +418,8 @@ final class WpscanScanSaveForSubmissionTest extends TestCase {
 				$this->problematic_addons_found['themes/twentytwentyone']['style.css']['addon_data_for_dir']['file_name']
 			);
 
+		vipgoci_unittests_output_suppress();
+
 		vipgoci_wpscan_scan_save_for_submission(
 			$this->options,
 			$commit_issues_submit,
@@ -422,6 +428,8 @@ final class WpscanScanSaveForSubmissionTest extends TestCase {
 			$this->getFilesAffectedByCommitByPR(),
 			$this->problematic_addons_found
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertSame(
 			array(

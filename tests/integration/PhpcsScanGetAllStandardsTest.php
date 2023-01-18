@@ -26,10 +26,14 @@ final class PhpcsScanGetAllStandardsTest extends TestCase {
 	 * @covers ::vipgoci_phpcs_get_all_standards
 	 */
 	public function testGetAllStandardsTest1() {
+		vipgoci_unittests_output_suppress();
+
 		$all_standards = vipgoci_phpcs_get_all_standards(
 			$this->options_phpcs['phpcs-path'],
 			$this->options_phpcs['phpcs-php-path']
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertNotEmpty(
 			$all_standards

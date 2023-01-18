@@ -88,6 +88,8 @@ final class RepoMetaApiRepoMetaApiDataFetchTest extends TestCase {
 			return;
 		}
 
+		vipgoci_unittests_output_suppress();
+
 		$repo_meta_data = vipgoci_repo_meta_api_data_fetch(
 			$this->options['repo-meta-api-base-url'],
 			$this->options['repo-meta-api-user-id'],
@@ -95,6 +97,8 @@ final class RepoMetaApiRepoMetaApiDataFetchTest extends TestCase {
 			$this->options['repo-owner'],
 			$this->options['repo-name']
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertTrue(
 			count(
@@ -114,6 +118,8 @@ final class RepoMetaApiRepoMetaApiDataFetchTest extends TestCase {
 		/*
 		 * Re-test due to caching.
 		 */
+		vipgoci_unittests_output_suppress();
+
 		$repo_meta_data_2 = vipgoci_repo_meta_api_data_fetch(
 			$this->options['repo-meta-api-base-url'],
 			$this->options['repo-meta-api-user-id'],
@@ -121,6 +127,8 @@ final class RepoMetaApiRepoMetaApiDataFetchTest extends TestCase {
 			$this->options['repo-owner'],
 			$this->options['repo-name']
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertSame(
 			$repo_meta_data,

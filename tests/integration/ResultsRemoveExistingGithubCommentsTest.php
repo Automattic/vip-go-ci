@@ -191,6 +191,8 @@ final class ResultsRemoveExistingGithubCommentsTest extends TestCase {
 			'error' => 1,
 		);
 
+		vipgoci_unittests_output_suppress();
+
 		vipgoci_results_remove_existing_github_comments(
 			$this->options,
 			$prs_implicated,
@@ -198,6 +200,8 @@ final class ResultsRemoveExistingGithubCommentsTest extends TestCase {
 			false,
 			array()
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertSame(
 			$results_expected,

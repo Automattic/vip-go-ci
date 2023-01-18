@@ -122,8 +122,11 @@ final class SvgScanScanCommitTest extends TestCase {
 		$issues_stats = array();
 		$issues_skipped = array();
 
+		vipgoci_unittests_output_suppress();
 
 		$prs_implicated = $this->getPRsImplicated();
+
+		vipgoci_unittests_output_unsuppress();
 
 		foreach( $prs_implicated as $pr_item ) {
 			$issues_stats[
@@ -213,6 +216,8 @@ final class SvgScanScanCommitTest extends TestCase {
 	 * @return array|bool|mixed|null
 	 */
 	public function getPRsImplicated() {
+		vipgoci_unittests_output_suppress();
+
 		$prs_implicated = vipgoci_github_prs_implicated(
 			$this->options['repo-owner'],
 			$this->options['repo-name'],
@@ -220,6 +225,8 @@ final class SvgScanScanCommitTest extends TestCase {
 			$this->options['github-token'],
 			$this->options['branches-ignore']
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		return $prs_implicated;
 	}
