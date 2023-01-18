@@ -43,7 +43,7 @@ Follow these steps to release a new version of `vip-go-ci`:
 
 _When new release is ready, ensure to follow all internal post-release steps._
 
-_Rolling back a release_
+## Rolling back a release
 
 In some cases, it may be necessary to roll back a release. Follow this list to do so:
 
