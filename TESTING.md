@@ -8,9 +8,9 @@
 
 ### Setting up test suites
 
-First ensure that you have `phpunit` installed along with any dependencies needed (this would include `xdebug`).
+First ensure that you have `phpunit` installed along with any dependencies needed (this would include `xdebug`, `dom`, `mbstring` and `curl`).
 
-Follow these steps to run the test suites.
+Then follow these steps to run the test suites:
 
 1) Run the following command:
 > mv phpunit.xml.dist phpunit.xml
