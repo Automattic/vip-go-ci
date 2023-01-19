@@ -4,7 +4,9 @@
 
 `vip-go-ci` relies on both manual and automated testing. Much of the functionality it provides is automatically tested using it's extensive unit and integration test suite. _Most_ of these tests are run automatically when code is committed and pushed to the repository, though _some_ tests need to be run manually (due to secrets, see below). The manual testing that should be performed is functional, testing the final behaviour of the software. We aim to eliminate the need for manual testing by automating them. 
 
-## Setting up test suites
+## Automated testing
+
+### Setting up test suites
 
 First ensure that you have `phpunit` installed along with any dependencies needed (this would include `xdebug`).
 
@@ -28,7 +30,7 @@ Start with preparing the `unittests.ini` file:
 
 Alter any options in the file as needed to match the setup of your system. Note that in some cases, you may have to use different PHP versions for PHPCS or the SVG scanner, than `vip-go-ci` itself.
 
-### Test suite secrets file
+#### Test suite secrets file
 
 Note that some tests will require a GitHub token to submit POST/PUT requests to GitHub in order to complete, and some will need access to a repo-meta API. 
 
@@ -57,7 +59,7 @@ access-token= ; Access token for WPScan API.
 
 This file is not included, and needs to be configured manually.
 
-## Unit test suite
+### Unit test suite
 
 The unit test suite can be run using the following command:
 
@@ -65,7 +67,7 @@ The unit test suite can be run using the following command:
 
 By running this command, you will run the tests that do not depend on external calls. 
 
-## Integration test suite
+### Integration test suite
 
 The integration tests can be run using the following command:
 
@@ -75,7 +77,7 @@ Integration tests will execute the scanning utilities — PHPCS, SVG scanner and
 
 By using this command, you will run the tests of the test-suite which can be run (depending on tokens and other detail), and get feedback on any errors or warnings. Note that when run, requests will be made to the GitHub API, but using anonymous calls (unless configured as shown above). It can happen that the GitHub API returns with an error indicating that the maximum limit of API requests has been reached; the solution is to wait and re-run or use authenticated calls (see above). 
 
-## Details on tests
+### Details on tests
 
 Note that the test suite uses the `@runTestsInSeparateProcesses` and `@preserveGlobalState` PHPUnit flags to avoid any influence of one test on another. Further, tests should include all required files in `setUp()` function to avoid the same function being defined multiple times across multiple tests during the same run. Combining the usage of `@runTestsInSeparateProcesses` and the inclusion of required files in `setUp()` means each test is independent of other tests, which enables functions to be defined for each test easily.
 
