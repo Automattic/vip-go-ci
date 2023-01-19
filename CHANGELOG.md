@@ -17,7 +17,7 @@ All notable changes to this project will be documented in this file.
 - [#338](https://github.com/Automattic/vip-go-ci/pull/338): WPScan fixes: Changes to file path and addon location, avoid removing items from results, add slugs to tests
 - [#339](https://github.com/Automattic/vip-go-ci/pull/339): WPScan fixes: Ensure that WPScan type of items are not removed from results when filtering
 - [#340](https://github.com/Automattic/vip-go-ci/pull/340): Fix output suppression in tests
-- [#341](https://github.com/Automattic/vip-go-ci/pull/341): Restructure readme file
+- [#341](https://github.com/Automattic/vip-go-ci/pull/341): Restructure readme file, document manual testing
 
 ## [1.3.3](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.3) - 2022-11-21
 
