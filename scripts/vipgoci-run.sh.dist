@@ -1,0 +1,262 @@
+#!/bin/bash
+
+# 
+# Branches and commit-IDs to scan. Pull requests to scan should
+# match those.
+#
+# Find main configuration below.
+# 
+
+# PR with some PHPCS issues and PHP linting problem.
+export REPO_BRANCH="phpcs-and-linting-issues"
+export REPO_COMMIT_ID="3e8d5b9c2566ef285cb5d85e5c71cf82f40f9afa"
+
+# PR with more PHPCS issues, one large file (not skipped).
+#export REPO_BRANCH="phpcs-issues"
+#export REPO_COMMIT_ID="590d5c3daff17135af352cc9f3db024ac15d601a"
+
+# PR with some PHPCS issues, is from forked repo.
+# Note: This may need adjusting as this refers to external repository
+#export REPO_BRANCH="ext-branch-with-phpcs-issues"
+#export REPO_COMMIT_ID="9e90666a805ae8f364d662051d56d5a616338e9c"
+
+# PR with SVG issues.
+#export REPO_BRANCH="svg-issues"
+#export REPO_COMMIT_ID="44703e9d29e742a9b048e9ae2ad8e05c2fcc9d8d"
+
+# PR is auto approvable due to SVG file change only.
+#export REPO_BRANCH="auto-approvable-svg-file"
+#export REPO_COMMIT_ID="dfc0b80c44d20a1a29a4cee57094915483b6e1e8"
+
+# PR with no issues at all.
+#export REPO_BRANCH="no-issues"
+#export REPO_COMMIT_ID="250cc71a91daf0ed381817b935ed2dc2758d431c"
+
+# PR is not auto approvable.
+#export REPO_BRANCH="not-auto-approvable"
+#export REPO_COMMIT_ID="8509196e6b9dd1b020d456c2a6a6110bbe3b7320"
+
+# PR is auto approvable due to consisting of updates to approved file types only.
+#export REPO_BRANCH="auto-approvable-file-types"
+#export REPO_COMMIT_ID="facd284118a04aa25cc65ac79769618732317250"
+
+# PR is auto approvable due to non-functional changes.
+#export REPO_BRANCH="auto-approvable-non-functional-changes"
+#export REPO_COMMIT_ID="2d317b31f3f7c397ae4a7c7820d318e7a41cd19d"
+
+# PR updates a large file.
+#export REPO_BRANCH="too-large-file-and-phpcs-issues"
+#export REPO_COMMIT_ID="e4c5a36ecfbdad1138f8f8d1d5138cc4c7557bab"
+
+# PR updates a large file and autoapprovable file.
+#export REPO_BRANCH="too-large-file-and-non-auto-approvable-file"
+#export REPO_COMMIT_ID="9870438ab11b45d3bc83fe766afa20926e4f8e43"
+
+# PR includes a .vipgoci_options file.
+#export REPO_BRANCH="vipgoci-options-file-test"
+#export REPO_COMMIT_ID="9de88e331bbc8872879f2e80f6ccff71f054ebac"
+
+# PR with some WordPress plugins added to be scanned via WPScan API.
+#export REPO_BRANCH="wpscan-api-testing1"
+#export REPO_COMMIT_ID="afa7cf7df5cb941a8b170c42f50cd56300b4fc8d"
+
+# PR with some WordPress plugins altered to be scanned via WPScan API.
+#export REPO_BRANCH="wpscan-api-testing2"
+#export REPO_COMMIT_ID="f1e3eb6764066f333758c0cf3ac6d9c87af99316"
+
+# PR with some WordPress plugin removed.
+#export REPO_BRANCH="wpscan-api-testing3"
+#export REPO_COMMIT_ID="083bfb778bf6f0909eb4c6469d2683316ed99437"
+
+# PR with some WordPress plugin removed.
+#export REPO_BRANCH="wpscan-api-testing4"
+#export REPO_COMMIT_ID="a83ef4f813fa99d6a1595b35485f65c3773b07cb"
+
+# PR with some WordPress plugins altered to be scanned via WPScan API.
+#export REPO_BRANCH="wpscan-api-testing5"
+#export REPO_COMMIT_ID="85f6858f6bbb7b845fd7bc3060a5b7559e4db795"
+
+# PR with WordPress plugin added to theme directory (theme should not be scanned).
+#export REPO_BRANCH="wpscan-api-testing6"
+#export REPO_COMMIT_ID="b781799f8c6f789280672ce2dd63390c309fc25a"
+
+# Include information from custom config file
+. vipgoci-run-secrets.sh
+
+#
+# Main configuration parameters (except for custom).
+#
+
+# Output settings
+export VIPGOCI_OUTPUT="/tmp/output.txt"
+
+# PHP binary to run vip-go-ci itself
+export VIPGOCI_EXEC_PHP_PATH="/usr/bin/php8.1"
+
+# Linting
+export VIPGOCI_LINT_ENABLED="true"
+export VIPGOCI_LINT_PHP_PATH="/usr/bin/php8.1"
+export VIPGOCI_LINT_SKIP_FOLDERS_IN_REPO_OPTIONS_FILE="true"
+export VIPGOCI_LINT_SKIP_FOLDERS="skip-folder-testlint"
+export VIPGOCI_LINT_PHP_VERSIONS="7.4,8.1"
+export VIPGOCI_LINT_PHP_VERSION_PATHS="7.4:/usr/bin/php7.4,8.1:/usr/bin/php8.1"
+
+# PHPCS
+export PHPCS_ENABLED="true"
+export VIPGOCI_PHPCS_PHP_PATH="/usr/bin/php7.4"
+export VIPGOCI_PHPCS_PATH="$HOME/vip-go-ci-tools/phpcs/bin/phpcs"
+export VIPGOCI_PHPCS_STANDARD="WordPress-VIP-Go,PHPCompatibilityWP,WordPress"
+export VIPGOCI_PHPCS_STANDARDS_IGNORE="PHPCSUtils"
+export VIPGOCI_PHPCS_SEVERITY="1"
+export VIPGOCI_PHPCS_RUNTIME_SET="testVersion 7.4-"
+export VIPGOCI_PHPCS_SKIP_FOLDERS_IN_REPO_OPTIONS_FILE="true"
+export VIPGOCI_PHPCS_SKIP_SCANNING_VIA_LABELS_ALLOWED="true"
+export VIPGOCI_PHPCS_SNIFFS_EXCLUDE="Generic.PHP.Syntax,Generic.Commenting.DocComment,WordPress.Files.FileName,Squiz.Strings.DoubleQuoteUsage,Squiz.Commenting.FileComment,Squiz.Commenting.BlockComment,Squiz.Commenting.FileComment,PEAR.Functions.FunctionCallSignature"
+export VIPGOCI_PHPCS_SNIFFS_INCLUDE=""
+export VIPGOCI_PHPCS_SKIP_FOLDERS=""
+
+# WPScan API
+export VIPGOCI_WPSCAN_API="true"
+export VIPGOCI_WPSCAN_API_PATHS="plugins"
+export VIPGOCI_WPSCAN_API_REPORT_END_MSG=""
+
+
+# SVG config
+export VIPGOCI_SVG_CHECKS="true"
+export VIPGOCI_SVG_PHP_PATH="/usr/bin/php8.1"
+export VIPGOCI_SVG_SCANNER_PATH="$HOME/vip-go-ci-tools/vip-go-svg-sanitizer/svg-scanner.php"
+
+# Autoapproval
+export VIPGOCI_AUTOAPPROVE_ENABLED="true"
+export VIPGOCI_AUTOAPPROVE_PHP_NONFUNCTIONAL_CHANGES="true"
+export VIPGOCI_AUTOAPPROVE_FILETYPES="css,txt,json"
+export VIPGOCI_AUTOAPPROVE_LABEL="[ Status ] Auto approved"
+
+# Generic support comments
+export VIPGOCI_POST_GENERIC_PR_SUPPORT_COMMENTS="true"
+
+# Reviews
+export VIPGOCI_SCAN_DETAILS_MSG_INCLUDE="true"
+export VIPGOCI_REPORT_NO_ISSUES_FOUND="true"
+export VIPGOCI_REVIEW_COMMENTS_IGNORE="File appears to be minified and cannot be processed|||All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found 'time2'"
+export VIPGOCI_REVIEW_COMMENTS_INCLUDE_SEVERITY="true"
+export VIPGOCI_REVIEW_COMMENTS_SORT="true"
+export VIPGOCI_REVIEW_COMMENTS_MAX="18"
+export VIPGOCI_REVIEW_COMMENTS_TOTAL_MAX="100"
+
+export DISMISS_STALE_REVIEWS="true"
+export DISMISSED_REVIEWS_REPOST_COMMENTS="true"
+
+# Which repo options are allowed?
+export VIPGOCI_REPO_OPTIONS="true"
+export VIPGOCI_REPO_OPTIONS_ALLOWED="skip-execution,skip-draft-prs,phpcs,phpcs-severity,phpcs-sniffs-include,phpcs-sniffs-exclude,review-comments-sort,review-comments-include-severity,post-generic-pr-support-comments,review-comments-sort,svg-checks,autoapprove,autoapprove-php-nonfunctional-changes"
+
+# Misc
+export VIPGOCI_MAX_EXEC_TIME="600"
+export VIPGOCI_DEBUG_LEVEL=2
+export VIPGOCI_NAME_TO_USE="vip-go-ci"
+export VIPGOCI_INFORMATIONAL_MSG="vip-go-ci"
+
+# Paths to git repository
+export GIT_REPO_BASE_PATH="/tmp"
+export GIT_REPO_PATH="$GIT_REPO_BASE_PATH/$REPO_NAME"
+
+# Build status notification
+export VIPGOCI_BUILD_CONTEXT="vip-go-ci"
+
+export VIPGOCI_BUILD_DESCRIPTION_PENDING="In progress"
+export VIPGOCI_BUILD_DESCRIPTION_SUCCESS="No significant issues found"
+export VIPGOCI_BUILD_DESCRIPTION_INTERNAL_ERROR="Internal error"
+export VIPGOCI_BUILD_DESCRIPTION_NOT_PART_OF_PR="Pull request not found for commit"
+export VIPGOCI_BUILD_DESCRIPTION_HTTP_API_FATAL_ERROR="Fatal error when communicating with HTTP API"
+export VIPGOCI_BUILD_DESCRIPTION_COMMIT_NOT_LATEST_IN_PR="Commit not latest in PR"
+export VIPGOCI_BUILD_DESCRIPTION_EXEC_TIME="Build timed out, PR may be too large"
+export VIPGOCI_BUILD_DESCRIPTION_CODE_ISSUES="Problems were identified"
+export VIPGOCI_BUILD_DESCRIPTION_SYSTEM_PROBLEM="Build setup problem, please contact VIP"
+export VIPGOCI_BUILD_DESCRIPTION_GITHUB_PROBLEM="GitHub communication error. Please retry"
+export VIPGOCI_BUILD_DESCRIPTION_USAGE_ERROR="vip-go-ci usage error, please contact VIP"
+export VIPGOCI_BUILD_DESCRIPTION_UNKNOWN_ERROR="Unknown error, please contact VIP"
+
+#
+# Check out git repository, or update
+#
+
+if [ ! -d "$GIT_REPO_PATH" ] ; then
+	git -C "$GIT_REPO_BASE_PATH" clone "https://github.com/$REPO_ORG/$REPO_NAME.git"
+
+	# Fetch external branch from another repository
+	git -C "$GIT_REPO_PATH" fetch "https://github.com/gudmdharalds/vip-go-ci-manual-testing.git" ext-branch-with-phpcs-issues-original:ext-branch-with-phpcs-issues
+else
+	git -C "$GIT_REPO_PATH" pull
+fi
+
+#
+# Checkout correct branch
+#
+
+pushd $GIT_REPO_PATH && \
+git checkout $REPO_BRANCH && \
+git pull && \
+popd
+
+#
+# Set GitHub build status indication
+# 
+
+if [ "$VIPGOCI_BUILD_CONTEXT" != "" ] ; then
+	$VIPGOCI_EXEC_PHP_PATH ~/vip-go-ci-tools/vip-go-ci/github-commit-status.php --env-options="repo-name=REPO_NAME,repo-owner=REPO_ORG,github-token=VIPGOCI_GITHUB_TOKEN,github-commit=REPO_COMMIT_ID,build-context=VIPGOCI_BUILD_CONTEXT,build-description=VIPGOCI_BUILD_DESCRIPTION_PENDING" --build-state="pending"
+	echo ""
+fi
+
+#
+# Actually run vip-go-ci
+#
+$VIPGOCI_EXEC_PHP_PATH  ~/vip-go-ci-tools/vip-go-ci/vip-go-ci.php --env-options="max-exec-time=VIPGOCI_MAX_EXEC_TIME,repo-name=REPO_NAME,repo-owner=REPO_ORG,token=VIPGOCI_GITHUB_TOKEN,commit=REPO_COMMIT_ID,output=VIPGOCI_OUTPUT,repo-options=VIPGOCI_REPO_OPTIONS,repo-options-allowed=VIPGOCI_REPO_OPTIONS_ALLOWED,lint=VIPGOCI_LINT_ENABLED,lint-php-versions=VIPGOCI_LINT_PHP_VERSIONS,lint-php-version-paths=VIPGOCI_LINT_PHP_VERSION_PATHS,lint-skip-folders=VIPGOCI_LINT_SKIP_FOLDERS,lint-skip-folders-in-repo-options-file=VIPGOCI_LINT_SKIP_FOLDERS_IN_REPO_OPTIONS_FILE,phpcs=PHPCS_ENABLED,phpcs-php-path=VIPGOCI_PHPCS_PHP_PATH,phpcs-path=VIPGOCI_PHPCS_PATH,phpcs-standard=VIPGOCI_PHPCS_STANDARD,phpcs-standards-to-ignore=VIPGOCI_PHPCS_STANDARDS_IGNORE,phpcs-severity=VIPGOCI_PHPCS_SEVERITY,phpcs-runtime-set=VIPGOCI_PHPCS_RUNTIME_SET,phpcs-skip-folders=VIPGOCI_PHPCS_SKIP_FOLDERS,phpcs-skip-folders-in-repo-options-file=VIPGOCI_PHPCS_SKIP_FOLDERS_IN_REPO_OPTIONS_FILE,phpcs-skip-scanning-via-labels-allowed=VIPGOCI_PHPCS_SKIP_SCANNING_VIA_LABELS_ALLOWED,phpcs-sniffs-exclude=VIPGOCI_PHPCS_SNIFFS_EXCLUDE,phpcs-sniffs-include=VIPGOCI_PHPCS_SNIFFS_INCLUDE,wpscan-api=VIPGOCI_WPSCAN_API,wpscan-api-paths=VIPGOCI_WPSCAN_API_PATHS,wpscan-api-token=VIPGOCI_WPSCAN_API_TOKEN,wpscan-api-report-end-msg=VIPGOCI_WPSCAN_API_REPORT_END_MSG,svg-checks=VIPGOCI_SVG_CHECKS,svg-php-path=VIPGOCI_SVG_PHP_PATH,svg-scanner-path=VIPGOCI_SVG_SCANNER_PATH,autoapprove=VIPGOCI_AUTOAPPROVE_ENABLED,autoapprove-filetypes=VIPGOCI_AUTOAPPROVE_FILETYPES,autoapprove-label=VIPGOCI_AUTOAPPROVE_LABEL,autoapprove-php-nonfunctional-changes=VIPGOCI_AUTOAPPROVE_PHP_NONFUNCTIONAL_CHANGES,irc-api-token=VIPGOCI_IRC_API_TOKEN,irc-api-url=VIPGOCI_IRC_API_URL,irc-api-bot=VIPGOCI_IRC_API_BOT,irc-api-room=VIPGOCI_IRC_API_ROOM,pixel-api-url=VIPGOCI_PIXEL_API_URL,pixel-api-groupprefix=VIPGOCI_PIXEL_API_GROUPPREFIX,post-generic-pr-support-comments=VIPGOCI_POST_GENERIC_PR_SUPPORT_COMMENTS,post-generic-pr-support-comments-string=VIPGOCI_POST_GENERIC_PR_SUPPORT_COMMENTS_STRING,post-generic-pr-support-comments-repo-meta-match=VIPGOCI_POST_GENERIC_PR_SUPPORT_COMMENTS_REPO_META_MATCH,post-generic-pr-support-comments-branches=VIPGOCI_POST_GENERIC_PR_SUPPORT_COMMENTS_BRANCHES,post-generic-pr-support-comments-on-drafts=VIPGOCI_POST_GENERIC_PR_SUPPORT_COMMENTS_ON_DRAFTS,post-generic-pr-support-comments-skip-if-label-exists=VIPGOCI_POST_GENERIC_PR_SUPPORT_COMMENTS_SKIP_IF_LABEL_EXISTS,repo-meta-api-base-url=VIPGOCI_REPO_META_API_BASE_URL,repo-meta-api-user-id=VIPGOCI_REPO_META_API_USER_ID,repo-meta-api-access-token=VIPGOCI_REPO_META_API_ACCESS_TOKEN,scan-details-msg-include=VIPGOCI_SCAN_DETAILS_MSG_INCLUDE,report-no-issues-found=VIPGOCI_REPORT_NO_ISSUES_FOUND,review-comments-ignore=VIPGOCI_REVIEW_COMMENTS_IGNORE,review-comments-include-severity=VIPGOCI_REVIEW_COMMENTS_INCLUDE_SEVERITY,review-comments-sort=VIPGOCI_REVIEW_COMMENTS_SORT,review-comments-max=VIPGOCI_REVIEW_COMMENTS_MAX,review-comments-total-max=VIPGOCI_REVIEW_COMMENTS_TOTAL_MAX,dismiss-stale-reviews=DISMISS_STALE_REVIEWS,dismissed-reviews-repost-comments=DISMISSED_REVIEWS_REPOST_COMMENTS,dismissed-reviews-exclude-reviews-from-team=DISMISSED_REVIEWS_EXCLUDE_REVIEWS_FROM_TEAM,informational-msg=VIPGOCI_INFORMATIONAL_MSG,debug-level=VIPGOCI_DEBUG_LEVEL,name-to-use=VIPGOCI_NAME_TO_USE" --local-git-repo="$GIT_REPO_PATH" --enforce-https-urls=false --wpscan-api-dry-mode=false 
+
+#
+# Set GitHub build status after run
+# 
+
+export VIPGOCI_EXIT_CODE="$?"
+
+if [ "$VIPGOCI_EXIT_CODE" == "0" ] ; then
+    export BUILD_STATE="success"
+    export BUILD_DESCRIPTION="$VIPGOCI_BUILD_DESCRIPTION_SUCCESS"
+elif [ "$VIPGOCI_EXIT_CODE" == "220" ] ; then
+    export BUILD_STATE="failure"
+    export BUILD_DESCRIPTION="$VIPGOCI_BUILD_DESCRIPTION_INTERNAL_ERROR"
+elif [ "$VIPGOCI_EXIT_CODE" == "230" ] ; then
+    export BUILD_STATE="failure"
+    export BUILD_DESCRIPTION="$VIPGOCI_BUILD_DESCRIPTION_NOT_PART_OF_PR"
+elif [ "$VIPGOCI_EXIT_CODE" == "247" ] ; then
+    export BUILD_STATE="failure"
+    export BUILD_DESCRIPTION="$VIPGOCI_BUILD_DESCRIPTION_HTTP_API_FATAL_ERROR"
+elif [ "$VIPGOCI_EXIT_CODE" == "248" ] ; then
+    export BUILD_STATE="failure"
+    export BUILD_DESCRIPTION="$VIPGOCI_BUILD_DESCRIPTION_COMMIT_NOT_LATEST_IN_PR"
+elif [ "$VIPGOCI_EXIT_CODE" == "249" ] ; then
+    export BUILD_STATE="failure"
+    export BUILD_DESCRIPTION="$VIPGOCI_BUILD_DESCRIPTION_EXEC_TIME"
+elif [ "$VIPGOCI_EXIT_CODE" == "250" ] ; then
+    export BUILD_STATE="failure"
+    export BUILD_DESCRIPTION="$VIPGOCI_BUILD_DESCRIPTION_CODE_ISSUES"
+elif [ "$VIPGOCI_EXIT_CODE" == "251" ] ; then
+    export BUILD_STATE="failure"
+    export BUILD_DESCRIPTION="$VIPGOCI_BUILD_DESCRIPTION_SYSTEM_PROBLEM"
+elif [ "$VIPGOCI_EXIT_CODE" == "252" ] ; then
+    export BUILD_STATE="failure"
+    export BUILD_DESCRIPTION="$VIPGOCI_BUILD_DESCRIPTION_GITHUB_PROBLEM"
+elif [ "$VIPGOCI_EXIT_CODE" == "253" ] ; then
+    export BUILD_STATE="failure"
+    export BUILD_DESCRIPTION="$VIPGOCI_BUILD_DESCRIPTION_USAGE_ERROR"
+else
+    export BUILD_STATE="failure"
+    export BUILD_DESCRIPTION="$VIPGOCI_BUILD_DESCRIPTION_UNKNOWN_ERROR"
+fi
+
+if [ "$VIPGOCI_BUILD_CONTEXT" != "" ] ; then
+    $VIPGOCI_EXEC_PHP_PATH ~/vip-go-ci-tools/vip-go-ci/github-commit-status.php --env-options="repo-name=REPO_NAME,repo-owner=REPO_ORG,github-token=VIPGOCI_GITHUB_TOKEN,github-commit=REPO_COMMIT_ID,build-context=VIPGOCI_BUILD_CONTEXT,build-description=BUILD_DESCRIPTION,build-state=BUILD_STATE"
+   echo ""
+fi
+
+exit $VIPGOCI_EXIT_CODE
