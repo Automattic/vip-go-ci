@@ -64,6 +64,7 @@ final class WpscanScanSaveForSubmissionTest extends TestCase {
 					'popular'         => true,
 					'vulnerabilities' => array(),
 				),
+				'slug'               => 'hello-dolly',
 				'addon_data_for_dir' => array(
 					'type'             => 'vipgoci-addon-plugin',
 					'addon_headers'    => array(
@@ -84,7 +85,7 @@ final class WpscanScanSaveForSubmissionTest extends TestCase {
 					),
 					'name'             => 'Hello Dolly',
 					'version_detected' => '1.6',
-					'file_name'        => '/tmp/plugins/hello/hello.php',
+					'file_name'        => '%local-git-repo%plugins/hello/hello.php',
 					'id'               => 'w.org/plugins/hello-dolly',
 					'slug'             => 'hello-dolly',
 					'new_version'      => '1.7.2',
@@ -104,6 +105,7 @@ final class WpscanScanSaveForSubmissionTest extends TestCase {
 					'popular'         => true,
 					'vulnerabilities' => array(),
 				),
+				'slug'               => 'twentytwentyone',
 				'addon_data_for_dir' => array(
 					'type'             => 'vipgoci-addon-theme',
 					'addon_headers'    => array(
@@ -124,7 +126,7 @@ final class WpscanScanSaveForSubmissionTest extends TestCase {
 					),
 					'name'             => 'Twenty Twenty-One',
 					'version_detected' => '1.0',
-					'file_name'        => '/tmp/themes/twentytwentyone/style.css',
+					'file_name'        => '%local-git-repo%themes/twentytwentyone/style.css',
 					'id'               => 'w.org/themes/twentytwentyone',
 					'slug'             => 'twentytwentyone',
 					'new_version'      => '1.6',
@@ -316,6 +318,8 @@ final class WpscanScanSaveForSubmissionTest extends TestCase {
 			'error'   => 0,
 		);
 
+		vipgoci_unittests_output_suppress();
+
 		// Add label.
 		$this->prLabelAdd();
 
@@ -333,6 +337,8 @@ final class WpscanScanSaveForSubmissionTest extends TestCase {
 
 		// Remove label.
 		$this->prLabelRemove();
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertSame(
 			array(
@@ -398,6 +404,22 @@ final class WpscanScanSaveForSubmissionTest extends TestCase {
 			'error'   => 0,
 		);
 
+		$this->problematic_addons_found['plugins/hello']['hello.php']['addon_data_for_dir']['file_name'] =
+			str_replace(
+				'%local-git-repo%',
+				$this->options['local-git-repo'] . DIRECTORY_SEPARATOR,
+				$this->problematic_addons_found['plugins/hello']['hello.php']['addon_data_for_dir']['file_name']
+			);
+
+		$this->problematic_addons_found['themes/twentytwentyone']['style.css']['addon_data_for_dir']['file_name'] =
+			str_replace(
+				'%local-git-repo%',
+				$this->options['local-git-repo'] . DIRECTORY_SEPARATOR,
+				$this->problematic_addons_found['themes/twentytwentyone']['style.css']['addon_data_for_dir']['file_name']
+			);
+
+		vipgoci_unittests_output_suppress();
+
 		vipgoci_wpscan_scan_save_for_submission(
 			$this->options,
 			$commit_issues_submit,
@@ -406,6 +428,8 @@ final class WpscanScanSaveForSubmissionTest extends TestCase {
 			$this->getFilesAffectedByCommitByPR(),
 			$this->problematic_addons_found
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertSame(
 			array(
@@ -431,6 +455,7 @@ final class WpscanScanSaveForSubmissionTest extends TestCase {
 							'security'   => 'obsolete',
 							'severity'   => 7,
 							'details'    => array(
+								'slug'                => 'hello-dolly',
 								'url'                 => 'https://wordpress.org/plugins/hello-dolly/',
 								'installed_location'  => 'plugins/hello',
 								'version_detected'    => '1.6',
@@ -451,6 +476,7 @@ final class WpscanScanSaveForSubmissionTest extends TestCase {
 							'security'   => 'vulnerable',
 							'severity'   => 10,
 							'details'    => array(
+								'slug'                => 'twentytwentyone',
 								'url'                 => 'https://wordpress.org/themes/twentytwentyone/',
 								'installed_location'  => 'themes/twentytwentyone',
 								'version_detected'    => '1.0',

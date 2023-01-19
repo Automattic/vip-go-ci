@@ -195,6 +195,8 @@ final class WpscanScanDirsAlteredTest extends TestCase {
 			),
 		);
 
+		vipgoci_unittests_output_suppress();
+
 		$results_actual = vipgoci_wpscan_scan_dirs_altered(
 			$this->options,
 			explode(
@@ -204,9 +206,12 @@ final class WpscanScanDirsAlteredTest extends TestCase {
 			$addon_data_and_slugs_for_addon_dirs
 		);
 
+		vipgoci_unittests_output_unsuppress();
+
 		$results_expected = array(
 			$this->options['wpscan-pr-1-plugin-dir'] => array(
 				$this->options['wpscan-pr-1-plugin-dir'] => array(
+					'slug'               => $this->options['wpscan-pr-1-plugin-slug'],
 					'wpscan_results'     => array(
 						'friendly_name'  => $this->options['wpscan-pr-1-plugin-name'],
 						'latest_version' => $this->getAddonVersionNumber(
@@ -224,6 +229,7 @@ final class WpscanScanDirsAlteredTest extends TestCase {
 			),
 			$this->options['wpscan-pr-1-theme-dir']  => array(
 				$this->options['wpscan-pr-1-theme-slug'] => array(
+					'slug'               => $this->options['wpscan-pr-1-theme-slug'],
 					'wpscan_results'     => array(
 						'friendly_name'  => $this->options['wpscan-pr-1-theme-name'],
 						'latest_version' => $this->getAddonVersionNumber(
@@ -366,6 +372,8 @@ final class WpscanScanDirsAlteredTest extends TestCase {
 			),
 		);
 
+		vipgoci_unittests_output_suppress();
+
 		$results_actual = vipgoci_wpscan_scan_dirs_altered(
 			$this->options,
 			explode(
@@ -374,6 +382,8 @@ final class WpscanScanDirsAlteredTest extends TestCase {
 			),
 			$addon_data_and_slugs_for_addon_dirs
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertSame(
 			array(),
@@ -437,6 +447,8 @@ final class WpscanScanDirsAlteredTest extends TestCase {
 			),
 		);
 
+		vipgoci_unittests_output_suppress();
+
 		$results_actual = vipgoci_wpscan_scan_dirs_altered(
 			$this->options,
 			explode(
@@ -445,6 +457,8 @@ final class WpscanScanDirsAlteredTest extends TestCase {
 			),
 			$addon_data_and_slugs_for_addon_dirs
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertSame(
 			array(),
@@ -464,11 +478,15 @@ final class WpscanScanDirsAlteredTest extends TestCase {
 		string $addon_slug,
 		string $addon_type
 	) :string {
+		vipgoci_unittests_output_suppress();
+
 		$wpscan_plugin_info = vipgoci_wpscan_do_scan_via_api(
 			$addon_slug,
 			$addon_type,
 			$this->options['wpscan-api-token']
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		return (string) $wpscan_plugin_info[ $addon_slug ]['latest_version'];
 	}

@@ -114,9 +114,13 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 			( empty( $this->current_user_info ) ) &&
 			( ! empty( $this->options['github-token'] ) )
 		) {
+			vipgoci_unittests_output_suppress();
+
 			$this->current_user_info = vipgoci_github_authenticated_user_get(
 				$this->options['github-token']
 			);
+
+			vipgoci_unittests_output_unsuppress();
 		}
 
 		/*
@@ -361,11 +365,15 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 			VIPGOCI_CACHE_CLEAR
 		);
 
+		vipgoci_unittests_output_suppress();
+
 		// Try to submit support comment.
 		vipgoci_report_submit_pr_generic_support_comment(
 			$this->options,
 			$prs_implicated
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		// Check if commenting succeeded.
 		foreach ( $prs_implicated as $pr_item ) {
@@ -423,11 +431,15 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 			count( $prs_implicated ) > 0
 		);
 
+		vipgoci_unittests_output_suppress();
+
 		// Try to submit support comment.
 		vipgoci_report_submit_pr_generic_support_comment(
 			$this->options,
 			$prs_implicated
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		// Check if commenting succeeded.
 		foreach ( $prs_implicated as $pr_item ) {
@@ -468,11 +480,15 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 			VIPGOCI_CACHE_CLEAR
 		);
 
+		vipgoci_unittests_output_suppress();
+
 		// Try re-posting.
 		vipgoci_report_submit_pr_generic_support_comment(
 			$this->options,
 			$prs_implicated
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		// And make sure it did not succeed.
 		foreach ( $prs_implicated as $pr_item ) {
@@ -538,11 +554,15 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 			count( $prs_implicated ) > 0
 		);
 
+		vipgoci_unittests_output_suppress();
+
 		// Try to submit support comment.
 		vipgoci_report_submit_pr_generic_support_comment(
 			$this->options,
 			$prs_implicated
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		// Check if commenting succeeded.
 		foreach ( $prs_implicated as $pr_item ) {
@@ -583,11 +603,15 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 			VIPGOCI_CACHE_CLEAR
 		);
 
+		vipgoci_unittests_output_suppress();
+
 		// Try re-posting.
 		vipgoci_report_submit_pr_generic_support_comment(
 			$this->options,
 			$prs_implicated
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		// And make sure it did not succeed.
 		foreach ( $prs_implicated as $pr_item ) {
@@ -652,12 +676,15 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 		$this->assertTrue(
 			count( $prs_implicated ) > 0
 		);
+		vipgoci_unittests_output_suppress();
 
 		// Try to submit support comment.
 		vipgoci_report_submit_pr_generic_support_comment(
 			$this->options,
 			$prs_implicated
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		// Check if commenting succeeded -- should not have, as branch is invalid.
 		foreach ( $prs_implicated as $pr_item ) {
@@ -681,11 +708,15 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 			VIPGOCI_CACHE_CLEAR
 		);
 
+		vipgoci_unittests_output_suppress();
+
 		// Try re-posting.
 		vipgoci_report_submit_pr_generic_support_comment(
 			$this->options,
 			$prs_implicated
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		// And make sure it did not succeed the second time.
 		foreach ( $prs_implicated as $pr_item ) {
@@ -734,11 +765,15 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 			count( $prs_implicated ) > 0
 		);
 
+		vipgoci_unittests_output_suppress();
+
 		// Try to submit support comment.
 		vipgoci_report_submit_pr_generic_support_comment(
 			$this->options,
 			$prs_implicated
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		// Check if commenting succeeded.
 		foreach ( $prs_implicated as $pr_item ) {
@@ -779,11 +814,15 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 			VIPGOCI_CACHE_CLEAR
 		);
 
+		vipgoci_unittests_output_suppress();
+
 		// Try re-posting.
 		vipgoci_report_submit_pr_generic_support_comment(
 			$this->options,
 			$prs_implicated
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		// And make sure it did not succeed.
 		foreach ( $prs_implicated as $pr_item ) {
@@ -828,12 +867,14 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 		$this->options['post-generic-pr-support-comments-on-drafts'] = array(
 			2 => true,
 		);
+		vipgoci_unittests_output_suppress();
 
 		// Try re-posting.
 		vipgoci_report_submit_pr_generic_support_comment(
 			$this->options,
 			$prs_implicated
 		);
+		vipgoci_unittests_output_unsuppress();
 
 		// And make sure it did succeed.
 		foreach ( $prs_implicated as $pr_item ) {
@@ -901,6 +942,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 			$this->assertTrue(
 				count( $pr_comments ) === 0
 			);
+			vipgoci_unittests_output_suppress();
 
 			// Add label to make sure no comment is posted.
 			vipgoci_github_label_add_to_pr(
@@ -910,13 +952,18 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 				$pr_item->number,
 				$test_label
 			);
+
+			vipgoci_unittests_output_unsuppress();
 		}
+
+		vipgoci_unittests_output_suppress();
 
 		// Try to submit support comment.
 		vipgoci_report_submit_pr_generic_support_comment(
 			$this->options,
 			$prs_implicated
 		);
+		vipgoci_unittests_output_unsuppress();
 
 		// Make sure commenting did not succeed.
 		foreach ( $prs_implicated as $pr_item ) {
@@ -943,12 +990,14 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 		vipgoci_cache(
 			VIPGOCI_CACHE_CLEAR
 		);
+		vipgoci_unittests_output_suppress();
 
 		// Try re-posting.
 		vipgoci_report_submit_pr_generic_support_comment(
 			$this->options,
 			$prs_implicated
 		);
+		vipgoci_unittests_output_unsuppress();
 
 		// And make sure it did not succeed.
 		foreach ( $prs_implicated as $pr_item ) {
@@ -980,12 +1029,14 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 		$this->options['post-generic-pr-support-comments-on-drafts'] = array(
 			2 => true,
 		);
+		vipgoci_unittests_output_suppress();
 
 		// Try re-posting.
 		vipgoci_report_submit_pr_generic_support_comment(
 			$this->options,
 			$prs_implicated
 		);
+		vipgoci_unittests_output_unsuppress();
 
 		// And make sure it did not succeed.
 		foreach ( $prs_implicated as $pr_item ) {
@@ -1004,6 +1055,8 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 				)
 			);
 
+			vipgoci_unittests_output_suppress();
+
 			vipgoci_github_pr_label_remove(
 				$this->options['repo-owner'],
 				$this->options['repo-name'],
@@ -1011,6 +1064,8 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 				$pr_item->number,
 				$test_label
 			);
+
+			vipgoci_unittests_output_unsuppress();
 		}
 	}
 }
