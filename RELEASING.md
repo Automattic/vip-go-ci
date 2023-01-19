@@ -21,8 +21,9 @@ Follow these steps to test the new version before a release:
 
  * Ensure all pull requests that update the code have been merged. Do _not_ merge the changelog/version number pull request yet.
  * Ensure that all TODO items in the pull request created for changelog and version number have been completed.
- * Some of the TODO items involve running the individual test suites included. The test suites should be run against the main branch of the repository when all pull requests have been merged (except for the changelog version/number pull request). See more about testing [here](TESTING.md).
- * Manually test `vip-go-ci` against common code patterns, using this [script](). Note that a few environmental variables have to be adjusted before using the script. Note that the script has many different branches to select from, run the script against each branch at least once. You can fork [this repository](https://github.com/gudmdharalds-a8c/vip-go-ci-manual-testing) and use it to test; note that you will have to re-create the pull requests manually. The repository and the script work in tandem.
+ * Running tests
+   * Some of the TODO items involve running the individual test suites included. The test suites should be run against the main branch of the repository when all pull requests have been merged (except for the changelog version/number pull request). See more about automated testing in the [TESTING.md document](TESTING.md#automated-testing).
+   * Another item entails manually testing `vip-go-ci` against common code patterns. Again refer to the [TESTING.md document](TESTING.md#manual-testing).
  * If any problems are found in the steps above, fix those before continuing.
  * When all pull requests with new or modified code have been merged, ensure that the pull request that modifies the version number and changelog is merged. Ensure all tests pass when this pull request has been merged.
 
