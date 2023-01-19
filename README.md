@@ -15,7 +15,7 @@ Currently, a number of types of scanners are supported:
 
 Here is an example of the scanning results provided by `vip-go-ci`:
 
-![Scanning results!](docs/vipgoci-scanning-feedback.png "Scanning results")
+![Scanning results!](docs-images/vipgoci-scanning-feedback.png "Scanning results")
 
 `vip-go-ci` scans files differently depending on scan type:
 
@@ -36,7 +36,7 @@ A pull request with obsolete or vulnerable plugin or theme is not auto-approved.
 
 Here is an example auto approval by `vip-go-ci`:
 
-![Example auto approval!](docs/vipgoci-auto-approvals-approved.png "Example auto approval")
+![Example auto approval!](docs-images/vipgoci-auto-approvals-approved.png "Example auto approval")
 
 `vip-go-ci` will not re-approve a pull request already approved by itself, but it will remove previous approval by itself if the pull request does not fulfil the requirements for approval any longer.
 
@@ -698,7 +698,7 @@ Note that the utility supports setting options via [environmental variables](#co
 
 Here is an example GitHub build status:
 
-![Example build statusl!](docs/vipgoci-github-build-status-success.png "Example build status")
+![Example build statusl!](docs-images/vipgoci-github-build-status-success.png "Example build status")
 
 ## Testing
 
