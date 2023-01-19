@@ -3,3 +3,5 @@ unittests-secrets.ini
 *.dia~
 *.swp
 phpunit.xml
+scripts/vipgoci-run.sh
+scripts/vipgoci-run-secrets*
