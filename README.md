@@ -706,7 +706,7 @@ Information on automated and manual testing of `vip-go-ci` can be found in [TEST
 
 ## Releasing new versions
 
-Documentation on what steps to follow when releasing a new version of `vip-go-ci` can be found in the the [RELEASING.md](RELEASING.md) file.
+Documentation on what steps to follow when releasing a new version of `vip-go-ci` can be found in the [RELEASING.md](RELEASING.md) file.
 
 ## Updating tools-init.sh with new versions
 
