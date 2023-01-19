@@ -2,7 +2,7 @@
 
 ## Introduction 
 
-`vip-go-ci` relies on both manual and automated testing. Much of the functionality it provides is automatically tested using it's extensive unit and integration test suite. _Most_ of these tests are run automatically when code is committed and pushed to the repository, though _some_ tests need to be run manually (due to secrets, see below). The manual testing that should be performed is functional, testing the final behaviour of the software. We aim to eliminate the need for manual testing by automating them. 
+`vip-go-ci` relies on both manual and automated testing. Much of the functionality `vip-go-ci` provides is automatically tested using it's extensive unit and integration test suites. _Most_ of the tests in the test suites are run automatically when code is committed and pushed to the repository, though _some_ integration tests need to be run manually (due to secrets, see below). The manual testing that should be performed is functional, testing the final behaviour of the software. 
 
 ## Automated testing
 
@@ -83,4 +83,65 @@ Note that the test suite uses the `@runTestsInSeparateProcesses` and `@preserveG
 
 ## Manual testing
 
-Some functionality still needs to be tested manually.
+### Introduction
+
+Manual testing is still required to ensure the final behavior of `vip-go-ci` is correct. This entails, for example, ensuring that PHPCS-issues are noted for pull requests that should have them due to problematic PHP code embedded in those pull requests.  We aim to eliminate the need for manual testing by automating them.
+
+### Setting up
+
+Begin by forking [this repository](https://github.com/gudmdharalds-a8c/vip-go-ci-manual-testing). Use the forked repository to run the manual tests.
+
+Navigate into the [scripts](scripts) directory on the command line. Then follow these steps:
+
+1) Move the main script file.
+> mv vipgoci-run.sh.dist vipgoci-run.sh
+
+2) Add the following to a file named `vipgoci-run-secrets.sh`:
+
+```
+#!/bin/bash
+
+# Repo settings.
+export REPO_ORG=""
+export REPO_NAME=""
+
+# Access token for GitHub.
+export VIPGOCI_GITHUB_TOKEN=""
+
+# WPScan API.
+export VIPGOCI_WPSCAN_API_TOKEN=""
+
+# IRC config.
+export VIPGOCI_IRC_API_BOT=""
+export VIPGOCI_IRC_API_ROOM=""
+export VIPGOCI_IRC_API_TOKEN=""
+export VIPGOCI_IRC_API_URL=""
+
+# Pixel API.
+export VIPGOCI_PIXEL_API_GROUPPREFIX=""
+export VIPGOCI_PIXEL_API_URL=""
+
+# Generic support comments.
+export VIPGOCI_POST_GENERIC_PR_SUPPORT_COMMENTS_BRANCHES=""
+export VIPGOCI_POST_GENERIC_PR_SUPPORT_COMMENTS_ON_DRAFTS=""
+export VIPGOCI_POST_GENERIC_PR_SUPPORT_COMMENTS_REPO_META_MATCH=""
+export VIPGOCI_POST_GENERIC_PR_SUPPORT_COMMENTS_SKIP_IF_LABEL_EXISTS=""
+export VIPGOCI_POST_GENERIC_PR_SUPPORT_COMMENTS_STRING=''
+
+# Repo meta API.
+export VIPGOCI_REPO_META_API_ACCESS_TOKEN=""
+export VIPGOCI_REPO_META_API_BASE_URL=""
+export VIPGOCI_REPO_META_API_USER_ID=""
+
+# Reviews.
+export DISMISSED_REVIEWS_EXCLUDE_REVIEWS_FROM_TEAM=""
+```
+
+Ensure to populate the relevant fields with your own values.
+
+3) Create the pull requests needed in the forked repository on GitHub. Re-create the same pull requests as found [here](https://github.com/gudmdharalds-a8c/vip-go-ci-manual-testing/pulls), refering to the same branch names.
+
+### Running tests
+
+Run each test, identified by branch, found in `vipgoci-run.sh`. Ensure that the reviews, comments and labels generated are correct.
+
