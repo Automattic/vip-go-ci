@@ -632,13 +632,13 @@ Using the `VIPGOCI_IRC_IGNORE_STRING_START` and `VIPGOCI_IRC_IGNORE_STRING_END` 
 * Code `0`: Normal, no errors were found in the code scanned and no fatal system errors were encountered. There could have been warnings found in the code, though.
 * Code `220`: Internal error in `vip-go-ci`.
 * Code `230`: Commit specified is not associated with any pull request.
+* Code `247`: Fatal error when communicating with HTTP API.
+* Code `248`: Commit specified is not the latest one in pull request.
 * Code `249`: Scanning exceeded maximum time allowed.
 * Code `250`: Scanning was completed, but some errors were found in the code.
 * Code `251`: Exiting due to a system problem.
 * Code `252`: A fatal problem with GitHub was encountered leading to an exit.
 * Code `253`: A problem with usage options was detected, leading to an exit.
-* Code `247`: Fatal error when communicating with HTTP API.
-* Code `248`: Commit specified is not the latest one in pull request.
 
 ## Setting GitHub Build Status
 
