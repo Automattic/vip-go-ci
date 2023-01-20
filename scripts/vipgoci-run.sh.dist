@@ -81,7 +81,8 @@ export REPO_COMMIT_ID="3e8d5b9c2566ef285cb5d85e5c71cf82f40f9afa"
 #export REPO_COMMIT_ID="b781799f8c6f789280672ce2dd63390c309fc25a"
 
 # Include information from custom config file
-. vipgoci-run-secrets.sh
+CURRENT_DIR=`dirname -- "$0"`
+. "$CURRENT_DIR/vipgoci-run-secrets.sh"
 
 #
 # Main configuration parameters (except for custom).
