@@ -58,10 +58,12 @@ If you have a feature request, please read the [file on contributing](CONTRIBUTI
 
 ### System requirements
 
-* `vip-go-ci` requires PHP 8.0 or later. PHP 8.1 is recommended.
-  * The PHP-based utlities — PHPCS, SVG scanner and PHP Lint — can be run using different PHP versions than `vip-go-ci` itself. See individual sections below on this.
+* `vip-go-ci` requires PHP 8.0 or PHP 8.1. PHP 8.1 is recommended. PHP 8.2 is not yet supported.
+  * Required PHP add-ons include: `curl` and `xml`. Also, PCNTL should be enabled.
+  * The PHP-based utlities — PHPCS, SVG scanner and PHP Lint — can be run using different PHP versions than `vip-go-ci` itself. See individual sections below on this. 
+    * These utilities have their own requirements.
 * Linux is recommended as a platform for `vip-go-ci`.
-* git version 2.10 or later.
+* git version 2.30 or later.
 * Working bash shell.
 * Access to GitHub API and other APIs configured.
 
