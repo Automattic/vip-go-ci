@@ -19,7 +19,7 @@ function vipgoci_output_sanitize_version_number(
 	string $version_number
 ) :string {
 	return preg_replace(
-		'/[^a-zA-Z0-9\.]/',
+		'/[^a-zA-Z0-9\.\-]/',
 		'',
 		$version_number
 	);

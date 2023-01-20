@@ -158,15 +158,20 @@ final class PhpcsScanDoScanTest extends TestCase {
 		 * is not already part of the current
 		 * standard.
 		 */
+		vipgoci_unittests_output_suppress();
+
+		$phpcs_sniffs_for_standard = vipgoci_phpcs_get_sniffs_for_standard(
+			$this->options_phpcs['phpcs-path'],
+			$this->options_phpcs['phpcs-php-path'],
+			$this->options_phpcs['phpcs-standard']
+		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertFalse(
 			array_search(
 				$this->options_phpcs['phpcs-sniffs-include'],
-				vipgoci_phpcs_get_sniffs_for_standard(
-					$this->options_phpcs['phpcs-path'],
-					$this->options_phpcs['phpcs-php-path'],
-					$this->options_phpcs['phpcs-standard']
-				)
+				$phpcs_sniffs_for_standard
 			)
 		);
 

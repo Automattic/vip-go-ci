@@ -144,10 +144,14 @@ final class MainRunScanReviewsCommentsEnforceMaximumTest extends TestCase {
 		 */
 		$this->options['review-comments-total-max'] = 0;
 
+		vipgoci_unittests_output_suppress();
+
 		$prs_comments_maxed = vipgoci_run_scan_reviews_comments_enforce_maximum(
 			$this->options,
 			$this->results
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertSame(
 			array(),
@@ -181,10 +185,14 @@ final class MainRunScanReviewsCommentsEnforceMaximumTest extends TestCase {
 		 */
 		$this->options['review-comments-total-max'] = 1;
 
+		vipgoci_unittests_output_suppress();
+
 		$prs_comments_maxed = vipgoci_run_scan_reviews_comments_enforce_maximum(
 			$this->options,
 			$this->results
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertSame(
 			array(

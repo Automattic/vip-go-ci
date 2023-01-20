@@ -116,7 +116,7 @@ final class WpCoreMiscScanDirectoryForAddonsTest extends TestCase {
 				),
 				'name'             => 'My Package',
 				'version_detected' => '1.0.0',
-				'file_name'        => $this->temp_dir . '/WpCoreMiscScanDirectoryForAdddonsTest/addon2/style.css',
+				'file_name'        => $this->temp_dir . '/WpCoreMiscScanDirectoryForAdddonsTest/mu-plugins/addon2/style.css',
 			),
 			'vipgoci-addon-plugin-addon1/file2.php'     => array(
 				'type'             => 'vipgoci-addon-plugin',
@@ -138,7 +138,7 @@ final class WpCoreMiscScanDirectoryForAddonsTest extends TestCase {
 				),
 				'name'             => 'My <h1>Other</h1> Package',
 				'version_detected' => '1.1.0',
-				'file_name'        => $this->temp_dir . '/WpCoreMiscScanDirectoryForAdddonsTest/addon1/file2.php',
+				'file_name'        => $this->temp_dir . '/WpCoreMiscScanDirectoryForAdddonsTest/mu-plugins/addon1/file2.php',
 			),
 			'vipgoci-addon-plugin-this-is-a-plugin.php' => array(
 				'type'             => 'vipgoci-addon-plugin',
@@ -160,7 +160,7 @@ final class WpCoreMiscScanDirectoryForAddonsTest extends TestCase {
 				),
 				'name'             => 'This is a plugin.',
 				'version_detected' => '15.1.0',
-				'file_name'        => $this->temp_dir . '/WpCoreMiscScanDirectoryForAdddonsTest/this-is-a-plugin.php',
+				'file_name'        => $this->temp_dir . '/WpCoreMiscScanDirectoryForAdddonsTest/mu-plugins/this-is-a-plugin.php',
 			),
 		);
 
@@ -168,6 +168,7 @@ final class WpCoreMiscScanDirectoryForAddonsTest extends TestCase {
 
 		$results_actual = vipgoci_wpcore_misc_scan_directory_for_addons(
 			$this->temp_dir . '/WpCoreMiscScanDirectoryForAdddonsTest',
+			'mu-plugins',
 			array( 'php' ),
 			array( 'css' ),
 			true
@@ -237,7 +238,7 @@ final class WpCoreMiscScanDirectoryForAddonsTest extends TestCase {
 				),
 				'name'             => 'This is a plugin.',
 				'version_detected' => '15.1.0',
-				'file_name'        => $this->temp_dir . '/WpCoreMiscScanDirectoryForAdddonsTest/this-is-a-plugin.php',
+				'file_name'        => $this->temp_dir . '/WpCoreMiscScanDirectoryForAdddonsTest/mu-plugins/this-is-a-plugin.php',
 			),
 		);
 
@@ -245,6 +246,7 @@ final class WpCoreMiscScanDirectoryForAddonsTest extends TestCase {
 
 		$results_actual = vipgoci_wpcore_misc_scan_directory_for_addons(
 			$this->temp_dir . '/WpCoreMiscScanDirectoryForAdddonsTest',
+			'mu-plugins',
 			array( 'php' ),
 			array( 'css' ),
 			false

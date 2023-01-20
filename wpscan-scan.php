@@ -173,7 +173,8 @@ function vipgoci_wpscan_get_altered_addons_data_and_slugs(
 		$known_addons_file_to_key = array();
 
 		$addon_data_for_dir = vipgoci_wpcore_misc_get_addon_data_and_slugs_for_directory(
-			$options['local-git-repo'] . DIRECTORY_SEPARATOR . $addon_dir_relevant,
+			$options['local-git-repo'],
+			$addon_dir_relevant,
 			$options['wpscan-api-plugin-file-extensions'],
 			$options['wpscan-api-theme-file-extensions'],
 			( ! in_array( $addon_dir_relevant, $options['wpscan-api-paths'], true ) )
@@ -510,12 +511,19 @@ function vipgoci_wpscan_scan_save_for_submission(
 					$issue_severity = VIPGOCI_WPSCAN_VULNERABLE === $problem_addon_files[ $problem_addon_file_name ]['security_type'] ?
 						10 : 7;
 
+					// Calculate relative file path.
+					$file_name = str_replace(
+						$options['local-git-repo'] . DIRECTORY_SEPARATOR,
+						'',
+						$issue_details['addon_data_for_dir']['file_name']
+					);
+
 					// Determine installed location.
-					$addon_installed_location = $dir_with_problem_addons;
+					$addon_installed_location = dirname( $file_name );
 
 					$commit_issues_submit[ $pr_number ][] = array(
 						'type'      => VIPGOCI_STATS_WPSCAN_API,
-						'file_name' => $dir_with_problem_addons . DIRECTORY_SEPARATOR . $problem_addon_file_name, // Required field.
+						'file_name' => $file_name, // Required field.
 						'file_line' => 1, // Required field, even if not used.
 						'issue'     => array(
 							'addon_type' => $issue_details['addon_data_for_dir']['type'],

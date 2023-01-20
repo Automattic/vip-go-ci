@@ -30,14 +30,17 @@ final class WpscanScanCommitTest extends TestCase {
 		'wpscan-pr-1-plugin-dir'      => null,
 		'wpscan-pr-1-plugin-key'      => null,
 		'wpscan-pr-1-plugin-name'     => null,
+		'wpscan-pr-1-plugin-slug'     => null,
 		'wpscan-pr-1-plugin-version'  => null,
 		'wpscan-pr-1-plugin2-dir'     => null,
 		'wpscan-pr-1-plugin2-key'     => null,
 		'wpscan-pr-1-plugin2-name'    => null,
+		'wpscan-pr-1-plugin2-slug'    => null,
 		'wpscan-pr-1-plugin2-version' => null,
 		'wpscan-pr-1-theme-dir'       => null,
-		'wpscan-pr-1-theme-key'       => null,
 		'wpscan-pr-1-theme-name'      => null,
+		'wpscan-pr-1-theme-path'      => null,
+		'wpscan-pr-1-theme-slug'      => null,
 		'wpscan-pr-1-theme-version'   => null,
 	);
 
@@ -188,12 +191,16 @@ final class WpscanScanCommitTest extends TestCase {
 			'warning' => 0,
 		);
 
+		vipgoci_unittests_output_suppress();
+
 		vipgoci_wpscan_scan_commit(
 			$this->options,
 			$commit_issues_submit,
 			$commit_issues_stats,
 			$commit_skipped_files
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertSame(
 			array(
@@ -246,9 +253,9 @@ final class WpscanScanCommitTest extends TestCase {
 			return;
 		}
 
-		$this->options['wpscan-api'] = true;
-
 		vipgoci_unittests_output_unsuppress();
+
+		$this->options['wpscan-api'] = true;
 
 		$commit_issues_submit = array();
 		$commit_issues_stats  = array();
@@ -259,12 +266,16 @@ final class WpscanScanCommitTest extends TestCase {
 			'warning' => 0,
 		);
 
+		vipgoci_unittests_output_suppress();
+
 		vipgoci_wpscan_scan_commit(
 			$this->options,
 			$commit_issues_submit,
 			$commit_issues_stats,
 			$commit_skipped_files
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertSame(
 			array(
@@ -330,6 +341,7 @@ final class WpscanScanCommitTest extends TestCase {
 							'level'      => 'warning',
 							'severity'   => 7,
 							'details'    => array(
+								'slug'               => $this->options['wpscan-pr-1-plugin-slug'],
 								'installed_location' => $this->options['wpscan-pr-1-plugin-dir'],
 								'version_detected'   => $this->options['wpscan-pr-1-plugin-version'],
 								'vulnerabilities'    => array(),
@@ -346,6 +358,7 @@ final class WpscanScanCommitTest extends TestCase {
 							'level'      => 'warning',
 							'severity'   => 7,
 							'details'    => array(
+								'slug'               => $this->options['wpscan-pr-1-plugin2-slug'],
 								'installed_location' => $this->options['wpscan-pr-1-plugin2-dir'],
 								'version_detected'   => $this->options['wpscan-pr-1-plugin2-version'],
 								'vulnerabilities'    => array(),
@@ -354,7 +367,7 @@ final class WpscanScanCommitTest extends TestCase {
 					),
 					array(
 						'type'      => 'wpscan-api',
-						'file_name' => $this->options['wpscan-pr-1-theme-dir'] . '/' . $this->options['wpscan-pr-1-theme-key'],
+						'file_name' => $this->options['wpscan-pr-1-theme-path'],
 						'file_line' => 1,
 						'issue'     => array(
 							'addon_type' => 'vipgoci-addon-theme',
@@ -362,6 +375,7 @@ final class WpscanScanCommitTest extends TestCase {
 							'level'      => 'warning',
 							'severity'   => 7,
 							'details'    => array(
+								'slug'               => $this->options['wpscan-pr-1-theme-slug'],
 								'installed_location' => $this->options['wpscan-pr-1-theme-dir'],
 								'version_detected'   => $this->options['wpscan-pr-1-theme-version'],
 								'vulnerabilities'    => array(),

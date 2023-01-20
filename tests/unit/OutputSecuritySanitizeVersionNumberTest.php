@@ -33,11 +33,11 @@ final class OutputSecuritySanitizeVersionNumberTest extends TestCase {
 	 */
 	public function testSanitizeVersionNumber(): void {
 		$sanitized_number = vipgoci_output_sanitize_version_number(
-			PHP_EOL . ' 1.50.30.3b,    ' . "\t" . PHP_EOL
+			PHP_EOL . ' 1.50.30.3b,  - 5b  ' . "\t" . PHP_EOL
 		);
 
 		$this->assertSame(
-			'1.50.30.3b',
+			'1.50.30.3b-5b',
 			$sanitized_number
 		);
 	}
