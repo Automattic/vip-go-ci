@@ -39,6 +39,8 @@ function cpr_create_pull_requests(
 			);
 		}
 
+		$pr_items_failed[] = $pr_item;
+
 		// Try to avoid secondary rate limit errors.
 		sleep( 5 );
 	}
