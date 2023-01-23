@@ -15,14 +15,14 @@ Currently, a number of types of scanners are supported:
 
 Here is an example of the scanning results provided by `vip-go-ci`:
 
-![Scanning results!](docs/vipgoci-scanning-feedback.png "Scanning results")
+![Scanning results!](docs-images/vipgoci-scanning-feedback.png "Scanning results")
 
 `vip-go-ci` scans files differently depending on scan type:
 
 * For PHP linting, it will loop through every modified file in the pull request (or, each file existing in the code-base), and post a generic pull request comment for any issues it finds with the PHP-code. 
 * With PHPCS scanning it will scan only the files affected by the pull request using PHPCS and post a GitHub review on the pull request.
 * SVG scanning behaves similar to PHPCS scanning. 
-* WPScan API scanning will loop through every added plugin or theme in a pull request, as well as any plugin or theme that is updated or has files removed, and check with the WPScan API if it is obsolete or vulnerable. A pull request comment is posted if that is the case. 
+* WPScan API scanning will loop through every added plugin or theme in a pull request, as well as any plugin or theme that has files updated, and check with the WPScan API if it is obsolete or vulnerable. A pull request comment is posted if that is the case.
 
 In addition to the above scanning, `vip-go-ci` can also automatically approve pull requests that fulfill a certain criteria:
 
@@ -36,7 +36,7 @@ A pull request with obsolete or vulnerable plugin or theme is not auto-approved.
 
 Here is an example auto approval by `vip-go-ci`:
 
-![Example auto approval!](docs/vipgoci-auto-approvals-approved.png "Example auto approval")
+![Example auto approval!](docs-images/vipgoci-auto-approvals-approved.png "Example auto approval")
 
 `vip-go-ci` will not re-approve a pull request already approved by itself, but it will remove previous approval by itself if the pull request does not fulfil the requirements for approval any longer.
 
@@ -58,10 +58,12 @@ If you have a feature request, please read the [file on contributing](CONTRIBUTI
 
 ### System requirements
 
-* `vip-go-ci` requires PHP 8.0 or later. PHP 8.1 is recommended.
-  * The PHP-based utlities — PHPCS, SVG scanner and PHP Lint — can be run using different PHP versions than `vip-go-ci` itself. See individual sections below on this.
+* `vip-go-ci` requires PHP 8.0 or PHP 8.1. PHP 8.1 is recommended. PHP 8.2 is not yet supported.
+  * Required PHP add-ons include: `curl` and `xml`. Also, PCNTL should be enabled.
+  * The PHP-based utlities — PHPCS, SVG scanner and PHP Lint — can be run using different PHP versions than `vip-go-ci` itself. See individual sections below on this. 
+    * These utilities have their own requirements.
 * Linux is recommended as a platform for `vip-go-ci`.
-* git version 2.10 or later.
+* git version 2.30 or later.
 * Working bash shell.
 * Access to GitHub API and other APIs configured.
 
@@ -625,29 +627,6 @@ At this time, only certain messages are posted to IRC, all indicated by a specia
 
 Using the `VIPGOCI_IRC_IGNORE_STRING_START` and `VIPGOCI_IRC_IGNORE_STRING_END` constants, it is possible to designate parts of strings that should not be logged to the IRC API. Simply place any string not to be logged to IRC between these two constants and it will be filtered away before submisssion. Multiple constants can be used in one log message.
 
-
-## Updating tools-init.sh with new versions
-
-`tools-init.sh` will install PHPCS and related tools in your home-directory upon execution. It will keep these tools up to date when run; it should be executed on regular basis to keep everything up to date.
-
-However, once a while `tools-init.sh` itself needs to be updated with new versions of these utilities. The file keeps two data entries for each utility: Version number and SHA1 hash. The version number refers to a release on GitHub, and the hash to the SHA1 hash of the release's `.tar.gz` archive on GitHub. The hash is used to make sure that the relevant utility has not changed since last updated in `tools-init.sh`.
-
-Versions and hashes can be determined in the following way. Releases of the `WordPress-Coding-Standards` utility, for instance, are hosted [here](https://github.com/WordPress/WordPress-Coding-Standards/releases). Once a version has been chosen, `tools-init.sh` can be updated in the following way:
-
-```
-export WP_CODING_STANDARDS_VER="2.1.1"
-```
-
-Then the hash has to be calculated. First, obtain a `.tar.gz` archive for the release from GitHub. The download URL for `WordPress-Coding-Standards` is: `https://github.com/WordPress/WordPress-Coding-Standards/archive/VERSION.tar.gz` -- simply replace `VERSION` with the version to be used. Then run the `sha1sum` UNIX utility against the downloaded file. Any other compatible tool can be used. 
-
-For version 2.1.1 of `WordPress-Coding-Standards` the hash is added as follows:
-
-```
-export WP_CODING_STANDARDS_SHA1SUM="d35ec268531453cbf2078c57356e38c5f8936e87";
-```
-
-All utilities in `tools-init.sh` follow the same pattern.
-
 ##  Exit codes
 
 `vip-go-ci.php` exits with different UNIX exit codes depending on what problems were found and if any system issues were encountered:
@@ -655,88 +634,13 @@ All utilities in `tools-init.sh` follow the same pattern.
 * Code `0`: Normal, no errors were found in the code scanned and no fatal system errors were encountered. There could have been warnings found in the code, though.
 * Code `220`: Internal error in `vip-go-ci`.
 * Code `230`: Commit specified is not associated with any pull request.
+* Code `247`: Fatal error when communicating with HTTP API.
+* Code `248`: Commit specified is not the latest one in pull request.
 * Code `249`: Scanning exceeded maximum time allowed.
 * Code `250`: Scanning was completed, but some errors were found in the code.
 * Code `251`: Exiting due to a system problem.
 * Code `252`: A fatal problem with GitHub was encountered leading to an exit.
 * Code `253`: A problem with usage options was detected, leading to an exit.
-* Code `247`: Fatal error when communicating with HTTP API.
-* Code `248`: Commit specified is not the latest one in pull request.
-
-## Tests
-
-To run the tests for `vip-go-ci`, you will need to install `phpunit` and any dependencies needed (this would include `xdebug`).
-
-Note that the test suite uses the `@runTestsInSeparateProcesses` and `@preserveGlobalState` PHPUnit flags to avoid any influence of one test on another. Further, tests should include all required files in `setUp()` function to avoid the same function being defined multiple times across multiple tests during the same run. Combining the usage of `@runTestsInSeparateProcesses` and the inclusion of required files in `setUp()` means each test is independent of other tests, which enables functions to be defined for each test easily.
-
-### Setting up test suite
-
-To be able run the test suite, a few steps will need to be taken.
-
-1) run the following command:
-> mv phpunit.xml.dist phpunit.xml
-
-2) replace the string `PROJECT_DIR` in `phpunit.xml` with your local project directory.
-
-For example:
-> <directory>PROJECT_DIR/tests/integration</directory>
-will be:
-> <directory>~/Projects/vip-go-ci/tests/integration</directory>
-
-3) This step is only needed if you intend to run the integration tests. 
-
-Start with preparing the `unittests.ini` file:
-
-> cp unittests.ini.dist unittests.ini
-
-Alter any options in the file as needed to match the setup of your system. Note that in some cases, you may have to use different PHP versions for PHPCS or the SVG scanner, than `vip-go-ci` itself.
-
-#### Test suite secrets file
-
-Note that some tests will require a GitHub token to submit POST/PUT requests to GitHub in order to complete, and some will need access to a repo-meta API. 
-
-To skip these tests, simply place an empty `unittests-secrets.ini` file in the root directory of `vip-go-ci` and skip the rest of this section. 
-
-To enable the testing of these, you need to set up a `unittests-secrets.ini` file in the root directory of `vip-go-ci`. This file should include the following fields:
-
-```
-[git-secrets]
-github-token= ; Personal access token from GitHub
-team-slug=    ; Team slug to test if present, is a string.
-org-name=     ; GitHub organisation name to use in testing
-
-[repo-meta-api-secrets]
-repo-meta-api-base-url=         ; URL to base of meta API
-repo-meta-api-user-id=          ; User ID for the meta API
-repo-meta-api-access-token=     ; Access token for the meta API
-repo-owner=                     ; Repository owner for the test, should be found in meta API
-repo-name=                      ; Repository name for the test
-support-level=                  ; Name of support level given by meta API (only used in tests)
-support-level-field-name=       ; Support level field name in meta API (only used in tests)
-
-[wpscan-api-scan]
-access-token= ; Access token for WPScan API.
-```
-
-This file is not included, and needs to be configured manually.
-
-### Unit test suite
-
-The unit test suite can be run using the following command:
-
-> VIPGOCI_TESTING_DEBUG_MODE=true phpunit --testsuite=unit-tests
-
-By running this command, you will run the tests that do not depend on external calls. 
-
-### Integration test suite
-
-The integration tests can be run using the following command:
-
-> VIPGOCI_TESTING_DEBUG_MODE=true phpunit --testsuite=integration-tests
-
-Integration tests will execute the scanning utilities — PHPCS, SVG scanner and PHP Lint — and so paths to these, and a PHP interpreter, need to be configured. See the `unittests.ini` file.
-
-By using this command, you will run the tests of the test-suite which can be run (depending on tokens and other detail), and get feedback on any errors or warnings. Note that when run, requests will be made to the GitHub API, but using anonymous calls (unless configured as shown above). It can happen that the GitHub API returns with an error indicating that the maximum limit of API requests has been reached; the solution is to wait and re-run or use authenticated calls (see above). 
 
 ## Setting GitHub Build Status
 
@@ -796,4 +700,18 @@ Note that the utility supports setting options via [environmental variables](#co
 
 Here is an example GitHub build status:
 
-![Example build statusl!](docs/vipgoci-github-build-status-success.png "Example build status")
+![Example build statusl!](docs-images/vipgoci-github-build-status-success.png "Example build status")
+
+## Testing
+
+Information on automated and manual testing of `vip-go-ci` can be found in [TESTING.md](TESTING.md).
+
+## Releasing new versions
+
+Documentation on what steps to follow when releasing a new version of `vip-go-ci` can be found in the [RELEASING.md](RELEASING.md) file.
+
+## Updating tools-init.sh with new versions
+
+For information on how to update `tools-init.sh`, see the [TOOLS-UPDATE.md](TOOLS-UPDATE.md) file.
+
+
