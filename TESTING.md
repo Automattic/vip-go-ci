@@ -8,7 +8,7 @@
 
 ### Setting up test suites
 
-First ensure that you have `phpunit` installed along with any add-ons needed (this would include `xdebug`). Other requirements are listed in [README.md](README.md#system-requirements).
+First ensure that you have `phpunit` installed along with any add-ons needed, for example `xdebug`. Other requirements are listed in [README.md](README.md#system-requirements).
 
 Then follow these steps to run the test suites:
 
