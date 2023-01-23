@@ -12,27 +12,29 @@ First ensure that you have `phpunit` installed along with any add-ons needed, fo
 
 Then follow these steps to run the test suites:
 
-1) Run the following command:
+1) Put the PHPUnit configuration file in place:
+
 > mv phpunit.xml.dist phpunit.xml
 
 2) Replace the string `PROJECT_DIR` in `phpunit.xml` with your local project directory.
 
 For example:
+
 > <directory>PROJECT_DIR/tests/integration</directory>
+
 will be:
+
 > <directory>~/Projects/vip-go-ci/tests/integration</directory>
 
-3) This step is only needed if you intend to run the integration tests. 
-
-Start with preparing the `unittests.ini` file:
+3) Copy configuration file for tests and update the file as needed. Note that this step is only needed if you intend to run the integration tests. 
 
 > cp unittests.ini.dist unittests.ini
 
-Alter any options in the file as needed to match the setup of your system. Note that in some cases, you may have to use different PHP versions for PHPCS or the SVG scanner, than `vip-go-ci` itself.
+Alter any options in the file as needed to match the setup of your system. Note that in some cases, you may have to use different PHP versions for PHPCS or the SVG scanner than `vip-go-ci` itself.
 
 #### Test suite secrets file
 
-Note that some tests will require a GitHub token to submit POST/PUT requests to the GitHub API, some will need access to a repo-meta API and some access to the WPScan API. 
+Some tests will require a GitHub token to submit POST/PUT requests to the GitHub API, some will need access to a repo-meta API and some access to the WPScan API. 
 
 To skip these tests, simply place an empty `unittests-secrets.ini` file in the root directory of `vip-go-ci` and skip the rest of this section. 
 
@@ -73,13 +75,13 @@ The integration tests can be run using the following command:
 
 > VIPGOCI_TESTING_DEBUG_MODE=true phpunit --testsuite=integration-tests
 
-Integration tests will execute the scanning utilities — PHPCS, SVG scanner and PHP Lint — and so paths to these, and a PHP interpreter, need to be configured. See the `unittests.ini` file.
+Integration tests will execute the scanning utilities — PHPCS, SVG scanner and PHP Lint — and so paths to these, and a PHP interpreter, need to be configured.
 
-By using this command, you will run the tests of the test-suite which can be run (depending on tokens and other detail), and get feedback on any errors or warnings. Note that when run, requests will be made to the GitHub API, but using anonymous calls (unless configured as shown above). It can happen that the GitHub API returns with an error indicating that the maximum limit of API requests has been reached; the solution is to wait and re-run or use authenticated calls (see above). 
+By using this command, you will run the tests of the test-suite which can be run (depending on tokens and other detail), and get feedback on any errors or warnings. Note that when run, requests will be made to the GitHub API using anonymous calls (unless configured to use an access-token as shown above). It can happen that the GitHub API returns with an error indicating that the maximum limit of API requests has been reached; the solution is to wait and re-run or switch to authenticted calls. 
 
 ### Details on tests
 
-Note that the test suite uses the `@runTestsInSeparateProcesses` and `@preserveGlobalState` PHPUnit flags to avoid any influence of one test on another. Further, tests should include all required files in `setUp()` function to avoid the same function being defined multiple times across multiple tests during the same run. Combining the usage of `@runTestsInSeparateProcesses` and the inclusion of required files in `setUp()` means each test is independent of other tests, which enables functions to be defined for each test easily.
+Note that the test suite uses the `@runTestsInSeparateProcesses` and `@preserveGlobalState` PHPUnit flags to avoid any influence of one test on another. Further, tests should include all required files in `setUp()` function to avoid the same function being defined multiple times across multiple tests during the same run. Combining the usage of `@runTestsInSeparateProcesses` and the inclusion of required files in `setUp()` means each test is independent of other tests, which enables functions to be defined for each test easily and avoids leakage between tests.
 
 ## Manual testing
 
@@ -93,7 +95,8 @@ Begin by forking [this repository](https://github.com/gudmdharalds-a8c/vip-go-ci
 
 Navigate into the [tests/manual](tests/manual) directory on the command line. Then follow these steps:
 
-1) Move the main script file.
+1) Move the main script file:
+
 > mv vipgoci-run.sh.dist vipgoci-run.sh
 
 2) Add the following to a file named `vipgoci-run-secrets.sh`:
@@ -144,4 +147,3 @@ Ensure to populate the relevant fields with your own values.
 ### Running tests
 
 Run each test, identified by branch, found in `vipgoci-run.sh`. Ensure that the reviews, comments and labels generated are correct.
-
