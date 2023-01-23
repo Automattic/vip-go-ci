@@ -8,8 +8,8 @@
 # 
 
 # PR with some PHPCS issues and PHP linting problem.
-#export REPO_BRANCH="phpcs-and-linting-issues"
-#export REPO_COMMIT_ID="3e8d5b9c2566ef285cb5d85e5c71cf82f40f9afa"
+export REPO_BRANCH="phpcs-and-linting-issues"
+export REPO_COMMIT_ID="3e8d5b9c2566ef285cb5d85e5c71cf82f40f9afa"
 
 # PR with more PHPCS issues, one large file (not skipped).
 #export REPO_BRANCH="phpcs-issues"
@@ -61,8 +61,8 @@
 #export REPO_COMMIT_ID="afa7cf7df5cb941a8b170c42f50cd56300b4fc8d"
 
 # PR with some WordPress plugins altered to be scanned via WPScan API.
-export REPO_BRANCH="wpscan-api-testing2"
-export REPO_COMMIT_ID="f1e3eb6764066f333758c0cf3ac6d9c87af99316"
+#export REPO_BRANCH="wpscan-api-testing2"
+#export REPO_COMMIT_ID="f1e3eb6764066f333758c0cf3ac6d9c87af99316"
 
 # PR with some WordPress plugin removed.
 #export REPO_BRANCH="wpscan-api-testing3"
