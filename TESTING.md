@@ -91,7 +91,7 @@ Manual testing is still required to ensure the final behavior of `vip-go-ci` is 
 
 Begin by forking [this repository](https://github.com/gudmdharalds-a8c/vip-go-ci-manual-testing). Use the forked repository to run the manual tests.
 
-Navigate into the [scripts](scripts) directory on the command line. Then follow these steps:
+Navigate into the [testing-scripts](testing-scripts) directory on the command line. Then follow these steps:
 
 1) Move the main script file.
 > mv vipgoci-run.sh.dist vipgoci-run.sh
