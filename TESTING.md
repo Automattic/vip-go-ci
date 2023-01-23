@@ -75,7 +75,7 @@ The integration tests can be run using the following command:
 
 > VIPGOCI_TESTING_DEBUG_MODE=true phpunit --testsuite=integration-tests
 
-Integration tests will execute the scanning utilities — PHPCS, SVG scanner and PHP Lint — and so paths to these, and a PHP interpreter, need to be configured.
+Integration tests will execute the scanning utilities — PHPCS, SVG scanner and PHP Lint — and so paths to these, and a PHP interpreter, need to be configured. See the `unittests.ini` file.
 
 By using this command, you will run the tests of the test-suite which can be run (depending on tokens and other detail), and get feedback on any errors or warnings. Note that when run, requests will be made to the GitHub API using anonymous calls (unless configured to use an access-token as shown above). It can happen that the GitHub API returns with an error indicating that the maximum limit of API requests has been reached; the solution is to wait and re-run or switch to authenticted calls. 
 
