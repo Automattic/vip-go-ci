@@ -42,7 +42,7 @@ Follow these steps to release a new version of `vip-go-ci`:
  * The new version will be automatically deployed by the `tools-init.sh` script where it is used.
  * _VIP: Ensure internal steps are followed for this section._
 
-_VIP: When new release is ready, ensure to follow all internal post-release steps._
+_VIP: When new release is published, ensure to follow all internal post-release steps._
 
 ## Rolling back a release
 
