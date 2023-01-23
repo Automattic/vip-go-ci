@@ -121,7 +121,6 @@ export VIPGOCI_WPSCAN_API="true"
 export VIPGOCI_WPSCAN_API_PATHS="plugins"
 export VIPGOCI_WPSCAN_API_REPORT_END_MSG=""
 
-
 # SVG config
 export VIPGOCI_SVG_CHECKS="true"
 export VIPGOCI_SVG_PHP_PATH="/usr/bin/php8.1"
