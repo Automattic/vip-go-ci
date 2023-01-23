@@ -1,6 +1,6 @@
 # Updating tools-init.sh with new versions
 
-[tools-init.sh](tools-init.sh) will install `vip-go-ci`, PHPCS and related tools in your home-directory upon execution. If the tools are already installed, it will update them as needed; it should be executed on regular basis to keep everything up to date. (See [installation section](README.md#installing)).
+[tools-init.sh](tools-init.sh) will install `vip-go-ci`, PHPCS and related tools in your home-directory upon execution. If the tools are already installed, it will update them as needed; it should be executed on regular basis to keep everything up to date. See [installation section](README.md#installing).
 
 However, once a while `tools-init.sh` itself needs to be updated with new versions of these utilities. The file keeps three data entries for each utility that are important in this context: Repository owner and name for the utility, version number, and SHA1 hash. The repository owner and name refers to the GitHub repository where the utility is hosted, the version number refers to a release number on GitHub, and the hash to the SHA1 hash of the release's `.tar.gz` archive on GitHub. The hash is used to make sure that the relevant utility has not changed since last updated in `tools-init.sh`.
 
