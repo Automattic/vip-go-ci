@@ -20,11 +20,11 @@ Then follow these steps to run the test suites:
 
 For example:
 
-> <directory>PROJECT_DIR/tests/integration</directory>
+> &lt;directory&gt;PROJECT_DIR/tests/integration&lt;/directory&gt;
 
 will be:
 
-> <directory>~/Projects/vip-go-ci/tests/integration</directory>
+> &lt;directory&gt;~/Projects/vip-go-ci/tests/integration&lt;/directory&gt;
 
 3) Copy configuration file for tests and update the file as needed. Note that this step is only needed if you intend to run the integration tests. 
 
