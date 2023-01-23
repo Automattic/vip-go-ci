@@ -118,7 +118,7 @@ export VIPGOCI_PHPCS_SKIP_FOLDERS=""
 
 # WPScan API
 export VIPGOCI_WPSCAN_API="true"
-#export VIPGOCI_WPSCAN_API_PATHS="plugins"
+export VIPGOCI_WPSCAN_API_PATHS="plugins"
 export VIPGOCI_WPSCAN_API_REPORT_END_MSG=""
 
 
@@ -155,8 +155,8 @@ export VIPGOCI_REPO_OPTIONS_ALLOWED="skip-execution,skip-draft-prs,phpcs,phpcs-s
 # Misc
 export VIPGOCI_MAX_EXEC_TIME="600"
 export VIPGOCI_DEBUG_LEVEL=2
-#export VIPGOCI_NAME_TO_USE="vip-go-ci"
-#export VIPGOCI_INFORMATIONAL_MSG="vip-go-ci"
+export VIPGOCI_NAME_TO_USE="vip-go-ci"
+export VIPGOCI_INFORMATIONAL_MSG="vip-go-ci"
 
 # Paths to git repository
 export GIT_REPO_BASE_PATH="/tmp"
