@@ -279,7 +279,7 @@ function vipgoci_options_read_repo_skip_files(
 	array &$options
 ) :void {
 	foreach (
-		array( 'phpcs', 'lint' ) as $scan_type
+		array( 'phpcs', 'lint', 'wpscan-api' ) as $scan_type
 	) {
 		/*
 		 * If not configured to read
@@ -308,7 +308,13 @@ function vipgoci_options_read_repo_skip_files(
 			)
 		);
 
-		$type_options_file_name = '.vipgoci_' . $scan_type . '_skip_folders';
+		$scan_type_file_str = str_replace(
+			'-',
+			'_',
+			$scan_type
+		);
+
+		$type_options_file_name = '.vipgoci_' . $scan_type_file_str . '_skip_folders';
 
 		$type_options_file_contents =
 			vipgoci_gitrepo_fetch_committed_file(
