@@ -1,7 +1,8 @@
 #!/usr/bin/env php
 <?php
 /**
- * Ask the GitHub API to create pull requests specified.
+ * Command line utility that sends HTTP requests to the GitHub API
+ * to create pull requests specified.
  *
  * @package Automattic/vip-go-ci
  */
@@ -10,6 +11,11 @@ declare(strict_types=1);
 
 define( 'VIPGOCI_INCLUDED', true );
 
+/**
+ * Ask the GitHub HTTP API to create pull requests specified.
+ *
+ * @return void
+ */
 function cpr_create_pull_requests(
 	array $options,
 	array $pr_items,
@@ -46,6 +52,11 @@ function cpr_create_pull_requests(
 	}
 }
 
+/**
+ * Main function.
+ *
+ * @return void
+ */
 function cpr_main() {
 	require_once __DIR__ . '/../requires.php';
 
