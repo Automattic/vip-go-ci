@@ -176,7 +176,7 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 	 *
 	 * @return void
 	 */
-	public function testOptionsReadRepoFilePhpcsTest2() {
+	public function testOptionsReadRepoFilePhpcsTest2() :void {
 		$this->options['commit'] =
 			$this->options['commit-test-options-read-repo-skip-files-2'];
 
@@ -222,7 +222,7 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 	 *
 	 * @return void
 	 */
-	public function testOptionsReadRepoFilePhpcsTest3() {
+	public function testOptionsReadRepoFilePhpcsTest3() :void {
 		$this->options['commit'] =
 			$this->options['commit-test-options-read-repo-skip-files-1'];
 
@@ -272,7 +272,7 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 	 *
 	 * @return void
 	 */
-	public function testOptionsReadRepoFileLintTest1() {
+	public function testOptionsReadRepoFileLintTest1() :void {
 		$this->options['commit'] =
 			$this->options['commit-test-options-read-repo-skip-files-1'];
 
@@ -316,7 +316,7 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 	 *
 	 * @return void
 	 */
-	public function testOptionsReadRepoFileLintTest2() {
+	public function testOptionsReadRepoFileLintTest2() :void {
 		$this->options['commit'] =
 			$this->options['commit-test-options-read-repo-skip-files-2'];
 
@@ -362,7 +362,7 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 	 *
 	 * @return void
 	 */
-	public function testOptionsReadRepoFileLintTest3() {
+	public function testOptionsReadRepoFileLintTest3() :void {
 		$this->options['commit'] =
 			$this->options['commit-test-options-read-repo-skip-files-1'];
 
@@ -412,7 +412,7 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 	 *
 	 * @return void
 	 */
-	public function testOptionsReadRepoFileWPScanApiTest1() {
+	public function testOptionsReadRepoFileWpscanApiTest1() :void {
 		$this->options['commit'] =
 			$this->options['commit-test-options-read-repo-skip-files-1'];
 
@@ -456,7 +456,7 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 	 *
 	 * @return void
 	 */
-	public function testOptionsReadRepoFileWpscanApiTest2() {
+	public function testOptionsReadRepoFileWpscanApiTest2() :void {
 		$this->options['commit'] =
 			$this->options['commit-test-options-read-repo-skip-files-2'];
 
@@ -502,7 +502,7 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 	 *
 	 * @return void
 	 */
-	public function testOptionsReadRepoFileWpscanApiTest3() {
+	public function testOptionsReadRepoFileWpscanApiTest3() :void {
 		$this->options['commit'] =
 			$this->options['commit-test-options-read-repo-skip-files-1'];
 
