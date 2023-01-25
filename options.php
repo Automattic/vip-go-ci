@@ -267,9 +267,9 @@ function vipgoci_options_read_repo_file(
 
 /**
  * Read from repository files which folders are to
- * be skipped from PHPCS scanning and PHP Linting,
- * if configured to do so, and join with any folders
- * specified on the command line.
+ * be skipped from PHPCS scanning, PHP Linting and
+ * WPScan API scanning, if configured to do so, and
+ * join with any folders specified on the command line.
  *
  * @param array $options Options array for the program.
  *
