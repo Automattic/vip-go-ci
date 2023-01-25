@@ -104,7 +104,7 @@ function cpr_main() {
 
 	$options['pull-requests'] = json_decode(
 		$options['pull-requests'],
-		true 
+		true
 	);
 
 	$pr_items_failed = array();
