@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 ## Added
 - [#336](https://github.com/Automattic/vip-go-ci/pull/336): Add GitHub API version HTTP header
 - [#342](https://github.com/Automattic/vip-go-ci/pull/342): Add files needed for manual testing
+- [#343](https://github.com/Automattic/vip-go-ci/pull/343): Add --wpscan-api-skip-folders-in-repo-options-file parameter
 
 ## Updated
 - [#332](https://github.com/Automattic/vip-go-ci/pull/332): Improve WPScan logging
