@@ -142,7 +142,7 @@ export DISMISSED_REVIEWS_EXCLUDE_REVIEWS_FROM_TEAM=""
 
 Ensure to populate the relevant fields with your own values.
 
-3) Create the pull requests needed in the forked repository on GitHub. Re-create the same pull requests as found [here](https://github.com/gudmdharalds-a8c/vip-go-ci-manual-testing/pulls), refering to the same branch names.
+3) Create the pull requests needed in the forked repository on GitHub. Use the [create-all-pull-requests.sh](tests/manual/create-all-pull-requests.sh) script to create all the pull requests needed. Note that the pull requests will need to be created by a user _different_ from the one that runs the tests in the next step. This is because GitHub does not allow _changing_ reviews to be posted to one's own pull requests.
 
 ### Running tests
 
