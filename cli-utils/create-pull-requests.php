@@ -20,7 +20,7 @@ define( 'VIPGOCI_INCLUDED', true );
  *
  * @return void
  */
-function cpr_create_pull_requests(
+function crprs_create_pull_requests(
 	array $options,
 	array $pr_items,
 	array &$pr_items_failed
@@ -61,7 +61,7 @@ function cpr_create_pull_requests(
  *
  * @return void
  */
-function cpr_main() {
+function crprs_main() {
 	global $argv;
 
 	require_once __DIR__ . '/../requires.php';
@@ -151,7 +151,7 @@ function cpr_main() {
 
 	$pr_items_failed = array();
 
-	cpr_create_pull_requests(
+	crprs_create_pull_requests(
 		$options,
 		$options['pull-requests'],
 		$pr_items_failed
@@ -163,7 +163,7 @@ function cpr_main() {
 
 		$pr_items_failed2 = array();
 
-		cpr_create_pull_requests(
+		crprs_create_pull_requests(
 			$options,
 			$pr_items_failed,
 			$pr_items_failed2
@@ -173,5 +173,5 @@ function cpr_main() {
 	exit( 0 );
 }
 
-cpr_main();
+crprs_main();
 
