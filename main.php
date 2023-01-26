@@ -145,6 +145,10 @@ function vipgoci_help_print() :void {
 		"\t" . '                                   with items separated by commas.' . PHP_EOL .
 		"\t" . '--wpscan-api-skip-folders=ARRAY    Directories not to scan using WPScan API scanning. Should be an' . PHP_EOL .
 		"\t" . '                                   array with items separated by commas.' . PHP_EOL .
+		"\t" . '--wpscan-api-skip-folders-in-repo-options-file=BOOL Whether to allow specifying folders that are not to be' . PHP_EOL .
+		"\t" . '                                                    scanned via WPScan API to be specified in file in' . PHP_EOL .
+		"\t" . '                                                    root of repository (.vipgoci_wpscan_api_skip_folders).' . PHP_EOL .
+		"\t" . '                                                    Folders should be separated by newlines.' . PHP_EOL .
 		"\t" . '--wpscan-api-plugin-file-extensions=ARRAY Use specified file extensions to select which altered plugin files to scan with WPScan API.' . PHP_EOL .
 		"\t" . '                                          Default is: "' . implode( ',', VIPGOCI_WPSCAN_PLUGIN_FILE_EXTENSIONS_DEFAULT ) . '"' . PHP_EOL .
 		"\t" . '--wpscan-api-theme-file-extensions=ARRAY  Use specified file extensions to select which altered theme files to scan with WPScan API.' . PHP_EOL .
@@ -337,6 +341,7 @@ function vipgoci_options_recognized() :array {
 		'wpscan-api-plugin-file-extensions:',
 		'wpscan-api-theme-file-extensions:',
 		'wpscan-api-skip-folders:',
+		'wpscan-api-skip-folders-in-repo-options-file:',
 		'wpscan-api-report-end-msg:',
 
 		/*
@@ -708,6 +713,8 @@ function vipgoci_run_init_options_wpscan( array &$options ) :void {
 	vipgoci_option_bool_handle( $options, 'wpscan-api', 'false' );
 
 	vipgoci_option_bool_handle( $options, 'wpscan-api-dry-mode', 'true' );
+
+	vipgoci_option_bool_handle( $options, 'wpscan-api-skip-folders-in-repo-options-file', 'false' );
 
 	/*
 	 * Process --wpscan-folders -- expected to be an
