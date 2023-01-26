@@ -29,6 +29,27 @@ function crprs_create_pull_requests(
 	array &$pr_items_failed
 ) :void {
 	foreach ( $pr_items as $pr_item ) {
+		if ( ! isset(
+			$pr_item['title'],
+			$pr_item['body'],
+			$pr_item['head'],
+			$pr_item['base'],
+		) ) {
+			// phpcs:disable WordPress.PHP.NoSilencedErrors.Discouraged
+			vipgoci_log(
+				'Missing field for pull request item, not creating',
+				array(
+					'title' => @$pr_item['title'],
+					'body'  => @$pr_item['body'],
+					'head'  => @$pr_item['head'],
+					'base'  => @$pr_item['base'],
+				)
+			);
+			// phpcs:enable WordPress.PHP.NoSilencedErrors.Discouraged
+
+			continue;
+		}
+
 		vipgoci_log(
 			'Creating pull request',
 			array(
@@ -163,8 +184,7 @@ function crprs_main() {
 	if ( null === $options['pull-requests'] ) {
 		vipgoci_sysexit(
 			'Unable to JSON decode --pull-requests option value',
-			array(
-			)
+			array()
 		);
 	}
 
@@ -204,7 +224,7 @@ function crprs_main() {
 		);
 	} else {
 		vipgoci_log(
-			'Successfully created pull requests',
+			'Completed processing',
 			array()
 		);
 	}
