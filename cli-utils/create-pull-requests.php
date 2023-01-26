@@ -141,7 +141,6 @@ function crprs_main() {
 			"\t" . '--repo-owner=STRING            Specify repository owner, can be an organization.' . PHP_EOL .
 			"\t" . '--repo-name=STRING             Specify name of the repository.' . PHP_EOL .
 			"\t" . '--github-token=STRING          The access-token to use to communicate with GitHub.' . PHP_EOL .
-			PHP_EOL .
 			"\t" . '--pull-requests=STRING         Specify pull requests to create. Expects JSON format. For example:' . PHP_EOL .
 			"\t" . '                               [{"title":"test branch","body":"Test pull request","head":"testing1","base":"main"},{...}]' . PHP_EOL .
 			PHP_EOL .
@@ -160,6 +159,14 @@ function crprs_main() {
 		$options['pull-requests'],
 		true
 	);
+
+	if ( null === $options['pull-requests'] ) {
+		vipgoci_sysexit(
+			'Unable to JSON decode --pull-requests option value',
+			array(
+			)
+		);
+	}
 
 	$pr_items_failed  = array();
 	$pr_items_failed2 = array();
