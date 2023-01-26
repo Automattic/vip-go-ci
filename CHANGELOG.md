@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file.
 - [#332](https://github.com/Automattic/vip-go-ci/pull/332): Improve WPScan logging
 - [#334](https://github.com/Automattic/vip-go-ci/pull/334): Update WPScan API results wording
 - [#335](https://github.com/Automattic/vip-go-ci/pull/335): Update "local" slug determination mechanism
+- [#344](https://github.com/Automattic/vip-go-ci/pull/344): Update comment in wp-core-misc.php
 
 ## Fixed
 - [#337](https://github.com/Automattic/vip-go-ci/pull/337): Version number sanitizing: Allow "-" in version numbers
