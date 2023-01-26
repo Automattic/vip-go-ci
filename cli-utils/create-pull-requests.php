@@ -11,6 +11,9 @@ declare(strict_types=1);
 
 define( 'VIPGOCI_INCLUDED', true );
 
+// Extra long time to avoid secondary rate limits.
+define( 'VIPGOCI_HTTP_API_WAIT_TIME_SECONDS', 10 );
+
 /**
  * Ask the GitHub HTTP API to create pull requests specified.
  *
@@ -26,6 +29,13 @@ function crprs_create_pull_requests(
 	array &$pr_items_failed
 ) :void {
 	foreach ( $pr_items as $pr_item ) {
+		vipgoci_log(
+			'Creating pull request',
+			array(
+				'pr_item' => $pr_item,
+			)
+		);
+
 		$ret = vipgoci_http_api_post_url(
 			'https://api.github.com/repos/' .
 				rawurlencode( $options['repo-owner'] ) . '/' .
@@ -47,12 +57,14 @@ function crprs_create_pull_requests(
 					'pr_item' => $pr_item,
 				)
 			);
+
+			$pr_items_failed[] = $pr_item;
+		} else {
+			vipgoci_log(
+				'Creation successful',
+				array()
+			);
 		}
-
-		$pr_items_failed[] = $pr_item;
-
-		// Try to avoid secondary rate limit errors.
-		sleep( 5 );
 	}
 }
 
@@ -149,7 +161,8 @@ function crprs_main() {
 		true
 	);
 
-	$pr_items_failed = array();
+	$pr_items_failed  = array();
+	$pr_items_failed2 = array();
 
 	crprs_create_pull_requests(
 		$options,
@@ -159,14 +172,33 @@ function crprs_main() {
 
 	// Try failed items again.
 	if ( ! empty( $pr_items_failed ) ) {
-		sleep( 10 );
+		vipgoci_log(
+			'Retrying creation of pull requests that could not be created earlier',
+			array(
+				'pr_items_failed' => $pr_items_failed,
+			)
+		);
 
-		$pr_items_failed2 = array();
+		sleep( 15 );
 
 		crprs_create_pull_requests(
 			$options,
 			$pr_items_failed,
 			$pr_items_failed2
+		);
+	}
+
+	if ( ! empty( $pr_items_failed2 ) ) {
+		vipgoci_log(
+			'Failed creating pull requests, not retrying',
+			array(
+				'pr_items_failed' => $pr_items_failed2,
+			)
+		);
+	} else {
+		vipgoci_log(
+			'Successfully created pull requests',
+			array()
 		);
 	}
 
