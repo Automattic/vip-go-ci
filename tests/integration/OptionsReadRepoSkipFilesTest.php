@@ -1,11 +1,18 @@
 <?php
+/**
+ * Test vipgoci_options_read_repo_skip_files() function.
+ *
+ * @package Automattic/vip-go-ci
+ */
 
-require_once __DIR__ . '/IncludesForTests.php';
+declare(strict_types=1);
+
+namespace Vipgoci\Tests\Integration;
 
 use PHPUnit\Framework\TestCase;
 
 /**
- * Test vipgoci_options_read_repo_skip_files function.
+ * Class that implements the testing.
  *
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
@@ -34,9 +41,13 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 	);
 
 	/**
-	 * Set up all variables, etc.
+	 * Set up all variables, require file, etc.
+	 *
+	 * @return void
 	 */
 	protected function setUp(): void {
+		require_once __DIR__ . '/IncludesForTests.php';
+
 		vipgoci_unittests_get_config_values(
 			'git',
 			$this->options_git
@@ -64,6 +75,12 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 			'mmm-300/800',
 		);
 
+		$this->options['wpscan-api-skip-folders-in-repo-options-file'] = false;
+
+		$this->options['wpscan-api-skip-folders'] = array(
+			'ppp-400/900',
+		);
+
 		if ( empty( $this->options['token'] ) ) {
 			$this->options['token'] = '';
 		}
@@ -71,6 +88,8 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 
 	/**
 	 * Tear down git repository, clean up all variables.
+	 *
+	 * @return void
 	 */
 	protected function tearDown(): void {
 		$this->tearDownLocalGitrepo();
@@ -82,6 +101,8 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 
 	/**
 	 * Set up local git repository.
+	 *
+	 * @return void
 	 */
 	protected function setUpLocalGitRepo() :void {
 		$this->options['local-git-repo'] =
@@ -92,6 +113,8 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 
 	/**
 	 * Tear down local git repository.
+	 *
+	 * @return void
 	 */
 	protected function tearDownLocalGitrepo() :void {
 		if ( ! empty( $this->options['local-git-repo'] ) ) {
@@ -106,16 +129,22 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 	 * to read them.
 	 *
 	 * @covers ::vipgoci_options_read_repo_skip_files
+	 *
+	 * @return void
 	 */
-	public function testOptionsReadRepoFilePhpcsTest1() {
+	public function testOptionsReadRepoFilePhpcsTest1() :void {
 		$this->options['commit'] =
 			$this->options['commit-test-options-read-repo-skip-files-1'];
 
 		$this->setUpLocalGitRepo();
 
+		vipgoci_unittests_output_suppress();
+
 		vipgoci_options_read_repo_skip_files(
 			$this->options
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertSame(
 			array(
@@ -129,6 +158,13 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 				'mmm-300/800',
 			),
 			$this->options['lint-skip-folders']
+		);
+
+		$this->assertSame(
+			array(
+				'ppp-400/900',
+			),
+			$this->options['wpscan-api-skip-folders']
 		);
 	}
 
@@ -137,8 +173,10 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 	 * is configured to read one of them.
 	 *
 	 * @covers ::vipgoci_options_read_repo_skip_files
+	 *
+	 * @return void
 	 */
-	public function testOptionsReadRepoFilePhpcsTest2() {
+	public function testOptionsReadRepoFilePhpcsTest2() :void {
 		$this->options['commit'] =
 			$this->options['commit-test-options-read-repo-skip-files-2'];
 
@@ -146,9 +184,13 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 
 		$this->setUpLocalGitRepo();
 
+		vipgoci_unittests_output_suppress();
+
 		vipgoci_options_read_repo_skip_files(
 			$this->options
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertSame(
 			array(
@@ -163,6 +205,13 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 			),
 			$this->options['lint-skip-folders']
 		);
+
+		$this->assertSame(
+			array(
+				'ppp-400/900',
+			),
+			$this->options['wpscan-api-skip-folders']
+		);
 	}
 
 	/**
@@ -170,8 +219,10 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 	 * in skip-folders folders for PHPCS.
 	 *
 	 * @covers ::vipgoci_options_read_repo_skip_files
+	 *
+	 * @return void
 	 */
-	public function testOptionsReadRepoFilePhpcsTest3() {
+	public function testOptionsReadRepoFilePhpcsTest3() :void {
 		$this->options['commit'] =
 			$this->options['commit-test-options-read-repo-skip-files-1'];
 
@@ -179,9 +230,13 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 
 		$this->setUpLocalGitRepo();
 
+		vipgoci_unittests_output_suppress();
+
 		vipgoci_options_read_repo_skip_files(
 			$this->options
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertSame(
 			array(
@@ -200,6 +255,13 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 			),
 			$this->options['lint-skip-folders']
 		);
+
+		$this->assertSame(
+			array(
+				'ppp-400/900',
+			),
+			$this->options['wpscan-api-skip-folders']
+		);
 	}
 
 	/**
@@ -207,16 +269,22 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 	 * but not configured to read it.
 	 *
 	 * @covers ::vipgoci_options_read_repo_skip_files
+	 *
+	 * @return void
 	 */
-	public function testOptionsReadRepoFileLintTest1() {
+	public function testOptionsReadRepoFileLintTest1() :void {
 		$this->options['commit'] =
 			$this->options['commit-test-options-read-repo-skip-files-1'];
 
 		$this->setUpLocalGitRepo();
 
+		vipgoci_unittests_output_suppress();
+
 		vipgoci_options_read_repo_skip_files(
 			$this->options
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertSame(
 			array(
@@ -230,6 +298,13 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 				'mmm-300/800',
 			),
 			$this->options['lint-skip-folders']
+		);
+
+		$this->assertSame(
+			array(
+				'ppp-400/900',
+			),
+			$this->options['wpscan-api-skip-folders']
 		);
 	}
 
@@ -238,8 +313,10 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 	 * is configured to read it.
 	 *
 	 * @covers ::vipgoci_options_read_repo_skip_files
+	 *
+	 * @return void
 	 */
-	public function testOptionsReadRepoFileLintTest2() {
+	public function testOptionsReadRepoFileLintTest2() :void {
 		$this->options['commit'] =
 			$this->options['commit-test-options-read-repo-skip-files-2'];
 
@@ -247,9 +324,13 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 
 		$this->setUpLocalGitRepo();
 
+		vipgoci_unittests_output_suppress();
+
 		vipgoci_options_read_repo_skip_files(
 			$this->options
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertSame(
 			array(
@@ -264,6 +345,13 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 			),
 			$this->options['lint-skip-folders']
 		);
+
+		$this->assertSame(
+			array(
+				'ppp-400/900',
+			),
+			$this->options['wpscan-api-skip-folders']
+		);
 	}
 
 	/**
@@ -271,8 +359,10 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 	 * is configured to read it.
 	 *
 	 * @covers ::vipgoci_options_read_repo_skip_files
+	 *
+	 * @return void
 	 */
-	public function testOptionsReadRepoFileLintTest3() {
+	public function testOptionsReadRepoFileLintTest3() :void {
 		$this->options['commit'] =
 			$this->options['commit-test-options-read-repo-skip-files-1'];
 
@@ -280,9 +370,13 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 
 		$this->setUpLocalGitRepo();
 
+		vipgoci_unittests_output_suppress();
+
 		vipgoci_options_read_repo_skip_files(
 			$this->options
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertSame(
 			array(
@@ -300,6 +394,152 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 				'foo-test/folder7',
 			),
 			$this->options['lint-skip-folders']
+		);
+
+		$this->assertSame(
+			array(
+				'ppp-400/900',
+			),
+			$this->options['wpscan-api-skip-folders']
+		);
+	}
+
+	/**
+	 * Configuration file available for WPScan API folder skipping,
+	 * but not configured to read it.
+	 *
+	 * @covers ::vipgoci_options_read_repo_skip_files
+	 *
+	 * @return void
+	 */
+	public function testOptionsReadRepoFileWpscanApiTest1() :void {
+		$this->options['commit'] =
+			$this->options['commit-test-options-read-repo-skip-files-1'];
+
+		$this->setUpLocalGitRepo();
+
+		vipgoci_unittests_output_suppress();
+
+		vipgoci_options_read_repo_skip_files(
+			$this->options
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		$this->assertSame(
+			array(
+				'qqq-75x-n/plugins',
+			),
+			$this->options['phpcs-skip-folders']
+		);
+
+		$this->assertSame(
+			array(
+				'mmm-300/800',
+			),
+			$this->options['lint-skip-folders']
+		);
+
+		$this->assertSame(
+			array(
+				'ppp-400/900',
+			),
+			$this->options['wpscan-api-skip-folders']
+		);
+	}
+
+	/**
+	 * Uses commit without options files for WPScan API skip-folders,
+	 * is configured to read it.
+	 *
+	 * @covers ::vipgoci_options_read_repo_skip_files
+	 *
+	 * @return void
+	 */
+	public function testOptionsReadRepoFileWpscanApiTest2() :void {
+		$this->options['commit'] =
+			$this->options['commit-test-options-read-repo-skip-files-2'];
+
+		$this->options['wpscan-api-skip-folders-in-repo-options-file'] = true;
+
+		$this->setUpLocalGitRepo();
+
+		vipgoci_unittests_output_suppress();
+
+		vipgoci_options_read_repo_skip_files(
+			$this->options
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		$this->assertSame(
+			array(
+				'qqq-75x-n/plugins',
+			),
+			$this->options['phpcs-skip-folders']
+		);
+
+		$this->assertSame(
+			array(
+				'mmm-300/800',
+			),
+			$this->options['lint-skip-folders']
+		);
+
+		$this->assertSame(
+			array(
+				'ppp-400/900',
+			),
+			$this->options['wpscan-api-skip-folders']
+		);
+	}
+
+	/**
+	 * Uses commit with options files for skip-folders,
+	 * is configured to read it.
+	 *
+	 * @covers ::vipgoci_options_read_repo_skip_files
+	 *
+	 * @return void
+	 */
+	public function testOptionsReadRepoFileWpscanApiTest3() :void {
+		$this->options['commit'] =
+			$this->options['commit-test-options-read-repo-skip-files-1'];
+
+		$this->options['wpscan-api-skip-folders-in-repo-options-file'] = true;
+
+		$this->setUpLocalGitRepo();
+
+		vipgoci_unittests_output_suppress();
+
+		vipgoci_options_read_repo_skip_files(
+			$this->options
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		$this->assertSame(
+			array(
+				'qqq-75x-n/plugins',
+			),
+			$this->options['phpcs-skip-folders']
+		);
+
+		$this->assertSame(
+			array(
+				'mmm-300/800',
+			),
+			$this->options['lint-skip-folders']
+		);
+
+		$this->assertSame(
+			array(
+				'ppp-400/900',
+				'test-300-120',
+				'test-900-750',
+				'test-abc-123',
+			),
+			$this->options['wpscan-api-skip-folders']
 		);
 	}
 }

@@ -489,26 +489,36 @@ function vipgoci_http_api_fetch_url(
 			'vipgoci_curl_headers'
 		);
 
+		/*
+		 * Set HTTP headers.
+		 */
+		$tmp_http_headers_arr = array();
+
 		if (
 			( is_string( $http_api_token ) ) &&
 			( strlen( $http_api_token ) > 0 )
 		) {
+			$tmp_http_headers_arr[] = 'Authorization: token ' . $http_api_token;
+
+		} elseif (
+			( is_array( $http_api_token ) ) &&
+			( isset( $http_api_token['wpscan_token'] ) )
+		) {
+			$tmp_http_headers_arr[] = 'Authorization: Token token=' .
+				$http_api_token['wpscan_token'];
+		}
+
+		vipgoci_github_api_version_header_maybe_add(
+			$http_api_url,
+			$tmp_http_headers_arr
+		);
+
+		if ( ! empty( $tmp_http_headers_arr ) ) {
 			curl_setopt(
 				$ch,
 				CURLOPT_HTTPHEADER,
-				array( 'Authorization: token ' . $http_api_token )
+				$tmp_http_headers_arr
 			);
-		} elseif ( is_array( $http_api_token ) ) {
-			if ( isset( $http_api_token['wpscan_token'] ) ) {
-				curl_setopt(
-					$ch,
-					CURLOPT_HTTPHEADER,
-					array(
-						'Authorization: Token token=' .
-							$http_api_token['wpscan_token'],
-					)
-				);
-			}
 		}
 
 		vipgoci_curl_set_security_options(
@@ -769,7 +779,9 @@ function vipgoci_http_api_post_url(
 			'vipgoci_curl_headers'
 		);
 
-		// Construct HTTP headers to send with the request.
+		/*
+		 * Set HTTP headers.
+		 */
 		$tmp_http_headers_arr = array();
 
 		if (
@@ -787,6 +799,11 @@ function vipgoci_http_api_post_url(
 		if ( strlen( $http_content_type ) > 0 ) {
 			$tmp_http_headers_arr[] = 'Content-Type: ' . $http_content_type;
 		}
+
+		vipgoci_github_api_version_header_maybe_add(
+			$http_api_url,
+			$tmp_http_headers_arr
+		);
 
 		if ( ! empty( $tmp_http_headers_arr ) ) {
 			curl_setopt(
@@ -1072,11 +1089,30 @@ function vipgoci_http_api_put_url(
 			'vipgoci_curl_headers'
 		);
 
-		curl_setopt(
-			$ch,
-			CURLOPT_HTTPHEADER,
-			array( 'Authorization: token ' . $http_api_token )
+		/*
+		 * Set HTTP headers.
+		 */
+		$tmp_http_headers_arr = array();
+
+		if (
+			( is_string( $http_api_token ) ) &&
+			( strlen( $http_api_token ) > 0 )
+		) {
+			$tmp_http_headers_arr[] = 'Authorization: token ' . $http_api_token;
+		}
+
+		vipgoci_github_api_version_header_maybe_add(
+			$http_api_url,
+			$tmp_http_headers_arr
 		);
+
+		if ( ! empty( $tmp_http_headers_arr ) ) {
+			curl_setopt(
+				$ch,
+				CURLOPT_HTTPHEADER,
+				$tmp_http_headers_arr
+			);
+		}
 
 		vipgoci_curl_set_security_options(
 			$ch

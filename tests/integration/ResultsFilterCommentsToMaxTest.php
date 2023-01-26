@@ -119,11 +119,15 @@ final class ResultsFilterCommentsToMaxTest extends TestCase {
 
 		$prs_comments_maxed = array();
 
+		vipgoci_unittests_output_suppress();
+
 		vipgoci_results_filter_comments_to_max(
 			$this->options,
 			$this->results,
 			$prs_comments_maxed
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertSame(
 			array(
@@ -167,6 +171,8 @@ final class ResultsFilterCommentsToMaxTest extends TestCase {
 			return;
 		}
 
+		vipgoci_unittests_output_suppress();
+
 		/*
 		 * Exactly one more comment allowed.
 		 */
@@ -181,15 +187,21 @@ final class ResultsFilterCommentsToMaxTest extends TestCase {
 			)
 		);
 
+		vipgoci_unittests_output_unsuppress();
+
 		$this->options['review-comments-total-max'] = $comments_count + 1;
 
 		$prs_comments_maxed = array();
+
+		vipgoci_unittests_output_suppress();
 
 		vipgoci_results_filter_comments_to_max(
 			$this->options,
 			$this->results,
 			$prs_comments_maxed
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertSame(
 			array(
@@ -254,11 +266,15 @@ final class ResultsFilterCommentsToMaxTest extends TestCase {
 
 		$prs_comments_maxed = array();
 
+		vipgoci_unittests_output_suppress();
+
 		vipgoci_results_filter_comments_to_max(
 			$this->options,
 			$this->results,
 			$prs_comments_maxed
 		);
+
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertSame(
 			array(
