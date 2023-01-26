@@ -147,7 +147,7 @@ function crprs_main() {
 			PHP_EOL .
 			"\t" . '--env-options=STRING           Specifies configuration options to be read from environmental' . PHP_EOL .
 			"\t" . '                               variables -- any variable can be specified. For example:' . PHP_EOL .
-			"\t" . '                               --env-options="repo-owner=U_ROWNER,output=U_FOUTPUT"' . PHP_EOL .
+			"\t" . '                               --env-options="repo-owner=U_REPO_OWNER,repo-name=U_REPO_NAME"' . PHP_EOL .
 			PHP_EOL .
 			"\t" . '--help                         Prints this message.' . PHP_EOL .
 			PHP_EOL .
