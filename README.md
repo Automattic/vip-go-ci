@@ -501,11 +501,15 @@ For example:
 
 -- with this option in place, any files in the `foo/` or `Tests/bar` folders and subfolders will be exempt from PHP linting. The folders are relative to the git repository. Please note that regular expressions are not supported at this time.
 
+Similar option parameter exists for WPScan API scanning, use the `--wpscan-api-skip-folders-in-repo-options-file` option.
+
 Folders can also be specified in files placed at the root of the repository, `.vipgoci_lint_skip_folders` for PHP linting and `.vipgoci_phpcs_skip_folders` for PHPCS scanning. Each folder should be on a line of its own in the relevant file, and each path should be relative to the root of the repository.  This feature is activated using command-line options, for example:
 
 > ./vip-go-ci.php --lint-skip-folders-in-repo-options-file=true --phpcs-skip-folders-in-repo-options-file=true
 
 Any folders found in the files at the root of the repository will be merged with options specified on the command-line.
+
+For WPScan API, use file named `.vipgoci_wpscan_api_skip_folders`.
 
 ### Skipping large files
 
