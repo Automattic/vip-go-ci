@@ -29,7 +29,7 @@ TODO:
 - [ ] Add to, or update, `Scan run detail` report as applicable
 - [ ] Add/update tests -- unit and/or integrated
 - [ ] Ensure `PHPDoc` comments are up to date for functions added or altered
-- [ ] Update README
+- [ ] Update repository documentation (README.md, RELEASING.md, TESTING.md, TOOLS-UPDATE.md)
 - [ ] Changelog entry (for VIP)
 - [ ] Public documentation changes
 - [ ] Check status of automated tests
