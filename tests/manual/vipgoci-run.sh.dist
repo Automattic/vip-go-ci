@@ -80,10 +80,6 @@ export REPO_COMMIT_ID="3e8d5b9c2566ef285cb5d85e5c71cf82f40f9afa"
 #export REPO_BRANCH="wpscan-api-testing6"
 #export REPO_COMMIT_ID="b781799f8c6f789280672ce2dd63390c309fc25a"
 
-# Include information from custom config file
-CURRENT_DIR=`dirname -- "$0"`
-. "$CURRENT_DIR/vipgoci-run-secrets.sh"
-
 #
 # Main configuration parameters (except for custom).
 #
@@ -120,6 +116,7 @@ export VIPGOCI_PHPCS_SKIP_FOLDERS=""
 export VIPGOCI_WPSCAN_API="true"
 export VIPGOCI_WPSCAN_API_PATHS="plugins"
 export VIPGOCI_WPSCAN_API_REPORT_END_MSG=""
+export VIPGOCI_WPSCAN_API_SKIP_FOLDERS_IN_REPO_OPTIONS_FILE="true"
 
 # SVG config
 export VIPGOCI_SVG_CHECKS="true"
@@ -157,10 +154,6 @@ export VIPGOCI_DEBUG_LEVEL=2
 export VIPGOCI_NAME_TO_USE="vip-go-ci"
 export VIPGOCI_INFORMATIONAL_MSG="vip-go-ci"
 
-# Paths to git repository
-export GIT_REPO_BASE_PATH="/tmp"
-export GIT_REPO_PATH="$GIT_REPO_BASE_PATH/$REPO_NAME"
-
 # Build status notification
 export VIPGOCI_BUILD_CONTEXT="vip-go-ci"
 
@@ -176,6 +169,15 @@ export VIPGOCI_BUILD_DESCRIPTION_SYSTEM_PROBLEM="Build setup problem, please con
 export VIPGOCI_BUILD_DESCRIPTION_GITHUB_PROBLEM="GitHub communication error. Please retry"
 export VIPGOCI_BUILD_DESCRIPTION_USAGE_ERROR="vip-go-ci usage error, please contact VIP"
 export VIPGOCI_BUILD_DESCRIPTION_UNKNOWN_ERROR="Unknown error, please contact VIP"
+
+# Include information from custom config file
+CURRENT_DIR=`dirname -- "$0"`
+. "$CURRENT_DIR/vipgoci-run-secrets.sh"
+
+
+# Paths to git repository
+export GIT_REPO_BASE_PATH="/tmp"
+export GIT_REPO_PATH="$GIT_REPO_BASE_PATH/$REPO_NAME"
 
 #
 # Check out git repository, or update
@@ -211,7 +213,7 @@ fi
 #
 # Actually run vip-go-ci
 #
-$VIPGOCI_EXEC_PHP_PATH  ~/vip-go-ci-tools/vip-go-ci/vip-go-ci.php --env-options="max-exec-time=VIPGOCI_MAX_EXEC_TIME,repo-name=REPO_NAME,repo-owner=REPO_ORG,token=VIPGOCI_GITHUB_TOKEN,commit=REPO_COMMIT_ID,output=VIPGOCI_OUTPUT,repo-options=VIPGOCI_REPO_OPTIONS,repo-options-allowed=VIPGOCI_REPO_OPTIONS_ALLOWED,lint=VIPGOCI_LINT_ENABLED,lint-php-versions=VIPGOCI_LINT_PHP_VERSIONS,lint-php-version-paths=VIPGOCI_LINT_PHP_VERSION_PATHS,lint-skip-folders=VIPGOCI_LINT_SKIP_FOLDERS,lint-skip-folders-in-repo-options-file=VIPGOCI_LINT_SKIP_FOLDERS_IN_REPO_OPTIONS_FILE,phpcs=PHPCS_ENABLED,phpcs-php-path=VIPGOCI_PHPCS_PHP_PATH,phpcs-path=VIPGOCI_PHPCS_PATH,phpcs-standard=VIPGOCI_PHPCS_STANDARD,phpcs-standards-to-ignore=VIPGOCI_PHPCS_STANDARDS_IGNORE,phpcs-severity=VIPGOCI_PHPCS_SEVERITY,phpcs-runtime-set=VIPGOCI_PHPCS_RUNTIME_SET,phpcs-skip-folders=VIPGOCI_PHPCS_SKIP_FOLDERS,phpcs-skip-folders-in-repo-options-file=VIPGOCI_PHPCS_SKIP_FOLDERS_IN_REPO_OPTIONS_FILE,phpcs-skip-scanning-via-labels-allowed=VIPGOCI_PHPCS_SKIP_SCANNING_VIA_LABELS_ALLOWED,phpcs-sniffs-exclude=VIPGOCI_PHPCS_SNIFFS_EXCLUDE,phpcs-sniffs-include=VIPGOCI_PHPCS_SNIFFS_INCLUDE,wpscan-api=VIPGOCI_WPSCAN_API,wpscan-api-paths=VIPGOCI_WPSCAN_API_PATHS,wpscan-api-token=VIPGOCI_WPSCAN_API_TOKEN,wpscan-api-report-end-msg=VIPGOCI_WPSCAN_API_REPORT_END_MSG,svg-checks=VIPGOCI_SVG_CHECKS,svg-php-path=VIPGOCI_SVG_PHP_PATH,svg-scanner-path=VIPGOCI_SVG_SCANNER_PATH,autoapprove=VIPGOCI_AUTOAPPROVE_ENABLED,autoapprove-filetypes=VIPGOCI_AUTOAPPROVE_FILETYPES,autoapprove-label=VIPGOCI_AUTOAPPROVE_LABEL,autoapprove-php-nonfunctional-changes=VIPGOCI_AUTOAPPROVE_PHP_NONFUNCTIONAL_CHANGES,irc-api-token=VIPGOCI_IRC_API_TOKEN,irc-api-url=VIPGOCI_IRC_API_URL,irc-api-bot=VIPGOCI_IRC_API_BOT,irc-api-room=VIPGOCI_IRC_API_ROOM,pixel-api-url=VIPGOCI_PIXEL_API_URL,pixel-api-groupprefix=VIPGOCI_PIXEL_API_GROUPPREFIX,post-generic-pr-support-comments=VIPGOCI_POST_GENERIC_PR_SUPPORT_COMMENTS,post-generic-pr-support-comments-string=VIPGOCI_POST_GENERIC_PR_SUPPORT_COMMENTS_STRING,post-generic-pr-support-comments-repo-meta-match=VIPGOCI_POST_GENERIC_PR_SUPPORT_COMMENTS_REPO_META_MATCH,post-generic-pr-support-comments-branches=VIPGOCI_POST_GENERIC_PR_SUPPORT_COMMENTS_BRANCHES,post-generic-pr-support-comments-on-drafts=VIPGOCI_POST_GENERIC_PR_SUPPORT_COMMENTS_ON_DRAFTS,post-generic-pr-support-comments-skip-if-label-exists=VIPGOCI_POST_GENERIC_PR_SUPPORT_COMMENTS_SKIP_IF_LABEL_EXISTS,repo-meta-api-base-url=VIPGOCI_REPO_META_API_BASE_URL,repo-meta-api-user-id=VIPGOCI_REPO_META_API_USER_ID,repo-meta-api-access-token=VIPGOCI_REPO_META_API_ACCESS_TOKEN,scan-details-msg-include=VIPGOCI_SCAN_DETAILS_MSG_INCLUDE,report-no-issues-found=VIPGOCI_REPORT_NO_ISSUES_FOUND,review-comments-ignore=VIPGOCI_REVIEW_COMMENTS_IGNORE,review-comments-include-severity=VIPGOCI_REVIEW_COMMENTS_INCLUDE_SEVERITY,review-comments-sort=VIPGOCI_REVIEW_COMMENTS_SORT,review-comments-max=VIPGOCI_REVIEW_COMMENTS_MAX,review-comments-total-max=VIPGOCI_REVIEW_COMMENTS_TOTAL_MAX,dismiss-stale-reviews=DISMISS_STALE_REVIEWS,dismissed-reviews-repost-comments=DISMISSED_REVIEWS_REPOST_COMMENTS,dismissed-reviews-exclude-reviews-from-team=DISMISSED_REVIEWS_EXCLUDE_REVIEWS_FROM_TEAM,informational-msg=VIPGOCI_INFORMATIONAL_MSG,debug-level=VIPGOCI_DEBUG_LEVEL,name-to-use=VIPGOCI_NAME_TO_USE" --local-git-repo="$GIT_REPO_PATH" --enforce-https-urls=false --wpscan-api-dry-mode=false 
+$VIPGOCI_EXEC_PHP_PATH  ~/vip-go-ci-tools/vip-go-ci/vip-go-ci.php --env-options="max-exec-time=VIPGOCI_MAX_EXEC_TIME,repo-name=REPO_NAME,repo-owner=REPO_ORG,token=VIPGOCI_GITHUB_TOKEN,commit=REPO_COMMIT_ID,output=VIPGOCI_OUTPUT,repo-options=VIPGOCI_REPO_OPTIONS,repo-options-allowed=VIPGOCI_REPO_OPTIONS_ALLOWED,lint=VIPGOCI_LINT_ENABLED,lint-php-versions=VIPGOCI_LINT_PHP_VERSIONS,lint-php-version-paths=VIPGOCI_LINT_PHP_VERSION_PATHS,lint-skip-folders=VIPGOCI_LINT_SKIP_FOLDERS,lint-skip-folders-in-repo-options-file=VIPGOCI_LINT_SKIP_FOLDERS_IN_REPO_OPTIONS_FILE,phpcs=PHPCS_ENABLED,phpcs-php-path=VIPGOCI_PHPCS_PHP_PATH,phpcs-path=VIPGOCI_PHPCS_PATH,phpcs-standard=VIPGOCI_PHPCS_STANDARD,phpcs-standards-to-ignore=VIPGOCI_PHPCS_STANDARDS_IGNORE,phpcs-severity=VIPGOCI_PHPCS_SEVERITY,phpcs-runtime-set=VIPGOCI_PHPCS_RUNTIME_SET,phpcs-skip-folders=VIPGOCI_PHPCS_SKIP_FOLDERS,phpcs-skip-folders-in-repo-options-file=VIPGOCI_PHPCS_SKIP_FOLDERS_IN_REPO_OPTIONS_FILE,phpcs-skip-scanning-via-labels-allowed=VIPGOCI_PHPCS_SKIP_SCANNING_VIA_LABELS_ALLOWED,phpcs-sniffs-exclude=VIPGOCI_PHPCS_SNIFFS_EXCLUDE,phpcs-sniffs-include=VIPGOCI_PHPCS_SNIFFS_INCLUDE,wpscan-api=VIPGOCI_WPSCAN_API,wpscan-api-paths=VIPGOCI_WPSCAN_API_PATHS,wpscan-api-token=VIPGOCI_WPSCAN_API_TOKEN,wpscan-api-skip-folders-in-repo-options-file=VIPGOCI_WPSCAN_API_SKIP_FOLDERS_IN_REPO_OPTIONS_FILE,wpscan-api-report-end-msg=VIPGOCI_WPSCAN_API_REPORT_END_MSG,svg-checks=VIPGOCI_SVG_CHECKS,svg-php-path=VIPGOCI_SVG_PHP_PATH,svg-scanner-path=VIPGOCI_SVG_SCANNER_PATH,autoapprove=VIPGOCI_AUTOAPPROVE_ENABLED,autoapprove-filetypes=VIPGOCI_AUTOAPPROVE_FILETYPES,autoapprove-label=VIPGOCI_AUTOAPPROVE_LABEL,autoapprove-php-nonfunctional-changes=VIPGOCI_AUTOAPPROVE_PHP_NONFUNCTIONAL_CHANGES,irc-api-token=VIPGOCI_IRC_API_TOKEN,irc-api-url=VIPGOCI_IRC_API_URL,irc-api-bot=VIPGOCI_IRC_API_BOT,irc-api-room=VIPGOCI_IRC_API_ROOM,pixel-api-url=VIPGOCI_PIXEL_API_URL,pixel-api-groupprefix=VIPGOCI_PIXEL_API_GROUPPREFIX,post-generic-pr-support-comments=VIPGOCI_POST_GENERIC_PR_SUPPORT_COMMENTS,post-generic-pr-support-comments-string=VIPGOCI_POST_GENERIC_PR_SUPPORT_COMMENTS_STRING,post-generic-pr-support-comments-repo-meta-match=VIPGOCI_POST_GENERIC_PR_SUPPORT_COMMENTS_REPO_META_MATCH,post-generic-pr-support-comments-branches=VIPGOCI_POST_GENERIC_PR_SUPPORT_COMMENTS_BRANCHES,post-generic-pr-support-comments-on-drafts=VIPGOCI_POST_GENERIC_PR_SUPPORT_COMMENTS_ON_DRAFTS,post-generic-pr-support-comments-skip-if-label-exists=VIPGOCI_POST_GENERIC_PR_SUPPORT_COMMENTS_SKIP_IF_LABEL_EXISTS,repo-meta-api-base-url=VIPGOCI_REPO_META_API_BASE_URL,repo-meta-api-user-id=VIPGOCI_REPO_META_API_USER_ID,repo-meta-api-access-token=VIPGOCI_REPO_META_API_ACCESS_TOKEN,scan-details-msg-include=VIPGOCI_SCAN_DETAILS_MSG_INCLUDE,report-no-issues-found=VIPGOCI_REPORT_NO_ISSUES_FOUND,review-comments-ignore=VIPGOCI_REVIEW_COMMENTS_IGNORE,review-comments-include-severity=VIPGOCI_REVIEW_COMMENTS_INCLUDE_SEVERITY,review-comments-sort=VIPGOCI_REVIEW_COMMENTS_SORT,review-comments-max=VIPGOCI_REVIEW_COMMENTS_MAX,review-comments-total-max=VIPGOCI_REVIEW_COMMENTS_TOTAL_MAX,dismiss-stale-reviews=DISMISS_STALE_REVIEWS,dismissed-reviews-repost-comments=DISMISSED_REVIEWS_REPOST_COMMENTS,dismissed-reviews-exclude-reviews-from-team=DISMISSED_REVIEWS_EXCLUDE_REVIEWS_FROM_TEAM,informational-msg=VIPGOCI_INFORMATIONAL_MSG,debug-level=VIPGOCI_DEBUG_LEVEL,name-to-use=VIPGOCI_NAME_TO_USE" --local-git-repo="$GIT_REPO_PATH" --enforce-https-urls=false --wpscan-api-dry-mode=false
 
 #
 # Set GitHub build status after run
