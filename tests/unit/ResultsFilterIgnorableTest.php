@@ -26,8 +26,10 @@ final class ResultsFilterIgnorableTest extends TestCase {
 	 * Test the function in different ways.
 	 *
 	 * @covers ::vipgoci_results_filter_ignorable
+	 *
+	 * @return void
 	 */
-	public function testFilterIgnorable1() {
+	public function testFilterIgnorable1() :void {
 		$options = array(
  			'review-comments-ignore' => array(
 				'json_encode() is discouraged. Use wp_json_encode() instead.',
