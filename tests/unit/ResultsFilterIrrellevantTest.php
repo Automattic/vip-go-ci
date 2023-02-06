@@ -39,6 +39,7 @@ final class ResultsFilterIrrellevantTest extends TestCase {
 		$file_name = 'bla-10.php';
 
 		$file_issues_arr = json_decode(
+	 *
 			'{"bla-10.php":[{"message":"json_encode() is discouraged. Use wp_json_encode() instead.","source":"WordPress.WP.AlternativeFunctions.json_encode_json_encode","severity":5,"fixable":false,"type":"WARNING","line":7,"column":6,"level":"WARNING"}],"bla-8.php":[{"message":"All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found \'mysql_query\'.","source":"WordPress.Security.EscapeOutput.OutputNotEscaped","severity":5,"fixable":false,"type":"ERROR","line":3,"column":6,"level":"ERROR"},{"message":"Extension \'mysql_\' is deprecated since PHP 5.5 and removed since PHP 7.0; Use mysqli instead","source":"PHPCompatibility.Extensions.RemovedExtensions.mysql_DeprecatedRemoved","severity":5,"fixable":false,"type":"ERROR","line":3,"column":6,"level":"ERROR"}]}',
 			true
 		);
