@@ -43,7 +43,7 @@ final class OtherWebServicesIrcApiAlertQueueUniqueTest extends TestCase {
 	 *
 	 * @return void
 	 */
-	public function testIrcQueueUnique1() {
+	public function testIrcQueueUnique1() :void {
 		$msg_queue = array(
 			'Msg 1',
 			'Msg 2',
@@ -71,7 +71,7 @@ final class OtherWebServicesIrcApiAlertQueueUniqueTest extends TestCase {
 	 *
 	 * @return void
 	 */
-	public function testIrcQueueUnique2() {
+	public function testIrcQueueUnique2() :void {
 		$msg_queue = array(
 			'Msg 1',
 			'Msg 2',
@@ -102,7 +102,7 @@ final class OtherWebServicesIrcApiAlertQueueUniqueTest extends TestCase {
 	 *
 	 * @return void
 	 */
-	public function testIrcQueueUnique3() {
+	public function testIrcQueueUnique3() :void {
 		$msg_queue = array(
 			'Msg 1',
 			'Msg 2',
