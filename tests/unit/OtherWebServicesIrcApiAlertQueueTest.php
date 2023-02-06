@@ -1,4 +1,9 @@
 <?php
+/**
+ * Test vipgoci_irc_api_alert_queue().
+ *
+ * @package Automattic/vip-go-ci
+ */
 
 declare(strict_types=1);
 
@@ -12,9 +17,11 @@ use PHPUnit\Framework\TestCase;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class A00IrcApiAlertQueueTest extends TestCase {
+final class OtherWebServicesIrcApiAlertQueueTest extends TestCase {
 	/**
 	 * Require correct file.
+	 *
+	 * @return void
 	 */
 	public function setUp() :void {
 		/*
@@ -31,8 +38,10 @@ final class A00IrcApiAlertQueueTest extends TestCase {
 	 * Test if IRC queue functions correctly.
 	 *
 	 * @covers ::vipgoci_irc_api_alert_queue
+	 *
+         * @return void
 	 */
-	public function testIrcQueue1() {
+	public function testIrcQueue1() :void {
 		vipgoci_irc_api_alert_queue(
 			'mymessage1'
 		);
