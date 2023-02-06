@@ -8,8 +8,6 @@ require_once( __DIR__ . './../../misc.php' );
 
 use PHPUnit\Framework\TestCase;
 
-// phpcs:disable PSR1.Files.SideEffects
-
 final class MiscRoundArrayItemsTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_round_array_items

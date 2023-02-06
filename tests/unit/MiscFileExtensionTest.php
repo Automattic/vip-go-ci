@@ -8,8 +8,6 @@ require_once( __DIR__ . './../../misc.php' );
 
 use PHPUnit\Framework\TestCase;
 
-// phpcs:disable PSR1.Files.SideEffects
-
 final class MiscFileExtensionTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_file_extension_get

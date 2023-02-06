@@ -15,8 +15,6 @@ require_once __DIR__ . '/../../main.php';
 
 use PHPUnit\Framework\TestCase;
 
-// phpcs:disable PSR1.Files.SideEffects
-
 /**
  * Run tests in separate process to ensure
  * static value in vipgoci_set_maximum_exec_time() is

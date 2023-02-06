@@ -8,8 +8,6 @@ require_once( __DIR__ . './../../options.php' );
 
 use PHPUnit\Framework\TestCase;
 
-// phpcs:disable PSR1.Files.SideEffects
-
 final class VipgociOptionsIntegerHandleTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_option_integer_handle

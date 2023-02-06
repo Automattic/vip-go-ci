@@ -8,8 +8,6 @@ require_once( __DIR__ . './../../misc.php' );
 
 use PHPUnit\Framework\TestCase;
 
-// phpcs:disable PSR1.Files.SideEffects
-
 final class MiscFindFieldsInArrayTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_find_fields_in_array

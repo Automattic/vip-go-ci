@@ -9,8 +9,6 @@ require_once( __DIR__ . './../../options.php' );
 
 use PHPUnit\Framework\TestCase;
 
-// phpcs:disable PSR1.Files.SideEffects
-
 final class OptionsGenericSupportCommentsMatchTest extends TestCase {
 	public function setUp(): void {
 		$this->options = array();
