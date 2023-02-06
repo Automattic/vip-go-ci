@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class A00IrcApiAlertQueueUniqueTest extends TestCase {
+final class OtherWebServicesIrcApiAlertQueueUniqueTest extends TestCase {
 	/**
 	 * Require correct file.
 	 *
