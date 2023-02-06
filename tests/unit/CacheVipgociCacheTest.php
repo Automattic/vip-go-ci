@@ -1,28 +1,50 @@
 <?php
+/**
+ * Test vipgoci_cache().
+ *
+ * @package Automattic/vip-go-ci
+ */
 
 declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
-require_once( __DIR__ . './../../defines.php' );
-require_once( __DIR__ . './../../cache.php' );
-
 use PHPUnit\Framework\TestCase;
 
+/**
+ * Class that implements the testing.
+ *
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class CacheVipgociCacheTest extends TestCase {
 	/**
-	 * @covers ::vipgoci_cache
+	 * Setup function. Require files, etc.
+	 *
+	 * @return void
 	 */
-	public function testCache1() {
+	protected function setUp() :void {
+		require_once __DIR__ . './../../defines.php';
+		require_once __DIR__ . './../../cache.php';
+	}
+
+	/**
+	 * Test caching random data and test if is correctly retrived.
+	 *
+	 * @covers ::vipgoci_cache
+	 *
+	 * @return void
+	 */
+	public function testCache1() :void {
 		$cache_id1 =
 			__CLASS__ .
-			'_' . 
+			'_' .
 			__FUNCTION__ .
 			'_mytest1';
 
 		$cache_id2 =
 			__CLASS__ .
-			'_' . 
+			'_' .
 			__FUNCTION__ .
 			'_mytest2';
 
@@ -60,7 +82,6 @@ final class CacheVipgociCacheTest extends TestCase {
 			$r2_retrieved
 		);
 
-
 		$this->assertNotEquals(
 			$r1,
 			$r2
@@ -76,11 +97,13 @@ final class CacheVipgociCacheTest extends TestCase {
 	 * Test clearing of cache.
 	 *
 	 * @covers ::vipgoci_cache
+	 *
+	 * @return void
 	 */
-	public function testCache2() {
+	public function testCache2() :void {
 		$cache_id =
 			__CLASS__ .
-			'_' . 
+			'_' .
 			__FUNCTION__;
 
 		/*
