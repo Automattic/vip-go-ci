@@ -10,8 +10,6 @@ require_once __DIR__ . '/../unit/helper/IndicateTestId.php';
 
 use PHPUnit\Framework\TestCase;
 
-// phpcs:disable PSR1.Files.SideEffects
-
 /**
  * Test the vipgoci_run_cleanup_irc() function.
  *

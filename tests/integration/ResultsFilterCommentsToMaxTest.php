@@ -6,8 +6,6 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 
 use PHPUnit\Framework\TestCase;
 
-// phpcs:disable PSR1.Files.SideEffects
-
 final class ResultsFilterCommentsToMaxTest extends TestCase {
 	var $options_git = array(
 		'repo-owner'	=> null,

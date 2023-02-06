@@ -6,8 +6,6 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 
 use PHPUnit\Framework\TestCase;
 
-// phpcs:disable PSR1.Files.SideEffects
-
 final class GitHubStatusCreateTest extends TestCase {
 	var $options_git_repo_tests = array(
 		'commit-test-repo-pr-diffs-4-a'	=> null,
