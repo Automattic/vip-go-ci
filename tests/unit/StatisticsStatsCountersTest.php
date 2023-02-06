@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class A00StatsCountersTest extends TestCase {
+final class StatisticsCountersTest extends TestCase {
 	/**
 	 * Setup function. Require files, etc.
 	 *
