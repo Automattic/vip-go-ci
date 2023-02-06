@@ -1,11 +1,13 @@
 <?php
+/**
+ * Test vipgoci_irc_api_alert_queue_unique().
+ *
+ * @package Automattic/vip-go-ci
+ */
 
 declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
-
-require_once __DIR__ . '/../../defines.php';
-require_once __DIR__ . '/../../statistics.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -18,6 +20,8 @@ use PHPUnit\Framework\TestCase;
 final class A00IrcApiAlertQueueUniqueTest extends TestCase {
 	/**
 	 * Require correct file.
+	 *
+	 * @return void
 	 */
 	public function setUp() :void {
 		/*
@@ -27,6 +31,8 @@ final class A00IrcApiAlertQueueUniqueTest extends TestCase {
 		 * by this require. This is needed to ensure function
 		 * declarations are not attempted multiple times.
 		 */
+		require_once __DIR__ . '/../../defines.php';
+		require_once __DIR__ . '/../../statistics.php';
 		require_once __DIR__ . '/../../other-web-services.php';
 	}
 
@@ -34,6 +40,8 @@ final class A00IrcApiAlertQueueUniqueTest extends TestCase {
 	 * Test integrity first.
 	 *
 	 * @covers: vipgoci_irc_api_alert_queue_unique
+	 *
+	 * @return void
 	 */
 	public function testIrcQueueUnique1() {
 		$msg_queue = array(
@@ -60,6 +68,8 @@ final class A00IrcApiAlertQueueUniqueTest extends TestCase {
 	 * Test if entries are made unique and prefixed correctly.
 	 *
 	 * @covers: vipgoci_irc_api_alert_queue_unique
+	 *
+	 * @return void
 	 */
 	public function testIrcQueueUnique2() {
 		$msg_queue = array(
@@ -89,6 +99,8 @@ final class A00IrcApiAlertQueueUniqueTest extends TestCase {
 	 * Test if entries are made unique and prefixed correctly.
 	 *
 	 * @covers: vipgoci_irc_api_alert_queue_unique
+	 *
+	 * @return void
 	 */
 	public function testIrcQueueUnique3() {
 		$msg_queue = array(
