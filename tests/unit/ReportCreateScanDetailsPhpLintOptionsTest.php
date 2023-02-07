@@ -21,6 +21,8 @@ use PHPUnit\Framework\TestCase;
 final class ReportCreateScanDetailsPhpLintOptionsTest extends TestCase {
 	/**
 	 * Setup function. Require files, etc.
+	 *
+	 * @return void
 	 */
 	protected function setUp() :void {
 		require_once __DIR__ . '/../../reports.php';
@@ -33,6 +35,8 @@ final class ReportCreateScanDetailsPhpLintOptionsTest extends TestCase {
 
 	/**
 	 * Clean up options variable.
+	 *
+	 * @return void
 	 */
 	protected function tearDown() :void {
 		unset( $this->options );
@@ -42,6 +46,8 @@ final class ReportCreateScanDetailsPhpLintOptionsTest extends TestCase {
 	 * Test function with most reporting disabled.
 	 *
 	 * @covers ::vipgoci_report_create_scan_details_php_lint_options
+	 *
+	 * @return void
 	 */
 	public function testCreateDetails1(): void {
 		$this->options['lint'] = false;
@@ -81,6 +87,8 @@ final class ReportCreateScanDetailsPhpLintOptionsTest extends TestCase {
 	 * Test function with most reporting enabled.
 	 *
 	 * @covers ::vipgoci_report_create_scan_details_php_lint_options
+	 *
+	 * @return void
 	 */
 	public function testCreateDetails2(): void {
 		$this->options['lint']                     = true;
