@@ -1,12 +1,13 @@
 <?php
+/**
+ * Test function vipgoci_run_scan_log_skipped_files().
+ *
+ * @package Automattic/vip-go-ci
+ */
 
 declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
-
-require_once __DIR__ . '/../../main.php';
-require_once __DIR__ . '/../../log.php';
-require_once __DIR__ . '/../../defines.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -19,8 +20,14 @@ use PHPUnit\Framework\TestCase;
 final class MainRunScanLogSkippedFilesTest extends TestCase {
 	/**
 	 * Require file and define variables.
+	 *
+	 * @return void
 	 */
 	protected function setUp() :void {
+		require_once __DIR__ . '/../../main.php';
+		require_once __DIR__ . '/../../log.php';
+		require_once __DIR__ . '/../../defines.php';
+
 		require_once __DIR__ . '/helper/IrcApiAlertQueue.php';
 
 		$this->options = array(
@@ -54,6 +61,8 @@ final class MainRunScanLogSkippedFilesTest extends TestCase {
 
 	/**
 	 * Clean up variables.
+	 *
+	 * @return void
 	 */
 	protected function tearDown() :void {
 		unset( $this->options );
@@ -65,6 +74,8 @@ final class MainRunScanLogSkippedFilesTest extends TestCase {
 	 * Check if it is logged when a file is skipped.
 	 *
 	 * @covers ::vipgoci_run_scan_log_skipped_files
+	 *
+	 * @return void
 	 */
 	public function testRunScanLogSkippedFilesNoFound() :void {
 		ob_start();
@@ -90,6 +101,8 @@ final class MainRunScanLogSkippedFilesTest extends TestCase {
 	 * Check if it is not logged when a file is not skipped.
 	 *
 	 * @covers ::vipgoci_run_scan_log_skipped_files
+	 *
+	 * @return void
 	 */
 	public function testRunScanLogSkippedFilesFound() :void {
 		// Add issues found.
