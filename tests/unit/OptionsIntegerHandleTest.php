@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class VipgociOptionsIntegerHandleTest extends TestCase {
+final class OptionsIntegerHandleTest extends TestCase {
 	/**
 	 * Setup function. Require files, etc.
 	 *
