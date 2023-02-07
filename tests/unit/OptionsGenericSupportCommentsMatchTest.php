@@ -71,7 +71,6 @@ final class OptionsGenericSupportCommentsMatchTest extends TestCase {
 					'key30' => array( 'value30' ),
 				),
 			),
-
 			$this->options['myoption1']
 		);
 	}
