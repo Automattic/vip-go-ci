@@ -43,6 +43,8 @@ final class MainRunInitOptionsLintTest extends TestCase {
 
 	/**
 	 * Set up variable.
+	 *
+	 * @return void
 	 */
 	protected function setUp() :void {
 		require_once __DIR__ . '/../../main.php';
@@ -92,6 +94,8 @@ final class MainRunInitOptionsLintTest extends TestCase {
 
 	/**
 	 * Clear variable.
+	 *
+	 * @return void
 	 */
 	protected function tearDown() :void {
 		unset( $this->options );
@@ -108,6 +112,8 @@ final class MainRunInitOptionsLintTest extends TestCase {
 	 * are correctly parsed and set.
 	 *
 	 * @covers ::vipgoci_run_init_options_lint
+	 *
+	 * @return void
 	 */
 	public function testRunInitOptionsLintDefault() :void {
 		vipgoci_run_init_options_lint(
@@ -137,6 +143,8 @@ final class MainRunInitOptionsLintTest extends TestCase {
 	 * are correctly parsed and set.
 	 *
 	 * @covers ::vipgoci_run_init_options_lint
+	 *
+	 * @return void
 	 */
 	public function testRunInitOptionsLintCustom() :void {
 		$this->options['lint']                                   = 'false';
