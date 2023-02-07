@@ -22,6 +22,8 @@ use PHPUnit\Framework\TestCase;
 final class OutputSecuritySanitizeHtmlEscapeTest extends TestCase {
 	/**
 	 * Setup function. Require file needed.
+	 *
+	 * @return void
 	 */
 	protected function setUp() :void {
 		require_once __DIR__ . '/../../output-security.php';
@@ -31,6 +33,8 @@ final class OutputSecuritySanitizeHtmlEscapeTest extends TestCase {
 	 * Test if the function really HTML encodes input string.
 	 *
 	 * @covers ::vipgoci_output_html_escape
+	 *
+	 * @return void
 	 */
 	public function testSanitizeVersionNumber(): void {
 		$encoded_output = vipgoci_output_html_escape(
