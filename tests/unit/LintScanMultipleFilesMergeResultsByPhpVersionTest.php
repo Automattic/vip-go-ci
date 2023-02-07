@@ -20,6 +20,8 @@ use PHPUnit\Framework\TestCase;
 final class LintScanMultipleFilesMergeResultsByPhpVersionTest extends TestCase {
 	/**
 	 * Setup function. Require files, etc.
+	 *
+	 * @return void
 	 */
 	protected function setUp() :void {
 		require_once __DIR__ . '/../../lint-scan.php';
@@ -30,6 +32,8 @@ final class LintScanMultipleFilesMergeResultsByPhpVersionTest extends TestCase {
 	 * Test if merged results are as expected.
 	 *
 	 * @covers ::vipgoci_lint_scan_multiple_files_merge_results_by_php_version
+	 *
+	 * @return void
 	 */
 	public function testMergeResultsByPhpVersion(): void {
 		$current_file_intermediary_results = array(
@@ -101,6 +105,5 @@ final class LintScanMultipleFilesMergeResultsByPhpVersionTest extends TestCase {
 			),
 			$file_issues_arr
 		);
-
 	}
 }
