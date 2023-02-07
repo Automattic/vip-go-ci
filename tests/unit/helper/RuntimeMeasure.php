@@ -16,7 +16,7 @@ declare(strict_types=1);
  * @return void
  */
 function vipgoci_runtime_measure(
-	$action = null,
-	$type = null
+	$action = null, // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
+	$type = null // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
 ) {
 }
