@@ -40,14 +40,14 @@ final class ResultsStandardizeIgnorableMessageTest extends TestCase {
 			'json_encode() is discouraged. Use wp_json_encode() instead.',
 			'json_encode() is discouraged.       .',
 			'      TEST 200',
-			' Test 300 '
+			' Test 300 ',
 		);
 
 		$review_comments_expected = array(
 			'json_encode() is discouraged. use wp_json_encode() instead',
 			'json_encode() is discouraged',
 			'test 200',
-			'test 300'
+			'test 300',
 		);
 
 		$review_comments_observed = array_map(
