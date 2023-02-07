@@ -1,12 +1,13 @@
 <?php
+/**
+ * Test function vipgoci_run_init_options_repo_meta_api().
+ *
+ * @package Automattic/vip-go-ci
+ */
 
 declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
-
-require_once __DIR__ . '/../../main.php';
-require_once __DIR__ . '/../../options.php';
-require_once __DIR__ . '/../../misc.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -20,13 +21,21 @@ use PHPUnit\Framework\TestCase;
 final class MainRunInitOptionsRepoMetaApiTest extends TestCase {
 	/**
 	 * Set up variable.
+	 *
+	 * @return void
 	 */
 	protected function setUp() :void {
+		require_once __DIR__ . '/../../main.php';
+		require_once __DIR__ . '/../../options.php';
+		require_once __DIR__ . '/../../misc.php';
+
 		$this->options = array();
 	}
 
 	/**
 	 * Clear variable.
+	 *
+	 * @return void
 	 */
 	protected function tearDown() :void {
 		unset( $this->options );
@@ -36,6 +45,8 @@ final class MainRunInitOptionsRepoMetaApiTest extends TestCase {
 	 * Check if repo-meta API default options are correctly provided.
 	 *
 	 * @covers ::vipgoci_run_init_options_repo_meta_api
+	 *
+	 * @return void
 	 */
 	public function testRunInitOptionsRepoMetaApiDefault() :void {
 		vipgoci_run_init_options_repo_meta_api(
@@ -56,6 +67,8 @@ final class MainRunInitOptionsRepoMetaApiTest extends TestCase {
 	 * Check if repo-meta API custom options are correctly parsed.
 	 *
 	 * @covers ::vipgoci_run_init_options_repo_meta_api
+	 *
+	 * @return void
 	 */
 	public function testRunInitOptionsRepoMetaApiCustom() :void {
 		$this->options = array(
