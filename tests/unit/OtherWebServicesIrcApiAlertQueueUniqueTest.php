@@ -39,7 +39,7 @@ final class OtherWebServicesIrcApiAlertQueueUniqueTest extends TestCase {
 	/**
 	 * Test integrity first.
 	 *
-	 * @covers: vipgoci_irc_api_alert_queue_unique
+	 * @covers ::vipgoci_irc_api_alert_queue_unique
 	 *
 	 * @return void
 	 */
@@ -67,7 +67,7 @@ final class OtherWebServicesIrcApiAlertQueueUniqueTest extends TestCase {
 	/**
 	 * Test if entries are made unique and prefixed correctly.
 	 *
-	 * @covers: vipgoci_irc_api_alert_queue_unique
+	 * @covers ::vipgoci_irc_api_alert_queue_unique
 	 *
 	 * @return void
 	 */
@@ -98,7 +98,7 @@ final class OtherWebServicesIrcApiAlertQueueUniqueTest extends TestCase {
 	/**
 	 * Test if entries are made unique and prefixed correctly.
 	 *
-	 * @covers: vipgoci_irc_api_alert_queue_unique
+	 * @covers ::vipgoci_irc_api_alert_queue_unique
 	 *
 	 * @return void
 	 */
