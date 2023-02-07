@@ -94,7 +94,7 @@ final class ReportCreateScanDetailsAutoApproveConfigurationTest extends TestCase
 		$this->options['autoapprove']                           = true;
 		$this->options['autoapprove-php-nonfunctional-changes'] = true;
 		$this->options['autoapprove-php-nonfunctional-changes-file-extensions'] = array( 'php' );
-		$this->options['autoapprove-filetypes']                 = array( 'txt', 'ini' );
+		$this->options['autoapprove-filetypes']                                 = array( 'txt', 'ini' );
 
 		$actual_output = vipgoci_report_create_scan_details_auto_approve_configuration(
 			$this->options
