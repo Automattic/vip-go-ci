@@ -19,6 +19,8 @@ use PHPUnit\Framework\TestCase;
 final class OptionsReadRepositoryConfigFileTest extends TestCase {
 	/**
 	 * Setup function. Require files.
+	 *
+	 * @return void
 	 */
 	protected function setUp() :void {
 		require_once __DIR__ . '/helper/OptionsReadRepositoryConfigFile.php';
@@ -27,9 +29,11 @@ final class OptionsReadRepositoryConfigFileTest extends TestCase {
 	}
 
 	/**
+	 * Tests against the --lint-modified-files-only option.
+	 *
 	 * @covers ::vipgoci_options_read_repo_file
 	 *
-	 * Tests against the --lint-modified-files-only option.
+	 * @return void
 	 */
 	public function testIfOptionLintOnlyModifiedFilesOptionIsReplacedTest(): void {
 		$overritable_mock = $this->getOverritableMock();
@@ -47,7 +51,9 @@ final class OptionsReadRepositoryConfigFileTest extends TestCase {
 	}
 
 	/**
-	 * @return array[]
+	 * Get list of options that can be overridden.
+	 *
+	 * @return array
 	 */
 	private function getOverritableMock(): array {
 		return array(
@@ -126,6 +132,8 @@ final class OptionsReadRepositoryConfigFileTest extends TestCase {
 	}
 
 	/**
+	 * Get mocked options.
+	 *
 	 * @return array
 	 */
 	private function getOptionsMock(): array {
