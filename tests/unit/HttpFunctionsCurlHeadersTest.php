@@ -111,9 +111,9 @@ final class HttpFunctionsCurlHeadersTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				'status'        => array( '205' ),
-				'date'          => array( 'Mon, 04 Mar 2020 16:43:35 GMT' ),
-				'location'      => array( 'https://www.mytestdomain2.is/' ),
+				'status'   => array( '205' ),
+				'date'     => array( 'Mon, 04 Mar 2020 16:43:35 GMT' ),
+				'location' => array( 'https://www.mytestdomain2.is/' ),
 			),
 			$actual_results
 		);
