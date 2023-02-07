@@ -1,11 +1,13 @@
 <?php
+/**
+ * Test function vipgoci_run_init_vars().
+ *
+ * @package Automattic/vip-go-ci
+ */
 
 declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
-
-require_once __DIR__ . '/../../main.php';
-require_once __DIR__ . '/../../defines.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -17,9 +19,21 @@ use PHPUnit\Framework\TestCase;
  */
 final class MainRunInitVarsTest extends TestCase {
 	/**
+	 * Setup function. Require files, etc.
+	 *
+	 * @return void
+	 */
+	protected function setUp() :void {
+		require_once __DIR__ . '/../../main.php';
+		require_once __DIR__ . '/../../defines.php';
+	}
+
+	/**
 	 * Test if default variables are set correctly.
 	 *
 	 * @covers ::vipgoci_run_init_vars
+	 *
+	 * @return void
 	 */
 	public function testRunInitVars() :void {
 		list(
