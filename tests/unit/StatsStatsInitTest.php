@@ -49,7 +49,7 @@ final class StatsStatsInitTest extends TestCase {
 			array(
 				'phpcs'      => true,
 				'lint'       => true,
-				'test-api' => false,
+				'test-api'   => false,
 				'wpscan-api' => true,
 			),
 			array(
