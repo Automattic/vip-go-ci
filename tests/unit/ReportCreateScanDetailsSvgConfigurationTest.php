@@ -82,6 +82,7 @@ final class ReportCreateScanDetailsSvgConfigurationTest extends TestCase {
 	 */
 	public function testCreateDetails2(): void {
 		$this->options['svg-checks'] = true;
+
 		$this->options['svg-file-extensions'] = array( 'svg' );
 
 		$actual_output = vipgoci_report_create_scan_details_svg_configuration(
