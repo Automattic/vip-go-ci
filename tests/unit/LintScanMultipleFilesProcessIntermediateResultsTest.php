@@ -20,6 +20,8 @@ use PHPUnit\Framework\TestCase;
 final class LintScanMultipleFilesProcessIntermediateResultsTest extends TestCase {
 	/**
 	 * Setup function. Require files, etc.
+	 *
+	 * @return void
 	 */
 	protected function setUp() :void {
 		require_once __DIR__ . '/../../lint-scan.php';
@@ -30,6 +32,8 @@ final class LintScanMultipleFilesProcessIntermediateResultsTest extends TestCase
 	 * Check if the results match what is expected.
 	 *
 	 * @covers ::vipgoci_lint_scan_multiple_files_process_intermediate_results
+	 *
+	 * @return void
 	 */
 	public function testProcessIntermediateResults(): void {
 		$current_file_intermediary_results = array();
