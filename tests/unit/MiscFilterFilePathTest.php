@@ -360,6 +360,5 @@ final class MiscFilterFilePathTest extends TestCase {
 				)
 			)
 		);
-
 	}
 }
