@@ -39,7 +39,7 @@ final class OtherWebServicesIrcApiAlertQueueTest extends TestCase {
 	 *
 	 * @covers ::vipgoci_irc_api_alert_queue
 	 *
-         * @return void
+	 * @return void
 	 */
 	public function testIrcQueue1() :void {
 		vipgoci_irc_api_alert_queue(
