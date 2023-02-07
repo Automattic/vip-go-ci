@@ -82,7 +82,7 @@ final class LintScanMultipleFilesMergeResultsByPhpVersionTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				3 => array(
+				3  => array(
 					array(
 						'message'  => 'Linting with PHP 7.3, 7.4 turned up: <code>syntax error, unexpected &quot;;&quot;</code>',
 						'level'    => 'ERROR',
