@@ -137,7 +137,7 @@ final class HttpFunctionsHttpApiRateLimitsCheckTest extends TestCase {
 			'headers_input'     => $headers_input,
 			'output_expected'   => $output_expected,
 			'counters_expected' => $counters_expected,
-		); 
+		);
 
 		$this->assertSame(
 			$output_expected,
