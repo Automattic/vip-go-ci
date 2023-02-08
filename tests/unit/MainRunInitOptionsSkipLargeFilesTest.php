@@ -20,6 +20,13 @@ use PHPUnit\Framework\TestCase;
  */
 final class MainRunInitOptionsSkipLargeFilesTest extends TestCase {
 	/**
+	 * Options array.
+	 *
+	 * @var $options
+	 */
+	private array $options = array();
+
+	/**
 	 * Set up variable, include files.
 	 *
 	 * @return void
