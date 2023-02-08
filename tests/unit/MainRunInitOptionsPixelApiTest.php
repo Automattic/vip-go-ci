@@ -19,6 +19,13 @@ use PHPUnit\Framework\TestCase;
  */
 final class MainRunInitOptionsPixelApiTest extends TestCase {
 	/**
+	 * Options array.
+	 *
+	 * @var $options
+	 */
+	private array $options = array();
+
+	/**
 	 * Set up variable.
 	 *
 	 * @return void
