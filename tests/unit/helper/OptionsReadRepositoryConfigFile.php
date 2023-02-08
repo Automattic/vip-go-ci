@@ -40,9 +40,9 @@ function vipgoci_gitrepo_fetch_committed_file(
  * @return void
  */
 function vipgoci_log(
-        string $str,
-        array $debug_data = array(),
-        int $debug_level = 0,
-        bool $irc = false
+	string $str,
+	array $debug_data = array(),
+	int $debug_level = 0,
+	bool $irc = false
 ) :void {
 }
