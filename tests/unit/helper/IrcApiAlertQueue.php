@@ -1,4 +1,11 @@
 <?php
+/**
+ * Helper file.
+ *
+ * @package Automattic/vip-go-ci
+ */
+
+declare(strict_types=1);
 
 /**
  * Provide vipgoci_irc_api_alert_queue(), but does nothing.
@@ -9,8 +16,8 @@
  * @return void
  */
 function vipgoci_irc_api_alert_queue(
-	?string $message = null,
-	bool $dump = false
-) :void {
+	?string $message = null, // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
+	bool $dump = false // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
+) :void { // phpcs:ignore WordPress.WhiteSpace.ControlStructureSpacing.NoSpaceBeforeCloseParenthesis
 }
 
