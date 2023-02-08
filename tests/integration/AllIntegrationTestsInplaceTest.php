@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class AllUnitTestsInplaceTest extends TestCase {
+final class AllIntegrationTestsInplaceTest extends TestCase {
 	/**
 	 * Check all tests.
 	 */
