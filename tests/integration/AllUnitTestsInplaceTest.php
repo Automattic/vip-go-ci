@@ -1,6 +1,13 @@
 <?php
+/**
+ * Ensure all test files end with 'Test.php', unless exempt.
+ *
+ * @package Automattic/vip-go-ci
+ */
 
-require_once __DIR__ . '/IncludesForTests.php';
+declare(strict_types=1);
+
+namespace Vipgoci\Tests\Integration;
 
 use PHPUnit\Framework\TestCase;
 
