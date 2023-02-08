@@ -20,6 +20,13 @@ use PHPUnit\Framework\TestCase;
  */
 final class ReportCreateScanDetailsWpscanConfigurationTest extends TestCase {
 	/**
+	 * Options array.
+	 *
+	 * @var $options
+	 */
+	private array $options = array();
+
+	/**
 	 * Setup function. Require files, set options variable.
 	 *
 	 * @return void
