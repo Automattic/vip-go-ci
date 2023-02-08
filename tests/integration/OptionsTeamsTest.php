@@ -4,7 +4,7 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 
 use PHPUnit\Framework\TestCase;
 
-final class VipgociOptionsTeamsTest extends TestCase {
+final class OptionsTeamsTest extends TestCase {
 	var $options = array(
 		'github-token'	=> null,
 		'team-slug'	=> null,
