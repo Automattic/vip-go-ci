@@ -19,6 +19,13 @@ use PHPUnit\Framework\TestCase;
  */
 final class OptionsGenericSupportCommentsProcessTest extends TestCase {
 	/**
+	 * Options array.
+	 *
+	 * @var $options
+	 */
+	private array $options = array();
+
+	/**
 	 * Setup function. Require files, etc.
 	 *
 	 * @return void
