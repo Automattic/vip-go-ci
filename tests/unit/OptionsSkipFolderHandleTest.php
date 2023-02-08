@@ -19,6 +19,13 @@ use PHPUnit\Framework\TestCase;
  */
 final class OptionsSkipFolderHandleTest extends TestCase {
 	/**
+	 * Options array.
+	 *
+	 * @var $options
+	 */
+	private array $options = array();
+
+	/**
 	 * Set variable.
 	 *
 	 * @return void
