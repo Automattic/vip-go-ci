@@ -20,6 +20,13 @@ use PHPUnit\Framework\TestCase;
  */
 final class MainRunInitOptionsRepoMetaApiTest extends TestCase {
 	/**
+	 * Options array.
+	 *
+	 * @var $options
+	 */
+	private array $options = array();
+
+	/**
 	 * Set up variable.
 	 *
 	 * @return void
