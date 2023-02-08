@@ -19,19 +19,23 @@ use PHPUnit\Framework\TestCase;
  */
 final class AllIntegrationTestsInplaceTest extends TestCase {
 	/**
-	 * Check all tests.
+	 * Verify all files.
+	 *
+	 * @return void
 	 */
-	public function testAllUnitTestsInPlace() {
+	public function testAllUnitTestsInPlace() :void {
 		$files_arr = scandir( 'tests/integration' );
 
 		/*
-		 * Filter away any files that
-		 * should be in the tests/ directory,
-		 * but should not be tested -- they
-		 * are support files, etc. Also
-		 * filter away files that will be
-		 * tested, based on their names (end
-		 * with "Test.php").
+		 * Filter away any files that should be
+		 * in the tests/integration directory, but should
+		 * not be tested, i.e. supporting files.
+		 *
+		 * Also filter away files that end with 'Test.php', as
+		 * they will be tested.
+		 *
+		 * This will result in an empty array when everything
+		 * is accounted for.
 		 */
 		$files_arr = array_filter(
 			$files_arr,
