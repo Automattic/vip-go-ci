@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class A09GitHubLabelsTest extends TestCase {
+final class GitHubApiLabelsTest extends TestCase {
 	const label_name = 'Label for testing';
 
 	var $options_git = array(
