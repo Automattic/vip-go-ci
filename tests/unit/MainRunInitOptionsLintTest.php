@@ -20,6 +20,31 @@ use PHPUnit\Framework\TestCase;
  */
 final class MainRunInitOptionsLintTest extends TestCase {
 	/**
+	 * Options array.
+	 *
+	 * @var $options
+	 */
+	private array $options = array();
+
+	/**
+	 * PHP versions array.
+	 *
+	 * @var $php_versions_to_mock
+	 */
+	private array $php_versions_to_mock = array(
+		'7.3',
+		'7.4',
+		'8.1',
+	);
+
+	/**
+	 * PHP paths array.
+	 *
+	 * @var $php_paths
+	 */
+	private array $php_paths = array();
+
+	/**
 	 * Path to supposedly PHP 7.3 interpreter, will
 	 * be a temporary file, not PHP interpreter.
 	 *
@@ -60,12 +85,6 @@ final class MainRunInitOptionsLintTest extends TestCase {
 			'lint-skip-folders'                      => '/folder1/folder2/,folder3/folder4',
 			'lint-php-versions'                      => '7.4,8.1',
 			'lint-php-version-paths'                 => '',
-		);
-
-		$this->php_versions_to_mock = array(
-			'7.3',
-			'7.4',
-			'8.1',
 		);
 
 		foreach ( $this->php_versions_to_mock as $php_version ) {
