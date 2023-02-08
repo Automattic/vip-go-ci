@@ -19,6 +19,13 @@ use PHPUnit\Framework\TestCase;
  */
 final class MainRunScanSkipExecutionTest extends TestCase {
 	/**
+	 * Options array.
+	 *
+	 * @var $options
+	 */
+	private array $options = array();
+
+	/**
 	 * Set up variable, indicate what test is running.
 	 *
 	 * @return void
