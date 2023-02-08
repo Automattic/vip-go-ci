@@ -58,64 +58,64 @@ final class OptionsReadRepositoryConfigFileTest extends TestCase {
 	 */
 	private function getOverritableMock(): array {
 		return array(
-			'skip-execution' => array(
+			'skip-execution'                        => array(
 				'type'         => 'boolean',
 				'valid_values' => array( true, false ),
 			),
 
-			'skip-draft-prs' => array(
+			'skip-draft-prs'                        => array(
 				'type'         => 'boolean',
 				'valid_values' => array( true, false ),
 			),
 
-			'review-comments-sort' => array(
+			'review-comments-sort'                  => array(
 				'type'         => 'boolean',
 				'valid_values' => array( true, false ),
 			),
 
-			'review-comments-include-severity' => array(
+			'review-comments-include-severity'      => array(
 				'type'         => 'boolean',
 				'valid_values' => array( true, false ),
 			),
 
-			'phpcs' => array(
+			'phpcs'                                 => array(
 				'type'         => 'boolean',
 				'valid_values' => array( true, false ),
 			),
 
-			'phpcs-severity' => array(
+			'phpcs-severity'                        => array(
 				'type'         => 'integer',
 				'valid_values' => array( 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ),
 			),
 
-			'post-generic-pr-support-comments' => array(
+			'post-generic-pr-support-comments'      => array(
 				'type'         => 'boolean',
 				'valid_values' => array( true, false ),
 			),
 
-			'phpcs-sniffs-include' => array(
+			'phpcs-sniffs-include'                  => array(
 				'type'         => 'array',
 				'append'       => true,
 				'valid_values' => null,
 			),
 
-			'phpcs-sniffs-exclude' => array(
+			'phpcs-sniffs-exclude'                  => array(
 				'type'         => 'array',
 				'append'       => true,
 				'valid_values' => null,
 			),
 
-			'test-api' => array(
+			'test-api'                              => array(
 				'type'         => 'boolean',
 				'valid_values' => array( true, false ),
 			),
 
-			'svg-checks' => array(
+			'svg-checks'                            => array(
 				'type'         => 'boolean',
 				'valid_values' => array( true, false ),
 			),
 
-			'autoapprove' => array(
+			'autoapprove'                           => array(
 				'type'         => 'boolean',
 				'valid_values' => array( true, false ),
 			),
@@ -125,7 +125,7 @@ final class OptionsReadRepositoryConfigFileTest extends TestCase {
 				'valid_values' => array( true, false ),
 			),
 
-			'lint-modified-files-only' => array(
+			'lint-modified-files-only'              => array(
 				'type'         => 'boolean',
 				'valid_values' => array( true, false ),
 			),
