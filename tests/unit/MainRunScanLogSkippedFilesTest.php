@@ -19,6 +19,27 @@ use PHPUnit\Framework\TestCase;
  */
 final class MainRunScanLogSkippedFilesTest extends TestCase {
 	/**
+	 * Options array.
+	 *
+	 * @var $options
+	 */
+	private array $options = array();
+
+	/**
+	 * Results array.
+	 *
+	 * @var $results
+	 */
+	private array $results = array();
+
+	/**
+	 * PRs implicated array.
+	 *
+	 * @var $prs_implicated
+	 */
+	private array $prs_implicated = array();
+
+	/**
 	 * Require file and define variables.
 	 *
 	 * @return void
