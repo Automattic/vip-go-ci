@@ -19,6 +19,13 @@ use PHPUnit\Framework\TestCase;
  */
 final class MainRunInitOptionsWpscanTest extends TestCase {
 	/**
+	 * Options array.
+	 *
+	 * @var $options
+	 */
+	private array $options = array();
+
+	/**
 	 * Require files. Set up variable.
 	 *
 	 * @return void
