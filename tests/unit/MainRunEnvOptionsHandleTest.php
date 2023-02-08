@@ -20,6 +20,20 @@ use PHPUnit\Framework\TestCase;
  */
 final class MainRunEnvOptionsHandleTest extends TestCase {
 	/**
+	 * Options array.
+	 *
+	 * @var $options
+	 */
+	private array $options = array();
+
+	/**
+	 * Options array.
+	 *
+	 * @var $options
+	 */
+	private array $options_recognized = array();
+
+	/**
 	 * Set up variables, set environmental variables.
 	 *
 	 * @return void
