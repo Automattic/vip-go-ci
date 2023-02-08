@@ -18,7 +18,6 @@ declare(strict_types=1);
 function vipgoci_runtime_measure(
 	$action = null, // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
 	$type = null // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
-) :bool {
+):void { // phpcs:ignore WordPress.WhiteSpace.ControlStructureSpacing.NoSpaceBeforeCloseParenthesis
 	// Do nothing.
-	return true;
 }
