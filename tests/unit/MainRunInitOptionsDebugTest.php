@@ -19,6 +19,13 @@ use PHPUnit\Framework\TestCase;
  */
 final class MainRunInitOptionsDebugTest extends TestCase {
 	/**
+	 * Options array.
+	 *
+	 * @var $options
+	 */
+	private array $options = array();
+
+	/**
 	 * Set up variables.
 	 *
 	 * @return void
