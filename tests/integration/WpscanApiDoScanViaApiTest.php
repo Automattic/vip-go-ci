@@ -29,6 +29,18 @@ final class WpscanApiDoScanViaApiTest extends TestCase {
 	);
 
 	/**
+	 * Variable for options.
+	 *
+	 * @var $options
+	 */
+	private array $options = array(
+		'git-path'        => null,
+		'github-repo-url' => null,
+		'repo-name'       => null,
+		'repo-owner'      => null,
+	);
+
+	/**
 	 * Setup function. Require files.
 	 *
 	 * @return void
