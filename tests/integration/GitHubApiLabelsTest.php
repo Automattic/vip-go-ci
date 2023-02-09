@@ -53,6 +53,13 @@ final class GitHubApiLabelsTest extends TestCase {
 	private $options_secrets = array();
 
 	/**
+	 * Variable for options.
+	 *
+	 * @var $options
+	 */
+	private array $options = array();
+
+	/**
 	 * Set up function.
 	 *
 	 * @return void.
