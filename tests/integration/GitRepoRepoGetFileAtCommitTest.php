@@ -41,6 +41,13 @@ final class GitRepoRepoGetFileAtCommitTest extends TestCase {
 	);
 
 	/**
+	 * Variable for options.
+	 *
+	 * @var $options
+	 */
+	private array $options = array();
+
+	/**
 	 * Setup function. Require files, check out git repository, etc.
 	 *
 	 * @return void
