@@ -12,6 +12,20 @@ final class ApNonfunctionalChangesTest extends TestCase {
 		'github-repo-url'		=> null,
 	);
 
+	/**
+	 * Variable for options auto-approvals.
+	 *
+	 * @var $options_auto_approval
+	 */
+	private array $options_auto_approval = array();
+
+	/**
+	 * Variable for options.
+	 *
+	 * @var $options
+	 */
+	private array $options = array();
+
 	var $options_auto_approvals_nonfunc = array(
 		'commit-test-ap-nonfunctionalchanges-1b' => null,
 		'commit-test-ap-nonfunctionalchanges-2'  => null,
