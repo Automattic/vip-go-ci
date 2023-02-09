@@ -4,6 +4,12 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 
 use PHPUnit\Framework\TestCase;
 
+/**
+ * Class that implements the testing.
+ *
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class OptionsTeamsTest extends TestCase {
 	var $options = array(
 		'github-token'	=> null,
