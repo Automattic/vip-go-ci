@@ -28,6 +28,13 @@ final class GitRepoDiffsFetchTest extends TestCase {
 		'repo-name'		=> null,
 	);
 
+	/**
+	 * Variable for options.
+	 *
+	 * @var $options
+	 */
+	private array $options = array();
+
 	protected function setUp(): void {
 		vipgoci_unittests_get_config_values(
 			'git-repo-tests',
