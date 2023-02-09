@@ -61,12 +61,7 @@ final class WpscanScanCommitTest extends TestCase {
 	 *
 	 * @var $options
 	 */
-	private array $options = array(
-		'git-path'        => null,
-		'github-repo-url' => null,
-		'repo-name'       => null,
-		'repo-owner'      => null,
-	);
+	private array $options = array();
 
 	/**
 	 * Setup function. Require files, prepare repository, etc.
