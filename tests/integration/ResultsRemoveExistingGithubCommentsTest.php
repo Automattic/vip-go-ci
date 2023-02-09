@@ -41,6 +41,18 @@ final class ResultsRemoveExistingGithubCommentsTest extends TestCase {
 	);
 
 	/**
+	 * Variable for options.
+	 *
+	 * @var $options
+	 */
+	private array $options = array(
+		'git-path'        => null,
+		'github-repo-url' => null,
+		'repo-name'       => null,
+		'repo-owner'      => null,
+	);
+
+	/**
 	 * Comments for tests.
 	 *
 	 * @var $COMMENTS_DATA
