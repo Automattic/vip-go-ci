@@ -34,6 +34,18 @@ final class GitHubDiffsFetchUnfilteredTest extends TestCase {
 		'github-repo-url'	=> null,
 	);
 
+	/**
+	 * Variable for options.
+	 *
+	 * @var $options
+	 */
+	private array $options = array(
+		'git-path'        => null,
+		'github-repo-url' => null,
+		'repo-name'       => null,
+		'repo-owner'      => null,
+	);
+
 	protected function setUp(): void {
 		vipgoci_unittests_get_config_values(
 			'git-repo-tests',
