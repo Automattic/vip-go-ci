@@ -44,6 +44,13 @@ final class GitHubFilesAffectedByCommitTest extends TestCase {
 	);
 
 	/**
+	 * Variable for options.
+	 *
+	 * @var $options
+	 */
+	private array $options = array();
+
+	/**
 	 * Setup function. Require file, set up variables.
 	 *
 	 * @return void
