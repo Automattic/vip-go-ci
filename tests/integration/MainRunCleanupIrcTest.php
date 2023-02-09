@@ -21,6 +21,13 @@ use PHPUnit\Framework\TestCase;
  */
 final class MainRunCleanupIrcTest extends TestCase {
 	/**
+	 * Variable for options.
+	 *
+	 * @var $options
+	 */
+	private array $options = array();
+
+	/**
 	 * Set up all variables.
 	 */
 	protected function setUp(): void {
