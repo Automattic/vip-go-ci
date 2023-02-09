@@ -4,6 +4,12 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 
 use PHPUnit\Framework\TestCase;
 
+/**
+ * Class that implements the testing.
+ *
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class GitRepoDiffsFetchTest extends TestCase {
 	var $options_git_repo_tests = array(
 		'commit-test-repo-pr-diffs-1-a'	=> null,
