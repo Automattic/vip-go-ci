@@ -22,6 +22,13 @@ use PHPUnit\Framework\TestCase;
  */
 final class LintScanMultipleFilesTest extends TestCase {
 	/**
+	 * Variable for options.
+	 *
+	 * @var $options
+	 */
+	private array $options = array();
+
+	/**
 	 * Specify PHP versions to emulate.
 	 *
 	 * @var $emulating_php_versions
