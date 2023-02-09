@@ -40,6 +40,18 @@ final class StatsStatsPerFileTest extends TestCase {
 	);
 
 	/**
+	 * Variable for options.
+	 *
+	 * @var $options
+	 */
+	private array $options = array(
+		'git-path'        => null,
+		'github-repo-url' => null,
+		'repo-name'       => null,
+		'repo-owner'      => null,
+	);
+
+	/**
 	 * Require files, set variable values.
 	 *
 	 * @return void
