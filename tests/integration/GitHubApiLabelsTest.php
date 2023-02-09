@@ -18,19 +18,39 @@ use PHPUnit\Framework\TestCase;
  * @preserveGlobalState disabled
  */
 final class GitHubApiLabelsTest extends TestCase {
-	const label_name = 'Label for testing';
+	/**
+	 * Const for label name.
+	 *
+	 * @var $LABEL_NAME
+	 */
+	private const LABEL_NAME = 'Label for testing';
 
-	var $options_git = array(
-		'github-repo-url'	=> null,
-		'repo-name'		=> null,
-		'repo-owner'		=> null,
+	/**
+	 * Options variable for git.
+	 *
+	 * @var $options_git
+	 */
+	private array $options_git = array(
+		'github-repo-url' => null,
+		'repo-name'       => null,
+		'repo-owner'      => null,
 	);
 
-	var $options_labels = array(
-		'labels-pr-to-modify'	=> null,
+	/**
+	 * Options variable for labels.
+	 *
+	 * @var $options_labels
+	 */
+	private array $options_labels = array(
+		'labels-pr-to-modify' => null,
 	);
 
-	var $options_secrets = array();
+	/**
+	 * Options variable for secrets.
+	 *
+	 * @var $options_secrets
+	 */
+	private $options_secrets = array();
 
 	/**
 	 * Set up function.
@@ -38,7 +58,7 @@ final class GitHubApiLabelsTest extends TestCase {
 	 * @return void.
 	 */
 	protected function setUp(): void {
-		require_once( __DIR__ . '/IncludesForTests.php' );
+		require_once __DIR__ . '/IncludesForTests.php';
 
 		vipgoci_unittests_get_config_values(
 			'git',
@@ -50,11 +70,11 @@ final class GitHubApiLabelsTest extends TestCase {
 			$this->options_labels
 		);
 
-		$this->options_secrets[ 'github-token' ] =
+		$this->options_secrets['github-token'] =
 			vipgoci_unittests_get_config_value(
 				'git-secrets',
 				'github-token',
-				true // Fetch from secrets file
+				true // Fetch from secrets file.
 			);
 
 		$this->options = array_merge(
@@ -77,12 +97,16 @@ final class GitHubApiLabelsTest extends TestCase {
 	}
 
 	/**
+	 * Test adding a GitHub label.
+	 *
 	 * @covers ::vipgoci_github_label_add_to_pr
+	 *
+	 * @return void
 	 */
-	public function testGitHubAddLabel1() {
+	public function testGitHubAddLabel1() :void {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
-			array( ),
+			array(),
 			$this
 		);
 
@@ -99,7 +123,7 @@ final class GitHubApiLabelsTest extends TestCase {
 			$this->options['repo-name'],
 			$this->options['github-token'],
 			$this->options['labels-pr-to-modify'],
-			$this::label_name
+			$this::LABEL_NAME
 		);
 
 		vipgoci_unittests_output_unsuppress();
@@ -118,12 +142,16 @@ final class GitHubApiLabelsTest extends TestCase {
 	}
 
 	/**
+	 * Test removing a GitHub label.
+	 *
 	 * @covers ::vipgoci_github_pr_label_remove
+	 *
+	 * @return void
 	 */
 	public function testGitHubRemoveLabel1() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
-			array( ),
+			array(),
 			$this
 		);
 
@@ -140,7 +168,7 @@ final class GitHubApiLabelsTest extends TestCase {
 			$this->options['repo-name'],
 			$this->options['github-token'],
 			$this->options['labels-pr-to-modify'],
-			$this::label_name
+			$this::LABEL_NAME
 		);
 
 		vipgoci_unittests_output_unsuppress();
@@ -153,7 +181,12 @@ final class GitHubApiLabelsTest extends TestCase {
 		);
 	}
 
-	private function labels_get() {
+	/**
+	 * Get labels.
+	 *
+	 * @return mixed
+	 */
+	private function labels_get() :mixed {
 		/*
 		 * Sometimes it can take GitHub
 		 * a while to update its cache.
