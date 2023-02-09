@@ -47,6 +47,13 @@ final class LintScanCommitTest extends TestCase {
 	);
 
 	/**
+	 * Variable for options.
+	 *
+	 * @var $options
+	 */
+	private array $options = array();
+
+	/**
 	 * Setup function. Require files, etc.
 	 *
 	 * @return void
