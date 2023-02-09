@@ -15,6 +15,7 @@ All notable changes to this project will be documented in this file.
 - [#335](https://github.com/Automattic/vip-go-ci/pull/335): Update "local" slug determination mechanism
 - [#344](https://github.com/Automattic/vip-go-ci/pull/344): Update comment in wp-core-misc.php
 - [#345](https://github.com/Automattic/vip-go-ci/pull/345): Update vipgoci-run.sh.dist file: Add option to skip scanning of directories via file, alter order of commands
+- [#346](https://github.com/Automattic/vip-go-ci/pull/346): Update unit and integration tests to comply with a common standard, PHP 8.2 fixes, template update
 
 ## Fixed
 - [#337](https://github.com/Automattic/vip-go-ci/pull/337): Version number sanitizing: Allow "-" in version numbers
