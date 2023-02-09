@@ -104,6 +104,11 @@ final class HttpFunctionsHttpApiRateLimitsCheckTest extends TestCase {
 	/**
 	 * Test different ratelimits headers when calling the function.
 	 *
+	 * @param string $url_input         URL to process.
+	 * @param array  $headers_input     HTTP headers to process.
+	 * @param string $output_expected   Expected headers.
+	 * @param array  $counters_expected Expected counter values.
+	 *
 	 * @dataProvider dataRateLimits
 	 *
 	 * @covers ::vipgoci_http_api_rate_limit_check
