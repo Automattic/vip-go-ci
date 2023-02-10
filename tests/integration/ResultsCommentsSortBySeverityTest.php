@@ -14,6 +14,20 @@ final class ResultsCommentsSortBySeverityTest extends TestCase {
 	 */
 	private array $options = array();
 
+	/**
+	 * Results array.
+	 *
+	 * @var $results
+	 */
+	private array $results = array();
+
+	/**
+	 * Previous results array.
+	 *
+	 * @var $results_before
+	 */
+	private array $results_before = array();
+
 	protected function setUp(): void {
 		$this->results = array(
 			'issues' => array(
