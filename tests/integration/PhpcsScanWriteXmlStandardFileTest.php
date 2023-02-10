@@ -5,6 +5,13 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 use PHPUnit\Framework\TestCase;
 
 final class PhpcsScanWriteXmlStandardFileTest extends TestCase {
+	/**
+	 * XML file path.
+	 *
+	 * @var $xml_file_path
+	 */
+	private string $xml_file_path = '';
+
 	protected function setUp(): void {
 		$this->xml_file_path = tempnam(
 			sys_get_temp_dir(),
@@ -13,9 +20,9 @@ final class PhpcsScanWriteXmlStandardFileTest extends TestCase {
 	}
 
 	protected function tearDown(): void {
-		unlink(
-			$this->xml_file_path
-		);
+		unlink( $this->xml_file_path );
+
+		unset( $this->xml_file_path );
 	}
 
 	/**
