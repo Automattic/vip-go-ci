@@ -14,6 +14,13 @@ use PHPUnit\Framework\TestCase;
  * the GitDiffsFetchUnfilteredTrait.php file.
  */
 final class GitRepoDiffsFetchUnfilteredTest extends TestCase {
+	/**
+	 * Options array.
+	 *
+	 * @var $options
+	 */
+	private array $options = array();
+
 	use GitDiffsFetchUnfilteredTrait;
 
 	var $options_git_repo_tests = array(
@@ -75,9 +82,9 @@ final class GitRepoDiffsFetchUnfilteredTest extends TestCase {
 			);
 		}
 
-		$this->options_git_repo_tests = null;
-		$this->options_git = null;
-		$this->options = null;
+		unset( $this->options_git_repo_tests );
+		unset( $this->options_git );
+		unset( $this->options );
 	}
 
 	/**
