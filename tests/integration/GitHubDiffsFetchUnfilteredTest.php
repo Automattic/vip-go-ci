@@ -82,9 +82,9 @@ final class GitHubDiffsFetchUnfilteredTest extends TestCase {
 	}
 
 	protected function tearDown(): void {
-		$this->options_git_repo_tests = null;
-		$this->options_git = null;
-		$this->options = null;
+		unset( $this->options_git_repo_tests );
+		unset( $this->options_git );
+		unset( $this->options );
 	}
 
 	/**
