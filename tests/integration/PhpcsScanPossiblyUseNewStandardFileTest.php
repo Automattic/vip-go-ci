@@ -12,6 +12,13 @@ final class PhpcsScanPossiblyUseNewStandardFileTest extends TestCase {
 	 */
 	private array $options = array();
 
+	/**
+	 * Original standard.
+	 *
+	 * @var $original_standard
+	 */
+	private array $original_standard = array();
+
 	protected function setUp(): void {
 		$this->original_standard = array( 'WordPress-VIP-Go' );
 
