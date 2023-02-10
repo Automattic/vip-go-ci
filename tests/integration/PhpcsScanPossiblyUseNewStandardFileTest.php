@@ -5,6 +5,13 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 use PHPUnit\Framework\TestCase;
 
 final class PhpcsScanPossiblyUseNewStandardFileTest extends TestCase {
+	/**
+	 * Options array.
+	 *
+	 * @var $options
+	 */
+	private array $options = array();
+
 	protected function setUp(): void {
 		$this->original_standard = array( 'WordPress-VIP-Go' );
 
@@ -28,7 +35,7 @@ final class PhpcsScanPossiblyUseNewStandardFileTest extends TestCase {
 			);
 		}
 
-		$this->options = null;
+		unset( $this->options );
 	}
 
 	/**
