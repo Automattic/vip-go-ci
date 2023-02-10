@@ -109,8 +109,8 @@ jobs:
         env:
           VIPGOCI_TESTING_DEBUG_MODE: 'true'
 
-  phpcs-scan:
-    name: PHPCS scan
+  php-code-compatibility:
+    name: PHP code compatibility (8.2)
     runs-on: ubuntu-latest
     steps:
       - name: Check out the source code
