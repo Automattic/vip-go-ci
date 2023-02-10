@@ -7,6 +7,13 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 use PHPUnit\Framework\TestCase;
 
 final class ResultsCommentsSortBySeverityTest extends TestCase {
+	/**
+	 * Options array.
+	 *
+	 * @var $options
+	 */
+	private array $options = array();
+
 	protected function setUp(): void {
 		$this->results = array(
 			'issues' => array(
@@ -140,8 +147,8 @@ final class ResultsCommentsSortBySeverityTest extends TestCase {
 	}
 
 	protected function tearDown(): void {
-		$this->options = null;
-		$this->results = null;
+		unset( $this->options );
+		unset( $this->results );
 	}
 
 	/**
