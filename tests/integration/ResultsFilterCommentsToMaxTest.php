@@ -14,6 +14,20 @@ final class ResultsFilterCommentsToMaxTest extends TestCase {
 	 */
 	private array $options = array();
 
+	/**
+	 * Results array.
+	 *
+	 * @var $results
+	 */
+	private array $results = array();
+
+	/**
+	 * Original results array.
+	 *
+	 * @var $results_orig
+	 */
+	private array $results_orig = array();
+
 	var $options_git = array(
 		'repo-owner'	=> null,
 		'repo-name'	=> null,
