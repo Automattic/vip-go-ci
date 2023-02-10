@@ -5,6 +5,13 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 use PHPUnit\Framework\TestCase;
 
 final class GitHubLabelsFetchTest extends TestCase {
+	/**
+	 * Options array.
+	 *
+	 * @var $options
+	 */
+	private array $options = array();
+
 	var $options_git = array(
 		'git-path'			=> null,
 		'github-repo-url'		=> null,
@@ -45,9 +52,9 @@ final class GitHubLabelsFetchTest extends TestCase {
 	}
 
 	protected function tearDown(): void {
-		$this->options = null;
-		$this->options_git = null;
-		$this->options_git_repo_tests = null;
+		unset( $this->options );
+		unset( $this->options_git );
+		unset( $this->options_git_repo_tests );
 	}
 
 	/**
