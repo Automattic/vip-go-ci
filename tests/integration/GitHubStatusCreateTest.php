@@ -7,6 +7,13 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 use PHPUnit\Framework\TestCase;
 
 final class GitHubStatusCreateTest extends TestCase {
+	/**
+	 * Options array.
+	 *
+	 * @var $options
+	 */
+	private array $options = array();
+
 	var $options_git_repo_tests = array(
 		'commit-test-repo-pr-diffs-4-a'	=> null,
 	);
@@ -49,9 +56,9 @@ final class GitHubStatusCreateTest extends TestCase {
 	}
 
 	public function tearDown(): void {
-		$this->options = null;
-		$this->options_git = null;
-		$this->options_git_repo_tests = null;
+		unset( $this->options );
+		unset( $this->options_git );
+		unset( $this->options_git_repo_tests );
 	}
 
 	private function _setBuildStatus(): void {
