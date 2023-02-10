@@ -13,13 +13,6 @@ final class ApNonfunctionalChangesTest extends TestCase {
 	);
 
 	/**
-	 * Variable for auto-approvals options.
-	 *
-	 * @var $options_auto_approval
-	 */
-	private array $options_auto_approval = array();
-
-	/**
 	 * Variable for options.
 	 *
 	 * @var $options
@@ -81,9 +74,9 @@ final class ApNonfunctionalChangesTest extends TestCase {
 			);
 		}
 
-		$this->options = null;
-		$this->options_git = null;
-		$this->options_auto_approval = null;
+		unset( $this->options );
+		unset( $this->options_git );
+		unset( $this->options_auto_approvals_nonfunc );
 	}
 
 	/**
