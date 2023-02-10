@@ -21,6 +21,7 @@ jobs:
         php:
           - '8.0'
           - '8.1'
+          - '8.2'
     steps:
       - name: Check out the source code
         uses: actions/checkout@v3
@@ -51,6 +52,7 @@ jobs:
         php:
           - '8.0'
           - '8.1'
+          - '8.2'
     steps:
       - name: Check out the source code
         uses: actions/checkout@v3
@@ -72,6 +74,12 @@ jobs:
         with:
           coverage: none
           php-version: "8.1"
+
+      - name: Set up PHP 8.2
+        uses: shivammathur/setup-php@v2
+        with:
+          coverage: none
+          php-version: "8.2"
           tools: phpunit:9
         env:
           fail-fast: 'true'
@@ -112,7 +120,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           coverage: none
-          php-version: 8.1
+          php-version: 8.2
 
       - name: Install tools
         run: |
@@ -121,4 +129,4 @@ jobs:
 
       - name: Run PHPCS
         run: |
-          ~/vip-go-ci-tools/phpcs/bin/phpcs --runtime-set 'testVersion' '8.1-'  --standard=PHPCompatibility,PHPCompatibilityParagonieRandomCompat,PHPCompatibilityParagonieSodiumCompat --ignore="vendor/*" .
+          ~/vip-go-ci-tools/phpcs/bin/phpcs --runtime-set 'testVersion' '8.2-'  --standard=PHPCompatibility,PHPCompatibilityParagonieRandomCompat,PHPCompatibilityParagonieSodiumCompat --ignore="vendor/*" .
