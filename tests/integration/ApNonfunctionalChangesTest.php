@@ -13,7 +13,7 @@ final class ApNonfunctionalChangesTest extends TestCase {
 	);
 
 	/**
-	 * Variable for options auto-approvals.
+	 * Variable for auto-approvals options.
 	 *
 	 * @var $options_auto_approval
 	 */
