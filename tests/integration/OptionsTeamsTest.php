@@ -17,7 +17,7 @@ final class OptionsTeamsTest extends TestCase {
 		'org-name'	=> null,
 	);
 
-	public function setUp(): void {
+	protected function setUp(): void {
 		foreach( $this->options as $option_key => $option_value ) {
 			$this->options[ $option_key ] =
 				vipgoci_unittests_get_config_value(
