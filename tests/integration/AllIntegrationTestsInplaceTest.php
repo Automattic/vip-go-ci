@@ -23,7 +23,7 @@ final class AllIntegrationTestsInplaceTest extends TestCase {
 	 *
 	 * @return void
 	 */
-	public function testAllUnitTestsInPlace() :void {
+	public function testAllInterationTestsInPlace() :void {
 		$files_arr = scandir( 'tests/integration' );
 
 		/*
