@@ -55,7 +55,7 @@ final class GitHubStatusCreateTest extends TestCase {
 		$this->options['build-context'] = 'vip-go-ci-temp';
 	}
 
-	public function tearDown(): void {
+	protected function tearDown(): void {
 		unset( $this->options );
 		unset( $this->options_git );
 		unset( $this->options_git_repo_tests );
