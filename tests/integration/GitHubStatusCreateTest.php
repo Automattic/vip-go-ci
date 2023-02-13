@@ -23,7 +23,7 @@ final class GitHubStatusCreateTest extends TestCase {
 		'repo-name'		=> null,
 	);
 
-	public function setUp(): void {
+	protected function setUp(): void {
 		vipgoci_unittests_get_config_values(
 			'git',
 			$this->options_git
