@@ -34,7 +34,7 @@ final class OptionsTeamsTest extends TestCase {
 			$this->options['github-token'];
 	}
 
-	public function tearDown(): void {
+	protected function tearDown(): void {
 		$this->options = null;
 	}
 
