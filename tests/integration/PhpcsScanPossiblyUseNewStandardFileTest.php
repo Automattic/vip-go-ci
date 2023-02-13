@@ -42,6 +42,7 @@ final class PhpcsScanPossiblyUseNewStandardFileTest extends TestCase {
 			);
 		}
 
+		unset( $this->original_standard );
 		unset( $this->options );
 	}
 
