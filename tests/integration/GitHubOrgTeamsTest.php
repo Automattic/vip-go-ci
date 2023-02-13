@@ -22,7 +22,7 @@ final class GitHubOrgTeamsTest extends TestCase {
 		}
 	}
 
-	public function tearDown(): void {
+	protected function tearDown(): void {
 		$this->options = null;
 	}
 
