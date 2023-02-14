@@ -1,18 +1,43 @@
 <?php
+/**
+ * Test function vipgoci_github_org_teams_get().
+ *
+ * @package Automattic/vip-go-ci
+ */
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+declare(strict_types=1);
+
+namespace Vipgoci\Tests\Integration;
 
 use PHPUnit\Framework\TestCase;
 
+/**
+ * Class that implements the testing.
+ *
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState
+ */
 final class GitHubOrgTeamsTest extends TestCase {
-	var $options = array(
-		'github-token'	=> null,
-		'org-name'	=> null,
-		'team-slug'	=> null,
+	/**
+	 * Options array
+	 *
+	 * @var $options
+	 */
+	private array $options = array(
+		'github-token' => null,
+		'org-name'     => null,
+		'team-slug'    => null,
 	);
 
+	/**
+	 * Setup function.
+	 *
+	 * @return void
+	 */
 	protected function setUp(): void {
-		foreach( $this->options as $option_key => $option_value ) {
+		require_once __DIR__ . '/IncludesForTests.php';
+
+		foreach ( $this->options as $option_key => $option_value ) {
 			$this->options[ $option_key ] =
 				vipgoci_unittests_get_config_value(
 					'git-secrets',
@@ -22,17 +47,26 @@ final class GitHubOrgTeamsTest extends TestCase {
 		}
 	}
 
+	/**
+	 * Teardown function.
+	 *
+	 * @return void
+	 */
 	protected function tearDown(): void {
-		$this->options = null;
+		unset( $this->options );
 	}
 
 	/**
+	 * Test common usage of the function.
+	 *
 	 * @covers ::vipgoci_github_org_teams_get
+	 *
+	 * @return void
 	 */
-	public function testGitHubOrgTeamsNoFiltersNoKeys() {
+	public function testGitHubOrgTeamsNoFiltersNoKeys() :void {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
-			array( ),
+			array(),
 			$this
 		);
 
@@ -47,7 +81,6 @@ final class GitHubOrgTeamsTest extends TestCase {
 
 			return;
 		}
-
 
 		/*
 		 * Test vipgoci_github_org_teams_get() without any
@@ -107,12 +140,16 @@ final class GitHubOrgTeamsTest extends TestCase {
 	}
 
 	/**
+	 * Test common usage of the function.
+	 *
 	 * @covers ::vipgoci_github_org_teams_get
+	 *
+	 * @return void
 	 */
-	public function testGitHubOrgTeamsWithFilters() {
+	public function testGitHubOrgTeamsWithFilters() :void {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
-			array( ),
+			array(),
 			$this
 		);
 
@@ -139,13 +176,12 @@ final class GitHubOrgTeamsTest extends TestCase {
 			$this->options['github-token'],
 			$this->options['org-name'],
 			array(
-				'slug' => $this->options['team-slug']
+				'slug' => $this->options['team-slug'],
 			),
 			null
 		);
 
 		vipgoci_unittests_output_unsuppress();
-
 
 		$this->assertNotEmpty(
 			$teams_res_actual,
@@ -174,7 +210,7 @@ final class GitHubOrgTeamsTest extends TestCase {
 			$this->options['github-token'],
 			$this->options['org-name'],
 			array(
-				'slug' => $this->options['team-slug']
+				'slug' => $this->options['team-slug'],
 			),
 			null
 		);
@@ -191,12 +227,16 @@ final class GitHubOrgTeamsTest extends TestCase {
 	}
 
 	/**
+	 * Test common usage of the function.
+	 *
 	 * @covers ::vipgoci_github_org_teams_get
+	 *
+	 * @return void
 	 */
-	public function testGitHubOrgTeamsWithKeyes() {
+	public function testGitHubOrgTeamsWithKeyes() :void {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
-			array( ),
+			array(),
 			$this
 		);
 
@@ -212,7 +252,6 @@ final class GitHubOrgTeamsTest extends TestCase {
 			return;
 		}
 
-
 		/*
 		 * Test vipgoci_github_org_teams_get() without filters but
 		 * with output keyed.
@@ -225,9 +264,8 @@ final class GitHubOrgTeamsTest extends TestCase {
 			null,
 			'slug'
 		);
-	
-		vipgoci_unittests_output_unsuppress();
 
+		vipgoci_unittests_output_unsuppress();
 
 		$this->assertNotEmpty(
 			$teams_res_actual,
@@ -240,32 +278,24 @@ final class GitHubOrgTeamsTest extends TestCase {
 
 		$this->assertTrue(
 			isset(
-				$teams_res_actual[
-					$teams_res_actual_keys[0]
-				][0]->name
+				$teams_res_actual[ $teams_res_actual_keys[0] ][0]->name
 			)
 		);
 
 		$this->assertTrue(
 			strlen(
-				$teams_res_actual[
-					$teams_res_actual_keys[0]
-				][0]->name
+				$teams_res_actual[ $teams_res_actual_keys[0] ][0]->name
 			) > 0
 		);
 
 		$this->assertSame(
 			$teams_res_actual_keys[0],
-			$teams_res_actual[
-				$teams_res_actual_keys[0]
-			][0]->slug
+			$teams_res_actual[ $teams_res_actual_keys[0] ][0]->slug
 		);
-
 
 		/*
 		 * Test again, now the cached version.
 		 */
-
 		vipgoci_unittests_output_suppress();
 
 		$teams_res_actual_cached = vipgoci_github_org_teams_get(
