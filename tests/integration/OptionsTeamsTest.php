@@ -1,6 +1,13 @@
 <?php
+/**
+ * Test vipgoci_option_teams_handle().
+ *
+ * @package Automattic/vip-go-ci
+ */
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+declare(strict_types=1);
+
+namespace Vipgoci\Tests\Integration;
 
 use PHPUnit\Framework\TestCase;
 
@@ -11,13 +18,25 @@ use PHPUnit\Framework\TestCase;
  * @preserveGlobalState disabled
  */
 final class OptionsTeamsTest extends TestCase {
-	var $options = array(
-		'github-token'	=> null,
-		'team-slug'	=> null,
-		'org-name'	=> null,
+	/**
+	 * Options variable.
+	 *
+	 * @var $options
+	 */
+	private array $options = array(
+		'github-token' => null,
+		'team-slug'    => null,
+		'org-name'     => null,
 	);
 
+	/**
+	 * Setup function.
+	 *
+	 * @return void
+	 */
 	protected function setUp(): void {
+		require_once __DIR__ . '/IncludesForTests.php';
+
 		foreach( $this->options as $option_key => $option_value ) {
 			$this->options[ $option_key ] =
 				vipgoci_unittests_get_config_value(
@@ -34,14 +53,23 @@ final class OptionsTeamsTest extends TestCase {
 			$this->options['github-token'];
 	}
 
+	/**
+	 * Cleanup function.
+	 *
+	 * @return void
+	 */
 	protected function tearDown(): void {
 		$this->options = null;
 	}
 
 	/**
+	 * Test common usage of the function.
+	 *
 	 * @covers ::vipgoci_option_teams_handle
+	 *
+	 * @return void
 	 */
-	public function testVipgociOptionTeams1() {
+	public function testVipgociOptionTeams1() :void {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( ),
@@ -88,9 +116,13 @@ final class OptionsTeamsTest extends TestCase {
 	}
 
 	/**
+	 * Test common usage of the function.
+	 *
 	 * @covers ::vipgoci_option_teams_handle
+	 *
+	 * @return void
 	 */
-	public function testVipgociOptionTeams2() {
+	public function testVipgociOptionTeams2() :void {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array( ),
