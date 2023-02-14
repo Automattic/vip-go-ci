@@ -36,6 +36,8 @@ function vipgoci_util_php_interpreter_get_version(
 	return '7.4.20';
 }
 
+// phpcs:disable VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
+
 /**
  * Throws an exception indicating error when called.
  *
@@ -58,4 +60,6 @@ function vipgoci_sysexit(
 		'vipgoci_sysexit() was called. This means that some options are not defined or incorrectly used.'
 	);
 }
+
+// phpcs:enable VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
 

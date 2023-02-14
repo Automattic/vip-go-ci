@@ -1,19 +1,43 @@
 <?php
+/**
+ * Test vipgoci_results_filter_irrellevant().
+ *
+ * @package Automattic/vip-go-ci
+ */
 
 declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
-require_once __DIR__ . '/../../results.php';
-
 use PHPUnit\Framework\TestCase;
 
+/**
+ * Class that implements the testing.
+ *
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class ResultsFilterIrrellevantTest extends TestCase {
 	/**
-	 * @covers ::vipgoci_results_filter_irrellevant
+	 * Setup function. Require files, etc.
+	 *
+	 * @return void
 	 */
-	public function testDoScanIssuesFilter1() {
+	protected function setUp() :void {
+		require_once __DIR__ . '/../../results.php';
+		require_once __DIR__ . '/../../github-misc.php';
+	}
+
+	/**
+	 * Test common usage of the function.
+	 *
+	 * @covers ::vipgoci_results_filter_irrellevant
+	 *
+	 * @return void
+	 */
+	public function testDoScanIssuesFilter1() :void {
 		$file_name = 'bla-10.php';
+
 		$file_issues_arr = json_decode(
 			'{"bla-10.php":[{"message":"json_encode() is discouraged. Use wp_json_encode() instead.","source":"WordPress.WP.AlternativeFunctions.json_encode_json_encode","severity":5,"fixable":false,"type":"WARNING","line":7,"column":6,"level":"WARNING"}],"bla-8.php":[{"message":"All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found \'mysql_query\'.","source":"WordPress.Security.EscapeOutput.OutputNotEscaped","severity":5,"fixable":false,"type":"ERROR","line":3,"column":6,"level":"ERROR"},{"message":"Extension \'mysql_\' is deprecated since PHP 5.5 and removed since PHP 7.0; Use mysqli instead","source":"PHPCompatibility.Extensions.RemovedExtensions.mysql_DeprecatedRemoved","severity":5,"fixable":false,"type":"ERROR","line":3,"column":6,"level":"ERROR"}]}',
 			true
@@ -45,15 +69,15 @@ final class ResultsFilterIrrellevantTest extends TestCase {
 		$this->assertSame(
 			array(
 				array(
-					'message' => 'json_encode() is discouraged. Use wp_json_encode() instead.',
-					'source' => 'WordPress.WP.AlternativeFunctions.json_encode_json_encode',
+					'message'  => 'json_encode() is discouraged. Use wp_json_encode() instead.',
+					'source'   => 'WordPress.WP.AlternativeFunctions.json_encode_json_encode',
 					'severity' => 5,
-					'fixable' => false,
-					'type' => 'WARNING',
-					'line' => 7,
-					'column' => 6,
-					'level' => 'WARNING',
-				)
+					'fixable'  => false,
+					'type'     => 'WARNING',
+					'line'     => 7,
+					'column'   => 6,
+					'level'    => 'WARNING',
+				),
 			),
 			$issues_filtered
 		);

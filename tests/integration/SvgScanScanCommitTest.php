@@ -20,6 +20,13 @@ use PHPUnit\Framework\TestCase;
  * as expected.
  */
 final class SvgScanScanCommitTest extends TestCase {
+	/**
+	 * Options array.
+	 *
+	 * @var $options
+	 */
+	private array $options = array();
+
 	var $options_svg = array(
 		'svg-scanner-path'                        => null,
 		'svg-php-path'                            => null,
@@ -95,9 +102,9 @@ final class SvgScanScanCommitTest extends TestCase {
 			);
 		}
 
-		$this->options_svg      = null;
-		$this->options_git_repo = null;
-		$this->options          = null;
+		unset( $this->options_svg );
+		unset( $this->options_git_repo );
+		unset( $this->options );
 	}
 
 	/**

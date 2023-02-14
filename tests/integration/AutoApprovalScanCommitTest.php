@@ -27,6 +27,27 @@ final class AutoApprovalScanCommitTest extends TestCase {
 	private mixed $safe_to_run = null;
 
 	/**
+	 * Variable for auto-approval options.
+	 *
+	 * @var $options_auto_approvals
+	 */
+	private array $options_auto_approvals = array();
+
+	/**
+	 * Variable for git options.
+	 *
+	 * @var $options_git
+	 */
+	private array $options_git = array();
+
+	/**
+	 * Variable for options.
+	 *
+	 * @var $options
+	 */
+	private array $options = array();
+
+	/**
 	 * Setup function. Require files, set up variables, etc.
 	 *
 	 * @return void

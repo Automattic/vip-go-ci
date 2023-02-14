@@ -37,6 +37,27 @@ final class MainRunScanReviewsCommentsEnforceMaximumTest extends TestCase {
 	);
 
 	/**
+	 * Variable for options.
+	 *
+	 * @var $options
+	 */
+	private array $options = array();
+
+	/**
+	 * Variable for results.
+	 *
+	 * @var $results
+	 */
+	private array $results = array();
+
+	/**
+	 * Variable for original results.
+	 *
+	 * @var $results_orig
+	 */
+	private array $results_orig = array();
+
+	/**
 	 * Set up all variables, etc.
 	 */
 	protected function setUp(): void {

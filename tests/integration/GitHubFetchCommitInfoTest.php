@@ -38,6 +38,13 @@ final class GitHubFetchCommitInfoTest extends TestCase {
 	);
 
 	/**
+	 * Variable for options.
+	 *
+	 * @var $options
+	 */
+	private array $options = array();
+
+	/**
 	 * Set up function. Require files, set variables, etc.
 	 *
 	 * @return void

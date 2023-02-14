@@ -1,6 +1,13 @@
 <?php
+/**
+ * Ensure all test files end with 'Test.php', unless exempt.
+ *
+ * @package Automattic/vip-go-ci
+ */
 
-require_once __DIR__ . '/IncludesForTests.php';
+declare(strict_types=1);
+
+namespace Vipgoci\Tests\Integration;
 
 use PHPUnit\Framework\TestCase;
 
@@ -10,21 +17,25 @@ use PHPUnit\Framework\TestCase;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class AllUnitTestsInplaceTest extends TestCase {
+final class AllIntegrationTestsInplaceTest extends TestCase {
 	/**
-	 * Check all tests.
+	 * Verify all files.
+	 *
+	 * @return void
 	 */
-	public function testAllUnitTestsInPlace() {
+	public function testAllInterationTestsInPlace() :void {
 		$files_arr = scandir( 'tests/integration' );
 
 		/*
-		 * Filter away any files that
-		 * should be in the tests/ directory,
-		 * but should not be tested -- they
-		 * are support files, etc. Also
-		 * filter away files that will be
-		 * tested, based on their names (end
-		 * with "Test.php").
+		 * Filter away any files that should be
+		 * in the tests/integration directory, but should
+		 * not be tested, i.e. supporting files.
+		 *
+		 * Also filter away files that end with 'Test.php', as
+		 * they will be tested.
+		 *
+		 * This will result in an empty array when everything
+		 * is accounted for.
 		 */
 		$files_arr = array_filter(
 			$files_arr,

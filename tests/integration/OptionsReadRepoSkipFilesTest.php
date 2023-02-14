@@ -41,6 +41,13 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 	);
 
 	/**
+	 * Variable for options.
+	 *
+	 * @var $options
+	 */
+	private array $options = array();
+
+	/**
 	 * Set up all variables, require file, etc.
 	 *
 	 * @return void

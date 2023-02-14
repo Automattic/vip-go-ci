@@ -1,41 +1,69 @@
 <?php
+/**
+ * Test function vipgoci_runtime_measure().
+ *
+ * @package Automattic/vip-go-ci
+ */
 
 declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
-require_once( __DIR__ . './../../defines.php' );
-require_once( __DIR__ . './../../statistics.php' );
-
 use PHPUnit\Framework\TestCase;
 
-// phpcs:disable PSR1.Files.SideEffects
-
+/**
+ * Class that implements the testing.
+ *
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class StatisticsRuntimeMeasureTest extends TestCase {
 	/**
-	 * @covers ::vipgoci_runtime_measure
+	 * Setup function. Require files, etc.
+	 *
+	 * @return void
 	 */
-	function testRuntimeMeasure1() {
-		return $this->assertSame(
+	protected function setUp() :void {
+		require_once __DIR__ . './../../defines.php';
+		require_once __DIR__ . './../../statistics.php';
+	}
+
+	/**
+	 * Test invalid usage of the function.
+	 *
+	 * @covers ::vipgoci_runtime_measure
+	 *
+	 * @return void
+	 */
+	public function testRuntimeMeasure1() :void {
+		$this->assertSame(
 			false,
 			vipgoci_runtime_measure( 'illegalaction', 'mytimer1' )
 		);
 	}
 
 	/**
+	 * Test common usage of the function.
+	 *
 	 * @covers ::vipgoci_runtime_measure
+	 *
+	 * @return void
 	 */
-	function testRuntimeMeasure2() {
-		return $this->assertSame(
+	public function testRuntimeMeasure2() :void {
+		$this->assertSame(
 			false,
 			vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'mytimer2' )
 		);
 	}
 
 	/**
+	 * Test common usage of the function.
+	 *
 	 * @covers ::vipgoci_runtime_measure
+	 *
+	 * @return void
 	 */
-	function testRuntimeMeasure3() {
+	public function testRuntimeMeasure3() :void {
 		$this->assertSame(
 			true,
 			vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'mytimer3' )
@@ -47,21 +75,16 @@ final class StatisticsRuntimeMeasureTest extends TestCase {
 			1,
 			vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'mytimer3' )
 		);
-	
+
 		$runtime_stats = vipgoci_runtime_measure(
 			VIPGOCI_RUNTIME_DUMP
 		);
 
 		$this->assertGreaterThanOrEqual(
 			1,
-			$runtime_stats[ 'mytimer3' ]
+			$runtime_stats['mytimer3']
 		);
-	}
 
-	/**
-	 * @covers ::vipgoci_runtime_measure
-	 */
-	function testRuntimeMeasure4() {
 		$this->assertSame(
 			true,
 			vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'mytimer4' )
@@ -75,9 +98,8 @@ final class StatisticsRuntimeMeasureTest extends TestCase {
 
 		$this->assertGreaterThanOrEqual(
 			1,
-			$runtime_stats[ 'mytimer3' ]
+			$runtime_stats['mytimer3']
 		);
-
 	}
 }
 

@@ -6,9 +6,14 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 
 use PHPUnit\Framework\TestCase;
 
-// phpcs:disable PSR1.Files.SideEffects
-
 final class GitHubAuthenticatedUserGetTest extends TestCase {
+	/**
+	 * Variable for options.
+	 *
+	 * @var $options
+	 */
+	private array $options = array();
+
 	protected function setUp(): void {
 		$this->options = array();
 

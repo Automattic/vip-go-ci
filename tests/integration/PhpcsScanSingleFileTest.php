@@ -5,6 +5,13 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 use PHPUnit\Framework\TestCase;
 
 final class PhpcsScanSingleFileTest extends TestCase {
+	/**
+	 * Options array.
+	 *
+	 * @var $options
+	 */
+	private array $options = array();
+
 	var $options_phpcs = array(
 		'phpcs-path'                      => null,
 		'phpcs-php-path'                  => null,
@@ -84,7 +91,7 @@ final class PhpcsScanSingleFileTest extends TestCase {
 
 		$this->options_phpcs    = null;
 		$this->options_git_repo = null;
-		$this->options          = null;
+		unset( $this->options );
 	}
 
 	/**

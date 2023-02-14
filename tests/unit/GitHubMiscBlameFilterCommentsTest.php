@@ -1,22 +1,42 @@
 <?php
+/**
+ * Test vipgoci_blame_filter_commits().
+ *
+ * @package Automattic/vip-go-ci
+ */
 
 declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
-require_once( __DIR__ . './../../misc.php' );
-
 use PHPUnit\Framework\TestCase;
 
-// phpcs:disable PSR1.Files.SideEffects
-
+/**
+ * Class that implements the testing.
+ *
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class GitHubMiscBlameFilterCommentsTest extends TestCase {
 	/**
-	 * @covers ::vipgoci_blame_filter_commits
+	 * Setup function. Require files, etc.
+	 *
+	 * @return void
 	 */
-	public function testBlameFilterComments1() {
+	protected function setUp() :void {
+		require_once __DIR__ . './../../github-misc.php';
+	}
+
+	/**
+	 * Test common usage of the function.
+	 *
+	 * @covers ::vipgoci_blame_filter_commits
+	 *
+	 * @return void
+	 */
+	public function testBlameFilterComments1() :void {
 		$blame_log = json_decode(
-			'[{"commit_id":"0131c2739c1a5d2d03bb2645e1be491a6a182091","file_name":"bla-10.php","line_no":1},{"commit_id":"0131c2739c1a5d2d03bb2645e1be491a6a182091","file_name":"bla-10.php","line_no":2},{"commit_id":"0131c2739c1a5d2d03bb2645e1be491a6a182091","file_name":"bla-10.php","line_no":3},{"commit_id":"0131c2739c1a5d2d03bb2645e1be491a6a182091","file_name":"bla-10.php","line_no":4},{"commit_id":"b591cee061d15b1e0187baf9f13a6ab32661bc1b","file_name":"bla-10.php","line_no":5},{"commit_id":"aec27de5f13a5495577ca7ba27fc8b10a04ac89f","file_name":"bla-10.php","line_no":6},{"commit_id":"aec27de5f13a5495577ca7ba27fc8b10a04ac89f","file_name":"bla-10.php","line_no":7}, {"commit_id":"8b1532de86c2f5f7187777a4957395d85ddc2be6", "file_name":"rename.c", "line_no":"5"}]', 
+			'[{"commit_id":"0131c2739c1a5d2d03bb2645e1be491a6a182091","file_name":"bla-10.php","line_no":1},{"commit_id":"0131c2739c1a5d2d03bb2645e1be491a6a182091","file_name":"bla-10.php","line_no":2},{"commit_id":"0131c2739c1a5d2d03bb2645e1be491a6a182091","file_name":"bla-10.php","line_no":3},{"commit_id":"0131c2739c1a5d2d03bb2645e1be491a6a182091","file_name":"bla-10.php","line_no":4},{"commit_id":"b591cee061d15b1e0187baf9f13a6ab32661bc1b","file_name":"bla-10.php","line_no":5},{"commit_id":"aec27de5f13a5495577ca7ba27fc8b10a04ac89f","file_name":"bla-10.php","line_no":6},{"commit_id":"aec27de5f13a5495577ca7ba27fc8b10a04ac89f","file_name":"bla-10.php","line_no":7}, {"commit_id":"8b1532de86c2f5f7187777a4957395d85ddc2be6", "file_name":"rename.c", "line_no":"5"}]',
 			true
 		);
 

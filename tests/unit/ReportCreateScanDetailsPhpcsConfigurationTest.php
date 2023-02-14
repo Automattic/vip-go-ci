@@ -20,7 +20,16 @@ use PHPUnit\Framework\TestCase;
  */
 final class ReportCreateScanDetailsPhpcsConfigurationTest extends TestCase {
 	/**
+	 * Options array.
+	 *
+	 * @var $options
+	 */
+	private array $options = array();
+
+	/**
 	 * Setup function. Require files, etc.
+	 *
+	 * @return void
 	 */
 	protected function setUp() :void {
 		require_once __DIR__ . '/../../reports.php';
@@ -33,6 +42,8 @@ final class ReportCreateScanDetailsPhpcsConfigurationTest extends TestCase {
 
 	/**
 	 * Clean up after running.
+	 *
+	 * @return void
 	 */
 	protected function tearDown() :void {
 		unset( $this->options );
@@ -42,6 +53,8 @@ final class ReportCreateScanDetailsPhpcsConfigurationTest extends TestCase {
 	 * Test function with most reporting disabled.
 	 *
 	 * @covers ::vipgoci_report_create_scan_details_phpcs_configuration
+	 *
+	 * @return void
 	 */
 	public function testCreateDetails1(): void {
 		$this->options['phpcs'] = false;
@@ -96,6 +109,8 @@ final class ReportCreateScanDetailsPhpcsConfigurationTest extends TestCase {
 	 * Test function with most reporting enabled.
 	 *
 	 * @covers ::vipgoci_report_create_scan_details_phpcs_configuration
+	 *
+	 * @return void
 	 */
 	public function testCreateDetails2(): void {
 		$this->options['phpcs']                 = true;
@@ -176,6 +191,8 @@ final class ReportCreateScanDetailsPhpcsConfigurationTest extends TestCase {
 	 * Test function with all reporting enabled.
 	 *
 	 * @covers ::vipgoci_report_create_scan_details_phpcs_configuration
+	 *
+	 * @return void
 	 */
 	public function testCreateDetails3(): void {
 		$this->options['phpcs']                   = true;

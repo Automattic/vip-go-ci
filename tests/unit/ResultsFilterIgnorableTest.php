@@ -1,4 +1,9 @@
 <?php
+/**
+ * Test vipgoci_results_filter_ignorable().
+ *
+ * @package Automattic/vip-go-ci
+ */
 
 declare(strict_types=1);
 
@@ -15,6 +20,8 @@ use PHPUnit\Framework\TestCase;
 final class ResultsFilterIgnorableTest extends TestCase {
 	/**
 	 * Require files.
+	 *
+	 * @return void
 	 */
 	protected function setUp() :void {
 		require_once __DIR__ . '/../../results.php';
@@ -26,17 +33,19 @@ final class ResultsFilterIgnorableTest extends TestCase {
 	 * Test the function in different ways.
 	 *
 	 * @covers ::vipgoci_results_filter_ignorable
+	 *
+	 * @return void
 	 */
-	public function testFilterIgnorable1() {
+	public function testFilterIgnorable1() :void {
 		$options = array(
- 			'review-comments-ignore' => array(
+			'review-comments-ignore' => array(
 				'json_encode() is discouraged. Use wp_json_encode() instead.',
 				'json_encode() is discouraged. ',
 				'Test 200',
-				'Test 300'
-			)
+				'Test 300',
+			),
 		);
-		
+
 		$options['review-comments-ignore'] = array_map(
 			'vipgoci_results_standardize_ignorable_message',
 			$options['review-comments-ignore']

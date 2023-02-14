@@ -1,21 +1,15 @@
 <?php
+/**
+ * Test function vipgoci_run_scan_max_exec_time().
+ *
+ * @package Automattic/vip-go-ci
+ */
 
 declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
-require_once __DIR__ . '/helper/IndicateTestId.php';
-require_once __DIR__ . '/helper/CheckPcntlSupport.php';
-require_once __DIR__ . '/../integration/IncludesForTestsOutputControl.php';
-
-require_once __DIR__ . '/../../defines.php';
-require_once __DIR__ . '/../../log.php';
-require_once __DIR__ . '/../../misc.php';
-require_once __DIR__ . '/../../main.php';
-
 use PHPUnit\Framework\TestCase;
-
-// phpcs:disable PSR1.Files.SideEffects
 
 /**
  * Run tests in separate process to ensure
@@ -39,15 +33,10 @@ final class MainRunScanMaxExecTimeTest extends TestCase {
 
 	/**
 	 * Require files and set up indication.
+	 *
+	 * @return void
 	 */
-	protected function setUp(): void {
-		/*
-		 * Indicate that this particular test is running,
-		 * needed so that vipgoci_sysexit() can return
-		 * instead of exiting. See the function itself.
-		 */
-		vipgoci_unittests_indicate_test_id( 'MainRunScanMaxExecTimeTest' );
-
+	protected function setUp() :void {
 		/*
 		 * Ensure this file is required on execution
 		 * of the test itself. This test is run in separate
@@ -55,13 +44,31 @@ final class MainRunScanMaxExecTimeTest extends TestCase {
 		 * by this require. This is needed to ensure function
 		 * declarations are not attempted multiple times.
 		 */
+
+		require_once __DIR__ . '/helper/IndicateTestId.php';
+		require_once __DIR__ . '/helper/CheckPcntlSupport.php';
+		require_once __DIR__ . '/../integration/IncludesForTestsOutputControl.php';
+
+		require_once __DIR__ . '/../../defines.php';
+		require_once __DIR__ . '/../../log.php';
+		require_once __DIR__ . '/../../misc.php';
+		require_once __DIR__ . '/../../main.php';
 		require_once __DIR__ . '/../../other-web-services.php';
+
+		/*
+		 * Indicate that this particular test is running,
+		 * needed so that vipgoci_sysexit() can return
+		 * instead of exiting. See the function itself.
+		 */
+		vipgoci_unittests_indicate_test_id( 'MainRunScanMaxExecTimeTest' );
 	}
 
 	/**
 	 * Remove indication.
+	 *
+	 * @return void
 	 */
-	protected function tearDown(): void {
+	protected function tearDown() :void {
 		/*
 		 * We are no longer running the test,
 		 * remove the indication.
@@ -74,6 +81,8 @@ final class MainRunScanMaxExecTimeTest extends TestCase {
 	 * indicating that alarm was raised.
 	 *
 	 * @covers ::vipgoci_run_scan_max_exec_time
+	 *
+	 * @return void
 	 */
 	public function testRunScanMaxExecTimeLargerThanZero() :void {
 		if ( ! vipgoci_unittests_pcntl_supported() ) {
@@ -141,6 +150,8 @@ final class MainRunScanMaxExecTimeTest extends TestCase {
 	 * indicating that alarm was not raised.
 	 *
 	 * @covers ::vipgoci_run_scan_max_exec_time
+	 *
+	 * @return void
 	 */
 	public function testRunScanMaxExecTimeIsZero() :void {
 		if ( ! vipgoci_unittests_pcntl_supported() ) {
