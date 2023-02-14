@@ -84,7 +84,7 @@ final class GitHubStatusCreateTest extends TestCase {
 	}
 
 	/**
-	 * Setup function.
+	 * Clean up function.
 	 *
 	 * @return void
 	 */
