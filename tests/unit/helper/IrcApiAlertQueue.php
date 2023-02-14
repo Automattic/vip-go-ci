@@ -7,6 +7,8 @@
 
 declare(strict_types=1);
 
+// phpcs:disable VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
+
 /**
  * Provide vipgoci_irc_api_alert_queue(), but does nothing.
  *
@@ -16,8 +18,10 @@ declare(strict_types=1);
  * @return void
  */
 function vipgoci_irc_api_alert_queue(
-	?string $message = null, // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
-	bool $dump = false // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
-) :void { // phpcs:ignore WordPress.WhiteSpace.ControlStructureSpacing.NoSpaceBeforeCloseParenthesis
+	?string $message = null,
+	bool $dump = false
+) :void {
 }
+
+// phpcs:enable VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
 

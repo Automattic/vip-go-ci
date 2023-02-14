@@ -12,7 +12,12 @@ final class PhpcsScanScanCommitTest extends TestCase {
 	 */
 	private array $options = array();
 
-	var $options_phpcs = array(
+	/**
+	 * Options array for PHPCS.
+	 *
+	 * @var $options_phpcs
+	 */
+	private array $options_phpcs = array(
 		'phpcs-path'                      => null,
 		'phpcs-php-path'                  => null,
 		'phpcs-standard'                  => null,
@@ -25,7 +30,12 @@ final class PhpcsScanScanCommitTest extends TestCase {
 		'commit-test-phpcs-scan-commit-6' => null,
 	);
 
-	var $options_git_repo = array(
+	/**
+	 * Options array for git repository.
+	 *
+	 * @var $options_git_repo
+	 */
+	private array $options_git_repo = array(
 		'repo-owner'      => null,
 		'repo-name'       => null,
 		'git-path'        => null,
@@ -99,8 +109,8 @@ final class PhpcsScanScanCommitTest extends TestCase {
 			);
 		}
 
-		$this->options_phpcs    = null;
-		$this->options_git_repo = null;
+		unset( $this->options_phpcs );
+		unset( $this->options_git_repo );
 		unset( $this->options );
 	}
 

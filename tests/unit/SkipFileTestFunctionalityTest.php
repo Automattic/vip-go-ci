@@ -20,7 +20,7 @@ use stdClass;
  */
 final class SkipFileTestFunctionalityTest extends TestCase {
 	/**
-	 * Constant mocked comment.
+	 * Mocked comment constant.
 	 *
 	 * @var $COMMENT_MOCK
 	 */

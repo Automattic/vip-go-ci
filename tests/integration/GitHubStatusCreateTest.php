@@ -1,11 +1,22 @@
 <?php
+/**
+ * Test function vipgoci_github_status_create().
+ *
+ * @package Automattic/vip-go-ci
+ */
 
-namespace Vipgoci\tests;
+declare(strict_types=1);
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+namespace Vipgoci\Tests\Integration;
 
 use PHPUnit\Framework\TestCase;
 
+/**
+ * Class that implements the testing.
+ *
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class GitHubStatusCreateTest extends TestCase {
 	/**
 	 * Options array.
@@ -14,16 +25,33 @@ final class GitHubStatusCreateTest extends TestCase {
 	 */
 	private array $options = array();
 
-	var $options_git_repo_tests = array(
-		'commit-test-repo-pr-diffs-4-a'	=> null,
+	/**
+	 * Options for git repo.
+	 *
+	 * @var $options_git_repo_tests
+	 */
+	private array $options_git_repo_tests = array(
+		'commit-test-repo-pr-diffs-4-a' => null,
 	);
 
-	var $options_git = array(
-		'repo-owner'		=> null,
-		'repo-name'		=> null,
+	/**
+	 * Options for git.
+	 *
+	 * @var $options_git
+	 */
+	private array $options_git = array(
+		'repo-owner' => null,
+		'repo-name'  => null,
 	);
 
-	public function setUp(): void {
+	/**
+	 * Setup function.
+	 *
+	 * @return void
+	 */
+	protected function setUp() :void {
+		require_once __DIR__ . '/IncludesForTests.php';
+
 		vipgoci_unittests_get_config_values(
 			'git',
 			$this->options_git
@@ -43,7 +71,7 @@ final class GitHubStatusCreateTest extends TestCase {
 			vipgoci_unittests_get_config_value(
 				'git-secrets',
 				'github-token',
-				true // Fetch from secrets file
+				true // Fetch from secrets file.
 			);
 
 		$this->options['token'] =
@@ -55,14 +83,24 @@ final class GitHubStatusCreateTest extends TestCase {
 		$this->options['build-context'] = 'vip-go-ci-temp';
 	}
 
-	public function tearDown(): void {
+	/**
+	 * Clean up function.
+	 *
+	 * @return void
+	 */
+	protected function tearDown() :void {
 		unset( $this->options );
 		unset( $this->options_git );
 		unset( $this->options_git_repo_tests );
 	}
 
-	private function _setBuildStatus(): void {
-		sleep(2); // GitHub API requirement
+	/**
+	 * Set build status.
+	 *
+	 * @return void
+	 */
+	private function setBuildStatus() :void {
+		sleep( 2 ); // GitHub API requirement.
 
 		$github_url =
 			VIPGOCI_GITHUB_BASE_URL . '/' .
@@ -73,10 +111,10 @@ final class GitHubStatusCreateTest extends TestCase {
 			rawurlencode( $this->options['github-commit'] );
 
 		$github_postfields = array(
-			'state'		=> $this->options['build-state'],
-			'description'	=> $this->options['build-description'],
-			'context'	=> $this->options['build-context'],
-			'target_url'	=> $this->options['build-target-url'],
+			'state'       => $this->options['build-state'],
+			'description' => $this->options['build-description'],
+			'context'     => $this->options['build-context'],
+			'target_url'  => $this->options['build-target-url'],
 		);
 
 		vipgoci_http_api_post_url(
@@ -86,8 +124,13 @@ final class GitHubStatusCreateTest extends TestCase {
 		);
 	}
 
-	private function _getCurrentBuildStatus(): ?array {
-		sleep(2);
+	/**
+	 * Get current build status.
+	 *
+	 * @return array
+	 */
+	private function getCurrentBuildStatus(): ?array {
+		sleep( 2 );
 
 		$github_url =
 			VIPGOCI_GITHUB_BASE_URL . '/' .
@@ -108,16 +151,16 @@ final class GitHubStatusCreateTest extends TestCase {
 			true
 		);
 
-		foreach( $data['statuses'] as $tmp_status ) {
+		foreach ( $data['statuses'] as $tmp_status ) {
 			if (
 				$this->options['build-context'] ===
 				$tmp_status['context']
 			) {
 				return array(
-					'state'		=> $tmp_status['state'],
-					'description'	=> $tmp_status['description'],
-					'context'	=> $tmp_status['context'],
-					'target_url'	=> $tmp_status['target_url'],
+					'state'       => $tmp_status['state'],
+					'description' => $tmp_status['description'],
+					'context'     => $tmp_status['context'],
+					'target_url'  => $tmp_status['target_url'],
 				);
 			}
 		}
@@ -126,12 +169,16 @@ final class GitHubStatusCreateTest extends TestCase {
 	}
 
 	/**
+	 * Test common usage of the function.
+	 *
 	 * @covers ::vipgoci_github_status_create
+	 *
+	 * @return void
 	 */
-	public function testGitHubStatusCreate1(): void {
+	public function testGitHubStatusCreate1() :void {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
-			array( ),
+			array(),
 			$this
 		);
 
@@ -143,22 +190,22 @@ final class GitHubStatusCreateTest extends TestCase {
 		 * Set build status and
 		 * then verify that it is failed.
 		 */
-		$new_build_description  = 'Build failure: ' . time();
+		$new_build_description = 'Build failure: ' . time();
 
-		$this->options['build-state'] = 'failure';
+		$this->options['build-state']       = 'failure';
 		$this->options['build-description'] = $new_build_description;
-		$this->options['build-target-url'] = null;
+		$this->options['build-target-url']  = null;
 
-		$this->_setBuildStatus();
+		$this->setBuildStatus();
 
 		$this->assertSame(
 			array(
-				'state'		=> 'failure',
-				'description'	=> $new_build_description,
-				'context'	=> $this->options['build-context'],
-				'target_url'	=> null,
+				'state'       => 'failure',
+				'description' => $new_build_description,
+				'context'     => $this->options['build-context'],
+				'target_url'  => null,
 			),
-			$this->_getCurrentBuildStatus()
+			$this->getCurrentBuildStatus()
 		);
 
 		/*
@@ -184,12 +231,12 @@ final class GitHubStatusCreateTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				'state'		=> 'success',
-				'description'	=> $new_build_description,
-				'context'	=> $this->options['build-context'],
-				'target_url'	=> 'https://automattic.com/test1',
+				'state'       => 'success',
+				'description' => $new_build_description,
+				'context'     => $this->options['build-context'],
+				'target_url'  => 'https://automattic.com/test1',
 			),
-			$this->_getCurrentBuildStatus()
+			$this->getCurrentBuildStatus()
 		);
 	}
 }

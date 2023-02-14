@@ -60,8 +60,6 @@ final class StatisticsCounterUpdateWithIssuesFoundTest extends TestCase {
 			VIPGOCI_COUNTERS_DUMP
 		);
 
-		unset( $report['mycounter2'] );
-
 		$this->assertSame(
 			array(
 				'github_pr_unique_issue_issues' => 3,

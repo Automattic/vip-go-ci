@@ -27,9 +27,9 @@ final class MainRunEnvOptionsHandleTest extends TestCase {
 	private array $options = array();
 
 	/**
-	 * Options array.
+	 * Recognized options array.
 	 *
-	 * @var $options
+	 * @var $options_recognized
 	 */
 	private array $options_recognized = array();
 

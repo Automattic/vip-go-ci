@@ -23,7 +23,7 @@ final class OtherWebServicesIrcApiAlertQueueUniqueTest extends TestCase {
 	 *
 	 * @return void
 	 */
-	public function setUp() :void {
+	protected function setUp() :void {
 		/*
 		 * Ensure this file is required on execution
 		 * of the test itself. This test is run in separate

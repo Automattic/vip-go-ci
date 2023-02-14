@@ -29,7 +29,7 @@ final class CacheVipgociCacheTest extends TestCase {
 	}
 
 	/**
-	 * Test caching random data and test if is correctly retrived.
+	 * Test caching random data and test if is correctly retrieved.
 	 *
 	 * @covers ::vipgoci_cache
 	 *

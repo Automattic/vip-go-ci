@@ -155,7 +155,7 @@ final class GitHubApiLabelsTest extends TestCase {
 	 *
 	 * @return void
 	 */
-	public function testGitHubRemoveLabel1() {
+	public function testGitHubRemoveLabel1() :void {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array(),

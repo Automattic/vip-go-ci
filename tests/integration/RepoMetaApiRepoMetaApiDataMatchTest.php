@@ -12,7 +12,12 @@ final class RepoMetaApiRepoMetaApiDataMatchTest extends TestCase {
 	 */
 	private array $options = array();
 
-	var $options_meta_api_secrets = array(
+	/**
+	 * Options array for meta API.
+	 *
+	 * @var $options_meta_api_secrets
+	 */
+	private array $options_meta_api_secrets = array(
 		'repo-meta-api-base-url'	=> null,
 		'repo-meta-api-user-id'		=> null,
 		'repo-meta-api-access-token'	=> null,
@@ -79,7 +84,7 @@ final class RepoMetaApiRepoMetaApiDataMatchTest extends TestCase {
 
 	protected function tearDown(): void {
 		unset( $this->options );
-		$this->options_meta_api_secrets = null;
+		unset( $this->options_meta_api_secrets );
 	}
 
 	/**
