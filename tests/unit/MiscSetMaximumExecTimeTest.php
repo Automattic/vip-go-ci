@@ -1,16 +1,13 @@
 <?php
+/**
+ * Test function vipgoci_set_maximum_exec_time().
+ *
+ * @package Automattic/vip-go-ci
+ */
 
 declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
-
-require_once __DIR__ . '/helper/IndicateTestId.php';
-require_once __DIR__ . '/helper/CheckPcntlSupport.php';
-require_once __DIR__ . '/../integration/IncludesForTestsOutputControl.php';
-
-require_once __DIR__ . '/../../defines.php';
-require_once __DIR__ . '/../../misc.php';
-require_once __DIR__ . '/../../log.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -25,8 +22,18 @@ use PHPUnit\Framework\TestCase;
 final class MiscSetMaximumExecTimeTest extends TestCase {
 	/**
 	 * Require file and set indication.
+	 *
+	 * @return void
 	 */
-	protected function setUp(): void {
+	protected function setUp() :void {
+		require_once __DIR__ . '/helper/IndicateTestId.php';
+		require_once __DIR__ . '/helper/CheckPcntlSupport.php';
+		require_once __DIR__ . '/../integration/IncludesForTestsOutputControl.php';
+
+		require_once __DIR__ . '/../../defines.php';
+		require_once __DIR__ . '/../../misc.php';
+		require_once __DIR__ . '/../../log.php';
+
 		/*
 		 * Indicate that this particular test is running,
 		 * needed so that vipgoci_sysexit() can return
@@ -46,8 +53,10 @@ final class MiscSetMaximumExecTimeTest extends TestCase {
 
 	/**
 	 * Remove indication.
+	 *
+	 * @return void
 	 */
-	protected function tearDown(): void {
+	protected function tearDown() :void {
 		vipgoci_unittests_remove_indication_for_test_id( 'MiscSetMaximumExecTimeTest' );
 	}
 
@@ -56,6 +65,8 @@ final class MiscSetMaximumExecTimeTest extends TestCase {
 	 * indicating that alarm was raised.
 	 *
 	 * @covers ::vipgoci_set_maximum_exec_time
+	 *
+	 * @return void
 	 */
 	public function testSetMaxExecTime1() :void {
 		if ( ! vipgoci_unittests_pcntl_supported() ) {

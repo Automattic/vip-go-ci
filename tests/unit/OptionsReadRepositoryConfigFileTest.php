@@ -4,6 +4,7 @@
  *
  * @package Automattic/vip-go-ci
  */
+
 declare( strict_types=1 );
 
 namespace Vipgoci\Tests\Unit;
@@ -19,6 +20,8 @@ use PHPUnit\Framework\TestCase;
 final class OptionsReadRepositoryConfigFileTest extends TestCase {
 	/**
 	 * Setup function. Require files.
+	 *
+	 * @return void
 	 */
 	protected function setUp() :void {
 		require_once __DIR__ . '/helper/OptionsReadRepositoryConfigFile.php';
@@ -27,9 +30,11 @@ final class OptionsReadRepositoryConfigFileTest extends TestCase {
 	}
 
 	/**
+	 * Tests against the --lint-modified-files-only option.
+	 *
 	 * @covers ::vipgoci_options_read_repo_file
 	 *
-	 * Tests against the --lint-modified-files-only option.
+	 * @return void
 	 */
 	public function testIfOptionLintOnlyModifiedFilesOptionIsReplacedTest(): void {
 		$overritable_mock = $this->getOverritableMock();
@@ -47,68 +52,70 @@ final class OptionsReadRepositoryConfigFileTest extends TestCase {
 	}
 
 	/**
-	 * @return array[]
+	 * Get list of options that can be overridden.
+	 *
+	 * @return array
 	 */
 	private function getOverritableMock(): array {
 		return array(
-			'skip-execution' => array(
+			'skip-execution'                        => array(
 				'type'         => 'boolean',
 				'valid_values' => array( true, false ),
 			),
 
-			'skip-draft-prs' => array(
+			'skip-draft-prs'                        => array(
 				'type'         => 'boolean',
 				'valid_values' => array( true, false ),
 			),
 
-			'review-comments-sort' => array(
+			'review-comments-sort'                  => array(
 				'type'         => 'boolean',
 				'valid_values' => array( true, false ),
 			),
 
-			'review-comments-include-severity' => array(
+			'review-comments-include-severity'      => array(
 				'type'         => 'boolean',
 				'valid_values' => array( true, false ),
 			),
 
-			'phpcs' => array(
+			'phpcs'                                 => array(
 				'type'         => 'boolean',
 				'valid_values' => array( true, false ),
 			),
 
-			'phpcs-severity' => array(
+			'phpcs-severity'                        => array(
 				'type'         => 'integer',
 				'valid_values' => array( 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ),
 			),
 
-			'post-generic-pr-support-comments' => array(
+			'post-generic-pr-support-comments'      => array(
 				'type'         => 'boolean',
 				'valid_values' => array( true, false ),
 			),
 
-			'phpcs-sniffs-include' => array(
+			'phpcs-sniffs-include'                  => array(
 				'type'         => 'array',
 				'append'       => true,
 				'valid_values' => null,
 			),
 
-			'phpcs-sniffs-exclude' => array(
+			'phpcs-sniffs-exclude'                  => array(
 				'type'         => 'array',
 				'append'       => true,
 				'valid_values' => null,
 			),
 
-			'test-api' => array(
+			'test-api'                              => array(
 				'type'         => 'boolean',
 				'valid_values' => array( true, false ),
 			),
 
-			'svg-checks' => array(
+			'svg-checks'                            => array(
 				'type'         => 'boolean',
 				'valid_values' => array( true, false ),
 			),
 
-			'autoapprove' => array(
+			'autoapprove'                           => array(
 				'type'         => 'boolean',
 				'valid_values' => array( true, false ),
 			),
@@ -118,7 +125,7 @@ final class OptionsReadRepositoryConfigFileTest extends TestCase {
 				'valid_values' => array( true, false ),
 			),
 
-			'lint-modified-files-only' => array(
+			'lint-modified-files-only'              => array(
 				'type'         => 'boolean',
 				'valid_values' => array( true, false ),
 			),
@@ -126,6 +133,8 @@ final class OptionsReadRepositoryConfigFileTest extends TestCase {
 	}
 
 	/**
+	 * Get mocked options.
+	 *
 	 * @return array
 	 */
 	private function getOptionsMock(): array {

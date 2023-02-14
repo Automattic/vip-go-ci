@@ -20,10 +20,10 @@ declare(strict_types=1);
  * @return string|null Returns URL.
  */
 function vipgoci_http_api_fetch_url(
-        string $http_api_url,
-        null|string|array $http_api_token,
-        bool $fatal_error_on_failure = true,
-        int $curl_retries_max = 4
+	string $http_api_url,
+	null|string|array $http_api_token,
+	bool $fatal_error_on_failure = true,
+	int $curl_retries_max = 4
 ) :string|null {
 	echo json_encode( $http_api_url ) . PHP_EOL;
 

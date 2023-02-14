@@ -5,6 +5,13 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 use PHPUnit\Framework\TestCase;
 
 final class SvgScanWithScannerTest extends TestCase {
+	/**
+	 * SVG PHP path.
+	 *
+	 * @var $svg_php_path
+	 */
+	private string $svg_php_path = '';
+
 	var $svg_scanner_path = null;
 
 	protected function setUp(): void {
@@ -28,8 +35,8 @@ final class SvgScanWithScannerTest extends TestCase {
 	}
 
 	protected function tearDown(): void {
-		$this->svg_scanner_path = null;
-		$this->svg_php_path = null;
+		unset( $this->svg_scanner_path );
+		unset( $this->svg_php_path );
 	}
 
 	/**

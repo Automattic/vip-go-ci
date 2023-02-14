@@ -1,6 +1,6 @@
 <?php
 /**
- * Test vipgoci_markdown_comment_add_pagebreak().
+ * Test function vipgoci_option_integer_handle().
  *
  * @package Automattic/vip-go-ci
  */
@@ -17,34 +17,37 @@ use PHPUnit\Framework\TestCase;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class GitHubMiscMarkdownCommentAddPagebreakTest extends TestCase {
+final class OptionsIntegerHandleTest extends TestCase {
 	/**
 	 * Setup function. Require files, etc.
 	 *
 	 * @return void
 	 */
 	protected function setUp() :void {
-		require_once __DIR__ . './../../github-misc.php';
+		require_once __DIR__ . './../../options.php';
 	}
 
 	/**
 	 * Test common usage of the function.
 	 *
-	 * @covers ::vipgoci_markdown_comment_add_pagebreak
+	 * @covers ::vipgoci_option_integer_handle
 	 *
 	 * @return void
 	 */
-	public function testPageBreak1() :void {
-		$mycomment = 'Here is my text. ' . "\n\r";
+	public function testOptionsIntegerHandle1() :void {
+		$options = array();
 
-		vipgoci_markdown_comment_add_pagebreak(
-			$mycomment,
-			'***'
+		vipgoci_option_integer_handle(
+			$options,
+			'mytestoption',
+			5
 		);
 
 		$this->assertSame(
-			'Here is my text. ' . "\n\r" . '***' . "\n\r",
-			$mycomment
+			array(
+				'mytestoption' => 5,
+			),
+			$options
 		);
 	}
 }

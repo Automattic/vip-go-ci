@@ -1,6 +1,13 @@
 <?php
+/**
+ * Helper file.
+ *
+ * @package Automattic/vip-go-ci
+ */
 
-/*
+declare(strict_types=1);
+
+/**
  * Check for expected data in IRC queue.
  *
  * @param string $str_expected String to look for in the IRC queue.
@@ -14,11 +21,11 @@ function vipgoci_unittests_check_irc_api_alert_queue(
 
 	$irc_msg_queue = vipgoci_irc_api_alert_queue( null, true );
 
-	foreach( $irc_msg_queue as $irc_msg_queue_item ) {
+	foreach ( $irc_msg_queue as $irc_msg_queue_item ) {
 		if ( false !== strpos(
-				$irc_msg_queue_item,
-				$str_expected
-			) ) {
+			$irc_msg_queue_item,
+			$str_expected
+		) ) {
 			$found = true;
 		}
 	}

@@ -7,8 +7,6 @@ require_once( __DIR__ . '/GitDiffsFetchUnfilteredTrait.php' );
 
 use PHPUnit\Framework\TestCase;
 
-// phpcs:disable PSR1.Files.SideEffects
-
 /*
  * This test should be identical with GitRepoDiffsFetchUnfilteredTest.php
  *
@@ -35,6 +33,13 @@ final class GitHubDiffsFetchUnfilteredTest extends TestCase {
 		'repo-name'		=> null,
 		'github-repo-url'	=> null,
 	);
+
+	/**
+	 * Variable for options.
+	 *
+	 * @var $options
+	 */
+	private array $options = array();
 
 	protected function setUp(): void {
 		vipgoci_unittests_get_config_values(
@@ -77,9 +82,9 @@ final class GitHubDiffsFetchUnfilteredTest extends TestCase {
 	}
 
 	protected function tearDown(): void {
-		$this->options_git_repo_tests = null;
-		$this->options_git = null;
-		$this->options = null;
+		unset( $this->options_git_repo_tests );
+		unset( $this->options_git );
+		unset( $this->options );
 	}
 
 	/**

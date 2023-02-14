@@ -32,6 +32,9 @@ final class MainRunTimeLengthDetermineTest extends TestCase {
 	/**
 	 * Test common usage of the function.
 	 *
+	 * @param int    $length           Length.
+	 * @param string $expected_counter Expected counter.
+	 *
 	 * @dataProvider dataDetermineRunTimeLength
 	 *
 	 * @covers ::vipgoci_run_time_length_determine

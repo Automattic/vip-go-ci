@@ -38,7 +38,7 @@ final class OutputSecuritySanitizeUrlTest extends TestCase {
 		$this->assertSame(
 			'https://test.local/api/v3?test=foo1\--#',
 			vipgoci_output_sanitize_url(
-				'https://test.local/api/v3?test=foo1 \\ -- #'  . PHP_EOL
+				'https://test.local/api/v3?test=foo1 \\ -- #' . PHP_EOL
 			)
 		);
 	}

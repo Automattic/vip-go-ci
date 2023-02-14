@@ -41,6 +41,13 @@ final class ResultsRemoveExistingGithubCommentsTest extends TestCase {
 	);
 
 	/**
+	 * Variable for options.
+	 *
+	 * @var $options
+	 */
+	private array $options = array();
+
+	/**
 	 * Comments for tests.
 	 *
 	 * @var $COMMENTS_DATA

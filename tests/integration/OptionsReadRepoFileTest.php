@@ -44,6 +44,13 @@ final class OptionsReadRepoFileTest extends TestCase {
 	);
 
 	/**
+	 * Variable for options.
+	 *
+	 * @var $options
+	 */
+	private array $options = array();
+
+	/**
 	 * Set up function. Requires files, sets variables.
 	 *
 	 * @return void

@@ -21,6 +21,8 @@ use PHPUnit\Framework\TestCase;
 final class ReportCreateScanDetailsListTest extends TestCase {
 	/**
 	 * Setup function.
+	 *
+	 * @return void
 	 */
 	protected function setUp() :void {
 		require_once __DIR__ . '/../../reports.php';
@@ -31,6 +33,8 @@ final class ReportCreateScanDetailsListTest extends TestCase {
 	 * Test number being provided for formatting.
 	 *
 	 * @covers ::vipgoci_report_create_scan_details_list
+	 *
+	 * @return void
 	 */
 	public function testDetailsListNumber(): void {
 		$actual_output = vipgoci_report_create_scan_details_list(
@@ -50,6 +54,8 @@ final class ReportCreateScanDetailsListTest extends TestCase {
 	 * Test boolean being provided for formatting.
 	 *
 	 * @covers ::vipgoci_report_create_scan_details_list
+	 *
+	 * @return void
 	 */
 	public function testDetailsListBool(): void {
 		$actual_output = vipgoci_report_create_scan_details_list(
@@ -69,6 +75,8 @@ final class ReportCreateScanDetailsListTest extends TestCase {
 	 * Test empty array being provided for formatting.
 	 *
 	 * @covers ::vipgoci_report_create_scan_details_list
+	 *
+	 * @return void
 	 */
 	public function testDetailsListArray1(): void {
 		$actual_output = vipgoci_report_create_scan_details_list(
@@ -88,6 +96,8 @@ final class ReportCreateScanDetailsListTest extends TestCase {
 	 * Test array with data being provided for formatting.
 	 *
 	 * @covers ::vipgoci_report_create_scan_details_list
+	 *
+	 * @return void
 	 */
 	public function testDetailsListArray2(): void {
 		$actual_output = vipgoci_report_create_scan_details_list(
@@ -118,6 +128,8 @@ final class ReportCreateScanDetailsListTest extends TestCase {
 	 * Test array with data being provided for formatting.
 	 *
 	 * @covers ::vipgoci_report_create_scan_details_list
+	 *
+	 * @return void
 	 */
 	public function testDetailsListArray3(): void {
 		$actual_output = vipgoci_report_create_scan_details_list(

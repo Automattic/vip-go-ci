@@ -1,11 +1,13 @@
 <?php
+/**
+ * Test vipgoci_irc_api_alert_queue_unique().
+ *
+ * @package Automattic/vip-go-ci
+ */
 
 declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
-
-require_once __DIR__ . '/../../defines.php';
-require_once __DIR__ . '/../../statistics.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -15,11 +17,13 @@ use PHPUnit\Framework\TestCase;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class A00IrcApiAlertQueueUniqueTest extends TestCase {
+final class OtherWebServicesIrcApiAlertQueueUniqueTest extends TestCase {
 	/**
 	 * Require correct file.
+	 *
+	 * @return void
 	 */
-	public function setUp() :void {
+	protected function setUp() :void {
 		/*
 		 * Ensure this file is required on execution
 		 * of the test itself. This test is run in separate
@@ -27,15 +31,19 @@ final class A00IrcApiAlertQueueUniqueTest extends TestCase {
 		 * by this require. This is needed to ensure function
 		 * declarations are not attempted multiple times.
 		 */
+		require_once __DIR__ . '/../../defines.php';
+		require_once __DIR__ . '/../../statistics.php';
 		require_once __DIR__ . '/../../other-web-services.php';
 	}
 
 	/**
 	 * Test integrity first.
 	 *
-	 * @covers: vipgoci_irc_api_alert_queue_unique
+	 * @covers ::vipgoci_irc_api_alert_queue_unique
+	 *
+	 * @return void
 	 */
-	public function testIrcQueueUnique1() {
+	public function testIrcQueueUnique1() :void {
 		$msg_queue = array(
 			'Msg 1',
 			'Msg 2',
@@ -59,9 +67,11 @@ final class A00IrcApiAlertQueueUniqueTest extends TestCase {
 	/**
 	 * Test if entries are made unique and prefixed correctly.
 	 *
-	 * @covers: vipgoci_irc_api_alert_queue_unique
+	 * @covers ::vipgoci_irc_api_alert_queue_unique
+	 *
+	 * @return void
 	 */
-	public function testIrcQueueUnique2() {
+	public function testIrcQueueUnique2() :void {
 		$msg_queue = array(
 			'Msg 1',
 			'Msg 2',
@@ -88,9 +98,11 @@ final class A00IrcApiAlertQueueUniqueTest extends TestCase {
 	/**
 	 * Test if entries are made unique and prefixed correctly.
 	 *
-	 * @covers: vipgoci_irc_api_alert_queue_unique
+	 * @covers ::vipgoci_irc_api_alert_queue_unique
+	 *
+	 * @return void
 	 */
-	public function testIrcQueueUnique3() {
+	public function testIrcQueueUnique3() :void {
 		$msg_queue = array(
 			'Msg 1',
 			'Msg 2',

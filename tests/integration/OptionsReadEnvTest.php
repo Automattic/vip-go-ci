@@ -4,7 +4,13 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 
 use PHPUnit\Framework\TestCase;
 
-final class VipgociOptionsReadEnvTest extends TestCase {
+/**
+ * Class that implements the testing.
+ *
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
+final class OptionsReadEnvTest extends TestCase {
 	protected function setUp(): void {
 		// Add environmental variable
 		putenv(

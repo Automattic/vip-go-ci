@@ -5,6 +5,13 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 use PHPUnit\Framework\TestCase;
 
 final class GitHubRepoCollaboratorsTest extends TestCase {
+	/**
+	 * Options array.
+	 *
+	 * @var $options
+	 */
+	private array $options = array();
+
 	var $options_git = array(
 		'repo-owner'	=> null,
 		'repo-name'	=> null,
@@ -27,8 +34,8 @@ final class GitHubRepoCollaboratorsTest extends TestCase {
 	}
 
 	protected function tearDown(): void {
-		$this->options = null;
-		$this->options_git = null;
+		unset( $this->options );
+		unset( $this->options_git );
 	}
 
 	/**

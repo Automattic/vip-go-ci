@@ -7,6 +7,8 @@
 
 declare(strict_types=1);
 
+// phpcs:disable VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
+
 /**
  * Helper function that does nothing.
  *
@@ -18,5 +20,9 @@ declare(strict_types=1);
 function vipgoci_runtime_measure(
 	$action = null,
 	$type = null
-) {
+):void {
+	// Do nothing.
 }
+
+// phpcs:enable VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
+

@@ -1,30 +1,33 @@
 <?php
-
-declare( strict_types=1 );
-
 /**
  * Mock functions required to execute tests/OptionsReadRepositoryConfigFileTest.php
+ *
+ * @package Automattic/vip-go-ci
  */
+
+declare(strict_types=1);
+
+// phpcs:disable VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
 
 /**
  * Mock options.php @ vipgoci_gitrepo_fetch_committed_file
  *
- * @param $repo_owner
- * @param $repo_name
- * @param $github_token
- * @param $commit_id
- * @param $file_name
- * @param $local_git_repo
+ * @param string $repo_owner     Repository owner.
+ * @param string $repo_name      Repository name.
+ * @param string $github_token   Token.
+ * @param string $commit_id      Commit-ID.
+ * @param string $file_name      File name.
+ * @param string $local_git_repo Local git repository.
  *
  * @return string
  */
 function vipgoci_gitrepo_fetch_committed_file(
-	$repo_owner,
-	$repo_name,
-	$github_token,
-	$commit_id,
-	$file_name,
-	$local_git_repo
+	string $repo_owner,
+	string $repo_name,
+	string $github_token,
+	string $commit_id,
+	string $file_name,
+	string $local_git_repo
 ): string {
 	return "{\"lint-modified-files-only\":false}\n";
 }
@@ -40,9 +43,12 @@ function vipgoci_gitrepo_fetch_committed_file(
  * @return void
  */
 function vipgoci_log(
-        string $str,
-        array $debug_data = array(),
-        int $debug_level = 0,
-        bool $irc = false
+	string $str,
+	array $debug_data = array(),
+	int $debug_level = 0,
+	bool $irc = false
 ) :void {
 }
+
+// phpcs:enable VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
+

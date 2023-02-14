@@ -57,6 +57,13 @@ final class WpscanScanCommitTest extends TestCase {
 	);
 
 	/**
+	 * Variable for options.
+	 *
+	 * @var $options
+	 */
+	private array $options = array();
+
+	/**
 	 * Setup function. Require files, prepare repository, etc.
 	 *
 	 * @return void

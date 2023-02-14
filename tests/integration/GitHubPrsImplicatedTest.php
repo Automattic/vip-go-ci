@@ -5,6 +5,13 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 use PHPUnit\Framework\TestCase;
 
 final class GitHubPrsImplicatedTest extends TestCase {
+	/**
+	 * Options array.
+	 *
+	 * @var $options
+	 */
+	private array $options = array();
+
 	var $options_git_repo_tests = array(
 		'commit-test-repo-pr-files-changed-1'	=> null,
 		'commit-test-repo-pr-files-changed-2'	=> null,
@@ -52,9 +59,9 @@ final class GitHubPrsImplicatedTest extends TestCase {
 	}
 
 	protected function tearDown(): void {
-		$this->options_git_repo_tests = null;
-		$this->options_git = null;
-		$this->options = null;
+		unset( $this->options_git_repo_tests );
+		unset( $this->options_git );
+		unset( $this->options );
 	}
 
 	/**

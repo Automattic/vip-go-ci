@@ -5,6 +5,13 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 use PHPUnit\Framework\TestCase;
 
 final class SvgScanScanSingleFileTest extends TestCase {
+	/**
+	 * Options array.
+	 *
+	 * @var $options
+	 */
+	private array $options = array();
+
 	var $options_git = array(
 		'git-path'		=> null,
 		'github-repo-url'	=> null,
@@ -66,9 +73,9 @@ final class SvgScanScanSingleFileTest extends TestCase {
 			);
 		}
 
-		$this->options_git = null;
-		$this->options_svg_scan = null;
-		$this->options = null;
+		unset( $this->options_git );
+		unset( $this->options_svg_scan );
+		unset( $this->options );
 	}
 
 	/**

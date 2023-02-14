@@ -33,6 +33,8 @@ final class StatsStatsInitTest extends TestCase {
 	 * Test the vipgoci_stats_init() function with fairly typical values.
 	 *
 	 * @covers ::vipgoci_stats_init
+	 *
+	 * @return void
 	 */
 	public function testStatsInit() :void {
 		$pr_item1         = new stdClass();
@@ -47,7 +49,7 @@ final class StatsStatsInitTest extends TestCase {
 			array(
 				'phpcs'      => true,
 				'lint'       => true,
-				'test-api' => false,
+				'test-api'   => false,
 				'wpscan-api' => true,
 			),
 			array(

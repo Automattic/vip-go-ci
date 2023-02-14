@@ -17,6 +17,13 @@ final class ApFileTypesTest extends TestCase {
 		'autoapprove-filetypes'		=> null,
 	);
 
+	/**
+	 * Variable for options.
+	 *
+	 * @var $options
+	 */
+	private array $options = array();
+
 	protected function setUp(): void {
 		vipgoci_unittests_get_config_values(
 			'git',
@@ -65,9 +72,9 @@ final class ApFileTypesTest extends TestCase {
 	}
 
 	protected function tearDown(): void {
-		$this->options = null;
-		$this->options_git = null;
-		$this->options_auto_approval = null;
+		unset( $this->options );
+		unset( $this->options_git );
+		unset( $this->options_auto_approval );
 	}
 
 	/**

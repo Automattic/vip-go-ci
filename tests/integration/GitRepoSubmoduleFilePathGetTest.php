@@ -40,6 +40,13 @@ final class GitRepoSubmoduleFilePathGetTest extends TestCase {
 	);
 
 	/**
+	 * Variable for options.
+	 *
+	 * @var $options
+	 */
+	private array $options = array();
+
+	/**
 	 * Setup function. Require files, set variables, etc.
 	 *
 	 * @return void

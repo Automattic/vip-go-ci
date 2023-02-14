@@ -4,7 +4,13 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 
 use PHPUnit\Framework\TestCase;
 
-final class GitDiffsFetchTest extends TestCase {
+/**
+ * Class that implements the testing.
+ *
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
+final class GitRepoDiffsFetchTest extends TestCase {
 	var $options_git_repo_tests = array(
 		'commit-test-repo-pr-diffs-1-a'	=> null,
 		'commit-test-repo-pr-diffs-1-b'	=> null,
@@ -21,6 +27,13 @@ final class GitDiffsFetchTest extends TestCase {
 		'repo-owner'		=> null,
 		'repo-name'		=> null,
 	);
+
+	/**
+	 * Variable for options.
+	 *
+	 * @var $options
+	 */
+	private array $options = array();
 
 	protected function setUp(): void {
 		vipgoci_unittests_get_config_values(
@@ -71,9 +84,9 @@ final class GitDiffsFetchTest extends TestCase {
 			);
 		}
 
-		$this->options_git_repo_tests = null;
-		$this->options_git = null;
-		$this->options = null;
+		unset( $this->options_git_repo_tests );
+		unset( $this->options_git );
+		unset( $this->options );
 	}
 
 	/**

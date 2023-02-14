@@ -21,6 +21,8 @@ use PHPUnit\Framework\TestCase;
 final class OutputSecuritySanitizeVersionNumberTest extends TestCase {
 	/**
 	 * Setup function. Require file needed.
+	 *
+	 * @return void
 	 */
 	protected function setUp() :void {
 		require_once __DIR__ . '/../../output-security.php';
@@ -30,6 +32,8 @@ final class OutputSecuritySanitizeVersionNumberTest extends TestCase {
 	 * Check if function really sanitizes input string.
 	 *
 	 * @covers ::vipgoci_output_sanitize_version_number
+	 *
+	 * @return void
 	 */
 	public function testSanitizeVersionNumber(): void {
 		$sanitized_number = vipgoci_output_sanitize_version_number(

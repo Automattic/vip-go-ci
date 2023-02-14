@@ -4,7 +4,13 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 
 use PHPUnit\Framework\TestCase;
 
-final class VipgociOptionsFileHandleTest extends TestCase {
+/**
+ * Class that implements the testing.
+ *
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
+final class OptionsFileHandleTest extends TestCase {
 	/**
 	 * @covers ::vipgoci_option_file_handle
 	 */

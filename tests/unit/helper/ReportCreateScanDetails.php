@@ -34,6 +34,8 @@ function vipgoci_util_php_interpreter_get_version(
 	return '7.4.20';
 }
 
+// phpcs:disable VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
+
 /**
  * Helper function that does nothing.
  *
@@ -48,6 +50,8 @@ function vipgoci_phpcs_get_version(
 ) :string {
 	return '3.5.5';
 }
+
+// phpcs:enable VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
 
 /**
  * Helper function that does nothing.

@@ -40,6 +40,13 @@ final class StatsStatsPerFileTest extends TestCase {
 	);
 
 	/**
+	 * Variable for options.
+	 *
+	 * @var $options
+	 */
+	private array $options = array();
+
+	/**
 	 * Require files, set variable values.
 	 *
 	 * @return void

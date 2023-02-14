@@ -1,20 +1,40 @@
 <?php
+/**
+ * Test function vipgoci_sanitize_path_prefix().
+ *
+ * @package Automattic/vip-go-ci
+ */
 
 declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
-require_once( __DIR__ . './../../misc.php' );
-
 use PHPUnit\Framework\TestCase;
 
-// phpcs:disable PSR1.Files.SideEffects
-
+/**
+ * Class that implements the testing.
+ *
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class MiscSanitizePathPrefixTest extends TestCase {
 	/**
-	 * @covers ::vipgoci_sanitize_path_prefix
+	 * Setup function. Require files, etc.
+	 *
+	 * @return void
 	 */
-	public function testSanitizePathPrefix1() {
+	protected function setUp() :void {
+		require_once __DIR__ . './../../misc.php';
+	}
+
+	/**
+	 * Test common usage of the function.
+	 *
+	 * @covers ::vipgoci_sanitize_path_prefix
+	 *
+	 * @return void
+	 */
+	public function testSanitizePathPrefix1() :void {
 		$path = vipgoci_sanitize_path_prefix(
 			'a/folder1',
 			array( 'a/' )
@@ -25,11 +45,14 @@ final class MiscSanitizePathPrefixTest extends TestCase {
 			$path
 		);
 	}
-
 	/**
+	 * Test common usage of the function.
+	 *
 	 * @covers ::vipgoci_sanitize_path_prefix
+	 *
+	 * @return void
 	 */
-	public function testSanitizePathPrefix2() {
+	public function testSanitizePathPrefix2() :void {
 		$path = vipgoci_sanitize_path_prefix(
 			'a/b/folder1',
 			array( 'a/', 'b/' )
@@ -42,9 +65,13 @@ final class MiscSanitizePathPrefixTest extends TestCase {
 	}
 
 	/**
+	 * Test common usage of the function.
+	 *
 	 * @covers ::vipgoci_sanitize_path_prefix
+	 *
+	 * @return void
 	 */
-	public function testSanitizePathPrefix3() {
+	public function testSanitizePathPrefix3() :void {
 		$path = vipgoci_sanitize_path_prefix(
 			'a/folder1',
 			array( 'b/' )
