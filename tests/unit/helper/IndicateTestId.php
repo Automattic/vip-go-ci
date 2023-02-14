@@ -1,4 +1,11 @@
 <?php
+/**
+ * Helper file.
+ *
+ * @package Automattic/vip-go-ci
+ */
+
+declare(strict_types=1);
 
 define( 'VIPGOCI_UNIT_TESTS_TEST_ID_KEY', 'vipgoci_unittests_test_ids' );
 

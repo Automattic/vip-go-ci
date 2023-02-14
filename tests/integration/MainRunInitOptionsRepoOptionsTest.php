@@ -37,6 +37,13 @@ final class MainRunInitOptionsRepoOptionsTest extends TestCase {
 	);
 
 	/**
+	 * Variable for options.
+	 *
+	 * @var $options
+	 */
+	private array $options = array();
+
+	/**
 	 * Set up variables.
 	 */
 	protected function setUp() :void {

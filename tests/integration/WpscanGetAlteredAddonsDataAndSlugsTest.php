@@ -56,6 +56,13 @@ final class WpscanGetAlteredAddonsDataAndSlugsTest extends TestCase {
 	);
 
 	/**
+	 * Variable for options.
+	 *
+	 * @var $options
+	 */
+	private array $options = array();
+
+	/**
 	 * Variable for skipped files.
 	 *
 	 * @var $commit_skipped_files

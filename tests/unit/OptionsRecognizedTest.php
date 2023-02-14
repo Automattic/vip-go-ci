@@ -1,10 +1,13 @@
 <?php
+/**
+ * Test function vipgoci_options_recognized().
+ *
+ * @package Automattic/vip-go-ci
+ */
 
 declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
-
-require_once __DIR__ . '/../../main.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -14,12 +17,23 @@ use PHPUnit\Framework\TestCase;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class VipgociOptionsRecognizedTest extends TestCase {
+final class OptionsRecognizedTest extends TestCase {
+	/**
+	 * Setup function. Require files, etc.
+	 *
+	 * @return void
+	 */
+	protected function setUp() :void {
+		require_once __DIR__ . '/../../main.php';
+	}
+
 	/**
 	 * Check if expected options are returned by the
 	 * function that defines them.
 	 *
 	 * @covers ::vipgoci_options_recognized
+	 *
+	 * @return void
 	 */
 	public function testOptionsRecognized() :void {
 		$options_recognized_arr = vipgoci_options_recognized();

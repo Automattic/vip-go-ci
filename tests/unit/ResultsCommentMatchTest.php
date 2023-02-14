@@ -31,6 +31,8 @@ final class ResultsCommentMatchTest extends TestCase {
 	 * Test common usage of the function.
 	 *
 	 * @covers ::vipgoci_results_comment_match
+	 *
+	 * @return void
 	 */
 	public function testCommentMatch1() :void {
 		$prs_comments = array(

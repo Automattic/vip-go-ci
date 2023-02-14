@@ -19,7 +19,16 @@ use PHPUnit\Framework\TestCase;
  */
 final class MainRunInitOptionsWpscanTest extends TestCase {
 	/**
+	 * Options array.
+	 *
+	 * @var $options
+	 */
+	private array $options = array();
+
+	/**
 	 * Require files. Set up variable.
+	 *
+	 * @return void
 	 */
 	protected function setUp() :void {
 		require_once __DIR__ . '/../../main.php';
@@ -31,6 +40,8 @@ final class MainRunInitOptionsWpscanTest extends TestCase {
 
 	/**
 	 * Clear variable.
+	 *
+	 * @return void
 	 */
 	protected function tearDown() :void {
 		unset( $this->options );
@@ -41,6 +52,8 @@ final class MainRunInitOptionsWpscanTest extends TestCase {
 	 * parsed and provided.
 	 *
 	 * @covers ::vipgoci_run_init_options_wpscan
+	 *
+	 * @return void
 	 */
 	public function testRunInitOptionsWpscanOptionsDefault() :void {
 		$this->options = array(
@@ -86,6 +99,8 @@ final class MainRunInitOptionsWpscanTest extends TestCase {
 	 * parsed and provided.
 	 *
 	 * @covers ::vipgoci_run_init_options_wpscan
+	 *
+	 * @return void
 	 */
 	public function testRunInitOptionsWpscanOptionsCustom() :void {
 		$this->options = array(

@@ -47,7 +47,6 @@ final class OtherWebServicesSendStatsToPixelApiTest extends TestCase {
 			'stat7' => -100,
 		);
 
-
 		ob_start();
 
 		vipgoci_send_stats_to_pixel_api(

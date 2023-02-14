@@ -1,20 +1,40 @@
 <?php
+/**
+ * Test vipgoci_cached_indication_str().
+ *
+ * @package Automattic/vip-go-ci
+ */
 
 declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
-require_once( __DIR__ . './../../cache.php' );
-
 use PHPUnit\Framework\TestCase;
 
-// phpcs:disable PSR1.Files.SideEffects
-
+/**
+ * Class that implements the testing.
+ *
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class CacheCachedIndicationStrTest extends TestCase {
 	/**
-	 * @covers ::vipgoci_cached_indication_str
+	 * Setup function. Require files, etc.
+	 *
+	 * @return void
 	 */
-	public function testCachedIndicationStr1() {
+	protected function setUp() :void {
+		require_once __DIR__ . './../../cache.php';
+	}
+
+	/**
+	 * Test common usage of the function.
+	 *
+	 * @covers ::vipgoci_cached_indication_str
+	 *
+	 * @return void
+	 */
+	public function testCachedIndicationStr1() :void {
 		$this->assertSame(
 			' (cached)',
 			vipgoci_cached_indication_str(

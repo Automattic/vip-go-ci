@@ -29,6 +29,13 @@ final class WpscanApiDoScanViaApiTest extends TestCase {
 	);
 
 	/**
+	 * Variable for options.
+	 *
+	 * @var $options
+	 */
+	private array $options = array();
+
+	/**
 	 * Setup function. Require files.
 	 *
 	 * @return void

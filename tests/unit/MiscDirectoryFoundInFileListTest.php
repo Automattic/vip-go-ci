@@ -39,7 +39,7 @@ final class MiscDirectoryFoundInFileListTest extends TestCase {
 			vipgoci_directory_found_in_file_list(
 				array(
 					'dir1/subdir1/file1.txt',
-					'dir2/subdir2/file1.txt'
+					'dir2/subdir2/file1.txt',
 				),
 				'dir2/subdir2'
 			)
@@ -58,7 +58,7 @@ final class MiscDirectoryFoundInFileListTest extends TestCase {
 			vipgoci_directory_found_in_file_list(
 				array(
 					'dir1/subdir1/file1.txt',
-					'dir2/subdir2/subsubdir3/file1.txt'
+					'dir2/subdir2/subsubdir3/file1.txt',
 				),
 				'dir2/subdir2'
 			)
@@ -77,7 +77,7 @@ final class MiscDirectoryFoundInFileListTest extends TestCase {
 			vipgoci_directory_found_in_file_list(
 				array(
 					'dir1/subdir1/file1.txt',
-					'dir2/subdir2/file1.txt'
+					'dir2/subdir2/file1.txt',
 				),
 				'dir2/subdir'
 			)
@@ -96,7 +96,7 @@ final class MiscDirectoryFoundInFileListTest extends TestCase {
 			vipgoci_directory_found_in_file_list(
 				array(
 					'dir1/subdir1/file1.txt',
-					'dir2/subdir2/file1.txt'
+					'dir2/subdir2/file1.txt',
 				),
 				'dir'
 			)

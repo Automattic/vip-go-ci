@@ -20,7 +20,16 @@ use PHPUnit\Framework\TestCase;
  */
 final class ReportCreateScanDetailsAutoApproveConfigurationTest extends TestCase {
 	/**
+	 * Options array.
+	 *
+	 * @var $options
+	 */
+	private array $options = array();
+
+	/**
 	 * Setup function. Require files, etc.
+	 *
+	 * @return void
 	 */
 	protected function setUp() :void {
 		require_once __DIR__ . '/../../reports.php';
@@ -33,6 +42,8 @@ final class ReportCreateScanDetailsAutoApproveConfigurationTest extends TestCase
 
 	/**
 	 * Clean up after running.
+	 *
+	 * @return void
 	 */
 	protected function tearDown() :void {
 		unset( $this->options );
@@ -42,6 +53,8 @@ final class ReportCreateScanDetailsAutoApproveConfigurationTest extends TestCase
 	 * Test function with most reporting disabled.
 	 *
 	 * @covers ::vipgoci_report_create_scan_details_auto_approve_configuration
+	 *
+	 * @return void
 	 */
 	public function testCreateDetails1(): void {
 		$this->options['autoapprove'] = false;
@@ -81,12 +94,14 @@ final class ReportCreateScanDetailsAutoApproveConfigurationTest extends TestCase
 	 * Test function with most reporting enabled.
 	 *
 	 * @covers ::vipgoci_report_create_scan_details_auto_approve_configuration
+	 *
+	 * @return void
 	 */
 	public function testCreateDetails2(): void {
 		$this->options['autoapprove']                           = true;
 		$this->options['autoapprove-php-nonfunctional-changes'] = true;
 		$this->options['autoapprove-php-nonfunctional-changes-file-extensions'] = array( 'php' );
-		$this->options['autoapprove-filetypes']                 = array( 'txt', 'ini' );
+		$this->options['autoapprove-filetypes']                                 = array( 'txt', 'ini' );
 
 		$actual_output = vipgoci_report_create_scan_details_auto_approve_configuration(
 			$this->options

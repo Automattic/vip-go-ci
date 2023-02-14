@@ -158,6 +158,8 @@ final class OptionsArrayHandleTest extends TestCase {
 	/**
 	 * Test forbidden values. No errors, as no forbidden value is used.
 	 *
+	 * @covers ::vipgoci_option_array_handle
+	 *
 	 * @return void
 	 */
 	public function testOptionsArrayHandle5() :void {
@@ -187,6 +189,8 @@ final class OptionsArrayHandleTest extends TestCase {
 	/**
 	 * Test forbidden values. No errors, as no forbidden value is used.
 	 *
+	 * @covers ::vipgoci_option_array_handle
+	 *
 	 * @return void
 	 */
 	public function testOptionsArrayHandle6() :void {
@@ -215,6 +219,8 @@ final class OptionsArrayHandleTest extends TestCase {
 
 	/**
 	 * Test forbidden values. Error, as forbidden value is used.
+	 *
+	 * @covers ::vipgoci_option_array_handle
 	 *
 	 * @return void
 	 */
