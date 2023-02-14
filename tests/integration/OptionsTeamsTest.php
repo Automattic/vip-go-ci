@@ -37,7 +37,7 @@ final class OptionsTeamsTest extends TestCase {
 	protected function setUp(): void {
 		require_once __DIR__ . '/IncludesForTests.php';
 
-		foreach( $this->options as $option_key => $option_value ) {
+		foreach ( $this->options as $option_key => $option_value ) {
 			$this->options[ $option_key ] =
 				vipgoci_unittests_get_config_value(
 					'git-secrets',
@@ -59,7 +59,7 @@ final class OptionsTeamsTest extends TestCase {
 	 * @return void
 	 */
 	protected function tearDown(): void {
-		$this->options = null;
+		unset( $this->options );
 	}
 
 	/**
@@ -72,7 +72,7 @@ final class OptionsTeamsTest extends TestCase {
 	public function testVipgociOptionTeams1() :void {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
-			array( ),
+			array(),
 			$this
 		);
 
@@ -88,9 +88,8 @@ final class OptionsTeamsTest extends TestCase {
 			return;
 		}
 
-
 		$this->options['my-team-option'] = array(
-			$this->options['team-slug']
+			$this->options['team-slug'],
 		);
 
 		vipgoci_unittests_output_suppress();
@@ -125,7 +124,7 @@ final class OptionsTeamsTest extends TestCase {
 	public function testVipgociOptionTeams2() :void {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
-			array( ),
+			array(),
 			$this
 		);
 
