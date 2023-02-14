@@ -7,6 +7,8 @@
 
 declare(strict_types=1);
 
+// phpcs:disable VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
+
 /**
  * Helper function that does nothing.
  *
@@ -16,8 +18,11 @@ declare(strict_types=1);
  * @return void
  */
 function vipgoci_runtime_measure(
-	$action = null, // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
-	$type = null // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
-):void { // phpcs:ignore WordPress.WhiteSpace.ControlStructureSpacing.NoSpaceBeforeCloseParenthesis
+	$action = null,
+	$type = null
+):void {
 	// Do nothing.
 }
+
+// phpcs:enable VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
+
