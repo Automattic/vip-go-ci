@@ -186,6 +186,10 @@ final class GitHubStatusCreateTest extends TestCase {
 			return;
 		}
 
+		if ( vipgoci_unittests_skip_github_write_tests( $this ) ) {
+			return;
+		}
+
 		/*
 		 * Set build status and
 		 * then verify that it is failed.
