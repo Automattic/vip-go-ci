@@ -97,10 +97,10 @@ final class GitHubApiLabelsTest extends TestCase {
 	 * @return void.
 	 */
 	protected function tearDown(): void {
-		$this->options_git     = null;
-		$this->options_secrets = null;
-		$this->options_labels  = null;
-		$this->options         = null;
+		unset( $this->options_git );
+		unset( $this->options_secrets );
+		unset( $this->options_labels );
+		unset( $this->options );
 	}
 
 	/**
@@ -118,6 +118,10 @@ final class GitHubApiLabelsTest extends TestCase {
 		);
 
 		if ( -1 === $options_test ) {
+			return;
+		}
+
+		if ( vipgoci_unittests_skip_github_write_tests( $this ) ) {
 			return;
 		}
 
@@ -163,6 +167,10 @@ final class GitHubApiLabelsTest extends TestCase {
 		);
 
 		if ( -1 === $options_test ) {
+			return;
+		}
+
+		if ( vipgoci_unittests_skip_github_write_tests( $this ) ) {
 			return;
 		}
 
