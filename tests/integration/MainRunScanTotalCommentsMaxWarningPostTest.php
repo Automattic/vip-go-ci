@@ -212,6 +212,10 @@ final class MainRunScanTotalCommentsMaxWarningPostTest extends TestCase {
 			return;
 		}
 
+		if ( vipgoci_unittests_skip_github_write_tests( $this ) ) {
+			return;
+		}
+
 		$this->options['review-comments-total-max'] = 100;
 
 		$prs_comments_maxed = array(
@@ -270,6 +274,10 @@ final class MainRunScanTotalCommentsMaxWarningPostTest extends TestCase {
 		);
 
 		if ( -1 === $options_test ) {
+			return;
+		}
+
+		if ( vipgoci_unittests_skip_github_write_tests( $this ) ) {
 			return;
 		}
 
