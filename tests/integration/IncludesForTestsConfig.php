@@ -163,7 +163,7 @@ function vipgoci_unittests_skip_github_write_tests(
 	) {
 		if ( null !== $test_instance ) {
 			$test_instance->markTestSkipped(
-				'Skipping test, should not be run as configured to skip tests that write data via GitHub API and this test does'
+				'Skipping test, should not be run as configured to skip tests that write data via GitHub API and this test does so'
 			);
 		}
 
