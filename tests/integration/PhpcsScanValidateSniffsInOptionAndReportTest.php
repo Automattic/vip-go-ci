@@ -180,6 +180,10 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 			return;
 		}
 
+		if ( vipgoci_unittests_skip_github_write_tests( $this ) ) {
+			return;
+		}
+
 		$this->options['commit'] =
 			$this->options['phpcs-validate-sniffs-and-report-include-commit'];
 
@@ -368,6 +372,10 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 			return;
 		}
 
+		if ( vipgoci_unittests_skip_github_write_tests( $this ) ) {
+			return;
+		}
+
 		$this->options['commit'] =
 			$this->options['phpcs-validate-sniffs-and-report-include-commit'];
 
@@ -507,6 +515,10 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 		);
 
 		if ( -1 === $options_test ) {
+			return;
+		}
+
+		if ( vipgoci_unittests_skip_github_write_tests( $this ) ) {
 			return;
 		}
 
@@ -695,6 +707,10 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 		);
 
 		if ( -1 === $options_test ) {
+			return;
+		}
+
+		if ( vipgoci_unittests_skip_github_write_tests( $this ) ) {
 			return;
 		}
 
