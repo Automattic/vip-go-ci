@@ -48,6 +48,13 @@ final class MainRunScanTotalCommentsMaxWarningPostTest extends TestCase {
 	private array $options = array();
 
 	/**
+	 * Variable for information about owner of access token.
+	 *
+	 * @var $current_user_info
+	 */
+	private mixed $current_user_info = null;
+
+	/**
 	 * Set up all variables, etc.
 	 *
 	 * @return void
