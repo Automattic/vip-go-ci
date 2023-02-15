@@ -160,6 +160,10 @@ final class MainRunScanReviewsCommentsEnforceMaximumTest extends TestCase {
 			return;
 		}
 
+		if ( vipgoci_unittests_skip_github_write_tests( $this ) ) {
+			return;
+		}
+
 		/*
 		 * Test with no maximum comments allowed.
 		 */
@@ -198,6 +202,10 @@ final class MainRunScanReviewsCommentsEnforceMaximumTest extends TestCase {
 		);
 
 		if ( -1 === $options_test ) {
+			return;
+		}
+
+		if ( vipgoci_unittests_skip_github_write_tests( $this ) ) {
 			return;
 		}
 
