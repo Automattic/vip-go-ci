@@ -137,3 +137,38 @@ function vipgoci_unittests_options_test(
 	return 0;
 }
 
+/**
+ * Returns true if to skip tests that write data via GitHub API.
+ *
+ * @param object $test_instance Instance of test class.
+ *
+ * @return bool
+ */
+function vipgoci_unittests_skip_github_write_tests(
+	&$test_instance
+) :bool {
+	$config_arr = array(
+		'github-skip-write-tests' => null,
+	);
+
+	vipgoci_unittests_get_config_values(
+		'git-secrets',
+		$config_arr,
+		true
+	);
+
+	if (
+		( isset( $config_arr['github-skip-write-tests'] ) ) &&
+		( '1' === $config_arr['github-skip-write-tests'] )
+	) {
+		if ( null !== $test_instance ) {
+			$test_instance->markTestSkipped(
+				'Skipping test, should not be run as configured to skip tests that write data via GitHub API and this test does'
+			);
+		}
+
+		return true;
+	}
+
+	return false;
+}
