@@ -98,8 +98,9 @@ jobs:
       - name: Configure tools
         run: |
           sed "s:/home/phpunit/:${HOME}/:; s:phpcs-php-path=.*:phpcs-php-path=/usr/bin/php7.4:g; s:svg-php-path=.*:svg-php-path=/usr/bin/php8.1:g; s:github-repo-url=.*:github-repo-url=${HOME}/vip-go-ci-tools/vip-go-ci-testing:g;" unittests.ini.dist > unittests.ini
-          rm unittests.ini.dist
-          touch unittests-secrets.ini
+          rm -f unittests.ini.dist
+          echo '[git-secrets]' > unittests-secrets.ini
+          echo 'github-skip-write-tests=true' >> unittests-secrets.ini
           sed "s:PROJECT_DIR:$(pwd):g" phpunit.xml.dist > phpunit.xml
 
       - name: Set default PHP version
