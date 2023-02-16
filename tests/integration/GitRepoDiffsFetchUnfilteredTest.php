@@ -1,4 +1,11 @@
 <?php
+/**
+ * Test function vipgoci_gitrepo_diffs_fetch_unfiltered().
+ *
+ * @package Automattic/vip-go-ci
+ */
+
+declare(strict_types=1);
 
 namespace Vipgoci\tests;
 
@@ -6,6 +13,12 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 require_once( __DIR__ . '/GitDiffsFetchUnfilteredTrait.php' );
 
 use PHPUnit\Framework\TestCase;
+/**
+ * Class that implements the testing.
+ *
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 
 /*
  * This test should be identical with GitHubDiffsFetchUnfilteredTest.php
