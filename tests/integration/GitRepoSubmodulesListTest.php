@@ -1,9 +1,24 @@
 <?php
+/**
+ * Test function vipgoci_gitrepo_submodules_list().
+ *
+ * @package Automattic/vip-go-ci
+ */
+
+declare(strict_types=1);
+
+namespace Vipgoci\Tests\Integration;
 
 require_once( __DIR__ . '/IncludesForTests.php' );
 
 use PHPUnit\Framework\TestCase;
 
+/**
+ * Class that implements the testing.
+ *
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class GitRepoSubmodulesListTest extends TestCase {
 	/**
 	 * Options array.
