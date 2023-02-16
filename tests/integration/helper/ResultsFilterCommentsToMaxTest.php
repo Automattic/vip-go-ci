@@ -19,7 +19,7 @@ declare(strict_types=1);
  * @param int        $pr_number  Pull request number.
  * @param null|array $filter     Filter to apply.
  *
- * @return array Mocked review comments.
+ * @return array Mocked review comments, simplified values.
  */
 function vipgoci_github_pr_reviews_comments_get_by_pr(
 	array $options,
