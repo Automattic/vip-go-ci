@@ -1,4 +1,11 @@
 <?php
+/**
+ * Test function vipgoci_http_resp_sunset_header_check().
+ *
+ * @package Automattic/vip-go-ci
+ */
+
+declare(strict_types=1);
 
 namespace Vipgoci\tests;
 
@@ -6,6 +13,12 @@ require_once( __DIR__ . '/IncludesForTests.php' );
 
 use PHPUnit\Framework\TestCase;
 
+/**
+ * Class that implements the testing.
+ *
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class HttpFunctionsSunsetHeaderCheckTest extends TestCase {
 	protected function setUp(): void {
 		vipgoci_irc_api_alert_queue( null, true ); // Empty IRC queue
