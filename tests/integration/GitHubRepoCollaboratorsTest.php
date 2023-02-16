@@ -1,9 +1,24 @@
 <?php
+/**
+ * Test function vipgoci_github_repo_collaborators_get().
+ *
+ * @package Automattic/vip-go-ci
+ */
+
+declare(strict_types=1);
+
+namespace Vipgoci\Tests\Integration;
 
 require_once( __DIR__ . '/IncludesForTests.php' );
 
 use PHPUnit\Framework\TestCase;
 
+/**
+ * Class that implements the testing.
+ *
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class GitHubRepoCollaboratorsTest extends TestCase {
 	/**
 	 * Options array.
