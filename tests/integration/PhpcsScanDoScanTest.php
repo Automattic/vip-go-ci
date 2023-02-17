@@ -119,7 +119,7 @@ final class PhpcsScanDoScanTest extends TestCase {
 			$this->options_phpcs['phpcs-php-path'],
 			$this->options_phpcs['phpcs-standard'],
 			$this->options_phpcs['phpcs-sniffs-exclude'],
-			$this->options_phpcs['phpcs-severity'],
+			(int) $this->options_phpcs['phpcs-severity'],
 			$this->options_phpcs['phpcs-runtime-set']
 		);
 
@@ -216,7 +216,7 @@ final class PhpcsScanDoScanTest extends TestCase {
 			$this->options_phpcs['phpcs-php-path'],
 			$this->options_phpcs['phpcs-standard'],
 			$this->options_phpcs['phpcs-sniffs-exclude'],
-			$this->options_phpcs['phpcs-severity'],
+			(int) $this->options_phpcs['phpcs-severity'],
 			$this->options_phpcs['phpcs-runtime-set']
 		);
 
@@ -272,7 +272,7 @@ final class PhpcsScanDoScanTest extends TestCase {
 			$this->options_phpcs['phpcs-php-path'],
 			$this->options_phpcs['phpcs-standard'],
 			$this->options_phpcs['phpcs-sniffs-exclude'],
-			$this->options_phpcs['phpcs-severity'],
+			(int) $this->options_phpcs['phpcs-severity'],
 			$this->options_phpcs['phpcs-runtime-set']
 		);
 
@@ -347,7 +347,7 @@ final class PhpcsScanDoScanTest extends TestCase {
 			$this->options_phpcs['phpcs-php-path'],
 			$this->options_phpcs['phpcs-standard'],
 			$this->options_phpcs['phpcs-sniffs-exclude'],
-			$this->options_phpcs['phpcs-severity'],
+			(int) $this->options_phpcs['phpcs-severity'],
 			$this->options_phpcs['phpcs-runtime-set']
 		);
 
