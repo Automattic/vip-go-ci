@@ -24,7 +24,7 @@ final class SvgScanLookForSpecificTokensTest extends TestCase {
 	 * @return void
 	 */
 	protected function setUp() :void {
-		require_once( __DIR__ . '/IncludesForTests.php' );
+		require_once __DIR__ . '/IncludesForTests.php';
 	}
 
 	/**
