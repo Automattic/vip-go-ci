@@ -1,6 +1,6 @@
 <?php
 /**
- * Test function vipgoci_ap_file_types().
+ * Test function vipgoci_gitrepo_get_head().
  *
  * @package Automattic/vip-go-ci
  */
