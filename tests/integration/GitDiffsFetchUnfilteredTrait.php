@@ -1,6 +1,6 @@
 <?php
 
-namespace Vipgoci\tests;
+namespace Vipgoci\Tests\Integration;
 
 trait GitDiffsFetchUnfilteredTrait {
 	private function _dataGitDiffsAssert1() {
