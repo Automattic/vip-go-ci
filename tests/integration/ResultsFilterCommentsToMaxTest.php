@@ -40,7 +40,7 @@ final class ResultsFilterCommentsToMaxTest extends TestCase {
 	private array $results_orig = array();
 
 	/**
-	 * Options array for git options.
+	 * Options array for Git.
 	 *
 	 * @var $options_git
 	 */
@@ -50,7 +50,7 @@ final class ResultsFilterCommentsToMaxTest extends TestCase {
 	);
 
 	/**
-	 * Options array for git repo tests.
+	 * Options array for git repo.
 	 *
 	 * @var $options_git_repo_tests
 	 */
@@ -59,7 +59,7 @@ final class ResultsFilterCommentsToMaxTest extends TestCase {
 	);
 
 	/**
-	 * Include files, set up variables, etc.
+	 * Set up function.
 	 *
 	 * @return void
 	 */

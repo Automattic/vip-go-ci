@@ -1,9 +1,22 @@
 <?php
+/**
+ * Test function vipgoci_phpcs_do_scan().
+ *
+ * @package Automattic/vip-go-ci
+ */
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+declare(strict_types=1);
+
+namespace Vipgoci\Tests\Integration;
 
 use PHPUnit\Framework\TestCase;
 
+/**
+ * Class that implements the testing.
+ *
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class PhpcsScanDoScanTest extends TestCase {
 	var $options_phpcs = array(
 		'phpcs-path'		=> null,
@@ -16,6 +29,8 @@ final class PhpcsScanDoScanTest extends TestCase {
 	);
 
 	protected function setUp(): void {
+		require_once __DIR__ . '/IncludesForTests.php';
+
 		vipgoci_unittests_get_config_values(
 			'phpcs-scan',
 			$this->options_phpcs
@@ -104,7 +119,7 @@ final class PhpcsScanDoScanTest extends TestCase {
 			$this->options_phpcs['phpcs-php-path'],
 			$this->options_phpcs['phpcs-standard'],
 			$this->options_phpcs['phpcs-sniffs-exclude'],
-			$this->options_phpcs['phpcs-severity'],
+			(int) $this->options_phpcs['phpcs-severity'],
 			$this->options_phpcs['phpcs-runtime-set']
 		);
 
@@ -201,7 +216,7 @@ final class PhpcsScanDoScanTest extends TestCase {
 			$this->options_phpcs['phpcs-php-path'],
 			$this->options_phpcs['phpcs-standard'],
 			$this->options_phpcs['phpcs-sniffs-exclude'],
-			$this->options_phpcs['phpcs-severity'],
+			(int) $this->options_phpcs['phpcs-severity'],
 			$this->options_phpcs['phpcs-runtime-set']
 		);
 
@@ -257,7 +272,7 @@ final class PhpcsScanDoScanTest extends TestCase {
 			$this->options_phpcs['phpcs-php-path'],
 			$this->options_phpcs['phpcs-standard'],
 			$this->options_phpcs['phpcs-sniffs-exclude'],
-			$this->options_phpcs['phpcs-severity'],
+			(int) $this->options_phpcs['phpcs-severity'],
 			$this->options_phpcs['phpcs-runtime-set']
 		);
 
@@ -332,7 +347,7 @@ final class PhpcsScanDoScanTest extends TestCase {
 			$this->options_phpcs['phpcs-php-path'],
 			$this->options_phpcs['phpcs-standard'],
 			$this->options_phpcs['phpcs-sniffs-exclude'],
-			$this->options_phpcs['phpcs-severity'],
+			(int) $this->options_phpcs['phpcs-severity'],
 			$this->options_phpcs['phpcs-runtime-set']
 		);
 

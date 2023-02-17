@@ -1,6 +1,13 @@
 <?php
+/**
+ * Test vipgoci_option_file_handle().
+ *
+ * @package Automattic/vip-go-ci
+ */
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+declare(strict_types=1);
+
+namespace Vipgoci\Tests\Integration;
 
 use PHPUnit\Framework\TestCase;
 
@@ -12,9 +19,22 @@ use PHPUnit\Framework\TestCase;
  */
 final class OptionsFileHandleTest extends TestCase {
 	/**
-	 * @covers ::vipgoci_option_file_handle
+	 * Set up function. Require files, etc.
+	 *
+	 * @return void
 	 */
-	public function testOptionsFileHandle1() {
+	public function setUp(): void {
+		require_once __DIR__ . '/IncludesForTests.php';
+	}
+
+	/**
+	 * Test common usage of the function.
+	 *
+	 * @covers ::vipgoci_option_file_handle
+	 *
+	 * @return void
+	 */
+	public function testOptionsFileHandle1() :void {
 		$options = array(
 		);
 
