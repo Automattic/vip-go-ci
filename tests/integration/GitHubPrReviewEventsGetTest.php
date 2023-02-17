@@ -115,7 +115,7 @@ final class GitHubPrReviewEventsGetTest extends TestCase {
 
 		$issue_events_cached = vipgoci_github_pr_review_events_get(
 			$this->options,
-			$this->options['test-github-pr-reviews-event-get-pr-number'],
+			(int) $this->options['test-github-pr-reviews-event-get-pr-number'],
 			null,
 			false
 		);
@@ -198,7 +198,7 @@ final class GitHubPrReviewEventsGetTest extends TestCase {
 	
 		$issue_events_cached = vipgoci_github_pr_review_events_get(
 			$this->options,
-			$this->options['test-github-pr-reviews-event-get-pr-number'],
+			(int) $this->options['test-github-pr-reviews-event-get-pr-number'],
 			array(
 				'event_type'	=> 'labeled',
 				'actors_logins'	=> array(
@@ -253,7 +253,7 @@ final class GitHubPrReviewEventsGetTest extends TestCase {
 
 		$issue_events_cached = vipgoci_github_pr_review_events_get(
 			$this->options,
-			$this->options['test-github-pr-reviews-event-get-pr-number'],
+			(int) $this->options['test-github-pr-reviews-event-get-pr-number'],
 			null,
 			true
 		);
