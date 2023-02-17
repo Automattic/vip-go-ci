@@ -14,8 +14,6 @@ use PHPUnit\Framework\TestCase;
 /**
  * Class that implements the testing.
  *
- * @package Automattic/vip-go-ci
- *
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
