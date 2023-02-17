@@ -127,8 +127,7 @@ final class AutoApprovalScanCommitTest extends TestCase {
 		$this->options['pr-test-ap-auto-approval-1'] =
 			(int) $this->options['pr-test-ap-auto-approval-1'];
 
-		$tmp = null;
-		if ( ! vipgoci_unittests_skip_github_write_tests( $tmp ) ) {
+		if ( ! vipgoci_unittests_get_skip_github_write_tests() ) {
 			$this->cleanup_prs();
 		}
 	}
@@ -146,8 +145,7 @@ final class AutoApprovalScanCommitTest extends TestCase {
 			);
 		}
 
-		$tmp = null;
-		if ( ! vipgoci_unittests_skip_github_write_tests( $tmp ) ) {
+		if ( ! vipgoci_unittests_get_skip_github_write_tests() ) {
 			$this->cleanup_prs();
 		}
 
