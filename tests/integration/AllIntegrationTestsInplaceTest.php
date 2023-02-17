@@ -44,6 +44,7 @@ final class AllIntegrationTestsInplaceTest extends TestCase {
 					case '.':
 					case '..':
 					case 'helper':
+					case 'helper/ResultsFilterCommentsToMax.php':
 					case 'helper-files':
 					case 'helper-scripts':
 					case 'Skeleton.php':
