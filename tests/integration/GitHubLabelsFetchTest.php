@@ -92,7 +92,7 @@ final class GitHubLabelsFetchTest extends TestCase {
 			$this->options['repo-owner'],
 			$this->options['repo-name'],
 			$this->options['github-token'],
-			$this->options['pr-test-labels-fetch-test-1'],
+			(int) $this->options['pr-test-labels-fetch-test-1'],
 			null
 		);
 

@@ -98,7 +98,7 @@ final class GitHubPrsCommitsListTest extends TestCase {
 		$commits_list = vipgoci_github_prs_commits_list(
 			$this->options['repo-owner'],
 			$this->options['repo-name'],
-			$this->options['pr-test-repo-prs-commits-list-1'],
+			(int) $this->options['pr-test-repo-prs-commits-list-1'],
 			$this->options['github-token']
 		);
 

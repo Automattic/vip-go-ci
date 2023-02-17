@@ -89,7 +89,7 @@ final class GitHubPrReviewsGetTest extends TestCase {
 		$reviews_actual = vipgoci_github_pr_reviews_get(
 			$this->options['repo-owner'],
 			$this->options['repo-name'],
-			$this->options['pr-test-github-pr-reviews-get-1'],
+			(int) $this->options['pr-test-github-pr-reviews-get-1'],
 			$this->options['github-token'],
 			array()
 		);

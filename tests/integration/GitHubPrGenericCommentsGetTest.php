@@ -94,7 +94,7 @@ final class GitHubPrGenericCommentsGetTest extends TestCase {
 		$pr_comments = vipgoci_github_pr_generic_comments_get_all(
 			$this->options['repo-owner'],
 			$this->options['repo-name'],
-			$this->options['pr-test-github-pr-reviews-get-1'],
+			(int) $this->options['pr-test-github-pr-reviews-get-1'],
 			$this->options['github-token']
 		);
 

@@ -91,7 +91,7 @@ final class GitHubPrReviewsCommentsGetByPrTest extends TestCase {
 
 		$comments_actual = vipgoci_github_pr_reviews_comments_get_by_pr(
 			$this->options,
-			$this->options['pr-test-github-pr-reviews-get-1'],
+			(int) $this->options['pr-test-github-pr-reviews-get-1'],
 			array()
 		);
 
@@ -142,7 +142,7 @@ final class GitHubPrReviewsCommentsGetByPrTest extends TestCase {
 
 		$comments_actual = vipgoci_github_pr_reviews_comments_get_by_pr(
 			$this->options,
-			$this->options['pr-test-github-pr-reviews-get-1'],
+			(int) $this->options['pr-test-github-pr-reviews-get-1'],
 			array(
 				'login'	=> 'gudmdharalds',
 			)
@@ -195,7 +195,7 @@ final class GitHubPrReviewsCommentsGetByPrTest extends TestCase {
 
 		$comments_actual = vipgoci_github_pr_reviews_comments_get_by_pr(
 			$this->options,
-			$this->options['pr-test-github-pr-reviews-get-1'],
+			(int) $this->options['pr-test-github-pr-reviews-get-1'],
 			array(
 				'login'	=> 'random_invalid_user___0x0',
 			)
