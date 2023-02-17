@@ -68,7 +68,7 @@ final class ResultsFilterCommentsToMaxTest extends TestCase {
 		require_once __DIR__ . '/../../results.php';
 		require_once __DIR__ . '/../../log.php';
 
-		require_once __DIR__ . '/helper/ResultsFilterCommentsToMaxTest.php';
+		require_once __DIR__ . '/helper/ResultsFilterCommentsToMax.php';
 
 		require_once __DIR__ . '/IncludesForTestsDefines.php';
 		require_once __DIR__ . '/IncludesForTestsConfig.php';
