@@ -1,6 +1,13 @@
 <?php
+/**
+ * Trait for Git diff.
+ *
+ * @package Automattic/vip-go-ci
+ */
 
-namespace Vipgoci\tests;
+declare(strict_types=1);
+
+namespace Vipgoci\Tests\Integration;
 
 trait GitDiffsFetchUnfilteredTrait {
 	private function _dataGitDiffsAssert1() {

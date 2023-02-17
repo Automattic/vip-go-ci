@@ -1,8 +1,13 @@
 <?php
+/**
+ * Test function vipgoci_phpcs_scan_commit().
+ *
+ * @package Automattic/vip-go-ci
+ */
 
-namespace Vipgoci\tests;
+declare(strict_types=1);
 
-require_once( __DIR__ . '/IncludesForTests.php' );
+namespace Vipgoci\Tests\Integration;
 
 use PHPUnit\Framework\TestCase;
 
@@ -18,6 +23,9 @@ use PHPUnit\Framework\TestCase;
  * 
  * Here we only test if SVG scanning does work 
  * as expected.
+ *
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
  */
 final class SvgScanScanCommitTest extends TestCase {
 	/**
@@ -41,6 +49,8 @@ final class SvgScanScanCommitTest extends TestCase {
 	);
 
 	protected function setUp(): void {
+		require_once __DIR__ . '/IncludesForTests.php';
+
 		vipgoci_unittests_get_config_values(
 			'git',
 			$this->options_git_repo
