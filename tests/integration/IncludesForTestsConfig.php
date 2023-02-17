@@ -141,7 +141,7 @@ function vipgoci_unittests_options_test(
  * Returns true if to skip tests that write data via GitHub API,
  * otherwise false.
  *
- * @return bool True when to skip tests that write data.
+ * @return bool True when to skip tests that write data, otherwise false.
  */
 function vipgoci_unittests_get_skip_github_write_tests() :bool {
 	$config_arr = array(
@@ -169,7 +169,7 @@ function vipgoci_unittests_get_skip_github_write_tests() :bool {
  *
  * @param object|null $test_instance Instance of test class.
  *
- * @return bool True when to skip tests that write data.
+ * @return bool True when to skip tests that write data, otherwise false.
  */
 function vipgoci_unittests_skip_github_write_tests(
 	object|null &$test_instance
