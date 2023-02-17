@@ -117,12 +117,10 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 		 * but only if we have a token. This info will
 		 * be re-used.
 		 */
-		$tmp = null;
-
 		if (
 			( empty( $this->current_user_info ) ) &&
 			( ! empty( $this->options['github-token'] ) ) &&
-			( ! vipgoci_unittests_skip_github_write_tests( $tmp ) )
+			( ! vipgoci_unittests_get_skip_github_write_tests() )
 		) {
 			vipgoci_unittests_output_suppress();
 
