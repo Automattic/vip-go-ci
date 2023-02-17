@@ -138,15 +138,12 @@ function vipgoci_unittests_options_test(
 }
 
 /**
- * Returns true if to skip tests that write data via GitHub API.
+ * Returns true if to skip tests that write data via GitHub API,
+ * otherwise false.
  *
- * @param object|null $test_instance Instance of test class.
- *
- * @return bool
+ * @return bool True when to skip tests that write data.
  */
-function vipgoci_unittests_skip_github_write_tests(
-	object|null &$test_instance
-) :bool {
+function vipgoci_unittests_get_skip_github_write_tests() :bool {
 	$config_arr = array(
 		'github-skip-write-tests' => null,
 	);
@@ -161,6 +158,23 @@ function vipgoci_unittests_skip_github_write_tests(
 		( isset( $config_arr['github-skip-write-tests'] ) ) &&
 		( '1' === $config_arr['github-skip-write-tests'] )
 	) {
+		return true;
+	}
+
+	return false;
+}
+/**
+ * Returns true if to skip tests that write data via GitHub API
+ * and will mark test as skipped as well. Otherwise returns false.
+ *
+ * @param object|null $test_instance Instance of test class.
+ *
+ * @return bool True when to skip tests that write data.
+ */
+function vipgoci_unittests_skip_github_write_tests(
+	object|null &$test_instance
+) :bool {
+	if ( true === vipgoci_unittests_get_skip_github_write_tests() ) {
 		if ( null !== $test_instance ) {
 			$test_instance->markTestSkipped(
 				'Skipping test, should not be run as configured to skip tests that write data via GitHub API and this test does so'
