@@ -23,7 +23,7 @@ final class OptionsFileHandleTest extends TestCase {
 	 *
 	 * @return void
 	 */
-	private function setUp(): void {
+	public function setUp(): void {
 		require_once __DIR__ . '/IncludesForTests.php';
 	}
 
