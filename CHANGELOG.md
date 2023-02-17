@@ -19,6 +19,7 @@ All notable changes to this project will be documented in this file.
 - [#347](https://github.com/Automattic/vip-go-ci/pull/347): Add PHP 8.2 to CI tests, rename one CI task
 - [#350](https://github.com/Automattic/vip-go-ci/pull/350): Update integration test ResultsFilterCommentsToMaxTest.php: Mock key function
 - [#349](https://github.com/Automattic/vip-go-ci/pull/349): Upgrade integration tests to a common standard
+- [#348](https://github.com/Automattic/vip-go-ci/pull/348): Adding user for CI tests
 
 ## Fixed
 - [#337](https://github.com/Automattic/vip-go-ci/pull/337): Version number sanitizing: Allow "-" in version numbers
