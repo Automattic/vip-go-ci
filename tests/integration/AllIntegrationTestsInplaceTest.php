@@ -50,6 +50,7 @@ final class AllIntegrationTestsInplaceTest extends TestCase {
 					case 'Skeleton.php':
 					case 'IncludesForTests.php':
 					case 'IncludesForTestsConfig.php':
+					case 'IncludesForTestsDefines.php':
 					case 'IncludesForTestsOutputControl.php':
 					case 'IncludesForTestsMisc.php':
 					case 'IncludesForTestsRepo.php':
