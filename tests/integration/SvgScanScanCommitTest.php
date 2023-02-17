@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-namespace Vipgoci\tests;
+namespace Vipgoci\Tests\Integration;
 
 use PHPUnit\Framework\TestCase;
 

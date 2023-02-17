@@ -9,8 +9,6 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
-require_once( __DIR__ . '/IncludesForTests.php' );
-
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -27,6 +25,8 @@ final class PhpcsScanGetAllStandardsTest extends TestCase {
 	);
 
 	protected function setUp(): void {
+		require_once __DIR__ . '/IncludesForTests.php';
+
 		vipgoci_unittests_get_config_values(
 			'phpcs-scan',
 			$this->options_phpcs

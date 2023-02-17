@@ -9,8 +9,6 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
-require_once( __DIR__ . '/IncludesForTests.php' );
-
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -40,6 +38,8 @@ final class GitHubPrsCommitsListTest extends TestCase {
 	);
 
 	protected function setUp(): void {
+		require_once __DIR__ . '/IncludesForTests.php';
+
 		vipgoci_unittests_get_config_values(
 			'git-repo-tests',
 			$this->options_git_repo_tests
