@@ -11,7 +11,7 @@ namespace Vipgoci\Tests\Integration;
 
 use PHPUnit\Framework\TestCase;
 
-/*
+/**
  * This test should be identical with GitHubDiffsFetchUnfilteredTest.php
  *
  * Note that these two tests share the same data, via

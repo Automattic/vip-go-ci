@@ -12,9 +12,7 @@ namespace Vipgoci\Tests\Integration;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Test vipgoci_run_scan_reviews_comments_enforce_maximum function.
- *
- * @package Automattic/vip-go-ci
+ * Class that implements the tests.
  *
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
