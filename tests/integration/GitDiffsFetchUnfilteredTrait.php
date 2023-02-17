@@ -1,4 +1,11 @@
 <?php
+/**
+ * Trait for Git diff.
+ *
+ * @package Automattic/vip-go-ci
+ */
+
+declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
