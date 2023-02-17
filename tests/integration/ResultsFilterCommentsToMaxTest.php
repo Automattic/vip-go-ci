@@ -45,8 +45,8 @@ final class ResultsFilterCommentsToMaxTest extends TestCase {
 	 * @var $options_git
 	 */
 	private array $options_git = array(
-		'repo-owner'	=> null,
-		'repo-name'	=> null,
+		'repo-owner' => null,
+		'repo-name'  => null,
 	);
 
 	/**
@@ -55,9 +55,14 @@ final class ResultsFilterCommentsToMaxTest extends TestCase {
 	 * @var $options_git_repo_tests
 	 */
 	private array $options_git_repo_tests = array(
-		'pr-test-github-pr-results-max'	=> null,
+		'pr-test-github-pr-results-max' => null,
 	);
 
+	/**
+	 * Set up function.
+	 *
+	 * @return void
+	 */
 	protected function setUp(): void {
 		require_once __DIR__ . '/../../defines.php';
 		require_once __DIR__ . '/../../results.php';
