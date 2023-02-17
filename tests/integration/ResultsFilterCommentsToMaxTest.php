@@ -38,6 +38,16 @@ final class ResultsFilterCommentsToMaxTest extends TestCase {
 	);
 
 	protected function setUp(): void {
+		require_once __DIR__ . '/../../defines.php';
+		require_once __DIR__ . '/../../results.php';
+		require_once __DIR__ . '/../../log.php';
+
+		require_once __DIR__ . '/helper/ResultsFilterCommentsToMax.php';
+
+		require_once __DIR__ . '/IncludesForTestsDefines.php';
+		require_once __DIR__ . '/IncludesForTestsConfig.php';
+		require_once __DIR__ . '/IncludesForTestsOutputControl.php';
+
 		vipgoci_unittests_get_config_values(
 			'git',
 			$this->options_git
