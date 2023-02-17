@@ -142,11 +142,9 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 			$this
 		);
 
-		$tmp = null;
-
 		if (
 			( -1 !== $options_test ) &&
-			( ! vipgoci_unittests_skip_github_write_tests( $tmp ) )
+			( ! vipgoci_unittests_get_skip_github_write_tests() )
 		) {
 			$this->clearOldSupportComments();
 		}
@@ -164,11 +162,9 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 			$this
 		);
 
-		$tmp = null;
-
 		if (
 			( -1 !== $options_test ) &&
-			( ! vipgoci_unittests_skip_github_write_tests( $tmp ) )
+			( ! vipgoci_unittests_get_skip_github_write_tests() )
 		) {
 			$this->clearOldSupportComments();
 		}
