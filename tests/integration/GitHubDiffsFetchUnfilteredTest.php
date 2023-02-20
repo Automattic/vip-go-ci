@@ -1,17 +1,26 @@
 <?php
+/**
+ * Test function vipgoci_github_diffs_fetch_unfiltered().
+ *
+ * @package Automattic/vip-go-ci
+ */
 
-namespace Vipgoci\tests;
+declare(strict_types=1);
 
-require_once( __DIR__ . '/IncludesForTests.php' );
-require_once( __DIR__ . '/GitDiffsFetchUnfilteredTrait.php' );
+namespace Vipgoci\Tests\Integration;
 
 use PHPUnit\Framework\TestCase;
 
-/*
+require_once __DIR__ . '/GitDiffsFetchUnfilteredTrait.php';
+
+/**
  * This test should be identical with GitRepoDiffsFetchUnfilteredTest.php
  *
  * Note that these two tests share the same data, via
  * the GitDiffsFetchUnfilteredTrait.php file.
+ *
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
  */
 final class GitHubDiffsFetchUnfilteredTest extends TestCase {
 	use GitDiffsFetchUnfilteredTrait;
@@ -42,6 +51,8 @@ final class GitHubDiffsFetchUnfilteredTest extends TestCase {
 	private array $options = array();
 
 	protected function setUp(): void {
+		require_once __DIR__ . '/IncludesForTests.php';
+
 		vipgoci_unittests_get_config_values(
 			'git-repo-tests',
 			$this->options_git_repo_tests

@@ -127,7 +127,9 @@ final class AutoApprovalScanCommitTest extends TestCase {
 		$this->options['pr-test-ap-auto-approval-1'] =
 			(int) $this->options['pr-test-ap-auto-approval-1'];
 
-		$this->cleanup_prs();
+		if ( ! vipgoci_unittests_get_skip_github_write_tests() ) {
+			$this->cleanup_prs();
+		}
 	}
 
 	/**
@@ -143,7 +145,9 @@ final class AutoApprovalScanCommitTest extends TestCase {
 			);
 		}
 
-		$this->cleanup_prs();
+		if ( ! vipgoci_unittests_get_skip_github_write_tests() ) {
+			$this->cleanup_prs();
+		}
 
 		unset( $this->options_git );
 		unset( $this->options_auto_approvals );
@@ -281,6 +285,10 @@ final class AutoApprovalScanCommitTest extends TestCase {
 			return;
 		}
 
+		if ( vipgoci_unittests_skip_github_write_tests( $this ) ) {
+			return;
+		}
+
 		if ( false === $this->safe_to_run ) {
 			$this->markTestSkipped(
 				'Test not safe to run due to earlier warnings'
@@ -404,6 +412,10 @@ final class AutoApprovalScanCommitTest extends TestCase {
 			return;
 		}
 
+		if ( vipgoci_unittests_skip_github_write_tests( $this ) ) {
+			return;
+		}
+
 		if ( false === $this->safe_to_run ) {
 			$this->markTestSkipped(
 				'Test not safe to run due to earlier warnings'
@@ -521,6 +533,9 @@ final class AutoApprovalScanCommitTest extends TestCase {
 			return;
 		}
 
+		if ( vipgoci_unittests_skip_github_write_tests( $this ) ) {
+			return;
+		}
 		if ( false === $this->safe_to_run ) {
 			$this->markTestSkipped(
 				'Test not safe to run due to earlier warnings'
@@ -640,6 +655,10 @@ final class AutoApprovalScanCommitTest extends TestCase {
 			return;
 		}
 
+		if ( vipgoci_unittests_skip_github_write_tests( $this ) ) {
+			return;
+		}
+
 		if ( false === $this->safe_to_run ) {
 			$this->markTestSkipped(
 				'Test not safe to run due to earlier warnings'
@@ -752,6 +771,9 @@ final class AutoApprovalScanCommitTest extends TestCase {
 			return;
 		}
 
+		if ( vipgoci_unittests_skip_github_write_tests( $this ) ) {
+			return;
+		}
 		if ( false === $this->safe_to_run ) {
 			$this->markTestSkipped(
 				'Test not safe to run due to earlier warnings'
@@ -880,6 +902,10 @@ final class AutoApprovalScanCommitTest extends TestCase {
 		);
 
 		if ( -1 === $options_test ) {
+			return;
+		}
+
+		if ( vipgoci_unittests_skip_github_write_tests( $this ) ) {
 			return;
 		}
 

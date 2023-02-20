@@ -42,9 +42,10 @@ To enable the testing of these, you need to set up a `unittests-secrets.ini` fil
 
 ```
 [git-secrets]
-github-token= ; Personal access token from GitHub
-team-slug=    ; Team slug to test if present, is a string.
-org-name=     ; GitHub organisation name to use in testing
+github-token=            ; Personal access token for GitHub API.
+github-skip-write-tests= ; Whether to skip tests that write data to GitHub (true or false).
+team-slug=               ; Team slug to test if present, should be a string.
+org-name=                ; GitHub organisation name to use in testing.
 
 [repo-meta-api-secrets]
 repo-meta-api-base-url=         ; URL to base of meta API
@@ -79,9 +80,17 @@ Integration tests will execute the scanning utilities — PHPCS, SVG scanner and
 
 By using this command, you will run the tests of the test-suite which can be run (depending on tokens and other detail), and get feedback on any errors or warnings. Note that when run, requests will be made to the GitHub API using anonymous calls (unless configured to use an access-token as shown above). It can happen that the GitHub API returns with an error indicating that the maximum limit of API requests has been reached; the solution is to wait and re-run or switch to authenticted calls. 
 
-### Details on tests
+### Test isolation
 
 Note that the test suite uses the `@runTestsInSeparateProcesses` and `@preserveGlobalState` PHPUnit flags to avoid any influence of one test on another. Further, tests should include all required files in `setUp()` function to avoid the same function being defined multiple times across multiple tests during the same run. Combining the usage of `@runTestsInSeparateProcesses` and the inclusion of required files in `setUp()` means each test is independent of other tests, which enables functions to be defined for each test easily and avoids leakage between tests.
+
+### Integration tests and GitHub Actions
+
+When the integration test suite runs on GitHub Actions the suite is configured specifically not to write any data to GitHub during testing. More specifically, the `github-skip-write-tests` key/value (see [above](#test-suite-secrets-file)) is set to `true` value in the `unittests-secrets.ini` file during execution of the tests (see [here](.github/workflows/ci.yml)), which leads to certain tests not being run.
+
+The integration test suite is further more set up with a GitHub access token, guaranteeing enough rate limiting quota for the tests. The access token is stored in GitHub Actions secrets for the repository. More details are available in internal documentation.
+
+During testing, certain fields in the `unittests-secrets.ini` file are not specified, which leads to certain tests to being skipped.
 
 ## Manual testing
 
