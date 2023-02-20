@@ -318,7 +318,7 @@ define( 'VIPGOCI_WPSCAN_UPDATEURI_WP_ORG_URLS', array( 'w.org', 'wordpress.org' 
 define( 'VIPGOCI_WPSCAN_VULNERABLE', 'vulnerable' );
 define( 'VIPGOCI_WPSCAN_OBSOLETE', 'obsolete' );
 
-define( 'VIPGOCI_WPSCAN_API_ERROR', 'Automated Addon Security Scanning' );
+define( 'VIPGOCI_WPSCAN_API_ERROR', 'Vulnerability and Update Scan' );
 
 define(
 	'VIPGOCI_WPSCAN_REPORT_START',
