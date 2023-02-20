@@ -119,7 +119,8 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 		 */
 		if (
 			( empty( $this->current_user_info ) ) &&
-			( ! empty( $this->options['github-token'] ) )
+			( ! empty( $this->options['github-token'] ) ) &&
+			( ! vipgoci_unittests_get_skip_github_write_tests() )
 		) {
 			vipgoci_unittests_output_suppress();
 
@@ -133,14 +134,16 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 		/*
 		 * Don't attempt cleanup if not configured.
 		 */
-
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array(),
 			$this
 		);
 
-		if ( -1 !== $options_test ) {
+		if (
+			( -1 !== $options_test ) &&
+			( ! vipgoci_unittests_get_skip_github_write_tests() )
+		) {
 			$this->clearOldSupportComments();
 		}
 	}
@@ -157,7 +160,10 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 			$this
 		);
 
-		if ( -1 !== $options_test ) {
+		if (
+			( -1 !== $options_test ) &&
+			( ! vipgoci_unittests_get_skip_github_write_tests() )
+		) {
 			$this->clearOldSupportComments();
 		}
 
@@ -343,6 +349,10 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 			return;
 		}
 
+		if ( vipgoci_unittests_skip_github_write_tests( $this ) ) {
+			return;
+		}
+
 		// Configure branches we can post against.
 		$this->options['post-generic-pr-support-comments-branches'] =
 			array(
@@ -421,6 +431,10 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 		);
 
 		if ( -1 === $options_test ) {
+			return;
+		}
+
+		if ( vipgoci_unittests_skip_github_write_tests( $this ) ) {
 			return;
 		}
 
@@ -547,6 +561,10 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 			return;
 		}
 
+		if ( vipgoci_unittests_skip_github_write_tests( $this ) ) {
+			return;
+		}
+
 		// Configure branches we allow posting against.
 		$this->options['post-generic-pr-support-comments-branches'] =
 			array(
@@ -670,6 +688,10 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 			return;
 		}
 
+		if ( vipgoci_unittests_skip_github_write_tests( $this ) ) {
+			return;
+		}
+
 		// Configure branches to post against.
 		$this->options['post-generic-pr-support-comments-branches'] =
 			array(
@@ -755,6 +777,10 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 		);
 
 		if ( -1 === $options_test ) {
+			return;
+		}
+
+		if ( vipgoci_unittests_skip_github_write_tests( $this ) ) {
 			return;
 		}
 
@@ -919,6 +945,10 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 		);
 
 		if ( -1 === $options_test ) {
+			return;
+		}
+
+		if ( vipgoci_unittests_skip_github_write_tests( $this ) ) {
 			return;
 		}
 

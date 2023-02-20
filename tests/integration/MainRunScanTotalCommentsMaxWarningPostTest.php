@@ -46,6 +46,13 @@ final class MainRunScanTotalCommentsMaxWarningPostTest extends TestCase {
 	private array $options = array();
 
 	/**
+	 * Variable for information about owner of access token.
+	 *
+	 * @var $current_user_info
+	 */
+	private mixed $current_user_info = null;
+
+	/**
 	 * Set up all variables, etc.
 	 *
 	 * @return void
@@ -210,6 +217,10 @@ final class MainRunScanTotalCommentsMaxWarningPostTest extends TestCase {
 			return;
 		}
 
+		if ( vipgoci_unittests_skip_github_write_tests( $this ) ) {
+			return;
+		}
+
 		$this->options['review-comments-total-max'] = 100;
 
 		$prs_comments_maxed = array(
@@ -268,6 +279,10 @@ final class MainRunScanTotalCommentsMaxWarningPostTest extends TestCase {
 		);
 
 		if ( -1 === $options_test ) {
+			return;
+		}
+
+		if ( vipgoci_unittests_skip_github_write_tests( $this ) ) {
 			return;
 		}
 

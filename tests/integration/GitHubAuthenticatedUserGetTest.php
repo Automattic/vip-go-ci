@@ -59,6 +59,10 @@ final class GitHubAuthenticatedUserGetTest extends TestCase {
 			return;
 		}
 
+		if ( vipgoci_unittests_skip_github_write_tests( $this ) ) {
+			return;
+		}
+
 		vipgoci_unittests_output_suppress();
 
 		$gh_result = vipgoci_github_authenticated_user_get(

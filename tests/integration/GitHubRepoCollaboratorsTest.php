@@ -67,6 +67,10 @@ final class GitHubRepoCollaboratorsTest extends TestCase {
 			return;
 		}
 
+		if ( vipgoci_unittests_skip_github_write_tests( $this ) ) {
+			return;
+		}
+
 		vipgoci_unittests_output_suppress();
 
 		$repo_collaborators_all = vipgoci_github_repo_collaborators_get(
@@ -109,6 +113,10 @@ final class GitHubRepoCollaboratorsTest extends TestCase {
 		);
 
 		if ( -1 === $options_test ) {
+			return;
+		}
+
+		if ( vipgoci_unittests_skip_github_write_tests( $this ) ) {
 			return;
 		}
 
