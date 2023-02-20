@@ -1,11 +1,22 @@
 <?php
+/**
+ * Test function vipgoci_github_authenticated_user_get().
+ *
+ * @package Automattic/vip-go-ci
+ */
+
+declare(strict_types=1);
 
 namespace Vipgoci\tests;
 
-require_once( __DIR__ . '/IncludesForTests.php' );
-
 use PHPUnit\Framework\TestCase;
 
+/**
+ * Class that implements the testing.
+ *
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class GitHubAuthenticatedUserGetTest extends TestCase {
 	/**
 	 * Variable for options.
@@ -15,6 +26,8 @@ final class GitHubAuthenticatedUserGetTest extends TestCase {
 	private array $options = array();
 
 	protected function setUp(): void {
+		require_once __DIR__ . '/IncludesForTests.php';
+
 		$this->options = array();
 
 		$this->options[ 'github-token' ] =
@@ -43,6 +56,10 @@ final class GitHubAuthenticatedUserGetTest extends TestCase {
 		);
 
 		if ( -1 === $options_test ) {
+			return;
+		}
+
+		if ( vipgoci_unittests_skip_github_write_tests( $this ) ) {
 			return;
 		}
 

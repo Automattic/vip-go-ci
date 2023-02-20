@@ -451,7 +451,6 @@ function vipgoci_http_api_fetch_url(
 	int $curl_retries_max = 4
 ) :string|null {
 	$curl_retries = 0;
-
 	/*
 	 * Attempt to send request -- retry if
 	 * it fails.
@@ -499,7 +498,6 @@ function vipgoci_http_api_fetch_url(
 			( strlen( $http_api_token ) > 0 )
 		) {
 			$tmp_http_headers_arr[] = 'Authorization: token ' . $http_api_token;
-
 		} elseif (
 			( is_array( $http_api_token ) ) &&
 			( isset( $http_api_token['wpscan_token'] ) )

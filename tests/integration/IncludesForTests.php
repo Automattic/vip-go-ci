@@ -1,15 +1,14 @@
 <?php
+/**
+ * Include all test suite files and
+ * vip-go-ci files as well.
+ *
+ * @package Automattic/vip-go-ci
+ */
 
-declare( strict_types=1 );
+declare(strict_types=1);
 
-if ( ! defined( 'VIPGOCI_UNIT_TESTING' ) ) {
-	define( 'VIPGOCI_UNIT_TESTING', true );
-}
-
-if ( ! defined( 'VIPGOCI_UNIT_TESTS_INI_DIR_PATH' ) ) {
-	define( 'VIPGOCI_UNIT_TESTS_INI_DIR_PATH', dirname( __DIR__ ) );
-}
-
+require_once __DIR__ . '/IncludesForTestsDefines.php';
 require_once __DIR__ . '/IncludesForTestsOutputControl.php';
 require_once __DIR__ . '/IncludesForTestsConfig.php';
 require_once __DIR__ . '/IncludesForTestsRepo.php';
