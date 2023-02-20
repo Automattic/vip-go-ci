@@ -21,6 +21,7 @@ All notable changes to this project will be documented in this file.
 - [#349](https://github.com/Automattic/vip-go-ci/pull/349): Upgrade integration tests to a common standard
 - [#348](https://github.com/Automattic/vip-go-ci/pull/348): Adding user for CI tests
 - [#351](https://github.com/Automattic/vip-go-ci/pull/351): Update WPScan generic comment messaging
+- [#352](https://github.com/Automattic/vip-go-ci/pull/352): Move and rename unittests ini and unittests-secrets.ini files
 
 ## Fixed
 - [#337](https://github.com/Automattic/vip-go-ci/pull/337): Version number sanitizing: Allow "-" in version numbers
