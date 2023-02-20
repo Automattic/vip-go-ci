@@ -99,11 +99,11 @@ jobs:
         env:
           GH_TESTS_TOKEN: ${{ secrets.GH_TESTS_TOKEN }}
         run: |
-          sed "s:/home/phpunit/:${HOME}/:; s:phpcs-php-path=.*:phpcs-php-path=/usr/bin/php7.4:g; s:svg-php-path=.*:svg-php-path=/usr/bin/php8.1:g; s:github-repo-url=.*:github-repo-url=${HOME}/vip-go-ci-tools/vip-go-ci-testing:g;" unittests.ini.dist > unittests.ini
-          rm -f unittests.ini.dist
-          echo '[git-secrets]' > unittests-secrets.ini
-          echo "github-token=$GH_TESTS_TOKEN" >> unittests-secrets.ini
-          echo 'github-skip-write-tests=true' >> unittests-secrets.ini
+          sed "s:/home/phpunit/:${HOME}/:; s:phpcs-php-path=.*:phpcs-php-path=/usr/bin/php7.4:g; s:svg-php-path=.*:svg-php-path=/usr/bin/php8.1:g; s:github-repo-url=.*:github-repo-url=${HOME}/vip-go-ci-tools/vip-go-ci-testing:g;" tests/unittests.ini.dist > tests/unittests.ini
+          rm -f tests/unittests.ini.dist
+          echo '[git-secrets]' > tests/unittests-secrets.ini
+          echo "github-token=$GH_TESTS_TOKEN" >> tests/unittests-secrets.ini
+          echo 'github-skip-write-tests=true' >> tests/unittests-secrets.ini
           sed "s:PROJECT_DIR:$(pwd):g" phpunit.xml.dist > phpunit.xml
 
       - name: Set default PHP version
@@ -116,7 +116,7 @@ jobs:
 
       - name: Clean up after integration tests
         run: |
-          rm -f unittests-secrets.ini
+          rm -f tests/unittests-secrets.ini
 
   php-code-compatibility:
     name: PHP code compatibility (8.2)
