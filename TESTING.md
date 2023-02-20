@@ -88,7 +88,7 @@ Note that the test suite uses the `@runTestsInSeparateProcesses` and `@preserveG
 
 When the integration test suite runs on GitHub Actions the suite is configured specifically not to write any data to GitHub during testing. More specifically, the `github-skip-write-tests` key/value (see [above](#test-suite-secrets-file)) is set to `true` value in the `unittests-secrets.ini` file during execution of the tests (see [here](.github/workflows/ci.yml)), which leads to certain tests not being run.
 
-The integration test suite is further more set up with a GitHub access token, guaranteeing enough rate limiting quota. The access token is stored in GitHub Actions secrets for the repository. More details are available in internal documentation.
+The integration test suite is further more set up with a GitHub access token, guaranteeing enough rate limiting quota for the tests. The access token is stored in GitHub Actions secrets for the repository. More details are available in internal documentation.
 
 During testing, certain fields in the `unittests-secrets.ini` file are not specified, which leads to certain tests to being skipped.
 
