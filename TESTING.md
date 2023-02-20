@@ -28,7 +28,7 @@ will be:
 
 3) Copy configuration file for tests and update the file as needed. Note that this step is only needed if you intend to run the integration tests. 
 
-> cp unittests.ini.dist unittests.ini
+> cp tests/unittests.ini.dist tests/unittests.ini
 
 Alter any options in the file as needed to match the setup of your system. Note that in some cases, you may have to use different PHP versions for PHPCS or the SVG scanner than `vip-go-ci` itself.
 
@@ -36,9 +36,9 @@ Alter any options in the file as needed to match the setup of your system. Note 
 
 Some tests will require a GitHub token to submit POST/PUT requests to the GitHub API, some will need access to a repo-meta API and some access to the WPScan API. 
 
-To skip these tests, simply place an empty `unittests-secrets.ini` file in the root directory of `vip-go-ci` and skip the rest of this section. 
+To skip these tests, simply place an empty `unittests-secrets.ini` file in the `tests/` directory of `vip-go-ci` and skip the rest of this section.
 
-To enable the testing of these, you need to set up a `unittests-secrets.ini` file in the root directory of `vip-go-ci`. This file should include the following fields:
+To enable the testing of these, you need to set up a `tests/unittests-secrets.ini` file. This file should include the following fields:
 
 ```
 [git-secrets]
@@ -76,7 +76,7 @@ The integration tests can be run using the following command:
 
 > VIPGOCI_TESTING_DEBUG_MODE=true phpunit --testsuite=integration-tests
 
-Integration tests will execute the scanning utilities — PHPCS, SVG scanner and PHP Lint — and so paths to these, and a PHP interpreter, need to be configured. See the `unittests.ini` file.
+Integration tests will execute the scanning utilities — PHPCS, SVG scanner and PHP Lint — and so paths to these, and a PHP interpreter, need to be configured. See the `tests/unittests.ini` file.
 
 By using this command, you will run the tests of the test-suite which can be run (depending on tokens and other detail), and get feedback on any errors or warnings. Note that when run, requests will be made to the GitHub API using anonymous calls (unless configured to use an access-token as shown above). It can happen that the GitHub API returns with an error indicating that the maximum limit of API requests has been reached; the solution is to wait and re-run or switch to authenticted calls. 
 
@@ -86,11 +86,11 @@ Note that the test suite uses the `@runTestsInSeparateProcesses` and `@preserveG
 
 ### Integration tests and GitHub Actions
 
-When the integration test suite runs on GitHub Actions the suite is configured specifically not to write any data to GitHub during testing. More specifically, the `github-skip-write-tests` key/value (see [above](#test-suite-secrets-file)) is set to `true` value in the `unittests-secrets.ini` file during execution of the tests (see [here](.github/workflows/ci.yml)), which leads to certain tests not being run.
+When the integration test suite runs on GitHub Actions the suite is configured specifically not to write any data to GitHub during testing. More specifically, the `github-skip-write-tests` key/value (see [above](#test-suite-secrets-file)) is set to `true` value in the `tests/unittests-secrets.ini` file during execution of the tests (see [here](.github/workflows/ci.yml)), which leads to certain tests not being run.
 
 The integration test suite is further more set up with a GitHub access token, guaranteeing enough rate limiting quota for the tests. The access token is stored in GitHub Actions secrets for the repository. More details are available in internal documentation.
 
-During testing, certain fields in the `unittests-secrets.ini` file are not specified, which leads to certain tests to being skipped.
+During testing, certain fields in the `tests/unittests-secrets.ini` file are not specified, which leads to certain tests to being skipped.
 
 ## Manual testing
 
