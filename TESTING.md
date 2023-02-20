@@ -42,10 +42,10 @@ To enable the testing of these, you need to set up a `unittests-secrets.ini` fil
 
 ```
 [git-secrets]
-github-token=            ; Personal access token from GitHub
+github-token=            ; Personal access token for GitHub API.
 github-skip-write-tests= ; Whether to skip tests that write data to GitHub (true or false).
-team-slug=               ; Team slug to test if present, is a string.
-org-name=                ; GitHub organisation name to use in testing
+team-slug=               ; Team slug to test if present, should be a string.
+org-name=                ; GitHub organisation name to use in testing.
 
 [repo-meta-api-secrets]
 repo-meta-api-base-url=         ; URL to base of meta API
@@ -90,7 +90,7 @@ When the integration test suite runs on GitHub Actions the suite is configured s
 
 The integration test suite is further more set up with a GitHub access token, guaranteeing enough rate limiting quota. The access token is stored in GitHub Actions secrets for the repository. More details are available in internal documentation.
 
-During testing, certain fields in the `unittests-secrets.ini` are not specified, which leads to certain tests to being skipped.
+During testing, certain fields in the `unittests-secrets.ini` file are not specified, which leads to certain tests to being skipped.
 
 ## Manual testing
 
