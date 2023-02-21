@@ -1,7 +1,11 @@
 unittests.ini
 unittests-secrets.ini
+config.ini
+config-secrets.ini
 tests/unittests.ini
 tests/unittests-secrets.ini
+tests/config.ini
+tests/config-secrets.ini
 *.dia~
 *.swp
 phpunit.xml
