@@ -38,7 +38,7 @@ Some tests will require a GitHub token to submit POST/PUT requests to the GitHub
 
 To skip these tests, simply place an empty `unittests-secrets.ini` file in the `tests/` directory of `vip-go-ci` and skip the rest of this section.
 
-To enable the testing of these, you need to set up a `tests/unittests-secrets.ini` file. This file should include the following fields:
+To enable the testing of these, you need to set up a `tests/config-secrets.ini` file. This file should include the following fields:
 
 ```
 [git-secrets]
@@ -86,11 +86,11 @@ Note that the test suite uses the `@runTestsInSeparateProcesses` and `@preserveG
 
 ### Integration tests and GitHub Actions
 
-When the integration test suite runs on GitHub Actions the suite is configured specifically not to write any data to GitHub during testing. More specifically, the `github-skip-write-tests` key/value (see [above](#test-suite-secrets-file)) is set to `true` value in the `tests/unittests-secrets.ini` file during execution of the tests (see [here](.github/workflows/ci.yml)), which leads to certain tests not being run.
+When the integration test suite runs on GitHub Actions the suite is configured specifically not to write any data to GitHub during testing. More specifically, the `github-skip-write-tests` key/value (see [above](#test-suite-secrets-file)) is set to `true` value in the `tests/config-secrets.ini` file during execution of the tests (see [here](.github/workflows/ci.yml)), which leads to certain tests not being run.
 
 The integration test suite is further more set up with a GitHub access token, guaranteeing enough rate limiting quota for the tests. The access token is stored in GitHub Actions secrets for the repository. More details are available in internal documentation.
 
-During testing, certain fields in the `tests/unittests-secrets.ini` file are not specified, which leads to certain tests to being skipped.
+During testing, certain fields in the `tests/config-secrets.ini` file are not specified, which leads to certain tests to being skipped.
 
 ## Manual testing
 
