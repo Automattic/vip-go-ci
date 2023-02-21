@@ -36,7 +36,7 @@ Alter any options in the file as needed to match the setup of your system. Note 
 
 Some tests will require a GitHub token to submit POST/PUT requests to the GitHub API, some will need access to a repo-meta API and some access to the WPScan API. 
 
-To skip these tests, simply place an empty `unittests-secrets.ini` file in the `tests/` directory of `vip-go-ci` and skip the rest of this section.
+To skip these tests, simply place an empty `config-secrets.ini` file in the `tests/` directory of `vip-go-ci` and skip the rest of this section.
 
 To enable the testing of these, you need to set up a `tests/config-secrets.ini` file. This file should include the following fields:
 
