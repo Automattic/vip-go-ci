@@ -18,12 +18,12 @@ function vipgoci_unittests_get_config_value(
 ) :?string {
 	if ( false === $secret_file ) {
 		$ini_array = parse_ini_file(
-			VIPGOCI_UNIT_TESTS_INI_DIR_PATH . '/unittests.ini',
+			VIPGOCI_UNIT_TESTS_INI_DIR_PATH . '/config.ini',
 			true
 		);
 	} else {
 		$ini_array = parse_ini_file(
-			VIPGOCI_UNIT_TESTS_INI_DIR_PATH . '/unittests-secrets.ini',
+			VIPGOCI_UNIT_TESTS_INI_DIR_PATH . '/config-secrets.ini',
 			true
 		);
 	}
