@@ -22,6 +22,7 @@ All notable changes to this project will be documented in this file.
 - [#348](https://github.com/Automattic/vip-go-ci/pull/348): Adding user for CI tests
 - [#351](https://github.com/Automattic/vip-go-ci/pull/351): Update WPScan generic comment messaging
 - [#352](https://github.com/Automattic/vip-go-ci/pull/352): Move and rename unittests ini and unittests-secrets.ini files
+- [#353](https://github.com/Automattic/vip-go-ci/pull/353): Update tests/integration/WpscanScanSaveForSubmissionTest.php: Do not run tests when skip GitHub write is true
 
 ## Fixed
 - [#337](https://github.com/Automattic/vip-go-ci/pull/337): Version number sanitizing: Allow "-" in version numbers
