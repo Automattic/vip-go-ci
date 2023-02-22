@@ -203,10 +203,10 @@ function vipgoci_wpscan_report_comment_format_result(
 
 	// Type of addon.
 	if ( VIPGOCI_ADDON_PLUGIN === $issue_type ) {
-		$res .= '**Plugin Name**: ' . vipgoci_output_markdown_escape( $issue['message'] ) . "\n" .
+		$res .= '**Plugin name**: ' . vipgoci_output_markdown_escape( $issue['message'] ) . "\n" .
 			'**Plugin URI**: ' . $addon_url_escaped . "\n";
 	} elseif ( VIPGOCI_ADDON_THEME === $issue_type ) {
-		$res .= '**Theme Name**: ' . vipgoci_output_markdown_escape( $issue['message'] ) . "\n" .
+		$res .= '**Theme name**: ' . vipgoci_output_markdown_escape( $issue['message'] ) . "\n" .
 			'**Theme URI**: ' . $addon_url_escaped . "\n";
 	}
 
