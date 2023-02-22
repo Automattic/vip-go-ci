@@ -90,12 +90,12 @@ final class WpscanReportCommentFormatResultTest extends TestCase {
 		);
 
 		$this->assertStringNotContainsString(
-			'Theme',
+			'theme',
 			$report_str
 		);
 
 		$this->assertStringContainsString(
-			'Plugin Name',
+			'Plugin name',
 			$report_str
 		);
 
@@ -250,7 +250,7 @@ final class WpscanReportCommentFormatResultTest extends TestCase {
 		);
 
 		$this->assertStringContainsString(
-			'Theme Name',
+			'Theme name',
 			$report_str
 		);
 
