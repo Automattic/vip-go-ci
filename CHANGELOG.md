@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.3.4](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.4) - 2023-01-??
+## [1.3.4](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.4) - 2023-02-22
 
 ## Added
 - [#336](https://github.com/Automattic/vip-go-ci/pull/336): Add GitHub API version HTTP header
