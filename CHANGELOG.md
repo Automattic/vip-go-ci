@@ -31,6 +31,7 @@ All notable changes to this project will be documented in this file.
 - [#340](https://github.com/Automattic/vip-go-ci/pull/340): Fix output suppression in tests
 - [#341](https://github.com/Automattic/vip-go-ci/pull/341): Restructure readme file, document manual testing, various updates
 - [#354](https://github.com/Automattic/vip-go-ci/pull/354): Change capitalization in WPScan results
+- [#355](https://github.com/Automattic/vip-go-ci/pull/355): Update tests/integration/GitHubApiLabelsTest.php: Cast PR number to integer
 
 ## [1.3.3](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.3) - 2022-11-21
 
