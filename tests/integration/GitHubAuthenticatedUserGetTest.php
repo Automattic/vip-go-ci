@@ -42,7 +42,7 @@ final class GitHubAuthenticatedUserGetTest extends TestCase {
 	}
 
 	protected function tearDown(): void {
-		$this->options = null;
+		unset( $this->options );
 	}
 
 	/**
