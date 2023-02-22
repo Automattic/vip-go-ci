@@ -133,7 +133,7 @@ final class GitHubApiLabelsTest extends TestCase {
 			$this->options['repo-owner'],
 			$this->options['repo-name'],
 			$this->options['github-token'],
-			$this->options['labels-pr-to-modify'],
+			(int) $this->options['labels-pr-to-modify'],
 			$this::LABEL_NAME
 		);
 
@@ -182,7 +182,7 @@ final class GitHubApiLabelsTest extends TestCase {
 			$this->options['repo-owner'],
 			$this->options['repo-name'],
 			$this->options['github-token'],
-			$this->options['labels-pr-to-modify'],
+			(int) $this->options['labels-pr-to-modify'],
 			$this::LABEL_NAME
 		);
 
