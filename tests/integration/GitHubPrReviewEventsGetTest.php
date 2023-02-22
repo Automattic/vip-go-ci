@@ -53,7 +53,18 @@ final class GitHubPrReviewEventsGetTest extends TestCase {
 			$this->options_git_repo_tests
 		);
 
-		$this->options['token'] = '';
+		$this->options['github-token'] =
+			vipgoci_unittests_get_config_value(
+				'git-secrets',
+				'github-token',
+				true // Fetch from secrets file.
+			);
+
+		if ( empty( $this->options['github-token'] ) ) {
+			$this->options['github-token'] = '';
+		}
+
+		$this->options['token'] = $this->options['github-token'];
 	}
 
 	protected function tearDown(): void {
