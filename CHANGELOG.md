@@ -2,7 +2,40 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.3.3](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.3) - 2022-10-??
+## [1.3.4](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.4) - 2023-02-22
+
+## Added
+- [#336](https://github.com/Automattic/vip-go-ci/pull/336): Add GitHub API version HTTP header
+- [#342](https://github.com/Automattic/vip-go-ci/pull/342): Add files needed for manual testing
+- [#343](https://github.com/Automattic/vip-go-ci/pull/343): Add --wpscan-api-skip-folders-in-repo-options-file parameter
+
+## Updated
+- [#332](https://github.com/Automattic/vip-go-ci/pull/332): Improve WPScan logging
+- [#334](https://github.com/Automattic/vip-go-ci/pull/334): Update WPScan API results wording
+- [#335](https://github.com/Automattic/vip-go-ci/pull/335): Update "local" slug determination mechanism
+- [#344](https://github.com/Automattic/vip-go-ci/pull/344): Update comment in wp-core-misc.php
+- [#345](https://github.com/Automattic/vip-go-ci/pull/345): Update vipgoci-run.sh.dist file: Add option to skip scanning of directories via file, alter order of commands
+- [#346](https://github.com/Automattic/vip-go-ci/pull/346): Update unit and integration tests to comply with a common standard, PHP 8.2 fixes, template update
+- [#347](https://github.com/Automattic/vip-go-ci/pull/347): Add PHP 8.2 to CI tests, rename one CI task
+- [#350](https://github.com/Automattic/vip-go-ci/pull/350): Update integration test ResultsFilterCommentsToMaxTest.php: Mock key function
+- [#349](https://github.com/Automattic/vip-go-ci/pull/349): Upgrade integration tests to a common standard
+- [#348](https://github.com/Automattic/vip-go-ci/pull/348): Adding user for CI tests
+- [#351](https://github.com/Automattic/vip-go-ci/pull/351): Update WPScan generic comment messaging
+- [#352](https://github.com/Automattic/vip-go-ci/pull/352): Move and rename unittests ini and unittests-secrets.ini files
+- [#353](https://github.com/Automattic/vip-go-ci/pull/353): Update tests/integration/WpscanScanSaveForSubmissionTest.php: Do not run tests when skip GitHub write is true
+- [#356](https://github.com/Automattic/vip-go-ci/pull/356): Update tests/integration/GitHubPrReviewEventsGetTest.php: Use GitHub token if available
+
+## Fixed
+- [#337](https://github.com/Automattic/vip-go-ci/pull/337): Version number sanitizing: Allow "-" in version numbers
+- [#338](https://github.com/Automattic/vip-go-ci/pull/338): WPScan fixes: Changes to file path and addon location, avoid removing items from results, add slugs to tests
+- [#339](https://github.com/Automattic/vip-go-ci/pull/339): WPScan fixes: Ensure that WPScan type of items are not removed from results when filtering
+- [#340](https://github.com/Automattic/vip-go-ci/pull/340): Fix output suppression in tests
+- [#341](https://github.com/Automattic/vip-go-ci/pull/341): Restructure readme file, document manual testing, various updates
+- [#354](https://github.com/Automattic/vip-go-ci/pull/354): Change capitalization in WPScan results
+- [#355](https://github.com/Automattic/vip-go-ci/pull/355): Update tests/integration/GitHubApiLabelsTest.php: Cast PR number to integer
+- [#357](https://github.com/Automattic/vip-go-ci/pull/357): Update tests/integration/GitHubAuthenticatedUserGetTest.php: Unset $this->options
+
+## [1.3.3](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.3) - 2022-11-21
 
 ## Added
 - [#320](https://github.com/Automattic/vip-go-ci/pull/320): Introduce custom file extensions with scanners
