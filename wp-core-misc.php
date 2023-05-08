@@ -538,6 +538,7 @@ function vipgoci_wpcore_api_determine_slug_and_other_for_addons(
 			if (
 				( 'false' === $data_item['addon_headers']['UpdateURI'] ) ||
 				(
+					( null !== $update_uri_host ) &&
 					( false !== $update_uri_host ) &&
 					( true !== vipgoci_string_found_in_substrings_array(
 						VIPGOCI_WPSCAN_UPDATEURI_WP_ORG_URLS,
