@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.5](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.5) - 2023-05-??
+
+### Fixes
+- [#358](https://github.com/Automattic/vip-go-ci/pull/358): Fix WPScan issue: Invalid UpdateURI plugin/theme headers lead to error
+
 ## [1.3.4](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.4) - 2023-02-22
 
 ## Added
