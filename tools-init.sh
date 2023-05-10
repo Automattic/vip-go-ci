@@ -10,9 +10,9 @@ set -e
 
 # https://github.com/squizlabs/PHP_CodeSniffer
 export PHP_CODESNIFFER_REPO="squizlabs/PHP_CodeSniffer"
-export PHP_CODESNIFFER_VER="3.7.1"
+export PHP_CODESNIFFER_VER="3.7.2"
 export PHP_CODESNIFFER_VER_FILE="php-codesniffer-$PHP_CODESNIFFER_VER.txt"
-export PHP_CODESNIFFER_SHA1SUM="ca1bd8bc97fede23155b83029d174079c3905014"
+export PHP_CODESNIFFER_SHA1SUM="f20912a426eff7a7547947f00f1ea0db097a7ffb"
 
 # https://github.com/WordPress/WordPress-Coding-Standards
 export WP_CODING_STANDARDS_REPO="WordPress/WordPress-Coding-Standards"
@@ -28,9 +28,9 @@ export VIP_CODING_STANDARDS_SHA1SUM="44c6519c628d450be5330b2706ae9dbb09dbd6be"
 
 # https://github.com/sirbrillig/phpcs-variable-analysis
 export PHPCS_VARIABLE_ANALYSIS_REPO="sirbrillig/phpcs-variable-analysis"
-export PHPCS_VARIABLE_ANALYSIS_VER="v2.11.9"
+export PHPCS_VARIABLE_ANALYSIS_VER="v2.11.16"
 export PHPCS_VARIABLE_ANALYSIS_VER_FILE="phpcs-variable-analysis-$PHPCS_VARIABLE_ANALYSIS_VER.txt"
-export PHPCS_VARIABLE_ANALYSIS_SHA1SUM="42bd1fd822e0326ef39522098a8ae3f5fb65146a"
+export PHPCS_VARIABLE_ANALYSIS_SHA1SUM="1bc958033ffa6a5eda6ffe180e564b61f50f3c6a"
 
 # https://github.com/phpcompatibility/phpcompatibility
 export PHP_COMPATIBILITY_REPO="phpcompatibility/phpcompatibility"
