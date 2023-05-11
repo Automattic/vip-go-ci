@@ -1067,3 +1067,37 @@ function vipgoci_results_filter_duplicate(
 	return $file_issues_arr_new;
 }
 
+/**
+ * Dump results of scan to a file, if possible.
+ *
+ * @param string $output_file Path to file to write to.
+ * @param array  $data        Data array to write.
+ *
+ * @return void
+ */
+function vipgoci_results_output_dump(
+	string $output_file,
+	array $data
+) :void {
+	if (
+		( is_file( $output_file ) ) &&
+		( ! is_writeable( $output_file ) )
+	) {
+		vipgoci_log(
+			'Unable to write results to file; not writable',
+			array(
+				'output_file' => $output_file,
+			)
+		);
+	} else {
+		file_put_contents(
+			$output_file,
+			json_encode(
+				$data,
+				JSON_PRETTY_PRINT
+			),
+			FILE_APPEND
+		);
+	}
+}
+
