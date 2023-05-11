@@ -3070,6 +3070,16 @@ function vipgoci_run_scan(
 	}
 
 	/*
+	 * Output results to file specified.
+	 */
+	if ( ! empty( $options['output'] ) ) {
+		vipgoci_results_output_dump(
+			$options['output'],
+			$results
+		);
+	}
+
+	/*
 	 * Log to IRC when files are skipped.
 	 */
 	vipgoci_run_scan_log_skipped_files(
