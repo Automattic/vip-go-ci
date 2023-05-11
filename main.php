@@ -3075,7 +3075,13 @@ function vipgoci_run_scan(
 	if ( ! empty( $options['output'] ) ) {
 		vipgoci_results_output_dump(
 			$options['output'],
-			$results
+			array(
+				'results'        => $results,
+				'repo-owner'     => $options['repo-owner'],
+				'repo-name'      => $options['repo-name'],
+				'commit'         => $options['commit'],
+				'prs_implicated' => array_keys( $prs_implicated ),
+			)
 		);
 	}
 
