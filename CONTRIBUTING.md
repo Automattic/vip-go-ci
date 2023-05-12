@@ -21,10 +21,10 @@ Each GitHub issue and pull request relating to this repository should have a pri
 
 Each GitHub issue and pull-request should have a type of change label associated with it. The definition of these are as follows:
 
-* [Bug](https://github.com/Automattic/vip-go-ci/labels/%5BType%5D%20DBug): Code change to fix a bug, or a bug report.
-* [Changelog and version](https://github.com/Automattic/vip-go-ci/labels/%5BType%5D%20DChangelog%20and%20version): Pull request for updates to `CHANGELOG.md`.
-* [Clean up](https://github.com/Automattic/vip-go-ci/labels/%5BType%5D%20Clean%20up): Pull request for general code clean ups.
-* [Documentation](https://github.com/Automattic/vip-go-ci/labels/%5BType%5D%20Documentation): Pull request to update documentation.
+* [Bug](https://github.com/Automattic/vip-go-ci/labels/%5BType%5D%20Bug): Code change to fix a bug, or a bug report.
+* [Changelog and version](https://github.com/Automattic/vip-go-ci/labels/%5B%20Type%20%5D%20Changelog%20%26%20version): Pull request for updates to `CHANGELOG.md`.
+* [Clean up](https://github.com/Automattic/vip-go-ci/labels/%5B%20Type%20%5D%20Clean%20up): Pull request for general code clean ups.
+* [Documentation](https://github.com/Automattic/vip-go-ci/labels/%5B%20Type%20%5D%20Documentation): Pull request to update documentation.
 * [Enhancement](https://github.com/Automattic/vip-go-ci/labels/%5BType%5D%20Enhancement): A general enhancement – new feature, better implementation, new tests and so forth.
-* [Remove feature](https://github.com/Automattic/vip-go-ci/labels/%5BType%5D%20Remove%20feature): Pull request to remove feature code.
-* [Update dependency](https://github.com/Automattic/vip-go-ci/labels/%5BType%5D%20Update%20dependency): Pull request to update one or more dependencies.
+* [Remove feature](https://github.com/Automattic/vip-go-ci/labels/%5B%20Type%20%5D%20Remove%20feature): Pull request to remove feature code.
+* [Update dependency](https://github.com/Automattic/vip-go-ci/labels/%5B%20Type%20%5D%20Update%20dependency): Pull request to update one or more dependencies.
