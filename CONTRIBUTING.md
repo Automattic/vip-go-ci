@@ -22,7 +22,7 @@ Each GitHub issue and pull request relating to this repository should have a pri
 Each GitHub issue and pull-request should have a type of change label associated with it. The definition of these are as follows:
 
 * [Bug](https://github.com/Automattic/vip-go-ci/labels/%5BType%5D%20Bug): Code change to fix a bug, or a bug report.
-* [Changelog and version](https://github.com/Automattic/vip-go-ci/labels/%5B%20Type%20%5D%20Changelog%20%26%20version): Pull request for updates to `CHANGELOG.md`.
+* [Changelog & version](https://github.com/Automattic/vip-go-ci/labels/%5B%20Type%20%5D%20Changelog%20%26%20version): Pull request for updates to `CHANGELOG.md`.
 * [Clean up](https://github.com/Automattic/vip-go-ci/labels/%5B%20Type%20%5D%20Clean%20up): Pull request for general code clean ups.
 * [Documentation](https://github.com/Automattic/vip-go-ci/labels/%5B%20Type%20%5D%20Documentation): Pull request to update documentation.
 * [Enhancement](https://github.com/Automattic/vip-go-ci/labels/%5BType%5D%20Enhancement): A general enhancement – new feature, better implementation, new tests and so forth.
