@@ -8,6 +8,10 @@ All notable changes to this project will be documented in this file.
 - [#358](https://github.com/Automattic/vip-go-ci/pull/358): Fix WPScan issue: Invalid UpdateURI plugin/theme headers lead to error
 - [#360](https://github.com/Automattic/vip-go-ci/pull/360): Update tools: PHPCS and phpcs-variable-analysis
 
+### Updated
+- [#361](https://github.com/Automattic/vip-go-ci/pull/361): Update --output option to output more types of data
+- [#362](https://github.com/Automattic/vip-go-ci/pull/362): Document type-of-change label usage and add to pull request template
+
 ## [1.3.4](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.4) - 2023-02-22
 
 ### Added
