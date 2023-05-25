@@ -17,6 +17,7 @@ TODO:
 - [ ] Add to, or update, `Scan run detail` report as applicable
 - [ ] Check status of automated tests
 - [ ] Ensure `PHPDoc` comments are up to date for functions added or altered
+- [ ] Assign appropriate [priority](https://github.com/Automattic/vip-go-ci/blob/trunk/CONTRIBUTING.md#priorities) and [type of change labels](https://github.com/Automattic/vip-go-ci/blob/trunk/CONTRIBUTING.md#type-of-change-labels).
 - [ ] Changelog entry (for VIP)
 
 ***
@@ -32,6 +33,7 @@ TODO:
   - [ ] Ensure only one function is tested per test file.
 - [ ] Ensure `PHPDoc` comments are up to date for functions added or altered
 - [ ] Update repository documentation (README.md, RELEASING.md, TESTING.md, TOOLS-UPDATE.md)
+- [ ] Assign appropriate [priority](https://github.com/Automattic/vip-go-ci/blob/trunk/CONTRIBUTING.md#priorities) and [type of change labels](https://github.com/Automattic/vip-go-ci/blob/trunk/CONTRIBUTING.md#type-of-change-labels).
 - [ ] Changelog entry (for VIP)
 - [ ] Public documentation changes
 - [ ] Check status of automated tests
@@ -44,7 +46,7 @@ TODO:
 - [ ] Define version number in CHANGELOG.md, add release date and update links
 - [ ] Add same version number in defines.php
 - [ ] Assign a milestone corresponding to the version number to this PR and PRs that will form the release
-- [ ] Assign label (changelog)
+- [ ] Assign label ([Changelog and version](https://github.com/Automattic/vip-go-ci/blob/trunk/CONTRIBUTING.md#type-of-change-labels))
 - [ ] Run unit-test suite
 - [ ] Run integration-test suite with secrets
 - [ ] Manual testing
