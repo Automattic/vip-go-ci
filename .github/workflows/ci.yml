@@ -31,7 +31,7 @@ jobs:
         with:
           coverage: none
           php-version: "${{ matrix.php }}"
-          tools: phpunit:9.5
+          tools: phpunit:9
         env:
           fail-fast: 'true'
 
@@ -80,7 +80,7 @@ jobs:
         with:
           coverage: none
           php-version: "8.2"
-          tools: phpunit:9.5
+          tools: phpunit:9
         env:
           fail-fast: 'true'
 
