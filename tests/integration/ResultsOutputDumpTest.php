@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class ResultsOutputDump extends TestCase {
+final class ResultsOutputDumpTest extends TestCase {
 	/**
 	 * Temporary file to dump results to.
 	 *
