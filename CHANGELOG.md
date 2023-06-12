@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 ### Fixes
 - [#358](https://github.com/Automattic/vip-go-ci/pull/358): Fix WPScan issue: Invalid UpdateURI plugin/theme headers lead to error
 - [#360](https://github.com/Automattic/vip-go-ci/pull/360): Update tools: PHPCS and phpcs-variable-analysis
+- [#364](https://github.com/Automattic/vip-go-ci/pull/364): Rename class "ResultsOutputDump" in test to match file name
 
 ### Updated
 - [#361](https://github.com/Automattic/vip-go-ci/pull/361): Update --output option to output more types of data
