@@ -2,14 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.5](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.5) - 2023-06-12
+
+### Fixes
+- [#358](https://github.com/Automattic/vip-go-ci/pull/358): Fix WPScan issue: Invalid UpdateURI plugin/theme headers lead to error
+- [#360](https://github.com/Automattic/vip-go-ci/pull/360): Update tools: PHPCS and phpcs-variable-analysis
+- [#364](https://github.com/Automattic/vip-go-ci/pull/364): Rename class "ResultsOutputDump" in test to match file name
+
+### Updated
+- [#361](https://github.com/Automattic/vip-go-ci/pull/361): Update --output option to output more types of data
+- [#362](https://github.com/Automattic/vip-go-ci/pull/362): Document type-of-change label usage and add to pull request template
+- [#363](https://github.com/Automattic/vip-go-ci/pull/363): Set shivammathur/setup-php to fixed version
+
 ## [1.3.4](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.4) - 2023-02-22
 
-## Added
+### Added
 - [#336](https://github.com/Automattic/vip-go-ci/pull/336): Add GitHub API version HTTP header
 - [#342](https://github.com/Automattic/vip-go-ci/pull/342): Add files needed for manual testing
 - [#343](https://github.com/Automattic/vip-go-ci/pull/343): Add --wpscan-api-skip-folders-in-repo-options-file parameter
 
-## Updated
+### Updated
 - [#332](https://github.com/Automattic/vip-go-ci/pull/332): Improve WPScan logging
 - [#334](https://github.com/Automattic/vip-go-ci/pull/334): Update WPScan API results wording
 - [#335](https://github.com/Automattic/vip-go-ci/pull/335): Update "local" slug determination mechanism
@@ -25,7 +37,7 @@ All notable changes to this project will be documented in this file.
 - [#353](https://github.com/Automattic/vip-go-ci/pull/353): Update tests/integration/WpscanScanSaveForSubmissionTest.php: Do not run tests when skip GitHub write is true
 - [#356](https://github.com/Automattic/vip-go-ci/pull/356): Update tests/integration/GitHubPrReviewEventsGetTest.php: Use GitHub token if available
 
-## Fixed
+### Fixed
 - [#337](https://github.com/Automattic/vip-go-ci/pull/337): Version number sanitizing: Allow "-" in version numbers
 - [#338](https://github.com/Automattic/vip-go-ci/pull/338): WPScan fixes: Changes to file path and addon location, avoid removing items from results, add slugs to tests
 - [#339](https://github.com/Automattic/vip-go-ci/pull/339): WPScan fixes: Ensure that WPScan type of items are not removed from results when filtering
@@ -37,10 +49,10 @@ All notable changes to this project will be documented in this file.
 
 ## [1.3.3](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.3) - 2022-11-21
 
-## Added
+### Added
 - [#320](https://github.com/Automattic/vip-go-ci/pull/320): Introduce custom file extensions with scanners
 
-## Updated
+### Updated
 - [#310](https://github.com/Automattic/vip-go-ci/pull/310): New exit status for HTTP API errors, update log message
 - [#311](https://github.com/Automattic/vip-go-ci/pull/311): Use constants for content-type headers
 - [#313](https://github.com/Automattic/vip-go-ci/pull/313): Apply constant for WordPress.org API
@@ -57,7 +69,7 @@ All notable changes to this project will be documented in this file.
 - [#328](https://github.com/Automattic/vip-go-ci/pull/328): Update shivammathur/setup-php dependency to use @v2
 - [#330](https://github.com/Automattic/vip-go-ci/pull/330): Updating references to build management software
 
-## Fixes
+### Fixes
 - [#314](https://github.com/Automattic/vip-go-ci/pull/314): WPScan API: Add function to determine "local" slug
 - [#326](https://github.com/Automattic/vip-go-ci/pull/326): Rename test class, update function name in comments
 - [#327](https://github.com/Automattic/vip-go-ci/pull/327): WPScan API: Ensure comments are only submitted for changed add-ons
@@ -65,37 +77,37 @@ All notable changes to this project will be documented in this file.
 
 ## [1.3.2](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.2) - 2022-10-18
 
-## Added
+### Added
 - [#309](https://github.com/Automattic/vip-go-ci/pull/309): WPScan API integration: Add URL to commit in IRC log
 
-## Fixed
+### Fixed
 - [#304](https://github.com/Automattic/vip-go-ci/pull/304): WPScan API: Update x-ratelimit-remaining header functionality
 - [#308](https://github.com/Automattic/vip-go-ci/pull/308): Add checks to WPScan API reporting logic, ensure CVSS outputted includes precision
 
-## Updated
+### Updated
 - [#303](https://github.com/Automattic/vip-go-ci/pull/303): Remove OAuth 1.0a functions
 - [#307](https://github.com/Automattic/vip-go-ci/pull/307): Update PULL_REQUEST_TEMPLATE
 
 ## [1.3.1](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.1) - 2022-10-05
 
-## Fixed
+### Fixed
 - [#299](https://github.com/Automattic/vip-go-ci/pull/299): Fix: Do not report latest plugin/theme as obsolete
 - [#302](https://github.com/Automattic/vip-go-ci/pull/302): Fix WPScan test
 
-## Updated
+### Updated
 - [#301](https://github.com/Automattic/vip-go-ci/pull/301): Update statistics logic
 
 ## [1.3.0](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.0) - 2022-09-28
 
-## Added
+### Added
 - [#273](https://github.com/Automattic/vip-go-ci/pull/273): Add support for WPScan API scanning
 
-## Updated
+### Updated
 - [#281](https://github.com/Automattic/vip-go-ci/pull/281): Small updates: Use new functions introduced in #273; update HTTP wait function; update URL in README.md; update tests
 - [#295](https://github.com/Automattic/vip-go-ci/pull/295): Use local git repository when running integration tests using GitHub Actions
 - [#296](https://github.com/Automattic/vip-go-ci/pull/296): Use vipgoci_cached_indication_str() function
 
-## Fixed
+### Fixed
 - [#291](https://github.com/Automattic/vip-go-ci/pull/291): Fix two problems with local git diffs
 - [#292](https://github.com/Automattic/vip-go-ci/pull/292): Rename test class to match file name
 - [#293](https://github.com/Automattic/vip-go-ci/pull/293): Fix re-posted comments that contain "/**" 
@@ -104,20 +116,20 @@ All notable changes to this project will be documented in this file.
 
 ## [1.2.6](https://github.com/Automattic/vip-go-ci/releases/tag/1.2.6) - 2022-08-08
 
-## Added
+### Added
  - [#289](https://github.com/Automattic/vip-go-ci/pull/289): Add allow list for file filtering function
 
 ## [1.2.5](https://github.com/Automattic/vip-go-ci/releases/tag/1.2.5) - 2022-07-19
 
-## Fixed
+### Fixed
 - [#287](https://github.com/Automattic/vip-go-ci/pull/287): Fix problem with removed files in non-functional auto-approvals and add sanity checks elsewhere
 
 ## [1.2.4](https://github.com/Automattic/vip-go-ci/releases/tag/1.2.4) - 2022-07-19
 
-## Added
+### Added
 - [#285](https://github.com/Automattic/vip-go-ci/pull/285): Add support for ignoring PHPCS standards during startup
 
-## Updated
+### Updated
 - [#274](https://github.com/Automattic/vip-go-ci/pull/274): Update files to reflect that "main" branch is now named "trunk"
 - [#272](https://github.com/Automattic/vip-go-ci/pull/272): Apply WP CS and variable types to final files
 - [#276](https://github.com/Automattic/vip-go-ci/pull/276): Update phpcs-variable-analysis to version 2.11.3
@@ -126,17 +138,17 @@ All notable changes to this project will be documented in this file.
 - [#280](https://github.com/Automattic/vip-go-ci/pull/280): Re-enable auto-approval of removed SVG files
 - [#283](https://github.com/Automattic/vip-go-ci/pull/283): Update PHPCS, update PHPCompatibility and add PHPCSUtils, restructure tools-init.sh
 
-## Removed
+### Removed
 - [#282](https://github.com/Automattic/vip-go-ci/pull/282): Remove Hashes API support
 - [#284](https://github.com/Automattic/vip-go-ci/pull/284): Remove support level label feature
 
 ## [1.2.3](https://github.com/Automattic/vip-go-ci/releases/tag/1.2.3) - 2022-04-04
 
-## Added
+### Added
 - [#268](https://github.com/Automattic/vip-go-ci/pull/268): Filter IRC log messages, removing strings to ignore
 - [#269](https://github.com/Automattic/vip-go-ci/pull/269): Verify commit and access to repository on start up
 - 
-## Updated
+### Updated
 - [#260](https://github.com/Automattic/vip-go-ci/pull/260): Move generic HTTP functions from github-api.php and to http-functions.php
 - [#261](https://github.com/Automattic/vip-go-ci/pull/261): Apply WP CS to tests and other updates: GitHubPrGenericSupportCommentTest.php, PhpcsScanValidateSniffsInOptionAndReportTest.php, Skeleton.php
 - [#263](https://github.com/Automattic/vip-go-ci/pull/263): Improve GitHub API error handling
@@ -146,7 +158,7 @@ All notable changes to this project will be documented in this file.
 - [#267](https://github.com/Automattic/vip-go-ci/pull/267): Update two integration tests relating to git functionality
 - [#270](https://github.com/Automattic/vip-go-ci/pull/270): Update PULL_REQUEST_TEMPLATE: Mention checking and updating all test types
 
-## Fixed
+### Fixed
 - [#271](https://github.com/Automattic/vip-go-ci/pull/271): Set exit code for vipgoci_sysexit() called in vipgoci_runtime_measure_exec_with_retry() 
 
 ## [1.2.2](https://github.com/Automattic/vip-go-ci/releases/tag/1.2.2) - 2022-03-08
