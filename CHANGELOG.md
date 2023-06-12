@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
 ### Updated
 - [#361](https://github.com/Automattic/vip-go-ci/pull/361): Update --output option to output more types of data
 - [#362](https://github.com/Automattic/vip-go-ci/pull/362): Document type-of-change label usage and add to pull request template
+- [#363](https://github.com/Automattic/vip-go-ci/pull/363): Set shivammathur/setup-php to fixed version
 
 ## [1.3.4](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.4) - 2023-02-22
 
