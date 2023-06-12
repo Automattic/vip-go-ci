@@ -437,42 +437,6 @@ function vipgoci_phpcs_scan_single_file(
 }
 
 /**
- * Dump output of PHPCS scan to a file, if possible.
- *
- * @param string $output_file Path to file to write to.
- * @param array  $data        Data array to write.
- *
- * @return void
- *
- * @codeCoverageIgnore
- */
-function vipgoci_phpcs_scan_output_dump(
-	string $output_file,
-	array $data
-) :void {
-	if (
-		( is_file( $output_file ) ) &&
-		( ! is_writeable( $output_file ) )
-	) {
-		vipgoci_log(
-			'File ' .
-				$output_file .
-				' is not writeable',
-			array()
-		);
-	} else {
-		file_put_contents(
-			$output_file,
-			json_encode(
-				$data,
-				JSON_PRETTY_PRINT
-			),
-			FILE_APPEND
-		);
-	}
-}
-
-/**
  * Scan a particular commit which should live within
  * a particular repository on GitHub, and use the specified
  * access-token to gain access.
@@ -811,23 +775,6 @@ function vipgoci_phpcs_scan_commit(
 		);
 
 		$files_issues_arr[ $file_name ] = $file_issues_arr_master;
-
-		/*
-		 * Output scanning-results if requested
-		 */
-
-		if ( ! empty( $options['output'] ) ) {
-			vipgoci_phpcs_scan_output_dump(
-				$options['output'],
-				array(
-					'repo_owner' => $repo_owner,
-					'repo_name'  => $repo_name,
-					'commit_id'  => $commit_id,
-					'filename'   => $file_name,
-					'issues'     => $file_issues_arr_master,
-				)
-			);
-		}
 
 		/*
 		 * Get rid of data, and

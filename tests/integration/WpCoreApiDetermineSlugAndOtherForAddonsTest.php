@@ -245,7 +245,6 @@ final class WpCoreApiDetermineSlugAndOtherForAddonsTest extends TestCase {
 		);
 	}
 
-
 	/**
 	 * Test invalid usage with plugin data.
 	 *
@@ -282,6 +281,46 @@ final class WpCoreApiDetermineSlugAndOtherForAddonsTest extends TestCase {
 			$actual_results,
 		);
 	}
+
+	/**
+	 * Test invalid usage with plugin data.
+	 *
+	 * @covers ::vipgoci_wpcore_api_determine_slug_and_other_for_addons
+	 *
+	 * @return void
+	 */
+	public function testInvalidPluginUsage3(): void {
+		vipgoci_unittests_output_suppress();
+
+		$actual_results = vipgoci_wpcore_api_determine_slug_and_other_for_addons(
+			array(
+				self::KEY_PLUGIN_PREFIX . '-hello/hello.php'  => array(
+					'type'          => 'vipgoci-addon-plugin',
+					'addon_headers' => array(
+						'Name'        => 'Hello Dolly',
+						'PluginURI'   => 'http://wordpress.org/plugins/hello-dolly/',
+						'Version'     => '1.6',
+						'Description' => 'This is not just a plugin, it symbolizes the hope and enthusiasm of an entire generation summed up in two words sung most famously by Louis Armstrong: Hello, Dolly. When activated you will randomly see a lyric from <cite>Hello, Dolly</cite> in the upper right of your admin screen on every page.',
+						'Author'      => 'Matt Mullenweg',
+						'Title'       => 'Hello Dolly',
+						'AuthorName'  => 'Matt Mullenweg',
+						'AuthorURI '  => 'http://ma.tt/',
+						'UpdateURI'   => 'wordpress/plugins/hello-dolly', // Invalid URL.
+					),
+				),
+			),
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		$this->assertSame(
+			array(
+				self::KEY_PLUGIN_PREFIX . '-hello/hello.php' => null,
+			),
+			$actual_results,
+		);
+	}
+
 
 	/**
 	 * Test common usage of the function with themes.
