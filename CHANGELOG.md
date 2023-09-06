@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.6](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.6) - 2023-09-11
+
+### Updated
+- [#365](https://github.com/Automattic/vip-go-ci/pull/365): Update tools-init.sh: New version of VIP-Coding-Standards
+
 ## [1.3.5](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.5) - 2023-06-12
 
 ### Fixes
