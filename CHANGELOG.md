@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.7](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.7) - 2023-09-11
+
+### Updated
+- [#367](https://github.com/Automattic/vip-go-ci/pull/367): Update phpcs-variable-analysis to v2.11.17
+- [#369](https://github.com/Automattic/vip-go-ci/pull/369): PHP 8.2 compatibility for tests/integration/GitHubPrGenericSupportCommentTest.php
+- [#370](https://github.com/Automattic/vip-go-ci/pull/370): Update tests/manual/create-all-pull-requests.sh
+  
 ## [1.3.6](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.6) - 2023-09-11
 
 ### Updated
