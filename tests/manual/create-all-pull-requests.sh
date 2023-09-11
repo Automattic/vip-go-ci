@@ -28,7 +28,7 @@ PR_WPSCAN_API_TESTING2_BRANCH='{"title":"wpscan-api-testing2 branch","body":"One
 PR_WPSCAN_API_TESTING3_BRANCH='{"title":"wpscan-api-testing3 branch","body":"No plugins or themes should be noted vulnerable/obsolete (files deleted only)","head":"wpscan-api-testing3","base":"wpscan-api-testing2"}'
 PR_WPSCAN_API_TESTING4_BRANCH='{"title":"wpscan-api-testing4 branch","body":"One plugin should be noted vulnerable/obsolete","head":"wpscan-api-testing4","base":"main"}'
 PR_WPSCAN_API_TESTING5_BRANCH='{"title":"wpscan-api-testing5 branch","body":"One plugin should be noted vulnerable/obsolete","head":"wpscan-api-testing5","base":"main"}'
-PR_WPSCAN_API_TESTING6_BRANCH='{"title":"wpscan-api-testing6 branch","body":"One theme, inside a plugin directory, should be noted vulnerable/obsolete","head":"wpscan-api-testing6","base":"wpscan-api-testing1"}'
+PR_WPSCAN_API_TESTING6_BRANCH='{"title":"wpscan-api-testing6 branch","body":"One plugin, inside a theme directory, should be noted vulnerable/obsolete","head":"wpscan-api-testing6","base":"wpscan-api-testing1"}'
 
 #
 # Create pull requests
