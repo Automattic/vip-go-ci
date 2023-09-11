@@ -45,6 +45,13 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 	private array $options = array();
 
 	/**
+	 * Variable for current user information.
+	 *
+	 * @var $current_user_info
+	 */
+	private mixed $current_user_info = null;
+
+	/**
 	 * Setup function. Require file, set up variables, etc.
 	 *
 	 * @return void
