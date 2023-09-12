@@ -22,15 +22,15 @@ export WP_CODING_STANDARDS_SHA1SUM="c8161d77fcf63bdeaa3e8e6aa36bc1936b469070"
 
 # https://github.com/automattic/vip-coding-standards
 export VIP_CODING_STANDARDS_REPO="automattic/vip-coding-standards"
-export VIP_CODING_STANDARDS_VER="2.3.3"
+export VIP_CODING_STANDARDS_VER="2.3.4"
 export VIP_CODING_STANDARDS_VER_FILE="vip-coding-standards-$VIP_CODING_STANDARDS_VER.txt"
-export VIP_CODING_STANDARDS_SHA1SUM="44c6519c628d450be5330b2706ae9dbb09dbd6be"
+export VIP_CODING_STANDARDS_SHA1SUM="cdde10d915e1134a3f79965da84a05a621de1298"
 
 # https://github.com/sirbrillig/phpcs-variable-analysis
 export PHPCS_VARIABLE_ANALYSIS_REPO="sirbrillig/phpcs-variable-analysis"
-export PHPCS_VARIABLE_ANALYSIS_VER="v2.11.16"
+export PHPCS_VARIABLE_ANALYSIS_VER="v2.11.17"
 export PHPCS_VARIABLE_ANALYSIS_VER_FILE="phpcs-variable-analysis-$PHPCS_VARIABLE_ANALYSIS_VER.txt"
-export PHPCS_VARIABLE_ANALYSIS_SHA1SUM="1bc958033ffa6a5eda6ffe180e564b61f50f3c6a"
+export PHPCS_VARIABLE_ANALYSIS_SHA1SUM="8effbc612733ec3fc0d7e623b5b3af912d5febb8"
 
 # https://github.com/phpcompatibility/phpcompatibility
 export PHP_COMPATIBILITY_REPO="phpcompatibility/phpcompatibility"
