@@ -134,7 +134,7 @@ function lock_remove() {
 			echo "$0: Removed lock"
 			rm -f "$TMP_LOCK_FILE"
 		else
-			echo "$0. Someone else got the lock file. Not removing lock file."
+			echo "$0: Someone else got the lock file. Not removing lock file."
 		fi
 	fi
 }
