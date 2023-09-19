@@ -19,11 +19,11 @@ use PHPUnit\Framework\TestCase;
  */
 final class LatestReleaseTest extends TestCase {
 	/**
-	 * Correct version number.
+	 * Temporary file for contents of defines.php.
 	 *
-	 * @var $correct_version_number
+	 * @var $temp_file_name
 	 */
-	private string $correct_version_number = '';
+	private mixed $temp_file_name = '';
 
 	/**
 	 * Setup function. Require files, etc.
@@ -31,9 +31,10 @@ final class LatestReleaseTest extends TestCase {
 	 * @return void
 	 */
 	protected function setUp() :void {
-		require_once __DIR__ . '/../../defines.php';
-
-		$this->correct_version_number = VIPGOCI_VERSION;
+		$this->temp_file_name = tempnam(
+			sys_get_temp_dir(),
+			'vipgoci-defines-php-file'
+		);
 	}
 
 	/**
@@ -42,7 +43,9 @@ final class LatestReleaseTest extends TestCase {
 	 * @return void
 	 */
 	protected function tearDown() :void {
-		unset( $this->correct_version_number );
+		if ( false !== $this->temp_file_name ) {
+			unlink( $this->temp_file_name );
+		}
 	}
 
 	/**
@@ -53,13 +56,31 @@ final class LatestReleaseTest extends TestCase {
 	 * @return void
 	 */
 	public function testResults(): void {
-		$returned_version_number = exec( 'php latest-release.php' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_exec
+		// phpcs:disable WordPress.PHP.DiscouragedPHPFunctions.system_calls_exec
+		if ( false === $this->temp_file_name ) {
+			$this->markTestSkipped(
+				'Unable to create temporary file'
+			);
 
-		// phpcs:disable
-echo 'Values:';var_dump(array(
-		$returned_version_number,
-		$this->correct_version_number
-	));
+			return;
+		}
+
+		/*
+		 * Get 'defines.php' from latest branch,
+		 * put contents of the file into temporary file
+		 * and then retrieve the version number
+		 * by including the file.
+		 */
+		exec( 'git -C . show latest:defines.php > ' . $this->temp_file_name );
+
+		require_once $this->temp_file_name;
+
+		$correct_version_number = VIPGOCI_VERSION;
+
+		/*
+		 * Run latest-release.php to get latest version number.
+		 */
+		$returned_version_number = exec( 'php latest-release.php' );
 
 		/*
 		 * Verify format of version number is correct.
@@ -70,7 +91,7 @@ echo 'Values:';var_dump(array(
 			1,
 			preg_match(
 				$version_number_preg,
-				$this->correct_version_number
+				$correct_version_number
 			)
 		);
 
@@ -86,8 +107,9 @@ echo 'Values:';var_dump(array(
 		 * Verify both version numbers match.
 		 */
 		$this->assertSame(
-			$this->correct_version_number,
+			$correct_version_number,
 			$returned_version_number
 		);
+		// phpcs:enable WordPress.PHP.DiscouragedPHPFunctions.system_calls_exec
 	}
 }
