@@ -144,7 +144,7 @@ jobs:
       - name: Configure PHPUnit
         run: sed "s:PROJECT_DIR:$(pwd):g" phpunit.xml.dist > phpunit.xml
 
-      - name: Run unit tests
+      - name: Run E2E tests
         run: phpunit --testsuite=e2e-tests
         env:
           VIPGOCI_TESTING_DEBUG_MODE: 'true'
