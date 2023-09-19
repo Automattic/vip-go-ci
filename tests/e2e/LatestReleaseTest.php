@@ -71,7 +71,7 @@ final class LatestReleaseTest extends TestCase {
 		 * and then retrieve the version number
 		 * by including the file.
 		 */
-		exec( 'git fetch origin latest && git -C . show latest:defines.php > ' . $this->temp_file_name );
+		exec( 'git -C . show latest:defines.php > ' . $this->temp_file_name );
 
 		require_once $this->temp_file_name;
 
