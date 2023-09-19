@@ -133,7 +133,10 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Ask git to fetch latest branch
-        run: git fetch origin latest
+        run: ( pwd ; ls -al )
+        
+      - name: Ask git to fetch latest branch
+        run: git fetch origin latest && git pull
 
       - name: Set up PHP
         uses: shivammathur/setup-php@2.25.2
