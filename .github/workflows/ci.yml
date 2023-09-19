@@ -132,8 +132,8 @@ jobs:
       - name: Check out the source code
         uses: actions/checkout@v3
 
-      - name: Ask git to fetch "latest" branch
-	run: git fetch origin latest
+      - name: Ask git to fetch latest branch
+        run: git fetch origin latest
 
       - name: Set up PHP
         uses: shivammathur/setup-php@2.25.2
