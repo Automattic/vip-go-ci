@@ -18,6 +18,11 @@ use PHPUnit\Framework\TestCase;
  * @preserveGlobalState disabled
  */
 final class LatestReleaseTest extends TestCase {
+	/**
+	 * Correct version number.
+	 *
+	 * @var $correct_version_number
+	 */
 	private string $correct_version_number = '';
 
 	/**
