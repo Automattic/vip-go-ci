@@ -15,5 +15,8 @@
         <testsuite name="integration-tests">
             <directory>PROJECT_DIR/tests/integration</directory>
         </testsuite>
+        <testsuite name="e2e-tests">
+            <directory>PROJECT_DIR/tests/e2e</directory>
+        </testsuite>
     </testsuites>
 </phpunit>
