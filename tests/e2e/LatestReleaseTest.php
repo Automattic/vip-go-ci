@@ -18,6 +18,8 @@ use PHPUnit\Framework\TestCase;
  * @preserveGlobalState disabled
  */
 final class LatestReleaseTest extends TestCase {
+	private string $correct_version_number = '';
+
 	/**
 	 * Setup function. Require files, etc.
 	 *
@@ -46,7 +48,7 @@ final class LatestReleaseTest extends TestCase {
 	 * @return void
 	 */
 	public function testResults(): void {
-		$returned_version_number = exec( 'php ../../latest-release.php' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_exec
+		$returned_version_number = exec( 'php latest-release.php' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_exec
 
 		// phpcs:disable
 echo 'Values:';var_dump(array(
