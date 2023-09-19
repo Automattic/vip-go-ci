@@ -48,6 +48,12 @@ final class LatestReleaseTest extends TestCase {
 	public function testResults(): void {
 		$returned_version_number = exec( 'php ../../latest-release.php' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_exec
 
+		// phpcs:disable
+echo 'Values:';var_dump(array(
+		$returned_version_number,
+		$this->correct_version_number
+	));
+
 		/*
 		 * Verify format of version number is correct.
 		 */
