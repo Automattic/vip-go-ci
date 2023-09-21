@@ -132,7 +132,7 @@ jobs:
       - name: Check out the source code
         uses: actions/checkout@v3
         
-      - name: Ask git to fetch latest branch
+      - name: Ask git to fetch latest branch and other branches
         run: git fetch origin latest && git pull
 
       - name: Set up PHP
