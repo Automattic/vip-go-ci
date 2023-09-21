@@ -12,8 +12,8 @@ Draft for a patch:
 
 TODO:
 - [ ] Added patch for [describe issue]
-- [ ] Add/update tests -- unit and/or integrated (if needed)
-  - [ ] Ensure only one function is tested per test file.
+- [ ] Add/update tests -- unit/integrated/E2E (if needed)
+  - [ ] Ensure only one function/functionality is tested per test file.
 - [ ] Add to, or update, `Scan run detail` report as applicable
 - [ ] Check status of automated tests
 - [ ] Ensure `PHPDoc` comments are up to date for functions added or altered
@@ -29,8 +29,8 @@ TODO:
 - [ ] Update `--help` message
 - [ ] Implement [new feature / logic]
 - [ ] Add to, or update, `Scan run detail` report as applicable
-- [ ] Add/update tests -- unit and/or integrated
-  - [ ] Ensure only one function is tested per test file.
+- [ ] Add/update tests -- unit/integrated/E2E
+  - [ ] Ensure only one function/functionality is tested per test file.
 - [ ] Ensure `PHPDoc` comments are up to date for functions added or altered
 - [ ] Update repository documentation (README.md, RELEASING.md, TESTING.md, TOOLS-UPDATE.md)
 - [ ] Assign appropriate [priority](https://github.com/Automattic/vip-go-ci/blob/trunk/CONTRIBUTING.md#priorities) and [type of change labels](https://github.com/Automattic/vip-go-ci/blob/trunk/CONTRIBUTING.md#type-of-change-labels).
@@ -47,8 +47,10 @@ TODO:
 - [ ] Add same version number in defines.php
 - [ ] Assign a milestone corresponding to the version number to this PR and PRs that will form the release
 - [ ] Assign label ([Changelog and version](https://github.com/Automattic/vip-go-ci/blob/trunk/CONTRIBUTING.md#type-of-change-labels))
-- [ ] Run unit-test suite
+- [ ] Unit-test suite run successful 
+- [ ] Integration-test suite successful (without secrets)
 - [ ] Run integration-test suite with secrets
+- [ ] E2E-test suite run successful
 - [ ] Manual testing
   - [ ] Pull request with PHP linting issues
   - [ ] Pull request with PHPCS issues

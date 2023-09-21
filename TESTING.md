@@ -2,7 +2,7 @@
 
 ## Introduction 
 
-`vip-go-ci` relies on both manual and automated testing. Much of the functionality `vip-go-ci` provides is automatically tested using it's extensive unit and integration test suites. _Most_ of the tests in the test suites are run automatically when code is committed and pushed to the repository, though _some_ integration tests need to be run manually (due to secrets, see below). The manual testing that should be performed is functional, testing the final behaviour of the software. 
+`vip-go-ci` relies on both manual and automated testing. Much of the functionality `vip-go-ci` provides is automatically tested using it's extensive unit, integration and E2E (End-to-End) test suites. _Most_ of the tests in the test suites are run automatically when code is committed and pushed to the repository, though _some_ integration tests need to be run manually (due to secrets, see below). The manual testing that should be performed is functional, testing the final behaviour of the software. 
 
 ## Automated testing
 
@@ -79,6 +79,12 @@ The integration tests can be run using the following command:
 Integration tests will execute the scanning utilities — PHPCS, SVG scanner and PHP Lint — and so paths to these, and a PHP interpreter, need to be configured. See the `tests/config.ini` file.
 
 By using this command, you will run the tests of the test-suite which can be run (depending on tokens and other detail), and get feedback on any errors or warnings. Note that when run, requests will be made to the GitHub API using anonymous calls (unless configured to use an access-token as shown above). It can happen that the GitHub API returns with an error indicating that the maximum limit of API requests has been reached; the solution is to wait and re-run or switch to authenticted calls. 
+
+### E2E test suite
+
+The E2E (End-to-End) tests can be run using the following command:
+
+> VIPGOCI_TESTING_DEBUG_MODE=true phpunit --testsuite=e2e-tests
 
 ### Test isolation
 
