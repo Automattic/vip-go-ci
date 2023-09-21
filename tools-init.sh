@@ -104,6 +104,7 @@ function gh_fetch_and_verify() {
 	return 1 )
 }
 
+# Put lock file in place.
 function lock_place() {
 	# Get lock, if that fails, just exit
 	if [ -f "$TMP_LOCK_FILE" ] ; then
@@ -112,12 +113,34 @@ function lock_place() {
 	fi
 
 	# Acquire lock
-	touch "$TMP_LOCK_FILE"
+	echo "$$" > "$TMP_LOCK_FILE"
+
+	# Try to detect if two instances run at the same time
+	# on the same system. Should not happen often.
+	sleep 1
+
+	if [ "$$" == `cat "$TMP_LOCK_FILE"` ] ; then
+		echo "$0: Acquired lock ($TMP_LOCK_FILE)"
+	else
+		echo "$0: Someone else got the lock before us. Bailing out"
+		exit 1
+	fi
 }
 
+# Remove lock file, but only if we acquired it.
 function lock_remove() {
-	rm -f "$TMP_LOCK_FILE"
+	if [ -f "$TMP_LOCK_FILE" ] ; then
+		if [ "$$" == `cat "$TMP_LOCK_FILE"` ] ; then
+			echo "$0: Removed lock"
+			rm -f "$TMP_LOCK_FILE"
+		else
+			echo "$0: Someone else got the lock file. Not removing lock file."
+		fi
+	fi
 }
+
+# When exiting, ensure we remove lock file.
+trap lock_remove EXIT
 
 lock_place
 
