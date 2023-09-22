@@ -16,15 +16,15 @@ export PHP_CODESNIFFER_SHA1SUM="f20912a426eff7a7547947f00f1ea0db097a7ffb"
 
 # https://github.com/WordPress/WordPress-Coding-Standards
 export WP_CODING_STANDARDS_REPO="WordPress/WordPress-Coding-Standards"
-export WP_CODING_STANDARDS_VER="2.3.0"
+export WP_CODING_STANDARDS_VER="3.0.1"
 export WP_CODING_STANDARDS_VER_FILE="wp-coding-standards-$WP_CODING_STANDARDS_VER.txt"
-export WP_CODING_STANDARDS_SHA1SUM="c8161d77fcf63bdeaa3e8e6aa36bc1936b469070"
+export WP_CODING_STANDARDS_SHA1SUM="25f3cc04c7484cc50104a6ca2bf5fcadd447d9d0"
 
 # https://github.com/automattic/vip-coding-standards
 export VIP_CODING_STANDARDS_REPO="automattic/vip-coding-standards"
-export VIP_CODING_STANDARDS_VER="2.3.4"
+export VIP_CODING_STANDARDS_VER="3.0.0"
 export VIP_CODING_STANDARDS_VER_FILE="vip-coding-standards-$VIP_CODING_STANDARDS_VER.txt"
-export VIP_CODING_STANDARDS_SHA1SUM="cdde10d915e1134a3f79965da84a05a621de1298"
+export VIP_CODING_STANDARDS_SHA1SUM="c38362e2463f2cfc2c9cabe48011f921843f3bf4"
 
 # https://github.com/sirbrillig/phpcs-variable-analysis
 export PHPCS_VARIABLE_ANALYSIS_REPO="sirbrillig/phpcs-variable-analysis"
@@ -52,9 +52,15 @@ export PHP_COMPATIBILITY_PARAGONIE_SHA1SUM="7aa800cf9b2737ad64082cb70b4b4113d8c1
 
 # https://github.com/PHPCSStandards/PHPCSUtils
 export PHPCS_UTILS_REPO="PHPCSStandards/PHPCSUtils"
-export PHPCS_UTILS_VER="b65fbd47c38202a667ea3930a4a51c5c8b9ca434" # Using develop branch.
+export PHPCS_UTILS_VER="1.0.8"
 export PHPCS_UTILS_VER_FILE="phpcs-utils-$PHPCS_UTILS_VER.txt"
-export PHPCS_UTILS_SHA1SUM="bc3309c56747e4c2ee165fa4b1ba2bf994e78570"
+export PHPCS_UTILS_SHA1SUM="50dc4e4a5138179e0ef481b1af5aa7dc51817dfc"
+
+# https://github.com/PHPCSStandards/PHPCSExtra
+export PHPCS_EXTRA_REPO="PHPCSStandards/PHPCSExtra"
+export PHPCS_EXTRA_VER="1.1.2"
+export PHPCS_EXTRA_VER_FILE="phpcs-extra-$PHPCS_EXTRA_VER.txt"
+export PHPCS_EXTRA_SHA1SUM="7c1d6d6d454106d46446f43324b4297b7caa8fbe"
 
 # https://github.com/Automattic/vip-go-svg-sanitizer
 export VIP_GO_SVG_SANITIZER_REPO="Automattic/vip-go-svg-sanitizer"
@@ -256,6 +262,8 @@ else
 	gh_fetch_and_verify "$PHP_COMPATIBILITY_PARAGONIE_REPO" "$PHP_COMPATIBILITY_PARAGONIE_VER" "$TMP_FOLDER/$PHP_COMPATIBILITY_PARAGONIE_VER_FILE" "$PHP_COMPATIBILITY_PARAGONIE_SHA1SUM" "PHPCompatibilityParagonie-$PHP_COMPATIBILITY_PARAGONIE_VER/PHPCompatibilityParagonie*" "$TMP_FOLDER/phpcs/src/Standards/" && \
 	\
 	gh_fetch_and_verify "$PHPCS_UTILS_REPO" "$PHPCS_UTILS_VER" "$TMP_FOLDER/$PHPCS_UTILS_VER_FILE" "$PHPCS_UTILS_SHA1SUM" "PHPCSUtils-$PHPCS_UTILS_VER/PHPCS* PHPCSUtils-$PHPCS_UTILS_VER/phpcsutils-autoload.php" "$TMP_FOLDER/phpcs/src/Standards/" && \
+	\
+	gh_fetch_and_verify "$PHPCS_EXTRA_REPO" "$PHPCS_EXTRA_VER" "$TMP_FOLDER/$PHPCS_EXTRA_VER_FILE" "$PHPCS_EXTRA_SHA1SUM" "PHPCSExtra-$PHPCS_EXTRA_VER/*" "$TMP_FOLDER/phpcs/src/Standards/" && \
 	\
 	gh_fetch_and_verify "$VIP_GO_SVG_SANITIZER_REPO" "$VIP_GO_SVG_SANITIZER_VER" "$TMP_FOLDER/$VIP_GO_SVG_SANITIZER_VER_FILE" "$VIP_GO_SVG_SANITIZER_SHA1SUM" "vip-go-svg-sanitizer-$VIP_GO_SVG_SANITIZER_VER" "$TMP_FOLDER/vip-go-svg-sanitizer" && \
 	\
