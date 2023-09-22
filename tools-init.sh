@@ -34,7 +34,7 @@ export PHPCS_VARIABLE_ANALYSIS_SHA1SUM="8effbc612733ec3fc0d7e623b5b3af912d5febb8
 
 # https://github.com/phpcompatibility/phpcompatibility
 export PHP_COMPATIBILITY_REPO="phpcompatibility/phpcompatibility"
-export PHP_COMPATIBILITY_VER="c23e20c0aaa5c527fd7b3fbef38c50c458bb47f1" # Using develop branch.
+export PHP_COMPATIBILITY_VER="a8ff2291e73352b0e70160a810927983078bfc58" # Using develop branch.
 export PHP_COMPATIBILITY_VER_FILE="php-compatibility-$PHP_COMPATIBILITY_VER.txt"
 export PHP_COMPATIBILITY_SHA1SUM="3787a3f86edbfbc4881d2b123f17ca1e1bcbeb66"
 
