@@ -35,6 +35,7 @@ if ( ! defined( 'VIPGOCI_GITHUB_BASE_URL' ) ) {
 	define( 'VIPGOCI_GITHUB_BASE_URL', 'https://api.github.com' );
 }
 
+// GitHub API version header. If updated, update latest-release.php too.
 define( 'VIPGOCI_GITHUB_API_VERSION', '2022-11-28' );
 
 /*
