@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.8](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.8) - 2023-09-25
+
+### Updated
+- [#375](https://github.com/Automattic/vip-go-ci/pull/375): Upgrading PHPCS standards: WordPress-Coding-Standards, VIP-Coding-Standards, PHPCompatibility, PHPCSUtils and adding PHPCSExtra
+- [#371](https://github.com/Automattic/vip-go-ci/pull/371): tools-init.sh: Updating lock file mechanism to be safer
+- [#372](https://github.com/Automattic/vip-go-ci/pull/372): Add initial E2E test for latest-release.php
+- [#373](https://github.com/Automattic/vip-go-ci/pull/373): Use GitHub API version header in latest-release.php
+
 ## [1.3.7](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.7) - 2023-09-11
 
 ### Updated
