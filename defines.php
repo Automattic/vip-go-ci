@@ -10,7 +10,7 @@ declare(strict_types=1);
 /*
  * Version number and default name to use.
  */
-define( 'VIPGOCI_VERSION', '1.3.7' );
+define( 'VIPGOCI_VERSION', '1.3.8' );
 define( 'VIPGOCI_DEFAULT_NAME_TO_USE', 'vip-go-ci' );
 
 /*
@@ -35,6 +35,7 @@ if ( ! defined( 'VIPGOCI_GITHUB_BASE_URL' ) ) {
 	define( 'VIPGOCI_GITHUB_BASE_URL', 'https://api.github.com' );
 }
 
+// GitHub API version header. If updated, update latest-release.php too.
 define( 'VIPGOCI_GITHUB_API_VERSION', '2022-11-28' );
 
 /*

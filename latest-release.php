@@ -10,8 +10,9 @@
 
 declare(strict_types=1);
 
-$github_url = 'https://api.github.com/repos/automattic/vip-go-ci/releases';
-$client_id  = 'automattic-vip-go-ci-release-checker';
+$github_url         = 'https://api.github.com/repos/automattic/vip-go-ci/releases';
+$client_id          = 'automattic-vip-go-ci-release-checker';
+$github_api_version = 'X-GitHub-Api-Version: 2022-11-28'; // If updated, update defines.php too.
 
 $ch = curl_init();
 
@@ -21,7 +22,7 @@ curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, 20 );
 curl_setopt( $ch, CURLOPT_USERAGENT, $client_id );
 curl_setopt( $ch, CURLOPT_MAXREDIRS, 0 );
 curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, false );
-
+curl_setopt( $ch, CURLOPT_HTTPHEADER, array( $github_api_version ) );
 
 $resp_data_raw = curl_exec( $ch );
 
