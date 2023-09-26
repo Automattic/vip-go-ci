@@ -125,7 +125,7 @@ function lock_place() {
 	# on the same system. Should not happen often.
 	sleep 1
 
-	if [ "$$" == `cat "$TMP_LOCK_FILE"` ] ; then
+	if [ "$$" == "`cat \"$TMP_LOCK_FILE\"`" ] ; then
 		echo "$0: Acquired lock ($TMP_LOCK_FILE)"
 	else
 		echo "$0: Someone else got the lock before us. Bailing out"
