@@ -136,7 +136,7 @@ function lock_place() {
 # Remove lock file, but only if we acquired it.
 function lock_remove() {
 	if [ -f "$TMP_LOCK_FILE" ] ; then
-		if [ "$$" == `cat "$TMP_LOCK_FILE"` ] ; then
+		if [ "$$" == "`cat \"$TMP_LOCK_FILE\"`" ] ; then
 			echo "$0: Removed lock"
 			rm -f "$TMP_LOCK_FILE"
 		else
