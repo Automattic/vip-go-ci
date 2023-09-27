@@ -125,7 +125,7 @@ function lock_place() {
 	# on the same system. Should not happen often.
 	sleep 1
 
-	if [ "$$" == `cat "$TMP_LOCK_FILE"` ] ; then
+	if [ "$$" == "`cat \"$TMP_LOCK_FILE\"`" ] ; then
 		echo "$0: Acquired lock ($TMP_LOCK_FILE)"
 	else
 		echo "$0: Someone else got the lock before us. Bailing out"
@@ -136,7 +136,7 @@ function lock_place() {
 # Remove lock file, but only if we acquired it.
 function lock_remove() {
 	if [ -f "$TMP_LOCK_FILE" ] ; then
-		if [ "$$" == `cat "$TMP_LOCK_FILE"` ] ; then
+		if [ "$$" == "`cat \"$TMP_LOCK_FILE\"`" ] ; then
 			echo "$0: Removed lock"
 			rm -f "$TMP_LOCK_FILE"
 		else
@@ -164,10 +164,10 @@ fi
 if [ -d ~/vip-go-ci-tools ] ; then
 	#
 	# We have got the tools installed already,
-	# only check in 33% of cases if we should
+	# only check in 5% of cases if we should
 	# upgrade.
 	#
-	export TMP_RAND=`seq 1 3 | sort -R | head -n 1`
+	export TMP_RAND=`seq 1 20 | sort -R | head -n 1`
 
 	if [ "$TMP_RAND" -ne "1" ] ; then
 		echo "$0: Will not check for updates at this time, exiting"
