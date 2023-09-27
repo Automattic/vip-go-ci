@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.3.9](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.9) - 2023-09-?
+## [1.3.9](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.9) - 2023-09-27
 
 ### Updated
 - [#376](https://github.com/Automattic/vip-go-ci/pull/376): Attempt to fix a problem with E2E tests
