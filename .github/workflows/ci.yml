@@ -131,6 +131,8 @@ jobs:
     steps:
       - name: Check out the source code
         uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
         
       - name: Ask git to fetch latest branch and other branches
         run: git fetch origin latest && git pull
