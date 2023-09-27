@@ -164,10 +164,10 @@ fi
 if [ -d ~/vip-go-ci-tools ] ; then
 	#
 	# We have got the tools installed already,
-	# only check in 10% of cases if we should
+	# only check in 5% of cases if we should
 	# upgrade.
 	#
-	export TMP_RAND=`seq 1 10 | sort -R | head -n 1`
+	export TMP_RAND=`seq 1 20 | sort -R | head -n 1`
 
 	if [ "$TMP_RAND" -ne "1" ] ; then
 		echo "$0: Will not check for updates at this time, exiting"
