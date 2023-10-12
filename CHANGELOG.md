@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.9](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.9) - 2023-09-27
+
+### Updated
+- [#376](https://github.com/Automattic/vip-go-ci/pull/376): Attempt to fix a problem with E2E tests
+- [#378](https://github.com/Automattic/vip-go-ci/pull/378): tools-init.sh: Only update in 5% of cases and a small fix
+- [#379](https://github.com/Automattic/vip-go-ci/pull/379): Offically support PHP 8.2
+
 ## [1.3.8](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.8) - 2023-09-25
 
 ### Updated
