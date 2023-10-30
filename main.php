@@ -3080,7 +3080,7 @@ function vipgoci_run_scan(
 				'repo-owner'     => $options['repo-owner'],
 				'repo-name'      => $options['repo-name'],
 				'commit'         => $options['commit'],
-				'prs_implicated' => array_keys( $prs_implicated ),
+				'prs_implicated' => $prs_implicated,
 			)
 		);
 	}
