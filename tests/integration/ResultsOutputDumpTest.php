@@ -32,6 +32,7 @@ final class ResultsOutputDumpTest extends TestCase {
 	 */
 	protected function setUp() :void {
 		require_once __DIR__ . '/../../results.php';
+		require_once __DIR__ . '/../../log.php';
 
 		$this->temp_dump_file = tempnam(
 			sys_get_temp_dir(),
@@ -63,11 +64,32 @@ final class ResultsOutputDumpTest extends TestCase {
 			'repo-name'      => 'test-repo',
 			'commit'         => 'abc123',
 			'prs_implicated' => array(
-				1 => array(
-					'test1',
+				1 => (object) array(
+					'title'       => 'testing #1',
+					'base' => (object) array(
+						'ref' => 'main',
+					),
+					'head' => (object) array(
+						'ref' => 'add/testing1',
+					),
+					'user' => (object) array(
+						'login' => 'user1',
+					),
 				),
-				2 => array(
-					'test2',
+				2 => (object) array(
+					'title'       => 'testing #2',
+					'base' => (object) array(
+						'ref' => 'main',
+					),
+					'head' => (object) array(
+						'ref' => 'add/testing2',
+					),
+					'user' => (object) array(
+						'login' => 'user2',
+					),
+				),
+				3 => (object) array(
+					'invalid' => false,
 				),
 			),
 		);
@@ -87,7 +109,26 @@ final class ResultsOutputDumpTest extends TestCase {
 		);
 
 		$this->assertSame(
-			$data,
+			array(
+				'results'        => array( 1, 2, 3, 4 ),
+				'repo-owner'     => 'test-owner',
+				'repo-name'      => 'test-repo',
+				'commit'         => 'abc123',
+				'prs_implicated' => array(
+					1 => array(
+						'title'       => 'testing #1',
+						'base_branch' => 'main',
+						'head_branch' => 'add/testing1',
+						'creator'     => 'user1',
+					),
+					2 => array(
+						'title'       => 'testing #2',
+						'base_branch' => 'main',
+						'head_branch' => 'add/testing2',
+						'creator'     => 'user2',
+					),
+				),
+			),
 			$dumped_contents
 		);
 	}
