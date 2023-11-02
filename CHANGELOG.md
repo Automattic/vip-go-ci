@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.10](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.10) - 2023-11-02
+
+### Updated
+- [#380](https://github.com/Automattic/vip-go-ci/pull/380): Update --output functionality 
+- [#381](https://github.com/Automattic/vip-go-ci/pull/381): Update minimum requirements and TODO template
+
 ## [1.3.9](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.9) - 2023-09-27
 
 ### Updated
