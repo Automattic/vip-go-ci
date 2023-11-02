@@ -16,8 +16,8 @@ define( 'VIPGOCI_DEFAULT_NAME_TO_USE', 'vip-go-ci' );
 /*
  * Define minimum version requirements.
  */
-define( 'VIPGOCI_GIT_VERSION_MINIMUM', '2.10' );
-define( 'VIPGOCI_PHP_VERSION_MINIMUM', '7.3.0' );
+define( 'VIPGOCI_GIT_VERSION_MINIMUM', '2.30' );
+define( 'VIPGOCI_PHP_VERSION_MINIMUM', '8.0.0' );
 
 /*
  * Client-ID for HTTP requests.
