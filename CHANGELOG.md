@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.11](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.11) - 2023-11-02
+- [#383](https://github.com/Automattic/vip-go-ci/pull/383): Temporarily roll back git requirement
+
 ## [1.3.10](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.10) - 2023-11-02
 
 ### Updated
