@@ -14,6 +14,9 @@ TODO:
 - [ ] Added patch for [describe issue]
 - [ ] Add/update tests -- unit/integrated/E2E (if needed)
   - [ ] Ensure only one function/functionality is tested per test file.
+- [ ] New/updated software requirements? 
+  - [ ] Update README.md
+  - [ ] Update defines.php
 - [ ] Add to, or update, `Scan run detail` report as applicable
 - [ ] Check status of automated tests
 - [ ] Ensure `PHPDoc` comments are up to date for functions added or altered
@@ -31,6 +34,9 @@ TODO:
 - [ ] Add to, or update, `Scan run detail` report as applicable
 - [ ] Add/update tests -- unit/integrated/E2E
   - [ ] Ensure only one function/functionality is tested per test file.
+- [ ] New/updated software requirements? 
+  - [ ] Update README.md
+  - [ ] Update defines.php
 - [ ] Ensure `PHPDoc` comments are up to date for functions added or altered
 - [ ] Update repository documentation (README.md, RELEASING.md, TESTING.md, TOOLS-UPDATE.md)
 - [ ] Assign appropriate [priority](https://github.com/Automattic/vip-go-ci/blob/trunk/CONTRIBUTING.md#priorities) and [type of change labels](https://github.com/Automattic/vip-go-ci/blob/trunk/CONTRIBUTING.md#type-of-change-labels).
