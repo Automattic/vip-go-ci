@@ -123,7 +123,6 @@ function vipgoci_help_print() :void {
 		"\t" . '                                                 to be PHPCS scanned to be specified in file in root' . PHP_EOL .
 		"\t" . '                                                 of repository (.vipgoci_phpcs_skip_folders).' . PHP_EOL .
 		"\t" . '                                                 Folders should be separated by newlines.' . PHP_EOL .
-		"\t" . '--output=FILE                  Where to save PHPCS output.' . PHP_EOL .
 		PHP_EOL .
 		'SVG scanning configuration:' . PHP_EOL .
 		"\t" . '--svg-checks=BOOL              Enable or disable SVG checks, both auto-approval of SVG' . PHP_EOL .
@@ -214,6 +213,8 @@ function vipgoci_help_print() :void {
 		"\t" . '                               explain what the bot does. Can contain HTML or Markdown.' . PHP_EOL .
 		"\t" . '--scan-details-msg-include=BOOL If to include additional detail about the scan, versions of' . PHP_EOL .
 		"\t" . '                                software used, options altered and so forth. Enabled by default.' . PHP_EOL .
+		PHP_EOL .
+		"\t" . '--output=FILE                  Where to save results output.' . PHP_EOL .
 		PHP_EOL .
 		'Generic support comments configuration:' . PHP_EOL .
 		"\t" . '--post-generic-pr-support-comments=BOOL            Whether to post generic comment to pull requests' . PHP_EOL .
@@ -3080,7 +3081,7 @@ function vipgoci_run_scan(
 				'repo-owner'     => $options['repo-owner'],
 				'repo-name'      => $options['repo-name'],
 				'commit'         => $options['commit'],
-				'prs_implicated' => array_keys( $prs_implicated ),
+				'prs_implicated' => $prs_implicated,
 			)
 		);
 	}
