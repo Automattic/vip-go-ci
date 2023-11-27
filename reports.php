@@ -101,7 +101,7 @@ function vipgoci_report_create_scan_details_software_versions(
 
 	$details .= '<ul>' . PHP_EOL;
 
-	$details .= '<li>vip-go-ci version: <code>' . vipgoci_output_sanitize_version_number( VIPGOCI_VERSION ) . '</code></li>' . PHP_EOL;
+	$details .= '<li><a href="https://github.com/Automattic/vip-go-ci">vip-go-ci</a> version: <code>' . vipgoci_output_sanitize_version_number( VIPGOCI_VERSION ) . '</code></li>' . PHP_EOL;
 
 	$php_runtime_version = phpversion();
 
@@ -648,6 +648,8 @@ function vipgoci_report_maybe_no_issues_found(
 		}
 
 		$no_issues_msg .= ' (commit-ID: ' . $commit_id . ')';
+
+		$no_issues_msg = vipgoci_output_html_escape( $no_issues_msg );
 
 		/*
 		 * If we have informational message, append it.
@@ -1440,7 +1442,7 @@ function vipgoci_report_submit_pr_review_from_results(
 				$repo_name,
 				$github_token,
 				$pr_number,
-				VIPGOCI_GITHUB_ERROR_STR,
+				vipgoci_output_html_escape( VIPGOCI_GITHUB_ERROR_STR ),
 				$commit_id
 			);
 		}
