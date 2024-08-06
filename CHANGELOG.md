@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.13](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.13) - 2024-05-23
+- [389](https://github.com/Automattic/vip-go-ci/pull/389): Upgrade to PHPCS 3.10.1
+
+## [1.3.12](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.12) - 2024-05-22
+- [#386](https://github.com/Automattic/vip-go-ci/pull/386): Update VIPCS + dependencies
+- [#388](https://github.com/Automattic/vip-go-ci/pull/388): Update PHPCS, PHPUtils and PHPCompatibility dependencies
+
+## [1.3.11](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.11) - 2023-11-02
+- [#383](https://github.com/Automattic/vip-go-ci/pull/383): Temporarily roll back git requirement
+
+## [1.3.10](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.10) - 2023-11-02
+
+### Updated
+- [#380](https://github.com/Automattic/vip-go-ci/pull/380): Update --output functionality 
+- [#381](https://github.com/Automattic/vip-go-ci/pull/381): Update minimum requirements and TODO template
+
 ## [1.3.9](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.9) - 2023-09-27
 
 ### Updated

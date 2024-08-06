@@ -63,7 +63,7 @@ If you have a feature request, please read the [file on contributing](CONTRIBUTI
   * The PHP-based utlities — PHPCS, SVG scanner and PHP Lint — can be run using different PHP versions than `vip-go-ci` itself. See individual sections below on this. 
     * These utilities have their own requirements.
 * Linux is recommended as a platform for `vip-go-ci`.
-* git version 2.30 or later.
+* git version 2.10 or later.
 * Working bash shell.
 * Access to GitHub API and other APIs configured.
 

@@ -8,29 +8,29 @@ set -e
 # https://github.com/Automattic/vip-go-ci/#updating-tools-initsh-with-new-versions
 #
 
-# https://github.com/squizlabs/PHP_CodeSniffer
-export PHP_CODESNIFFER_REPO="squizlabs/PHP_CodeSniffer"
-export PHP_CODESNIFFER_VER="3.7.2"
+# https://github.com/PHPCSStandards/PHP_CodeSniffer
+export PHP_CODESNIFFER_REPO="PHPCSStandards/PHP_CodeSniffer"
+export PHP_CODESNIFFER_VER="3.10.1"
 export PHP_CODESNIFFER_VER_FILE="php-codesniffer-$PHP_CODESNIFFER_VER.txt"
-export PHP_CODESNIFFER_SHA1SUM="f20912a426eff7a7547947f00f1ea0db097a7ffb"
+export PHP_CODESNIFFER_SHA1SUM="b8aca4578b3afbc3fb9162a59fa075b209e2c611"
 
 # https://github.com/WordPress/WordPress-Coding-Standards
 export WP_CODING_STANDARDS_REPO="WordPress/WordPress-Coding-Standards"
-export WP_CODING_STANDARDS_VER="3.0.1"
+export WP_CODING_STANDARDS_VER="3.1.0"
 export WP_CODING_STANDARDS_VER_FILE="wp-coding-standards-$WP_CODING_STANDARDS_VER.txt"
-export WP_CODING_STANDARDS_SHA1SUM="25f3cc04c7484cc50104a6ca2bf5fcadd447d9d0"
+export WP_CODING_STANDARDS_SHA1SUM="e499d90ab2ca6d60b119049b9410c351780d2ebd"
 
 # https://github.com/automattic/vip-coding-standards
 export VIP_CODING_STANDARDS_REPO="automattic/vip-coding-standards"
-export VIP_CODING_STANDARDS_VER="3.0.0"
+export VIP_CODING_STANDARDS_VER="3.0.1"
 export VIP_CODING_STANDARDS_VER_FILE="vip-coding-standards-$VIP_CODING_STANDARDS_VER.txt"
-export VIP_CODING_STANDARDS_SHA1SUM="c38362e2463f2cfc2c9cabe48011f921843f3bf4"
+export VIP_CODING_STANDARDS_SHA1SUM="73f113f13b8747aeed8f93a827e34fd4125c3b81"
 
 # https://github.com/sirbrillig/phpcs-variable-analysis
 export PHPCS_VARIABLE_ANALYSIS_REPO="sirbrillig/phpcs-variable-analysis"
-export PHPCS_VARIABLE_ANALYSIS_VER="v2.11.17"
+export PHPCS_VARIABLE_ANALYSIS_VER="v2.11.18"
 export PHPCS_VARIABLE_ANALYSIS_VER_FILE="phpcs-variable-analysis-$PHPCS_VARIABLE_ANALYSIS_VER.txt"
-export PHPCS_VARIABLE_ANALYSIS_SHA1SUM="8effbc612733ec3fc0d7e623b5b3af912d5febb8"
+export PHPCS_VARIABLE_ANALYSIS_SHA1SUM="f54bd764751ceabc89b377730638ffd871f74f1a"
 
 # https://github.com/phpcompatibility/phpcompatibility
 export PHP_COMPATIBILITY_REPO="phpcompatibility/phpcompatibility"
@@ -40,27 +40,27 @@ export PHP_COMPATIBILITY_SHA1SUM="ee2b066a386664419f190ef55850a68172fd29e5"
 
 # https://github.com/phpcompatibility/phpcompatibilitywp
 export PHP_COMPATIBILITY_WP_REPO="phpcompatibility/phpcompatibilitywp"
-export PHP_COMPATIBILITY_WP_VER="2.1.4"
+export PHP_COMPATIBILITY_WP_VER="2.1.5"
 export PHP_COMPATIBILITY_WP_VER_FILE="php-compatibility-wp-$PHP_COMPATIBILITY_WP_VER.txt"
-export PHP_COMPATIBILITY_WP_SHA1SUM="e1f90246005b6265428e6c7313cd7335a49b9ac6"
+export PHP_COMPATIBILITY_WP_SHA1SUM="ed0f9717fde6dd295f2fe64b834051e13908203d"
 
 # https://github.com/phpcompatibility/phpcompatibilityparagonie
 export PHP_COMPATIBILITY_PARAGONIE_REPO="phpcompatibility/phpcompatibilityparagonie"
-export PHP_COMPATIBILITY_PARAGONIE_VER="1.3.2"
+export PHP_COMPATIBILITY_PARAGONIE_VER="1.3.3"
 export PHP_COMPATIBILITY_PARAGONIE_VER_FILE="php-compatibility-paragonie-$PHP_COMPATIBILITY_PARAGONIE_VER.txt"
-export PHP_COMPATIBILITY_PARAGONIE_SHA1SUM="7aa800cf9b2737ad64082cb70b4b4113d8c19cdb"
+export PHP_COMPATIBILITY_PARAGONIE_SHA1SUM="ce612de4aa56e6184570c69d5cabf56c29e90d30"
 
 # https://github.com/PHPCSStandards/PHPCSUtils
 export PHPCS_UTILS_REPO="PHPCSStandards/PHPCSUtils"
-export PHPCS_UTILS_VER="1.0.8"
+export PHPCS_UTILS_VER="1.0.12"
 export PHPCS_UTILS_VER_FILE="phpcs-utils-$PHPCS_UTILS_VER.txt"
-export PHPCS_UTILS_SHA1SUM="50dc4e4a5138179e0ef481b1af5aa7dc51817dfc"
+export PHPCS_UTILS_SHA1SUM="3877b9c263dee2b490520c58b98ad8c407d810b3"
 
 # https://github.com/PHPCSStandards/PHPCSExtra
 export PHPCS_EXTRA_REPO="PHPCSStandards/PHPCSExtra"
-export PHPCS_EXTRA_VER="1.1.2"
+export PHPCS_EXTRA_VER="1.2.1"
 export PHPCS_EXTRA_VER_FILE="phpcs-extra-$PHPCS_EXTRA_VER.txt"
-export PHPCS_EXTRA_SHA1SUM="7c1d6d6d454106d46446f43324b4297b7caa8fbe"
+export PHPCS_EXTRA_SHA1SUM="76cda4f26f099e588ba531bf41ac173b7ad02e17"
 
 # https://github.com/Automattic/vip-go-svg-sanitizer
 export VIP_GO_SVG_SANITIZER_REPO="Automattic/vip-go-svg-sanitizer"

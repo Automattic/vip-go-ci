@@ -1078,7 +1078,14 @@ function vipgoci_results_filter_duplicate(
 function vipgoci_results_output_dump(
 	string $output_file,
 	array $data
-) :void {
+): void {
+	vipgoci_log(
+		'Preparing to dump results to file',
+		array(
+			'output' => $output_file,
+		)
+	);
+
 	if (
 		( is_file( $output_file ) ) &&
 		( ! is_writeable( $output_file ) )
@@ -1089,15 +1096,54 @@ function vipgoci_results_output_dump(
 				'output_file' => $output_file,
 			)
 		);
+
+		return;
+	}
+
+	if ( isset( $data['prs_implicated'] ) ) {
+		$tmp_prs_implicated = $data['prs_implicated'];
+
+		$data['prs_implicated'] = array();
+
+		foreach ( $tmp_prs_implicated as $pr_number => $pr_data ) {
+			if ( isset( $pr_data->title ) ) {
+				$data['prs_implicated'][ $pr_number ]['title'] = $pr_data->title;
+			}
+
+			if ( isset( $pr_data->base->ref ) ) {
+				$data['prs_implicated'][ $pr_number ]['base_branch'] = $pr_data->base->ref;
+			}
+
+			if ( isset( $pr_data->head->ref ) ) {
+				$data['prs_implicated'][ $pr_number ]['head_branch'] = $pr_data->head->ref;
+			}
+
+			if ( isset( $pr_data->user->login ) ) {
+				$data['prs_implicated'][ $pr_number ]['creator'] = $pr_data->user->login;
+			}
+		}
+
+		unset( $tmp_prs_implicated );
+		unset( $pr_number );
+		unset( $pr_data );
+	}
+
+	$res = file_put_contents(
+		$output_file,
+		json_encode(
+			$data,
+			JSON_PRETTY_PRINT
+		),
+		FILE_APPEND
+	);
+
+	if ( false === $res ) {
+		vipgoci_log(
+			'Unable to write results to output file due to error',
+		);
 	} else {
-		file_put_contents(
-			$output_file,
-			json_encode(
-				$data,
-				JSON_PRETTY_PRINT
-			),
-			FILE_APPEND
+		vipgoci_log(
+			'Successfully wrote results to file'
 		);
 	}
 }
-
