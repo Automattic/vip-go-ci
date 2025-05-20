@@ -187,7 +187,7 @@ if [ ! -d "$GIT_REPO_PATH" ] ; then
 	git -C "$GIT_REPO_BASE_PATH" clone "https://github.com/$REPO_ORG/$REPO_NAME.git"
 
 	# Fetch external branch from another repository
-	git -C "$GIT_REPO_PATH" fetch "https://github.com/gudmdharalds/vip-go-ci-manual-testing.git" ext-branch-with-phpcs-issues-original:ext-branch-with-phpcs-issues
+	git -C "$GIT_REPO_PATH" fetch "https://github.com/Automattic/vip-go-ci-manual-testing.git" ext-branch-with-phpcs-issues-original:ext-branch-with-phpcs-issues
 else
 	git -C "$GIT_REPO_PATH" pull
 fi

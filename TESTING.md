@@ -106,7 +106,7 @@ Manual testing is still required to ensure the final behavior of `vip-go-ci` is 
 
 ### Setting up
 
-Begin by forking [this repository](https://github.com/gudmdharalds-a8c/vip-go-ci-manual-testing). Use the forked repository to run the manual tests.
+Begin by forking [this repository](https://github.com/Automattic/vip-go-ci-manual-testing). Use the forked repository to run the manual tests.
 
 Navigate into the [tests/manual](tests/manual) directory on the command line. Then follow these steps:
 
