@@ -13,7 +13,7 @@
 
 PR_PHPCS_AND_LINTING_ISSUES='{"title":"phpcs-and-linting-issues branch","body":"PHPCS and linting issues","head":"phpcs-and-linting-issues","base":"main"}'
 PR_PHPCS='{"title":"phpcs-issues branch","body":"PHPCS issues","head":"phpcs-issues","base":"main"}'
-EXT_WITH_PHPCS_ISSUES_BRANCH='{"title":"ext-branch-with-phpcs-issues branch","body":"PHPCS issues from external branch","head":"gudmdharalds:ext-branch-with-phpcs-issues-original","base":"main"}'
+EXT_WITH_PHPCS_ISSUES_BRANCH='{"title":"ext-branch-with-phpcs-issues branch","body":"PHPCS issues from external branch","head":"ext-branch-with-phpcs-issues-original","base":"main"}'
 PR_SVG_ISSUES_BRANCH='{"title":"svg-issues branch","body":"SVG issues","head":"svg-issues","base":"main"}'
 PR_AUTO_APPROVABLE_SVG_FILE_BRANCH='{"title":"auto-approvable-svg-file branch","body":"Auto-approvable due to safe SVG file change only","head":"auto-approvable-svg-file","base":"main"}'
 PR_NO_ISSUES_BRANCH='{"title":"no-issues branch","body":"No issues at all","head":"no-issues","base":"main"}'
