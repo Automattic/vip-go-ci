@@ -24,7 +24,7 @@ jobs:
           - '8.2'
     steps:
       - name: Check out the source code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
 
       - name: Set up PHP
         uses: shivammathur/setup-php@c5fc0d8281aba02c7fda07d3a70cc5371548067d # 2.25.2
@@ -55,7 +55,7 @@ jobs:
           - '8.2'
     steps:
       - name: Check out the source code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
 
       - name: Set up PHP 7.4
         uses: shivammathur/setup-php@c5fc0d8281aba02c7fda07d3a70cc5371548067d # 2.25.2
@@ -130,7 +130,7 @@ jobs:
           - '8.2'
     steps:
       - name: Check out the source code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
         with:
           ref: ${{ github.event.pull_request.head.ref }}
         
@@ -160,7 +160,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the source code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
 
       - name: Set up PHP
         uses: shivammathur/setup-php@c5fc0d8281aba02c7fda07d3a70cc5371548067d # 2.25.2
