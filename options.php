@@ -69,7 +69,7 @@ function vipgoci_options_read_repo_file(
 
 	if ( false === $repo_options_file_contents ) {
 		vipgoci_log(
-			'No options found in repository settings-file, nothing further to do',
+			'Repository settings-file is unavailable, unreadable, or rejected, nothing further to do',
 			array(
 				'filename' => $repo_options_file_name,
 			)
@@ -332,7 +332,7 @@ function vipgoci_options_read_repo_skip_files(
 			$type_options_file_contents
 		) ) {
 			vipgoci_log(
-				'No folders skippable found in repository for ' . $scan_type . ', so skipping',
+				'Repository skip-folders file for ' . $scan_type . ' is missing, empty, unreadable, or rejected, so skipping',
 				array(
 					'type_options_file_name' => $type_options_file_name,
 				)
