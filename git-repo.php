@@ -464,6 +464,7 @@ function vipgoci_gitrepo_fetch_committed_file(
 
 	if (
 		( true === $reject_symlink ) &&
+		( file_exists( $file_path ) ) &&
 		( is_link( $file_path ) )
 	) {
 		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'git_repo_fetch_file' );
