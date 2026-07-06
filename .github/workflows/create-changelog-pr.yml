@@ -1,0 +1,254 @@
+name: Create changelog PR
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: Release type to create.
+        required: true
+        default: patch
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+      release_date:
+        description: Release date to use in CHANGELOG.md, in YYYY-MM-DD format. Defaults to today in UTC.
+        required: false
+        type: string
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  create-changelog-pr:
+    name: Create changelog PR
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out trunk
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          ref: trunk
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Update release files
+        env:
+          RELEASE_TYPE: ${{ inputs.release_type }}
+          RELEASE_DATE_INPUT: ${{ inputs.release_date }}
+        run: |
+          set -euo pipefail
+
+          current_version="$(perl -ne "print \$1 if /define\\( 'VIPGOCI_VERSION', '([0-9]+\\.[0-9]+\\.[0-9]+)' \\);/" defines.php)"
+
+          if [[ ! "$current_version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Unable to determine current X.Y.Z version from defines.php."
+            exit 1
+          fi
+
+          IFS='.' read -r major minor patch <<< "$current_version"
+
+          case "$RELEASE_TYPE" in
+            patch)
+              patch=$((patch + 1))
+              ;;
+            minor)
+              minor=$((minor + 1))
+              patch=0
+              ;;
+            major)
+              major=$((major + 1))
+              minor=0
+              patch=0
+              ;;
+            *)
+              echo "::error::Release type must be patch, minor, or major."
+              exit 1
+              ;;
+          esac
+
+          VERSION="$major.$minor.$patch"
+
+          RELEASE_DATE="$RELEASE_DATE_INPUT"
+          if [[ -z "$RELEASE_DATE" ]]; then
+            RELEASE_DATE="$(date -u +%F)"
+          fi
+
+          if [[ ! "$RELEASE_DATE" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
+            echo "::error::Release date must use YYYY-MM-DD format."
+            exit 1
+          fi
+
+          BRANCH="add-changelog-${VERSION//./-}"
+          if git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null 2>&1; then
+            echo "::error::Branch $BRANCH already exists."
+            exit 1
+          fi
+
+          if grep -qE "^## \[$VERSION\]\(" CHANGELOG.md; then
+            echo "::error::CHANGELOG.md already has a $VERSION section."
+            exit 1
+          fi
+
+          git switch -c "$BRANCH"
+
+          perl -0pi -e "s/define\\( 'VIPGOCI_VERSION', '[^']+' \\);/define( 'VIPGOCI_VERSION', '$ENV{VERSION}' );/" defines.php
+          grep -q "define( 'VIPGOCI_VERSION', '$VERSION' );" defines.php
+
+          entries_file="$(mktemp)"
+          changelog_tmp="$(mktemp)"
+
+          printf '%s\n' "- TODO: Add release changes." > "$entries_file"
+
+          awk -v version="$VERSION" -v release_date="$RELEASE_DATE" -v entries_file="$entries_file" '
+            BEGIN {
+              header = "## [" version "](https://github.com/Automattic/vip-go-ci/releases/tag/" version ") - " release_date
+              while ((getline line < entries_file) > 0) {
+                entries = entries line "\n"
+              }
+              close(entries_file)
+            }
+            /^## \[/ && !inserted {
+              print header
+              print ""
+              printf "%s", entries
+              print ""
+              inserted = 1
+            }
+            { print }
+            END {
+              if (!inserted) {
+                print ""
+                print header
+                print ""
+                printf "%s", entries
+              }
+            }
+          ' CHANGELOG.md > "$changelog_tmp"
+
+          mv "$changelog_tmp" CHANGELOG.md
+          rm -f "$entries_file"
+
+          git diff --check
+
+          {
+            echo "BRANCH=$BRANCH"
+            echo "RELEASE_DATE=$RELEASE_DATE"
+            echo "VERSION=$VERSION"
+          } >> "$GITHUB_ENV"
+
+      - name: Commit and push
+        run: |
+          set -euo pipefail
+
+          git add defines.php CHANGELOG.md
+
+          if git diff --cached --quiet; then
+            echo "::error::No release file changes were generated."
+            exit 1
+          fi
+
+          git commit -m "Define version $VERSION"
+          git push --set-upstream origin "$BRANCH"
+
+      - name: Create pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          pr_body="$(mktemp)"
+
+          cat > "$pr_body" <<'EOF'
+          TODO:
+          - [ ] Define version number in CHANGELOG.md, add release date and update links
+          - [ ] Add same version number in defines.php
+          - [ ] Assign a milestone corresponding to the version number to this PR and PRs that will form the release
+          - [ ] Assign label ([Changelog and version](https://github.com/Automattic/vip-go-ci/blob/trunk/CONTRIBUTING.md#type-of-change-labels))
+          - [ ] Unit-test suite run successful
+          - [ ] Integration-test suite successful (without secrets)
+          - [ ] Run integration-test suite with secrets
+          - [ ] E2E-test suite run successful
+          - [ ] Manual testing
+            - [ ] Pull request with PHP linting issues
+            - [ ] Pull request with PHPCS issues
+            - [ ] Pull request without PHPCS issues, not auto-approved
+            - [ ] Pull request without PHPCS issues, is auto-approved
+            - [ ] Pull request with SVG issues
+            - [ ] Pull request with large file to be skipped
+            - [ ] Pull request with plugins and themes to be scanned via WPScan API
+          EOF
+
+          pr_url="$(
+            gh pr create \
+              --base trunk \
+              --head "$BRANCH" \
+              --title "Define version $VERSION" \
+              --body-file "$pr_body"
+          )"
+
+          pr_number="$(gh pr view "$pr_url" --json number --jq '.number')"
+
+          {
+            echo "PR_URL=$pr_url"
+            echo "PR_NUMBER=$pr_number"
+          } >> "$GITHUB_ENV"
+
+          {
+            echo "### Changelog PR"
+            echo ""
+            echo "Created $pr_url"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Assign milestone and label
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          milestone_number="$(
+            gh api "repos/$GITHUB_REPOSITORY/milestones?state=all&per_page=100" \
+              --jq ".[] | select(.title == \"$VERSION\") | .number" |
+              head -n 1
+          )"
+
+          if [[ -z "$milestone_number" ]]; then
+            milestone_number="$(
+              gh api \
+                --method POST \
+                "repos/$GITHUB_REPOSITORY/milestones" \
+                -f title="$VERSION" \
+                --jq '.number'
+            )"
+          fi
+
+          if [[ -n "$milestone_number" ]]; then
+            gh api \
+              --method PATCH \
+              "repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER" \
+              -F milestone="$milestone_number" >/dev/null
+          else
+            echo "::warning::No milestone named $VERSION was found or created."
+          fi
+
+          label_to_add=""
+          labels="$(gh label list --limit 200 --json name --jq '.[].name')"
+          for candidate_label in "[ Type ] Changelog & version" "Changelog and version" "Changelog & version"; do
+            if grep -Fxq "$candidate_label" <<< "$labels"; then
+              label_to_add="$candidate_label"
+              break
+            fi
+          done
+
+          if [[ -n "$label_to_add" ]]; then
+            gh pr edit "$PR_NUMBER" --add-label "$label_to_add"
+          else
+            echo "::warning::No changelog/version label was found."
+          fi
