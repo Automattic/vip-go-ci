@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.14](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.14) - 2026-07-06
+- [397](https://github.com/Automattic/vip-go-ci/pull/397): Reject symlinked .vipgoci_* config files
+
 ## [1.3.13](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.13) - 2024-05-23
 - [389](https://github.com/Automattic/vip-go-ci/pull/389): Upgrade to PHPCS 3.10.1
 
