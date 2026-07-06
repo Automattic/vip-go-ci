@@ -36,7 +36,7 @@ final class HttpFunctionsHttpApiRateLimitsCheckTest extends TestCase {
 	 *
 	 * @return array
 	 */
-	public function dataRateLimits() :array {
+	public static function dataRateLimits() :array {
 		return array(
 			array(
 				'https://api.github.com/v1', // Request URL (input).

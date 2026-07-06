@@ -67,7 +67,7 @@ final class MainRunTimeLengthDetermineTest extends TestCase {
 	 *
 	 * @return array
 	 */
-	public function dataDetermineRunTimeLength(): array {
+	public static function dataDetermineRunTimeLength(): array {
 		return array(
 			array( 1, 'short' ),
 			array( 60, 'short' ),

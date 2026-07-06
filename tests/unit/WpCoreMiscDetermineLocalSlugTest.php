@@ -18,12 +18,7 @@ use PHPUnit\Framework\TestCase;
  * @preserveGlobalState disabled
  */
 final class WpCoreMiscDetermineLocalSlugTest extends TestCase {
-	/**
-	 * Path to git repository (does not need to exist).
-	 *
-	 * @var $repo_path
-	 */
-	private string $repo_path = '/tmp/git-repo-123';
+	private const REPO_PATH = '/tmp/git-repo-123';
 
 	/**
 	 * Setup function. Require files.
@@ -40,20 +35,20 @@ final class WpCoreMiscDetermineLocalSlugTest extends TestCase {
 	 *
 	 * @return array Data.
 	 */
-	public function dataDetermineLocalSlug() :array {
+	public static function dataDetermineLocalSlug() :array {
 		require_once __DIR__ . '/../../defines.php';
 
 		$slug_prefix = 'vipgoci-addon-';
 
 		return array(
-			array( $slug_prefix . 'theme-test-theme1', VIPGOCI_ADDON_THEME, $this->repo_path . '/themes/test-theme1/style.css' ),
-			array( $slug_prefix . 'theme-test-theme2', VIPGOCI_ADDON_THEME, $this->repo_path . '/test-group/themes/test-theme2/style.css' ),
-			array( $slug_prefix . 'theme-test-theme3', VIPGOCI_ADDON_THEME, $this->repo_path . '/plugins/test-plugin/test-theme3/style.css' ),
+			array( $slug_prefix . 'theme-test-theme1', VIPGOCI_ADDON_THEME, self::REPO_PATH . '/themes/test-theme1/style.css' ),
+			array( $slug_prefix . 'theme-test-theme2', VIPGOCI_ADDON_THEME, self::REPO_PATH . '/test-group/themes/test-theme2/style.css' ),
+			array( $slug_prefix . 'theme-test-theme3', VIPGOCI_ADDON_THEME, self::REPO_PATH . '/plugins/test-plugin/test-theme3/style.css' ),
 
-			array( $slug_prefix . 'plugin-hello-dolly/hello1.php', VIPGOCI_ADDON_PLUGIN, $this->repo_path . '/plugins/hello-dolly/hello1.php' ),
-			array( $slug_prefix . 'plugin-hello-dolly/hello2.php', VIPGOCI_ADDON_PLUGIN, $this->repo_path . '/themes/test-theme4/plugins/hello-dolly/hello2.php' ),
-			array( $slug_prefix . 'plugin-hello3.php', VIPGOCI_ADDON_PLUGIN, $this->repo_path . '/themes/test-theme5/plugins/hello3.php' ),
-			array( $slug_prefix . 'plugin-hello4.php', VIPGOCI_ADDON_PLUGIN, $this->repo_path . '/hello4.php' ),
+			array( $slug_prefix . 'plugin-hello-dolly/hello1.php', VIPGOCI_ADDON_PLUGIN, self::REPO_PATH . '/plugins/hello-dolly/hello1.php' ),
+			array( $slug_prefix . 'plugin-hello-dolly/hello2.php', VIPGOCI_ADDON_PLUGIN, self::REPO_PATH . '/themes/test-theme4/plugins/hello-dolly/hello2.php' ),
+			array( $slug_prefix . 'plugin-hello3.php', VIPGOCI_ADDON_PLUGIN, self::REPO_PATH . '/themes/test-theme5/plugins/hello3.php' ),
+			array( $slug_prefix . 'plugin-hello4.php', VIPGOCI_ADDON_PLUGIN, self::REPO_PATH . '/hello4.php' ),
 		);
 	}
 
@@ -76,7 +71,7 @@ final class WpCoreMiscDetermineLocalSlugTest extends TestCase {
 		string $input_full_path,
 	): void {
 		$input_relative_path = str_replace(
-			$this->repo_path . '/',
+			self::REPO_PATH . '/',
 			'',
 			$input_full_path
 		);

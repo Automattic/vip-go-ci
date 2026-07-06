@@ -402,7 +402,7 @@ Note that the above file(s) were not analyzed due to their length.';
 	 *
 	 * @return array[]
 	 */
-	public function vipgociVerifySkipFileMessageDuplicationWillReturnOfCommentsOreIssuesResultsAreZeroProvider(): array {
+	public static function vipgociVerifySkipFileMessageDuplicationWillReturnOfCommentsOreIssuesResultsAreZeroProvider(): array {
 		return array(
 			array(
 				array(
@@ -568,7 +568,7 @@ Note that the above file(s) were not analyzed due to their length.';
 	 *
 	 * @return string[][]
 	 */
-	public function getLargeFilesMessageFromPRCommentShouldReturnEmptyForCommentsWithNoSkippedFilesProvider(): array {
+	public static function getLargeFilesMessageFromPRCommentShouldReturnEmptyForCommentsWithNoSkippedFilesProvider(): array {
 		// Needed, as define is needed before setUp() is called.
 		require_once __DIR__ . './../../defines.php';
 
