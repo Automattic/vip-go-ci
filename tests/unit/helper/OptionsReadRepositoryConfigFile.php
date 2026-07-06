@@ -18,6 +18,7 @@ declare(strict_types=1);
  * @param string $commit_id      Commit-ID.
  * @param string $file_name      File name.
  * @param string $local_git_repo Local git repository.
+ * @param bool   $reject_symlink Whether symbolic links should return false.
  *
  * @return string
  */
@@ -27,7 +28,8 @@ function vipgoci_gitrepo_fetch_committed_file(
 	string $github_token,
 	string $commit_id,
 	string $file_name,
-	string $local_git_repo
+	string $local_git_repo,
+	bool $reject_symlink = false
 ): string {
 	return "{\"lint-modified-files-only\":false}\n";
 }

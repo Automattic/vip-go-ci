@@ -63,7 +63,8 @@ function vipgoci_options_read_repo_file(
 		$options['token'],
 		$options['commit'],
 		$repo_options_file_name,
-		$options['local-git-repo']
+		$options['local-git-repo'],
+		true
 	);
 
 	if ( false === $repo_options_file_contents ) {
@@ -323,7 +324,8 @@ function vipgoci_options_read_repo_skip_files(
 				$options['token'],
 				$options['commit'],
 				$type_options_file_name,
-				$options['local-git-repo']
+				$options['local-git-repo'],
+				true
 			);
 
 		if ( empty(
