@@ -4,16 +4,11 @@ Releasing a new version of `vip-go-ci` entails a bit of preparation. Follow the 
 
 ## Creating a new version of vip-go-ci
 
-A few steps need to be completed to define a new version of `vip-go-ci` and have everything ready for a new release:
+To define a new version of `vip-go-ci`, trigger the [Create changelog PR](.github/workflows/create-changelog-pr.yml) GitHub Action.
 
- * Select a version number. Version numbers follow this pattern: `X.Y.Z`.
- * Commit the new version number to [defines.php](defines.php) into a branch named `add-changelog-X-Y-Z` where `X`, `Y` and `Z` form the version number.
- * Open up a [new pull request](https://github.com/Automattic/vip-go-ci/compare) in the code repository. This pull request should be used to update the version number in `defines.php` and to append to the [changelog](CHANGELOG.md).
-   * Use the TODO list template that is automatically provided in the pull request (defined [here](https://github.com/Automattic/vip-go-ci/blob/trunk/.github/PULL_REQUEST_TEMPLATE)). Use the section of the template intended for use as a changelog pull request. An example pull request can be found [here](https://github.com/Automattic/vip-go-ci/pull/312/).
-   * Assign a milestone to the newly created pull request that matches the version number selected.
-   * Use the new pull request to add items to the [CHANGELOG.md](https://github.com/Automattic/vip-go-ci/blob/trunk/CHANGELOG.md) file.
-   * Avoid altering any functionality in this pull request.
- * Assign the newly formed milestone to any pull requests intended to be part of the release.
+The workflow creates a release-preparation pull request. Choose `patch`, `minor`, or `major` when running the workflow; it calculates the next version number, updates [defines.php](defines.php), adds a new [CHANGELOG.md](CHANGELOG.md) section, creates the `add-changelog-X-Y-Z` branch, opens the pull request, and assigns the matching milestone.
+
+Use the created pull request to add changelog entries. Avoid altering any functionality in this pull request. Assign the release milestone to any other pull requests intended to be part of the release.
 
 ## Testing the new version
 
