@@ -58,7 +58,7 @@ If you have a feature request, please read the [file on contributing](CONTRIBUTI
 
 ### System requirements
 
-* `vip-go-ci` requires PHP 8.0, PHP 8.1 or PHP 8.2. PHP 8.2 is recommended.
+* `vip-go-ci` requires PHP 8.2 or later. PHP 8.2, PHP 8.3, and PHP 8.4 are currently tested.
   * Required PHP add-ons include: `curl` and `xml`. Also, PCNTL should be enabled.
   * The PHP-based utlities — PHPCS, SVG scanner and PHP Lint — can be run using different PHP versions than `vip-go-ci` itself. See individual sections below on this. 
     * These utilities have their own requirements.
@@ -122,11 +122,11 @@ While running, `vip-go-ci` will output log of its actions. Here is an example --
         "autoapprove-filetypes": [ "css", "txt", "pdf ],
         "lint-php-versions": [
             "7.4",
-            "8.1"
+            "8.2"
         ],
         "lint-php-version-paths": {
             "7.4": "\/usr\/bin\/php7.4",
-            "8.1": "\/usr\/bin\/php8.1"
+            "8.2": "\/usr\/bin\/php8.2"
         },
         "debug-level": 0,
         "dry-run": false
@@ -339,7 +339,7 @@ By default, `vip-go-ci` will PHP lint any files modified by the current pull req
 
 `vip-go-ci` can lint PHP files using one or more PHP versions during the same run. These must be specified using the `--lint-php-version-paths` and `--lint-php-versions` options. 
 
-The `--lint-php-version-paths` option should specify all PHP versions that may be used and a PHP interpreter path. For example: `--lint-php-version-paths=7.4:/usr/bin/php7.4,8.1:/usr/bin/php8.1`. `--lint-php-versions` should specify the PHP versions to lint with during the run: `--lint-php-versions=7.4`.
+The `--lint-php-version-paths` option should specify all PHP versions that may be used and a PHP interpreter path. For example: `--lint-php-version-paths=7.4:/usr/bin/php7.4,8.2:/usr/bin/php8.2`. `--lint-php-versions` should specify the PHP versions to lint with during the run: `--lint-php-versions=7.4`.
 
 The following PHP linting related options can be configured via repository config-file or normal options:
 
@@ -717,5 +717,4 @@ Documentation on what steps to follow when releasing a new version of `vip-go-ci
 ## Updating tools-init.sh with new versions
 
 For information on how to update `tools-init.sh`, see the [TOOLS-UPDATE.md](TOOLS-UPDATE.md) file.
-
 

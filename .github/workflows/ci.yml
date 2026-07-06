@@ -99,7 +99,7 @@ jobs:
         env:
           GH_TESTS_TOKEN: ${{ secrets.GH_TESTS_TOKEN }}
         run: |
-          sed "s:/home/phpunit/:${HOME}/:; s:phpcs-php-path=.*:phpcs-php-path=/usr/bin/php7.4:g; s:svg-php-path=.*:svg-php-path=/usr/bin/php8.2:g; s:github-repo-url=.*:github-repo-url=${HOME}/vip-go-ci-tools/vip-go-ci-testing:g;" tests/config.ini.dist > tests/config.ini
+          sed "s:/home/phpunit/:${HOME}/:; s:phpcs-php-path=.*:phpcs-php-path=/usr/bin/php7.4:g; s:lint-php2-path=.*:lint-php2-path=/usr/bin/php8.2:g; s:lint-php2-version=.*:lint-php2-version=8.2:g; s:svg-php-path=.*:svg-php-path=/usr/bin/php8.2:g; s:github-repo-url=.*:github-repo-url=${HOME}/vip-go-ci-tools/vip-go-ci-testing:g;" tests/config.ini.dist > tests/config.ini
           rm -f tests/config.ini.dist
           echo '[git-secrets]' > tests/config-secrets.ini
           echo "github-token=$GH_TESTS_TOKEN" >> tests/config-secrets.ini
