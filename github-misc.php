@@ -351,7 +351,7 @@ function vipgoci_github_files_affected_by_commit(
 	bool $renamed_files_also = false,
 	bool $removed_files_also = true,
 	bool $permission_changes_also = false,
-	array $filter = null,
+	null|array $filter = null,
 	bool $always_define_pr_number = true
 ) :array {
 	vipgoci_log(

@@ -16,6 +16,7 @@ declare(strict_types=1);
  * @param string $commit         Commit-ID.
  * @param string $filename       Name of file.
  * @param string $local_git_repo Local git repository.
+ * @param bool   $reject_symlink Whether symbolic links should return false.
  */
 function vipgoci_gitrepo_fetch_committed_file(
 	string $repo_owner,
@@ -23,7 +24,8 @@ function vipgoci_gitrepo_fetch_committed_file(
 	string $token,
 	string $commit,
 	string $filename,
-	string $local_git_repo
+	string $local_git_repo,
+	bool $reject_symlink = false
 ) :string {
 	return 'data';
 }
@@ -47,5 +49,4 @@ function vipgoci_report_submit_scanning_files_failed(
 	string $msg_end
 ) :void {
 }
-
 

@@ -48,8 +48,8 @@ commit-test-lint-scan-commit-3=dd60c66a7c1e27fc78c400f0c5160c9a80c4bd49
 commit-test-lint-scan-commit-4=84985c25706e83dada8c40061e6f1496cfe3c522
 lint-php1-path=/usr/bin/php7.4
 lint-php1-version=7.4
-lint-php2-path=/usr/bin/php8.1
-lint-php2-version=8.1
+lint-php2-path=/usr/bin/php8.2
+lint-php2-version=8.2
 
 ; For WPScan API tests. Plugin/theme known to API.
 [wpscan-api-scan]
@@ -167,4 +167,3 @@ commit-test-options-read-repo-file-with-file-5=9a13bbec0cc2c7557539076f0125cc396
 [results]
 pr-number-1=57
 commit-test-results-remove-existing-1=34ec039ca344336ad93abfbca2e9c313c11e28dd
-

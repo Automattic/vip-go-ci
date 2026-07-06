@@ -125,4 +125,88 @@ final class GitRepoRepoFetchCommittedFileTest extends TestCase {
 			$ret
 		);
 	}
+
+	/**
+	 * @covers ::vipgoci_gitrepo_fetch_committed_file
+	 */
+	public function testRepoFetchTreeRejectSymlink() {
+		$options_test = vipgoci_unittests_options_test(
+			$this->options,
+			array( 'github-token', 'token' ),
+			$this
+		);
+
+		if ( -1 === $options_test ) {
+			return;
+		}
+
+		$this->options['commit'] =
+			$this->options['commit-test-repo-fetch-committed-file-1'];
+
+		vipgoci_unittests_output_suppress();
+
+		$this->options['local-git-repo'] =
+			vipgoci_unittests_setup_git_repo(
+				$this->options
+			);
+
+		if ( false === $this->options['local-git-repo'] ) {
+			$this->markTestSkipped(
+				'Could not set up git repository: ' .
+					vipgoci_unittests_output_get()
+			);
+		}
+
+		if ( empty( $this->options['github-token'] ) ) {
+			$this->options['github-token'] = '';
+		}
+
+		$this->options['token'] =
+			$this->options['github-token'];
+
+		$symlinked_file_name = 'symlinked-file.txt';
+		$symlinked_file_path =
+			$this->options['local-git-repo'] . '/' . $symlinked_file_name;
+
+		if ( false === symlink(
+			'file-1.txt',
+			$symlinked_file_path
+		) ) {
+			vipgoci_unittests_output_unsuppress();
+
+			$this->markTestSkipped(
+				'Could not create symlink for test'
+			);
+		}
+
+		$ret_without_reject_symlink = vipgoci_gitrepo_fetch_committed_file(
+			$this->options['repo-owner'],
+			$this->options['repo-name'],
+			$this->options['github-token'],
+			$this->options['commit-test-repo-fetch-committed-file-1'],
+			$symlinked_file_name,
+			$this->options['local-git-repo']
+		);
+
+		$ret_with_reject_symlink = vipgoci_gitrepo_fetch_committed_file(
+			$this->options['repo-owner'],
+			$this->options['repo-name'],
+			$this->options['github-token'],
+			$this->options['commit-test-repo-fetch-committed-file-1'],
+			$symlinked_file_name,
+			$this->options['local-git-repo'],
+			true
+		);
+
+		vipgoci_unittests_output_unsuppress();
+
+		$this->assertSame(
+			'Test file contents. Some text.' . PHP_EOL,
+			$ret_without_reject_symlink
+		);
+
+		$this->assertFalse(
+			$ret_with_reject_symlink
+		);
+	}
 }

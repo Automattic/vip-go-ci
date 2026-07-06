@@ -77,7 +77,7 @@ function vipgoci_help_print() :void {
 		"\t" . '--lint=BOOL                    Whether to do PHP linting. Default is true.' . PHP_EOL .
 		"\t" . '--lint-php-version-paths=ARRAY Array of paths to different PHP interpreter versions, comma' . PHP_EOL .
 		"\t" . '                               separated. Version and path separated by colon. Used for linting.' . PHP_EOL .
-		"\t" . '                               E.g.: --lint-php-version-paths=7.4:/usr/bin/php7.4,8.1:/usr/bin/php8.1' . PHP_EOL .
+		"\t" . '                               E.g.: --lint-php-version-paths=7.4:/usr/bin/php7.4,8.2:/usr/bin/php8.2' . PHP_EOL .
 		"\t" . '--lint-php-versions=ARRAY      Array of PHP versions to lint with during run. Comma separated values.' . PHP_EOL .
 		"\t" . '--lint-modified-files-only=BOOL   Whether to limit lint scan to run against only modified or new' . PHP_EOL .
 		"\t" . '                               files in the PR to be scanned. Default is true. It can be ' . PHP_EOL .
@@ -3460,4 +3460,3 @@ function vipgoci_shutdown_function(
 		'Final exit'
 	);
 }
-

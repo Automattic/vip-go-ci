@@ -425,6 +425,7 @@ function vipgoci_gitrepo_fetch_tree(
  * @param string $commit_id      Current commit-ID.
  * @param string $file_name      File name whose content to fetch.
  * @param string $local_git_repo Path to local git repository.
+ * @param bool   $reject_symlink Whether symbolic links should return false.
  *
  * @return false|string String with file contents on success, false on failure.
  */
@@ -434,7 +435,8 @@ function vipgoci_gitrepo_fetch_committed_file(
 	string $github_token,
 	string $commit_id,
 	string $file_name,
-	string $local_git_repo
+	string $local_git_repo,
+	bool $reject_symlink = false
 ) :false|string {
 	vipgoci_gitrepo_ok(
 		$commit_id,
@@ -449,6 +451,7 @@ function vipgoci_gitrepo_fetch_committed_file(
 			'commit_id'      => $commit_id,
 			'filename'       => $file_name,
 			'local_git_repo' => $local_git_repo,
+			'reject_symlink' => $reject_symlink,
 		)
 	);
 
@@ -457,8 +460,28 @@ function vipgoci_gitrepo_fetch_committed_file(
 	 */
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'git_repo_fetch_file' );
 
+	$file_path = $local_git_repo . '/' . $file_name;
+
+	if (
+		( true === $reject_symlink ) &&
+		( is_link( $file_path ) )
+	) {
+		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'git_repo_fetch_file' );
+
+		vipgoci_log(
+			'Not fetching committed file because it is a symbolic link',
+			array(
+				'commit_id' => $commit_id,
+				'filename'  => $file_name,
+				'file_path' => $file_path,
+			)
+		);
+
+		return false;
+	}
+
 	$file_contents_tmp = @file_get_contents( // phpcs:ignore WordPress.PHP.NoSilencedErrors
-		$local_git_repo . '/' . $file_name
+		$file_path
 	);
 
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'git_repo_fetch_file' );
