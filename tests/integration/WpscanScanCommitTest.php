@@ -140,7 +140,7 @@ final class WpscanScanCommitTest extends TestCase {
 	 * @return void
 	 */
 	protected function tearDown(): void {
-		if ( false !== $this->options['local-git-repo'] ) {
+		if ( ! empty( $this->options['local-git-repo'] ) ) {
 			vipgoci_unittests_remove_git_repo(
 				$this->options['local-git-repo']
 			);
@@ -395,4 +395,3 @@ final class WpscanScanCommitTest extends TestCase {
 		);
 	}
 }
-
