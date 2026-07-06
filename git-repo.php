@@ -473,6 +473,7 @@ function vipgoci_gitrepo_fetch_committed_file(
 			array(
 				'commit_id' => $commit_id,
 				'filename'  => $file_name,
+				'file_path' => $file_path,
 			)
 		);
 
