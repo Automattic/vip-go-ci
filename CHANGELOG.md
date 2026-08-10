@@ -4,7 +4,14 @@ All notable changes to this project will be documented in this file.
 
 ## [1.3.15](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.15) - 2026-08-10
 
-- TODO: Add release changes.
+### Fixed
+
+- [#385](https://github.com/Automattic/vip-go-ci/pull/385): Run PHPCS in quiet mode to prevent non-report output from breaking result parsing.
+- [#401](https://github.com/Automattic/vip-go-ci/pull/401): Update WordPress Coding Standards to 3.4.1 to address [GHSA-3pwp-g2mj-5p3v / CVE-2026-45293](https://github.com/WordPress/WordPress-Coding-Standards/security/advisories/GHSA-3pwp-g2mj-5p3v).
+
+### Updated
+
+- [#401](https://github.com/Automattic/vip-go-ci/pull/401): Upgrade PHPCS to 3.13.5, VIP Coding Standards to 3.1.0, PHPCSUtils to 1.2.3, PHPCSExtra to 1.5.1, and VariableAnalysis to 2.13.0, as required by the updated coding standards.
 
 ## [1.3.14](https://github.com/Automattic/vip-go-ci/releases/tag/1.3.14) - 2026-07-06
 - [397](https://github.com/Automattic/vip-go-ci/pull/397): Reject symlinked .vipgoci_* config files
