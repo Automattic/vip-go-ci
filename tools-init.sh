@@ -10,27 +10,27 @@ set -e
 
 # https://github.com/PHPCSStandards/PHP_CodeSniffer
 export PHP_CODESNIFFER_REPO="PHPCSStandards/PHP_CodeSniffer"
-export PHP_CODESNIFFER_VER="3.10.1"
+export PHP_CODESNIFFER_VER="3.13.5"
 export PHP_CODESNIFFER_VER_FILE="php-codesniffer-$PHP_CODESNIFFER_VER.txt"
-export PHP_CODESNIFFER_SHA1SUM="b8aca4578b3afbc3fb9162a59fa075b209e2c611"
+export PHP_CODESNIFFER_SHA1SUM="76032cc4d7444b7c402a9edf6c1f8a131cadcaea"
 
 # https://github.com/WordPress/WordPress-Coding-Standards
 export WP_CODING_STANDARDS_REPO="WordPress/WordPress-Coding-Standards"
-export WP_CODING_STANDARDS_VER="3.1.0"
+export WP_CODING_STANDARDS_VER="3.4.1"
 export WP_CODING_STANDARDS_VER_FILE="wp-coding-standards-$WP_CODING_STANDARDS_VER.txt"
-export WP_CODING_STANDARDS_SHA1SUM="e499d90ab2ca6d60b119049b9410c351780d2ebd"
+export WP_CODING_STANDARDS_SHA1SUM="9bb8851c71e9f42a482d0f08cb167e6dafd200a5"
 
 # https://github.com/automattic/vip-coding-standards
 export VIP_CODING_STANDARDS_REPO="automattic/vip-coding-standards"
-export VIP_CODING_STANDARDS_VER="3.0.1"
+export VIP_CODING_STANDARDS_VER="3.1.0"
 export VIP_CODING_STANDARDS_VER_FILE="vip-coding-standards-$VIP_CODING_STANDARDS_VER.txt"
-export VIP_CODING_STANDARDS_SHA1SUM="73f113f13b8747aeed8f93a827e34fd4125c3b81"
+export VIP_CODING_STANDARDS_SHA1SUM="e4672987c3c548a2fc321be5fcc43f428ba7f15a"
 
 # https://github.com/sirbrillig/phpcs-variable-analysis
 export PHPCS_VARIABLE_ANALYSIS_REPO="sirbrillig/phpcs-variable-analysis"
-export PHPCS_VARIABLE_ANALYSIS_VER="v2.11.18"
+export PHPCS_VARIABLE_ANALYSIS_VER="v2.13.0"
 export PHPCS_VARIABLE_ANALYSIS_VER_FILE="phpcs-variable-analysis-$PHPCS_VARIABLE_ANALYSIS_VER.txt"
-export PHPCS_VARIABLE_ANALYSIS_SHA1SUM="f54bd764751ceabc89b377730638ffd871f74f1a"
+export PHPCS_VARIABLE_ANALYSIS_SHA1SUM="b8aa7beedaf112dd5c47c5b14826b3d027023c4f"
 
 # https://github.com/phpcompatibility/phpcompatibility
 export PHP_COMPATIBILITY_REPO="phpcompatibility/phpcompatibility"
@@ -52,15 +52,15 @@ export PHP_COMPATIBILITY_PARAGONIE_SHA1SUM="ce612de4aa56e6184570c69d5cabf56c29e9
 
 # https://github.com/PHPCSStandards/PHPCSUtils
 export PHPCS_UTILS_REPO="PHPCSStandards/PHPCSUtils"
-export PHPCS_UTILS_VER="1.0.12"
+export PHPCS_UTILS_VER="1.2.3"
 export PHPCS_UTILS_VER_FILE="phpcs-utils-$PHPCS_UTILS_VER.txt"
-export PHPCS_UTILS_SHA1SUM="3877b9c263dee2b490520c58b98ad8c407d810b3"
+export PHPCS_UTILS_SHA1SUM="e2a3af36f7362b4e0d5bba3eca6720bc4c750ca4"
 
 # https://github.com/PHPCSStandards/PHPCSExtra
 export PHPCS_EXTRA_REPO="PHPCSStandards/PHPCSExtra"
-export PHPCS_EXTRA_VER="1.2.1"
+export PHPCS_EXTRA_VER="1.5.1"
 export PHPCS_EXTRA_VER_FILE="phpcs-extra-$PHPCS_EXTRA_VER.txt"
-export PHPCS_EXTRA_SHA1SUM="76cda4f26f099e588ba531bf41ac173b7ad02e17"
+export PHPCS_EXTRA_SHA1SUM="e66c888a65f689dd21e2fc82dcf4749cb9db287b"
 
 # https://github.com/Automattic/vip-go-svg-sanitizer
 export VIP_GO_SVG_SANITIZER_REPO="Automattic/vip-go-svg-sanitizer"
@@ -216,7 +216,7 @@ if [ -d ~/vip-go-ci-tools ] ; then
 	export TMP_DO_DELETE="0"
 
 
-	for TMP_FILE in	"$PHP_CODESNIFFER_VER_FILE" "$WP_CODING_STANDARDS_VER_FILE" "$VIP_CODING_STANDARDS_VER_FILE" "$PHPCS_VARIABLE_ANALYSIS_VER_FILE" "$PHP_COMPATIBILITY_VER_FILE" "$PHP_COMPATIBILITY_WP_VER_FILE" "$PHP_COMPATIBILITY_PARAGONIE_VER_FILE" "$PHPCS_UTILS_VER_FILE" "$VIP_GO_SVG_SANITIZER_VER_FILE" "vip-go-ci-$VIP_GO_CI_VER.txt"; do
+	for TMP_FILE in	"$PHP_CODESNIFFER_VER_FILE" "$WP_CODING_STANDARDS_VER_FILE" "$VIP_CODING_STANDARDS_VER_FILE" "$PHPCS_VARIABLE_ANALYSIS_VER_FILE" "$PHP_COMPATIBILITY_VER_FILE" "$PHP_COMPATIBILITY_WP_VER_FILE" "$PHP_COMPATIBILITY_PARAGONIE_VER_FILE" "$PHPCS_UTILS_VER_FILE" "$PHPCS_EXTRA_VER_FILE" "$VIP_GO_SVG_SANITIZER_VER_FILE" "vip-go-ci-$VIP_GO_CI_VER.txt"; do
 		if [ ! -f ~/vip-go-ci-tools/$TMP_FILE ] ; then
 			export TMP_DO_DELETE="1"
 		fi
