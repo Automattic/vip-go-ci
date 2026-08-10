@@ -1207,7 +1207,7 @@ final class PhpcsScanScanCommitTest extends TestCase {
 					'file_line' => 3,
 					'issue' =>
 						array (
-							'message' => 'Detected usage of a possibly undefined superglobal array index: $_POST[\'phpcs should catch this problem\']. Use isset() or empty() to check the index exists before using it',
+							'message' => 'Detected usage of a possibly undefined superglobal array index: $_POST[\'phpcs should catch this problem\']. Check that the array index exists before using it.',
 							'source' => 'WordPress.Security.ValidatedSanitizedInput.InputNotValidated',
 							'severity' => 5,
 							'fixable' => false,
