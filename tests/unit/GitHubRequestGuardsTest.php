@@ -166,6 +166,66 @@ final class GitHubRequestGuardsTest extends TestCase {
 	}
 
 	/**
+	 * Pagination must select distinct fixtures and cache the combined result.
+	 *
+	 * @return void
+	 */
+	public function testPaginatedCommitsUseQuerySpecificFixtures(): void {
+		$first_page = array();
+		for ( $i = 1; $i <= 100; $i++ ) {
+			$first_page[] = array( 'sha' => 'commit-' . $i );
+		}
+
+		$GLOBALS['vipgoci_test_http_responses']['GET /repos/owner/repo/pulls/42/commits?page=1&per_page=100'] = $first_page;
+		$GLOBALS['vipgoci_test_http_responses']['GET /repos/owner/repo/pulls/42/commits?page=2&per_page=100'] = array( array( 'sha' => 'last-commit' ) );
+
+		$commits = vipgoci_github_prs_commits_list( 'owner', 'repo', 42, 'test-token' );
+
+		$this->assertCount( 101, $commits );
+		$this->assertSame( 'commit-1', $commits[0] );
+		$this->assertSame( 'commit-100', $commits[99] );
+		$this->assertSame( 'last-commit', $commits[100] );
+		$this->assertSame( $commits, vipgoci_github_prs_commits_list( 'owner', 'repo', 42, 'test-token' ) );
+		$this->assertRequests( array( 'GET /repos/owner/repo/pulls/42/commits', 'GET /repos/owner/repo/pulls/42/commits' ) );
+		$this->assertSame(
+			array(
+				'https://api.github.com/repos/owner/repo/pulls/42/commits?page=1&per_page=100',
+				'https://api.github.com/repos/owner/repo/pulls/42/commits?page=2&per_page=100',
+			),
+			array_column( $GLOBALS['vipgoci_test_http_requests'], 'url' )
+		);
+	}
+
+	/**
+	 * An explicit transport failure must override a successful path-only fixture.
+	 *
+	 * @return void
+	 */
+	public function testQuerySpecificGetFailureOverridesFallbackFixture(): void {
+		$GLOBALS['vipgoci_test_http_responses']['GET /repos/owner/repo/pulls/42/commits?page=2&per_page=100'] = null;
+
+		$response = vipgoci_http_api_fetch_url(
+			'https://api.github.com/repos/owner/repo/pulls/42/commits?page=2&per_page=100',
+			'test-token',
+			false
+		);
+
+		$this->assertNull( $response );
+		$this->assertRequests( array( 'GET /repos/owner/repo/pulls/42/commits' ) );
+	}
+
+	/**
+	 * The real deletion call must preserve its HTTP DELETE flag at the boundary.
+	 *
+	 * @return void
+	 */
+	public function testCommentDeletionUsesDeleteMethod(): void {
+		vipgoci_github_pr_reviews_comments_delete( $this->options, '10' );
+
+		$this->assertRequests( array( 'DELETE /repos/owner/repo/pulls/comments/10' ) );
+	}
+
+	/**
 	 * Empty PRs must not fetch history even when dismissed comments can be reposted.
 	 *
 	 * @return void
@@ -441,6 +501,31 @@ final class GitHubRequestGuardsTest extends TestCase {
 		$this->assertSame(
 			':no_entry_sign: **Error**: Escape output (*WordPress.Security.EscapeOutput.OutputNotEscaped*).',
 			$body['comments'][0]['body']
+		);
+	}
+
+	/**
+	 * The production failure branch must receive an integer, not JSON text "-1".
+	 *
+	 * @return void
+	 */
+	public function testFailedReviewSubmissionReportsFailure(): void {
+		$results                                = $this->emptyResults();
+		$results['issues'][42]                  = array( $this->issue() );
+		$results['stats']['phpcs'][42]['error'] = 1;
+		$GLOBALS['vipgoci_test_http_responses']['POST /repos/owner/repo/pulls/42/reviews'] = -1;
+
+		$this->submitReport( $results );
+
+		$this->assertRequests(
+			array(
+				'POST /repos/owner/repo/pulls/42/reviews',
+				'POST /repos/owner/repo/issues/42/comments',
+			)
+		);
+		$this->assertStringContainsString(
+			'commit-ID: abc',
+			$GLOBALS['vipgoci_test_http_requests'][1]['body']['body']
 		);
 	}
 
