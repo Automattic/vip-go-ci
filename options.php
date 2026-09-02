@@ -1009,26 +1009,18 @@ function vipgoci_option_teams_handle(
 		$options[ $option_name ]
 	);
 
-	$teams_info = vipgoci_github_org_teams_get(
-		$options['token'],
-		$options['repo-owner'],
-		null,
-		'slug'
-	);
-
 	foreach (
 		$options[ $option_name ] as $team_slug_key => $team_slug_value
 	) {
 		$team_slug_value_original = $team_slug_value;
 
-		/*
-		 * If the team slug provided by user is valid,
-		 * it should be in list of slugs returned by API.
-		 * Ensure this is the case.
-		 */
-		if ( ! empty( $teams_info[ $team_slug_value ] ) ) {
-			$team_slug_value = $teams_info[ $team_slug_value ][0]->slug;
-		} else {
+		$team_info = vipgoci_github_org_team_get(
+			$options['token'],
+			$options['repo-owner'],
+			$team_slug_value
+		);
+
+		if ( empty( $team_info ) ) {
 			/*
 			 * Something failed; slug may have been invalid so
 			 * remove it from the options array.
@@ -1063,7 +1055,7 @@ function vipgoci_option_teams_handle(
 		),
 	);
 
-	unset( $teams_info );
+	unset( $team_info );
 	unset( $team_slug_key );
 	unset( $team_slug_value );
 	unset( $team_slug_value_original );

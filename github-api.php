@@ -2279,6 +2279,64 @@ function vipgoci_github_team_members_many_get(
 
 
 /**
+ * Get one organization team by slug, without enumerating all teams.
+ *
+ * Cache both valid teams and missing/invalid responses for this run.
+ * Transport failures retain the HTTP helper's fatal-error policy.
+ *
+ * @param string $github_token GitHub token to use to make GitHub API requests.
+ * @param string $org_slug     Organization slug.
+ * @param string $team_slug    Team slug to look up.
+ *
+ * @return array Team information, or an empty array if no matching team is returned.
+ */
+function vipgoci_github_org_team_get(
+	string $github_token,
+	string $org_slug,
+	string $team_slug
+): array {
+	if ( '' === $team_slug ) {
+		return array();
+	}
+
+	$cached_id = array( __FUNCTION__, $github_token, $org_slug, $team_slug );
+	$team_info = vipgoci_cache( $cached_id );
+
+	vipgoci_log(
+		'Getting organization team from GitHub API' . vipgoci_cached_indication_str( $team_info ),
+		array(
+			'org_slug'  => $org_slug,
+			'team_slug' => $team_slug,
+		)
+	);
+
+	if ( false !== $team_info ) {
+		return $team_info;
+	}
+
+	$github_url = VIPGOCI_GITHUB_BASE_URL . '/orgs/' .
+		rawurlencode( $org_slug ) . '/teams/' . rawurlencode( $team_slug );
+
+	$team_info = json_decode(
+		vipgoci_http_api_fetch_url( $github_url, $github_token ),
+		true
+	);
+
+	// Error responses and renamed/nonmatching teams must not validate the option.
+	if (
+		( ! is_array( $team_info ) ) ||
+		( ! isset( $team_info['slug'] ) ) ||
+		( $team_slug !== $team_info['slug'] )
+	) {
+		$team_info = array();
+	}
+
+	vipgoci_cache( $cached_id, $team_info );
+
+	return $team_info;
+}
+
+/**
  * Get organization teams available to the calling
  * user from the GitHub API.
  *
