@@ -1149,9 +1149,11 @@ function vipgoci_gitrepo_diffs_fetch_metadata(
 			'git_cli',
 			true
 		);
-		if ( null !== $textconv ) {
-			vipgoci_cache( $textconv_cache_id, $textconv );
+		if ( null === $textconv ) {
+			// Configuration is unknown: report failure instead of building patches.
+			return null;
 		}
+		vipgoci_cache( $textconv_cache_id, $textconv );
 	}
 	if ( '' !== $textconv ) {
 		return vipgoci_gitrepo_diffs_fetch_unfiltered( $local_git_repo, $commit_id_a, $commit_id_b );

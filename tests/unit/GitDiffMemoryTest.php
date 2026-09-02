@@ -303,6 +303,42 @@ final class GitDiffMemoryTest extends TestCase {
 		$this->assertSame( VIPGOCI_GIT_DIFF_DATA_SOURCE_GIT_REPO, $filtered['data_source'] );
 	}
 
+	/** A failed textconv probe must not build patches or poison a later retry. */
+	public function testMetadataTextconvProbeFailureDoesNotFetchPatches(): void {
+		$base = $this->commit();
+		$this->write( 'file.php', "new\n" );
+		$head = $this->commit();
+
+		$real_git = trim( (string) shell_exec( 'command -v git' ) );
+		$this->assertNotSame( '', $real_git );
+		$shim = <<<'SH'
+#!/bin/sh
+if [ "$3" = config ] && [ "$4" = --get-regexp ]; then
+	exit 128
+fi
+SH;
+		$this->write( 'test-bin/git', $shim . "\nexec " . escapeshellarg( $real_git ) . ' "$@"' . "\n" );
+		chmod( $this->repo . '/test-bin/git', 0755 );
+		$original_path = getenv( 'PATH' );
+		try {
+			// Fail only the config probe; an accidental patch fetch still runs Git.
+			putenv( 'PATH=' . $this->repo . '/test-bin:' . $original_path );
+			$result = vipgoci_gitrepo_diffs_fetch_metadata( $this->repo, $base, $head );
+		} finally {
+			putenv( false === $original_path ? 'PATH' : 'PATH=' . $original_path );
+		}
+
+		$this->assertNull( $result );
+		$this->assertFalse( vipgoci_cache( array( 'vipgoci_gitrepo_diffs_fetch_unfiltered', $this->repo, $base, $head ) ) );
+		$this->assertFalse( vipgoci_cache( array( 'vipgoci_gitrepo_diffs_fetch_metadata', 'textconv', $this->repo ) ) );
+
+		// The same comparison can recover once the config probe succeeds.
+		$result = vipgoci_gitrepo_diffs_fetch_metadata( $this->repo, $base, $head );
+		$this->assertSame( array( 'file.php' ), array_keys( $result['files'] ) );
+		$this->assertSame( 1, $result['files']['file.php']['changes'] );
+		$this->assertFalse( vipgoci_cache( array( 'vipgoci_gitrepo_diffs_fetch_unfiltered', $this->repo, $base, $head ) ) );
+	}
+
 	/** Numstat ignores textconv; configured drivers must keep legacy scanning. */
 	public function testMetadataPreservesTextconvChangesUsingLocalFallback(): void {
 		$this->git( 'config diff.fixture.textconv cat' );
