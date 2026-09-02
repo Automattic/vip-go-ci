@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Vipgoci\Tests\Unit;
 
 use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\PreserveGlobalState;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
@@ -20,9 +21,12 @@ use PHPUnit\Framework\TestCase;
 #[RunTestsInSeparateProcesses]
 #[PreserveGlobalState( false )]
 #[CoversFunction( 'vipgoci_results_remove_existing_github_comments' )]
+#[CoversFunction( 'vipgoci_github_pr_reviews_comments_get' )]
 #[CoversFunction( 'vipgoci_results_filter_comments_to_max' )]
 #[CoversFunction( 'vipgoci_github_pr_reviews_dismiss_with_non_active_comments' )]
 #[CoversFunction( 'vipgoci_report_submit_pr_review_from_results' )]
+#[CoversFunction( 'vipgoci_option_teams_handle' )]
+#[CoversFunction( 'vipgoci_github_org_team_get' )]
 final class GitHubRequestGuardsTest extends TestCase {
 	/**
 	 * Options for the fixture repository.
@@ -53,6 +57,8 @@ final class GitHubRequestGuardsTest extends TestCase {
 		require_once __DIR__ . '/../../output-security.php';
 		require_once __DIR__ . '/../../other-web-services.php';
 		require_once __DIR__ . '/../../log.php';
+		require_once __DIR__ . '/../../options.php';
+		require_once __DIR__ . '/../../misc.php';
 		require_once __DIR__ . '/helper/GitHubRequestGuards.php';
 
 		$GLOBALS['vipgoci_debug_level']         = -1;
@@ -166,6 +172,171 @@ final class GitHubRequestGuardsTest extends TestCase {
 	}
 
 	/**
+	 * Return a team response with the fields supplied by the list endpoint.
+	 *
+	 * @param string $slug Team slug.
+	 *
+	 * @return array Team fixture.
+	 */
+	private function team( string $slug = 'reviewers' ): array {
+		return array(
+			'id'                   => 1,
+			'node_id'              => 'MDQ6VGVhbTE=',
+			'url'                  => 'https://api.github.com/teams/1',
+			'html_url'             => 'https://github.com/orgs/owner/teams/' . $slug,
+			'name'                 => 'Reviewers',
+			'slug'                 => $slug,
+			'description'          => 'Review team.',
+			'privacy'              => 'closed',
+			'notification_setting' => 'notifications_enabled',
+			'permission'           => 'pull',
+			'members_url'          => 'https://api.github.com/teams/1/members{/member}',
+			'repositories_url'     => 'https://api.github.com/teams/1/repos',
+			'parent'               => null,
+		);
+	}
+
+	/**
+	 * Validation must request only unique configured slugs and reuse cached results.
+	 *
+	 * @return void
+	 */
+	public function testTeamValidationFetchesOnlyConfiguredTeams(): void {
+		$GLOBALS['vipgoci_test_http_responses']['GET /orgs/owner/teams']             = array( $this->team(), $this->team( 'maintainers' ) );
+		$GLOBALS['vipgoci_test_http_responses']['GET /orgs/owner/teams/reviewers']   = $this->team();
+		$GLOBALS['vipgoci_test_http_responses']['GET /orgs/owner/teams/maintainers'] = $this->team( 'maintainers' );
+		$GLOBALS['vipgoci_test_http_responses']['GET /orgs/owner/teams/missing']     = array(
+			'message' => 'Not Found',
+			'status'  => '404',
+		);
+		$this->options['teams'] = array( ' Reviewers ', 'missing', 'reviewers', 'maintainers', 'missing', '' );
+
+		vipgoci_option_teams_handle( $this->options, 'teams' );
+
+		$this->assertSame( array( 'reviewers', 'maintainers' ), $this->options['teams'] );
+		vipgoci_option_teams_handle( $this->options, 'teams' );
+		$this->assertSame( array( 'reviewers', 'maintainers' ), $this->options['teams'] );
+		$this->assertRequests(
+			array( 'GET /orgs/owner/teams/reviewers', 'GET /orgs/owner/teams/missing', 'GET /orgs/owner/teams/maintainers' )
+		);
+	}
+
+	/**
+	 * Empty, absent and non-array options must not enumerate teams.
+	 *
+	 * @return void
+	 */
+	public function testEmptyTeamOptionsMakeNoRequests(): void {
+		vipgoci_option_teams_handle( $this->options, 'teams' );
+		$this->assertSame( array(), $this->options['teams'] );
+		foreach ( array( array(), 'reviewers', array( ' ', '' ) ) as $input ) {
+			$this->options['teams'] = $input;
+			vipgoci_option_teams_handle( $this->options, 'teams' );
+			$this->assertSame( array(), $this->options['teams'] );
+		}
+		$this->assertRequests( array() );
+	}
+
+	/**
+	 * Cached team visibility must not leak across organizations or credentials.
+	 *
+	 * @return void
+	 */
+	public function testTeamValidationCacheSeparatesOrganizationsAndTokens(): void {
+		$GLOBALS['vipgoci_test_http_responses']['GET /orgs/owner/teams']           = array( $this->team() );
+		$GLOBALS['vipgoci_test_http_responses']['GET /orgs/owner/teams/reviewers'] = $this->team();
+		$this->options['teams'] = array( 'reviewers' );
+		vipgoci_option_teams_handle( $this->options, 'teams' );
+		$this->assertSame( array( 'reviewers' ), $this->options['teams'] );
+
+		$GLOBALS['vipgoci_test_http_responses']['GET /orgs/owner/teams/reviewers'] = array(
+			'message' => 'Not Found',
+			'status'  => '404',
+		);
+		$this->options['token'] = 'other-token';
+		vipgoci_option_teams_handle( $this->options, 'teams' );
+		$this->assertSame( array(), $this->options['teams'] );
+
+		$GLOBALS['vipgoci_test_http_responses']['GET /orgs/other/teams/reviewers'] = $this->team();
+		$this->options['repo-owner'] = 'other';
+		$this->options['teams']      = array( 'reviewers' );
+		vipgoci_option_teams_handle( $this->options, 'teams' );
+		$this->assertSame( array( 'reviewers' ), $this->options['teams'] );
+		$this->assertRequests(
+			array( 'GET /orgs/owner/teams/reviewers', 'GET /orgs/owner/teams/reviewers', 'GET /orgs/other/teams/reviewers' )
+		);
+	}
+
+	/**
+	 * Responses that must not validate a configured team.
+	 *
+	 * @return array Invalid response fixtures.
+	 */
+	public static function invalidTeamResponses(): array {
+		return array(
+			'not found'       => array(
+				array(
+					'message' => 'Not Found',
+					'status'  => '404',
+				),
+			),
+			'empty response'  => array( array() ),
+			'scalar response' => array( 'invalid' ),
+			'non-string slug' => array( array( 'slug' => 123 ) ),
+			'different slug'  => array( array( 'slug' => 'another-team' ) ),
+		);
+	}
+
+	/**
+	 * Missing or malformed teams must be removed and their results cached.
+	 *
+	 * @param mixed $response API response.
+	 *
+	 * @return void
+	 */
+	#[DataProvider( 'invalidTeamResponses' )]
+	public function testInvalidTeamResponsesAreRemovedAndCached( mixed $response ): void {
+		$GLOBALS['vipgoci_test_http_responses']['GET /orgs/owner/teams/reviewers'] = $response;
+		foreach ( array( 1, 2 ) as $attempt ) {
+			$this->options['teams'] = array( 'reviewers' );
+			vipgoci_option_teams_handle( $this->options, 'teams' );
+			$this->assertSame( array(), $this->options['teams'], 'Attempt ' . $attempt );
+		}
+		$this->assertRequests( array( 'GET /orgs/owner/teams/reviewers' ) );
+	}
+
+	/**
+	 * User-supplied names must remain inside their URL path segments.
+	 *
+	 * @return void
+	 */
+	public function testTeamLookupEncodesPathSegments(): void {
+		$this->options['repo-owner'] = 'owner/other';
+		$this->options['teams']      = array( 'reviewers?foo#bar' );
+		vipgoci_option_teams_handle( $this->options, 'teams' );
+		$this->assertSame( array(), $this->options['teams'] );
+		$this->assertRequests( array( 'GET /orgs/owner%2Fother/teams/reviewers%3Ffoo%23bar' ) );
+	}
+
+	/**
+	 * A per-team lookup must not populate the separate organization-list cache.
+	 *
+	 * @return void
+	 */
+	public function testTeamValidationDoesNotPoisonOrganizationListCache(): void {
+		$GLOBALS['vipgoci_test_http_responses']['GET /orgs/owner/teams/reviewers'] = $this->team();
+		$GLOBALS['vipgoci_test_http_responses']['GET /orgs/owner/teams']           = array( $this->team(), $this->team( 'maintainers' ) );
+		$this->options['teams'] = array( 'reviewers' );
+		vipgoci_option_teams_handle( $this->options, 'teams' );
+		$this->assertSame( array( 'reviewers' ), $this->options['teams'] );
+		$this->assertSame(
+			array( 'reviewers', 'maintainers' ),
+			array_keys( vipgoci_github_org_teams_get( 'test-token', 'owner', null, 'slug' ) )
+		);
+		$this->assertRequests( array( 'GET /orgs/owner/teams/reviewers', 'GET /orgs/owner/teams' ) );
+	}
+
+	/**
 	 * Pagination must select distinct fixtures and cache the combined result.
 	 *
 	 * @return void
@@ -260,7 +431,7 @@ final class GitHubRequestGuardsTest extends TestCase {
 		$results['issues'][41]                  = array();
 		$results['issues'][42]                  = array( $this->issue() );
 		$results['stats']['phpcs'][42]['error'] = 1;
-		$GLOBALS['vipgoci_test_http_responses']['GET /repos/owner/repo/pulls/comments'] = array( $this->comment() );
+		$GLOBALS['vipgoci_test_http_responses']['GET /repos/owner/repo/pulls/42/comments'] = array( $this->comment() );
 
 		vipgoci_results_remove_existing_github_comments(
 			$this->options,
@@ -285,7 +456,129 @@ final class GitHubRequestGuardsTest extends TestCase {
 			$results['issues']
 		);
 		$this->assertSame( 0, $results['stats']['phpcs'][42]['error'] );
-		$this->assertRequests( array( 'GET /repos/owner/repo/pulls/42/commits', 'GET /repos/owner/repo/pulls/comments' ) );
+		$this->assertRequests( array( 'GET /repos/owner/repo/pulls/42/commits', 'GET /repos/owner/repo/pulls/42/comments' ) );
+	}
+
+	/**
+	 * Shared commits and creation timestamps must not leak comments between PRs.
+	 *
+	 * @return void
+	 */
+	public function testDeduplicationOnlyUsesCommentsOnTheCurrentPullRequest(): void {
+		$results                                = $this->emptyResults();
+		$results['issues'][42]                  = array( $this->issue() );
+		$results['issues'][99]                  = array( $this->issue() );
+		$results['stats']['phpcs'][42]['error'] = 1;
+		$results['stats']['phpcs'][99]          = $results['stats']['phpcs'][42];
+		$other_comment                          = $this->comment();
+		$other_comment['pull_request_url']      = 'https://api.github.com/repos/owner/repo/pulls/99';
+
+		$GLOBALS['vipgoci_test_http_responses']['GET /repos/owner/repo/pulls/comments']    = array( $other_comment );
+		$GLOBALS['vipgoci_test_http_responses']['GET /repos/owner/repo/pulls/42/comments'] = array();
+		$GLOBALS['vipgoci_test_http_responses']['GET /repos/owner/repo/pulls/99/comments'] = array( $other_comment );
+		$GLOBALS['vipgoci_test_http_responses']['GET /repos/owner/repo/pulls/99/commits']  = array( array( 'sha' => 'abc' ) );
+
+		vipgoci_results_remove_existing_github_comments(
+			$this->options,
+			array(
+				(object) array(
+					'number'     => 42,
+					'created_at' => '2026-01-01T00:00:00Z',
+				),
+				(object) array(
+					'number'     => 99,
+					'created_at' => '2026-01-01T00:00:00Z',
+				),
+			),
+			$results
+		);
+
+		$this->assertSame( array( $this->issue() ), $results['issues'][42] );
+		$this->assertSame( array(), $results['issues'][99] );
+		$this->assertSame( 1, $results['stats']['phpcs'][42]['error'] );
+		$this->assertSame( 0, $results['stats']['phpcs'][99]['error'] );
+		$this->assertRequests(
+			array(
+				'GET /repos/owner/repo/pulls/42/commits',
+				'GET /repos/owner/repo/pulls/42/comments',
+				'GET /repos/owner/repo/pulls/99/commits',
+				'GET /repos/owner/repo/pulls/99/comments',
+			)
+		);
+	}
+
+	/**
+	 * The legacy repository-wide lookup must remain separate from scoped caches.
+	 *
+	 * @return void
+	 */
+	public function testLegacyCommentLookupDoesNotPopulatePullRequestCache(): void {
+		$comment                     = $this->comment();
+		$comment['pull_request_url'] = 'https://api.github.com/repos/owner/repo/pulls/99';
+		$GLOBALS['vipgoci_test_http_responses']['GET /repos/owner/repo/pulls/comments']    = array( $comment );
+		$GLOBALS['vipgoci_test_http_responses']['GET /repos/owner/repo/pulls/42/comments'] = array();
+		$legacy_comments        = array();
+		$scoped_comments        = array();
+		$cached_legacy_comments = array();
+
+		vipgoci_github_pr_reviews_comments_get( $this->options, 'abc', '2026-01-01T00:00:00Z', $legacy_comments );
+		vipgoci_github_pr_reviews_comments_get( $this->options, 'abc', '2026-01-01T00:00:00Z', $scoped_comments, 42 );
+		vipgoci_github_pr_reviews_comments_get( $this->options, 'abc', '2026-01-01T00:00:00Z', $cached_legacy_comments );
+
+		$this->assertCount( 1, $legacy_comments['test.php:3'] );
+		$this->assertSame( 10, $legacy_comments['test.php:3'][0]->id );
+		$this->assertSame( array(), $scoped_comments );
+		$this->assertSame( $legacy_comments, $cached_legacy_comments );
+		$this->assertRequests( array( 'GET /repos/owner/repo/pulls/comments', 'GET /repos/owner/repo/pulls/42/comments' ) );
+	}
+
+	/**
+	 * Fetch every scoped page once, then filter cached comments for each commit.
+	 *
+	 * @return void
+	 */
+	public function testScopedCommentPagesAreReusedAcrossCommits(): void {
+		$first_page = array();
+		for ( $i = 1; $i <= 100; $i++ ) {
+			$comment       = $this->comment();
+			$comment['id'] = $i;
+			$first_page[]  = $comment;
+		}
+		$second_commit_comment                       = $this->comment( 8 );
+		$second_commit_comment['id']                 = 101;
+		$second_commit_comment['original_commit_id'] = 'def';
+		$unrelated_comment                           = $this->comment( 9 );
+		$unrelated_comment['original_commit_id']     = 'unrelated';
+
+		$GLOBALS['vipgoci_test_http_responses']['GET /repos/owner/repo/pulls/42/comments?sort=created&direction=asc&since=2026-01-01T00%3A00%3A00Z&page=1&per_page=100'] = $first_page;
+		$GLOBALS['vipgoci_test_http_responses']['GET /repos/owner/repo/pulls/42/comments?sort=created&direction=asc&since=2026-01-01T00%3A00%3A00Z&page=2&per_page=100'] = array(
+			$second_commit_comment,
+			$this->comment( null ),
+			$unrelated_comment,
+		);
+		$comments        = array();
+		$other_comments  = array();
+		$cached_comments = array();
+
+		vipgoci_github_pr_reviews_comments_get( $this->options, 'abc', '2026-01-01T00:00:00Z', $comments, 42 );
+		vipgoci_github_pr_reviews_comments_get( $this->options, 'def', '2026-01-01T00:00:00Z', $other_comments, 42 );
+		vipgoci_github_pr_reviews_comments_get( $this->options, 'abc', '2026-01-01T00:00:00Z', $cached_comments, 42 );
+
+		$this->assertSame( array( 'test.php:3' ), array_keys( $comments ) );
+		$this->assertCount( 100, $comments['test.php:3'] );
+		$this->assertSame( 1, $comments['test.php:3'][0]->id );
+		$this->assertSame( 100, $comments['test.php:3'][99]->id );
+		$this->assertSame( array( 'test.php:8' ), array_keys( $other_comments ) );
+		$this->assertCount( 1, $other_comments['test.php:8'] );
+		$this->assertSame( 101, $other_comments['test.php:8'][0]->id );
+		$this->assertSame( $comments, $cached_comments );
+		$this->assertSame(
+			array(
+				'https://api.github.com/repos/owner/repo/pulls/42/comments?sort=created&direction=asc&since=2026-01-01T00%3A00%3A00Z&page=1&per_page=100',
+				'https://api.github.com/repos/owner/repo/pulls/42/comments?sort=created&direction=asc&since=2026-01-01T00%3A00%3A00Z&page=2&per_page=100',
+			),
+			array_column( $GLOBALS['vipgoci_test_http_requests'], 'url' )
+		);
 	}
 
 	/**
@@ -315,8 +608,8 @@ final class GitHubRequestGuardsTest extends TestCase {
 		$results['issues'][42]                  = array( $this->issue() );
 		$results['stats']['phpcs'][42]['error'] = 1;
 		$expected                               = $results;
-		$GLOBALS['vipgoci_test_http_responses']['GET /repos/owner/repo/pulls/comments']   = array( $this->comment() );
-		$GLOBALS['vipgoci_test_http_responses']['GET /repos/owner/repo/pulls/42/reviews'] = array( $this->review( 'DISMISSED' ) );
+		$GLOBALS['vipgoci_test_http_responses']['GET /repos/owner/repo/pulls/42/comments'] = array( $this->comment() );
+		$GLOBALS['vipgoci_test_http_responses']['GET /repos/owner/repo/pulls/42/reviews']  = array( $this->review( 'DISMISSED' ) );
 
 		vipgoci_results_remove_existing_github_comments(
 			$this->options,
@@ -334,7 +627,7 @@ final class GitHubRequestGuardsTest extends TestCase {
 		$this->assertRequests(
 			array(
 				'GET /repos/owner/repo/pulls/42/commits',
-				'GET /repos/owner/repo/pulls/comments',
+				'GET /repos/owner/repo/pulls/42/comments',
 				'GET /repos/owner/repo/pulls/42/reviews',
 			)
 		);

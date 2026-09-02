@@ -79,7 +79,8 @@ function vipgoci_results_remove_existing_github_comments(
 				$options,
 				$pr_item_commit_id,
 				$pr_item->created_at,
-				$prs_comments // Pointer used.
+				$prs_comments, // Pointer used.
+				$pr_item->number
 			);
 
 			unset( $pr_item_commit_id );

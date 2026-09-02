@@ -334,15 +334,17 @@ function vipgoci_github_fetch_commit_info(
  * repository and commit specified, will fetch only
  * comments made after certain timestamp and that are
  * associated with a pull request.
+ * Optionally limit the lookup to a single pull request.
  *
  * Will populate associative array of comments (the pointer
  * $pr_comments), with file-name and file-position as
  * keys.
  *
- * @param array  $options        Options array for the program.
- * @param string $commit_id      Will fetch comments associated with this commit-ID.
- * @param string $commit_made_at Will fetch comments made after this timestamp.
- * @param array  $prs_comments   Results array pointer; pull request comments.
+ * @param array    $options        Options array for the program.
+ * @param string   $commit_id      Will fetch comments associated with this commit-ID.
+ * @param string   $commit_made_at Will fetch comments made after this timestamp.
+ * @param array    $prs_comments   Results array pointer; pull request comments.
+ * @param int|null $pr_number      Pull request to query, or null for the whole repository.
  *
  * @return void
  */
@@ -350,7 +352,8 @@ function vipgoci_github_pr_reviews_comments_get(
 	array $options,
 	string $commit_id,
 	string $commit_made_at,
-	array &$prs_comments
+	array &$prs_comments,
+	?int $pr_number = null
 ) :void {
 	/*
 	 * Try to get comments from cache
@@ -361,6 +364,7 @@ function vipgoci_github_pr_reviews_comments_get(
 		$options['repo-name'],
 		$commit_made_at,
 		$options['token'],
+		$pr_number,
 	);
 
 	$cached_data = vipgoci_cache( $cached_id );
@@ -373,6 +377,7 @@ function vipgoci_github_pr_reviews_comments_get(
 			'repo_name'      => $options['repo-name'],
 			'commit_id'      => $commit_id,
 			'commit_made_at' => $commit_made_at,
+			'pr_number'      => $pr_number,
 		)
 	);
 
@@ -395,6 +400,7 @@ function vipgoci_github_pr_reviews_comments_get(
 				rawurlencode( $options['repo-owner'] ) . '/' .
 				rawurlencode( $options['repo-name'] ) . '/' .
 				'pulls/' .
+				( null === $pr_number ? '' : rawurlencode( (string) $pr_number ) . '/' ) .
 				'comments?' .
 				'sort=created&' .
 				'direction=asc&' .
@@ -2271,6 +2277,64 @@ function vipgoci_github_team_members_many_get(
 	return $team_members_slugs_arr;
 }
 
+
+/**
+ * Get one organization team by slug, without enumerating all teams.
+ *
+ * Cache both valid teams and missing/invalid responses for this run.
+ * Transport failures retain the HTTP helper's fatal-error policy.
+ *
+ * @param string $github_token GitHub token to use to make GitHub API requests.
+ * @param string $org_slug     Organization slug.
+ * @param string $team_slug    Team slug to look up.
+ *
+ * @return array Team information, or an empty array if no matching team is returned.
+ */
+function vipgoci_github_org_team_get(
+	string $github_token,
+	string $org_slug,
+	string $team_slug
+): array {
+	if ( '' === $team_slug ) {
+		return array();
+	}
+
+	$cached_id = array( __FUNCTION__, $github_token, $org_slug, $team_slug );
+	$team_info = vipgoci_cache( $cached_id );
+
+	vipgoci_log(
+		'Getting organization team from GitHub API' . vipgoci_cached_indication_str( $team_info ),
+		array(
+			'org_slug'  => $org_slug,
+			'team_slug' => $team_slug,
+		)
+	);
+
+	if ( false !== $team_info ) {
+		return $team_info;
+	}
+
+	$github_url = VIPGOCI_GITHUB_BASE_URL . '/orgs/' .
+		rawurlencode( $org_slug ) . '/teams/' . rawurlencode( $team_slug );
+
+	$team_info = json_decode(
+		vipgoci_http_api_fetch_url( $github_url, $github_token ),
+		true
+	);
+
+	// Error responses and renamed/nonmatching teams must not validate the option.
+	if (
+		( ! is_array( $team_info ) ) ||
+		( ! isset( $team_info['slug'] ) ) ||
+		( $team_slug !== $team_info['slug'] )
+	) {
+		$team_info = array();
+	}
+
+	vipgoci_cache( $cached_id, $team_info );
+
+	return $team_info;
+}
 
 /**
  * Get organization teams available to the calling

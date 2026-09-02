@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Vipgoci\Tests\Integration;
 
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
  * Class that implements the testing.
@@ -37,6 +38,7 @@ final class ResultsRemoveExistingGithubCommentsTest extends TestCase {
 	 */
 	private array $options_results = array(
 		'pr-number-1'                           => null,
+		'pr-number-2'                           => null,
 		'commit-test-results-remove-existing-1' => null,
 	);
 
@@ -137,15 +139,44 @@ final class ResultsRemoveExistingGithubCommentsTest extends TestCase {
 	}
 
 	/**
-	 * Test if comments are removed from results when they have
-	 * already been posted on GitHub. Does not process dismissed
-	 * reviews.
+	 * Provide PRs sharing a commit, with comments present only on the second PR.
+	 *
+	 * @return array Test cases with expected remaining issues and error counts.
+	 */
+	public static function commentRemovalCases(): array {
+		return array(
+			'comments on another PR are preserved' => array(
+				'pr-number-1',
+				array(
+					self::COMMENTS_DATA['comment_removable'],
+					self::COMMENTS_DATA['comment_not_removable'],
+				),
+				2,
+			),
+			'comments on the same PR are removed'  => array(
+				'pr-number-2',
+				array( self::COMMENTS_DATA['comment_not_removable'] ),
+				1,
+			),
+		);
+	}
+
+	/**
+	 * Remove comments only when already posted on the PR being scanned.
+	 * Does not process dismissed reviews.
 	 *
 	 * @covers ::vipgoci_results_remove_existing_github_comments
 	 *
+	 * @param string $pr_option            Configuration key for the PR to scan.
+	 * @param array  $expected_issues      Issues that should remain after deduplication.
+	 * @param int    $expected_error_count Error count after deduplication.
+	 *
 	 * @return void
 	 */
-	public function testRemovingComments(): void {
+	#[DataProvider( 'commentRemovalCases' )]
+	public function testRemovingComments( string $pr_option, array $expected_issues, int $expected_error_count ): void {
+		$pr_number = (int) $this->options[ $pr_option ];
+
 		$this->options['commit'] =
 			$this->options['commit-test-results-remove-existing-1'];
 
@@ -168,8 +199,8 @@ final class ResultsRemoveExistingGithubCommentsTest extends TestCase {
 		vipgoci_unittests_output_unsuppress();
 
 		$prs_implicated = array(
-			$this->options['pr-number-1'] => (object) array(
-				'number'     => (int) $this->options['pr-number-1'],
+			$pr_number => (object) array(
+				'number'     => $pr_number,
 				'created_at' => '2020-01-01T00:00:01Z',
 			),
 		);
@@ -181,21 +212,19 @@ final class ResultsRemoveExistingGithubCommentsTest extends TestCase {
 
 		$results_expected = $results_actual;
 
-		$results_actual['issues'][ $this->options['pr-number-1'] ] = array(
+		$results_actual['issues'][ $pr_number ] = array(
 			self::COMMENTS_DATA['comment_removable'],
 			self::COMMENTS_DATA['comment_not_removable'],
 		);
 
-		$results_actual['stats'][ VIPGOCI_STATS_PHPCS ][ $this->options['pr-number-1'] ] = array(
+		$results_actual['stats'][ VIPGOCI_STATS_PHPCS ][ $pr_number ] = array(
 			'error' => 2,
 		);
 
-		$results_expected['issues'][ $this->options['pr-number-1'] ] = array(
-			self::COMMENTS_DATA['comment_not_removable'],
-		);
+		$results_expected['issues'][ $pr_number ] = $expected_issues;
 
-		$results_expected['stats'][ VIPGOCI_STATS_PHPCS ][ $this->options['pr-number-1'] ] = array(
-			'error' => 1,
+		$results_expected['stats'][ VIPGOCI_STATS_PHPCS ][ $pr_number ] = array(
+			'error' => $expected_error_count,
 		);
 
 		vipgoci_unittests_output_suppress();
