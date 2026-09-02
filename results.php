@@ -52,6 +52,11 @@ function vipgoci_results_remove_existing_github_comments(
 			$comments_removed[ $pr_item->number ] = array();
 		}
 
+		// Without new issues, there are no comments to deduplicate.
+		if ( empty( $results['issues'][ $pr_item->number ] ) ) {
+			continue;
+		}
+
 		/*
 		 * Get all commits related to the current
 		 * pull request.
@@ -463,6 +468,11 @@ function vipgoci_results_filter_comments_to_max(
 		$results['issues'] as
 			$pr_number => $pr_issues_comments
 	) {
+		// Existing comments cannot affect the limit when nothing will be added.
+		if ( empty( $pr_issues_comments ) ) {
+			continue;
+		}
+
 		/*
 		 * Take into account previously submitted comments
 		 * by us for the current pull request.
