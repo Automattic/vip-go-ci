@@ -932,6 +932,11 @@ function vipgoci_phpcs_scan_commit(
 				continue;
 			}
 
+			if ( empty( $files_issues_arr[ $file_name ] ) ) {
+				// No findings need attribution or mapping to patch positions.
+				continue;
+			}
+
 			/*
 			 * Get blame log for file
 			 */
