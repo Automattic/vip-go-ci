@@ -404,6 +404,7 @@ function vipgoci_github_files_affected_by_commit(
 			$removed_files_also,
 			$permission_changes_also,
 			$filter,
+			false // File discovery does not need patches.
 		);
 
 		foreach (
@@ -448,4 +449,3 @@ function vipgoci_github_files_affected_by_commit(
 
 	return $pr_item_files_changed;
 }
-

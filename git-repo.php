@@ -1062,8 +1062,203 @@ function vipgoci_gitrepo_submodule_get_url(
 }
 
 /**
+ * Execute Git with stdout on disk and stderr kept separate from diff records.
+ *
+ * @param string $cmd Escaped Git command.
+ * @return SplFileObject|null Open output file, or null on failure.
+ */
+function vipgoci_gitrepo_diff_output( string $cmd ): ?SplFileObject {
+	$output_file = vipgoci_save_temp_file( 'vipgoci-git-diff-' );
+	$stderr      = '';
+	$code        = -255;
+	try {
+		$result = vipgoci_runtime_measure_exec_with_retry(
+			// The outer command helper captures only stderr, never the patch.
+			'( ' . $cmd . ' >' . escapeshellarg( $output_file ) . ' )',
+			array( 0 ),
+			$stderr,
+			$code,
+			'git_cli',
+			true
+		);
+		if ( null === $result || str_starts_with( $result, 'fatal: ' ) ) {
+			vipgoci_log(
+				'Unable to run git due to error',
+				array(
+					'cmd'    => $cmd,
+					'output' => $stderr,
+				)
+			);
+			return null;
+		}
+		if ( '' !== $stderr ) {
+			vipgoci_log(
+				'Git returned diagnostic output',
+				array(
+					'cmd'    => $cmd,
+					'output' => $stderr,
+				)
+			);
+		}
+		return new SplFileObject( $output_file, 'r' );
+	} catch ( RuntimeException $exception ) {
+		vipgoci_log( 'Unable to read Git diff output', array( 'error' => $exception->getMessage() ) );
+		return null;
+	} finally {
+		// The open descriptor stays readable and closes when its owner releases it.
+		unlink( $output_file );
+	}
+}
+
+/**
+ * Fetch filenames, statuses and line counts without materializing patches.
+ *
+ * Raw records supply modes and rename identity; numstat supplies changed-line
+ * counts so renamed-and-edited files and permission-only changes retain the
+ * same filtering semantics as the patch reader. NUL delimiters preserve paths.
+ *
+ * @param string $local_git_repo Local repository path.
+ * @param string $commit_id_a    Baseline commit.
+ * @param string $commit_id_b    Comparison commit.
+ *
+ * @return array|null Metadata, or null if Git fails.
+ */
+function vipgoci_gitrepo_diffs_fetch_metadata(
+	string $local_git_repo,
+	string $commit_id_a,
+	string $commit_id_b
+): ?array {
+	$cached_id = array( __FUNCTION__, $local_git_repo, $commit_id_a, $commit_id_b );
+	$cached    = vipgoci_cache( $cached_id );
+	if ( false !== $cached ) {
+		return $cached;
+	}
+
+	// Numstat ignores textconv even when explicitly enabled. Preserve the old
+	// behavior using the local streaming reader for repositories with drivers.
+	$textconv_cache_id = array( __FUNCTION__, 'textconv', $local_git_repo );
+	$textconv          = vipgoci_cache( $textconv_cache_id );
+	if ( false === $textconv ) {
+		$output   = '';
+		$code     = -255;
+		$textconv = vipgoci_runtime_measure_exec_with_retry(
+			'git -C ' . escapeshellarg( $local_git_repo ) . ' config --get-regexp ' . escapeshellarg( '^diff\..*\.textconv$' ),
+			array( 0, 1 ), // No matching configuration is a successful empty result.
+			$output,
+			$code,
+			'git_cli',
+			true
+		);
+		if ( null !== $textconv ) {
+			vipgoci_cache( $textconv_cache_id, $textconv );
+		}
+	}
+	if ( '' !== $textconv ) {
+		return vipgoci_gitrepo_diffs_fetch_unfiltered( $local_git_repo, $commit_id_a, $commit_id_b );
+	}
+
+	$cmd    = sprintf(
+		'git --no-pager -C %s diff --no-color --raw --numstat -z %s',
+		escapeshellarg( $local_git_repo ),
+		escapeshellarg( $commit_id_a . '...' . $commit_id_b )
+	);
+	$stream = vipgoci_gitrepo_diff_output( $cmd );
+	if ( null === $stream ) {
+		return null;
+	}
+	$stream_stat = $stream->fstat();
+	if ( false === $stream_stat ) {
+		return null;
+	}
+	$data = 0 === $stream_stat['size'] ? '' : $stream->fread( $stream_stat['size'] );
+	if ( false === $data || strlen( $data ) !== $stream_stat['size'] ) {
+		return null;
+	}
+
+	$results      = array(
+		'files'      => array(),
+		'statistics' => array(
+			'additions' => 0,
+			'deletions' => 0,
+			'changes'   => 0,
+		),
+	);
+	$records      = explode( "\0", $data );
+	$record_count = count( $records ) - 1;
+	for ( $i = 0; $i < $record_count; $i++ ) {
+		$record = $records[ $i ];
+		if ( str_starts_with( $record, ':' ) ) {
+			$header = explode( ' ', substr( $record, 1 ) );
+			if ( 5 !== count( $header ) || ! isset( $records[ ++$i ] ) ) {
+				return null;
+			}
+			$filename          = $records[ $i ];
+			$status            = $header[4][0];
+			$previous_filename = null;
+			if ( 'R' === $status || 'C' === $status ) {
+				$previous_filename = $filename;
+				if ( ! isset( $records[ ++$i ] ) ) {
+					return null;
+				}
+				$filename = $records[ $i ];
+			}
+			$results['files'][ $filename ] = array(
+				'filename'  => $filename,
+				'status'    => match ( $status ) {
+					'A' => 'added',
+					'D' => 'removed',
+					'R', 'C' => $header[0] === $header[1] ? 'renamed' : 'modified',
+					default => 'modified',
+				},
+				'additions' => 0,
+				'deletions' => 0,
+				'changes'   => 0,
+			);
+			if ( null !== $previous_filename ) {
+				$results['files'][ $filename ]['previous_filename'] = $previous_filename;
+			}
+			continue;
+		}
+
+		$stat = explode( "\t", $record, 3 );
+		if ( 3 !== count( $stat ) ) {
+			return null;
+		}
+		$filename = $stat[2];
+		if ( '' === $filename ) {
+			// A rename has separate old and new NUL-delimited paths.
+			$i += 2;
+			if ( ! isset( $records[ $i ] ) ) {
+				return null;
+			}
+			$filename = $records[ $i ];
+		}
+		if ( ! isset( $results['files'][ $filename ] ) ) {
+			return null;
+		}
+		$file              = &$results['files'][ $filename ];
+		$file['additions'] = (int) $stat[0];
+		$file['deletions'] = (int) $stat[1];
+		$file['changes']   = $file['additions'] + $file['deletions'];
+		if ( 'renamed' === $file['status'] && 0 < $file['changes'] ) {
+			$file['status'] = 'modified';
+		} elseif ( 0 === $file['changes'] && in_array( $file['status'], array( 'added', 'removed' ), true ) ) {
+			// Match the existing patch reader for empty and binary-only changes.
+			$file['status'] = 'modified';
+		}
+		foreach ( array( 'additions', 'deletions', 'changes' ) as $stat_name ) {
+			$results['statistics'][ $stat_name ] += $file[ $stat_name ];
+		}
+		unset( $file );
+	}
+
+	vipgoci_cache( $cached_id, $results );
+	return $results;
+}
+
+/**
  * Fetch diff from git repository, unprocessed.
- * Results are not cached.
+ * Results are cached.
  *
  * @param string $local_git_repo  Path to local git repository.
  * @param string $commit_id_a     Baseline commit.
@@ -1145,49 +1340,9 @@ function vipgoci_gitrepo_diffs_fetch_unfiltered(
 		)
 	);
 
-	/*
-	 * Actually execute.
-	 */
-	$git_diff_results_output = '';
-	$git_diff_results_code   = -255;
-
-	$git_diff_results = vipgoci_runtime_measure_exec_with_retry(
-		$git_diff_cmd,
-		array( 0 ),
-		$git_diff_results_output,
-		$git_diff_results_code,
-		'git_cli',
-		true
-	);
-
-	if ( null === $git_diff_results ) {
-		vipgoci_log(
-			'Unable to run git due to error',
-			array(
-				'cmd'    => $git_diff_cmd,
-				'output' => $git_diff_results,
-			),
-		);
-
-		return null;
-	}
-
-	/*
-	 * Check if there are any problems,
-	 * return with error if there are any.
-	 */
-	if ( strpos(
-		$git_diff_results,
-		'fatal: '
-	) === 0 ) {
-		vipgoci_log(
-			'Unexpected problem while running git',
-			array(
-				'cmd'    => $git_diff_cmd,
-				'output' => $git_diff_results,
-			),
-		);
-
+	// Read one line at a time instead of retaining raw output and a line array.
+	$git_diff_lines = vipgoci_gitrepo_diff_output( $git_diff_cmd );
+	if ( null === $git_diff_lines ) {
 		return null;
 	}
 
@@ -1201,15 +1356,6 @@ function vipgoci_gitrepo_diffs_fetch_unfiltered(
 			VIPGOCI_GIT_DIFF_CALC_CHANGES['-'] => 0,
 			'changes'                          => 0,
 		),
-	);
-
-	/*
-	 * Split results into array
-	 */
-
-	$git_diff_results = explode(
-		PHP_EOL,
-		$git_diff_results
 	);
 
 	/*
@@ -1252,14 +1398,21 @@ function vipgoci_gitrepo_diffs_fetch_unfiltered(
 	 *  ...
 	 */
 
-	foreach ( $git_diff_results as $git_result_item ) {
+	foreach ( $git_diff_lines as $git_result_item ) {
+		if ( false === $git_result_item ) {
+			continue;
+		}
+		$git_result_item = rtrim( $git_result_item, "\n" );
+
 		/*
 		 * Split each line into array at spaces,
 		 * making it easy to process each line of results.
 		 */
 		$git_result_item_arr = explode(
 			' ',
-			$git_result_item
+			$git_result_item,
+			// Only header lines need tokenization; patch lines need the first byte.
+			str_starts_with( $git_result_item, 'diff --git ' ) || 'info' === $cur_mode ? PHP_INT_MAX : 1
 		);
 
 		/*
@@ -1660,6 +1813,7 @@ function vipgoci_gitrepo_diffs_clean_extra_whitespace(
  * @param bool       $removed_files_also      If to include removed files.
  * @param bool       $permission_changes_also If to include files whose permissions were changed.
  * @param null|array $filter                  Filter to apply to results.
+ * @param bool       $include_patches         Whether to load patches, rather than metadata only.
  *
  * @return array Array with results. For example:
  *  array(
@@ -1692,7 +1846,8 @@ function vipgoci_git_diffs_fetch(
 	bool $renamed_files_also = false,
 	bool $removed_files_also = true,
 	bool $permission_changes_also = false,
-	null|array $filter = null
+	null|array $filter = null,
+	bool $include_patches = true
 ): array {
 	/*
 	 * Check if we have a preference whether to
@@ -1728,7 +1883,8 @@ function vipgoci_git_diffs_fetch(
 	 * to fetch diff.
 	 */
 	if ( false === $github_api_preferred ) {
-		$diff_results = vipgoci_gitrepo_diffs_fetch_unfiltered(
+		$fetch_function = $include_patches ? 'vipgoci_gitrepo_diffs_fetch_unfiltered' : 'vipgoci_gitrepo_diffs_fetch_metadata';
+		$diff_results   = $fetch_function(
 			$local_git_repo,
 			$commit_id_a,
 			$commit_id_b
@@ -1854,7 +2010,7 @@ function vipgoci_git_diffs_fetch(
 		 * In case of no patch specified by
 		 * GitHub, we add it.
 		 */
-		if ( ! isset( $file_item['patch'] ) ) {
+		if ( false === $include_patches || ! isset( $file_item['patch'] ) ) {
 			$file_item['patch'] = null;
 		}
 
@@ -1882,4 +2038,3 @@ function vipgoci_git_diffs_fetch(
 
 	return $results;
 }
-
