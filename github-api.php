@@ -1191,6 +1191,11 @@ function vipgoci_github_pr_reviews_dismiss_with_non_active_comments(
 		)
 	);
 
+	// Comments cannot lead to a dismissal when there are no eligible reviews.
+	if ( empty( $pr_reviews ) ) {
+		return;
+	}
+
 	/*
 	 * Get all comments to the current pull request.
 	 *
