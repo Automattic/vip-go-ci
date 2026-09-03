@@ -98,6 +98,7 @@ final class PhpcsScanBatchIsolationTest extends TestCase {
 			'ignore first line'  => array( "<?php // phpcs:ignoreFile\n" . $long_line, 0 ),
 			'ignore second line' => array( "// PHPCS:IGNOREFILE\n" . $long_line, 0 ),
 			'legacy ignore'      => array( "// @codingStandardsIgnoreFile\n" . $long_line, 0 ),
+			'legacy wrong case'  => array( "// @CODINGSTANDARDSIGNOREFILE\n" . $long_line, 1 ),
 			'disable'            => array( "// phpcs:disable Generic.Files.LineLength\n" . $long_line, 0 ),
 			'ignore line'        => array( "// phpcs:ignore Generic.Files.LineLength\n" . $long_line, 0 ),
 		);

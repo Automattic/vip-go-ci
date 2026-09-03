@@ -326,7 +326,9 @@ function vipgoci_phpcs_temp_file( string $filename, bool $remove = false ): void
 		);
 	}
 	if ( $remove ) {
-		unlink( $filename );
+		if ( file_exists( $filename ) ) {
+			unlink( $filename );
+		}
 		unset( $files[ $filename ] );
 	} else {
 		$files[ $filename ] = true;

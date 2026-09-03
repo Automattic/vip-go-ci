@@ -435,23 +435,64 @@ final class PhpcsScanGitGuardsTest extends TestCase {
 		$this->base              = $this->commit( array() );
 		$this->head              = $this->commit(
 			array(
-				'ignored.php' => "<?php\n// phpcs:ignoreFile\n// fixture-empty-report\n",
-				'legacy.php'  => "<?php\n// @codingStandardsIgnoreFile\n// fixture-empty-report\n",
-				'missing.php' => "<?php\n// fixture-empty-report\n",
-				'broken.php'  => "<?php\n// phpcs:ignoreFile\n// fixture-invalid-json\n",
+				'ignored.php'    => "<?php\n// phpcs:ignoreFile\n// fixture-empty-report\n",
+				'legacy.php'     => "<?php\n// @codingStandardsIgnoreFile\n// fixture-empty-report\n",
+				'missing.php'    => "<?php\n// fixture-empty-report\n",
+				'broken.php'     => "<?php\n// phpcs:ignoreFile\n// fixture-invalid-json\n",
+				'wrong-case.php' => "<?php\n// @CODINGSTANDARDSIGNOREFILE\n// fixture-empty-report\n",
 			)
 		);
 		list( $result, $output ) = $this->scanWithLogs( 0 );
 		$this->assertSame( array( 42 => array() ), $result['issues'] );
 		$this->assertStringContainsString( '"files_scanned": 2', $output );
-		$this->assertStringContainsString( '"files_failed": 2', $output );
+		$this->assertStringContainsString( '"files_failed": 3', $output );
 		$posts = array_values( array_filter( $GLOBALS['vipgoci_test_http_requests'], static fn( $request ) => str_starts_with( $request['request'], 'POST ' ) ) );
 		$this->assertCount( 1, $posts );
 		$this->assertStringContainsString( '* missing.php', $posts[0]['body']['body'] );
 		$this->assertStringContainsString( '* broken.php', $posts[0]['body']['body'] );
+		$this->assertStringContainsString( '* wrong-case.php', $posts[0]['body']['body'] );
 		$this->assertStringNotContainsString( '* ignored.php', $posts[0]['body']['body'] );
 		$this->assertStringNotContainsString( '* legacy.php', $posts[0]['body']['body'] );
 		$this->phpcsInvocations();
+	}
+
+	/** @return array Ways a tracked temporary file can already have been removed. */
+	public static function missingTempFiles(): array {
+		return array(
+			'external removal' => array( true ),
+			'repeated cleanup' => array( false ),
+		);
+	}
+
+	/**
+	 * Cleanup must silently forget files that are no longer present.
+	 *
+	 * @param bool $removed_externally Whether another operation removed the file.
+	 */
+	#[DataProvider( 'missingTempFiles' )]
+	public function testTempFileCleanupToleratesMissingFiles( bool $removed_externally ): void {
+		$path = $this->directory . '/staged.php';
+		file_put_contents( $path, "<?php\n// synthetic source\n" );
+		vipgoci_phpcs_temp_file( $path );
+		if ( $removed_externally ) {
+			unlink( $path );
+		} else {
+			vipgoci_phpcs_temp_file( $path, true );
+		}
+		$this->assertFileDoesNotExist( $path );
+		$warnings = array();
+		set_error_handler(
+			static function ( $severity, $message ) use ( &$warnings ) {
+				$warnings[] = $message;
+				return true;
+			}
+		);
+		try {
+			vipgoci_phpcs_temp_file( $path, true );
+		} finally {
+			restore_error_handler();
+		}
+		$this->assertSame( array(), $warnings );
 	}
 
 	/** exit() bypasses finally; a later staging failure must still remove earlier files. */
