@@ -101,7 +101,15 @@ Then run  `vip-go-ci.php`:
 
 -- where `repo-owner` is the GitHub repository-owner, `repo-name` is the name of the repository, `commit-ID` is the SHA-hash identifying the commit, `Local-Git-Repo` is a path to the git-repository used to scan, `GitHub-Access-Token` is a access-token created on GitHub that allows reading and commenting on the repository in question, `path-to-phpcs` is a full path to PHPCS, `File-Types` refers to a list of file-types to be approved (such as `css,txt,pdf`), and `Informational-Msg` is a message that explains the CI process.
 
-While running, `vip-go-ci` will output log of its actions. Here is an example -- note that output generated on your system can differ substantially:
+While running, `vip-go-ci` will output a log of its actions. The `--debug-level` option controls verbosity:
+
+* `0` (default): normal progress, failures, skipped-file notices, and a PHPCS scan summary.
+* `1`: additionally includes routine PHPCS per-file details, the scan file list, local file-fetch messages, and line-count validation details.
+* `2`: additionally includes PHPCS commands, successful raw PHPCS reports, and command-execution diagnostics. Failed scans remain visible at level `0`.
+
+The PHPCS completion summary counts files considered, successfully scanned, failed, and skipped; it includes SVG files when SVG checking is enabled. A successful scan can contain findings. Its `duration_seconds` measures the file-scanning loop, excluding subsequent Git attribution and report preparation. Changing verbosity does not change scan findings or GitHub reporting.
+
+Here is an example from an older version -- output generated on your system can differ substantially:
 
 ```
 [ 2018-04-16T14:10:04+00:00 -- 0 ]  Initializing...; []
@@ -354,6 +362,10 @@ For example:
 ### PHPCS configuration
 
 Support for checking for issues in PHP files by using [PHPCS](https://github.com/squizlabs/PHP_CodeSniffer/) scanning is supported. The behaviour of PHPCS scanning can be configured using several options.
+
+Eligible files are scanned in groups of up to 25 per PHPCS process, sequentially within each process. Each process retains the existing 500 MB PHP memory limit and 300-second PHP execution-time setting. Large-file validation still happens before scanning, and SVG checks continue to use their separate scanner.
+
+If a batch fails or returns incomplete or inconsistent results, its partial findings are discarded and its files are retried individually. Findings and GitHub reporting remain per-file. Files containing inline `phpcs:set` or legacy `@codingStandardsChangeSetting` directives run individually so settings cannot leak into neighbouring files. Whole-file ignore directives in the first two lines also run individually; an omitted file is accepted only when PHPCS returns a valid empty report.
 
 An example of how PHPCS can be used:
 
@@ -717,4 +729,3 @@ Documentation on what steps to follow when releasing a new version of `vip-go-ci
 ## Updating tools-init.sh with new versions
 
 For information on how to update `tools-init.sh`, see the [TOOLS-UPDATE.md](TOOLS-UPDATE.md) file.
-

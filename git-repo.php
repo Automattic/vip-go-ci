@@ -452,7 +452,8 @@ function vipgoci_gitrepo_fetch_committed_file(
 			'filename'       => $file_name,
 			'local_git_repo' => $local_git_repo,
 			'reject_symlink' => $reject_symlink,
-		)
+		),
+		1
 	);
 
 	/*
