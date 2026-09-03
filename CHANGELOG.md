@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.1](https://github.com/Automattic/vip-go-ci/releases/tag/1.4.1) - 2026-09-03
+
+- TODO: Add release changes.
+
 ## [1.4.0](https://github.com/Automattic/vip-go-ci/releases/tag/1.4.0) - 2026-09-02
 
 - Things were done
