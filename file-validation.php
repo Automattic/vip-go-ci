@@ -83,7 +83,8 @@ function vipgoci_is_number_of_lines_valid(
 		array(
 			'file_name'     => $file_name,
 			'cached_result' => ( false === $is_number_of_lines_valid ) ? null : $is_number_of_lines_valid,
-		)
+		),
+		1
 	);
 
 	if ( false !== $is_number_of_lines_valid ) {
@@ -159,9 +160,9 @@ function vipgoci_is_number_of_lines_valid(
 		array(
 			'file_name' => $file_name,
 			'output'    => $output,
-		)
+		),
+		1
 	);
 
 	return $is_number_of_lines_valid;
 }
-

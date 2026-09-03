@@ -97,10 +97,10 @@ function vipgoci_phpcs_get_version(
 }
 
 /**
- * Run PHPCS for the file specified, using the
+ * Run PHPCS for the files specified, using the
  * appropriate standards. Return the results.
  *
- * @param string       $filename_tmp         Path to file to scan.
+ * @param string|array $filename_tmp         Path or paths to files to scan.
  * @param string       $phpcs_path           Path to PHPCS scanner.
  * @param string       $phpcs_php_path       Path to PHP to use to execute PHPCS scanner.
  * @param string|array $phpcs_standard       PHPCS standard to use.
@@ -111,7 +111,7 @@ function vipgoci_phpcs_get_version(
  * @return string|null Results of PHPCS scanning as string on success, null on failure.
  */
 function vipgoci_phpcs_do_scan(
-	string $filename_tmp,
+	string|array $filename_tmp,
 	string $phpcs_path,
 	string $phpcs_php_path,
 	array|string $phpcs_standard,
@@ -119,10 +119,13 @@ function vipgoci_phpcs_do_scan(
 	int $phpcs_severity,
 	array $phpcs_runtime_set
 ) :string|null {
+	if ( array() === $filename_tmp ) {
+		return null;
+	}
 	/*
 	 * Run PHPCS from the shell, making sure we escape everything.
 	 *
-	 * Feed PHPCS the temporary file specified by our caller.
+	 * Feed PHPCS the temporary files specified by our caller.
 	 */
 	$cmd = sprintf(
 		'%s -d memory_limit=500M -d max_execution_time=300 %s --severity=%s --report=%s -q',
@@ -193,17 +196,22 @@ function vipgoci_phpcs_do_scan(
 	 * Lastly, append the target filename
 	 * to the command-line string.
 	 */
-	$cmd .= sprintf(
-		' %s',
-		escapeshellarg( $filename_tmp )
-	);
+	if ( is_array( $filename_tmp ) ) {
+		// Batch execution must stay sequential within the existing memory limit.
+		$cmd .= ' --parallel=1';
+	} else {
+		$filename_tmp = array( $filename_tmp );
+	}
+	foreach ( $filename_tmp as $filename ) {
+		$cmd .= ' ' . escapeshellarg( $filename );
+	}
 
 	vipgoci_log(
 		'Running PHPCS now',
 		array(
 			'cmd' => $cmd,
 		),
-		0
+		2
 	);
 
 	/*
@@ -297,16 +305,43 @@ function vipgoci_phpcs_write_xml_standard_file(
 }
 
 /**
- * Scan a single file using the PHPCS scanner,
- * return JSON decoded results. Avoid scanning
- * a file if it is too large to scan.
+ * Track staged PHPCS files so exit-based failures also clean them up.
+ *
+ * @param string $filename Owned temporary path.
+ * @param bool   $remove   Delete and stop tracking this path.
+ * @return void
+ */
+function vipgoci_phpcs_temp_file( string $filename, bool $remove = false ): void {
+	static $files = null;
+	if ( null === $files ) {
+		$files = array();
+		register_shutdown_function(
+			static function () use ( &$files ) {
+				foreach ( array_keys( $files ) as $path ) {
+					if ( file_exists( $path ) ) {
+						unlink( $path );
+					}
+				}
+			}
+		);
+	}
+	if ( $remove ) {
+		unlink( $filename );
+		unset( $files[ $filename ] );
+	} else {
+		$files[ $filename ] = true;
+	}
+}
+
+/**
+ * Stage a file for PHPCS and apply the existing large-file validation.
  *
  * @param array  $options   Options needed.
  * @param string $file_name File path to scan.
  *
- * @return array Results of scanning and validation.
+ * @return array Temporary path and validation, or the completed skipped-file result.
  */
-function vipgoci_phpcs_scan_single_file(
+function vipgoci_phpcs_prepare_file(
 	array $options,
 	string $file_name
 ) {
@@ -342,6 +377,7 @@ function vipgoci_phpcs_scan_single_file(
 		$file_extension,
 		$file_contents
 	);
+	vipgoci_phpcs_temp_file( $temp_file_name );
 
 	/*
 	 * Skips the phpcs scan when the validation contains any issue
@@ -362,11 +398,22 @@ function vipgoci_phpcs_scan_single_file(
 				'validation'             => $validation,
 			);
 
-			unlink( $temp_file_name );
+			vipgoci_phpcs_temp_file( $temp_file_name, true );
 
 			return $skipped;
 		}
 	}
+
+	// Inspect the first two lines without copying/splitting the remaining source.
+	$first_line_end  = strpos( $file_contents, "\n" );
+	$second_line_end = false === $first_line_end ? false : strpos( $file_contents, "\n", $first_line_end + 1 );
+	$first_lines     = false === $second_line_end ? $file_contents : substr( $file_contents, 0, $second_line_end + 1 );
+	// PHPCS may omit files bearing these directives in their first two lines.
+	$may_be_ignored = false !== stripos( $first_lines, 'phpcs:ignorefile' ) ||
+		false !== strpos( $first_lines, '@codingStandardsIgnoreFile' );
+	// Settings mutate shared sniff instances. A conservative match only costs a process.
+	$requires_isolation = $may_be_ignored || false !== stripos( $file_contents, 'phpcs:set' ) ||
+		false !== stripos( $file_contents, '@codingStandardsChangeSetting' );
 
 	vipgoci_log(
 		'About to PHPCS-scan file',
@@ -377,14 +424,111 @@ function vipgoci_phpcs_scan_single_file(
 			'filename'       => $file_name,
 			'file_extension' => $file_extension,
 			'temp_file_name' => $temp_file_name,
-		)
+		),
+		1
 	);
 
-	$retry_cnt = 0;
+	return array(
+		'temp_file_name'     => $temp_file_name,
+		'validation'         => $validation ?? array(),
+		'requires_isolation' => $requires_isolation,
+		'may_be_ignored'     => $may_be_ignored,
+	);
+}
 
-	/*
-	 * Try to PHPCS scan.
-	 */
+/**
+ * Validate a complete PHPCS report and split it into independent per-file reports.
+ *
+ * Missing files, malformed messages and inconsistent counts must never look clean.
+ *
+ * @param string|null $output    Raw scanner output.
+ * @param array       $filenames Requested temporary paths.
+ * @return array|null Per-file reports keyed by temporary path, or null on failure.
+ */
+function vipgoci_phpcs_parse_report( ?string $output, array $filenames ): ?array {
+	$report = null === $output ? null : json_decode( $output, true );
+	if ( ! is_array( $report ) || ! isset( $report['files'], $report['totals'] ) ||
+		! is_array( $report['files'] ) || ! is_array( $report['totals'] ) ||
+		count( $report['files'] ) !== count( $filenames ) ) {
+		return null;
+	}
+	$reports = array();
+	$totals  = array(
+		'errors'   => 0,
+		'warnings' => 0,
+		'fixable'  => 0,
+	);
+	foreach ( $filenames as $filename ) {
+		$file = $report['files'][ $filename ] ?? $report['files'][ ltrim( $filename, '/' ) ] ?? null;
+		if ( ! is_array( $file ) || ! isset( $file['errors'], $file['warnings'], $file['messages'] ) ||
+			! is_int( $file['errors'] ) || ! is_int( $file['warnings'] ) ||
+			! is_array( $file['messages'] ) || ! array_is_list( $file['messages'] ) ) {
+			return null;
+		}
+		$file_totals = array(
+			'errors'   => 0,
+			'warnings' => 0,
+			'fixable'  => 0,
+		);
+		foreach ( $file['messages'] as $message ) {
+			if ( ! is_array( $message ) ||
+				! isset( $message['message'], $message['source'], $message['type'], $message['line'], $message['column'], $message['severity'], $message['fixable'] ) ||
+				! is_string( $message['message'] ) || ! is_string( $message['source'] ) ||
+				! in_array( $message['type'], array( 'ERROR', 'WARNING' ), true ) ||
+				! is_int( $message['line'] ) || ! is_int( $message['column'] ) || ! is_int( $message['severity'] ) || ! is_bool( $message['fixable'] ) ) {
+				return null;
+			}
+			++$file_totals[ 'ERROR' === $message['type'] ? 'errors' : 'warnings' ];
+			$file_totals['fixable'] += (int) $message['fixable'];
+		}
+		if ( $file['errors'] !== $file_totals['errors'] || $file['warnings'] !== $file_totals['warnings'] ) {
+			return null;
+		}
+		foreach ( $totals as $key => $value ) {
+			$totals[ $key ] += $file_totals[ $key ];
+		}
+		$reports[ $filename ] = array(
+			'totals' => $file_totals,
+			'files'  => array( $filename => $file ),
+		);
+	}
+	foreach ( $totals as $key => $value ) {
+		if ( ( $report['totals'][ $key ] ?? null ) !== $value ) {
+			return null;
+		}
+	}
+	return $reports;
+}
+
+/**
+ * Scan one file, also used to isolate failures after a rejected batch.
+ *
+ * @param array  $options   Scanner options.
+ * @param string $file_name Repository-relative file path.
+ * @return array Results of scanning and validation.
+ */
+function vipgoci_phpcs_scan_single_file( array $options, string $file_name ): array {
+	$prepared = vipgoci_phpcs_prepare_file( $options, $file_name );
+	if ( array_key_exists( 'file_issues_arr_master', $prepared ) ) {
+		return $prepared;
+	}
+	try {
+		return vipgoci_phpcs_scan_prepared_file( $options, $file_name, $prepared );
+	} finally {
+		vipgoci_phpcs_temp_file( $prepared['temp_file_name'], true );
+	}
+}
+
+/**
+ * Run one staged file in an isolated process; the caller owns cleanup.
+ *
+ * @param array  $options   Scanner options.
+ * @param string $file_name Repository-relative path.
+ * @param array  $prepared Staged file metadata.
+ * @return array Per-file scanning result.
+ */
+function vipgoci_phpcs_scan_prepared_file( array $options, string $file_name, array $prepared ): array {
+	$temp_file_name  = $prepared['temp_file_name'];
 	$file_issues_str = vipgoci_phpcs_do_scan(
 		$temp_file_name,
 		$options['phpcs-path'],
@@ -401,13 +545,26 @@ function vipgoci_phpcs_scan_single_file(
 			$file_issues_str,
 			"\n"
 		);
-
-		$file_issues_arr_master = json_decode(
-			$file_issues_str,
-			true
+	}
+	$reports                = vipgoci_phpcs_parse_report( $file_issues_str, array( $temp_file_name ) );
+	$file_issues_arr_master = $reports[ $temp_file_name ] ?? null;
+	if ( null === $file_issues_arr_master && $prepared['may_be_ignored'] &&
+		array() === vipgoci_phpcs_parse_report( $file_issues_str, array() ) ) {
+		// Accept an intentional omission only after PHPCS returned a valid zero-file report.
+		$file_issues_arr_master = array(
+			'totals' => array(
+				'errors'   => 0,
+				'warnings' => 0,
+				'fixable'  => 0,
+			),
+			'files'  => array(
+				$temp_file_name => array(
+					'errors'   => 0,
+					'warnings' => 0,
+					'messages' => array(),
+				),
+			),
 		);
-	} else {
-		$file_issues_arr_master = null;
 	}
 
 	/*
@@ -422,18 +579,125 @@ function vipgoci_phpcs_scan_single_file(
 			'file_issues_str' => $file_issues_str,
 			'issues_stats'    => isset( $file_issues_arr_master['totals'] ) ?
 				$file_issues_arr_master['totals'] : null,
-		)
+		),
+		( null !== $file_issues_arr_master ) ? 2 : 0
 	);
-
-	/* Get rid of temporary file */
-	unlink( $temp_file_name );
 
 	return array(
 		'file_issues_arr_master' => $file_issues_arr_master,
 		'file_issues_str'        => $file_issues_str,
 		'temp_file_name'         => $temp_file_name,
-		'validation'             => $validation ?? array(),
+		'validation'             => $prepared['validation'],
 	);
+}
+
+/**
+ * Scan a bounded group, retrying each eligible file if a batch is unusable.
+ *
+ * Only one group's staged files and reports are retained at a time.
+ *
+ * @param array $options    Scanner options.
+ * @param array $file_names Repository-relative paths, at most the batch size.
+ * @return array Per-file results keyed by repository-relative path.
+ */
+function vipgoci_phpcs_scan_batch( array $options, array $file_names ): array {
+	if ( 1 === count( $file_names ) ) {
+		return array( $file_names[0] => vipgoci_phpcs_scan_single_file( $options, $file_names[0] ) );
+	}
+	$prepared = array();
+	$results  = array();
+	$batch    = array();
+	try {
+		foreach ( $file_names as $file_name ) {
+			$file = vipgoci_phpcs_prepare_file( $options, $file_name );
+			if ( array_key_exists( 'file_issues_arr_master', $file ) ) {
+				$results[ $file_name ] = $file;
+			} else {
+				$prepared[ $file_name ] = $file;
+				if ( $file['requires_isolation'] ) {
+					$results[ $file_name ] = vipgoci_phpcs_scan_prepared_file( $options, $file_name, $file );
+				} else {
+					$batch[ $file_name ] = $file;
+				}
+			}
+		}
+		if ( empty( $batch ) ) {
+			return $results;
+		}
+		if ( 1 === count( $batch ) ) {
+			$file_name             = array_key_first( $batch );
+			$results[ $file_name ] = vipgoci_phpcs_scan_prepared_file( $options, $file_name, $batch[ $file_name ] );
+			return $results;
+		}
+		$filenames = array_column( $batch, 'temp_file_name' );
+		$output    = vipgoci_phpcs_do_scan(
+			$filenames,
+			$options['phpcs-path'],
+			$options['phpcs-php-path'],
+			$options['phpcs-standard'],
+			$options['phpcs-sniffs-exclude'],
+			$options['phpcs-severity'],
+			$options['phpcs-runtime-set']
+		);
+		$reports   = vipgoci_phpcs_parse_report( $output, $filenames );
+		if ( null !== $reports ) {
+			foreach ( $batch as $file_name => $file ) {
+				$report                = $reports[ $file['temp_file_name'] ];
+				$results[ $file_name ] = array(
+					'file_issues_arr_master' => $report,
+					'file_issues_str'        => json_encode( $report ),
+					'temp_file_name'         => $file['temp_file_name'],
+					'validation'             => $file['validation'],
+				);
+			}
+			vipgoci_log(
+				'PHPCS returned results',
+				array(
+					'filenames'       => array_keys( $batch ),
+					'file_issues_str' => $output,
+				),
+				2
+			);
+			return $results;
+		}
+		vipgoci_log(
+			'Retrying PHPCS batch files individually',
+			array( 'filenames' => array_keys( $batch ) )
+		);
+		// Discard all partial results; individual retries are the only source of findings.
+		foreach ( $batch as $file_name => $file ) {
+			$results[ $file_name ] = vipgoci_phpcs_scan_prepared_file( $options, $file_name, $file );
+		}
+		return $results;
+	} finally {
+		foreach ( $prepared as $file ) {
+			vipgoci_phpcs_temp_file( $file['temp_file_name'], true );
+		}
+	}
+}
+
+/**
+ * Yield results in input order while batching PHPCS and keeping SVG scans separate.
+ *
+ * @param array $options    Scanner options.
+ * @param array $file_names Repository-relative paths to scan.
+ * @return Generator Per-file results.
+ */
+function vipgoci_phpcs_scan_files( array $options, array $file_names ): Generator {
+	foreach ( array_chunk( $file_names, VIPGOCI_PHPCS_BATCH_SIZE ) as $chunk ) {
+		$phpcs_files = array();
+		foreach ( $chunk as $file_name ) {
+			if ( ! $options['svg-checks'] || ! in_array( vipgoci_file_extension_get( $file_name ), $options['svg-file-extensions'], true ) ) {
+				$phpcs_files[] = $file_name;
+			}
+		}
+		$results = vipgoci_phpcs_scan_batch( $options, $phpcs_files );
+		foreach ( $chunk as $file_name ) {
+			yield $file_name => in_array( $file_name, $phpcs_files, true ) ?
+				$results[ $file_name ] : vipgoci_svg_scan_single_file( $options, $file_name );
+			unset( $results[ $file_name ] );
+		}
+	}
 }
 
 /**
@@ -530,6 +794,12 @@ function vipgoci_phpcs_scan_commit(
 	);
 
 	$files_issues_arr = array();
+	$scan_summary     = array(
+		'files_considered' => count( $pr_item_files_changed['all'] ),
+		'files_scanned'    => 0,
+		'files_failed'     => 0,
+		'files_skipped'    => 0,
+	);
 
 	/*
 	 * Loop through each altered file in all the pull requests,
@@ -545,7 +815,8 @@ function vipgoci_phpcs_scan_commit(
 			'repo_name'                => $repo_name,
 			'commit_id'                => $commit_id,
 			'all_files_changed_by_prs' => $pr_item_files_changed['all'],
-		)
+		),
+		1
 	);
 
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'phpcs_scan_single_file' );
@@ -564,6 +835,7 @@ function vipgoci_phpcs_scan_commit(
 		break;
 	}
 
+	$files_to_scan = array();
 	foreach ( $pr_item_files_changed['all'] as $file_name ) {
 		if (
 			isset( $commit_skipped_files[ $pr_item->number ]['issues'][ VIPGOCI_VALIDATION_MAXIMUM_LINES ] )
@@ -574,44 +846,12 @@ function vipgoci_phpcs_scan_commit(
 			)
 		) {
 			$files_issues_arr[ $file_name ] = array();
+			++$scan_summary['files_skipped'];
 			continue;
 		}
-
-		/*
-		 * Loop through each file affected by
-		 * the commit.
-		 */
-
-		$file_extension = vipgoci_file_extension_get(
-			$file_name
-		);
-
-		/*
-		 * If a SVG file, scan using a
-		 * custom internal function, otherwise
-		 * use PHPCS.
-		 *
-		 * However, only do this if SVG-checks
-		 * is enabled.
-		 */
-		$scanning_func =
-			(
-				( true === in_array(
-					$file_extension,
-					$options['svg-file-extensions'],
-					true
-				) )
-				&&
-				( $options['svg-checks'] )
-			) ?
-				'vipgoci_svg_scan_single_file' :
-				'vipgoci_phpcs_scan_single_file';
-
-		$tmp_scanning_results = $scanning_func(
-			$options,
-			$file_name
-		);
-
+		$files_to_scan[] = $file_name;
+	}
+	foreach ( vipgoci_phpcs_scan_files( $options, $files_to_scan ) as $file_name => $tmp_scanning_results ) {
 		if (
 			( true === $options['skip-large-files'] ) &&
 			( 0 !== $tmp_scanning_results['validation']['total'] )
@@ -641,6 +881,7 @@ function vipgoci_phpcs_scan_commit(
 			);
 
 			$files_issues_arr[ $file_name ] = array();
+			++$scan_summary['files_skipped'];
 
 			continue;
 		}
@@ -702,6 +943,7 @@ function vipgoci_phpcs_scan_commit(
 				$files_failed_phpcs_scanning,
 				$file_name,
 			);
+			++$scan_summary['files_failed'];
 
 			continue;
 		}
@@ -740,9 +982,12 @@ function vipgoci_phpcs_scan_commit(
 			vipgoci_log(
 				'Unable to read results of PHPCS scanning, missing index',
 				array(
-					'temp_file_name' => $temp_file_name,
+					'filename'        => $file_name,
+					'temp_file_name'  => $temp_file_name,
+					'file_issues_str' => $tmp_scanning_results['file_issues_str'],
 				)
 			);
+			++$scan_summary['files_failed'];
 
 			continue;
 		}
@@ -775,6 +1020,7 @@ function vipgoci_phpcs_scan_commit(
 		);
 
 		$files_issues_arr[ $file_name ] = $file_issues_arr_master;
+		++$scan_summary['files_scanned'];
 
 		/*
 		 * Get rid of data, and
@@ -782,11 +1028,10 @@ function vipgoci_phpcs_scan_commit(
 		 */
 		vipgoci_log(
 			'Cleaning up after scanning of file...',
-			array()
+			array(),
+			1
 		);
 
-		unset( $file_contents );
-		unset( $file_extension );
 		unset( $temp_file_name );
 		unset( $file_issues_arr_master );
 		unset( $file_issues_str );
@@ -794,7 +1039,7 @@ function vipgoci_phpcs_scan_commit(
 		gc_collect_cycles();
 	}
 
-	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'phpcs_scan_single_file' );
+	$scan_summary['duration_seconds'] = vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'phpcs_scan_single_file' );
 
 	/*
 	 * Send generic message to each pull request
@@ -841,7 +1086,8 @@ function vipgoci_phpcs_scan_commit(
 				'commit_id'     => $commit_id,
 				'pr_number'     => $pr_item->number,
 				'files_changed' => $pr_item_files_changed[ $pr_item->number ],
-			)
+			),
+			1
 		);
 
 		/*
@@ -1028,7 +1274,7 @@ function vipgoci_phpcs_scan_commit(
 
 	vipgoci_log(
 		'PHPCS-scanning complete',
-		array()
+		$scan_summary
 	);
 
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'phpcs_scan_commit' );
