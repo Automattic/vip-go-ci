@@ -99,6 +99,7 @@ function vipgoci_phpcs_get_version(
 /**
  * Run PHPCS for the files specified, using the
  * appropriate standards. Return the results.
+ * Twig and non-Twig paths must be scanned in separate calls.
  *
  * @param string|array $filename_tmp         Path or paths to files to scan.
  * @param string       $phpcs_path           Path to PHPCS scanner.
@@ -201,6 +202,18 @@ function vipgoci_phpcs_do_scan(
 		$cmd .= ' --parallel=1';
 	} else {
 		$filename_tmp = array( $filename_tmp );
+	}
+	foreach ( $filename_tmp as $filename ) {
+		if ( 'twig' === strtolower( pathinfo( $filename, PATHINFO_EXTENSION ) ) ) {
+			foreach ( $filename_tmp as $batch_filename ) {
+				if ( 'twig' !== strtolower( pathinfo( $batch_filename, PATHINFO_EXTENSION ) ) ) {
+					return null;
+				}
+			}
+			// Twig runs separately so this replacement cannot override other tokenizers.
+			$cmd .= ' --extensions=' . escapeshellarg( 'twig/php' );
+			break;
+		}
 	}
 	foreach ( $filename_tmp as $filename ) {
 		$cmd .= ' ' . escapeshellarg( $filename );
@@ -499,6 +512,24 @@ function vipgoci_phpcs_parse_report( ?string $output, array $filenames ): ?array
 			return null;
 		}
 	}
+	// Validate the entire raw report before suppressing expected tokenizer noise.
+	foreach ( $reports as $filename => &$file_report ) {
+		if ( 'twig' !== strtolower( pathinfo( $filename, PATHINFO_EXTENSION ) ) ) {
+			continue;
+		}
+		$file = &$file_report['files'][ $filename ];
+		foreach ( $file['messages'] as $index => $message ) {
+			if ( 'Internal.NoCodeFound' === $message['source'] && 'WARNING' === $message['type'] ) {
+				unset( $file['messages'][ $index ] );
+				--$file['warnings'];
+				--$file_report['totals']['warnings'];
+				$file_report['totals']['fixable'] -= (int) $message['fixable'];
+			}
+		}
+		$file['messages'] = array_values( $file['messages'] );
+		unset( $file );
+	}
+	unset( $file_report );
 	return $reports;
 }
 
@@ -603,6 +634,19 @@ function vipgoci_phpcs_scan_prepared_file( array $options, string $file_name, ar
  * @return array Per-file results keyed by repository-relative path.
  */
 function vipgoci_phpcs_scan_batch( array $options, array $file_names ): array {
+	$twig_files  = array();
+	$other_files = array();
+	foreach ( $file_names as $file_name ) {
+		if ( 'twig' === strtolower( pathinfo( $file_name, PATHINFO_EXTENSION ) ) ) {
+			$twig_files[] = $file_name;
+		} else {
+			$other_files[] = $file_name;
+		}
+	}
+	if ( ! empty( $twig_files ) && ! empty( $other_files ) ) {
+		// --extensions replaces ruleset mappings; keep Twig's mapping out of other scans.
+		return vipgoci_phpcs_scan_batch( $options, $twig_files ) + vipgoci_phpcs_scan_batch( $options, $other_files );
+	}
 	if ( 1 === count( $file_names ) ) {
 		return array( $file_names[0] => vipgoci_phpcs_scan_single_file( $options, $file_names[0] ) );
 	}

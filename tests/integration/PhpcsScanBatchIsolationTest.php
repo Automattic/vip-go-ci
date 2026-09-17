@@ -136,4 +136,120 @@ final class PhpcsScanBatchIsolationTest extends TestCase {
 		}
 		$this->assertSame( $expected, $actual );
 	}
+
+	/**
+	 * Singleton/batch execution, with and without Twig sniff exclusions.
+	 *
+	 * @return array Scanner configurations.
+	 */
+	public static function twigScans(): array {
+		return array(
+			'singletons'           => array( false, false ),
+			'mixed batch'          => array( true, false ),
+			'excluded singleton'   => array( false, true ),
+			'excluded mixed batch' => array( true, true ),
+		);
+	}
+
+	/**
+	 * Real Twig findings and complete clean reports must survive both execution paths.
+	 *
+	 * @param bool $batch   Scan together rather than individually.
+	 * @param bool $exclude Exclude the Twig sniff through the existing option.
+	 */
+	#[DataProvider( 'twigScans' )]
+	public function testTwigSecurityScanning( bool $batch, bool $exclude ): void {
+		vipgoci_phpcs_write_xml_standard_file(
+			$this->options['phpcs-standard'][0],
+			array(),
+			array( 'Generic.Files.LineLength', 'Generic.Files.LineEndings', 'WordPressVIPMinimum.Security.Twig' )
+		);
+		if ( $exclude ) {
+			$this->options['phpcs-sniffs-exclude'] = array( 'WordPressVIPMinimum.Security.Twig' );
+		}
+		$long_line = '// ' . str_repeat( 'long ', 33 ) . "\n";
+		$files     = array(
+			'unsafe.twig' => "{% autoescape false %}\n{{ customer_name|raw }}\n{% endautoescape %}\n",
+			'clean.twig'  => "{{ customer_name }}\n",
+			'php.php'     => "<?php\n" . $long_line,
+			'js.js'       => "var example = 1;\r\n",
+			'include.inc' => "<?php\n" . $long_line,
+			'style.css'   => "body { color: red; }\r\n",
+			'no-code.php' => "Plain HTML, not PHP.\n",
+		);
+		foreach ( $files as $name => $content ) {
+			file_put_contents( $this->directory . '/' . $name, $content );
+		}
+		$this->git( 'add -A' );
+		$this->git( 'commit -qm fixture' );
+		$this->options['commit'] = $this->git( 'rev-parse HEAD' );
+		$results                 = $batch ? vipgoci_phpcs_scan_files( $this->options, array_keys( $files ) ) :
+			array_map( fn( $name ) => vipgoci_phpcs_scan_single_file( $this->options, $name ), array_combine( array_keys( $files ), array_keys( $files ) ) );
+		$reports                 = array();
+		foreach ( $results as $name => $result ) {
+			$this->assertNotNull( $result['file_issues_arr_master'], $name );
+			$reports[ $name ] = $result['file_issues_arr_master']['files'][ $result['temp_file_name'] ];
+			$this->assertFileDoesNotExist( $result['temp_file_name'] );
+		}
+		$this->assertSame( $exclude ? array() : array( 'WordPressVIPMinimum.Security.Twig.AutoescapeFalse', 'WordPressVIPMinimum.Security.Twig.RawFound' ), array_column( $reports['unsafe.twig']['messages'], 'source' ) );
+		$this->assertSame( $exclude ? 0 : 2, $reports['unsafe.twig']['warnings'] );
+		$this->assertSame( 0, $reports['clean.twig']['warnings'] );
+		$this->assertSame( array(), $reports['clean.twig']['messages'] );
+		foreach ( array( 'php.php', 'js.js', 'include.inc', 'style.css' ) as $name ) {
+			$this->assertSame( 1, $reports[ $name ]['errors'], $name );
+		}
+		$this->assertSame( array( 'Internal.NoCodeFound' ), array_column( $reports['no-code.php']['messages'], 'source' ) );
+	}
+
+	/** A Twig-only batch must return complete reports, including clean templates. */
+	public function testTwigOnlyBatch(): void {
+		vipgoci_phpcs_write_xml_standard_file( $this->options['phpcs-standard'][0], array(), array( 'WordPressVIPMinimum.Security.Twig' ) );
+		file_put_contents( $this->directory . '/a.twig', '{{ value|raw }}' );
+		file_put_contents( $this->directory . '/b.twig', '{{ value }}' );
+		$this->git( 'add -A' );
+		$this->git( 'commit -qm fixture' );
+		$this->options['commit'] = $this->git( 'rev-parse HEAD' );
+		foreach ( vipgoci_phpcs_scan_files( $this->options, array( 'a.twig', 'b.twig' ) ) as $name => $result ) {
+			$this->assertNotNull( $result['file_issues_arr_master'] );
+			$this->assertSame( 'a.twig' === $name ? 1 : 0, $result['file_issues_arr_master']['totals']['warnings'] );
+			$this->assertFileDoesNotExist( $result['temp_file_name'] );
+		}
+	}
+
+	/** Twig neighbours must not replace extension mappings supplied by a custom standard. */
+	public function testTwigPreservesCustomExtensionMappings(): void {
+		file_put_contents(
+			$this->options['phpcs-standard'][0],
+			'<ruleset name="Fixture"><arg name="extensions" value="php,js/php,phtml/php"/>' .
+			'<rule ref="Generic.Files.LineLength"/><rule ref="WordPressVIPMinimum.Security.Twig"/></ruleset>'
+		);
+		foreach ( array( 'custom.js', 'custom.phtml' ) as $name ) {
+			file_put_contents( $this->directory . '/' . $name, "<?php\n// " . str_repeat( 'long ', 33 ) . "\n" );
+		}
+		file_put_contents( $this->directory . '/clean.twig', '{{ value }}' );
+		$this->git( 'add -A' );
+		$this->git( 'commit -qm fixture' );
+		$this->options['commit'] = $this->git( 'rev-parse HEAD' );
+		// Test the tokenizer override without a custom-extension omission triggering fallback.
+		foreach ( array( array( 'clean.twig', 'custom.js' ), array( 'clean.twig', 'custom.js', 'custom.phtml' ) ) as $names ) {
+			foreach ( vipgoci_phpcs_scan_files( $this->options, $names ) as $name => $result ) {
+				$this->assertNotNull( $result['file_issues_arr_master'], $name );
+				$this->assertSame( 'clean.twig' === $name ? 0 : 1, $result['file_issues_arr_master']['totals']['errors'], $name );
+				$this->assertFileDoesNotExist( $result['temp_file_name'] );
+			}
+		}
+	}
+
+	/** Preserve the production standard's Twig-only include pattern on staged paths. */
+	public function testTwigWithProductionStandard(): void {
+		$this->options['phpcs-standard'] = array( 'WordPressVIPMinimum' );
+		file_put_contents( $this->directory . '/unsafe.twig', "{% autoescape false %}\n{{ value|raw }}\n{% endautoescape %}\n" );
+		$this->git( 'add -A' );
+		$this->git( 'commit -qm fixture' );
+		$this->options['commit'] = $this->git( 'rev-parse HEAD' );
+		$result = vipgoci_phpcs_scan_single_file( $this->options, 'unsafe.twig' );
+		$this->assertNotNull( $result['file_issues_arr_master'] );
+		$this->assertSame( array( 'WordPressVIPMinimum.Security.Twig.AutoescapeFalse', 'WordPressVIPMinimum.Security.Twig.RawFound' ), array_column( $result['file_issues_arr_master']['files'][ $result['temp_file_name'] ]['messages'], 'source' ) );
+		$this->assertFileDoesNotExist( $result['temp_file_name'] );
+	}
 }
