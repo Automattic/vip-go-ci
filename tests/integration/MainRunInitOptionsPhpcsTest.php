@@ -108,7 +108,7 @@ final class MainRunInitOptionsPhpcsTest extends TestCase {
 				'phpcs-sniffs-include'                    => array(),
 				'phpcs-sniffs-exclude'                    => array(),
 				'phpcs-runtime-set'                       => array(),
-				'phpcs-file-extensions'                   => array( 'php', 'js', 'twig' ),
+				'phpcs-file-extensions'                   => array( 'php', 'js' ),
 				'phpcs-skip-folders'                      => array(),
 				'phpcs-severity'                          => 1,
 				'phpcs-standard-file'                     => false,
