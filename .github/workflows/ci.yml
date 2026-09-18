@@ -132,10 +132,7 @@ jobs:
       - name: Check out the source code
         uses: actions/checkout@v6
         with:
-          ref: ${{ github.event.pull_request.head.ref }}
-        
-      - name: Ask git to fetch latest branch and other branches
-        run: git fetch origin latest && git pull
+          fetch-depth: 0 # E2E tests inspect the published release's versioned tag.
 
       - name: Set up PHP
         uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2

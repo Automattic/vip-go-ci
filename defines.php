@@ -234,7 +234,7 @@ define( 'VIPGOCI_LINT_ERROR_STR', 'PHP Syntax Errors Found' );
 /*
  * Defines relating to PHPCS scanning.
  */
-define( 'VIPGOCI_PHPCS_FILE_EXTENSIONS_DEFAULT', array( 'php', 'js', 'twig' ) );
+define( 'VIPGOCI_PHPCS_FILE_EXTENSIONS_DEFAULT', array( 'php', 'js' ) );
 define( 'VIPGOCI_PHPCS_BATCH_SIZE', 25 );
 
 define(

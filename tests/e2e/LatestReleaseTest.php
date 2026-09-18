@@ -66,21 +66,55 @@ final class LatestReleaseTest extends TestCase {
 		}
 
 		/*
-		 * Get 'defines.php' from latest branch,
+		 * Resolve the published release independently of latest-release.php.
+		 * The moving 'latest' Git tag can lag behind published releases.
+		 */
+		$ch = curl_init( 'https://api.github.com/repos/Automattic/vip-go-ci/releases/latest' );
+		curl_setopt_array(
+			$ch,
+			array(
+				CURLOPT_RETURNTRANSFER => true,
+				CURLOPT_CONNECTTIMEOUT => 20,
+				CURLOPT_TIMEOUT        => 60,
+				CURLOPT_USERAGENT      => 'vip-go-ci-e2e-tests',
+				CURLOPT_HTTPHEADER     => array( 'X-GitHub-Api-Version: 2022-11-28' ),
+			)
+		);
+		$release_json = curl_exec( $ch );
+		$this->assertNotFalse( $release_json, 'Unable to retrieve the published release.' );
+		$this->assertSame( 200, curl_getinfo( $ch, CURLINFO_HTTP_CODE ) );
+		$release = json_decode( $release_json, true, 512, JSON_THROW_ON_ERROR );
+		$this->assertArrayHasKey( 'tag_name', $release );
+		$this->assertMatchesRegularExpression( '/^\d+\.\d+\.\d+$/', $release['tag_name'] );
+
+		/*
+		 * Get 'defines.php' from the published release's versioned tag,
 		 * put contents of the file into temporary file
 		 * and then retrieve the version number
 		 * by including the file.
 		 */
-		exec( 'git -C . show latest:defines.php > ' . $this->temp_file_name );
+		exec(
+			'git -C . show ' . escapeshellarg( 'refs/tags/' . $release['tag_name'] . ':defines.php' ) .
+			' > ' . escapeshellarg( $this->temp_file_name ),
+			$git_output,
+			$git_status
+		);
+		$this->assertSame( 0, $git_status, 'Unable to read the release tag; fetch tags before running E2E tests.' );
 
 		require_once $this->temp_file_name;
 
 		$correct_version_number = VIPGOCI_VERSION;
+		$this->assertSame( $release['tag_name'], $correct_version_number );
 
 		/*
 		 * Run latest-release.php to get latest version number.
 		 */
-		$returned_version_number = exec( 'php latest-release.php' );
+		$returned_version_number = exec(
+			escapeshellarg( PHP_BINARY ) . ' latest-release.php',
+			$script_output,
+			$script_status
+		);
+		$this->assertSame( 0, $script_status, 'latest-release.php failed.' );
 
 		/*
 		 * Verify format of version number is correct.

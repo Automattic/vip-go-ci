@@ -495,6 +495,8 @@ For example:
 
 Each scan type uses by default internally specified file extensions when considering which added or modified files to scan for a given pull request. This can be overridden by specifying command-line parameters for each scan type. The help message lists the available parameters and default file extensions for each scan type.
 
+PHPCS selects `.php` and `.js` files by default. Twig (`.twig`) files are unsupported and are excluded even when included in `--phpcs-file-extensions`; they are not scanned or reported as scan failures.
+
 Non-functional auto-approvals can be configured in similar way, impacting which files are considered when performing non-functional auto-approval.
 
 For example:

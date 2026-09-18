@@ -783,11 +783,14 @@ function vipgoci_phpcs_scan_commit(
 		false, // Exclude permission changes.
 		array(
 			// If SVG-checks are enabled, include it in the file-extensions.
-			'file_extensions' => array_merge(
-				$options['phpcs-file-extensions'],
-				( $options['svg-checks'] ?
-					$options['svg-file-extensions'] :
-					array()
+			'file_extensions' => array_values(
+				array_filter(
+					array_merge(
+						$options['phpcs-file-extensions'],
+						( $options['svg-checks'] ? $options['svg-file-extensions'] : array() )
+					),
+					// VIP Coding Standards no longer supports Twig, including explicit overrides.
+					static fn( $extension ) => 'twig' !== strtolower( $extension )
 				)
 			),
 			'skip_folders'    => $options['phpcs-skip-folders'],

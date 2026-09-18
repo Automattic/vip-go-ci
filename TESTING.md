@@ -82,6 +82,8 @@ By using this command, you will run the tests of the test-suite which can be run
 
 ### E2E test suite
 
+The E2E tests need network access to GitHub's releases API and the published release's versioned Git tag locally. Fetch the published version before running them (`git fetch origin tag <version>`, replacing `<version>` with the release number). The moving `latest` tag is not used because it can lag behind the published release.
+
 The E2E (End-to-End) tests can be run using the following command:
 
 > VIPGOCI_TESTING_DEBUG_MODE=true phpunit --testsuite=e2e-tests
