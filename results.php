@@ -1079,7 +1079,7 @@ function vipgoci_results_filter_duplicate(
 }
 
 /**
- * Dump results of scan to a file, if possible.
+ * Replace the scan report, exiting with a system error if it cannot be written.
  *
  * @param string $output_file Path to file to write to.
  * @param array  $data        Data array to write.
@@ -1101,14 +1101,13 @@ function vipgoci_results_output_dump(
 		( is_file( $output_file ) ) &&
 		( ! is_writeable( $output_file ) )
 	) {
-		vipgoci_log(
+		vipgoci_sysexit(
 			'Unable to write results to file; not writable',
 			array(
 				'output_file' => $output_file,
-			)
+			),
+			VIPGOCI_EXIT_SYSTEM_PROBLEM
 		);
-
-		return;
 	}
 
 	if ( isset( $data['prs_implicated'] ) ) {
@@ -1139,18 +1138,22 @@ function vipgoci_results_output_dump(
 		unset( $pr_data );
 	}
 
-	$res = file_put_contents(
-		$output_file,
-		json_encode(
-			$data,
-			JSON_PRETTY_PRINT
-		),
-		FILE_APPEND
-	);
+	$json = json_encode( $data, JSON_PRETTY_PRINT );
+	if ( false === $json ) {
+		vipgoci_sysexit(
+			'Unable to serialize results to JSON',
+			array( 'error' => json_last_error_msg() ),
+			VIPGOCI_EXIT_SYSTEM_PROBLEM
+		);
+	}
 
-	if ( false === $res ) {
-		vipgoci_log(
+	$res = file_put_contents( $output_file, $json );
+
+	if ( false === $res || strlen( $json ) !== $res ) {
+		vipgoci_sysexit(
 			'Unable to write results to output file due to error',
+			array(),
+			VIPGOCI_EXIT_SYSTEM_PROBLEM
 		);
 	} else {
 		vipgoci_log(

@@ -403,10 +403,10 @@ function vipgoci_options_recognized() :array {
 }
 
 /**
- * Determine exit status.
+ * Classify findings using the legacy result codes, independently of process exit.
  *
  * If any VIPGOCI_ISSUE_TYPE_ERROR issues were submitted to
- * GitHub return with a non-zero exit-code. Same
+ * GitHub return the legacy findings code. Same
  * if any files were skipped.
  *
  * If we submitted nothing or only warnings, and
@@ -414,7 +414,7 @@ function vipgoci_options_recognized() :array {
  *
  * @param array $results Array with results from scanning, etc.
  *
- * @return int Exit status as determined from $results.
+ * @return int Legacy result code (0 or 250), not the process exit status.
  */
 function vipgoci_exit_status( array $results ) :int {
 	foreach (
@@ -459,6 +459,38 @@ function vipgoci_exit_status( array $results ) :int {
 	}
 
 	return 0;
+}
+
+/**
+ * Report a completed or intentionally skipped scan and return process success.
+ *
+ * @param array       $options        Run options.
+ * @param array       $results        Scan results (empty for early skips).
+ * @param array       $prs_implicated Implicated pull requests.
+ * @param string|null $outcome        Expected skip, or null to classify results.
+ * @return int Process exit status.
+ */
+function vipgoci_run_complete(
+	array $options,
+	array $results = array( 'issues' => array(), 'stats' => array() ),
+	array $prs_implicated = array(),
+	?string $outcome = null
+) :int {
+	if ( ! empty( $options['output'] ) ) {
+		vipgoci_results_output_dump(
+			$options['output'],
+			array(
+				'scan-outcome'   => $outcome ?? ( VIPGOCI_EXIT_NORMAL === vipgoci_exit_status( $results ) ? 'clean' : 'findings' ),
+				'results'        => $results,
+				'repo-owner'     => $options['repo-owner'],
+				'repo-name'      => $options['repo-name'],
+				'commit'         => $options['commit'],
+				'prs_implicated' => $prs_implicated,
+			)
+		);
+	}
+
+	return VIPGOCI_EXIT_NORMAL;
 }
 
 /**
@@ -1699,12 +1731,11 @@ function vipgoci_run_init_options_output( array &$options ) :void {
 	}
 
 	/*
-	 * Try writing empty string to it.
+	 * Clear any previous report before this invocation begins scanning.
 	 */
 	$res = @file_put_contents( // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
 		$options['output'],
-		'',
-		FILE_APPEND
+		''
 	);
 
 	if ( false === $res ) {
@@ -2352,6 +2383,7 @@ function vipgoci_run_scan_skip_execution( array &$options ) :void {
 	 * If asked not to scan, don't scan then.
 	 */
 	if ( true === $options['skip-execution'] ) {
+		vipgoci_run_complete( $options, outcome: 'disabled' );
 		vipgoci_sysexit(
 			'Skipping scanning entirely, as determined ' .
 				'by configuration',
@@ -2443,6 +2475,7 @@ function vipgoci_run_scan_find_prs( array &$options ) :array {
 	 * bail now, as there is no point in continuing running.
 	 */
 	if ( empty( $prs_implicated ) ) {
+		vipgoci_run_complete( $options, outcome: 'no-pull-request' );
 		vipgoci_sysexit(
 			'Skipping scanning entirely, as the commit ' .
 				'is not a part of any pull request',
@@ -2451,8 +2484,7 @@ function vipgoci_run_scan_find_prs( array &$options ) :array {
 				'repo_name'  => $options['repo-name'],
 				'commit'     => $options['commit'],
 			),
-			VIPGOCI_EXIT_COMMIT_NOT_PART_OF_PR,
-			true
+			VIPGOCI_EXIT_NORMAL
 		);
 	}
 
@@ -2492,18 +2524,21 @@ function vipgoci_run_scan_check_latest_commit(
 			$options['token']
 		);
 
-		// Found commits, do verification.
-		if ( ! empty( $commits_list ) ) {
-			// Reverse array, so we get the last commit first.
-			$commits_list = array_reverse( $commits_list );
+		$valid_commits = array_filter(
+			$commits_list,
+			static fn( $commit ) => is_string( $commit ) && 1 === preg_match( '/^[a-f0-9]{40}$/i', $commit )
+		);
+		if ( empty( $commits_list ) || $valid_commits !== $commits_list ) {
+			vipgoci_sysexit(
+				'Unable to determine the latest commit: missing or invalid pull request commit data',
+				array( 'pr_number' => $pr_item->number ),
+				VIPGOCI_EXIT_GITHUB_PROBLEM
+			);
+		}
 
-			/*
-			 * If latest commit to the PR things look good,
-			 * can continue.
-			 */
-			if ( $commits_list[0] === $options['commit'] ) {
-				continue;
-			}
+		// The API lists commits chronologically; compare with the latest one.
+		if ( end( $commits_list ) === $options['commit'] ) {
+			continue;
 		}
 
 		/*
@@ -2512,16 +2547,16 @@ function vipgoci_run_scan_check_latest_commit(
 		 * to the pull request, and we have to deal with that.
 		 */
 
+		vipgoci_run_complete( $options, prs_implicated: $prs_implicated, outcome: 'superseded' );
 		vipgoci_sysexit(
 			'The current commit is not the latest one ' .
-				'to the pull request. Unable to continue.',
+				'to the pull request. Skipping scanning.',
 			array(
 				'repo_owner' => $options['repo-owner'],
 				'repo_name'  => $options['repo-name'],
 				'pr_number'  => $pr_item->number,
 			),
-			VIPGOCI_EXIT_COMMIT_NOT_LATEST,
-			true // Log to IRC.
+			VIPGOCI_EXIT_NORMAL
 		);
 	}
 }
@@ -2799,6 +2834,9 @@ function vipgoci_run_scan(
 	// Find PRs relating to the commit we are processing.
 	$prs_implicated = vipgoci_run_scan_find_prs( $options );
 
+	// Resolve expected skips before announcing that scanning has started.
+	vipgoci_run_scan_check_latest_commit( $options, $prs_implicated );
+
 	// Log to IRC URLs to PRs implicated.
 	$prs_urls = vipgoci_github_prs_urls_get(
 		$prs_implicated,
@@ -2813,12 +2851,6 @@ function vipgoci_run_scan(
 		),
 		0,
 		true // Log to IRC.
-	);
-
-	// Check that each PR has the commit specified as the latest one.
-	vipgoci_run_scan_check_latest_commit(
-		$options,
-		$prs_implicated
 	);
 
 	/*
@@ -3067,22 +3099,6 @@ function vipgoci_run_scan(
 			$prs_implicated,
 			$options['informational-msg'],
 			$scan_details_msg
-		);
-	}
-
-	/*
-	 * Output results to file specified.
-	 */
-	if ( ! empty( $options['output'] ) ) {
-		vipgoci_results_output_dump(
-			$options['output'],
-			array(
-				'results'        => $results,
-				'repo-owner'     => $options['repo-owner'],
-				'repo-name'      => $options['repo-name'],
-				'commit'         => $options['commit'],
-				'prs_implicated' => $prs_implicated,
-			)
 		);
 	}
 
@@ -3354,11 +3370,9 @@ function vipgoci_run() :int {
 	);
 
 	/*
-	 * Determine exit code.
+	 * Publish the scan outcome separately from the process exit status.
 	 */
-	return vipgoci_exit_status(
-		$results
-	);
+	return vipgoci_run_complete( $options, $results, $prs_implicated );
 }
 
 /**
