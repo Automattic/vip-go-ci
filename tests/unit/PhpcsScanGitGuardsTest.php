@@ -651,6 +651,69 @@ final class PhpcsScanGitGuardsTest extends TestCase {
 		$this->assertSame( 'Fixture finding.', $report['files']['/unexpected.php']['messages'][0]['message'] );
 	}
 
+	/** Even explicitly selected Twig-only changes must not reach the scanner. */
+	public function testTwigOnlyChangeDoesNotInvokeScanner(): void {
+		$this->base = $this->commit( array() );
+		$this->head = $this->commit(
+			array(
+				'template.twig' => "{{ value }}\nfixture-invalid-json\n",
+				'upper.TWIG'    => "{{ value }}\nfixture-invalid-json\n",
+			)
+		);
+		$result     = $this->scan( array( 42 ), array( 'phpcs-file-extensions' => array( 'twig', 'TWIG' ) ) );
+		$this->assertFileDoesNotExist( $this->directory . '/phpcs.jsonl' );
+		$this->assertSame( array( 42 => array() ), $result['issues'] );
+		$this->assertSame( array(), array_filter( $GLOBALS['vipgoci_test_http_requests'], static fn( $request ) => str_starts_with( $request['request'], 'POST ' ) ) );
+		$this->assertSame( 0, vipgoci_counter_report( VIPGOCI_COUNTERS_DUMP )['github_pr_files_phpcs_scanned'] ?? 0 );
+	}
+
+	/** Twig must not poison a supported-file batch even when explicitly configured. */
+	public function testTwigIsExcludedFromMixedBatch(): void {
+		$this->base = $this->commit( array() );
+		$this->head = $this->commit(
+			array(
+				'clean.php'     => "<?php\n// clean\n",
+				'finding.php'   => "<?php\n// fixture-error\n",
+				'script.js'     => "// fixture-warning\n",
+				'template.twig' => "{{ value }}\nfixture-invalid-json\n",
+			)
+		);
+		$result     = $this->scan( array( 42 ), array( 'phpcs-file-extensions' => array( 'php', 'js', 'twig' ) ) );
+		$calls      = $this->phpcsInvocations();
+		$this->assertCount( 1, $calls );
+		$this->assertCount( 3, $calls[0]['files'] );
+		$this->assertSame( array( 'finding.php', 'script.js' ), array_column( $result['issues'][42], 'file_name' ) );
+		$this->assertSame(
+			array(
+				'error'   => 1,
+				'warning' => 1,
+				'info'    => 0,
+			),
+			$result['stats'][42]
+		);
+		$this->assertSame( 3, vipgoci_counter_report( VIPGOCI_COUNTERS_DUMP )['github_pr_files_phpcs_scanned'] );
+		$this->assertSame( array(), array_filter( $GLOBALS['vipgoci_test_http_requests'], static fn( $request ) => str_starts_with( $request['request'], 'POST ' ) ) );
+	}
+
+	/** Ignoring Twig must not hide genuine supported-file scanner failures. */
+	public function testTwigExclusionPreservesSupportedFileFailures(): void {
+		$this->base = $this->commit( array() );
+		$this->head = $this->commit(
+			array(
+				'failed.php'    => "<?php\n// fixture-invalid-json\n",
+				'template.twig' => "{{ value }}\nfixture-invalid-json\n",
+			)
+		);
+		$this->scan( array( 42 ), array( 'phpcs-file-extensions' => array( 'php', 'twig' ) ) );
+		$calls = $this->phpcsInvocations();
+		$this->assertCount( 1, $calls );
+		$this->assertCount( 1, $calls[0]['files'] );
+		$posts = array_values( array_filter( $GLOBALS['vipgoci_test_http_requests'], static fn( $request ) => str_starts_with( $request['request'], 'POST ' ) ) );
+		$this->assertCount( 1, $posts );
+		$this->assertStringContainsString( '* failed.php', $posts[0]['body']['body'] );
+		$this->assertStringNotContainsString( 'template.twig', $posts[0]['body']['body'] );
+	}
+
 	/** Clean scans must not run blame or populate the full-patch cache. */
 	public function testCleanScanSkipsReportOnlyGitWork(): void {
 		$this->base = $this->commit( array() );
