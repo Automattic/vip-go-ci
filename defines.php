@@ -56,11 +56,11 @@ define( 'VIPGOCI_HTTP_API_CONTENT_TYPE_X_WWW_FORM_URLENCODED', 'application/x-ww
  */
 define( 'VIPGOCI_EXIT_NORMAL', 0 );
 define( 'VIPGOCI_EXIT_INTERNAL_ERROR', 220 );
-define( 'VIPGOCI_EXIT_COMMIT_NOT_PART_OF_PR', 230 );
+define( 'VIPGOCI_EXIT_COMMIT_NOT_PART_OF_PR', 230 ); // Legacy result code; no longer a process exit.
 define( 'VIPGOCI_EXIT_HTTP_API_ERROR', 247 );
-define( 'VIPGOCI_EXIT_COMMIT_NOT_LATEST', 248 );
+define( 'VIPGOCI_EXIT_COMMIT_NOT_LATEST', 248 ); // Legacy result code; no longer a process exit.
 define( 'VIPGOCI_EXIT_EXEC_TIME', 249 );
-define( 'VIPGOCI_EXIT_CODE_ISSUES', 250 );
+define( 'VIPGOCI_EXIT_CODE_ISSUES', 250 ); // Legacy result code; no longer a process exit.
 define( 'VIPGOCI_EXIT_SYSTEM_PROBLEM', 251 );
 define( 'VIPGOCI_EXIT_GITHUB_PROBLEM', 252 );
 define( 'VIPGOCI_EXIT_USAGE_ERROR', 253 );

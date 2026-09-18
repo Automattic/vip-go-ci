@@ -59,6 +59,7 @@ final class ResultsOutputDumpTest extends TestCase {
 	 */
 	public function testDumpResults(): void {
 		$data = array(
+			'scan-outcome'   => 'findings',
 			'results'        => array( 1, 2, 3, 4 ),
 			'repo-owner'     => 'test-owner',
 			'repo-name'      => 'test-repo',
@@ -94,6 +95,8 @@ final class ResultsOutputDumpTest extends TestCase {
 			),
 		);
 
+		// Reusing an output path must replace the old document, not append JSON.
+		file_put_contents( $this->temp_dump_file, '{"scan-outcome":"clean"}' );
 		vipgoci_results_output_dump(
 			$this->temp_dump_file,
 			$data
@@ -110,6 +113,7 @@ final class ResultsOutputDumpTest extends TestCase {
 
 		$this->assertSame(
 			array(
+				'scan-outcome'   => 'findings',
 				'results'        => array( 1, 2, 3, 4 ),
 				'repo-owner'     => 'test-owner',
 				'repo-name'      => 'test-repo',
