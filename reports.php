@@ -915,6 +915,10 @@ function vipgoci_report_submit_pr_generic_comment_from_results(
 				$github_postfields['body'] .= $scan_details_msg;
 			}
 
+			$github_postfields['body'] = vipgoci_github_comment_marker_add(
+				$github_postfields['body']
+			);
+
 			// Post to GitHub API.
 			vipgoci_http_api_post_url(
 				$github_url,
@@ -1389,6 +1393,10 @@ function vipgoci_report_submit_pr_review_from_results(
 
 				$y--;
 
+				$github_postfields['comments'][ $y ]['body'] = vipgoci_github_comment_marker_add(
+					$github_postfields['comments'][ $y ]['body']
+				);
+
 				$github_postfields_tmp['comments'][] =
 					$github_postfields['comments'][ $y ];
 
@@ -1396,6 +1404,10 @@ function vipgoci_report_submit_pr_review_from_results(
 					$github_postfields['comments'][ $y ]
 				);
 			}
+
+			$github_postfields_tmp['body'] = vipgoci_github_comment_marker_add(
+				$github_postfields_tmp['body']
+			);
 
 			// Actually send a request to GitHub.
 			$github_post_res_tmp = vipgoci_http_api_post_url(

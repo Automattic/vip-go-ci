@@ -458,7 +458,27 @@ function vipgoci_github_pr_reviews_comments_get(
 		vipgoci_cache( $cached_id, $prs_comments_cache );
 	}
 
+	/*
+	 * When a comment marker is configured, only consider
+	 * comments submitted by us, so that feedback from other
+	 * tools does not prevent ours from being posted.
+	 */
+	$token_holder_login = null;
+
+	if ( '' !== vipgoci_github_comment_marker_get() ) {
+		$token_holder_login = vipgoci_github_authenticated_user_get(
+			$options['token']
+		)->login;
+	}
+
 	foreach ( $prs_comments_cache as $pr_comment ) {
+		if (
+			( null !== $token_holder_login ) &&
+			( ! vipgoci_github_item_submitted_by_us( $pr_comment, $token_holder_login ) )
+		) {
+			continue;
+		}
+
 		if ( null === $pr_comment->position ) {
 			/*
 			 * If no line-number was provided,
@@ -554,7 +574,8 @@ function vipgoci_github_pr_reviews_comments_get_by_pr(
 			$options['token']
 		);
 
-		$filter['login'] = $current_user_info->login;
+		$filter['login']  = $current_user_info->login;
+		$filter['myself'] = true;
 	}
 
 	$page     = 1;
@@ -583,6 +604,11 @@ function vipgoci_github_pr_reviews_comments_get_by_pr(
 
 		foreach ( $comments as $comment ) {
 			if (
+				( isset( $filter['myself'] ) ) &&
+				( ! vipgoci_github_item_submitted_by_us( $comment, $filter['login'] ) )
+			) {
+				continue;
+			} elseif (
 				( isset( $filter['login'] ) ) &&
 				( $comment->user->login !== $filter['login'] )
 			) {
@@ -802,6 +828,10 @@ function vipgoci_github_pr_comments_generic_submit(
 	$github_postfields['body'] .=
 		"\n\r";
 
+	$github_postfields['body'] = vipgoci_github_comment_marker_add(
+		$github_postfields['body']
+	);
+
 	vipgoci_http_api_post_url(
 		$github_url,
 		$github_postfields,
@@ -867,7 +897,7 @@ function vipgoci_github_pr_comments_cleanup(
 
 		foreach ( $pr_comments as $pr_comment ) {
 
-			if ( $pr_comment->user->login !== $current_user_info->login ) {
+			if ( ! vipgoci_github_item_submitted_by_us( $pr_comment, $current_user_info->login ) ) {
 				// Do not delete other person's comment.
 				continue;
 			}
@@ -1059,7 +1089,8 @@ function vipgoci_github_pr_reviews_get(
 			$github_token
 		);
 
-		$filter['login'] = $current_user_info->login;
+		$filter['login']  = $current_user_info->login;
+		$filter['myself'] = true;
 	}
 
 	/*
@@ -1071,7 +1102,14 @@ function vipgoci_github_pr_reviews_get(
 	$ret_reviews_filtered = array();
 
 	foreach ( $ret_reviews as $pr_review ) {
-		if ( ! empty( $filter['login'] ) ) {
+		if ( ! empty( $filter['myself'] ) ) {
+			if ( ! vipgoci_github_item_submitted_by_us(
+				$pr_review,
+				$filter['login']
+			) ) {
+				continue;
+			}
+		} elseif ( ! empty( $filter['login'] ) ) {
 			if (
 				$pr_review->user->login !==
 				$filter['login']
@@ -1356,8 +1394,10 @@ function vipgoci_github_approve_pr(
 	);
 
 	// Add body to postfields. Ensure to remove IRC ignore constants first.
-	$github_postfields['body'] = vipgoci_irc_api_clean_ignorable_constants(
-		$message
+	$github_postfields['body'] = vipgoci_github_comment_marker_add(
+		vipgoci_irc_api_clean_ignorable_constants(
+			$message
+		)
 	);
 
 	vipgoci_log(
@@ -1734,6 +1774,28 @@ function vipgoci_github_authenticated_user_get(
 		return $cached_data;
 	}
 
+	/*
+	 * If the token-holder login was configured, use
+	 * it instead of asking GitHub. This is required for
+	 * tokens that cannot query /user, such as GITHUB_TOKEN.
+	 */
+	$token_login = vipgoci_github_token_login_get();
+
+	if ( null !== $token_login ) {
+		$current_user_info = (object) array(
+			'login'    => $token_login,
+			'html_url' => VIPGOCI_GITHUB_WEB_BASE_URL . '/' . (
+				str_ends_with( $token_login, '[bot]' ) ?
+				'apps/' . rawurlencode( substr( $token_login, 0, -5 ) ) :
+				rawurlencode( $token_login )
+			),
+		);
+
+		vipgoci_cache( $cached_id, $current_user_info );
+
+		return $current_user_info;
+	}
+
 	$github_url =
 		VIPGOCI_GITHUB_BASE_URL . '/' .
 		'user';
@@ -1770,6 +1832,131 @@ function vipgoci_github_authenticated_user_get(
 	vipgoci_cache( $cached_id, $current_user_info );
 
 	return $current_user_info;
+}
+
+/**
+ * Set login of the token-holder, so that the GitHub
+ * API is not queried for it. Null clears the value.
+ *
+ * @param null|string $login Login of token-holder.
+ *
+ * @return void
+ */
+function vipgoci_github_token_login_set( null|string $login ) :void {
+	global $vipgoci_github_token_login;
+
+	$vipgoci_github_token_login = $login;
+}
+
+/**
+ * Get login of the token-holder, if configured.
+ *
+ * @return null|string Login of token-holder, or null if not configured.
+ */
+function vipgoci_github_token_login_get() :null|string {
+	global $vipgoci_github_token_login;
+
+	return $vipgoci_github_token_login ?? null;
+}
+
+/**
+ * Set ID of the hidden marker added to comments and
+ * reviews posted. Null disables the marker.
+ *
+ * @param null|string $marker_id Marker ID.
+ *
+ * @return void
+ */
+function vipgoci_github_comment_marker_set( null|string $marker_id ) :void {
+	global $vipgoci_github_comment_marker_id;
+
+	$vipgoci_github_comment_marker_id = $marker_id;
+}
+
+/**
+ * Get the hidden marker added to comments and reviews.
+ *
+ * @return string Marker, or empty string if not configured.
+ */
+function vipgoci_github_comment_marker_get() :string {
+	global $vipgoci_github_comment_marker_id;
+
+	if ( empty( $vipgoci_github_comment_marker_id ) ) {
+		return '';
+	}
+
+	return VIPGOCI_GITHUB_COMMENT_MARKER_PREFIX .
+		$vipgoci_github_comment_marker_id .
+		VIPGOCI_GITHUB_COMMENT_MARKER_SUFFIX;
+}
+
+/**
+ * Add the hidden marker to a comment or review body,
+ * if a marker is configured and not already present.
+ *
+ * @param string $body Comment or review body.
+ *
+ * @return string Body with marker added.
+ */
+function vipgoci_github_comment_marker_add( string $body ) :string {
+	$marker = vipgoci_github_comment_marker_get();
+
+	if (
+		( '' === $marker ) ||
+		( str_contains( $body, $marker ) )
+	) {
+		return $body;
+	}
+
+	return $body . "\n" . $marker;
+}
+
+/**
+ * Remove any hidden markers from a comment or review body.
+ *
+ * @param string $body Comment or review body.
+ *
+ * @return string Body without markers.
+ */
+function vipgoci_github_comment_marker_remove( string $body ) :string {
+	return preg_replace(
+		'/\s*' . preg_quote( VIPGOCI_GITHUB_COMMENT_MARKER_PREFIX, '/' ) .
+			'[A-Za-z0-9._:-]+' .
+			preg_quote( VIPGOCI_GITHUB_COMMENT_MARKER_SUFFIX, '/' ) . '/',
+		'',
+		$body
+	);
+}
+
+/**
+ * Determine if a comment or review was submitted by us: authored
+ * by the specified login and, if a marker is configured, carrying
+ * the marker.
+ *
+ * @param object $item  Comment or review object from the GitHub API.
+ * @param string $login Login of token-holder.
+ *
+ * @return bool True if submitted by us.
+ */
+function vipgoci_github_item_submitted_by_us( object $item, string $login ) :bool {
+	if (
+		( ! isset( $item->user->login ) ) ||
+		( $item->user->login !== $login )
+	) {
+		return false;
+	}
+
+	$marker = vipgoci_github_comment_marker_get();
+
+	if ( '' === $marker ) {
+		return true;
+	}
+
+	return (
+		( isset( $item->body ) ) &&
+		( is_string( $item->body ) ) &&
+		( str_contains( $item->body, $marker ) )
+	);
 }
 
 

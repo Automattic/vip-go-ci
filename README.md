@@ -317,6 +317,18 @@ Use the `--max-exec-time` option to set maximum execution time (in seconds):
 
 > ./vip-go-ci.php ... --max-exec-time=600
 
+### Using GitHub Actions' `GITHUB_TOKEN`
+
+`vip-go-ci` normally asks GitHub which user the token belongs to, and uses that login to recognize the comments and reviews it posted earlier. GitHub App installation tokens, such as the `GITHUB_TOKEN` provided by GitHub Actions, cannot query this information. For these tokens (prefixed `ghs_`), `vip-go-ci` assumes the `github-actions[bot]` login. A different login can be set with `--github-token-login`, which also skips the lookup for any other token.
+
+Since other workflows may also post as `github-actions[bot]`, use `--comment-marker` to add a hidden marker to every comment and review `vip-go-ci` posts. When set, only feedback carrying the marker is treated as posted by `vip-go-ci`, both when avoiding duplicate comments and when cleaning up or dismissing earlier feedback. For example:
+
+> ./vip-go-ci.php ... --token="$GITHUB_TOKEN" --comment-marker="github-actions"
+
+-- this adds `<!-- vip-go-ci-marker:github-actions -->` to the comments and reviews posted. Note that feedback posted before the marker was enabled is not recognized as `vip-go-ci`'s own.
+
+The workflow needs `pull-requests: write` and `issues: write` permissions. Auto-approvals additionally require the repository setting "Allow GitHub Actions to create and approve pull requests".
+
 ### Informational message
 
 To help users understand better why a bot is posting comments and reviews on their pull requests, and sometimes automatically approving them, it can be helpful to have a bit of information added to the comments `vip-go-ci` posts. This feature serves this purpose.

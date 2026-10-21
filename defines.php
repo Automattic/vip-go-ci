@@ -39,6 +39,22 @@ if ( ! defined( 'VIPGOCI_GITHUB_BASE_URL' ) ) {
 define( 'VIPGOCI_GITHUB_API_VERSION', '2022-11-28' );
 
 /*
+ * GitHub App installation tokens (such as the GITHUB_TOKEN provided
+ * by GitHub Actions) start with this prefix and cannot query the
+ * /user endpoint. Comments made with GITHUB_TOKEN are authored by
+ * the login defined below.
+ */
+define( 'VIPGOCI_GITHUB_APP_INSTALLATION_TOKEN_PREFIX', 'ghs_' );
+define( 'VIPGOCI_GITHUB_ACTIONS_BOT_LOGIN', 'github-actions[bot]' );
+
+/*
+ * Hidden marker added to comments and reviews when --comment-marker
+ * is set. Used to identify feedback posted by this instance.
+ */
+define( 'VIPGOCI_GITHUB_COMMENT_MARKER_PREFIX', '<!-- vip-go-ci-marker:' );
+define( 'VIPGOCI_GITHUB_COMMENT_MARKER_SUFFIX', ' -->' );
+
+/*
  * Defines for various sizes, such as KB.
  */
 define( 'VIPGOCI_KB_IN_BYTES', 1024 );
