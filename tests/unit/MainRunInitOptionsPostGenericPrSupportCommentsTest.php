@@ -146,4 +146,35 @@ final class MainRunInitOptionsPostGenericPrSupportCommentsTest extends TestCase 
 			$this->options
 		);
 	}
+
+	/**
+	 * Check that a single support message works without the optional
+	 * skip-if-label-exists and repo-meta-match options.
+	 *
+	 * @covers ::vipgoci_run_init_options_post_generic_pr_support_comments
+	 *
+	 * @return void
+	 */
+	public function testRunInitOptionsPostGenericPrSupportCommentsWithoutOptionalOptions() :void {
+		$this->options = array(
+			'post-generic-pr-support-comments'           => 'true',
+			'post-generic-pr-support-comments-on-drafts' => '1:false',
+			'post-generic-pr-support-comments-string'    => '1:Text1',
+			'post-generic-pr-support-comments-branches'  => '1:any',
+		);
+
+		vipgoci_run_init_options_post_generic_pr_support_comments(
+			$this->options
+		);
+
+		$this->assertSame(
+			array(),
+			$this->options['post-generic-pr-support-comments-skip-if-label-exists']
+		);
+
+		$this->assertSame(
+			array( 1 => 'Text1' ),
+			$this->options['post-generic-pr-support-comments-string']
+		);
+	}
 }

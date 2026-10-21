@@ -1081,6 +1081,9 @@ function vipgoci_run_init_options_reviews( array &$options ) :void {
 			PHP_EOL . VIPGOCI_IRC_IGNORE_STRING_START . PHP_EOL .
 			$options['informational-msg'] .
 			PHP_EOL . VIPGOCI_IRC_IGNORE_STRING_END . PHP_EOL;
+	} else {
+		// Reporting functions expect a string.
+		$options['informational-msg'] = '';
 	}
 
 	/*
@@ -1367,6 +1370,14 @@ function vipgoci_run_init_options_post_generic_pr_support_comments( array &$opti
 		'string',
 		false
 	);
+
+	/*
+	 * The option is optional; ensure it is an array when not
+	 * specified so that later count() calls do not fail.
+	 */
+	if ( null === $options['post-generic-pr-support-comments-skip-if-label-exists'] ) {
+		$options['post-generic-pr-support-comments-skip-if-label-exists'] = array();
+	}
 
 	vipgoci_option_generic_support_comments_process(
 		$options,
