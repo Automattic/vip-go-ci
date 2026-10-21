@@ -256,6 +256,48 @@ Here is an example from an older version -- output generated on your system can 
 
 vip-go-ci should be compatible with most build management software available. Execution is similar to running it standalone on the console. However, using the [environmental variables](#configuring-via-environmental-variables) to configure it is recommended in production. It is also recommended to run `tools-init.sh` on regular intervals.
 
+### Running vip-go-ci as a GitHub Action
+
+This repository is also a GitHub Action. It checks out the pull request, sets up PHP, installs (and caches) the tools via `tools-init.sh`, and runs the `vip-go-ci` version at the ref used. By default it uses the workflow's `GITHUB_TOKEN` (see [below](#using-github-actions-github_token)), so feedback is posted as `github-actions[bot]`.
+
+```yaml
+name: vip-go-ci
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  vip-go-ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: Automattic/vip-go-ci@trunk
+        with:
+          lint-php-version: '8.2'
+          support-comment: 'This pull request is scanned automatically by vip-go-ci.'
+          wpscan-api-token: ${{ secrets.WPSCAN_API_TOKEN }} # Optional, enables WPScan API scanning.
+```
+
+Defaults mirror the configuration of the WordPress VIP Code Analysis Bot. See [action.yml](action.yml) for all inputs. Options not exposed as inputs can be passed via `extra-options`, one per line; these take precedence over the inputs:
+
+```yaml
+        with:
+          extra-options: |
+            --phpcs-skip-folders=plugins
+            --review-comments-max=10
+```
+
+Notes:
+
+* Only Linux runners are supported.
+* Pull requests from forks and, by default, pull requests opened by the VIP Codebase Manager (`vip/codebase_manager/*` branches) are skipped.
+* The `result` output is `success`, `issues`, `skipped` or `error`. Errors found in the code fail the step unless `fail-on-issues` is `false`; commits that are not part of a pull request, or not the latest commit in one, are treated as skipped.
+* Auto-approvals are disabled by default. With `GITHUB_TOKEN`, they require the repository setting "Allow GitHub Actions to create and approve pull requests".
+
 ## Features overview
 
 `vip-go-ci` has support for various features not documented above, such as dismissing stale reviews, setting specific options via the repository being scanned and more. These features are configurable via the command-line or the environment, and are documented below.
