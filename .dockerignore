@@ -1,0 +1,18 @@
+# Only what vip-go-ci needs at runtime is copied into the image.
+.git
+.github
+docker/*
+!docker/entrypoint.sh
+docs-images
+tests
+vendor
+Dockerfile
+.dockerignore
+*.md
+phpunit.xml
+phpunit.xml.dist
+test.bootstrap.php
+unittests*.ini
+config*.ini
+*.swp
+*.dia~
