@@ -249,6 +249,10 @@ function vipgoci_help_print() :void {
 		"\t" . '                                     information.' . PHP_EOL .
 		"\t" . '--repo-meta-api-user-id=STRING       Authentication detail for the repo-meta API.' . PHP_EOL .
 		"\t" . '--repo-meta-api-access-token=STRING  Access token for the repo-meta API.' . PHP_EOL .
+		"\t" . '--repo-meta-data=STRING              Repository meta-data to use instead of fetching it from the' . PHP_EOL .
+		"\t" . '                                     repo-meta API. Comma separated field=value pairs, e.g.' . PHP_EOL .
+		"\t" . '                                     "code_review_strategy=vip,enforce_github_reviews=1".' . PHP_EOL .
+		"\t" . '                                     When set, the repo-meta API is not called.' . PHP_EOL .
 		PHP_EOL .
 		'IRC API configuration:' . PHP_EOL .
 		"\t" . '--irc-api-url=STRING           URL to IRC API to send messages.' . PHP_EOL .
@@ -394,6 +398,7 @@ function vipgoci_options_recognized() :array {
 		'repo-meta-api-base-url:',
 		'repo-meta-api-user-id:',
 		'repo-meta-api-access-token:',
+		'repo-meta-data:',
 
 		/*
 		 * IRC API configuration.
@@ -1942,6 +1947,11 @@ function vipgoci_run_init_options_repo_meta_api( array &$options ) :void {
 		array(
 			'repo-meta-api-access-token',
 		)
+	);
+
+	vipgoci_option_repo_meta_data_handle(
+		$options,
+		'repo-meta-data'
 	);
 }
 

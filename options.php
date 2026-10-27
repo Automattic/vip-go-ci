@@ -1334,6 +1334,69 @@ function vipgoci_option_generic_support_comments_match(
 }
 
 /**
+ * Process option providing repository meta-data, used
+ * instead of fetching the data from the repo-meta API.
+ *
+ * Syntax of this option is:
+ * --repo-meta-data="mykey=myvalue,foo=bar"
+ *
+ * Values are processed the same way as values of
+ * --post-generic-pr-support-comments-repo-meta-match,
+ * so the two can be matched against each other.
+ *
+ * @param array  $options     Options array for the program.
+ * @param string $option_name Option name.
+ *
+ * @return void
+ */
+function vipgoci_option_repo_meta_data_handle(
+	array &$options,
+	string $option_name
+) :void {
+	vipgoci_option_array_handle(
+		$options,
+		$option_name,
+		array()
+	);
+
+	if ( empty( $options[ $option_name ] ) ) {
+		$options[ $option_name ] = null;
+
+		return;
+	}
+
+	$processed_option_value = array();
+
+	foreach ( $options[ $option_name ] as $key_value_item ) {
+		$key_value_item_arr = explode(
+			'=',
+			$key_value_item,
+			2
+		);
+
+		if ( ! isset( $key_value_item_arr[1] ) ) {
+			vipgoci_sysexit(
+				'Parameter ' .
+					'--' . $option_name . ' ' .
+					'is illegally constructed, ' .
+					'it is missing a value',
+				array(
+					'key_value_item' => $key_value_item,
+				),
+				VIPGOCI_EXIT_USAGE_ERROR
+			);
+		}
+
+		$processed_option_value[ $key_value_item_arr[0] ] =
+			vipgoci_convert_string_to_type(
+				$key_value_item_arr[1]
+			);
+	}
+
+	$options[ $option_name ] = $processed_option_value;
+}
+
+/**
  * Process --phpcs-runtime-set like parameters --
  * expected to be an array of values.
  *

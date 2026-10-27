@@ -249,4 +249,64 @@ final class RepoMetaApiRepoMetaApiDataMatchTest extends TestCase {
 			$option_key_no
 		);
 	}
+
+	/**
+	 * Test matching against data from --repo-meta-data,
+	 * with no repo-meta API configured.
+	 *
+	 * @covers ::vipgoci_repo_meta_api_data_match
+	 */
+	public function test_repo_meta_api_data_match_repo_meta_data_option() {
+		$this->options['repo-meta-api-base-url'] = null;
+
+		$this->options['data_match_option'] =
+			'1:code_review_strategy=vip,enforce_github_reviews=1|||2:code_review_strategy=vip,enforce_github_reviews=null,enforce_github_reviews=0';
+
+		vipgoci_option_generic_support_comments_match(
+			$this->options,
+			'data_match_option'
+		);
+
+		$tests = array(
+			array( 'code_review_strategy=vip,enforce_github_reviews=1', true, 1 ),
+			array( 'code_review_strategy=vip,enforce_github_reviews=0', true, 2 ),
+			array( 'code_review_strategy=VIP,enforce_github_reviews=null', true, 2 ),
+			array( 'code_review_strategy=customer,enforce_github_reviews=1', false, null ),
+			array( 'code_review_strategy=vip', false, null ),
+			array( '', false, null ),
+		);
+
+		foreach ( $tests as $test ) {
+			$this->options['repo-meta-data'] = $test[0];
+
+			vipgoci_option_repo_meta_data_handle(
+				$this->options,
+				'repo-meta-data'
+			);
+
+			$option_key_no = null;
+
+			vipgoci_unittests_output_suppress();
+
+			$repo_meta_api_data_match = vipgoci_repo_meta_api_data_match(
+				$this->options,
+				'data_match_option',
+				$option_key_no
+			);
+
+			vipgoci_unittests_output_unsuppress();
+
+			$this->assertSame(
+				$test[1],
+				$repo_meta_api_data_match,
+				'repo-meta-data: ' . $test[0]
+			);
+
+			$this->assertSame(
+				$test[2],
+				$option_key_no,
+				'repo-meta-data: ' . $test[0]
+			);
+		}
+	}
 }

@@ -182,6 +182,9 @@ function vipgoci_repo_meta_api_data_fetch(
  * found in a particular $option parameter
  * specified as an argument here ($option_name).
  *
+ * When the --repo-meta-data option is set, its
+ * data is used instead and the API is not called.
+ *
  * @param array  $options         Options needed.
  * @param string $option_name     Option name.
  * @param mixed  $option_no_match Variable to update when there is a match.
@@ -195,7 +198,10 @@ function vipgoci_repo_meta_api_data_match(
 ) :bool {
 	if (
 		( empty( $option_name ) ) ||
-		( empty( $options['repo-meta-api-base-url'] ) ) ||
+		(
+			( empty( $options['repo-meta-api-base-url'] ) ) &&
+			( empty( $options['repo-meta-data'] ) )
+		) ||
 		( empty( $options[ $option_name ] ) )
 	) {
 		vipgoci_log(
@@ -208,6 +214,10 @@ function vipgoci_repo_meta_api_data_match(
 				'repo_meta_api_base_url'
 					=> isset( $options['repo-meta-api-base-url'] ) ?
 						$options['repo-meta-api-base-url'] : '',
+
+				'repo_meta_data'
+					=> isset( $options['repo-meta-data'] ) ?
+						$options['repo-meta-data'] : null,
 
 				'repo_meta_match'
 					=> ( ( ! empty( $option_name ) ) && ( isset( $options[ $option_name ] ) ) ) ?
@@ -222,18 +232,34 @@ function vipgoci_repo_meta_api_data_match(
 			array(
 				'option_name'            => $option_name,
 				'repo_meta_match'        => $options[ $option_name ],
-				'repo_meta_api_base_url' => $options['repo-meta-api-base-url'],
+				'repo_meta_api_base_url' => isset( $options['repo-meta-api-base-url'] ) ?
+					$options['repo-meta-api-base-url'] : '',
+				'repo_meta_data'         => isset( $options['repo-meta-data'] ) ?
+					$options['repo-meta-data'] : null,
 			)
 		);
 	}
 
-	$repo_meta_data = vipgoci_repo_meta_api_data_fetch(
-		$options['repo-meta-api-base-url'],
-		$options['repo-meta-api-user-id'],
-		$options['repo-meta-api-access-token'],
-		$options['repo-owner'],
-		$options['repo-name']
-	);
+	if ( ! empty( $options['repo-meta-data'] ) ) {
+		/*
+		 * Use data from the --repo-meta-data option,
+		 * shaped like a response from the API with one site.
+		 */
+		$repo_meta_data = array(
+			'status' => 'ok',
+			'data'   => array(
+				$options['repo-meta-data'],
+			),
+		);
+	} else {
+		$repo_meta_data = vipgoci_repo_meta_api_data_fetch(
+			$options['repo-meta-api-base-url'],
+			$options['repo-meta-api-user-id'],
+			$options['repo-meta-api-access-token'],
+			$options['repo-owner'],
+			$options['repo-name']
+		);
+	}
 
 	if (
 		( empty(

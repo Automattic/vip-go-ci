@@ -633,6 +633,12 @@ For example:
 
 With the `--post-generic-pr-support-comments-repo-meta-match` parameter added, `vip-go-ci` will look at the data returned by the repo-meta API, and check if these fields and their values are found in there for at least one entry. If so, the generic support message will be posted, and not otherwise.
 
+When the repo-meta API is not reachable, the data can be provided with the `--repo-meta-data` parameter instead, as comma separated `field=value` pairs. When it is set, the repo-meta API is not called, and the data is matched as if it were the only entry returned by the API. For example:
+
+> ./vip-go-ci.php --post-generic-pr-support-comments=true ... --post-generic-pr-support-comments-repo-meta-match="1:code_review_strategy=vip,enforce_github_reviews=1" --repo-meta-data="code_review_strategy=vip,enforce_github_reviews=1"
+
+Values `true`, `false` and `null` are converted to their types and other values are compared as lower-case strings, the same way as in `--post-generic-pr-support-comments-repo-meta-match`.
+
 The following Generic Support Message related options can be configured via repository-config file:
 
 #### Option `--post-generic-pr-support-comments`
