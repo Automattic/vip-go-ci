@@ -933,6 +933,9 @@ function vipgoci_github_pr_comments_cleanup(
 						$github_token,
 						$pr_comment->id
 					);
+
+					// Deleted; a comment can match more than one item.
+					break;
 				}
 			}
 		}
@@ -1570,11 +1573,14 @@ function vipgoci_github_prs_implicated(
 			}
 		}
 
-		sleep( 2 );
-
 		$page++;
 
 		$prs_implicated_unfiltered_cnt = count( $prs_implicated_unfiltered );
+
+		// Only sleep if another page is to be fetched.
+		if ( $prs_implicated_unfiltered_cnt >= $per_page ) {
+			sleep( 2 );
+		}
 	} while ( $prs_implicated_unfiltered_cnt >= $per_page );
 
 	/*

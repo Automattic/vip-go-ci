@@ -142,7 +142,7 @@ define( 'VIPGOCI_CACHE_CLEAR', '--VIPGOCI-CACHE-CLEAR-0x321--' );
 
 // This can be overridden in programs using vip-go-ci as library.
 if ( ! defined( 'VIPGOCI_HTTP_API_WAIT_TIME_SECONDS' ) ) {
-	define( 'VIPGOCI_HTTP_API_WAIT_TIME_SECONDS', 3 );
+	define( 'VIPGOCI_HTTP_API_WAIT_TIME_SECONDS', 1 );
 }
 
 define( 'VIPGOCI_HTTP_API_WAIT_APIS_ARRAY', array( VIPGOCI_GITHUB_BASE_URL ) );
