@@ -509,6 +509,21 @@ function vipgoci_github_pr_reviews_comments_get(
 }
 
 /**
+ * Determine if an inline review comment is still active, that
+ * is, if it has not become obsolete as the code has changed.
+ *
+ * GitHub can report a position for obsolete comments, but
+ * reports no line for them.
+ *
+ * @param object $comment Comment, as returned by GitHub.
+ *
+ * @return bool True if the comment is active.
+ */
+function vipgoci_github_pr_comment_is_active( object $comment ) :bool {
+	return ( null !== $comment->position ) && ( null !== $comment->line );
+}
+
+/**
  * Get all review-comments submitted to a
  * particular pull request.
  * Supports filtering by:
@@ -619,13 +634,7 @@ function vipgoci_github_pr_reviews_comments_get_by_pr(
 			}
 
 			if ( isset( $filter['comments_active'] ) ) {
-				if (
-					( ( null !== $comment->position ) &&
-					( false === $filter['comments_active'] ) )
-					||
-					( ( null === $comment->position ) &&
-					( true === $filter['comments_active'] ) )
-				) {
+				if ( vipgoci_github_pr_comment_is_active( $comment ) !== $filter['comments_active'] ) {
 					continue;
 				}
 			}
@@ -1303,15 +1312,14 @@ function vipgoci_github_pr_reviews_dismiss_with_non_active_comments(
 		}
 
 		/*
-		 * In case position (relative line number)
-		 * is at null, this means that the comment
-		 * is no longer 'active': It has become obsolete
-		 * as the code has changed. If we have not so far
+		 * In case the comment is no longer 'active',
+		 * it has become obsolete as the code
+		 * has changed. If we have not so far
 		 * found any instance of the review associated
 		 * with the comment having other active comments,
 		 * mark it as 'safe to dismiss'.
 		 */
-		if ( null === $comment_item->position ) {
+		if ( false === vipgoci_github_pr_comment_is_active( $comment_item ) ) {
 			if (
 				false !== $reviews_status[ $comment_item->pull_request_review_id ]
 			) {
