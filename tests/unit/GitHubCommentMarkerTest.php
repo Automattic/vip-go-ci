@@ -82,6 +82,7 @@ final class GitHubCommentMarkerTest extends TestCase {
 			'id'       => 7,
 			'state'    => $state,
 			'position' => 3,
+			'line'     => 3,
 			'user'     => array( 'login' => $login ),
 			'body'     => $body,
 		);
@@ -267,6 +268,7 @@ final class GitHubCommentMarkerTest extends TestCase {
 				$this->item( $login, 'Comment' ),
 				array(
 					'position'               => null,
+					'line'                   => null,
 					'pull_request_review_id' => $review_id,
 				)
 			);

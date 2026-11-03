@@ -141,10 +141,11 @@ final class GitHubRequestGuardsTest extends TestCase {
 	 * Return an inline comment fixture.
 	 *
 	 * @param int|null $position Active diff position, or null for an obsolete comment.
+	 * @param int|null $line     Line of the comment, or null for an obsolete comment.
 	 *
 	 * @return array Comment fixture.
 	 */
-	private function comment( ?int $position = 3 ): array {
+	private function comment( ?int $position = 3, ?int $line = 3 ): array {
 		return array(
 			'id'                     => 10,
 			'pull_request_review_id' => 7,
@@ -153,6 +154,7 @@ final class GitHubRequestGuardsTest extends TestCase {
 			'commit_id'              => 'abc',
 			'path'                   => 'test.php',
 			'position'               => $position,
+			'line'                   => $line,
 			'body'                   => 'Escape output.',
 			'user'                   => array( 'login' => 'bot' ),
 			'created_at'             => '2026-01-02T00:00:00Z',
@@ -712,7 +714,7 @@ final class GitHubRequestGuardsTest extends TestCase {
 		$GLOBALS['vipgoci_test_http_responses']['GET /repos/owner/repo/pulls/42/comments'] = array( $this->comment() );
 		vipgoci_github_pr_reviews_comments_get_by_pr( $this->options, 42, array( 'login' => 'myself' ) );
 		$GLOBALS['vipgoci_test_http_requests'] = array();
-		$GLOBALS['vipgoci_test_http_responses']['GET /repos/owner/repo/pulls/42/comments'] = array( $this->comment( null ) );
+		$GLOBALS['vipgoci_test_http_responses']['GET /repos/owner/repo/pulls/42/comments'] = array( $this->comment( null, null ) );
 
 		vipgoci_github_pr_reviews_dismiss_with_non_active_comments( $this->options, 42 );
 
@@ -726,13 +728,65 @@ final class GitHubRequestGuardsTest extends TestCase {
 	}
 
 	/**
+	 * GitHub can report a position for an obsolete comment, with no line.
+	 *
+	 * @return void
+	 */
+	public function testObsoleteCommentWithPositionDismissesReview(): void {
+		$GLOBALS['vipgoci_test_http_responses']['GET /repos/owner/repo/pulls/42/reviews']  = array( $this->review() );
+		$GLOBALS['vipgoci_test_http_responses']['GET /repos/owner/repo/pulls/42/comments'] = array( $this->comment( 1, null ) );
+
+		vipgoci_github_pr_reviews_dismiss_with_non_active_comments( $this->options, 42 );
+
+		$this->assertRequests(
+			array(
+				'GET /repos/owner/repo/pulls/42/reviews',
+				'GET /repos/owner/repo/pulls/42/comments',
+				'PUT /repos/owner/repo/pulls/42/reviews/7/dismissals',
+			)
+		);
+	}
+
+	/**
+	 * An obsolete comment with a position must not outweigh an active comment.
+	 *
+	 * @return void
+	 */
+	public function testObsoleteCommentWithPositionAndActiveCommentPreventDismissal(): void {
+		$GLOBALS['vipgoci_test_http_responses']['GET /repos/owner/repo/pulls/42/reviews']  = array( $this->review() );
+		$GLOBALS['vipgoci_test_http_responses']['GET /repos/owner/repo/pulls/42/comments'] = array( $this->comment( 1, null ), $this->comment() );
+
+		vipgoci_github_pr_reviews_dismiss_with_non_active_comments( $this->options, 42 );
+
+		$this->assertRequests( array( 'GET /repos/owner/repo/pulls/42/reviews', 'GET /repos/owner/repo/pulls/42/comments' ) );
+	}
+
+	/**
+	 * Obsolete comments must not count as active comments.
+	 *
+	 * @return void
+	 */
+	public function testActiveCommentFilterExcludesObsoleteCommentWithPosition(): void {
+		$GLOBALS['vipgoci_test_http_responses']['GET /repos/owner/repo/pulls/42/comments'] = array( $this->comment(), $this->comment( 1, null ), $this->comment( null, null ) );
+
+		$active = vipgoci_github_pr_reviews_comments_get_by_pr( $this->options, 42, array( 'comments_active' => true ) );
+
+		$this->assertCount( 1, $active );
+		$this->assertSame( 3, $active[0]->line );
+
+		$obsolete = vipgoci_github_pr_reviews_comments_get_by_pr( $this->options, 42, array( 'comments_active' => false ) );
+
+		$this->assertCount( 2, $obsolete );
+	}
+
+	/**
 	 * Active inline comments must keep a blocking review in place.
 	 *
 	 * @return void
 	 */
 	public function testActiveCommentPreventsDismissal(): void {
 		$GLOBALS['vipgoci_test_http_responses']['GET /repos/owner/repo/pulls/42/reviews']  = array( $this->review() );
-		$GLOBALS['vipgoci_test_http_responses']['GET /repos/owner/repo/pulls/42/comments'] = array( $this->comment( null ), $this->comment() );
+		$GLOBALS['vipgoci_test_http_responses']['GET /repos/owner/repo/pulls/42/comments'] = array( $this->comment( null, null ), $this->comment() );
 
 		vipgoci_github_pr_reviews_dismiss_with_non_active_comments( $this->options, 42 );
 
