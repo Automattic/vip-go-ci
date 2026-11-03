@@ -31,6 +31,8 @@ use PHPUnit\Framework\TestCase;
 #[CoversFunction( 'vipgoci_github_pr_reviews_comments_get_by_pr' )]
 #[CoversFunction( 'vipgoci_github_pr_reviews_dismiss_with_non_active_comments' )]
 #[CoversFunction( 'vipgoci_github_pr_comments_generic_submit' )]
+#[CoversFunction( 'vipgoci_github_pr_comments_cleanup' )]
+#[CoversFunction( 'vipgoci_github_prs_implicated' )]
 final class GitHubCommentMarkerTest extends TestCase {
 	/**
 	 * Options for the fixture repository.
@@ -317,5 +319,68 @@ final class GitHubCommentMarkerTest extends TestCase {
 			'<!-- vip-go-ci-marker:actions -->',
 			$GLOBALS['vipgoci_test_http_requests'][0]['body']['body']
 		);
+	}
+
+	/**
+	 * A comment matching several items to remove is only deleted once.
+	 *
+	 * @return void
+	 */
+	public function testCommentMatchingSeveralItemsDeletedOnce(): void {
+		vipgoci_github_token_login_set( 'bot' );
+
+		$GLOBALS['vipgoci_test_http_responses'] = array(
+			'GET /repos/owner/repo/pulls'             => array(
+				array(
+					'number' => 42,
+					'head'   => array(
+						'ref' => 'branch',
+						'sha' => 'abc',
+					),
+				),
+			),
+			'GET /repos/owner/repo/issues/42/comments' => array(
+				$this->item( 'bot', 'No issues found. See Update Scan.' ),
+			),
+		);
+
+		vipgoci_github_pr_comments_cleanup(
+			'owner',
+			'repo',
+			'abc',
+			$this->options['token'],
+			array(),
+			false,
+			array( 'No issues found', 'Update Scan' )
+		);
+
+		$deletes = array_filter(
+			$GLOBALS['vipgoci_test_http_requests'],
+			static fn( array $request ): bool => str_starts_with( $request['request'], 'DELETE ' )
+		);
+
+		$this->assertSame(
+			array( 'DELETE /repos/owner/repo/issues/comments/7' ),
+			array_values( array_column( $deletes, 'request' ) )
+		);
+	}
+
+	/**
+	 * Does not sleep after fetching the last page of pull requests.
+	 *
+	 * @return void
+	 */
+	public function testPrsImplicatedDoesNotSleepAfterLastPage(): void {
+		$time_start = microtime( true );
+
+		vipgoci_github_prs_implicated(
+			'owner',
+			'repo',
+			'abc',
+			$this->options['token'],
+			array()
+		);
+
+		$this->assertLessThan( 1, microtime( true ) - $time_start );
 	}
 }
