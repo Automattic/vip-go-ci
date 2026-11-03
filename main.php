@@ -72,6 +72,16 @@ function vipgoci_help_print() :void {
 		"\t" . '--repo-name=STRING             Specify name of the repository.' . PHP_EOL .
 		"\t" . '--commit=STRING                Specify the exact commit to scan (SHA).' . PHP_EOL .
 		"\t" . '--token=STRING                 The access-token to use to communicate with GitHub.' . PHP_EOL .
+		"\t" . '--github-token-login=STRING    Login of the token-holder. When set, the GitHub API is not' . PHP_EOL .
+		"\t" . '                               queried for it. Defaults to "' . VIPGOCI_GITHUB_ACTIONS_BOT_LOGIN . '" for' . PHP_EOL .
+		"\t" . '                               GitHub App installation tokens, such as GITHUB_TOKEN.' . PHP_EOL .
+		"\t" . '--comment-marker=STRING        Add a hidden marker with this ID to comments and reviews' . PHP_EOL .
+		"\t" . '                               posted, and only treat feedback carrying the marker as' . PHP_EOL .
+		"\t" . '                               our own. Useful when the token is shared with other tools.' . PHP_EOL .
+		"\t" . '                               Allowed characters: A-Z, a-z, 0-9, ".", "_", ":" and "-".' . PHP_EOL .
+		"\t" . '--comment-marker-legacy-login=STRING  Login vip-go-ci posted as before --comment-marker was' . PHP_EOL .
+		"\t" . '                               enabled. Its feedback without any marker is treated as our' . PHP_EOL .
+		"\t" . '                               own. Default is "' . VIPGOCI_GITHUB_COMMENT_MARKER_LEGACY_LOGIN_DEFAULT . '".' . PHP_EOL .
 		PHP_EOL .
 		'PHP Linting configuration:' . PHP_EOL .
 		"\t" . '--lint=BOOL                    Whether to do PHP linting. Default is true.' . PHP_EOL .
@@ -242,6 +252,10 @@ function vipgoci_help_print() :void {
 		"\t" . '                                     information.' . PHP_EOL .
 		"\t" . '--repo-meta-api-user-id=STRING       Authentication detail for the repo-meta API.' . PHP_EOL .
 		"\t" . '--repo-meta-api-access-token=STRING  Access token for the repo-meta API.' . PHP_EOL .
+		"\t" . '--repo-meta-data=STRING              Repository meta-data to use instead of fetching it from the' . PHP_EOL .
+		"\t" . '                                     repo-meta API. Comma separated field=value pairs, e.g.' . PHP_EOL .
+		"\t" . '                                     "code_review_strategy=vip,enforce_github_reviews=1".' . PHP_EOL .
+		"\t" . '                                     When set, the repo-meta API is not called.' . PHP_EOL .
 		PHP_EOL .
 		'IRC API configuration:' . PHP_EOL .
 		"\t" . '--irc-api-url=STRING           URL to IRC API to send messages.' . PHP_EOL .
@@ -294,6 +308,9 @@ function vipgoci_options_recognized() :array {
 		'repo-name:',
 		'commit:',
 		'token:',
+		'github-token-login:',
+		'comment-marker:',
+		'comment-marker-legacy-login:',
 
 		/*
 		 * PHP Linting configuration.
@@ -385,6 +402,7 @@ function vipgoci_options_recognized() :array {
 		'repo-meta-api-base-url:',
 		'repo-meta-api-user-id:',
 		'repo-meta-api-access-token:',
+		'repo-meta-data:',
 
 		/*
 		 * IRC API configuration.
@@ -1072,6 +1090,9 @@ function vipgoci_run_init_options_reviews( array &$options ) :void {
 			PHP_EOL . VIPGOCI_IRC_IGNORE_STRING_START . PHP_EOL .
 			$options['informational-msg'] .
 			PHP_EOL . VIPGOCI_IRC_IGNORE_STRING_END . PHP_EOL;
+	} else {
+		// Reporting functions expect a string.
+		$options['informational-msg'] = '';
 	}
 
 	/*
@@ -1359,6 +1380,14 @@ function vipgoci_run_init_options_post_generic_pr_support_comments( array &$opti
 		false
 	);
 
+	/*
+	 * The option is optional; ensure it is an array when not
+	 * specified so that later count() calls do not fail.
+	 */
+	if ( null === $options['post-generic-pr-support-comments-skip-if-label-exists'] ) {
+		$options['post-generic-pr-support-comments-skip-if-label-exists'] = array();
+	}
+
 	vipgoci_option_generic_support_comments_process(
 		$options,
 		'post-generic-pr-support-comments-branches',
@@ -1610,6 +1639,69 @@ function vipgoci_run_init_options_git_repo( array &$options ): void {
  * @codeCoverageIgnore
  */
 function vipgoci_run_init_github_token_option( array &$options ) :void {
+	/*
+	 * Process --github-token-login. GitHub App installation
+	 * tokens, such as GITHUB_TOKEN, cannot query the /user
+	 * endpoint, so assume the GitHub Actions bot for those.
+	 */
+	if (
+		( empty( $options['github-token-login'] ) ) &&
+		( str_starts_with( $options['token'], VIPGOCI_GITHUB_APP_INSTALLATION_TOKEN_PREFIX ) )
+	) {
+		$options['github-token-login'] = VIPGOCI_GITHUB_ACTIONS_BOT_LOGIN;
+	}
+
+	if ( empty( $options['github-token-login'] ) ) {
+		$options['github-token-login'] = null;
+	} elseif ( ! is_string( $options['github-token-login'] ) ) {
+		vipgoci_sysexit(
+			'Option --github-token-login should be a single string',
+			array(
+				'github-token-login' => $options['github-token-login'],
+			),
+			VIPGOCI_EXIT_USAGE_ERROR
+		);
+	}
+
+	vipgoci_github_token_login_set( $options['github-token-login'] );
+
+	/*
+	 * Process --comment-marker.
+	 */
+	if ( empty( $options['comment-marker'] ) ) {
+		$options['comment-marker'] = null;
+	} elseif (
+		( ! is_string( $options['comment-marker'] ) ) ||
+		( 1 !== preg_match( '/^[A-Za-z0-9._:-]+$/', $options['comment-marker'] ) )
+	) {
+		vipgoci_sysexit(
+			'Option --comment-marker should be a single string containing only A-Z, a-z, 0-9, ".", "_", ":" and "-"',
+			array(
+				'comment-marker' => $options['comment-marker'],
+			),
+			VIPGOCI_EXIT_USAGE_ERROR
+		);
+	}
+
+	vipgoci_github_comment_marker_set( $options['comment-marker'] );
+
+	/*
+	 * Process --comment-marker-legacy-login.
+	 */
+	if ( empty( $options['comment-marker-legacy-login'] ) ) {
+		$options['comment-marker-legacy-login'] = VIPGOCI_GITHUB_COMMENT_MARKER_LEGACY_LOGIN_DEFAULT;
+	} elseif ( ! is_string( $options['comment-marker-legacy-login'] ) ) {
+		vipgoci_sysexit(
+			'Option --comment-marker-legacy-login should be a single string',
+			array(
+				'comment-marker-legacy-login' => $options['comment-marker-legacy-login'],
+			),
+			VIPGOCI_EXIT_USAGE_ERROR
+		);
+	}
+
+	vipgoci_github_comment_marker_legacy_login_set( $options['comment-marker-legacy-login'] );
+
 	/*
 	 * Ask GitHub about information about
 	 * the user the token belongs to
@@ -1876,6 +1968,11 @@ function vipgoci_run_init_options_repo_meta_api( array &$options ) :void {
 		array(
 			'repo-meta-api-access-token',
 		)
+	);
+
+	vipgoci_option_repo_meta_data_handle(
+		$options,
+		'repo-meta-data'
 	);
 }
 

@@ -62,6 +62,7 @@ final class MainRunInitOptionsReviewsTest extends TestCase {
 				'dismiss-stale-reviews'             => false,
 				'dismissed-reviews-repost-comments' => true,
 				'dismissed-reviews-exclude-reviews-from-team' => array(),
+				'informational-msg'                 => '',
 				'scan-details-msg-include'          => true,
 			),
 			$this->options
