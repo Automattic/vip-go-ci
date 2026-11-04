@@ -309,6 +309,14 @@ For example:
 
 > {"skip-draft-prs":true}
 
+### Dry-run mode
+
+With `--dry-run=true`, `vip-go-ci` scans as usual but does not send POST, PUT or DELETE requests to the GitHub API. Nothing is posted, dismissed, approved or labelled, and no commit status is set. Each skipped request is logged instead, with its method, URL and body.
+
+> ./vip-go-ci.php --dry-run=true
+
+GET requests to the GitHub API are still sent, so a valid token is still required. Other services are not affected: IRC messages, statistics to the Pixel API and requests to the WordPress.org and WPScan APIs are still sent if configured. The option cannot be set via the repository config-file.
+
 ### Maximum execution time
 
 `vip-go-ci` supports setting maximum execution time. Once the maximum time is exceeded, it will exit with an error code (see [above](#exit-codes)).
