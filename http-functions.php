@@ -454,6 +454,36 @@ function vipgoci_http_api_retry_wait(
 }
 
 /**
+ * Set whether write requests to the GitHub API
+ * are to be skipped and logged instead of sent.
+ *
+ * @param bool $dry_run True to enable dry-run mode.
+ *
+ * @return void
+ */
+function vipgoci_http_api_dry_run_set( bool $dry_run ) :void {
+	global $vipgoci_http_api_dry_run;
+
+	$vipgoci_http_api_dry_run = $dry_run;
+}
+
+/**
+ * Determine if a write request should be skipped because
+ * of dry-run mode. Only requests to the GitHub API are
+ * skipped, other services are not affected.
+ *
+ * @param string $http_api_url HTTP request URL.
+ *
+ * @return bool True if the request should not be sent.
+ */
+function vipgoci_http_api_dry_run_skip( string $http_api_url ) :bool {
+	global $vipgoci_http_api_dry_run;
+
+	return ( true === ( $vipgoci_http_api_dry_run ?? false ) ) &&
+		( str_starts_with( $http_api_url, VIPGOCI_GITHUB_BASE_URL . '/' ) );
+}
+
+/**
  * Make a GET request to HTTP API, for the URL
  * provided, using the access-token specified.
  *
@@ -708,6 +738,19 @@ function vipgoci_http_api_post_url(
 	int $retry_max = 4,
 	int $timeout = VIPGOCI_HTTP_API_LONG_TIMEOUT
 ) :string|int {
+	if ( true === vipgoci_http_api_dry_run_skip( $http_api_url ) ) {
+		vipgoci_log(
+			'Dry-run mode: Not sending request to GitHub API',
+			array(
+				'http_method' => ( true === $http_delete ) ? 'DELETE' : 'POST',
+				'http_url'    => $http_api_url,
+				'postfields'  => $http_api_postfields,
+			)
+		);
+
+		return '';
+	}
+
 	/*
 	 * Actually send a request to HTTP API -- make sure
 	 * to retry if something fails.
@@ -1047,6 +1090,19 @@ function vipgoci_http_api_put_url(
 	string $http_api_token,
 	int $retry_max = 4
 ) :int {
+	if ( true === vipgoci_http_api_dry_run_skip( $http_api_url ) ) {
+		vipgoci_log(
+			'Dry-run mode: Not sending request to GitHub API',
+			array(
+				'http_method' => 'PUT',
+				'http_url'    => $http_api_url,
+				'postfields'  => $http_api_postfields,
+			)
+		);
+
+		return 0;
+	}
+
 	$retry_cnt = 0;
 
 	/*

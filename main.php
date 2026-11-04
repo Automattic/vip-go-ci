@@ -38,6 +38,8 @@ function vipgoci_help_print() :void {
 		"\t" . '                               considered as execution time. Time initializing is excluded.' . PHP_EOL .
 		"\t" . '--enforce-https-urls=BOOL      Check and enforce that all URLs provided to parameters' . PHP_EOL .
 		"\t" . '                               that expect a URL are HTTPS and not HTTP. Default is true.' . PHP_EOL .
+		"\t" . '--dry-run=BOOL                 If true, log POST, PUT and DELETE requests to the GitHub API instead' . PHP_EOL .
+		"\t" . '                               of sending them. Other services are not affected. Default is false.' . PHP_EOL .
 		"\t" . '--skip-draft-prs=BOOL          If true, skip scanning of all pull requests that are in draft mode.' . PHP_EOL .
 		"\t" . '                               Default is false.' . PHP_EOL .
 		"\t" . '--skip-large-files=true=BOOL          If true, skip scanning files that have number of lines higher than the skip-large-files-limit value.' . PHP_EOL .
@@ -287,6 +289,7 @@ function vipgoci_options_recognized() :array {
 		'debug-level:',
 		'max-exec-time:',
 		'enforce-https-urls:',
+		'dry-run:',
 		'skip-draft-prs:',
 		'skip-large-files:',
 		'skip-large-files-limit:',
@@ -2276,6 +2279,23 @@ function vipgoci_run_init_options(
 	 * Read options from environment, if configured to do so.
 	 */
 	vipgoci_run_env_options_handle( $options, $options_recognized );
+
+	/*
+	 * Handle --dry-run before anything is sent to GitHub. getopt() silently
+	 * drops a trailing --dry-run without a value, which would result in
+	 * a real run, so exit instead.
+	 */
+	if ( in_array( '--dry-run', $GLOBALS['argv'] ?? array(), true ) ) {
+		vipgoci_sysexit(
+			'Parameter --dry-run has to be either false or true',
+			array(),
+			VIPGOCI_EXIT_USAGE_ERROR
+		);
+	}
+
+	vipgoci_option_bool_handle( $options, 'dry-run', 'false' );
+
+	vipgoci_http_api_dry_run_set( $options['dry-run'] );
 
 	/*
 	 * Handle boolean parameters not handled by specialized functions.
