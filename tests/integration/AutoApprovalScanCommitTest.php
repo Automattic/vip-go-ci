@@ -310,11 +310,13 @@ final class AutoApprovalScanCommitTest extends TestCase {
 		}
 
 		$auto_approved_files_arr = array(
-			'file-1.php'  => 'autoapprove-approved-php-file', // Not a value used generally, only for testing.
-			'file-2.css'  => 'autoapprove-filetypes',
-			'file-3.txt'  => 'autoapprove-filetypes',
-			'file-4.json' => 'autoapprove-filetypes',
-			'README.md'   => 'autoapprove-filetypes',
+			(int) $this->options['pr-test-ap-auto-approval-1'] => array(
+				'file-1.php'  => 'autoapprove-approved-php-file', // Not a value used generally, only for testing.
+				'file-2.css'  => 'autoapprove-filetypes',
+				'file-3.txt'  => 'autoapprove-filetypes',
+				'file-4.json' => 'autoapprove-filetypes',
+				'README.md'   => 'autoapprove-filetypes',
+			),
 		);
 
 		$results = array();
@@ -437,11 +439,13 @@ final class AutoApprovalScanCommitTest extends TestCase {
 		}
 
 		$auto_approved_files_arr = array(
-			// Note: file-1.php is NOT approved.
-			'file-2.css'  => 'autoapprove-filetypes',
-			'file-3.txt'  => 'autoapprove-filetypes',
-			'file-4.json' => 'autoapprove-filetypes',
-			'README.md'   => 'autoapprove-filetypes',
+			(int) $this->options['pr-test-ap-auto-approval-1'] => array(
+				// Note: file-1.php is NOT approved.
+				'file-2.css'  => 'autoapprove-filetypes',
+				'file-3.txt'  => 'autoapprove-filetypes',
+				'file-4.json' => 'autoapprove-filetypes',
+				'README.md'   => 'autoapprove-filetypes',
+			),
 		);
 
 		$results = array();
@@ -557,13 +561,15 @@ final class AutoApprovalScanCommitTest extends TestCase {
 		}
 
 		$auto_approved_files_arr = array(
-			// Note: file-1.php is approved, but
-			// some of the other files are not.
-			'file-1.php' => 'autoapprove-approved-php-file', // Not a value used generally, only for testing.
-			'file-2.css' => 'autoapprove-filetypes',
-			'file-3.txt' => 'autoapprove-filetypes',
-			// file-4.json is not approved.
-			'README.md'  => 'autoapprove-filetypes',
+			(int) $this->options['pr-test-ap-auto-approval-1'] => array(
+				// Note: file-1.php is approved, but
+				// some of the other files are not.
+				'file-1.php' => 'autoapprove-approved-php-file', // Not a value used generally, only for testing.
+				'file-2.css' => 'autoapprove-filetypes',
+				'file-3.txt' => 'autoapprove-filetypes',
+				// file-4.json is not approved.
+				'README.md'  => 'autoapprove-filetypes',
+			),
 		);
 
 		$results = array(
@@ -708,11 +714,13 @@ final class AutoApprovalScanCommitTest extends TestCase {
 		 */
 
 		$auto_approved_files_arr = array(
-			// All files in the PR are approvable.
-			'file-1.php'  => 'autoapprove-approved-php-file', // Not a value used generally, only for testing.
-			'file-2.css'  => 'autoapprove-filetypes',
-			'file-3.txt'  => 'autoapprove-filetypes',
-			'file-4.json' => 'autoapprove-filetypes',
+			(int) $this->options['pr-test-ap-auto-approval-1'] => array(
+				// All files in the PR are approvable.
+				'file-1.php'  => 'autoapprove-approved-php-file', // Not a value used generally, only for testing.
+				'file-2.css'  => 'autoapprove-filetypes',
+				'file-3.txt'  => 'autoapprove-filetypes',
+				'file-4.json' => 'autoapprove-filetypes',
+			),
 		);
 
 		$results = array(
@@ -799,11 +807,13 @@ final class AutoApprovalScanCommitTest extends TestCase {
 
 		// All files are approved.
 		$auto_approved_files_arr = array(
-			'file-1.php'  => 'autoapprove-approved-php-file', // Not a value used generally, only for testing.
-			'file-2.css'  => 'autoapprove-filetypes',
-			'file-3.txt'  => 'autoapprove-filetypes',
-			'file-4.json' => 'autoapprove-filetypes',
-			'README.md'   => 'autoapprove-filetypes',
+			(int) $this->options['pr-test-ap-auto-approval-1'] => array(
+				'file-1.php'  => 'autoapprove-approved-php-file', // Not a value used generally, only for testing.
+				'file-2.css'  => 'autoapprove-filetypes',
+				'file-3.txt'  => 'autoapprove-filetypes',
+				'file-4.json' => 'autoapprove-filetypes',
+				'README.md'   => 'autoapprove-filetypes',
+			),
 		);
 
 		$results_before = array(
@@ -934,11 +944,13 @@ final class AutoApprovalScanCommitTest extends TestCase {
 
 		// All files are approved.
 		$auto_approved_files_arr = array(
-			'file-1.php'  => 'autoapprove-approved-php-file', // Not a value used generally, only for testing.
-			'file-2.css'  => 'autoapprove-filetypes',
-			'file-3.txt'  => 'autoapprove-filetypes',
-			'file-4.json' => 'autoapprove-filetypes',
-			'README.md'   => 'autoapprove-filetypes',
+			(int) $this->options['pr-test-ap-auto-approval-1'] => array(
+				'file-1.php'  => 'autoapprove-approved-php-file', // Not a value used generally, only for testing.
+				'file-2.css'  => 'autoapprove-filetypes',
+				'file-3.txt'  => 'autoapprove-filetypes',
+				'file-4.json' => 'autoapprove-filetypes',
+				'README.md'   => 'autoapprove-filetypes',
+			),
 		);
 
 		$results_before = array(
