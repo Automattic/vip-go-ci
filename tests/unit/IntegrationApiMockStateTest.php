@@ -57,6 +57,43 @@ final class IntegrationApiMockStateTest extends TestCase {
 		IntegrationApiMock::request( 'PUT', 'https://api.github.com/repos/automattic/vip-go-ci-testing/pulls/46/reviews/999999999/dismissals', null );
 	}
 
+	/** Label creation must reject a DELETE-only label-name suffix. */
+	public function testLabelCreationRejectsLabelNameRoute(): void {
+		$url     = 'https://api.github.com/repos/automattic/vip-go-ci-testing/issues/32/labels';
+		$before  = IntegrationApiMock::request( 'GET', $url, null );
+		$failure = null;
+		try {
+			IntegrationApiMock::request( 'POST', $url . '/unregistered', null, array( 'fixture-label' ) );
+		} catch ( AssertionFailedError $error ) {
+			$failure = $error;
+		}
+		$this->assertNotNull( $failure, 'Unsupported label route must fail.' );
+		$this->assertSame( $before, IntegrationApiMock::request( 'GET', $url, null ) );
+	}
+
+	/** Review creation must reject a PUT-only dismissal suffix. */
+	public function testReviewCreationRejectsDismissalRoute(): void {
+		$url     = 'https://api.github.com/repos/automattic/vip-go-ci-testing/pulls/46/reviews';
+		$before  = IntegrationApiMock::request( 'GET', $url . '?per_page=100&page=1', null );
+		$failure = null;
+		try {
+			IntegrationApiMock::request(
+				'POST',
+				$url . '/999999999/dismissals',
+				null,
+				array(
+					'event'     => 'APPROVE',
+					'body'      => 'approved',
+					'commit_id' => 'fixture-commit',
+				)
+			);
+		} catch ( AssertionFailedError $error ) {
+			$failure = $error;
+		}
+		$this->assertNotNull( $failure, 'Unsupported review route must fail.' );
+		$this->assertSame( $before, IntegrationApiMock::request( 'GET', $url . '?per_page=100&page=1', null ) );
+	}
+
 	/** A registered review can still be dismissed and subsequently read. */
 	public function testKnownReviewDismissalUpdatesState(): void {
 		$url    = 'https://api.github.com/repos/automattic/vip-go-ci-testing/pulls/46/reviews';

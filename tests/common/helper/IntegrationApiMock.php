@@ -89,7 +89,7 @@ final class IntegrationApiMock {
 				$get_key = 'GET https://api.github.com' . $matches[1];
 				Assert::assertArrayHasKey( $get_key, self::$responses, 'Unknown fixture label resource.' );
 				$labels = self::$responses[ $get_key ];
-				if ( 'POST' === $method ) {
+				if ( 'POST' === $method && ! isset( $matches[2] ) ) {
 					Assert::assertIsString( $body[0] ?? null );
 					$labels = array_values( array_filter( $labels, static fn( $label ) => $body[0] !== $label['name'] ) );
 					array_unshift(
@@ -139,7 +139,7 @@ final class IntegrationApiMock {
 				$get_key = 'GET https://api.github.com' . $matches[1] . '/reviews?per_page=100&page=1';
 				Assert::assertArrayHasKey( $get_key, self::$responses, 'Unknown fixture review resource.' );
 				$reviews = self::$responses[ $get_key ];
-				if ( 'POST' === $method ) {
+				if ( 'POST' === $method && ! isset( $matches[2] ) ) {
 					Assert::assertContains( $body['event'] ?? null, array( 'APPROVE', 'COMMENT', 'REQUEST_CHANGES' ) );
 					$review                      = array(
 						'id'        => 800000 + count( $reviews ),
@@ -171,6 +171,7 @@ final class IntegrationApiMock {
 					self::$responses[ $get_key ] = $reviews;
 					return '{}';
 				}
+				Assert::fail( 'Unsupported fixture review mutation: ' . $key );
 			}
 			if ( 'POST' === $method && preg_match( '#^/repos/automattic/vip-go-ci-testing/statuses/([^/]+)$#', $path, $matches ) ) {
 				Assert::assertContains( $body['state'] ?? null, array( 'pending', 'failure', 'success', 'error' ) );
