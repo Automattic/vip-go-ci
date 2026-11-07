@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[Group( 'mocked-api' )]
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
 final class OtherWebServicesSendStatsToPixelApiTest extends TestCase {
 	/**
 	 * Setup function. Require files.

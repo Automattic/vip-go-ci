@@ -110,7 +110,7 @@ jobs:
         run: sudo update-alternatives --set php "/usr/bin/php${{ matrix.php }}"
 
       - name: Run integration tests
-        run: phpunit --testsuite=integration-tests
+        run: phpunit --testsuite=integration-tests --exclude-group=live-api
         env:
           VIPGOCI_TESTING_DEBUG_MODE: 'true'
 

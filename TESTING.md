@@ -68,7 +68,35 @@ The unit test suite can be run using the following command:
 
 > VIPGOCI_TESTING_DEBUG_MODE=true phpunit --testsuite=unit-tests
 
-By running this command, you will run the tests that do not depend on external calls. 
+By running this command, you will run the tests that do not depend on external calls.
+
+#### Mocked API responses
+
+The `mocked-api` PHPUnit group exercises real API-client parsing, pagination, caching and request construction with a test-only HTTP transport. These tests run in the unit suite without tokens, configuration files or network access. GitHub user lookup, commit listing, label lookup and approvals, and WPScan plugin/theme responses have deterministic coverage. The existing GitHub request-guard and mocked Pixel API tests also belong to this group.
+
+Run only these tests with:
+
+> phpunit --testsuite=unit-tests --group=mocked-api
+
+To skip mocked API tests during a manual run of all configured suites, use:
+
+> VIPGOCI_TESTING_DEBUG_MODE=true phpunit --exclude-group=mocked-api
+
+This still runs the live integration counterparts when their configuration and credentials are present. Existing integration write-test controls continue to apply. To run only the live counterparts of the migrated checks, use:
+
+> VIPGOCI_TESTING_DEBUG_MODE=true phpunit --testsuite=integration-tests --group=live-api
+
+The `live-api` group currently contains the GitHub authenticated-user, PR commit-list and label-fetch tests, and the WPScan API plugin/theme tests. Other integration tests can still use external APIs; excluding `live-api` does not make the entire integration suite offline.
+
+When adding mocked API coverage:
+
+- Extend `tests/common/MockedApiTestCase.php` and mark the concrete class with `Group( 'mocked-api' )`, `RunTestsInSeparateProcesses` and `PreserveGlobalState( false )` attributes.
+- Call `parent::setUp()` before loading the production API client. Load only the required production files, rather than `requires.php` or the integration bootstrap, which load the real HTTP functions.
+- Queue raw responses through `HttpApiMock::expect( $method, $url, $token, $response, $body )`. Use synthetic data and dummy tokens. Responses can include malformed JSON or the transport's failure sentinel (`null` for GET, `-1` for POST, an integer status for PUT).
+- Match the full URL, including host and query parameters, and the method, authentication argument and payload. Queue each expected request in order, including every pagination page. Unexpected or mismatched requests fail immediately; unused responses fail in teardown. The mock has no live-network fallback.
+- Keep each test file focused on one production function or behavior. Preserve a live integration counterpart where transport or service compatibility needs manual verification.
+
+The mock replaces `vipgoci_http_api_fetch_url()`, `vipgoci_http_api_post_url()` and `vipgoci_http_api_put_url()` only inside isolated test processes. It does not test cURL, HTTP retries, rate-limit handling or live service schemas. Production HTTP behavior is unchanged. Repo-meta uses cURL directly and is not covered by this helper.
 
 ### Integration test suite
 
@@ -93,6 +121,8 @@ The E2E (End-to-End) tests can be run using the following command:
 Note that the test suite uses the `@runTestsInSeparateProcesses` and `@preserveGlobalState` PHPUnit flags to avoid any influence of one test on another. Further, tests should include all required files in `setUp()` function to avoid the same function being defined multiple times across multiple tests during the same run. Combining the usage of `@runTestsInSeparateProcesses` and the inclusion of required files in `setUp()` means each test is independent of other tests, which enables functions to be defined for each test easily and avoids leakage between tests.
 
 ### Integration tests and GitHub Actions
+
+CI runs mocked API tests in the unit suite and excludes `live-api` from the integration suite. This avoids repeating the migrated checks against live services on every push. Run the live counterparts manually using the commands above when checking service compatibility.
 
 When the integration test suite runs on GitHub Actions the suite is configured specifically not to write any data to GitHub during testing. More specifically, the `github-skip-write-tests` key/value (see [above](#test-suite-secrets-file)) is set to `true` value in the `tests/config-secrets.ini` file during execution of the tests (see [here](.github/workflows/ci.yml)), which leads to certain tests not being run.
 
