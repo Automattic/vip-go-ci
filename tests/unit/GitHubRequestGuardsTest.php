@@ -965,6 +965,84 @@ final class GitHubRequestGuardsTest extends TestCase {
 		$this->assertRequests( array( 'GET /repos/owner/repo/pulls/42/reviews' ) );
 	}
 
+
+	/**
+	 * Retained errors must not create an undismissable blocking skip summary.
+	 *
+	 * @return void
+	 */
+	public function testDeduplicatedErrorsWithNewSkippedFileUseCommentReview(): void {
+		$results                                = $this->emptyResults();
+		$results['issues'][42]                  = array( $this->issue() );
+		$results['stats']['phpcs'][42]['error'] = 1;
+		$results['skipped-files'][42]           = array(
+			'issues' => array( 'max-lines' => array( 'large.php' ) ),
+			'total'  => 1,
+		);
+		$GLOBALS['vipgoci_test_http_responses']['GET /repos/owner/repo/pulls/42/comments'] = array( $this->comment() );
+
+		vipgoci_results_remove_existing_github_comments(
+			$this->options,
+			array( (object) array( 'number' => 42, 'created_at' => '2026-01-01T00:00:00Z' ) ),
+			$results
+		);
+		$this->assertSame( array(), $results['issues'][42] );
+		$this->assertSame( 1, $results['stats']['phpcs'][42]['error'] );
+
+		$this->submitReport( $results );
+
+		$this->assertRequests(
+			array(
+				'GET /repos/owner/repo/pulls/42/commits',
+				'GET /repos/owner/repo/pulls/42/comments',
+				'GET /repos/owner/repo/pulls/42/reviews',
+				'POST /repos/owner/repo/pulls/42/reviews',
+			)
+		);
+		$body = $GLOBALS['vipgoci_test_http_requests'][3]['body'];
+		$this->assertSame( 'COMMENT', $body['event'] );
+		$this->assertSame( array(), $body['comments'] ?? array() );
+		$this->assertStringContainsString( 'large.php', $body['body'] );
+		$this->assertSame( VIPGOCI_EXIT_CODE_ISSUES, vipgoci_exit_status( $results ) );
+		$this->assertSame( 1, $results['stats']['phpcs'][42]['error'] );
+
+		// A later run recognizes the summary, without reposting retained errors.
+		vipgoci_cache( VIPGOCI_CACHE_CLEAR );
+		vipgoci_cache(
+			array( 'vipgoci_github_authenticated_user_get', 'test-token' ),
+			(object) array( 'login' => 'bot', 'id' => 123 )
+		);
+		$GLOBALS['vipgoci_test_http_responses']['GET /repos/owner/repo/pulls/42/reviews'] = array( $this->review( 'COMMENTED', 'bot', $body['body'] ) );
+		$GLOBALS['vipgoci_test_http_requests'] = array();
+		$this->submitReport( $results );
+		$this->assertRequests( array( 'GET /repos/owner/repo/pulls/42/reviews' ) );
+		$this->assertSame( VIPGOCI_EXIT_CODE_ISSUES, vipgoci_exit_status( $results ) );
+	}
+
+	/**
+	 * New inline errors must still block when skipped files are also reported.
+	 *
+	 * @return void
+	 */
+	public function testSkippedFileWithInlineErrorStillRequestsChanges(): void {
+		$results                                = $this->emptyResults();
+		$results['issues'][42]                  = array( $this->issue() );
+		$results['stats']['phpcs'][42]['error'] = 1;
+		$results['skipped-files'][42]           = array(
+			'issues' => array( 'max-lines' => array( 'large.php' ) ),
+			'total'  => 1,
+		);
+
+		$this->submitReport( $results );
+
+		$this->assertRequests( array( 'GET /repos/owner/repo/pulls/42/reviews', 'POST /repos/owner/repo/pulls/42/reviews' ) );
+		$body = $GLOBALS['vipgoci_test_http_requests'][1]['body'];
+		$this->assertSame( 'REQUEST_CHANGES', $body['event'] );
+		$this->assertCount( 1, $body['comments'] );
+		$this->assertStringContainsString( 'large.php', $body['body'] );
+		$this->assertSame( VIPGOCI_EXIT_CODE_ISSUES, vipgoci_exit_status( $results ) );
+	}
+
 	/**
 	 * Newly skipped files must still generate a review without code issues.
 	 *

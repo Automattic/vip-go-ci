@@ -1118,8 +1118,11 @@ function vipgoci_report_submit_pr_review_from_results(
 				$results['stats']
 					[ $stats_type ][ $pr_number ][ VIPGOCI_ISSUE_TYPE_ERROR ]
 			) ) {
-				$github_postfields['event'] = 'REQUEST_CHANGES';
-				$github_errors              = true;
+				// Blocking reviews need inline comments for automatic stale dismissal.
+				if ( ! empty( $github_postfields['comments'] ) ) {
+					$github_postfields['event'] = 'REQUEST_CHANGES';
+				}
+				$github_errors = true;
 			}
 
 			if ( ! empty(
