@@ -375,7 +375,7 @@ function vipgoci_auto_approval_scan_commit(
 		}
 
 		$deletions_only = ( true === ( $options['autoapprove-deletions-only'] ?? false ) ) &&
-			vipgoci_github_pr_deletions_only( $options, (int) $pr_number );
+			vipgoci_github_pr_deletions_only( $options, (int) $pr_number, true );
 		if ( $deletions_only ) {
 			$files_seen       = $pr_files_changed;
 			$can_auto_approve = true;

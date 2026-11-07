@@ -11,13 +11,14 @@ declare(strict_types=1);
  * Determine whether the whole pull request only deletes lines at the scanned head.
  * Missing statistics or a changed head must not qualify for auto-approval.
  *
- * @param array $options   Repository options and scanned commit.
- * @param int   $pr_number Pull request number.
+ * @param array $options    Repository options and scanned commit.
+ * @param int   $pr_number  Pull request number.
+ * @param bool  $skip_cache Fetch current PR data instead of reusing a cached classification.
  * @return bool
  */
-function vipgoci_github_pr_deletions_only( array $options, int $pr_number ): bool {
+function vipgoci_github_pr_deletions_only( array $options, int $pr_number, bool $skip_cache = false ): bool {
 	$cached_id = array( __FUNCTION__, $options['repo-owner'], $options['repo-name'], $pr_number, $options['commit'], $options['token'] );
-	$cached    = vipgoci_cache( $cached_id );
+	$cached    = $skip_cache ? false : vipgoci_cache( $cached_id );
 	if ( false !== $cached ) {
 		return $cached['deletions-only'];
 	}

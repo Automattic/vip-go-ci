@@ -152,12 +152,13 @@ final class GitHubPrDeletionsOnlyTest extends MockedApiTestCase {
 		require_once __DIR__ . '/../../statistics.php';
 		require_once __DIR__ . '/../../other-web-services.php';
 		foreach ( array(
-			array( true, 0, 4, false, true ),
-			array( false, 0, 4, false, false ),
-			array( true, 1, 4, false, false ),
-			array( true, 0, 0, false, false ),
-			array( true, 0, 4, true, false ),
-		) as [ $enabled, $additions, $deletions, $wpscan_error, $approve ] ) {
+			array( true, 0, 4, false, true, false ),
+			array( false, 0, 4, false, false, false ),
+			array( true, 1, 4, false, false, false ),
+			array( true, 0, 0, false, false, false ),
+			array( true, 0, 4, true, false, false ),
+			array( true, 1, 4, false, false, true ),
+		) as [ $enabled, $additions, $deletions, $wpscan_error, $approve, $head_changed ] ) {
 			vipgoci_cache( VIPGOCI_CACHE_CLEAR );
 			$options = array(
 				'repo-owner'                            => 'owner',
@@ -182,6 +183,27 @@ final class GitHubPrDeletionsOnlyTest extends MockedApiTestCase {
 					),
 				),
 			);
+			if ( $head_changed ) {
+				// Support comments run before scanning and cache the old head's result.
+				$support_options = $options + array(
+					'post-generic-pr-support-comments' => true,
+					'post-generic-pr-support-comments-string' => array( 0 => 'Regular support message' ),
+					'post-generic-pr-support-comments-branches' => array( 0 => array( 'any' ) ),
+					'post-generic-pr-support-comments-on-drafts' => array( 0 => false ),
+					'post-generic-pr-support-comments-repo-meta-match' => array(),
+				);
+				$pr              = (object) array(
+					'number' => 1,
+					'draft'  => false,
+					'base'   => (object) array( 'ref' => 'trunk' ),
+				);
+				$message         = 'This pull request only removes lines. Please verify that the removed code is no longer needed and that tests pass before merging.';
+				HttpApiMock::expect( 'GET', 'https://api.github.com/repos/owner/repo/pulls/1', 'token', '{"head":{"sha":"head"},"additions":0,"deletions":4}' );
+				HttpApiMock::expect( 'GET', 'https://api.github.com/repos/owner/repo/issues/1/comments?page=1&per_page=100', 'token', '[]' );
+				HttpApiMock::expect( 'POST', 'https://api.github.com/repos/owner/repo/issues/1/comments', 'token', '{}', array( 'body' => $message . "\n\r" ) );
+				vipgoci_report_submit_pr_generic_support_comment( $support_options, array( $pr ) );
+				HttpApiMock::assert_complete();
+			}
 			if ( $enabled ) {
 				HttpApiMock::expect(
 					'GET',
@@ -189,7 +211,7 @@ final class GitHubPrDeletionsOnlyTest extends MockedApiTestCase {
 					'token',
 					json_encode(
 						array(
-							'head'      => array( 'sha' => 'head' ),
+							'head'      => array( 'sha' => $head_changed ? 'new-head' : 'head' ),
 							'additions' => $additions,
 							'deletions' => $deletions,
 						)
