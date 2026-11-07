@@ -38,6 +38,9 @@ jobs:
       - name: Configure PHPUnit
         run: sed "s:PROJECT_DIR:$(pwd):g" phpunit.xml.dist > phpunit.xml
 
+      - name: Check unit bootstrap with native cURL
+        run: phpunit --testsuite=unit-tests --filter=HttpApiRateLimitUsageTest
+
       - name: Run unit tests
         run: tests/run-tests.sh --testsuite=unit-tests
         env:
