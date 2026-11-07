@@ -29,8 +29,8 @@ declare(strict_types=1);
  * @param string $commit_id      Commit-ID of current commit.
  * @param string $file_name      File name.
  *
- * @return array Array, keys representing lines in patch,
- *               values line-number in raw committed file.
+ * @return array|null Keys represent patch lines and values raw committed lines.
+ *                    Null when the file has no available, nonempty patch.
  */
 function vipgoci_patch_changed_lines(
 	string $local_git_repo,
@@ -57,11 +57,12 @@ function vipgoci_patch_changed_lines(
 	);
 
 	/*
-	 * No such file found, return with error
+	 * An absent or empty patch cannot establish a position for a finding.
 	 */
-	if ( ! isset(
-		$patch_arr['files'][ $file_name ]
-	) ) {
+	if (
+		! isset( $patch_arr['files'][ $file_name ] ) ||
+		'' === $patch_arr['files'][ $file_name ]
+	) {
 		return null;
 	}
 
