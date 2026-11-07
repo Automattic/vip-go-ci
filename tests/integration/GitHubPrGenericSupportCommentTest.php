@@ -52,6 +52,13 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 	private mixed $current_user_info = null;
 
 	/**
+	 * Whether setup completed with GitHub comment cleanup enabled.
+	 *
+	 * @var bool
+	 */
+	private bool $cleanup_enabled = false;
+
+	/**
 	 * Setup function. Require file, set up variables, etc.
 	 *
 	 * @return void
@@ -152,6 +159,7 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 			( ! vipgoci_unittests_get_skip_github_write_tests() )
 		) {
 			$this->clearOldSupportComments();
+			$this->cleanup_enabled = true;
 		}
 	}
 
@@ -161,14 +169,8 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 	 * @return void
 	 */
 	protected function tearDown(): void {
-		$options_test = vipgoci_unittests_options_test(
-			$this->options,
-			array(),
-			$this
-		);
-
 		if (
-			( -1 !== $options_test ) &&
+			$this->cleanup_enabled &&
 			( ! vipgoci_unittests_get_skip_github_write_tests() )
 		) {
 			$this->clearOldSupportComments();
