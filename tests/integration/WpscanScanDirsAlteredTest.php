@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_wpscan_scan_dirs_altered' )]
 final class WpscanScanDirsAlteredTest extends TestCase {
 	/**
 	 * Variable for WPScan API configuration.
@@ -153,8 +156,6 @@ final class WpscanScanDirsAlteredTest extends TestCase {
 
 	/**
 	 * Test common usage of the function. Expect results.
-	 *
-	 * @covers ::vipgoci_wpscan_scan_dirs_altered
 	 *
 	 * @return void
 	 */
@@ -322,8 +323,6 @@ final class WpscanScanDirsAlteredTest extends TestCase {
 	 * Test common usage of the function. No results expected
 	 * as plugin and theme are of latest version.
 	 *
-	 * @covers ::vipgoci_wpscan_scan_dirs_altered
-	 *
 	 * @return void
 	 */
 	public function testFindDirsAlteredWithNoResultsFound1(): void {
@@ -401,8 +400,6 @@ final class WpscanScanDirsAlteredTest extends TestCase {
 	/**
 	 * Test common usage of the function. No results expected
 	 * as plugin and theme are more recent than latest.
-	 *
-	 * @covers ::vipgoci_wpscan_scan_dirs_altered
 	 *
 	 * @return void
 	 */

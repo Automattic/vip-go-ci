@@ -9,6 +9,9 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -16,10 +19,10 @@ use PHPUnit\Framework\TestCase;
  *
  * Should not call a HTTP endpoint as no data
  * should be in queue.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_run_cleanup_irc' )]
 final class MainRunCleanupIrcTest extends TestCase {
 	/**
 	 * Variable for options.
@@ -53,8 +56,6 @@ final class MainRunCleanupIrcTest extends TestCase {
 	/**
 	 * Check if correct message is printed,
 	 * indicating IRC queue clearing was attempted.
-	 *
-	 * @covers ::vipgoci_run_cleanup_irc
 	 */
 	public function testRunCleanupIrcSuccess() :void {
 		$this->options['irc-api-url'] = 'https://127.0.0.1:1234';
@@ -104,8 +105,6 @@ final class MainRunCleanupIrcTest extends TestCase {
 	 *
 	 * Option irc-api-url option is missing from $this->options which
 	 * should lead to failure.
-	 *
-	 * @covers ::vipgoci_run_cleanup_irc
 	 */
 	public function testRunCleanupIrcFailure() :void {
 		ob_start();

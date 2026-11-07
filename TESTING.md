@@ -124,7 +124,9 @@ The E2E (End-to-End) tests can be run using the following command:
 
 ### Test isolation
 
-Note that the test suite uses the `@runTestsInSeparateProcesses` and `@preserveGlobalState` PHPUnit flags to avoid any influence of one test on another. Further, tests should include all required files in `setUp()` function to avoid the same function being defined multiple times across multiple tests during the same run. Combining the usage of `@runTestsInSeparateProcesses` and the inclusion of required files in `setUp()` means each test is independent of other tests, which enables functions to be defined for each test easily and avoids leakage between tests.
+The test suite uses `#[RunTestsInSeparateProcesses]` and `#[PreserveGlobalState( false )]` to isolate tests. Include required files in `setUp()` so each test can define the functions it needs without leaking definitions into other tests.
+
+Use PHPUnit attributes for test metadata. Declare coverage targets with `#[CoversFunction( 'function_name' )]` on the test class and data providers with `#[DataProvider( 'providerMethod' )]` on the test method. The configuration enables `failOnPhpunitDeprecation`, so deprecated PHPUnit features fail the run. Regenerate your local `phpunit.xml` from `phpunit.xml.dist` after updating the template.
 
 ### Integration tests and GitHub Actions
 

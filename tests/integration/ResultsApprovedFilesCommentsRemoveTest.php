@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_results_approved_files_comments_remove' )]
 final class ResultsApprovedFilesCommentsRemoveTest extends TestCase {
 	/**
 	 * Setup function. Require file.
@@ -132,8 +135,6 @@ final class ResultsApprovedFilesCommentsRemoveTest extends TestCase {
 	 * Test function and compare result with expected results.
 	 *
 	 * @return void
-	 *
-	 * @covers ::vipgoci_results_approved_files_comments_remove
 	 */
 	public function testRemoveCommentFromResults() :void {
 		$results_altered = $this->results_arr;

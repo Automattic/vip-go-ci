@@ -9,14 +9,18 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_http_api_rate_limit_check' )]
 final class HttpFunctionsHttpApiRateLimitsCheckTest extends TestCase {
 	/**
 	 * Setup function. Require files.
@@ -109,12 +113,9 @@ final class HttpFunctionsHttpApiRateLimitsCheckTest extends TestCase {
 	 * @param string $output_expected   Expected headers.
 	 * @param array  $counters_expected Expected counter values.
 	 *
-	 * @dataProvider dataRateLimits
-	 *
-	 * @covers ::vipgoci_http_api_rate_limit_check
-	 *
 	 * @return void
 	 */
+	#[DataProvider( 'dataRateLimits' )]
 	public function testRateLimits(
 		string $url_input,
 		array $headers_input,

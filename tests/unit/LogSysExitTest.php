@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Test if vipgoci_sysexit() function works correctly.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_sysexit' )]
 final class LogSysExitTest extends TestCase {
 	/**
 	 * Require file, clear IRC queue, and set up indication.
@@ -50,8 +53,6 @@ final class LogSysExitTest extends TestCase {
 	 * with correct exit status, check
 	 * if it prints the expected data, and
 	 * if it logs to the IRC queue.
-	 *
-	 * @covers ::vipgoci_sysexit
 	 *
 	 * @return void
 	 */

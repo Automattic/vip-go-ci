@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Test if IRC queue returns unique entries on flush.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_irc_api_alert_queue_unique' )]
 final class OtherWebServicesIrcApiAlertQueueUniqueTest extends TestCase {
 	/**
 	 * Require correct file.
@@ -38,8 +41,6 @@ final class OtherWebServicesIrcApiAlertQueueUniqueTest extends TestCase {
 
 	/**
 	 * Test integrity first.
-	 *
-	 * @covers ::vipgoci_irc_api_alert_queue_unique
 	 *
 	 * @return void
 	 */
@@ -66,8 +67,6 @@ final class OtherWebServicesIrcApiAlertQueueUniqueTest extends TestCase {
 
 	/**
 	 * Test if entries are made unique and prefixed correctly.
-	 *
-	 * @covers ::vipgoci_irc_api_alert_queue_unique
 	 *
 	 * @return void
 	 */
@@ -97,8 +96,6 @@ final class OtherWebServicesIrcApiAlertQueueUniqueTest extends TestCase {
 
 	/**
 	 * Test if entries are made unique and prefixed correctly.
-	 *
-	 * @covers ::vipgoci_irc_api_alert_queue_unique
 	 *
 	 * @return void
 	 */

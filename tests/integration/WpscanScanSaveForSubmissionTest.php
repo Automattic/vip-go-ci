@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_wpscan_scan_save_for_submission' )]
 final class WpscanScanSaveForSubmissionTest extends TestCase {
 	/**
 	 * Variable for WPScan API scanning.
@@ -283,8 +286,6 @@ final class WpscanScanSaveForSubmissionTest extends TestCase {
 	 * Test function when a 'skip-wpscan' label is associated with
 	 * pull request, so results should not be added.
 	 *
-	 * @covers ::vipgoci_wpscan_scan_save_for_submission
-	 *
 	 * @return void
 	 */
 	public function testSaveForSubmissionWithLabel(): void {
@@ -374,8 +375,6 @@ final class WpscanScanSaveForSubmissionTest extends TestCase {
 	/**
 	 * Test function when 'skip-wpscan' label is not associated with
 	 * pull request, so results should be added.
-	 *
-	 * @covers ::vipgoci_wpscan_scan_save_for_submission
 	 *
 	 * @return void
 	 */

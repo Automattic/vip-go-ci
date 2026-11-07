@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_github_files_affected_by_commit' )]
 final class GitHubFilesAffectedByCommitTest extends TestCase {
 	/**
 	 * Options for git.
@@ -121,8 +124,6 @@ final class GitHubFilesAffectedByCommitTest extends TestCase {
 	 * Test usage with no filter applied, and all
 	 * pull request IDs present in results.
 	 *
-	 * @covers ::vipgoci_github_files_affected_by_commit
-	 *
 	 * @return void
 	 */
 	public function testGitHubFilesAffectedByCommitSimple(): void {
@@ -191,8 +192,6 @@ final class GitHubFilesAffectedByCommitTest extends TestCase {
 	 * Test usage with filter applied, do not ask
 	 * for all pull request IDs to be present.
 	 *
-	 * @covers ::vipgoci_github_files_affected_by_commit
-	 *
 	 * @return void
 	 */
 	public function testGitHubFilesAffectedByCommitWithFilter1(): void {
@@ -257,8 +256,6 @@ final class GitHubFilesAffectedByCommitTest extends TestCase {
 	/**
 	 * Test usage with filter applied and ask for all
 	 * pull request IDs to be present in results.
-	 *
-	 * @covers ::vipgoci_github_files_affected_by_commit
 	 *
 	 * @return void
 	 */
@@ -325,8 +322,6 @@ final class GitHubFilesAffectedByCommitTest extends TestCase {
 	/**
 	 * Test usage with no filter applied, and a file
 	 * that should be skipped due to length.
-	 *
-	 * @covers ::vipgoci_github_files_affected_by_commit
 	 *
 	 * @return void
 	 */
@@ -403,8 +398,6 @@ final class GitHubFilesAffectedByCommitTest extends TestCase {
 	 * Test usage with no filter applied, without removed
 	 * files included in results, and all pull request IDs present
 	 * in results.
-	 *
-	 * @covers ::vipgoci_github_files_affected_by_commit
 	 *
 	 * @return void
 	 */

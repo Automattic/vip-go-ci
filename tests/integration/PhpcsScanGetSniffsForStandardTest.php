@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_phpcs_get_sniffs_for_standard' )]
 final class PhpcsScanGetSniffsForStandardTest extends TestCase {
 	var $options_phpcs = array(
 		'phpcs-path'            => null,
@@ -43,9 +46,6 @@ final class PhpcsScanGetSniffsForStandardTest extends TestCase {
 		$this->options_phpcs = null;
 	}
 
-	/**
-	 * @covers ::vipgoci_phpcs_get_sniffs_for_standard
-	 */
 	public function testDoScanTest1() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options_phpcs,

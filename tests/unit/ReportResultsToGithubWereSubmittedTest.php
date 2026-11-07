@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_report_feedback_to_github_was_submitted' )]
 final class ReportResultsToGithubWereSubmittedTest extends TestCase {
 	/**
 	 * Setup function. Require files.
@@ -30,8 +33,6 @@ final class ReportResultsToGithubWereSubmittedTest extends TestCase {
 	/**
 	 * Call vipgoci_report_feedback_to_github_was_submitted() in different ways,
 	 * test if it behaves as it should do.
-	 *
-	 * @covers ::vipgoci_report_feedback_to_github_was_submitted
 	 *
 	 * @return void
 	 */

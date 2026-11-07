@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_git_diffs_fetch' )]
 final class GitRepoDiffsFetchTest extends TestCase {
 	var $options_git_repo_tests = array(
 		'commit-test-repo-pr-diffs-1-a'	=> null,
@@ -102,8 +105,6 @@ final class GitRepoDiffsFetchTest extends TestCase {
 	 * Check diff between commits; do not ask
 	 * for renamed files, removed files or files
 	 * that had permissions changed to be included.
-	 *
-	 * @covers ::vipgoci_git_diffs_fetch
 	 */
 	public function testGitDiffsFetch1() {
 		$options_test = vipgoci_unittests_options_test(
@@ -169,8 +170,6 @@ final class GitRepoDiffsFetchTest extends TestCase {
  	 * Test diff between commits; do ask for
 	 * files with changed permissions to be included
 	 * in the results.
-	 *
-	 * @covers ::vipgoci_git_diffs_fetch
 	 */
 	public function testGitDiffsFetch2() {
 		$options_test = vipgoci_unittests_options_test(
@@ -238,8 +237,6 @@ final class GitRepoDiffsFetchTest extends TestCase {
  	 * Test diff between commits; do ask for
 	 * renamed files to be included
 	 * in the results.
-	 *
-	 * @covers ::vipgoci_git_diffs_fetch
 	 */
 	public function testGitDiffsFetch3() {
 		$options_test = vipgoci_unittests_options_test(
@@ -305,8 +302,6 @@ final class GitRepoDiffsFetchTest extends TestCase {
  	 * Test diff between commits; do not ask
 	 * for renamed files to be included
 	 * in the results.
-	 *
-	 * @covers ::vipgoci_git_diffs_fetch
 	 */
 	public function testGitDiffsFetch4() {
 		$options_test = vipgoci_unittests_options_test(
@@ -368,8 +363,6 @@ final class GitRepoDiffsFetchTest extends TestCase {
  	 * Test diff between commits; do ask for
 	 * removed files to be included
 	 * in the results.
-	 *
-	 * @covers ::vipgoci_git_diffs_fetch
 	 */
 	public function testGitDiffsFetch5() {
 		$options_test = vipgoci_unittests_options_test(
@@ -438,8 +431,6 @@ final class GitRepoDiffsFetchTest extends TestCase {
  	 * Test diff between commits; do not ask for
 	 * removed files to be included
 	 * in the results.
-	 *
-	 * @covers ::vipgoci_git_diffs_fetch
 	 */
 	public function testGitDiffsFetch6() {
 		$options_test = vipgoci_unittests_options_test(
@@ -501,8 +492,6 @@ final class GitRepoDiffsFetchTest extends TestCase {
 	/**
  	 * Test diff between commits; do ask for
 	 * all files to be included.
-	 *
-	 * @covers ::vipgoci_git_diffs_fetch
 	 */
 	public function testGitDiffsFetch7() {
 		$options_test = vipgoci_unittests_options_test(
@@ -570,8 +559,6 @@ final class GitRepoDiffsFetchTest extends TestCase {
  	 * Test diff between commits; do ask for
 	 * all files to be included. Test filtering
 	 * of files.
-	 *
-	 * @covers ::vipgoci_git_diffs_fetch
 	 */
 	public function testGitDiffsFetch8() {
 		$options_test = vipgoci_unittests_options_test(
@@ -638,8 +625,6 @@ final class GitRepoDiffsFetchTest extends TestCase {
  	 * Test diff between commits; do ask for
 	 * all files to be included. Test filtering
 	 * of files.
-	 *
-	 * @covers ::vipgoci_git_diffs_fetch
 	 */
 	public function testGitDiffsFetch9() {
 		$options_test = vipgoci_unittests_options_test(
@@ -713,8 +698,6 @@ final class GitRepoDiffsFetchTest extends TestCase {
 	 * some files to be included. Test filtering
 	 * of files. Also, test interaction between
 	 * filtering and files to be included.
-	 *
-	 * @covers ::vipgoci_git_diffs_fetch
 	 */
 	public function testGitDiffsFetch10() {
 		$options_test = vipgoci_unittests_options_test(
@@ -790,8 +773,6 @@ final class GitRepoDiffsFetchTest extends TestCase {
 	 * live elsewhere. This test should end up
 	 * using the GitHub API, as the commit
 	 * does not exist in the local repository.
-	 *
-	 * @covers ::vipgoci_git_diffs_fetch
 	 */
 	public function testGitDiffsFetch11() {
 		$options_test = vipgoci_unittests_options_test(

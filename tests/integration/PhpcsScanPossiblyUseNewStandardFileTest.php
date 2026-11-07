@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_phpcs_possibly_use_new_standard_file' )]
 final class PhpcsScanPossiblyUseNewStandardFileTest extends TestCase {
 	/**
 	 * Options array.
@@ -61,9 +64,6 @@ final class PhpcsScanPossiblyUseNewStandardFileTest extends TestCase {
 		unset( $this->options );
 	}
 
-	/**
-	 * @covers ::vipgoci_phpcs_possibly_use_new_standard_file
-	 */
 	public function testPhpcsDisabledTest() {
 		$this->options['phpcs'] = false;
 
@@ -84,9 +84,6 @@ final class PhpcsScanPossiblyUseNewStandardFileTest extends TestCase {
 		);
 	}
 
-	/**
-	 * @covers ::vipgoci_phpcs_possibly_use_new_standard_file
-	 */
 	public function testDoNotUseNewstandardFileTest() {
 		vipgoci_unittests_output_suppress();
 
@@ -110,9 +107,6 @@ final class PhpcsScanPossiblyUseNewStandardFileTest extends TestCase {
 		);
 	}
 
-	/**
-	 * @covers ::vipgoci_phpcs_possibly_use_new_standard_file
-	 */
 	public function testDoUseNewstandardFileTest() {
 		$this->options['phpcs-sniffs-include'] = array(
 			'WordPress.DB.RestrictedFunctions'

@@ -9,14 +9,18 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_wpcore_misc_determine_local_slug' )]
 final class WpCoreMiscDetermineLocalSlugTest extends TestCase {
 	private const REPO_PATH = '/tmp/git-repo-123';
 
@@ -59,12 +63,9 @@ final class WpCoreMiscDetermineLocalSlugTest extends TestCase {
 	 * @param string $input_addon_type    Add-on type.
 	 * @param string $input_full_path     Full path to file.
 	 *
-	 * @dataProvider dataDetermineLocalSlug
-	 *
-	 * @covers ::vipgoci_wpcore_misc_determine_local_slug
-	 *
 	 * @return void
 	 */
+	#[DataProvider( 'dataDetermineLocalSlug' )]
 	public function testDetermineLocalSlug(
 		string $expected_local_slug,
 		string $input_addon_type,

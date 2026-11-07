@@ -9,14 +9,17 @@ declare( strict_types=1 );
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the tests.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_run_scan_reviews_comments_enforce_maximum' )]
 final class MainRunScanReviewsCommentsEnforceMaximumTest extends TestCase {
 	/**
 	 * Git options array.
@@ -149,8 +152,6 @@ final class MainRunScanReviewsCommentsEnforceMaximumTest extends TestCase {
 
 	/**
 	 * Test function, check if comments are not enforced.
-	 *
-	 * @covers ::vipgoci_run_scan_reviews_comments_enforce_maximum
 	 */
 	public function testRunScanReviewsCommentsEnforceMaximum1() :void {
 		$options_test = vipgoci_unittests_options_test(
@@ -194,8 +195,6 @@ final class MainRunScanReviewsCommentsEnforceMaximumTest extends TestCase {
 
 	/**
 	 * Test function, check if comments are enforced.
-	 *
-	 * @covers ::vipgoci_run_scan_reviews_comments_enforce_maximum
 	 */
 	public function testRunScanReviewsCommentsEnforceMaximum2() :void {
 		$options_test = vipgoci_unittests_options_test(

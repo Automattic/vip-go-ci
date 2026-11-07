@@ -9,14 +9,18 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_run_time_length_determine' )]
 final class MainRunTimeLengthDetermineTest extends TestCase {
 	/**
 	 * Setup function. Require files.
@@ -35,12 +39,9 @@ final class MainRunTimeLengthDetermineTest extends TestCase {
 	 * @param int    $length           Length.
 	 * @param string $expected_counter Expected counter.
 	 *
-	 * @dataProvider dataDetermineRunTimeLength
-	 *
-	 * @covers ::vipgoci_run_time_length_determine
-	 *
 	 * @return void
 	 */
+	#[DataProvider( 'dataDetermineRunTimeLength' )]
 	public function testDetermineRunTimeLength(
 		int $length,
 		string $expected_counter

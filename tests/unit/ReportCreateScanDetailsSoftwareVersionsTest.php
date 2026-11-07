@@ -10,14 +10,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_report_create_scan_details_software_versions' )]
 final class ReportCreateScanDetailsSoftwareVersionsTest extends TestCase {
 	/**
 	 * Options array.
@@ -51,8 +54,6 @@ final class ReportCreateScanDetailsSoftwareVersionsTest extends TestCase {
 
 	/**
 	 * Test function with most reporting disabled.
-	 *
-	 * @covers ::vipgoci_report_create_scan_details_software_versions
 	 *
 	 * @return void
 	 */
@@ -109,8 +110,6 @@ final class ReportCreateScanDetailsSoftwareVersionsTest extends TestCase {
 
 	/**
 	 * Test function with most reporting enabled.
-	 *
-	 * @covers ::vipgoci_report_create_scan_details_software_versions
 	 *
 	 * @return void
 	 */

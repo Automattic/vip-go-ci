@@ -11,6 +11,7 @@ namespace Vipgoci\Tests\Integration;
 
 use PHPUnit\Framework\Attributes\PreserveGlobalState;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+use PHPUnit\Framework\Attributes\CoversFunction;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -18,6 +19,7 @@ use PHPUnit\Framework\TestCase;
  */
 #[RunTestsInSeparateProcesses]
 #[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_github_pr_labels_get' )]
 final class GitHubLabelsFetchTest extends TestCase {
 	/**
 	 * Options array.
@@ -73,9 +75,6 @@ final class GitHubLabelsFetchTest extends TestCase {
 		unset( $this->options_git_repo_tests );
 	}
 
-	/**
-	 * @covers ::vipgoci_github_pr_labels_get
-	 */
 	public function testLabelsFetch1() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,

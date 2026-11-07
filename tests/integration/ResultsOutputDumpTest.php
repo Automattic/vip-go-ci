@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_results_output_dump' )]
 final class ResultsOutputDumpTest extends TestCase {
 	/**
 	 * Temporary file to dump results to.
@@ -52,8 +55,6 @@ final class ResultsOutputDumpTest extends TestCase {
 
 	/**
 	 * Test if function dumps results in a file.
-	 *
-	 * @covers ::vipgoci_results_output_dump
 	 *
 	 * @return void
 	 */

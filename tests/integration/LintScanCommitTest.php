@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_lint_scan_commit' )]
 final class LintScanCommitTest extends TestCase {
 	/**
 	 * Variable for PHP linting.
@@ -150,8 +153,6 @@ final class LintScanCommitTest extends TestCase {
 	 * PHP lint file with syntax errors.
 	 *
 	 * @return void
-	 *
-	 * @covers ::vipgoci_lint_scan_commit
 	 */
 	public function testLintDoScan1() :void {
 		$options_test = vipgoci_unittests_options_test(
@@ -281,8 +282,6 @@ final class LintScanCommitTest extends TestCase {
 	 * PHP lint files, two files have syntax errors.
 	 *
 	 * @return void
-	 *
-	 * @covers ::vipgoci_lint_scan_commit
 	 */
 	public function testLintDoScan2() :void {
 		$options_test = vipgoci_unittests_options_test(
@@ -445,8 +444,6 @@ final class LintScanCommitTest extends TestCase {
 	 * and the feature is enabled.
 	 *
 	 * @return void
-	 *
-	 * @covers ::vipgoci_lint_scan_commit
 	 */
 	public function testLintWillSkipLargeFileWhenOptionIsOn(): void {
 
@@ -540,8 +537,6 @@ final class LintScanCommitTest extends TestCase {
 
 	/**
 	 * PHP lint when skipping large files is disabled.
-	 *
-	 * @covers ::vipgoci_lint_scan_commit
 	 */
 	public function testLintShouldScanAllFilesWhenSkipLargeFilesOptionIsOff() :void {
 
@@ -631,8 +626,6 @@ final class LintScanCommitTest extends TestCase {
 	/**
 	 * PHP lint when skipping large files is enabled and
 	 * the limit is set to a custom value.
-	 *
-	 * @covers ::vipgoci_lint_scan_commit
 	 */
 	public function testLintShouldValidateAndSkipLargeFileWhenSkipLargeFilesAndLimitOptionsAreOn(): void {
 
@@ -743,8 +736,6 @@ final class LintScanCommitTest extends TestCase {
 	 * PHP lint with the lint-modified-files-only option on.
 	 *
 	 * @return void
-	 *
-	 * @covers ::vipgoci_lint_scan_commit
 	 */
 	public function testLintDoScan3(): void {
 		$options_test = vipgoci_unittests_options_test(

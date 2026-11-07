@@ -9,15 +9,18 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Check if auto-approve options are
  * correctly handled.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_run_init_options_autoapprove' )]
 final class MainRunInitOptionsAutoapproveTest extends TestCase {
 	/**
 	 * Options array.
@@ -54,8 +57,6 @@ final class MainRunInitOptionsAutoapproveTest extends TestCase {
 	 * Check if default auto-approve options are
 	 * correctly provided.
 	 *
-	 * @covers ::vipgoci_run_init_options_autoapprove
-	 *
 	 * @return void
 	 */
 	public function testRunInitOptionsAutoapproveDefault() :void {
@@ -86,8 +87,6 @@ final class MainRunInitOptionsAutoapproveTest extends TestCase {
 	/**
 	 * Check if custom auto-approve options are
 	 * correctly parsed.
-	 *
-	 * @covers ::vipgoci_run_init_options_autoapprove
 	 *
 	 * @return void
 	 */
@@ -125,8 +124,6 @@ final class MainRunInitOptionsAutoapproveTest extends TestCase {
 	/**
 	 * Check if errors are correctly handled.
 	 *
-	 * @covers ::vipgoci_run_init_options_autoapprove
-	 *
 	 * @return void
 	 */
 	public function testRunInitOptionsAutoapproveErrors1() :void {
@@ -159,8 +156,6 @@ final class MainRunInitOptionsAutoapproveTest extends TestCase {
 
 	/**
 	 * Check if errors are correctly handled.
-	 *
-	 * @covers ::vipgoci_run_init_options_autoapprove
 	 *
 	 * @return void
 	 */

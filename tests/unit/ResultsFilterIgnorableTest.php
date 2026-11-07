@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Test function that filters out ignorable messages.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_results_filter_ignorable' )]
 final class ResultsFilterIgnorableTest extends TestCase {
 	/**
 	 * Require files.
@@ -31,8 +34,6 @@ final class ResultsFilterIgnorableTest extends TestCase {
 
 	/**
 	 * Test the function in different ways.
-	 *
-	 * @covers ::vipgoci_results_filter_ignorable
 	 *
 	 * @return void
 	 */

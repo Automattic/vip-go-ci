@@ -9,15 +9,18 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_results_remove_existing_github_comments' )]
 final class ResultsRemoveExistingGithubCommentsTest extends TestCase {
 	/**
 	 * Git options variable.
@@ -164,8 +167,6 @@ final class ResultsRemoveExistingGithubCommentsTest extends TestCase {
 	/**
 	 * Remove comments only when already posted on the PR being scanned.
 	 * Does not process dismissed reviews.
-	 *
-	 * @covers ::vipgoci_results_remove_existing_github_comments
 	 *
 	 * @param string $pr_option            Configuration key for the PR to scan.
 	 * @param array  $expected_issues      Issues that should remain after deduplication.

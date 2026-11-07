@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_wpcore_misc_get_addon_headers_and_type' )]
 final class WpCoreMiscGetAddonHeadersAndTypeTest extends TestCase {
 	/**
 	 * Setup function. Require files.
@@ -29,8 +32,6 @@ final class WpCoreMiscGetAddonHeadersAndTypeTest extends TestCase {
 
 	/**
 	 * Test when a plugin should be detected.
-	 *
-	 * @covers ::vipgoci_wpcore_misc_get_addon_headers_and_type
 	 *
 	 * @return void
 	 */
@@ -134,8 +135,6 @@ final class WpCoreMiscGetAddonHeadersAndTypeTest extends TestCase {
 	/**
 	 * Test when a theme should be detected.
 	 *
-	 * @covers ::vipgoci_wpcore_misc_get_addon_headers_and_type
-	 *
 	 * @return void
 	 */
 	public function testWpCoreMiscGetAddonHeadersAndTypeForTheme(): void {
@@ -237,8 +236,6 @@ final class WpCoreMiscGetAddonHeadersAndTypeTest extends TestCase {
 
 	/**
 	 * Test when nothing should be detected.
-	 *
-	 * @covers ::vipgoci_wpcore_misc_get_addon_headers_and_type
 	 *
 	 * @return void
 	 */

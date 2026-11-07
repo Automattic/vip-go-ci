@@ -11,16 +11,19 @@ namespace Vipgoci\Tests\Unit;
 
 // Note: require_once should be in setUp().
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
  *
  * See README.md for details.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'function_to_test' )]
 final class Skeleton extends TestCase {
 	/**
 	 * Setup function. Require files, etc.
@@ -35,8 +38,6 @@ final class Skeleton extends TestCase {
 
 	/**
 	 * Short description of the function.
-	 *
-	 * @covers ::
 	 *
 	 * @return void
 	 */

@@ -9,16 +9,19 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
  *
  * Note: Running in separate processes fails for unknown reasons.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_gitrepo_submodule_file_path_get' )]
 final class GitRepoSubmoduleFilePathGetTest extends TestCase {
 	/**
 	 * Git options.
@@ -92,8 +95,6 @@ final class GitRepoSubmoduleFilePathGetTest extends TestCase {
 
 	/**
 	 * Test common usage of the function.
-	 *
-	 * @covers ::vipgoci_gitrepo_submodule_file_path_get
 	 */
 	public function testSubmoduleFilePathGet1() :void {
 		$options_test = vipgoci_unittests_options_test(

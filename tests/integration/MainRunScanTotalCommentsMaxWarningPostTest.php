@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_run_scan_total_comments_max_warning_post' )]
 final class MainRunScanTotalCommentsMaxWarningPostTest extends TestCase {
 	/**
 	 * Git options array.
@@ -202,8 +205,6 @@ final class MainRunScanTotalCommentsMaxWarningPostTest extends TestCase {
 	/**
 	 * Test function. Comments are expected to reach maximum.
 	 *
-	 * @covers ::vipgoci_run_scan_total_comments_max_warning_post
-	 *
 	 * @return void
 	 */
 	public function testTotalCommentsReachedMax(): void {
@@ -268,8 +269,6 @@ final class MainRunScanTotalCommentsMaxWarningPostTest extends TestCase {
 
 	/**
 	 * Test function. Comments are not expected to reach maximum.
-	 *
-	 * @covers ::vipgoci_run_scan_total_comments_max_warning_post
 	 *
 	 * @return void
 	 */

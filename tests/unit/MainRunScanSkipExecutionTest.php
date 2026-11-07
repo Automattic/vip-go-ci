@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Check if skip execution functionality works.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_run_scan_skip_execution' )]
 final class MainRunScanSkipExecutionTest extends TestCase {
 	/**
 	 * Options array.
@@ -62,8 +65,6 @@ final class MainRunScanSkipExecutionTest extends TestCase {
 	 * Check if vipgoci_run_scan_skip_execution() attempts to
 	 * exit.
 	 *
-	 * @covers ::vipgoci_run_scan_skip_execution
-	 *
 	 * @return void
 	 */
 	public function testRunScanSkipExecution() :void {
@@ -95,8 +96,6 @@ final class MainRunScanSkipExecutionTest extends TestCase {
 	/**
 	 * Check if vipgoci_run_scan_skip_execution() returns
 	 * with exit-status.
-	 *
-	 * @covers ::vipgoci_run_scan_skip_execution
 	 *
 	 * @return void
 	 */

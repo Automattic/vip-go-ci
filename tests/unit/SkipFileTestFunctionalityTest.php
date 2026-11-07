@@ -9,15 +9,27 @@ declare( strict_types=1 );
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_get_skipped_files' )]
+#[CoversFunction( 'vipgoci_set_skipped_file' )]
+#[CoversFunction( 'vipgoci_set_prs_implicated_skipped_files' )]
+#[CoversFunction( 'vipgoci_get_skipped_files_message' )]
+#[CoversFunction( 'vipgoci_get_skipped_files_issue_message' )]
+#[CoversFunction( 'vipgoci_skip_file_check_previous_pr_comments' )]
+#[CoversFunction( 'vipgoci_get_skipped_files_from_comment' )]
+#[CoversFunction( 'vipgoci_get_skipped_files_from_pr_comments' )]
+#[CoversFunction( 'vipgoci_get_skipped_files_message_from_comment' )]
 final class SkipFileTestFunctionalityTest extends TestCase {
 	/**
 	 * Mocked comment constant.
@@ -84,8 +96,6 @@ final class SkipFileTestFunctionalityTest extends TestCase {
 	/**
 	 * Test getting skipped files with correct value.
 	 *
-	 * @covers ::vipgoci_get_skipped_files
-	 *
 	 * @return void
 	 */
 	public function testGetSkippedFilesWillReturnCorrectValue() :void {
@@ -129,8 +139,6 @@ final class SkipFileTestFunctionalityTest extends TestCase {
 	/**
 	 * Test getting skipped files.
 	 *
-	 * @covers ::vipgoci_get_skipped_files
-	 *
 	 * @return void
 	 */
 	public function testGetSkippedFilesWillReturnCorrectValueForTotal0() :void {
@@ -166,8 +174,6 @@ final class SkipFileTestFunctionalityTest extends TestCase {
 
 	/**
 	 * Test setting skipped files.
-	 *
-	 * @covers ::vipgoci_set_skipped_file
 	 *
 	 * @return void
 	 */
@@ -210,8 +216,6 @@ final class SkipFileTestFunctionalityTest extends TestCase {
 
 	/**
 	 * Test setting skipped files for implicated PRs.
-	 *
-	 * @covers ::vipgoci_set_prs_implicated_skipped_files
 	 *
 	 * @return void
 	 */
@@ -257,8 +261,6 @@ final class SkipFileTestFunctionalityTest extends TestCase {
 	/**
 	 * Test getting skipped file message.
 	 *
-	 * @covers ::vipgoci_get_skipped_files_message
-	 *
 	 * @return void
 	 */
 	public function testGetSkippedFilesMessage() :void {
@@ -287,8 +289,6 @@ Note that the above file(s) were not analyzed due to their length.';
 	/**
 	 * Test getting skipped file message.
 	 *
-	 * @covers ::vipgoci_get_skipped_files_message
-	 *
 	 * @return void
 	 */
 	public function testGetSkippedFilesMessageWithNumberOfLinesExceededDifferentThanDefault() :void {
@@ -316,8 +316,6 @@ Note that the above file(s) were not analyzed due to their length.';
 	/**
 	 * Test getting skipped file message.
 	 *
-	 * @covers ::vipgoci_get_skipped_files_issue_message
-	 *
 	 * @return void
 	 */
 	public function testGetSkippedFilesIssueMessage() :void {
@@ -339,8 +337,6 @@ Note that the above file(s) were not analyzed due to their length.';
 
 	/**
 	 * Test getting previous PR comments.
-	 *
-	 * @covers ::vipgoci_skip_file_check_previous_pr_comments
 	 *
 	 * @return void
 	 */
@@ -375,12 +371,9 @@ Note that the above file(s) were not analyzed due to their length.';
 	 * @param array $skipped_files_result Skipped files array.
 	 * @param array $comments             Comments array.
 	 *
-	 * @covers ::vipgoci_skip_file_check_previous_pr_comments
-	 *
-	 * @dataProvider vipgociVerifySkipFileMessageDuplicationWillReturnOfCommentsOreIssuesResultsAreZeroProvider
-	 *
 	 * @return void
 	 */
+	#[DataProvider( 'vipgociVerifySkipFileMessageDuplicationWillReturnOfCommentsOreIssuesResultsAreZeroProvider' )]
 	public function testVipgociVerifySkipFileMessageDuplicationWillReturnOfCommentsOreIssuesResultsAreZero(
 		array $skipped_files_result,
 		array $comments
@@ -433,8 +426,6 @@ Note that the above file(s) were not analyzed due to their length.';
 	/**
 	 * Get files skipped from comment.
 	 *
-	 * @covers ::vipgoci_get_skipped_files_from_comment
-	 *
 	 * @return void
 	 */
 	public function testGetLargeFilesFromComments() :void {
@@ -459,8 +450,6 @@ Note that the above file(s) were not analyzed due to their length.';
 	/**
 	 * Get files skipped from comment.
 	 *
-	 * @covers ::vipgoci_get_skipped_files_from_comment
-	 *
 	 * @return void
 	 */
 	public function testGetSingleLargeFilesFromComments() :void {
@@ -480,8 +469,6 @@ Note that the above file(s) were not analyzed due to their length.';
 	/**
 	 * Get skipped files from comment.
 	 *
-	 * @covers ::vipgoci_get_skipped_files_from_comment
-	 *
 	 * @return void
 	 */
 	public function testGetLargeFilesFromCommentsWillReturnEmptyWhenCommentIsNotAboutSkippedFiles() :void {
@@ -498,8 +485,6 @@ Note that the above file(s) were not analyzed due to their length.';
 
 	/**
 	 * Get skipped files from PR comments.
-	 *
-	 * @covers ::vipgoci_get_skipped_files_from_pr_comments
 	 *
 	 * @return void
 	 */
@@ -525,8 +510,6 @@ Note that the above file(s) were not analyzed due to their length.';
 	/**
 	 * Get skipped files from comment.
 	 *
-	 * @covers ::vipgoci_get_skipped_files_message_from_comment
-	 *
 	 * @return void
 	 */
 	public function testGetLargeFilesMessageFromPRComment() :void {
@@ -545,12 +528,9 @@ Note that the above file(s) were not analyzed due to their length.';
 	 *
 	 * @param string $comment Comment string.
 	 *
-	 * @covers ::vipgoci_get_skipped_files_message_from_comment
-	 *
-	 * @dataProvider getLargeFilesMessageFromPRCommentShouldReturnEmptyForCommentsWithNoSkippedFilesProvider
-	 *
 	 * @return void
 	 */
+	#[DataProvider( 'getLargeFilesMessageFromPRCommentShouldReturnEmptyForCommentsWithNoSkippedFilesProvider' )]
 	public function testGetLargeFilesMessageFromPRCommentShouldReturnEmptyForCommentsWithNoSkippedFiles(
 		string $comment
 	) :void {
@@ -581,8 +561,6 @@ Note that the above file(s) were not analyzed due to their length.';
 
 	/**
 	 * Test when PR comments are not about skipped files.
-	 *
-	 * @covers ::vipgoci_get_skipped_files_from_pr_comments
 	 *
 	 * @return void
 	 */
