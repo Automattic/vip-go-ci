@@ -39,7 +39,7 @@ jobs:
         run: sed "s:PROJECT_DIR:$(pwd):g" phpunit.xml.dist > phpunit.xml
 
       - name: Run unit tests
-        run: phpunit --testsuite=unit-tests
+        run: tests/run-tests.sh --testsuite=unit-tests
         env:
           VIPGOCI_TESTING_DEBUG_MODE: 'true'
 
@@ -56,6 +56,8 @@ jobs:
     steps:
       - name: Check out the source code
         uses: actions/checkout@v7
+        with:
+          fetch-depth: 0 # Supply pinned submodule objects without fetching during tests.
 
       - name: Set up PHP 7.4
         uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
@@ -96,21 +98,16 @@ jobs:
           git -C ~/vip-go-ci-tools/vip-go-ci-testing checkout master # Switch to default
 
       - name: Configure tools
-        env:
-          GH_TESTS_TOKEN: ${{ secrets.GH_TESTS_TOKEN }}
         run: |
           sed "s:/home/phpunit/:${HOME}/:; s:phpcs-php-path=.*:phpcs-php-path=/usr/bin/php7.4:g; s:lint-php2-path=.*:lint-php2-path=/usr/bin/php8.2:g; s:lint-php2-version=.*:lint-php2-version=8.2:g; s:svg-php-path=.*:svg-php-path=/usr/bin/php8.2:g; s:github-repo-url=.*:github-repo-url=${HOME}/vip-go-ci-tools/vip-go-ci-testing:g;" tests/config.ini.dist > tests/config.ini
           rm -f tests/config.ini.dist
-          echo '[git-secrets]' > tests/config-secrets.ini
-          echo "github-token=$GH_TESTS_TOKEN" >> tests/config-secrets.ini
-          echo 'github-skip-write-tests=true' >> tests/config-secrets.ini
           sed "s:PROJECT_DIR:$(pwd):g" phpunit.xml.dist > phpunit.xml
 
       - name: Set default PHP version
         run: sudo update-alternatives --set php "/usr/bin/php${{ matrix.php }}"
 
       - name: Run integration tests
-        run: phpunit --testsuite=integration-tests
+        run: tests/run-tests.sh --testsuite=integration-tests
         env:
           VIPGOCI_TESTING_DEBUG_MODE: 'true'
 
@@ -147,7 +144,7 @@ jobs:
         run: sed "s:PROJECT_DIR:$(pwd):g" phpunit.xml.dist > phpunit.xml
 
       - name: Run E2E tests
-        run: phpunit --testsuite=e2e-tests
+        run: tests/run-tests.sh --testsuite=e2e-tests
         env:
           VIPGOCI_TESTING_DEBUG_MODE: 'true'
 

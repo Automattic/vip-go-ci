@@ -1,8 +1,8 @@
 # Tests
 
-## Introduction 
+## Introduction
 
-`vip-go-ci` relies on both manual and automated testing. Much of the functionality `vip-go-ci` provides is automatically tested using it's extensive unit, integration and E2E (End-to-End) test suites. _Most_ of the tests in the test suites are run automatically when code is committed and pushed to the repository, though _some_ integration tests need to be run manually (due to secrets, see below). The manual testing that should be performed is functional, testing the final behaviour of the software. 
+`vip-go-ci` relies on both manual and automated testing. Much of the functionality `vip-go-ci` provides is automatically tested using it's extensive unit, integration and E2E (End-to-End) test suites. _Most_ of the tests in the test suites are run automatically when code is committed and pushed to the repository, though _some_ integration tests need to be run manually (due to secrets, see below). The manual testing that should be performed is functional, testing the final behaviour of the software.
 
 ## Automated testing
 
@@ -26,15 +26,17 @@ will be:
 
 > &lt;directory&gt;~/Projects/vip-go-ci/tests/integration&lt;/directory&gt;
 
-3) Copy configuration file for tests and update the file as needed. Note that this step is only needed if you intend to run the integration tests. 
+3) Copy configuration file for tests and update the file as needed. Note that this step is only needed if you intend to run the integration tests.
 
 > cp tests/config.ini.dist tests/config.ini
+
+For fixture mode, clone `Automattic/vip-go-ci-testing` once and set `github-repo-url` to that local checkout's absolute path. Check out its `ap-file-types-test-1` branch once, then switch back to `master`, so the fixture branch is available locally. The main project checkout must include full history for the pinned submodule objects; fetch missing history during setup if using a shallow checkout.
 
 Alter any options in the file as needed to match the setup of your system. Note that in some cases, you may have to use different PHP versions for PHPCS or the SVG scanner than `vip-go-ci` itself.
 
 #### Test suite secrets file
 
-Some tests will require a GitHub token to submit POST/PUT requests to the GitHub API, some will need access to a repo-meta API and some access to the WPScan API. 
+Only explicit live-mode runs use this secrets file. Those tests may require a GitHub token, repo-meta API credentials or a WPScan API token. Default fixture-mode runs ignore this file.
 
 To skip these tests, simply place an empty `config-secrets.ini` file in the `tests/` directory of `vip-go-ci` and skip the rest of this section.
 
@@ -66,27 +68,59 @@ This file is not included, and needs to be configured manually.
 
 The unit test suite can be run using the following command:
 
-> VIPGOCI_TESTING_DEBUG_MODE=true phpunit --testsuite=unit-tests
+> VIPGOCI_TESTING_DEBUG_MODE=true tests/run-tests.sh --testsuite=unit-tests
 
-By running this command, you will run the tests that do not depend on external calls. 
+By running this command, you will run the tests that do not depend on external calls.
+
+#### Mocked API responses
+
+API calls use checked-in responses by default. Run the suites through `tests/run-tests.sh`, which finds `phpunit` on `PATH`. If needed, set `VIPGOCI_PHPUNIT` to a PHPUnit executable or PHAR path and `VIPGOCI_PHP_BINARY` to the PHP interpreter.
+
+> tests/run-tests.sh --testsuite=unit-tests
+>
+> tests/run-tests.sh --testsuite=integration-tests
+>
+> tests/run-tests.sh --testsuite=e2e-tests
+
+The runner disables cURL execution, option setters, request-info lookup and `sleep()` in a temporary PHP INI directory inherited by PHPUnit's isolated child processes, preserving any functions already disabled in the caller's configuration. Test-only replacements capture the real clients' request options and replay `tests/fixtures/integration-api.json`. They never contact a live service or record new responses automatically. Missing fixtures fail the test. API pacing and retry delays are recorded instead of waiting; sleeps outside the API clients retain real time. Retry tests assert the requested backoff durations. The temporary INI directory is removed when the runner exits.
+
+Integration tests continue to execute the production API clients, scanners, response parsers, caches and reporting logic. Fixture mode uses synthetic credentials and ignores `tests/config-secrets.ini`; writes update only the fixture service's per-test state. Git operations use the local fixture checkout configured in `tests/config.ini`. The offline runner allows only Git file transport; the submodule test redirects its pinned submodule to the full project checkout. Install dependencies and prepare that checkout before running tests; these setup operations can require network access.
+
+The `mocked-api` group additionally contains focused unit tests using a strict HTTP response queue, existing mocked GitHub request-guard, comment-limit helper and Pixel API tests, and tests of the fixture transport. Run only this group with:
+
+> tests/run-tests.sh --group=mocked-api
+
+To run the full suites against live services and skip the tests dedicated to mocks:
+
+> VIPGOCI_TESTING_LIVE_API=true VIPGOCI_TESTING_DEBUG_MODE=true tests/run-tests.sh --exclude-group=mocked-api
+
+Live mode uses the normal PHP cURL functions and integration configuration, including the existing `github-skip-write-tests` control. Configure real credentials only for live runs. Set `github-skip-write-tests=true` to prevent writes during those runs; offline tests exercise the write paths against fixtures.
+
+When adding mocked coverage:
+
+- For focused client tests, extend `tests/common/MockedApiTestCase.php` and use the `mocked-api`, process-isolation and disabled-global-preservation attributes. Queue raw responses with `HttpApiMock::expect()`. Every expected request must be consumed, and extra requests fail immediately.
+- For existing integration tests, add a reviewed response for the exact HTTP method and complete URL to `tests/fixtures/integration-api.json`. Use the fixture repository's immutable commits, retain fields the client consumes, and use synthetic identities for private-service examples. Keep assertions independent of the credential holder and mutable service data.
+- Use the fixture transport's focused expectations for malformed responses, errors, headers and retries. Do not add a live fallback to make an offline test pass.
+
+Production files do not contain test hooks. The cURL replacements are loaded only by the test bootstrap when the runner has disabled the native entry points. Plain `phpunit` remains usable for the unit suite; integration and E2E tests require the runner or an explicit live mode.
 
 ### Integration test suite
 
 The integration tests can be run using the following command:
 
-> VIPGOCI_TESTING_DEBUG_MODE=true phpunit --testsuite=integration-tests
+> VIPGOCI_TESTING_DEBUG_MODE=true tests/run-tests.sh --testsuite=integration-tests
 
 Integration tests will execute the scanning utilities — PHPCS, SVG scanner and PHP Lint — and so paths to these, and a PHP interpreter, need to be configured. See the `tests/config.ini` file.
 
-By using this command, you will run the tests of the test-suite which can be run (depending on tokens and other detail), and get feedback on any errors or warnings. Note that when run, requests will be made to the GitHub API using anonymous calls (unless configured to use an access-token as shown above). It can happen that the GitHub API returns with an error indicating that the maximum limit of API requests has been reached; the solution is to wait and re-run or switch to authenticted calls. 
+The default run uses API fixtures without tokens or rate-limit quota. Scanner paths and the local Git fixture repository must still be configured. To check live service compatibility, use the explicit live-mode command above.
 
 ### E2E test suite
 
-The E2E tests need network access to GitHub's releases API and the published release's versioned Git tag locally. Fetch the published version before running them (`git fetch origin tag <version>`, replacing `<version>` with the release number). The moving `latest` tag is not used because it can lag behind the published release.
+The default E2E test uses the release response pinned in `tests/fixtures/integration-api.json` and needs its versioned Git tag locally (currently `1.4.2`). Fetch that tag before running it if necessary. In live mode it queries GitHub and needs the published release's versioned tag. The moving `latest` tag is not used.
 
 The E2E (End-to-End) tests can be run using the following command:
 
-> VIPGOCI_TESTING_DEBUG_MODE=true phpunit --testsuite=e2e-tests
+> VIPGOCI_TESTING_DEBUG_MODE=true tests/run-tests.sh --testsuite=e2e-tests
 
 ### Test isolation
 
@@ -94,11 +128,9 @@ Note that the test suite uses the `@runTestsInSeparateProcesses` and `@preserveG
 
 ### Integration tests and GitHub Actions
 
-When the integration test suite runs on GitHub Actions the suite is configured specifically not to write any data to GitHub during testing. More specifically, the `github-skip-write-tests` key/value (see [above](#test-suite-secrets-file)) is set to `true` value in the `tests/config-secrets.ini` file during execution of the tests (see [here](.github/workflows/ci.yml)), which leads to certain tests not being run.
+CI runs all suites through the offline runner. API fixtures replace GitHub, WordPress.org, WPScan, repo-meta and release requests; API credentials are not supplied to the jobs. The integration job prepares scanner dependencies and a local clone of the Git fixture repository before tests start. E2E checkout includes the versioned release tags.
 
-The integration test suite is further more set up with a GitHub access token, guaranteeing enough rate limiting quota for the tests. The access token is stored in GitHub Actions secrets for the repository. More details are available in internal documentation.
-
-During testing, certain fields in the `tests/config-secrets.ini` file are not specified, which leads to certain tests to being skipped.
+Run the explicit live mode manually to check service compatibility. Live requests are intentionally outside the routine CI jobs.
 
 ## Manual testing
 
