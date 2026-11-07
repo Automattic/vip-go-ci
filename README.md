@@ -309,6 +309,14 @@ For example:
 
 > {"skip-draft-prs":true}
 
+### Dry-run mode
+
+With `--dry-run=true`, `vip-go-ci` scans as usual but does not send POST, PUT or DELETE requests to the GitHub API. Nothing is posted, dismissed, approved or labelled, and no commit status is set. Each skipped request is logged instead, with its method, URL and body.
+
+> ./vip-go-ci.php --dry-run=true
+
+GET requests to the GitHub API are still sent, so a valid token is still required. Other services are not affected: IRC messages, statistics to the Pixel API and requests to the WordPress.org and WPScan APIs are still sent if configured. The option cannot be set via the repository config-file.
+
 ### Maximum execution time
 
 `vip-go-ci` supports setting maximum execution time. Once the maximum time is exceeded, it will exit with an error code (see [above](#exit-codes)).
@@ -316,6 +324,23 @@ For example:
 Use the `--max-exec-time` option to set maximum execution time (in seconds):
 
 > ./vip-go-ci.php ... --max-exec-time=600
+
+### Using GitHub Actions' `GITHUB_TOKEN`
+
+`vip-go-ci` normally asks GitHub which user the token belongs to, and uses that login to recognize the comments and reviews it posted earlier. GitHub App installation tokens, such as the `GITHUB_TOKEN` provided by GitHub Actions, cannot query this information. For these tokens (prefixed `ghs_`), `vip-go-ci` assumes the `github-actions[bot]` login. A different login can be set with `--github-token-login`, which also skips the lookup for any other token.
+
+Since other workflows may also post as `github-actions[bot]`, use `--comment-marker` to add a hidden marker to every comment and review `vip-go-ci` posts. When set, feedback carrying the marker is treated as posted by `vip-go-ci`, both when avoiding duplicate comments and when cleaning up or dismissing earlier feedback. For example:
+
+> ./vip-go-ci.php ... --token="$GITHUB_TOKEN" --comment-marker="github-actions"
+
+-- this adds `<!-- vip-go-ci-marker:github-actions -->` to the comments and reviews posted.
+
+Feedback posted before the marker was enabled is handled as follows, so that pull requests already scanned do not receive duplicate comments:
+
+* Inline comments without any marker count as already posted, regardless of who posted them. Comments carrying a different marker do not.
+* Comments and reviews without any marker are treated as `vip-go-ci`'s own if authored by the login set with `--comment-marker-legacy-login` (default: `wpcomvip-vipgoci-bot`), and may be cleaned up or dismissed. This login should only be used by `vip-go-ci`.
+
+The workflow needs `pull-requests: write` and `issues: write` permissions. Auto-approvals additionally require the repository setting "Allow GitHub Actions to create and approve pull requests".
 
 ### Informational message
 
@@ -620,6 +645,12 @@ For example:
 > ./vip-go-ci.php --post-generic-pr-support-comments=true --post-generic-pr-support-comments-string="This ..." --post-generic-pr-support-comments-branches="trunk" --post-generic-pr-support-comments-repo-meta-match="support_message=true,support_plan=true" 
 
 With the `--post-generic-pr-support-comments-repo-meta-match` parameter added, `vip-go-ci` will look at the data returned by the repo-meta API, and check if these fields and their values are found in there for at least one entry. If so, the generic support message will be posted, and not otherwise.
+
+When the repo-meta API is not reachable, the data can be provided with the `--repo-meta-data` parameter instead, as comma separated `field=value` pairs. When it is set, the repo-meta API is not called, and the data is matched as if it were the only entry returned by the API. For example:
+
+> ./vip-go-ci.php --post-generic-pr-support-comments=true ... --post-generic-pr-support-comments-repo-meta-match="1:code_review_strategy=vip,enforce_github_reviews=1" --repo-meta-data="code_review_strategy=vip,enforce_github_reviews=1"
+
+Values `true`, `false` and `null` are converted to their types and other values are compared as lower-case strings, the same way as in `--post-generic-pr-support-comments-repo-meta-match`.
 
 The following Generic Support Message related options can be configured via repository-config file:
 

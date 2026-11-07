@@ -39,6 +39,29 @@ if ( ! defined( 'VIPGOCI_GITHUB_BASE_URL' ) ) {
 define( 'VIPGOCI_GITHUB_API_VERSION', '2022-11-28' );
 
 /*
+ * GitHub App installation tokens (such as the GITHUB_TOKEN provided
+ * by GitHub Actions) start with this prefix and cannot query the
+ * /user endpoint. Comments made with GITHUB_TOKEN are authored by
+ * the login defined below.
+ */
+define( 'VIPGOCI_GITHUB_APP_INSTALLATION_TOKEN_PREFIX', 'ghs_' );
+define( 'VIPGOCI_GITHUB_ACTIONS_BOT_LOGIN', 'github-actions[bot]' );
+
+/*
+ * Hidden marker added to comments and reviews when --comment-marker
+ * is set. Used to identify feedback posted by this instance.
+ */
+define( 'VIPGOCI_GITHUB_COMMENT_MARKER_PREFIX', '<!-- vip-go-ci-marker:' );
+define( 'VIPGOCI_GITHUB_COMMENT_MARKER_SUFFIX', ' -->' );
+
+/*
+ * Default login vip-go-ci posted as before --comment-marker was
+ * enabled. Feedback by this login without any marker is treated
+ * as our own. Can be changed with --comment-marker-legacy-login.
+ */
+define( 'VIPGOCI_GITHUB_COMMENT_MARKER_LEGACY_LOGIN_DEFAULT', 'wpcomvip-vipgoci-bot' );
+
+/*
  * Defines for various sizes, such as KB.
  */
 define( 'VIPGOCI_KB_IN_BYTES', 1024 );
@@ -119,7 +142,7 @@ define( 'VIPGOCI_CACHE_CLEAR', '--VIPGOCI-CACHE-CLEAR-0x321--' );
 
 // This can be overridden in programs using vip-go-ci as library.
 if ( ! defined( 'VIPGOCI_HTTP_API_WAIT_TIME_SECONDS' ) ) {
-	define( 'VIPGOCI_HTTP_API_WAIT_TIME_SECONDS', 3 );
+	define( 'VIPGOCI_HTTP_API_WAIT_TIME_SECONDS', 1 );
 }
 
 define( 'VIPGOCI_HTTP_API_WAIT_APIS_ARRAY', array( VIPGOCI_GITHUB_BASE_URL ) );

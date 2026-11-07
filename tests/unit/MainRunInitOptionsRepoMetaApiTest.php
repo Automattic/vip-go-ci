@@ -65,6 +65,7 @@ final class MainRunInitOptionsRepoMetaApiTest extends TestCase {
 				'repo-meta-api-base-url'     => null,
 				'repo-meta-api-user-id'      => null,
 				'repo-meta-api-access-token' => null,
+				'repo-meta-data'             => null,
 			),
 			$this->options
 		);
@@ -82,6 +83,7 @@ final class MainRunInitOptionsRepoMetaApiTest extends TestCase {
 			'repo-meta-api-base-url'     => 'https://api.test.local/v1/api  ',
 			'repo-meta-api-user-id'      => '3500',
 			'repo-meta-api-access-token' => '   test  ',
+			'repo-meta-data'             => 'code_review_strategy=VIP,enforce_github_reviews=1,support_message=true,enforce_x=null',
 		);
 
 		vipgoci_run_init_options_repo_meta_api(
@@ -93,6 +95,12 @@ final class MainRunInitOptionsRepoMetaApiTest extends TestCase {
 				'repo-meta-api-base-url'     => 'https://api.test.local/v1/api',
 				'repo-meta-api-user-id'      => 3500,
 				'repo-meta-api-access-token' => 'test',
+				'repo-meta-data'             => array(
+					'code_review_strategy'   => 'vip',
+					'enforce_github_reviews' => '1',
+					'support_message'        => true,
+					'enforce_x'              => null,
+				),
 			),
 			$this->options
 		);
