@@ -143,9 +143,11 @@ final class ResultsApprovedFilesCommentsRemoveTest extends TestCase {
 		 * do not have any specific meaning.
 		 */
 		$auto_approved_files_arr = array(
-			'php-file-1.php' => 'autoapprove-approved-php-file', // This file should be removed from results.
-			'theme-1.css'    => 'autoapprove-filetypes', // This one not.
-			'plugin-1.php'   => 'autoapprove-approved-php-file', // And not this one either.
+			32 => array(
+				'php-file-1.php' => 'autoapprove-approved-php-file', // This file should be removed from results.
+				'theme-1.css'    => 'autoapprove-filetypes', // This one not.
+				'plugin-1.php'   => 'autoapprove-approved-php-file', // And not this one either.
+			),
 		);
 
 		/*

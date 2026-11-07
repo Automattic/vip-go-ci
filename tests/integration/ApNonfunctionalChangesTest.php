@@ -131,7 +131,7 @@ final class ApNonfunctionalChangesTest extends TestCase {
 				 * - file101.png, same.
 				 */
 			),
-			$auto_approved_files_arr
+			$this->approvalReasonsForFixture( $auto_approved_files_arr )
 		);
 	}
 
@@ -169,7 +169,28 @@ final class ApNonfunctionalChangesTest extends TestCase {
 				 * - file2.php is not approved, has been removed.
 				 */
 			),
-			$auto_approved_files_arr
+			$this->approvalReasonsForFixture( $auto_approved_files_arr )
 		);
 	}
+	/**
+	 * Verify the fixture PR owns the approval reasons.
+	 *
+	 * @param array $approved Approval reasons keyed by PR and filename.
+	 * @return array Reasons for the fixture PR.
+	 */
+	private function approvalReasonsForFixture( array $approved ): array {
+		$prs = vipgoci_github_prs_implicated(
+			$this->options['repo-owner'],
+			$this->options['repo-name'],
+			$this->options['commit'],
+			$this->options['token'],
+			$this->options['branches-ignore'],
+			$this->options['skip-draft-prs']
+		);
+		$this->assertCount( 1, $prs );
+		$pr = reset( $prs );
+		$this->assertSame( array( $pr->number ), array_keys( $approved ) );
+		return $approved[ $pr->number ];
+	}
+
 }
