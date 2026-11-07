@@ -20,7 +20,8 @@ vipgoci_disabled_functions="$("$vipgoci_php_binary" -r '
     ))));
 ')"
 printf 'disable_functions=%s\n' "$vipgoci_disabled_functions" > "$vipgoci_test_ini_dir/offline-api.ini"
-vipgoci_ini_scan_dir="${PHP_INI_SCAN_DIR:-$("$vipgoci_php_binary" -r 'echo PHP_CONFIG_FILE_SCAN_DIR;')}"
+# An empty component resolves to the invoked interpreter's own default directory.
+vipgoci_ini_scan_dir="${PHP_INI_SCAN_DIR-}"
 export GIT_ALLOW_PROTOCOL=file
 export PHP_INI_SCAN_DIR="$vipgoci_ini_scan_dir:$vipgoci_test_ini_dir"
 "$vipgoci_php_binary" "$vipgoci_phpunit_binary" "$@"
