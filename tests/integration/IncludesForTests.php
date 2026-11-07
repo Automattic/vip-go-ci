@@ -14,4 +14,9 @@ require_once __DIR__ . '/IncludesForTestsConfig.php';
 require_once __DIR__ . '/IncludesForTestsRepo.php';
 require_once __DIR__ . '/IncludesForTestsMisc.php';
 
+if ( 'true' !== getenv( 'VIPGOCI_TESTING_LIVE_API' ) ) {
+	$GLOBALS['vipgoci_mock_api_waits'] = true;
+	require_once __DIR__ . '/../common/helper/IntegrationApiMock.php';
+	require_once __DIR__ . '/../common/helper/CurlApiMock.php';
+}
 require_once __DIR__ . '/../../requires.php';

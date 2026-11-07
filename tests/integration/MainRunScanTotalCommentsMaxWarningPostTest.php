@@ -240,7 +240,9 @@ final class MainRunScanTotalCommentsMaxWarningPostTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		sleep( 5 ); // Give API time to catch up.
+		if ( 'true' === getenv( 'VIPGOCI_TESTING_LIVE_API' ) ) {
+			sleep( 5 );
+		} // Give API time to catch up.
 
 		$all_comments = $this->fetchPrGenericComments();
 
@@ -305,7 +307,9 @@ final class MainRunScanTotalCommentsMaxWarningPostTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		sleep( 5 ); // Give API time to catch up.
+		if ( 'true' === getenv( 'VIPGOCI_TESTING_LIVE_API' ) ) {
+			sleep( 5 );
+		} // Give API time to catch up.
 
 		$all_comments = $this->fetchPrGenericComments();
 

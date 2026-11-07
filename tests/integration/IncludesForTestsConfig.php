@@ -16,6 +16,28 @@ function vipgoci_unittests_get_config_value(
 	string $key,
 	bool $secret_file = false
 ) :?string {
+	if ( $secret_file && 'true' !== getenv( 'VIPGOCI_TESTING_LIVE_API' ) ) {
+		$fixtures = array(
+			'git-secrets' => array(
+				'github-token' => 'fixture-token',
+				'github-skip-write-tests' => '0',
+				'team-slug' => 'reviewers',
+				'org-name' => 'fixture-org',
+			),
+			'wpscan-api-scan' => array( 'access-token' => 'fixture-token' ),
+			'repo-meta-api-secrets' => array(
+				'repo-meta-api-base-url' => 'https://meta.fixture.invalid',
+				'repo-meta-api-user-id' => 'fixture-user',
+				'repo-meta-api-access-token' => 'fixture-token',
+				'repo-owner' => 'fixture-owner',
+				'repo-name' => 'fixture-repo',
+				'support-level' => 'fixture-tier',
+				'support-level-field-name' => 'support_tier',
+			),
+		);
+		return $fixtures[ $section ][ $key ] ?? null;
+	}
+
 	if ( false === $secret_file ) {
 		$ini_array = parse_ini_file(
 			VIPGOCI_UNIT_TESTS_INI_DIR_PATH . '/config.ini',

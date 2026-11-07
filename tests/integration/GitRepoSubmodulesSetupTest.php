@@ -38,6 +38,19 @@ final class GitRepoSubmodulesSetupTest extends TestCase {
 	protected function setUp(): void {
 		require_once __DIR__ . '/IncludesForTests.php';
 
+		if ( 'true' !== getenv( 'VIPGOCI_TESTING_LIVE_API' ) ) {
+			// Submodule objects are already present in the full project checkout.
+			// phpcs:disable WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv -- Configure only this isolated Git fixture process.
+			$config_count = (int) ( getenv( 'GIT_CONFIG_COUNT' ) ?: 0 );
+			putenv( 'GIT_CONFIG_KEY_' . $config_count . '=url.' . dirname( __DIR__, 2 ) . '.insteadOf' );
+			putenv( 'GIT_CONFIG_VALUE_' . $config_count . '=https://github.com/automattic/vip-go-ci.git' );
+			putenv( 'GIT_CONFIG_KEY_' . ( $config_count + 1 ) . '=protocol.file.allow' );
+			putenv( 'GIT_CONFIG_VALUE_' . ( $config_count + 1 ) . '=always' );
+			putenv( 'GIT_CONFIG_COUNT=' . ( $config_count + 2 ) );
+			// phpcs:enable WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
+		}
+
+
 		vipgoci_unittests_get_config_values(
 			'git',
 			$this->options_git

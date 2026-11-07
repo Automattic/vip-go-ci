@@ -176,6 +176,7 @@ final class GitHubApiLabelsTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
+		vipgoci_github_label_add_to_pr( $this->options['repo-owner'], $this->options['repo-name'], $this->options['github-token'], (int) $this->options['labels-pr-to-modify'], self::LABEL_NAME );
 		$labels_before = $this->labels_get();
 
 		vipgoci_github_pr_label_remove(
@@ -208,7 +209,9 @@ final class GitHubApiLabelsTest extends TestCase {
 		 * Avoid stale cache by waiting
 		 * a short while.
 		 */
-		sleep( 10 );
+		if ( 'true' === getenv( 'VIPGOCI_TESTING_LIVE_API' ) ) {
+			sleep( 10 );
+		}
 
 		$github_url =
 			VIPGOCI_GITHUB_BASE_URL . '/' .
