@@ -12,7 +12,8 @@ declare(strict_types=1);
  * Remove comments that exist on a GitHub pull request from
  * the results array. Will loop through each pull request
  * affected by the current commit, and remove any comment
- * from the results array if it already exists.
+ * from the results array if it already exists under the authenticated account.
+ * Detected issue statistics remain unchanged for enforcement.
  *
  * @param array $options                                Options array for the program.
  * @param array $prs_implicated                         Array of PRs implicated.
@@ -269,12 +270,7 @@ function vipgoci_results_remove_existing_github_comments(
 					$results['issues'][ $pr_item->number ][ $tobe_submitted_cmt_key ]
 				);
 
-				/*
-				 * Update statistics
-				 */
-				$results['stats'][ $tobe_submitted_cmt['type'] ][ $pr_item->number ][ strtolower(
-					$tobe_submitted_cmt['issue']['level']
-				) ]--;
+				// Suppress duplicate presentation only; detected issues still count.
 			}
 		}
 

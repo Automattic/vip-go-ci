@@ -330,7 +330,7 @@ function vipgoci_github_fetch_commit_info(
 }
 
 /**
- * Fetch all comments from GitHub API for the
+ * Fetch the authenticated account's comments from GitHub API for the
  * repository and commit specified, will fetch only
  * comments made after certain timestamp and that are
  * associated with a pull request.
@@ -458,7 +458,19 @@ function vipgoci_github_pr_reviews_comments_get(
 		vipgoci_cache( $cached_id, $prs_comments_cache );
 	}
 
+	$authenticated_user = vipgoci_github_authenticated_user_get( $options['token'] );
+	$authenticated_id   = $authenticated_user->id ?? null;
+
+	// Unknown identity must never authorize suppression of a scan finding.
+	if ( ! is_int( $authenticated_id ) || $authenticated_id <= 0 ) {
+		return;
+	}
+
 	foreach ( $prs_comments_cache as $pr_comment ) {
+		if ( ( $pr_comment->user->id ?? null ) !== $authenticated_id ) {
+			continue;
+		}
+
 		if ( null === $pr_comment->position ) {
 			/*
 			 * If no line-number was provided,
