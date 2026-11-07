@@ -156,7 +156,7 @@ final class ResultsRemoveExistingGithubCommentsTest extends TestCase {
 			'comments on the same PR are removed'  => array(
 				'pr-number-2',
 				array( self::COMMENTS_DATA['comment_not_removable'] ),
-				1,
+				2,
 			),
 		);
 	}

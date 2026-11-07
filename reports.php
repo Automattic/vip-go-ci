@@ -1174,10 +1174,13 @@ function vipgoci_report_submit_pr_review_from_results(
 		 * do not continue processing the pull request.
 		 * Our exit signal will indicate if anything is wrong.
 		 */
+		// Existing inline feedback already carries its review; do not create
+		// a duplicate summary-only review that stale-comment cleanup cannot dismiss.
 		if (
-			( false === $github_errors ) &&
-			( false === $github_warnings ) &&
-			( false === $github_info ) &&
+			(
+				empty( $github_postfields['comments'] ) ||
+				( false === $github_errors && false === $github_warnings && false === $github_info )
+			) &&
 			( empty( $results[ VIPGOCI_SKIPPED_FILES ][ $pr_number ]['issues']['max-lines'] ) )
 		) {
 			continue;

@@ -52,6 +52,7 @@ final class GitHubRequestGuardsTest extends TestCase {
 		require_once __DIR__ . '/../../github-api.php';
 		require_once __DIR__ . '/../../github-misc.php';
 		require_once __DIR__ . '/../../results.php';
+		require_once __DIR__ . '/../../main.php';
 		require_once __DIR__ . '/../../reports.php';
 		require_once __DIR__ . '/../../skip-file.php';
 		require_once __DIR__ . '/../../output-security.php';
@@ -70,7 +71,7 @@ final class GitHubRequestGuardsTest extends TestCase {
 		vipgoci_cache( VIPGOCI_CACHE_CLEAR );
 		vipgoci_cache(
 			array( 'vipgoci_github_authenticated_user_get', 'test-token' ),
-			(object) array( 'login' => 'bot' )
+			(object) array( 'login' => 'bot', 'id' => 123 )
 		);
 	}
 
@@ -154,7 +155,7 @@ final class GitHubRequestGuardsTest extends TestCase {
 			'path'                   => 'test.php',
 			'position'               => $position,
 			'body'                   => 'Escape output.',
-			'user'                   => array( 'login' => 'bot' ),
+			'user'                   => array( 'login' => 'bot', 'id' => 123 ),
 			'created_at'             => '2026-01-02T00:00:00Z',
 			'updated_at'             => '2026-01-02T00:00:00Z',
 		);
@@ -455,8 +456,103 @@ final class GitHubRequestGuardsTest extends TestCase {
 			),
 			$results['issues']
 		);
-		$this->assertSame( 0, $results['stats']['phpcs'][42]['error'] );
+		$this->assertSame( 1, $results['stats']['phpcs'][42]['error'] );
 		$this->assertRequests( array( 'GET /repos/owner/repo/pulls/42/commits', 'GET /repos/owner/repo/pulls/42/comments' ) );
+	}
+
+	/**
+	 * Comment authors cannot clear enforcement, including on genuine bot reruns.
+	 *
+	 * @return void
+	 */
+	public function testDeduplicationPreservesEnforcementForEveryAuthor(): void {
+		foreach ( array( 456, 123, null, '123' ) as $author_id ) {
+			$results = $this->emptyResults();
+			$results['issues'][42] = array( $this->issue() );
+			$results['stats']['phpcs'][42]['error'] = 1;
+			$comment = $this->comment();
+			$comment['user']['id'] = $author_id;
+			// A copied login cannot substitute for the account's stable ID.
+			$comment['body'] = ':no_entry_sign: **Error**: Escape output (*WordPress.Security.EscapeOutput.OutputNotEscaped*).';
+			vipgoci_cache( VIPGOCI_CACHE_CLEAR );
+			vipgoci_cache(
+				array( 'vipgoci_github_authenticated_user_get', 'test-token' ),
+				(object) array( 'login' => 'bot', 'id' => 123 )
+			);
+			$GLOBALS['vipgoci_test_http_responses']['GET /repos/owner/repo/pulls/42/comments'] = array( $comment );
+			vipgoci_results_remove_existing_github_comments(
+				$this->options,
+				array( (object) array( 'number' => 42, 'created_at' => '2026-01-01T00:00:00Z' ) ),
+				$results
+			);
+			$this->assertCount( 123 === $author_id ? 0 : 1, $results['issues'][42] );
+			$this->assertSame( 1, $results['stats']['phpcs'][42]['error'] );
+			$this->assertSame( VIPGOCI_EXIT_CODE_ISSUES, vipgoci_exit_status( $results ) );
+			$request_count = count( $GLOBALS['vipgoci_test_http_requests'] );
+			$this->submitReport( $results );
+			if ( 123 === $author_id ) {
+				$this->assertCount( $request_count, $GLOBALS['vipgoci_test_http_requests'] );
+			} else {
+				$request = end( $GLOBALS['vipgoci_test_http_requests'] );
+				$this->assertSame( 'REQUEST_CHANGES', $request['body']['event'] );
+				$this->assertCount( 1, $request['body']['comments'] );
+			}
+		}
+	}
+
+	/**
+	 * Explicit ignores remove enforcement before bot duplicates are hidden.
+	 *
+	 * @return void
+	 */
+	public function testIgnoredBotDuplicateDoesNotRemainBlocking(): void {
+		$results = $this->emptyResults();
+		$results['issues'][42] = array( $this->issue() );
+		$results['stats']['phpcs'][42]['error'] = 1;
+		$options = $this->options;
+		$options['review-comments-ignore'] = array( vipgoci_results_standardize_ignorable_message( 'Escape output.' ) );
+		$GLOBALS['vipgoci_test_http_responses']['GET /repos/owner/repo/pulls/42/comments'] = array( $this->comment() );
+		vipgoci_results_filter_ignorable( $options, $results );
+		vipgoci_results_remove_existing_github_comments(
+			$options,
+			array( (object) array( 'number' => 42, 'created_at' => '2026-01-01T00:00:00Z' ) ),
+			$results
+		);
+		$this->assertSame( 0, $results['stats']['phpcs'][42]['error'] );
+		$this->assertSame( 0, vipgoci_exit_status( $results ) );
+		$this->submitReport( $results );
+		$this->assertRequests( array() );
+	}
+
+	/**
+	 * Mixed authors are filtered on fresh and cached, scoped and legacy reads.
+	 *
+	 * @return void
+	 */
+	public function testOnlyAuthenticatedIdentityCanSupplyDuplicateComments(): void {
+		$attacker = $this->comment();
+		$attacker['user']['id'] = 456;
+		$bot = $this->comment();
+		$bot['user']['login'] = 'renamed-bot';
+		$GLOBALS['vipgoci_test_http_responses']['GET /repos/owner/repo/pulls/42/comments'] = array( $attacker, $bot );
+		$GLOBALS['vipgoci_test_http_responses']['GET /repos/owner/repo/pulls/comments'] = array( $attacker, $bot );
+		foreach ( array( 42, null ) as $pr_number ) {
+			foreach ( array( 1, 2 ) as $attempt ) {
+				$comments = array();
+				vipgoci_github_pr_reviews_comments_get( $this->options, 'abc', '2026-01-01T00:00:00Z', $comments, $pr_number );
+				$this->assertCount( 1, $comments['test.php:3'] );
+				$this->assertSame( 123, $comments['test.php:3'][0]->user->id );
+			}
+		}
+		foreach ( array( null, 0, '123' ) as $identity ) {
+			vipgoci_cache(
+				array( 'vipgoci_github_authenticated_user_get', 'test-token' ),
+				(object) array( 'id' => $identity )
+			);
+			$comments = array();
+			vipgoci_github_pr_reviews_comments_get( $this->options, 'abc', '2026-01-01T00:00:00Z', $comments, 42 );
+			$this->assertSame( array(), $comments );
+		}
 	}
 
 	/**
@@ -496,7 +592,7 @@ final class GitHubRequestGuardsTest extends TestCase {
 		$this->assertSame( array( $this->issue() ), $results['issues'][42] );
 		$this->assertSame( array(), $results['issues'][99] );
 		$this->assertSame( 1, $results['stats']['phpcs'][42]['error'] );
-		$this->assertSame( 0, $results['stats']['phpcs'][99]['error'] );
+		$this->assertSame( 1, $results['stats']['phpcs'][99]['error'] );
 		$this->assertRequests(
 			array(
 				'GET /repos/owner/repo/pulls/42/commits',
