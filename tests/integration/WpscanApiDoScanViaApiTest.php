@@ -9,7 +9,6 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
-use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\PreserveGlobalState;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
@@ -17,7 +16,6 @@ use PHPUnit\Framework\TestCase;
 /**
  * Class that implements the testing.
  */
-#[Group( 'live-api' )]
 #[RunTestsInSeparateProcesses]
 #[PreserveGlobalState( false )]
 final class WpscanApiDoScanViaApiTest extends TestCase {
