@@ -18,7 +18,7 @@ declare(strict_types=1);
  * safe to be deployed.
  *
  * @param array $options                 Options needed.
- * @param array $auto_approved_files_arr Auto approved files array.
+ * @param array $auto_approved_files_arr Auto-approved reasons keyed by PR number and filename.
  */
 function vipgoci_ap_svg_files(
 	array $options,
@@ -84,7 +84,7 @@ function vipgoci_ap_svg_files(
 			 * of approved files, do not do anything.
 			 */
 			if ( isset(
-				$auto_approved_files_arr[ $pr_diff_file_name ]
+				$auto_approved_files_arr[ $pr_item->number ][ $pr_diff_file_name ]
 			) ) {
 				continue;
 			}
@@ -107,7 +107,7 @@ function vipgoci_ap_svg_files(
 					)
 				);
 
-				$auto_approved_files_arr[ $pr_diff_file_name ]
+				$auto_approved_files_arr[ $pr_item->number ][ $pr_diff_file_name ]
 					= 'ap-svg-files';
 			} elseif ( 'removed' === $pr_diff['files_status'][ $pr_diff_file_name ] ) {
 				vipgoci_log(
@@ -120,7 +120,7 @@ function vipgoci_ap_svg_files(
 					)
 				);
 
-				$auto_approved_files_arr[ $pr_diff_file_name ] =
+				$auto_approved_files_arr[ $pr_item->number ][ $pr_diff_file_name ] =
 					'ap-svg-files';
 				continue;
 			}
@@ -187,7 +187,7 @@ function vipgoci_ap_svg_files(
 					)
 				);
 
-				$auto_approved_files_arr[ $pr_diff_file_name ]
+				$auto_approved_files_arr[ $pr_item->number ][ $pr_diff_file_name ]
 					= 'ap-svg-files';
 			} else {
 				vipgoci_log(

@@ -196,7 +196,7 @@ final class ApSvgFilesTest extends TestCase {
 				'auto-approvable-1.svg' => 'ap-svg-files',
 				'auto-approvable-2.svg' => 'ap-svg-files',
 			),
-			$auto_approved_files_arr
+			$this->approvalReasonsForFixture( $auto_approved_files_arr )
 		);
 
 		unset( $this->options['svg-checks'] );
@@ -258,9 +258,30 @@ final class ApSvgFilesTest extends TestCase {
 				'auto-approvable3.svg'          => 'ap-svg-files',
 				'auto-approvable4.svg'          => 'ap-svg-files',
 			),
-			$auto_approved_files_arr
+			$this->approvalReasonsForFixture( $auto_approved_files_arr )
 		);
 
 		unset( $this->options['svg-checks'] );
 	}
+	/**
+	 * Verify the fixture PR owns the approval reasons.
+	 *
+	 * @param array $approved Approval reasons keyed by PR and filename.
+	 * @return array Reasons for the fixture PR.
+	 */
+	private function approvalReasonsForFixture( array $approved ): array {
+		$prs = vipgoci_github_prs_implicated(
+			$this->options['repo-owner'],
+			$this->options['repo-name'],
+			$this->options['commit'],
+			$this->options['token'],
+			$this->options['branches-ignore'],
+			$this->options['skip-draft-prs']
+		);
+		$this->assertCount( 1, $prs );
+		$pr = reset( $prs );
+		$this->assertSame( array( $pr->number ), array_keys( $approved ) );
+		return $approved[ $pr->number ];
+	}
+
 }

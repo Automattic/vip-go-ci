@@ -21,7 +21,7 @@ declare(strict_types=1);
  * @param array       $options                 Options needed.
  * @param int         $pr_number               Pull request number.
  * @param object|bool $pr_label                Pull request label found, false when none is found.
- * @param array       $auto_approved_files_arr Array of auto-approved files.
+ * @param array       $auto_approved_files_arr Auto-approved reasons keyed by PR number and filename.
  * @param array       $files_seen              Files processed during auto-approval.
  * @param array       $pr_files_changed        Files changed by pull request.
  *
@@ -149,7 +149,7 @@ function vipgoci_auto_approval_non_approval(
  * @param array       $options                 Options needed.
  * @param int         $pr_number               Pull request item.
  * @param object|bool $pr_label                Pull request label found, false when none is found.
- * @param array       $auto_approved_files_arr Array of auto-approved files.
+ * @param array       $auto_approved_files_arr Auto-approved reasons keyed by PR number and filename.
  * @param array       $files_seen              Files processed during auto-approval.
  *
  * @return void
@@ -300,7 +300,7 @@ function vipgoci_autoapproval_do_approve(
  * involved with the commit specified.
  *
  * @param array $options                 Array of options.
- * @param array $auto_approved_files_arr Array of auto-approved files.
+ * @param array $auto_approved_files_arr Auto-approved reasons keyed by PR number and filename.
  * @param array $results                 Results of scanning.
  *
  * @return void
@@ -363,7 +363,7 @@ function vipgoci_auto_approval_scan_commit(
 			 * If not, we cannot auto-approve.
 			 */
 			if ( ! isset(
-				$auto_approved_files_arr[ $pr_diff_file_name ]
+				$auto_approved_files_arr[ $pr_number ][ $pr_diff_file_name ]
 			) ) {
 				$can_auto_approve = false;
 				break;
