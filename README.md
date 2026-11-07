@@ -647,72 +647,49 @@ Using the `VIPGOCI_IRC_IGNORE_STRING_START` and `VIPGOCI_IRC_IGNORE_STRING_END` 
 
 ##  Exit codes
 
-`vip-go-ci.php` exits with different UNIX exit codes depending on what problems were found and if any system issues were encountered:
+Process exit codes describe whether `vip-go-ci.php` executed successfully. Customer-code findings and expected skips are reported separately in the JSON report and GitHub reviews.
 
-* Code `0`: Normal, no errors were found in the code scanned and no fatal system errors were encountered. There could have been warnings found in the code, though.
+* Code `0`: Scanning completed (with or without findings), or was intentionally skipped.
 * Code `220`: Internal error in `vip-go-ci`.
-* Code `230`: Commit specified is not associated with any pull request.
 * Code `247`: Fatal error when communicating with HTTP API.
-* Code `248`: Commit specified is not the latest one in pull request.
 * Code `249`: Scanning exceeded maximum time allowed.
-* Code `250`: Scanning was completed, but some errors were found in the code.
-* Code `251`: Exiting due to a system problem.
-* Code `252`: A fatal problem with GitHub was encountered leading to an exit.
-* Code `253`: A problem with usage options was detected, leading to an exit.
+* Code `251`: System problem, including failure to serialize or write the requested report.
+* Code `252`: Fatal GitHub problem, including missing or invalid PR commit data.
+* Code `253`: Invalid usage options.
+
+### Scan outcome report
+
+`--output=FILE` writes one JSON document per invocation, replacing previous contents. The file is cleared during initialization. A nonzero exit always takes precedence over any report contents.
+
+The existing `results`, `repo-owner`, `repo-name`, `commit`, and `prs_implicated` fields are preserved. The new top-level `scan-outcome` field has these values:
+
+| Outcome | Meaning | GitHub status |
+| --- | --- | --- |
+| `clean` | Completed with no errors or skipped oversized files; warnings may exist. | Success |
+| `findings` | Completed with errors or skipped oversized files. | Failure |
+| `no-pull-request` | No matching PR after the existing lookup retries and filters. | Success with skip reason |
+| `superseded` | Valid PR commit data establishes that this commit is no longer latest. | Success with skip reason |
+| `disabled` | Scanning was disabled by repository configuration. | Success with skip reason |
+
+Expected skips also produce reports, with empty `results.issues` and `results.stats`. These do not represent completed clean scans. Findings, reviews, and approval behavior remain unchanged.
+
+**Migration:** Older releases returned `230`, `248`, or `250` for no PR, superseded commits, or findings. These are now successful process exits. Update consumers to read `scan-outcome` before deploying this release; otherwise findings may be incorrectly marked as passing. The legacy constants and `vipgoci_exit_status()` classification helper remain available to library callers.
 
 ## Setting GitHub Build Status
 
 `vip-go-ci` ships with an independent utility, `github-commit-status.php` to set [GitHub build status indication](https://docs.github.com/en/rest/reference/repos#statuses) for a particular commit. Use the utility to indicate that `vip-go-ci` is currently scanning or what the results of the scanning was (success, failure). The utility will communicate directly with the GitHub API to set the status.
 
-Example usage:
+Publish `pending` before invoking the scanner. After it finishes, first check the process exit status. On nonzero exits publish failure; on zero exits, validate the report against the requested repository and commit, then use the outcome mapping above. Missing or invalid reports and failed status-publication requests must fail the calling job.
 
-```
-php ~/vip-go-ci-tools/vip-go-ci/github-commit-status.php --repo-owner=`repo-owner` --repo-name=`repo-name` --github-token=`token` --github-commit=`commit-ID` --build-context=`vip-go-ci` --build-description="Analysis is in progress" --build-state="pending"
+The TeamCity integration implements this mapping in `vip-teamcity/build-steps/11-ci-run-vip-go-ci.sh`. It supports both legacy exit codes and the new report outcomes. A valid legacy report without `scan-outcome` is treated as clean only when the legacy scanner exited zero.
 
-php ~/vip-go-ci-tools/vip-go-ci/vip-go-ci.php ... 
+For a rollout without temporary failures, use this order:
 
-export VIPGOCI_EXIT_CODE="$?"
+1. Release report generation and status-publication error propagation first, retaining the old process exits (`230`, `248`, `250`). This prerequisite must also emit `disabled` reports: older scanners exit zero without writing anything when scanning is disabled.
+2. Deploy the TeamCity consumer update. It accepts the prerequisite reports and legacy exit codes, and rejects missing reports.
+3. Release the new default exit behavior described above.
 
-if [ "$VIPGOCI_EXIT_CODE" == "0" ] ; then
-	export BUILD_STATE="success"
-	export BUILD_DESCRIPTION="No problems were identified"
-
-elif [ "$VIPGOCI_EXIT_CODE" == "230" ] ; then
-	export BUILD_STATE="failure"
-	export BUILD_DESCRIPTION="Pull request not found for commit"
-
-elif [ "$VIPGOCI_EXIT_CODE" == "248" ] ; then
-	export BUILD_STATE="failure"
-	export BUILD_DESCRIPTION="Commit not latest in PR"
-
-elif [ "$VIPGOCI_EXIT_CODE" == "249" ] ; then
-	export BUILD_STATE="failure"
-	export BUILD_DESCRIPTION="Build timed out, PR may be too large"
-
-elif [ "$VIPGOCI_EXIT_CODE" == "250" ] ; then
-	export BUILD_STATE="failure"
-	export BUILD_DESCRIPTION="Problems were identified"
-
-elif [ "$VIPGOCI_EXIT_CODE" == "251" ] ; then
-	export BUILD_STATE="failure"
-	export BUILD_DESCRIPTION="Build setup problem"
-
-elif [ "$VIPGOCI_EXIT_CODE" == "252" ] ; then
-	export BUILD_STATE="failure"
-	export BUILD_DESCRIPTION="GitHub communication error. Please retry"
-
-elif [ "$VIPGOCI_EXIT_CODE" == "253" ] ; then
-	export BUILD_STATE="failure"
-	export BUILD_DESCRIPTION="vip-go-ci usage error"
-
-else
-	export BUILD_STATE="failure"
-	export BUILD_DESCRIPTION="Unknown error"
-
-fi
-
-php ~/vip-go-ci-tools/vip-go-ci/github-commit-status.php --repo-owner=`repo-owner` --repo-name=`repo-name` --github-token=`token` --github-commit=`commit-ID` --build-context=`vip-go-ci` --build-description="$BUILD_DESCRIPTION" --build-state="$BUILD_STATE"
-```
+When rolling back, restore the scanner's legacy exit behavior before restoring an older consumer. Keep report generation for disabled scans while the new consumer is deployed.
 
 Note that the utility supports setting options via [environmental variables](#configuring-via-environmental-variables), just like `vip-go-ci` does.
 

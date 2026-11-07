@@ -2635,9 +2635,17 @@ function vipgoci_github_status_create(
 		)
 	);
 
-	vipgoci_http_api_post_url(
+	$response = vipgoci_http_api_post_url(
 		$github_url,
 		$github_postfields,
 		$github_token
 	);
+
+	if ( ! is_string( $response ) ) {
+		vipgoci_sysexit(
+			'Unable to publish GitHub commit status',
+			array( 'commit_id' => $commit_id ),
+			VIPGOCI_EXIT_HTTP_API_ERROR
+		);
+	}
 }
