@@ -137,11 +137,14 @@ final class GitRepoSubmoduleFilePathGetTest extends TestCase {
 			'folder1/vip-go-ci-repo/vip-go-ci.php'
 		);
 
+		$this->assertMatchesRegularExpression( '/^0\.47-1-g[0-9a-f]{7,40}$/', $submodule_file_info['submodule_tag'] );
+		$this->assertStringStartsWith( substr( $submodule_file_info['submodule_tag'], strlen( '0.47-1-g' ) ), 'a0dba40108fe19f028dbd5970022281cc2cabf81' );
+		unset( $submodule_file_info['submodule_tag'] );
+
 		$this->assertSame(
 			array(
 				'commit_id'      => 'a0dba40108fe19f028dbd5970022281cc2cabf81',
 				'submodule_path' => 'folder1/vip-go-ci-repo',
-				'submodule_tag'  => '0.47-1-ga0dba40',
 			),
 			$submodule_file_info
 		);

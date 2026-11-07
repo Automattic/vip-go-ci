@@ -111,12 +111,15 @@ final class GitRepoSubmodulesListTest extends TestCase {
 			$this->options['local-git-repo']
 		);
 
+		$this->assertMatchesRegularExpression( '/^0\.47-1-g[0-9a-f]{7,40}$/', $ret[0]['submodule_tag'] );
+		$this->assertStringStartsWith( substr( $ret[0]['submodule_tag'], strlen( '0.47-1-g' ) ), 'a0dba40108fe19f028dbd5970022281cc2cabf81' );
+		unset( $ret[0]['submodule_tag'] );
+
 		$this->assertSame(
 			array(
 				array(
 					'commit_id'		=> 'a0dba40108fe19f028dbd5970022281cc2cabf81',
 					'submodule_path'	=> 'vip-go-ci',
-					'submodule_tag'		=> '0.47-1-ga0dba40',
 				),
 			),
 			$ret,
