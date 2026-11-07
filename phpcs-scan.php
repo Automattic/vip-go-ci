@@ -1211,13 +1211,13 @@ function vipgoci_phpcs_scan_commit(
 			);
 
 			/*
-			 * If no changed lines were available, log
-			 * and continue.
+			 * Findings cannot be safely attributed without a patch. Fail visibly
+			 * rather than dropping them and reporting a successful scan.
 			 */
 			if ( null === $file_changed_lines ) {
-				vipgoci_log(
+				vipgoci_sysexit(
 					'Unable to fetch changed lines for file, ' .
-						'skipping scanning',
+						'cannot report scan findings',
 					array(
 						'local-git-repo' => $options['local-git-repo'],
 						'repo-owner'     => $options['repo-owner'],
@@ -1225,10 +1225,9 @@ function vipgoci_phpcs_scan_commit(
 						'base_sha'       => $pr_item->base->sha,
 						'commit_id'      => $commit_id,
 						'file_name'      => $file_name,
-					)
+					),
+					VIPGOCI_EXIT_SYSTEM_PROBLEM
 				);
-
-				continue;
 			}
 
 			$file_relative_lines = @array_flip( // phpcs:disable WordPress.PHP.NoSilencedErrors.Discouraged

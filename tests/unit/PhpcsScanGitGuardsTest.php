@@ -275,6 +275,62 @@ final class PhpcsScanGitGuardsTest extends TestCase {
 		$this->assertSame( array( 'a.php', 'b.php', 'c.php' ), array_column( $result['issues'][42], 'file_name' ) );
 	}
 
+
+	/** Real scanner findings on unusual paths reach every implicated PR. */
+	public function testUnusualNamesKeepTheirFindingsAndBlockingReview(): void {
+		require_once __DIR__ . '/../../main.php';
+		$this->base = $this->commit( array() );
+		$names = array( 'täst.php', "tab\tname.php", "new\nline.php", 'quote".php', 'back\\slash.php' );
+		$this->head = $this->commit( array_fill_keys( $names, "<?php\n// fixture-error\n" ) );
+		$result = $this->scan( array( 42, 99 ) );
+		$expected = $names;
+		sort( $expected );
+		foreach ( array( 42, 99 ) as $pr ) {
+			$this->assertSame( $expected, array_column( $result['issues'][ $pr ], 'file_name' ) );
+			$this->assertSame( count( $names ), $result['stats'][ $pr ]['error'] );
+		}
+		$results = array( 'issues' => $result['issues'], 'stats' => array( VIPGOCI_STATS_PHPCS => $result['stats'] ), 'skipped-files' => $result['skipped'] );
+		$this->assertSame( VIPGOCI_EXIT_CODE_ISSUES, vipgoci_exit_status( $results ) );
+		vipgoci_report_submit_pr_review_from_results( 'owner', 'repo', 'test-token', $this->head, $results, '', '', 100, false, 100, 'fixture' );
+		$posts = array_values( array_filter( $GLOBALS['vipgoci_test_http_requests'], static fn( $request ) => str_starts_with( $request['request'], 'POST ' ) ) );
+		$this->assertCount( 2, $posts );
+		foreach ( $posts as $post ) {
+			$this->assertSame( 'REQUEST_CHANGES', $post['body']['event'] );
+			$this->assertSame( $expected, array_column( $post['body']['comments'], 'path' ) );
+		}
+		$this->phpcsInvocations();
+	}
+
+	/** Invalid byte names cannot share cached skip decisions. */
+	public function testInvalidByteNamesKeepValidationDecisionsSeparate(): void {
+		$long = $this->directory . '/long.php';
+		$short = $this->directory . '/short.php';
+		file_put_contents( $long, str_repeat( "line\n", 10 ) );
+		file_put_contents( $short, "<?php\n" );
+		$this->assertSame( 1, vipgoci_validate( $long, "invalid-\xff.php", 'head', 4 )['total'] );
+		$this->assertSame( 0, vipgoci_validate( $short, "invalid-\xfe.php", 'head', 4 )['total'] );
+	}
+
+	/** Missing and empty patch data must terminate instead of discarding findings. */
+	public function testUnavailablePatchFailsVisiblyAndCleansStaging(): void {
+		$this->base = $this->commit( array() );
+		$this->head = $this->commit( array( 'file.php' => "<?php\n// fixture-error\n" ) );
+		foreach ( array( 'missing', 'empty' ) as $mode ) {
+			$staging = $this->directory . '/' . $mode;
+			mkdir( $staging );
+			exec(
+				escapeshellarg( PHP_BINARY ) . ' -d ' . escapeshellarg( 'sys_temp_dir=' . $staging ) . ' ' .
+				escapeshellarg( __DIR__ . '/helper/PhpcsMissingPatch.php' ) . ' ' .
+				escapeshellarg( $this->repo ) . ' ' . escapeshellarg( $this->base ) . ' ' .
+				escapeshellarg( $this->head ) . ' ' . escapeshellarg( $mode ) . ' 2>&1',
+				$output,
+				$code
+			);
+			$this->assertSame( VIPGOCI_EXIT_SYSTEM_PROBLEM, $code, implode( "\n", $output ) );
+			$this->assertSame( array( '.', '..' ), scandir( $staging ) );
+		}
+	}
+
 	/** The production commit scanner must group files, not just expose an unused batch helper. */
 	public function testCommitScanUsesBoundedBatches(): void {
 		$this->base = $this->commit( array() );
