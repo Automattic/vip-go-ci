@@ -531,6 +531,8 @@ By default, `vip-go-ci` will skip scanning of any files that are longer than 15,
 
 This feature can be disabled by setting the `--skip-large-files` parameter to `false`. The size limit can be changed from 15,000 to a custom value by setting the `--skip-large-files-limit` option.
 
+Current checkout file reads through the shared scanner file reader also have a fixed 16 MiB byte limit, independent of the line limit and `--skip-large-files`. Files exceeding it cause a scan failure before temporary staging. Scanner reads reject symbolic links in the file path, nonregular files, and targets outside the checkout. Recursive repository discovery does not follow directory entries that are symlinks. Historical Git-object reads use a separate reader and are not subject to this byte limit.
+
 ### Configuring review comments 
 
 Review comments posted can be configured and number of them limited.

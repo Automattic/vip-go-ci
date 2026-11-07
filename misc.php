@@ -757,6 +757,11 @@ function vipgoci_scandir_git_repo(
 		if ( is_dir(
 			$path . DIRECTORY_SEPARATOR . $value
 		) ) {
+			// Never recurse through checkout symlinks, including links to ancestors.
+			if ( is_link( $path . DIRECTORY_SEPARATOR . $value ) ) {
+				continue;
+			}
+
 			if ( false === $process_subdirectories ) {
 				// Not supposed to process subdirectories, skip.
 				continue;
