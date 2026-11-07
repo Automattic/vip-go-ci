@@ -469,6 +469,8 @@ Note also that if set up to auto-approve, and the Hases API feature (see below) 
 
 If _all_ files altered by a pull request have been found to be auto-approvable -- for example, by the non-functional changes mechanism --, the whole pull request will be approved automatically.
 
+Use `--autoapprove=true --autoapprove-deletions-only=true --autoapprove-label="auto-approved"` to also approve whole pull requests with zero added lines and at least one deleted line, regardless of file type. This option defaults to false. Removing code can change behavior; enable this policy only where that is acceptable. Existing WPScan checks still apply. Empty diffs do not qualify.
+
 The following Autoapprovals-related options can be configured via repository config-file:
 
 #### Options `--autoapprove` and `--autoapprove-php-nonfunctional-changes`
@@ -620,6 +622,8 @@ For example:
 > ./vip-go-ci.php --post-generic-pr-support-comments=true --post-generic-pr-support-comments-string="This ..." --post-generic-pr-support-comments-branches="trunk" --post-generic-pr-support-comments-repo-meta-match="support_message=true,support_plan=true" 
 
 With the `--post-generic-pr-support-comments-repo-meta-match` parameter added, `vip-go-ci` will look at the data returned by the repo-meta API, and check if these fields and their values are found in there for at least one entry. If so, the generic support message will be posted, and not otherwise.
+
+When a pull request only removes lines, the bot posts a specific message asking the author to verify that the removed code is no longer needed and that tests pass before merging. The usual support-comment eligibility rules still apply.
 
 The following Generic Support Message related options can be configured via repository-config file:
 

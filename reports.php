@@ -1637,6 +1637,11 @@ function vipgoci_report_submit_pr_generic_support_comment(
 		 * not post anything.
 		 */
 
+		$support_message = $options['post-generic-pr-support-comments-string'][ $option_key_no_match ];
+		if ( vipgoci_github_pr_deletions_only( $options, $pr_item->number ) ) {
+			$support_message = 'This pull request only removes lines. Please verify that the removed code is no longer needed and that tests pass before merging.';
+		}
+
 		$existing_comments = vipgoci_github_pr_generic_comments_get_all(
 			$options['repo-owner'],
 			$options['repo-name'],
@@ -1653,7 +1658,7 @@ function vipgoci_report_submit_pr_generic_support_comment(
 
 			if ( strpos(
 				$existing_comment_item->body,
-				$options['post-generic-pr-support-comments-string'][ $option_key_no_match ]
+				$support_message
 			) !== false ) {
 				$comment_exists_already = true;
 			}
@@ -1678,7 +1683,7 @@ function vipgoci_report_submit_pr_generic_support_comment(
 			$options['repo-name'],
 			$options['token'],
 			$pr_item->number,
-			$options['post-generic-pr-support-comments-string'][ $option_key_no_match ]
+			$support_message
 		);
 	}
 }
