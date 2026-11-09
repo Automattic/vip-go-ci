@@ -124,6 +124,47 @@ final class GitHubCommentMarkerTest extends TestCase {
 	}
 
 	/**
+	 * A marker ID of "0" is valid and not treated as unset.
+	 *
+	 * @return void
+	 */
+	public function testMarkerZeroIsEnabled(): void {
+		vipgoci_github_comment_marker_set( '0' );
+
+		$this->assertSame( '<!-- vip-go-ci-marker:0 -->', vipgoci_github_comment_marker_get() );
+		$this->assertSame( "Body\n<!-- vip-go-ci-marker:0 -->", vipgoci_github_comment_marker_add( 'Body' ) );
+
+		$unmarked = json_decode( json_encode( $this->item( 'github-actions[bot]', 'Another workflow' ) ) );
+
+		$this->assertFalse( vipgoci_github_item_submitted_by_us( $unmarked, 'github-actions[bot]' ) );
+	}
+
+	/**
+	 * Initialization keeps a marker ID of "0".
+	 *
+	 * @return void
+	 */
+	public function testInitKeepsMarkerZero(): void {
+		require_once __DIR__ . '/../../options.php';
+		require_once __DIR__ . '/../../main.php';
+
+		$options = array(
+			'token'          => 'ghs_test-token',
+			'comment-marker' => '0',
+		);
+
+		ob_start();
+
+		vipgoci_run_init_github_token_option( $options );
+
+		ob_end_clean();
+
+		$this->assertSame( '0', $options['comment-marker'] );
+		$this->assertSame( '<!-- vip-go-ci-marker:0 -->', vipgoci_github_comment_marker_get() );
+		$this->assertSame( array(), $GLOBALS['vipgoci_test_http_requests'] );
+	}
+
+	/**
 	 * Ownership requires matching login, and the marker when configured.
 	 *
 	 * @return void
@@ -214,7 +255,8 @@ final class GitHubCommentMarkerTest extends TestCase {
 	}
 
 	/**
-	 * Unmarked inline comments by any login count as already posted, foreign markers do not.
+	 * Only our marked inline comments, and unmarked ones by the token-holder or
+	 * legacy login, count as already posted. Others' comments and foreign markers do not.
 	 *
 	 * @return void
 	 */
@@ -238,8 +280,10 @@ final class GitHubCommentMarkerTest extends TestCase {
 			'GET /repos/owner/repo/pulls/42/comments' => array(
 				$comment( 'github-actions[bot]', "Ours\n<!-- vip-go-ci-marker:actions -->", 1 ),
 				$comment( 'legacy-bot', 'Legacy', 2 ),
-				$comment( 'some-user', 'Unmarked', 3 ),
+				$comment( 'github-actions[bot]', 'Before marker', 3 ),
 				$comment( 'github-actions[bot]', "Other instance\n<!-- vip-go-ci-marker:other -->", 4 ),
+				$comment( 'some-user', 'Unmarked', 5 ),
+				$comment( 'some-user', "Copied\n<!-- vip-go-ci-marker:actions -->", 6 ),
 			),
 		);
 

@@ -337,7 +337,7 @@ Since other workflows may also post as `github-actions[bot]`, use `--comment-mar
 
 Feedback posted before the marker was enabled is handled as follows, so that pull requests already scanned do not receive duplicate comments:
 
-* Inline comments without any marker count as already posted, regardless of who posted them. Comments carrying a different marker do not.
+* Inline comments without any marker count as already posted only if authored by the token-holder's login or the login set with `--comment-marker-legacy-login`. Unmarked comments by other users, and comments carrying a different marker, do not.
 * Comments and reviews without any marker are treated as `vip-go-ci`'s own if authored by the login set with `--comment-marker-legacy-login` (default: `wpcomvip-vipgoci-bot`), and may be cleaned up or dismissed. This login should only be used by `vip-go-ci`.
 
 The workflow needs `pull-requests: write` and `issues: write` permissions. Auto-approvals additionally require the repository setting "Allow GitHub Actions to create and approve pull requests".

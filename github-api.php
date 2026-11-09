@@ -459,12 +459,12 @@ function vipgoci_github_pr_reviews_comments_get(
 	}
 
 	/*
-	 * When a comment marker is configured, ignore comments
-	 * carrying a marker that is not ours, so that feedback from
-	 * other instances does not prevent ours from being posted.
-	 * Comments without any marker are kept, as they may have been
-	 * posted before the marker was enabled, and should not be
-	 * posted again.
+	 * When a comment marker is configured, only keep comments
+	 * submitted by us, so that feedback from other instances or
+	 * other users does not prevent ours from being posted, nor
+	 * remove findings. Comments by the token-holder without any
+	 * marker are kept too, as they may have been posted before
+	 * the marker was enabled, and should not be posted again.
 	 */
 	$token_holder_login = null;
 
@@ -477,8 +477,12 @@ function vipgoci_github_pr_reviews_comments_get(
 	foreach ( $prs_comments_cache as $pr_comment ) {
 		if (
 			( null !== $token_holder_login ) &&
-			( vipgoci_github_item_has_any_marker( $pr_comment ) ) &&
-			( ! vipgoci_github_item_submitted_by_us( $pr_comment, $token_holder_login ) )
+			( ! vipgoci_github_item_submitted_by_us( $pr_comment, $token_holder_login ) ) &&
+			(
+				( vipgoci_github_item_has_any_marker( $pr_comment ) ) ||
+				( ! isset( $pr_comment->user->login ) ) ||
+				( $pr_comment->user->login !== $token_holder_login )
+			)
 		) {
 			continue;
 		}
@@ -1898,7 +1902,11 @@ function vipgoci_github_comment_marker_set( null|string $marker_id ) :void {
 function vipgoci_github_comment_marker_get() :string {
 	global $vipgoci_github_comment_marker_id;
 
-	if ( empty( $vipgoci_github_comment_marker_id ) ) {
+	// Not empty(), as "0" is a valid marker ID.
+	if (
+		( null === $vipgoci_github_comment_marker_id ) ||
+		( '' === $vipgoci_github_comment_marker_id )
+	) {
 		return '';
 	}
 

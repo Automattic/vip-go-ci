@@ -1671,7 +1671,11 @@ function vipgoci_run_init_github_token_option( array &$options ) :void {
 	/*
 	 * Process --comment-marker.
 	 */
-	if ( empty( $options['comment-marker'] ) ) {
+	// Not empty(), as "0" is a valid marker ID.
+	if (
+		( ! isset( $options['comment-marker'] ) ) ||
+		( '' === $options['comment-marker'] )
+	) {
 		$options['comment-marker'] = null;
 	} elseif (
 		( ! is_string( $options['comment-marker'] ) ) ||
@@ -2248,6 +2252,36 @@ function vipgoci_run_init_options_repo_options( array &$options ):void {
 }
 
 /**
+ * Process the --dry-run option and enable dry-run mode if set.
+ *
+ * getopt() silently drops a trailing --dry-run without a value,
+ * which would result in a real run, so exit instead. Values such
+ * as "--dry-run true" are parsed by getopt() and validated here.
+ *
+ * @param array $options Array of options.
+ *
+ * @return void
+ */
+function vipgoci_run_init_options_dry_run( array &$options ) :void {
+	if (
+		( ! isset( $options['dry-run'] ) ) &&
+		( in_array( '--dry-run', $GLOBALS['argv'] ?? array(), true ) )
+	) {
+		vipgoci_sysexit(
+			'Parameter --dry-run has to be either false or true',
+			array(),
+			VIPGOCI_EXIT_USAGE_ERROR
+		);
+
+		return;
+	}
+
+	vipgoci_option_bool_handle( $options, 'dry-run', 'false' );
+
+	vipgoci_http_api_dry_run_set( $options['dry-run'] );
+}
+
+/**
  * Process options by calling more specialized functions
  * that deal with each group of options.
  *
@@ -2281,21 +2315,9 @@ function vipgoci_run_init_options(
 	vipgoci_run_env_options_handle( $options, $options_recognized );
 
 	/*
-	 * Handle --dry-run before anything is sent to GitHub. getopt() silently
-	 * drops a trailing --dry-run without a value, which would result in
-	 * a real run, so exit instead.
+	 * Handle --dry-run before anything is sent to GitHub.
 	 */
-	if ( in_array( '--dry-run', $GLOBALS['argv'] ?? array(), true ) ) {
-		vipgoci_sysexit(
-			'Parameter --dry-run has to be either false or true',
-			array(),
-			VIPGOCI_EXIT_USAGE_ERROR
-		);
-	}
-
-	vipgoci_option_bool_handle( $options, 'dry-run', 'false' );
-
-	vipgoci_http_api_dry_run_set( $options['dry-run'] );
+	vipgoci_run_init_options_dry_run( $options );
 
 	/*
 	 * Handle boolean parameters not handled by specialized functions.
