@@ -75,7 +75,8 @@ final class MainRunInitOptionsDryRunTest extends TestCase {
 			'repeated, bare'       => array( array( '--dry-run=false', '--dry-run' ), array( 'dry-run' => 'false' ), null ),
 			'repeated, empty'      => array( array( '--dry-run=false', '--dry-run=' ), array( 'dry-run' => 'false' ), null ),
 			'environment and bare' => array( array( '--dry-run' ), array( 'dry-run' => 'false' ), null ),
-			'after end-of-options' => array( array( '--', '--dry-run' ), array(), false ),
+			'after end-of-options' => array( array( '--', '--dry-run=true' ), array(), null ),
+			'after -- as a value'  => array( array( '--phpcs-standard', '--', 'stray', '--dry-run=true' ), array( 'phpcs-standard' => '--' ), null ),
 			'after stray argument' => array( array( '--repo-owner=a', 'stray', '--dry-run=true' ), array( 'repo-owner' => 'a' ), null ),
 			'as another value'     => array( array( '--phpcs-standard', '--dry-run=true' ), array( 'phpcs-standard' => '--dry-run=true' ), null ),
 		);

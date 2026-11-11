@@ -75,8 +75,8 @@ function vipgoci_help_print() :void {
 		"\t" . '--commit=STRING                Specify the exact commit to scan (SHA).' . PHP_EOL .
 		"\t" . '--token=STRING                 The access-token to use to communicate with GitHub.' . PHP_EOL .
 		"\t" . '--github-token-login=STRING    Login of the token-holder. When set, the GitHub API is not' . PHP_EOL .
-		"\t" . '                               queried for it. Defaults to "' . VIPGOCI_GITHUB_ACTIONS_BOT_LOGIN . '" for' . PHP_EOL .
-		"\t" . '                               GitHub App installation tokens, such as GITHUB_TOKEN.' . PHP_EOL .
+		"\t" . '                               queried for it. Required for GitHub App installation tokens;' . PHP_EOL .
+		"\t" . '                               use "' . VIPGOCI_GITHUB_ACTIONS_BOT_LOGIN . '" for GITHUB_TOKEN.' . PHP_EOL .
 		"\t" . '--comment-marker=STRING        Add a hidden marker with this ID to comments and reviews' . PHP_EOL .
 		"\t" . '                               posted, and only treat feedback carrying the marker as' . PHP_EOL .
 		"\t" . '                               our own. Useful when the token is shared with other tools.' . PHP_EOL .
@@ -1645,17 +1645,21 @@ function vipgoci_run_init_github_token_option( array &$options ) :void {
 	/*
 	 * Process --github-token-login. GitHub App installation
 	 * tokens, such as GITHUB_TOKEN, cannot query the /user
-	 * endpoint, so assume the GitHub Actions bot for those.
+	 * endpoint. The prefix does not tell which app the token
+	 * belongs to, so require the login to be set explicitly.
 	 */
-	if (
-		( empty( $options['github-token-login'] ) ) &&
-		( str_starts_with( $options['token'], VIPGOCI_GITHUB_APP_INSTALLATION_TOKEN_PREFIX ) )
-	) {
-		$options['github-token-login'] = VIPGOCI_GITHUB_ACTIONS_BOT_LOGIN;
-	}
-
 	if ( empty( $options['github-token-login'] ) ) {
 		$options['github-token-login'] = null;
+
+		if ( str_starts_with( $options['token'], VIPGOCI_GITHUB_APP_INSTALLATION_TOKEN_PREFIX ) ) {
+			vipgoci_sysexit(
+				'Option --github-token-login is required for GitHub App installation tokens, such as GITHUB_TOKEN (e.g. --github-token-login="' . VIPGOCI_GITHUB_ACTIONS_BOT_LOGIN . '")',
+				array(),
+				VIPGOCI_EXIT_USAGE_ERROR
+			);
+
+			return;
+		}
 	} elseif ( ! is_string( $options['github-token-login'] ) ) {
 		vipgoci_sysexit(
 			'Option --github-token-login should be a single string',
@@ -1664,6 +1668,8 @@ function vipgoci_run_init_github_token_option( array &$options ) :void {
 			),
 			VIPGOCI_EXIT_USAGE_ERROR
 		);
+
+		return;
 	}
 
 	vipgoci_github_token_login_set( $options['github-token-login'] );
@@ -1688,6 +1694,8 @@ function vipgoci_run_init_github_token_option( array &$options ) :void {
 			),
 			VIPGOCI_EXIT_USAGE_ERROR
 		);
+
+		return;
 	}
 
 	vipgoci_github_comment_marker_set( $options['comment-marker'] );
@@ -1705,6 +1713,8 @@ function vipgoci_run_init_github_token_option( array &$options ) :void {
 			),
 			VIPGOCI_EXIT_USAGE_ERROR
 		);
+
+		return;
 	}
 
 	vipgoci_github_comment_marker_legacy_login_set( $options['comment-marker-legacy-login'] );
@@ -2258,9 +2268,10 @@ function vipgoci_run_init_options_repo_options( array &$options ):void {
  * value given earlier or read from the environment, which would
  * result in a real run. It also drops options following a stray
  * argument, and can take --dry-run as the value of another option.
- * So validate every occurrence on the command-line, in both
- * "--dry-run=true" and "--dry-run true" forms, and exit if any value
- * is missing or invalid, or was not parsed by getopt().
+ * So validate every occurrence on the command-line, including any
+ * after "--", in both "--dry-run=true" and "--dry-run true" forms,
+ * and exit if any value is missing or invalid, or was not parsed
+ * by getopt().
  *
  * @param array $options Array of options.
  *
@@ -2270,12 +2281,13 @@ function vipgoci_run_init_options_dry_run( array &$options ) :void {
 	$args       = $GLOBALS['argv'] ?? array();
 	$last_value = null;
 
+	/*
+	 * Do not stop at "--": getopt() may have taken it as the value
+	 * of another option, so it cannot be told apart from the
+	 * end-of-options delimiter here. A --dry-run after a real
+	 * delimiter is not parsed by getopt() and so is rejected below.
+	 */
 	foreach ( $args as $index => $arg ) {
-		// Stop at the end-of-options delimiter.
-		if ( '--' === $arg ) {
-			break;
-		}
-
 		if ( '--dry-run' === $arg ) {
 			$value = $args[ $index + 1 ] ?? null;
 		} elseif ( str_starts_with( $arg, '--dry-run=' ) ) {

@@ -151,8 +151,9 @@ final class GitHubCommentMarkerTest extends TestCase {
 		require_once __DIR__ . '/../../main.php';
 
 		$options = array(
-			'token'          => 'ghs_test-token',
-			'comment-marker' => '0',
+			'token'              => 'ghs_test-token',
+			'github-token-login' => 'github-actions[bot]',
+			'comment-marker'     => '0',
 		);
 
 		ob_start();
@@ -257,8 +258,9 @@ final class GitHubCommentMarkerTest extends TestCase {
 	}
 
 	/**
-	 * Only our marked inline comments, and unmarked ones by the token-holder or
-	 * legacy login, count as already posted. Others' comments and foreign markers do not.
+	 * Only our marked inline comments, and unmarked ones by the legacy login, count
+	 * as already posted. Unmarked ones by the token-holder, which may be shared with
+	 * other workflows, others' comments and foreign markers do not.
 	 *
 	 * @return void
 	 */
@@ -294,7 +296,7 @@ final class GitHubCommentMarkerTest extends TestCase {
 		vipgoci_github_pr_reviews_comments_get( $this->options, 'abc', '2026-01-01T00:00:00Z', $comments, 42 );
 
 		$this->assertSame(
-			array( 'test.php:1', 'test.php:2', 'test.php:3' ),
+			array( 'test.php:1', 'test.php:2' ),
 			array_keys( $comments )
 		);
 	}

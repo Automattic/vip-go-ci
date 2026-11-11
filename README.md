@@ -327,17 +327,18 @@ Use the `--max-exec-time` option to set maximum execution time (in seconds):
 
 ### Using GitHub Actions' `GITHUB_TOKEN`
 
-`vip-go-ci` normally asks GitHub which user the token belongs to, and uses that login to recognize the comments and reviews it posted earlier. GitHub App installation tokens, such as the `GITHUB_TOKEN` provided by GitHub Actions, cannot query this information. For these tokens (prefixed `ghs_`), `vip-go-ci` assumes the `github-actions[bot]` login. A different login can be set with `--github-token-login`, which also skips the lookup for any other token.
+`vip-go-ci` normally asks GitHub which user the token belongs to, and uses that login to recognize the comments and reviews it posted earlier. GitHub App installation tokens, such as the `GITHUB_TOKEN` provided by GitHub Actions, cannot query this information. For these tokens (prefixed `ghs_`), the login has to be set with `--github-token-login`, as the token does not tell which app it belongs to: use `github-actions[bot]` for `GITHUB_TOKEN`. The option also skips the lookup for any other token.
 
 Since other workflows may also post as `github-actions[bot]`, use `--comment-marker` to add a hidden marker to every comment and review `vip-go-ci` posts. When set, feedback carrying the marker is treated as posted by `vip-go-ci`, both when avoiding duplicate comments and when cleaning up or dismissing earlier feedback. For example:
 
-> ./vip-go-ci.php ... --token="$GITHUB_TOKEN" --comment-marker="github-actions"
+> ./vip-go-ci.php ... --token="$GITHUB_TOKEN" --github-token-login="github-actions[bot]" --comment-marker="github-actions"
 
 -- this adds `<!-- vip-go-ci-marker:github-actions -->` to the comments and reviews posted.
 
 Feedback posted before the marker was enabled is handled as follows, so that pull requests already scanned do not receive duplicate comments:
 
-* Inline comments without any marker count as already posted only if authored by the token-holder's login or the login set with `--comment-marker-legacy-login`. Unmarked comments by other users, and comments carrying a different marker, do not.
+* Inline comments without any marker count as already posted only if authored by the login set with `--comment-marker-legacy-login`. Unmarked comments by other users, including the token-holder's login (which other workflows may share), and comments carrying a different marker, do not.
+* When `vip-go-ci` posted as its own account before (for example with a personal access token for a dedicated bot user), set `--comment-marker-legacy-login` to that account's login when enabling the marker. Otherwise, its earlier comments are not recognized and findings are posted again.
 * Comments and reviews without any marker are treated as `vip-go-ci`'s own if authored by the login set with `--comment-marker-legacy-login` (default: `wpcomvip-vipgoci-bot`), and may be cleaned up or dismissed. This login should only be used by `vip-go-ci`.
 
 The workflow needs `pull-requests: write` and `issues: write` permissions. Auto-approvals additionally require the repository setting "Allow GitHub Actions to create and approve pull requests".
