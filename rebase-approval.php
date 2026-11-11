@@ -360,16 +360,19 @@ function vipgoci_rebase_approval_revoked( array $reviews, array $events, array $
  * @param int         $bot_id    Authenticated scanner account.
  * @param array       $payload   Submitted review fields.
  * @param object|null $posted    POST response, if conclusive.
- * @return void
+ * @return bool Whether the carried approval was confirmed against unchanged evidence.
  */
-function vipgoci_rebase_approval_verify( array $options, array $baseline, object $pr, array $reviews, array $events, int $bot_id, array $payload, ?object $posted ): void {
+function vipgoci_rebase_approval_verify( array $options, array $baseline, object $pr, array $reviews, array $events, int $bot_id, array $payload, ?object $posted ): bool {
 	$number        = $baseline['pr'];
 	$after         = vipgoci_rebase_api_read( $options, 'pulls/' . $number, false );
 	$after_reviews = vipgoci_rebase_api_read( $options, 'pulls/' . $number . '/reviews' );
 	$after_events  = vipgoci_rebase_api_read( $options, 'issues/' . $number . '/timeline' );
 	$old_ids       = array_column( $reviews, 'id' );
 	$created       = array();
-	if ( null !== $posted && ! in_array( $posted->id, $old_ids, true ) ) {
+	if (
+		null !== $posted && ! in_array( $posted->id, $old_ids, true ) &&
+		'APPROVED' === ( $posted->state ?? null ) && $payload['commit_id'] === ( $posted->commit_id ?? null )
+	) {
 		$created[] = $posted->id;
 	}
 	foreach ( $after_reviews ?? array() as $review ) {
@@ -395,10 +398,12 @@ function vipgoci_rebase_approval_verify( array $options, array $baseline, object
 		foreach ( $created as $review_id ) {
 			vipgoci_github_pr_review_dismiss( $options['repo-owner'], $options['repo-name'], $number, $review_id, 'PR head, base, or review evidence changed while approving the rebase.', $options['token'] );
 		}
+		return false;
 	}
 	if ( empty( $created ) ) {
 		vipgoci_log( 'Rebase approval submission could not be confirmed; inspect GitHub before retrying', array( 'pr_number' => $number ) );
 	}
+	return ! empty( $created );
 }
 
 /**
@@ -406,22 +411,24 @@ function vipgoci_rebase_approval_verify( array $options, array $baseline, object
  *
  * Baselines are COMMENT reviews, bound to the reviewed head and authenticated by
  * their API author ID. A run on the human-approved head is required before its
- * history is rewritten. This never removes scan findings or dismisses reviews.
+ * history is rewritten. This never removes scan findings; only reviews created
+ * by this run can be dismissed to compensate for a race.
  *
  * @param array $options Scanner options, configured outside the scanned repository.
  * @param array $results Original scan results.
  * @param array $prs     Pull requests implicated in the scanned commit.
- * @return void
+ * @return array PR numbers whose rebase approvals were verified this run.
  */
-function vipgoci_rebase_approval_process( array $options, array $results, array $prs ): void {
+function vipgoci_rebase_approval_process( array $options, array $results, array $prs ): array {
 	if ( true !== ( $options['autoapprove-rebases'] ?? false ) ) {
-		return;
+		return array();
 	}
 	$bot = vipgoci_github_authenticated_user_get( $options['token'] );
 	if ( ! is_int( $bot->id ?? null ) || $bot->id < 1 ) {
 		vipgoci_log( 'Rebase auto-approval requires the authenticated scanner account ID' );
-		return;
+		return array();
 	}
+	$approved_prs                                = array();
 	$options['autoapprove-rebases-reviewer-ids'] = array_values( array_diff( $options['autoapprove-rebases-reviewer-ids'], array( (string) $bot->id ) ) );
 	foreach ( $prs as $item ) {
 		$number = $item->number;
@@ -433,7 +440,7 @@ function vipgoci_rebase_approval_process( array $options, array $results, array 
 		$pr      = vipgoci_rebase_api_read( $options, 'pulls/' . $number, false );
 		$reviews = vipgoci_rebase_api_read( $options, 'pulls/' . $number . '/reviews' );
 		$events  = vipgoci_rebase_api_read( $options, 'issues/' . $number . '/timeline' );
-		if ( ! vipgoci_rebase_pr_matches( $pr, $options ) || $number !== ( $pr->number ?? null ) || null === $reviews || null === $events ) {
+		if ( ! vipgoci_rebase_pr_matches( $pr, $options ) || $number !== ( $pr->number ?? null ) || $bot->id === $pr->user->id || null === $reviews || null === $events ) {
 			vipgoci_log( 'Rebase auto-approval declined: incomplete evidence or PR identity mismatch', array( 'pr_number' => $number ) );
 			continue;
 		}
@@ -520,9 +527,14 @@ function vipgoci_rebase_approval_process( array $options, array $results, array 
 					'body'      => 'Auto-approved conflict-free rebase of human review #' . $human->id . '; exact integrated tree verified onto base ' . $pr->base->sha . '.',
 				);
 				$posted  = vipgoci_rebase_review_write( $options, $number, $payload );
-				vipgoci_rebase_approval_verify( $options, $baseline, $pr, $fresh_reviews, $fresh_events, $bot->id, $payload, $posted );
+				if ( vipgoci_rebase_approval_verify( $options, $baseline, $pr, $fresh_reviews, $fresh_events, $bot->id, $payload, $posted ) ) {
+					$approved_prs[] = $number;
+				}
+			} else {
+				$approved_prs[] = $number;
 			}
 			break;
 		}
 	}
+	return $approved_prs;
 }
