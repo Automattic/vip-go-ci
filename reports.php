@@ -453,6 +453,14 @@ function vipgoci_report_create_scan_details_auto_approve_configuration(
 	array $options_copy
 ) :string {
 	$details = '<h4>Auto-approval configuration</h4>' . PHP_EOL;
+	if ( true === ( $options_copy['autoapprove-rebases'] ?? false ) ) {
+		$details .= '<p>Verified rebase approvals enabled. Trusted human reviewer IDs: ';
+		$details .= vipgoci_report_create_scan_details_list( '<code>', '</code> ', $options_copy['autoapprove-rebases-reviewer-ids'], 'None' );
+		$details .= '</p>' . PHP_EOL;
+		$details .= '<p>Trusted rebase base branches: ';
+		$details .= vipgoci_report_create_scan_details_list( '<code>', '</code> ', $options_copy['autoapprove-rebases-base-branches'], 'None' );
+		$details .= '</p>' . PHP_EOL;
+	}
 
 	foreach (
 		array(
