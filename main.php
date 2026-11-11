@@ -2968,14 +2968,14 @@ function vipgoci_run_scan(
 	 * Will also remove from $results any files
 	 * auto-approved.
 	 */
-	// Keep the original results: existing auto-approval can remove findings.
-	$rebase_results = ( $options['autoapprove-rebases'] ?? false ) ? $results : array();
+	// Prove rebase approvals before file-based rules can remove scan findings.
+	$rebase_approved_prs = vipgoci_rebase_approval_process( $options, $results, $prs_implicated );
 	vipgoci_auto_approval_process(
 		$options,
-		$results
+		$results,
+		$rebase_approved_prs
 	);
-	vipgoci_rebase_approval_process( $options, $rebase_results, $prs_implicated );
-	unset( $rebase_results );
+	unset( $rebase_approved_prs );
 
 	gc_collect_cycles();
 

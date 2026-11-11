@@ -202,10 +202,10 @@ final class RebaseApprovalProcessTest extends TestCase {
 	/**
 	 * Run process.
 	 *
-	 * @return void
+	 * @return array PRs whose approvals were verified.
 	 */
-	private function runProcess(): void {
-		vipgoci_rebase_approval_process( $this->options, $this->results, array( (object) array( 'number' => 7 ) ) );
+	private function runProcess(): array {
+		return vipgoci_rebase_approval_process( $this->options, $this->results, array( (object) array( 'number' => 7 ) ) );
 	}
 
 	/**
@@ -215,7 +215,7 @@ final class RebaseApprovalProcessTest extends TestCase {
 	 */
 	public function testApprovesOnlyTheScannedHeadWithProvenance(): void {
 		$this->responses();
-		$this->runProcess();
+		$this->assertSame( array( 7 ), $this->runProcess() );
 		$this->assertCount( 1, $GLOBALS['rebase_posts'] );
 		$post = $GLOBALS['rebase_posts'][0];
 		$this->assertSame( 'APPROVE', $post['body']['event'] );
@@ -458,7 +458,7 @@ final class RebaseApprovalProcessTest extends TestCase {
 		$GLOBALS['rebase_responses'][ $this->root . 'pulls/7' ] = static function () use ( &$calls, $pr, $changed ): array {
 			return ++$calls < 3 ? $pr : $changed;
 		};
-		$this->runProcess();
+		$this->assertSame( array(), $this->runProcess() );
 		$this->assertCount( 1, $GLOBALS['rebase_posts'] );
 		$this->assertCount( 1, $GLOBALS['rebase_puts'] );
 		$this->assertStringEndsWith( '/reviews/900/dismissals', $GLOBALS['rebase_puts'][0]['url'] );

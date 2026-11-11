@@ -475,7 +475,9 @@ The following Autoapprovals-related options can be configured via repository con
 
 `--autoapprove-rebases=true` can submit a new bot approval after a previously
 human-approved PR is rebased onto an updated, trusted base branch. It is disabled
-by default and independent of file-type auto-approval (`--autoapprove`). Configure
+by default and independent of file-type auto-approval (`--autoapprove`). It can be
+enabled alongside that policy: a verified rebase approval is preserved even when
+the changed files do not qualify by type. Configure
 both trusted human reviewers by their stable GitHub user IDs and exact,
 case-sensitive base branch names:
 

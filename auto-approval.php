@@ -302,13 +302,15 @@ function vipgoci_autoapproval_do_approve(
  * @param array $options                 Array of options.
  * @param array $auto_approved_files_arr Array of auto-approved files.
  * @param array $results                 Results of scanning.
+ * @param array $rebase_approved_prs      PRs whose rebase approval was verified this run.
  *
  * @return void
  */
 function vipgoci_auto_approval_scan_commit(
 	array $options,
 	array &$auto_approved_files_arr,
-	array &$results
+	array &$results,
+	array $rebase_approved_prs = array()
 ) :void {
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'auto_approve_commit' );
 
@@ -340,6 +342,10 @@ function vipgoci_auto_approval_scan_commit(
 			$pr_number => $pr_files_changed
 	) {
 		if ( 'all' === $pr_number ) {
+			continue;
+		}
+		if ( in_array( (int) $pr_number, $rebase_approved_prs, true ) ) {
+			// Preserve verified rebase approvals when file-type rules do not apply.
 			continue;
 		}
 
@@ -463,12 +469,14 @@ function vipgoci_auto_approval_scan_commit(
  *
  * @param array $options Array of options.
  * @param array $results Array of results from scanning.
+ * @param array $rebase_approved_prs PRs whose rebase approval was verified this run.
  *
  * @return void
  */
 function vipgoci_auto_approval_process(
 	array &$options,
-	array &$results
+	array &$results,
+	array $rebase_approved_prs = array()
 ) :void {
 	if ( false === $options['autoapprove'] ) {
 		vipgoci_log(
@@ -523,7 +531,8 @@ function vipgoci_auto_approval_process(
 	vipgoci_auto_approval_scan_commit(
 		$options,
 		$auto_approved_files_arr,
-		$results
+		$results,
+		$rebase_approved_prs
 	);
 
 	/*
