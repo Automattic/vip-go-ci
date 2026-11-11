@@ -1679,7 +1679,7 @@ function vipgoci_run_init_github_token_option( array &$options ) :void {
 		$options['comment-marker'] = null;
 	} elseif (
 		( ! is_string( $options['comment-marker'] ) ) ||
-		( 1 !== preg_match( '/^[A-Za-z0-9._:-]+$/', $options['comment-marker'] ) )
+		( 1 !== preg_match( '/^[A-Za-z0-9._:-]+\z/', $options['comment-marker'] ) )
 	) {
 		vipgoci_sysexit(
 			'Option --comment-marker should be a single string containing only A-Z, a-z, 0-9, ".", "_", ":" and "-"',
@@ -2256,16 +2256,19 @@ function vipgoci_run_init_options_repo_options( array &$options ):void {
  *
  * getopt() silently drops a --dry-run without a value, keeping any
  * value given earlier or read from the environment, which would
- * result in a real run. So validate every occurrence on the
- * command-line, in both "--dry-run=true" and "--dry-run true" forms,
- * and exit if any value is missing or invalid.
+ * result in a real run. It also drops options following a stray
+ * argument, and can take --dry-run as the value of another option.
+ * So validate every occurrence on the command-line, in both
+ * "--dry-run=true" and "--dry-run true" forms, and exit if any value
+ * is missing or invalid, or was not parsed by getopt().
  *
  * @param array $options Array of options.
  *
  * @return void
  */
 function vipgoci_run_init_options_dry_run( array &$options ) :void {
-	$args = $GLOBALS['argv'] ?? array();
+	$args       = $GLOBALS['argv'] ?? array();
+	$last_value = null;
 
 	foreach ( $args as $index => $arg ) {
 		// Stop at the end-of-options delimiter.
@@ -2290,6 +2293,21 @@ function vipgoci_run_init_options_dry_run( array &$options ) :void {
 
 			return;
 		}
+
+		$last_value = $value;
+	}
+
+	if (
+		( null !== $last_value ) &&
+		( ( $options['dry-run'] ?? null ) !== $last_value )
+	) {
+		vipgoci_sysexit(
+			'Parameter --dry-run could not be parsed, check for stray arguments or missing values before it',
+			array(),
+			VIPGOCI_EXIT_USAGE_ERROR
+		);
+
+		return;
 	}
 
 	vipgoci_option_bool_handle( $options, 'dry-run', 'false' );

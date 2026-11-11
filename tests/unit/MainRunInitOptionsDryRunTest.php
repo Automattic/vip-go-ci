@@ -17,8 +17,9 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * Check that --dry-run accepts valid values in both forms, and that
- * a --dry-run without a valid value is rejected, even when a value
- * was given earlier or read from the environment.
+ * a --dry-run without a valid value, or not parsed by getopt(), is
+ * rejected, even when a value was given earlier or read from the
+ * environment.
  */
 #[RunTestsInSeparateProcesses]
 #[PreserveGlobalState( false )]
@@ -75,6 +76,8 @@ final class MainRunInitOptionsDryRunTest extends TestCase {
 			'repeated, empty'      => array( array( '--dry-run=false', '--dry-run=' ), array( 'dry-run' => 'false' ), null ),
 			'environment and bare' => array( array( '--dry-run' ), array( 'dry-run' => 'false' ), null ),
 			'after end-of-options' => array( array( '--', '--dry-run' ), array(), false ),
+			'after stray argument' => array( array( '--repo-owner=a', 'stray', '--dry-run=true' ), array( 'repo-owner' => 'a' ), null ),
+			'as another value'     => array( array( '--phpcs-standard', '--dry-run=true' ), array( 'phpcs-standard' => '--dry-run=true' ), null ),
 		);
 	}
 
@@ -103,7 +106,7 @@ final class MainRunInitOptionsDryRunTest extends TestCase {
 
 		$this->assertSame(
 			null === $expected_value,
-			str_contains( $printed_data, 'Usage: Parameter --dry-run has to be either false or true' ),
+			str_contains( $printed_data, 'Usage: Parameter --dry-run ' ),
 			$printed_data
 		);
 
