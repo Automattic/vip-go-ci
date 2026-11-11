@@ -286,9 +286,24 @@ function vipgoci_rebase_baseline_read( object $review, int $bot_id ): ?array {
  *
  * @param array $results Unmodified scan results, before auto-approval/deduplication.
  * @param int   $pr      Pull request number.
+ * @param array $options Enabled scanners and scanned commit.
  * @return bool Whether complete scan results are clear.
  */
-function vipgoci_rebase_scan_clear( array $results, int $pr ): bool {
+function vipgoci_rebase_scan_clear( array $results, int $pr, array $options ): bool {
+	if ( $options['commit'] !== ( $results['scan-completion']['commit'] ?? null ) ) {
+		return false;
+	}
+	foreach ( array( 'lint', 'phpcs', 'wpscan-api', 'svg-checks' ) as $scanner ) {
+		if ( true !== ( $options[ $scanner ] ?? false ) ) {
+			continue;
+		}
+		if ( true !== ( $results['scan-completion'][ $scanner ][ $pr ] ?? null ) ) {
+			return false;
+		}
+		if ( 'svg-checks' !== $scanner && ! isset( $results['stats'][ $scanner ][ $pr ] ) ) {
+			return false;
+		}
+	}
 	if ( ! isset( $results['issues'][ $pr ] ) || array() !== $results['issues'][ $pr ] || 0 !== ( $results[ VIPGOCI_SKIPPED_FILES ][ $pr ]['total'] ?? null ) ) {
 		return false;
 	}
@@ -433,7 +448,7 @@ function vipgoci_rebase_approval_process( array $options, array $results, array 
 	foreach ( $prs as $item ) {
 		$number = $item->number;
 		vipgoci_log( 'Checking trusted rebase approval evidence', array( 'pr_number' => $number ) );
-		if ( ! vipgoci_rebase_scan_clear( $results, $number ) ) {
+		if ( ! vipgoci_rebase_scan_clear( $results, $number, $options ) ) {
 			vipgoci_log( 'Rebase auto-approval declined: scan results are not clear', array( 'pr_number' => $number ) );
 			continue;
 		}

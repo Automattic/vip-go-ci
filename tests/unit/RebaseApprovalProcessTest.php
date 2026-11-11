@@ -95,6 +95,7 @@ final class RebaseApprovalProcessTest extends TestCase {
 		);
 		$this->fixture  = vipgoci_unittests_rebase_repository();
 		$this->options  = array(
+			'lint'                              => true,
 			'autoapprove-rebases'               => true,
 			'autoapprove-rebases-reviewer-ids'  => array( '42' ),
 			'autoapprove-rebases-base-branches' => array( 'trunk' ),
@@ -163,8 +164,12 @@ final class RebaseApprovalProcessTest extends TestCase {
 			),
 		);
 		$this->results  = array(
-			'issues'        => array( 7 => array() ),
-			'stats'         => array(
+			'scan-completion' => array(
+				'commit' => $this->fixture['head'],
+				'lint'   => array( 7 => true ),
+			),
+			'issues'          => array( 7 => array() ),
+			'stats'           => array(
 				'lint' => array(
 					7 => array(
 						'error'   => 0,
@@ -173,7 +178,7 @@ final class RebaseApprovalProcessTest extends TestCase {
 					),
 				),
 			),
-			'skipped-files' => array( 7 => array( 'total' => 0 ) ),
+			'skipped-files'   => array( 7 => array( 'total' => 0 ) ),
 		);
 	}
 
@@ -231,12 +236,13 @@ final class RebaseApprovalProcessTest extends TestCase {
 	 * @return void
 	 */
 	public function testRecordsBaselineWhileHumanApprovalIsCurrent(): void {
-		$this->options['commit']   = $this->fixture['reviewed'];
-		$this->pr['head']['sha']   = $this->fixture['reviewed'];
-		$this->pr['base']['sha']   = $this->fixture['base'];
-		$this->reviews             = array( $this->reviews[0] );
-		$this->reviews[0]['state'] = 'APPROVED';
-		$this->events              = array();
+		$this->options['commit']                    = $this->fixture['reviewed'];
+		$this->results['scan-completion']['commit'] = $this->fixture['reviewed'];
+		$this->pr['head']['sha']                    = $this->fixture['reviewed'];
+		$this->pr['base']['sha']                    = $this->fixture['base'];
+		$this->reviews                              = array( $this->reviews[0] );
+		$this->reviews[0]['state']                  = 'APPROVED';
+		$this->events                               = array();
 		$this->responses();
 		$this->runProcess();
 		$this->assertCount( 1, $GLOBALS['rebase_posts'] );
@@ -526,11 +532,12 @@ final class RebaseApprovalProcessTest extends TestCase {
 
 	/** Avoid duplicate baseline reviews when rerunning the approved head. */
 	public function testExistingBaselineIsNotRecordedAgain(): void {
-		$this->options['commit']   = $this->fixture['reviewed'];
-		$this->pr['head']['sha']   = $this->fixture['reviewed'];
-		$this->pr['base']['sha']   = $this->fixture['base'];
-		$this->reviews[0]['state'] = 'APPROVED';
-		$this->events              = array();
+		$this->options['commit']                    = $this->fixture['reviewed'];
+		$this->results['scan-completion']['commit'] = $this->fixture['reviewed'];
+		$this->pr['head']['sha']                    = $this->fixture['reviewed'];
+		$this->pr['base']['sha']                    = $this->fixture['base'];
+		$this->reviews[0]['state']                  = 'APPROVED';
+		$this->events                               = array();
 		$this->responses();
 		$this->runProcess();
 		$this->assertSame( array(), $GLOBALS['rebase_posts'] );
@@ -543,5 +550,31 @@ final class RebaseApprovalProcessTest extends TestCase {
 		$this->responses();
 		$this->runProcess();
 		$this->assertCount( 1, $GLOBALS['rebase_posts'] );
+	}
+
+	/** A same-head rerun returns the existing approval without posting again. */
+	public function testSameHeadRerunPreservesApproval(): void {
+		$this->responses();
+		$this->assertSame( array( 7 ), $this->runProcess() );
+		$this->assertSame( array( 7 ), $this->runProcess() );
+		$this->assertCount( 1, $GLOBALS['rebase_posts'] );
+		$this->assertSame( array(), $GLOBALS['rebase_puts'] );
+	}
+
+	/** Incomplete scanning must prevent both baseline capture and carry-forward. */
+	public function testIncompleteScanCannotRecordBaselineOrApprove(): void {
+		$this->results['scan-completion']['lint'][7] = false;
+		$this->responses();
+		$this->assertSame( array(), $this->runProcess() );
+		$this->options['commit']                    = $this->fixture['reviewed'];
+		$this->results['scan-completion']['commit'] = $this->fixture['reviewed'];
+		$this->pr['head']['sha']                    = $this->fixture['reviewed'];
+		$this->pr['base']['sha']                    = $this->fixture['base'];
+		$this->reviews                              = array( $this->reviews[0] );
+		$this->reviews[0]['state']                  = 'APPROVED';
+		$this->events                               = array();
+		$this->responses();
+		$this->assertSame( array(), $this->runProcess() );
+		$this->assertSame( array(), $GLOBALS['rebase_posts'] );
 	}
 }

@@ -17,7 +17,7 @@ if ( false !== $log_path ) {
 	) ) . "\n", FILE_APPEND );
 }
 
-if ( count( $filenames ) > 1 && str_contains( $contents, 'fixture-batch-fatal' ) ) {
+if ( str_contains( $contents, 'fixture-fatal' ) || ( count( $filenames ) > 1 && str_contains( $contents, 'fixture-batch-fatal' ) ) ) {
 	fwrite( STDERR, 'Simulated PHPCS fatal error' );
 	exit( 255 );
 }

@@ -216,9 +216,10 @@ function vipgoci_wpscan_get_altered_addons_data_and_slugs(
  * the information look for any plugins/themes that are obsolete or have
  * vulnerabilities via the WPScan API. Save results for further processing.
  *
- * @param array $options                             Options array for the program.
- * @param array $addon_dirs_relevant_to_scan         Array of directories which contain plugins/themes altered to be scanned.
- * @param array $addon_data_and_slugs_for_addon_dirs Array with slugs and other information for addon directories.
+ * @param array      $options                             Options array for the program.
+ * @param array      $addon_dirs_relevant_to_scan         Array of directories which contain plugins/themes altered to be scanned.
+ * @param array      $addon_data_and_slugs_for_addon_dirs Array with slugs and other information for addon directories.
+ * @param array|null $directory_completion                Per-directory completion evidence (reference).
  *
  * @return array Associative array with results. For example:
  *   Array(
@@ -259,12 +260,14 @@ function vipgoci_wpscan_get_altered_addons_data_and_slugs(
 function vipgoci_wpscan_scan_dirs_altered(
 	array $options,
 	array $addon_dirs_relevant_to_scan,
-	array $addon_data_and_slugs_for_addon_dirs
-) :array {
+	array $addon_data_and_slugs_for_addon_dirs,
+	?array &$directory_completion = null
+): array {
 	$problematic_addons_found = array();
 
 	foreach ( $addon_dirs_relevant_to_scan as $addon_dir_relevant ) {
-		$addon_data_for_dir = $addon_data_and_slugs_for_addon_dirs[ $addon_dir_relevant ];
+		$addon_data_for_dir                          = $addon_data_and_slugs_for_addon_dirs[ $addon_dir_relevant ];
+		$directory_completion[ $addon_dir_relevant ] = ! empty( $addon_data_for_dir );
 
 		foreach ( $addon_data_for_dir as $addon_item_key => $addon_item_info ) {
 			$addon_item_key = str_replace(
@@ -274,6 +277,7 @@ function vipgoci_wpscan_scan_dirs_altered(
 			);
 
 			if ( empty( $addon_item_info['slug'] ) ) {
+				$directory_completion[ $addon_dir_relevant ] = false;
 				continue;
 			}
 
@@ -305,6 +309,7 @@ function vipgoci_wpscan_scan_dirs_altered(
 			if ( empty(
 				$wpscan_results[ $addon_item_info['slug'] ]
 			) ) {
+				$directory_completion[ $addon_dir_relevant ] = false;
 				vipgoci_log(
 					'Unable to get information from WPScan API about slug',
 					array(
@@ -559,10 +564,11 @@ function vipgoci_wpscan_scan_save_for_submission(
  * for any insecure or obsolete plugins or themes using the WPScan API. Information
  * will be collected via the WordPress.org API as well -- in particular, slugs.
  *
- * @param array $options              Options array for the program.
- * @param array $commit_issues_submit Results for WPScan API scanning (reference).
- * @param array $commit_issues_stats  Result statistics for WPScan API scanning (reference).
- * @param array $commit_skipped_files Information about skipped files (reference).
+ * @param array      $options              Options array for the program.
+ * @param array      $commit_issues_submit Results for WPScan API scanning (reference).
+ * @param array      $commit_issues_stats  Result statistics for WPScan API scanning (reference).
+ * @param array      $commit_skipped_files Information about skipped files (reference).
+ * @param array|null $scan_completion      Per-PR completion evidence (reference).
  *
  * @return void
  */
@@ -570,8 +576,9 @@ function vipgoci_wpscan_scan_commit(
 	array $options,
 	array &$commit_issues_submit,
 	array &$commit_issues_stats,
-	array &$commit_skipped_files
-) :void {
+	array &$commit_skipped_files,
+	?array &$scan_completion = null
+): void {
 	if ( false === $options['wpscan-api'] ) {
 		vipgoci_log(
 			'Will not scan added/updated themes/plugins using WPScan API, not configured to do so',
@@ -614,6 +621,11 @@ function vipgoci_wpscan_scan_commit(
 		),
 		false
 	);
+	foreach ( $files_affected_by_commit_by_pr as $number => $files ) {
+		if ( 'all' !== $number ) {
+			$scan_completion[ $number ] = false;
+		}
+	}
 
 	/*
 	 * Get paths to added/altered plugins or themes.
@@ -644,6 +656,11 @@ function vipgoci_wpscan_scan_commit(
 		);
 
 		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'wpscan_scan_commit' );
+		foreach ( $files_affected_by_commit_by_pr as $number => $files ) {
+			if ( 'all' !== $number ) {
+				$scan_completion[ $number ] = vipgoci_wpscan_pr_scan_complete( $files, array(), $options['wpscan-api-paths'] );
+			}
+		}
 
 		return;
 	}
@@ -667,7 +684,8 @@ function vipgoci_wpscan_scan_commit(
 	$problematic_addons_found = vipgoci_wpscan_scan_dirs_altered(
 		$options,
 		$addon_dirs_relevant_to_scan,
-		$addon_data_and_slugs_for_addon_dirs
+		$addon_data_and_slugs_for_addon_dirs,
+		$directory_completion
 	);
 
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'wpscan_scan_get_addon_data_and_slugs_for_directories' );
@@ -683,6 +701,11 @@ function vipgoci_wpscan_scan_commit(
 		$files_affected_by_commit_by_pr,
 		$problematic_addons_found
 	);
+	foreach ( $files_affected_by_commit_by_pr as $number => $files ) {
+		if ( 'all' !== $number ) {
+			$scan_completion[ $number ] = vipgoci_wpscan_pr_scan_complete( $files, $directory_completion ?? array(), $options['wpscan-api-paths'] );
+		}
+	}
 
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'wpscan_scan_commit' );
 
@@ -692,3 +715,37 @@ function vipgoci_wpscan_scan_commit(
 	);
 }
 
+/**
+ * Require successful scanning for each changed path inside a WPScan root.
+ *
+ * @param array $files Changed files for one PR.
+ * @param array $directories Completed/failed add-on directories.
+ * @param array $roots Configured WPScan paths.
+ * @return bool Whether every relevant changed file is covered by completed scans.
+ */
+function vipgoci_wpscan_pr_scan_complete( array $files, array $directories, array $roots ): bool {
+	foreach ( $files as $file ) {
+		$relevant = false;
+		foreach ( $roots as $root ) {
+			if ( str_starts_with( $file, rtrim( $root, '/' ) . '/' ) ) {
+				$relevant = true;
+			}
+		}
+		if ( ! $relevant ) {
+			continue;
+		}
+		$covered = false;
+		foreach ( $directories as $directory => $complete ) {
+			if ( str_starts_with( $file, rtrim( $directory, '/' ) . '/' ) ) {
+				if ( true !== $complete ) {
+					return false;
+				}
+				$covered = true;
+			}
+		}
+		if ( ! $covered ) {
+			return false;
+		}
+	}
+	return true;
+}

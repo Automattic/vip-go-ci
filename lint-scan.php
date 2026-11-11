@@ -324,10 +324,11 @@ function vipgoci_lint_scan_multiple_files_merge_results_by_php_version(
 /**
  * Scan multiple files and return the results.
  *
- * @param array $options              Options array for the program.
- * @param array $prs_implicated       Pull requests implicated.
- * @param array $commit_skipped_files Information about skipped files (reference).
- * @param array $files_to_be_scanned  Files to be scanned.
+ * @param array      $options              Options array for the program.
+ * @param array      $prs_implicated       Pull requests implicated.
+ * @param array      $commit_skipped_files Information about skipped files (reference).
+ * @param array      $files_to_be_scanned  Files to be scanned.
+ * @param array|null $failed_files         Files whose execution/output was incomplete (reference).
  *
  * @return array Results of linting, with results merged by PHP version as possible.
  */
@@ -335,8 +336,9 @@ function vipgoci_lint_scan_multiple_files(
 	array $options,
 	array $prs_implicated,
 	array &$commit_skipped_files,
-	array $files_to_be_scanned
-) :array {
+	array $files_to_be_scanned,
+	?array &$failed_files = null
+): array {
 	$scanning_results = array();
 
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'lint_scan_single_file' );
@@ -423,6 +425,9 @@ function vipgoci_lint_scan_multiple_files(
 		);
 
 		$current_file_intermediary_results = array();
+		if ( empty( $options['lint-php-versions'] ) ) {
+			vipgoci_array_push_uniquely( $files_failed_linting, $filename );
+		}
 
 		foreach (
 			$options['lint-php-versions'] as
@@ -446,6 +451,12 @@ function vipgoci_lint_scan_multiple_files(
 					$temp_file_name,
 					$temp_linting_results_arr_raw
 				);
+				if (
+					empty( $temp_linting_results_arr ) &&
+					! in_array( 'No syntax errors detected in ' . $temp_file_name, $temp_linting_results_arr_raw, true )
+				) {
+					vipgoci_array_push_uniquely( $files_failed_linting, $filename );
+				}
 			} else {
 				$temp_linting_results_arr = null;
 
@@ -524,6 +535,7 @@ function vipgoci_lint_scan_multiple_files(
 		);
 	}
 
+	$failed_files = $files_failed_linting;
 	return $scanning_results;
 }
 
@@ -562,10 +574,11 @@ function vipgoci_lint_set_file_issues_result(
  * they are too large and/or they were not modified by the
  * pull requests implicated by the current commit.
  *
- * @param array $options              Options array for the program.
- * @param array $commit_issues_submit Results for PHP linting (reference).
- * @param array $commit_issues_stats  Result statistics, focussed on PHP linting (reference).
- * @param array $commit_skipped_files Information about skipped files (reference).
+ * @param array      $options              Options array for the program.
+ * @param array      $commit_issues_submit Results for PHP linting (reference).
+ * @param array      $commit_issues_stats  Result statistics, focussed on PHP linting (reference).
+ * @param array      $commit_skipped_files Information about skipped files (reference).
+ * @param array|null $scan_completion      Per-PR completion evidence (reference).
  *
  * @return void
  */
@@ -573,8 +586,9 @@ function vipgoci_lint_scan_commit(
 	array $options,
 	array &$commit_issues_submit,
 	array &$commit_issues_stats,
-	array &$commit_skipped_files
-) :void {
+	array &$commit_skipped_files,
+	?array &$scan_completion = null
+): void {
 	$repo_owner   = $options['repo-owner'];
 	$repo_name    = $options['repo-name'];
 	$commit_id    = $options['commit'];
@@ -610,6 +624,9 @@ function vipgoci_lint_scan_commit(
 		$options['branches-ignore'],
 		$options['skip-draft-prs']
 	);
+	foreach ( $prs_implicated as $pr_item ) {
+		$scan_completion[ $pr_item->number ] = false;
+	}
 
 	vipgoci_log(
 		( false === $options['lint-modified-files-only'] ) ?
@@ -667,7 +684,8 @@ function vipgoci_lint_scan_commit(
 		$options,
 		$prs_implicated,
 		$commit_skipped_files,
-		$files_to_be_scanned
+		$files_to_be_scanned,
+		$failed_files
 	);
 
 	/*
@@ -678,7 +696,13 @@ function vipgoci_lint_scan_commit(
 	$file_names = array_keys( $scanning_results );
 
 	foreach ( $prs_implicated as $pr_item ) {
-		$pr_number = $pr_item->number;
+		$pr_number                     = $pr_item->number;
+		$scan_completion[ $pr_number ] = false === $options['lint-modified-files-only']
+			? empty( $failed_files )
+			: isset( $files_changed_in_pr[ $pr_number ] ) && empty( array_intersect( $failed_files, $files_changed_in_pr[ $pr_number ] ) );
+		if ( 0 !== ( $commit_skipped_files[ $pr_number ]['total'] ?? 0 ) ) {
+			$scan_completion[ $pr_number ] = false;
+		}
 
 		$files_with_issues = false === $options['lint-modified-files-only']
 			? $file_names
