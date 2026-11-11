@@ -149,6 +149,8 @@ define( 'VIPGOCI_GIT_DIFF_DATA_SOURCE_GITHUB_API', 'github-api' );
 define( 'VIPGOCI_SKIPPED_FILES', 'skipped-files' );
 
 define( 'VIPGOCI_VALIDATION_MAXIMUM_LINES_LIMIT', 15000 );
+// Bound repository file allocation independently of configurable line limits.
+define( 'VIPGOCI_GIT_REPO_MAX_FILE_BYTES', 16 * 1024 * 1024 );
 define( 'VIPGOCI_VALIDATION_MAXIMUM_LINES', 'max-lines' );
 define(
 	'VIPGOCI_VALIDATION',

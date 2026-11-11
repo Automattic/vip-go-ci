@@ -185,7 +185,8 @@ final class GitRepoRepoFetchCommittedFileTest extends TestCase {
 			$this->options['github-token'],
 			$this->options['commit-test-repo-fetch-committed-file-1'],
 			$symlinked_file_name,
-			$this->options['local-git-repo']
+			$this->options['local-git-repo'],
+			false // Explicit opt-in for contained regular symlinks.
 		);
 
 		$ret_with_reject_symlink = vipgoci_gitrepo_fetch_committed_file(
