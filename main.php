@@ -2254,26 +2254,42 @@ function vipgoci_run_init_options_repo_options( array &$options ):void {
 /**
  * Process the --dry-run option and enable dry-run mode if set.
  *
- * getopt() silently drops a trailing --dry-run without a value,
- * which would result in a real run, so exit instead. Values such
- * as "--dry-run true" are parsed by getopt() and validated here.
+ * getopt() silently drops a --dry-run without a value, keeping any
+ * value given earlier or read from the environment, which would
+ * result in a real run. So validate every occurrence on the
+ * command-line, in both "--dry-run=true" and "--dry-run true" forms,
+ * and exit if any value is missing or invalid.
  *
  * @param array $options Array of options.
  *
  * @return void
  */
 function vipgoci_run_init_options_dry_run( array &$options ) :void {
-	if (
-		( ! isset( $options['dry-run'] ) ) &&
-		( in_array( '--dry-run', $GLOBALS['argv'] ?? array(), true ) )
-	) {
-		vipgoci_sysexit(
-			'Parameter --dry-run has to be either false or true',
-			array(),
-			VIPGOCI_EXIT_USAGE_ERROR
-		);
+	$args = $GLOBALS['argv'] ?? array();
 
-		return;
+	foreach ( $args as $index => $arg ) {
+		// Stop at the end-of-options delimiter.
+		if ( '--' === $arg ) {
+			break;
+		}
+
+		if ( '--dry-run' === $arg ) {
+			$value = $args[ $index + 1 ] ?? null;
+		} elseif ( str_starts_with( $arg, '--dry-run=' ) ) {
+			$value = substr( $arg, strlen( '--dry-run=' ) );
+		} else {
+			continue;
+		}
+
+		if ( ! in_array( $value, array( 'true', 'false' ), true ) ) {
+			vipgoci_sysexit(
+				'Parameter --dry-run has to be either false or true',
+				array(),
+				VIPGOCI_EXIT_USAGE_ERROR
+			);
+
+			return;
+		}
 	}
 
 	vipgoci_option_bool_handle( $options, 'dry-run', 'false' );

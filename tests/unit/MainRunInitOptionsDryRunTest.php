@@ -16,8 +16,9 @@ use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Check that --dry-run accepts valid values in both forms, and
- * that a trailing --dry-run without a value is rejected.
+ * Check that --dry-run accepts valid values in both forms, and that
+ * a --dry-run without a valid value is rejected, even when a value
+ * was given earlier or read from the environment.
  */
 #[RunTestsInSeparateProcesses]
 #[PreserveGlobalState( false )]
@@ -56,19 +57,24 @@ final class MainRunInitOptionsDryRunTest extends TestCase {
 	}
 
 	/**
-	 * Arguments, options as parsed by getopt(), and expected results.
+	 * Arguments, options as parsed by getopt() or read from
+	 * the environment, and expected results.
 	 *
 	 * @return array Test cases.
 	 */
 	public static function dataDryRun() :array {
 		return array(
-			'not set'        => array( array(), array(), false ),
-			'equals true'    => array( array( '--dry-run=true' ), array( 'dry-run' => 'true' ), true ),
-			'separate true'  => array( array( '--dry-run', 'true' ), array( 'dry-run' => 'true' ), true ),
-			'separate false' => array( array( '--dry-run', 'false' ), array( 'dry-run' => 'false' ), false ),
-			'invalid value'  => array( array( '--dry-run=yes' ), array( 'dry-run' => 'yes' ), null ),
-			'empty value'    => array( array( '--dry-run=' ), array( 'dry-run' => '' ), null ),
-			'trailing bare'  => array( array( '--dry-run' ), array(), null ),
+			'not set'              => array( array(), array(), false ),
+			'equals true'          => array( array( '--dry-run=true' ), array( 'dry-run' => 'true' ), true ),
+			'separate true'        => array( array( '--dry-run', 'true' ), array( 'dry-run' => 'true' ), true ),
+			'separate false'       => array( array( '--dry-run', 'false' ), array( 'dry-run' => 'false' ), false ),
+			'invalid value'        => array( array( '--dry-run=yes' ), array( 'dry-run' => 'yes' ), null ),
+			'empty value'          => array( array( '--dry-run=' ), array( 'dry-run' => '' ), null ),
+			'trailing bare'        => array( array( '--dry-run' ), array(), null ),
+			'repeated, bare'       => array( array( '--dry-run=false', '--dry-run' ), array( 'dry-run' => 'false' ), null ),
+			'repeated, empty'      => array( array( '--dry-run=false', '--dry-run=' ), array( 'dry-run' => 'false' ), null ),
+			'environment and bare' => array( array( '--dry-run' ), array( 'dry-run' => 'false' ), null ),
+			'after end-of-options' => array( array( '--', '--dry-run' ), array(), false ),
 		);
 	}
 
@@ -76,7 +82,7 @@ final class MainRunInitOptionsDryRunTest extends TestCase {
 	 * Check the resulting option value, or that a usage error is printed.
 	 *
 	 * @param array     $args           Command-line arguments.
-	 * @param array     $options        Options as parsed by getopt().
+	 * @param array     $options        Options as parsed by getopt() or read from the environment.
 	 * @param null|bool $expected_value Expected value of the option, null if a usage error is expected.
 	 *
 	 * @return void

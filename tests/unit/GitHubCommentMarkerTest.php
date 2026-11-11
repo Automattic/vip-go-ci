@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Vipgoci\Tests\Unit;
 
 use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\PreserveGlobalState;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
@@ -33,6 +34,7 @@ use PHPUnit\Framework\TestCase;
 #[CoversFunction( 'vipgoci_github_pr_comments_generic_submit' )]
 #[CoversFunction( 'vipgoci_github_pr_comments_cleanup' )]
 #[CoversFunction( 'vipgoci_github_prs_implicated' )]
+#[CoversFunction( 'vipgoci_report_submit_pr_generic_support_comment' )]
 final class GitHubCommentMarkerTest extends TestCase {
 	/**
 	 * Options for the fixture repository.
@@ -426,5 +428,92 @@ final class GitHubCommentMarkerTest extends TestCase {
 		);
 
 		$this->assertLessThan( 1, microtime( true ) - $time_start );
+	}
+
+	/**
+	 * Existing comments, marker configuration and expected number of POSTs.
+	 *
+	 * @return array Test cases.
+	 */
+	public static function dataSupportCommentDeduplication(): array {
+		$msg = 'Welcome to the project';
+
+		return array(
+			'no existing comment'       => array( array(), 'actions', 1 ),
+			'our marked comment'        => array(
+				array( 'github-actions[bot]', $msg . "\n<!-- vip-go-ci-marker:actions -->" ),
+				'actions',
+				0,
+			),
+			'foreign marker'            => array(
+				array( 'github-actions[bot]', $msg . "\n<!-- vip-go-ci-marker:other -->" ),
+				'actions',
+				1,
+			),
+			'foreign author'            => array(
+				array( 'some-user', $msg . "\n<!-- vip-go-ci-marker:actions -->" ),
+				'actions',
+				1,
+			),
+			'unmarked legacy login'     => array( array( 'legacy-bot', $msg ), 'actions', 0 ),
+			'marker disabled, any user' => array( array( 'some-user', $msg ), null, 0 ),
+		);
+	}
+
+	/**
+	 * The generic support comment is deduplicated only against our
+	 * own comments when a marker is configured, and against any
+	 * comment otherwise.
+	 *
+	 * @param array       $existing       Login and body of an existing comment, if any.
+	 * @param null|string $marker         Comment marker ID.
+	 * @param int         $expected_posts Expected number of comments posted.
+	 *
+	 * @return void
+	 */
+	#[DataProvider( 'dataSupportCommentDeduplication' )]
+	public function testSupportCommentDeduplication( array $existing, null|string $marker, int $expected_posts ): void {
+		require_once __DIR__ . '/../../reports.php';
+
+		vipgoci_github_token_login_set( VIPGOCI_GITHUB_ACTIONS_BOT_LOGIN );
+		vipgoci_github_comment_marker_set( $marker );
+		vipgoci_github_comment_marker_legacy_login_set( 'legacy-bot' );
+
+		$GLOBALS['vipgoci_test_http_responses'] = array(
+			'GET /repos/owner/repo/issues/42/comments' => empty( $existing ) ?
+				array() :
+				array( $this->item( $existing[0], $existing[1] ) ),
+		);
+
+		$options = array_merge(
+			$this->options,
+			array(
+				'post-generic-pr-support-comments'           => true,
+				'post-generic-pr-support-comments-on-drafts' => array( 1 => false ),
+				'post-generic-pr-support-comments-string'    => array( 1 => 'Welcome to the project' ),
+				'post-generic-pr-support-comments-branches'  => array( 1 => array( 'any' ) ),
+				'post-generic-pr-support-comments-repo-meta-match' => array(),
+				'post-generic-pr-support-comments-skip-if-label-exists' => array(),
+			)
+		);
+
+		$pr_item = json_decode(
+			json_encode(
+				array(
+					'number' => 42,
+					'draft'  => false,
+					'base'   => array( 'ref' => 'trunk' ),
+				)
+			)
+		);
+
+		vipgoci_report_submit_pr_generic_support_comment( $options, array( $pr_item ) );
+
+		$posts = array_filter(
+			$GLOBALS['vipgoci_test_http_requests'],
+			static fn( array $request ): bool => 'POST /repos/owner/repo/issues/42/comments' === $request['request']
+		);
+
+		$this->assertCount( $expected_posts, $posts );
 	}
 }

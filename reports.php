@@ -1658,10 +1658,30 @@ function vipgoci_report_submit_pr_generic_support_comment(
 
 		$comment_exists_already = false;
 
+		/*
+		 * When a comment marker is configured, only consider
+		 * comments submitted by us, so that comments by other
+		 * instances or other users do not prevent ours from
+		 * being posted.
+		 */
+		$token_holder_login = null;
+
+		if ( '' !== vipgoci_github_comment_marker_get() ) {
+			$token_holder_login = vipgoci_github_authenticated_user_get(
+				$options['token']
+			)->login;
+		}
+
 		foreach (
 			$existing_comments as
 				$existing_comment_item
 		) {
+			if (
+				( null !== $token_holder_login ) &&
+				( ! vipgoci_github_item_submitted_by_us( $existing_comment_item, $token_holder_login ) )
+			) {
+				continue;
+			}
 
 			if ( strpos(
 				$existing_comment_item->body,
