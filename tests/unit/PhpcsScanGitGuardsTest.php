@@ -213,13 +213,14 @@ final class PhpcsScanGitGuardsTest extends TestCase {
 			require_once __DIR__ . '/../../lint-scan.php';
 			vipgoci_lint_scan_commit( $options, $issues, $stats, $skipped, $completion );
 		} else {
-			vipgoci_phpcs_scan_commit( $options, $issues, $stats, $skipped, $completion );
+			vipgoci_phpcs_scan_commit( $options, $issues, $stats, $skipped, $completion, $rebase_clear );
 		}
 		return array(
-			'completion' => $completion,
-			'issues'     => $issues,
-			'stats'      => $stats,
-			'skipped'    => $skipped,
+			'completion'   => $completion,
+			'rebase-clear' => $rebase_clear ?? null,
+			'issues'       => $issues,
+			'stats'        => $stats,
+			'skipped'      => $skipped,
 		);
 	}
 
@@ -1171,5 +1172,39 @@ final class PhpcsScanGitGuardsTest extends TestCase {
 		$result                      = $this->scan( array( 42 ), $options );
 		$this->assertSame( array( 42 => 'clean' === $mutation ), $result['completion'] );
 		$this->assertSame( array(), $result['issues'][42] );
+	}
+	/**
+	 * Suppression and in-file rule overrides cannot prove a complete clean scan.
+	 *
+	 * @return array Source annotations.
+	 */
+	public static function rebaseSuppressionControls(): array {
+		return array( array( 'phpcs:ignoreFile', true ), array( 'phpcs:disable Fixture.Test', false ), array( 'phpcs:ignore Fixture.Test', false ), array( '@codingStandardsIgnoreLine', false ), array( 'phpcs:set Fixture.Test value 0', false ) );
+	}
+
+	/**
+	 * Keep normal PHPCS behavior while refusing unsupported rebase evidence.
+	 *
+	 * @param string $control Source annotation.
+	 * @param bool   $omitted Whether the report omits the file entirely.
+	 */
+	#[DataProvider( 'rebaseSuppressionControls' )]
+	public function testSuppressedSourceCannotQualifyForRebaseApproval( string $control, bool $omitted ): void {
+		$this->base = $this->commit( array() );
+		$this->head = $this->commit( array( 'file.php' => "<?php\n// $control\n" . ( $omitted ? '// fixture-zero-file' : '// clean' ) ) );
+		$result     = $this->scan();
+		$this->assertSame( array(), $result['issues'][42] );
+		$this->assertTrue( $result['completion'][42] );
+		$this->assertFalse( $result['rebase-clear'][42] );
+	}
+
+	/** Unchanged-line findings must not disappear from rebase approval evidence. */
+	public function testDiscardedFindingsStillPreventRebaseApproval(): void {
+		$this->base = $this->commit( array( 'file.php' => "<?php\n// fixture-warning\n" ) );
+		$this->head = $this->commit( array( 'file.php' => "<?php\n// fixture-warning\n// new clean line\n" ) );
+		$result     = $this->scan();
+		$this->assertSame( array(), $result['issues'][42] );
+		$this->assertTrue( $result['completion'][42] );
+		$this->assertFalse( $result['rebase-clear'][42] );
 	}
 }

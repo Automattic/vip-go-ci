@@ -150,6 +150,7 @@ final class PhpcsScanSingleFileTest extends TestCase {
 		vipgoci_unittests_output_unsuppress();
 
 		$expected_results = array(
+			'has_suppressions'       => false,
 			'file_issues_arr_master' => array(
 				'totals' => array(
 					'errors'   => 3,

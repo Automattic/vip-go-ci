@@ -511,6 +511,9 @@ After the rebase, the scanner requires all of the following:
   outstanding change requests, prevent carry-forward. A compensating scanner
   rollback can be retried only when its timeline actor is the scanner account
   and its dismissal marker matches the carried review, head and human approval.
+  A manually revoked carried approval blocks all older saved baselines. Reusing
+  the feature requires a new human approval provably submitted after revocation;
+  missing or same-second timing evidence is treated as ambiguous.
 - The PR is open, non-draft, still targets the saved repository and base branch,
   and has never been retargeted. Its base tip advances from the saved trusted tip,
   and the current head includes that new tip.
@@ -529,11 +532,16 @@ After the rebase, the scanner requires all of the following:
   committed scan input. Blob reads return stored symlink target text rather than
   following checkout links; callers can still reject committed symlinks.
   WPScan metadata inspection uses the checkout, so enabled WPScan checks require
-  its add-on paths to have no tracked, untracked or ignored changes.
+  its add-on paths to have no tracked, untracked or ignored changes. Raw metadata
+  bytes must match committed blob IDs even when Git index flags or clean filters
+  hide a change. Symlinks and submodules in those roots cannot supply this proof.
 - Every enabled scanner has explicit successful completion evidence for this
   PR and scanned commit. Failed commands, malformed output, missing reports and
   a `skip-phpcs-scan` label prevent both baseline capture and carry-forward.
-  Disabled scanners require no completion evidence.
+  Disabled scanners require no completion evidence. PHPCS/SVG also require no
+  raw findings in the affected files before line/commit attribution filters,
+  and no PHPCS suppression or inline-rule override annotations. These stricter
+  rebase eligibility checks do not change ordinary scan reporting.
 - The original scan has no issues, nonzero statistics, or skipped files. The
   feature never removes findings. Normal approval decisions preserve scan exit
   status; an unconfirmed rollback is an operational error that fails the run.
@@ -548,11 +556,11 @@ incomplete API responses all cause the feature to decline approval.
 The scanner rechecks the head, base and review evidence before approving, pins the
 review to the scanned head, then checks the PR again and dismisses its new review
 if the head/base moved during submission. A fresh read must confirm each created
-review is dismissed. Failed or inconclusive compensation, including an unknown
-review ID after an uncertain POST and unavailable recovery data, stops the run
-with an operational error; inspect GitHub and reconcile any active approval
-before retrying. GitHub has no atomic head-and-base
-precondition for submitting reviews; required current-head checks remain important.
+review is dismissed. Success also requires a fresh matching `APPROVED` review,
+not just an ID returned by POST. Failed or inconclusive compensation, including
+an unknown review ID after an uncertain POST (even with an unchanged review
+list), stops the run with an operational error; inspect GitHub and reconcile any active approval
+before retrying. GitHub has no atomic head-and-base precondition for submitting reviews; required current-head checks remain important.
 If GitHub already dismissed the human review on an earlier rebase, this first
 version requires a new human approval/baseline before another carry-forward.
 

@@ -720,4 +720,127 @@ final class RebaseApprovalProcessTest extends TestCase {
 		$this->expectExceptionMessage( 'submitted review ID is unknown' );
 		$this->runProcess();
 	}
+	/**
+	 * Older alternative approvals must not bypass a manual carried-review revoke.
+	 *
+	 * @return array Candidate approval time and expected authorization.
+	 */
+	public static function alternateBaselineTimes(): array {
+		return array( array( '2026-11-11T11:00:00Z', false ), array( '2026-11-11T12:00:00Z', false ), array( null, false ), array( 'invalid', false ), array( '2026-11-11T12:01:00Z', true ) );
+	}
+
+	/**
+	 * Only a provably later human approval can renew authorization after revocation.
+	 *
+	 * @param string|null $submitted_at Candidate human approval time.
+	 * @param bool        $allowed Whether this is a new authorization.
+	 */
+	#[DataProvider( 'alternateBaselineTimes' )]
+	public function testAlternateBaselineCannotBypassManualRevocation( ?string $submitted_at, bool $allowed ): void {
+		$this->options['autoapprove-rebases-reviewer-ids'][] = '43';
+		$baseline             = $this->baseline;
+		$baseline['review']   = 203;
+		$baseline['reviewer'] = 43;
+		$this->reviews[]      = array(
+			'id'        => 105,
+			'user'      => array( 'id' => 999 ),
+			'state'     => 'DISMISSED',
+			'commit_id' => $this->fixture['head'],
+			'body'      => 'Auto-approved conflict-free rebase of human review #101; exact integrated tree verified.',
+		);
+		$this->reviews[]      = array(
+			'id'           => 203,
+			'user'         => array(
+				'id'   => 43,
+				'type' => 'User',
+			),
+			'state'        => 'APPROVED',
+			'commit_id'    => $this->fixture['reviewed'],
+			'body'         => 'Approved',
+			'submitted_at' => $submitted_at,
+		);
+		$this->reviews[]      = array(
+			'id'        => 204,
+			'user'      => array( 'id' => 999 ),
+			'state'     => 'COMMENTED',
+			'commit_id' => $this->fixture['reviewed'],
+			'body'      => 'vip-go-ci rebase baseline v1: ' . json_encode( $baseline ),
+		);
+		$this->events[]       = array(
+			'event'            => 'review_dismissed',
+			'actor'            => array( 'id' => 42 ),
+			'created_at'       => '2026-11-11T12:00:00Z',
+			'dismissed_review' => array(
+				'review_id'         => 105,
+				'state'             => 'approved',
+				'dismissal_message' => 'Revoked',
+			),
+		);
+		$this->responses();
+		$this->assertSame( $allowed ? array( 7 ) : array(), $this->runProcess() );
+		$this->assertCount( $allowed ? 1 : 0, $GLOBALS['rebase_posts'] );
+	}
+
+	/** A complete but stale list cannot reconcile an inconclusive POST. */
+	public function testUnknownCreatedReviewCannotHideBehindUnchangedReviewList(): void {
+		$this->responses();
+		$reviews                         = $this->reviews;
+		$events                          = $this->events;
+		$GLOBALS['rebase_post_response'] = '';
+		$GLOBALS['rebase_responses'][ $this->root . 'pulls/7/reviews?per_page=100&page=1' ]   = static fn() => $reviews;
+		$GLOBALS['rebase_responses'][ $this->root . 'issues/7/timeline?per_page=100&page=1' ] = static fn() => $events;
+		$this->expectException( \RuntimeException::class );
+		$this->expectExceptionMessage( 'submitted review ID is unknown' );
+		try {
+			$this->runProcess();
+		} finally {
+			$this->assertSame( 'APPROVED', $GLOBALS['rebase_created_reviews'][900]['state'] );
+		}
+	}
+
+	/**
+	 * POST identity is insufficient without fresh matching approval evidence.
+	 *
+	 * @return array Mismatched server fields.
+	 */
+	public static function unconfirmedApprovalFields(): array {
+		return array( array( 'state' ), array( 'body' ), array( 'commit_id' ), array( 'author' ), array( 'absent' ) );
+	}
+
+	/**
+	 * Bad or missing fresh review metadata must cause compensation.
+	 *
+	 * @param string $field Field changed in the fresh read.
+	 */
+	#[DataProvider( 'unconfirmedApprovalFields' )]
+	public function testPostedIdDoesNotSubstituteForConfirmedApproval( string $field ): void {
+		$this->responses();
+		$reviews = $this->reviews;
+		$GLOBALS['rebase_responses'][ $this->root . 'pulls/7/reviews?per_page=100&page=1' ] = static function () use ( $reviews, $field ): array {
+			if ( empty( $GLOBALS['rebase_posts'] ) || 'absent' === $field ) {
+				return $reviews;
+			}
+			$review = $GLOBALS['rebase_created_reviews'][900];
+			if ( 'state' === $field ) {
+				$review['state'] = 'COMMENTED';
+			} elseif ( 'body' === $field ) {
+				$review['body'] = 'different';
+			} elseif ( 'commit_id' === $field ) {
+				$review['commit_id'] = str_repeat( 'a', 40 );
+			} else {
+				$review['user']['id'] = 42;
+			}
+			return array_merge( $reviews, array( $review ) );
+		};
+		$this->assertSame( array(), $this->runProcess() );
+		$this->assertCount( 1, $GLOBALS['rebase_puts'] );
+		$this->assertSame( 'DISMISSED', $GLOBALS['rebase_created_reviews'][900]['state'] );
+	}
+	/** Missing, malformed and ambiguous timestamp forms cannot renew authorization. */
+	public function testRevocationTimestampParsingRejectsMalformedEvidence(): void {
+		foreach ( array( null, 'invalid', '2026-13-99T99:99:99Z', "2026-11-11T12:01:0\0Z", '2026-11-11T12:01:00+00:00' ) as $value ) {
+			$this->assertNull( vipgoci_rebase_timestamp( $value ) );
+		}
+		$this->assertNotNull( vipgoci_rebase_timestamp( '2026-11-11T12:01:00Z' ) );
+	}
 }

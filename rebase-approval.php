@@ -304,6 +304,10 @@ function vipgoci_rebase_scan_clear( array $results, int $pr, array $options ): b
 			return false;
 		}
 	}
+	if ( ( ( $options['phpcs'] ?? false ) || ( $options['svg-checks'] ?? false ) ) &&
+		true !== ( $results['rebase-clear']['phpcs'][ $pr ] ?? null ) ) {
+		return false;
+	}
 	if ( ! isset( $results['issues'][ $pr ] ) || array() !== $results['issues'][ $pr ] || 0 !== ( $results[ VIPGOCI_SKIPPED_FILES ][ $pr ]['total'] ?? null ) ) {
 		return false;
 	}
@@ -351,6 +355,20 @@ function vipgoci_rebase_rollback_message( int $review_id, string $head, int $hum
 }
 
 /**
+ * Parse an unambiguous UTC GitHub event timestamp.
+ *
+ * @param mixed $value API timestamp.
+ * @return int|null Epoch seconds, or null for absent or malformed evidence.
+ */
+function vipgoci_rebase_timestamp( mixed $value ): ?int {
+	if ( ! is_string( $value ) || 1 !== preg_match( '/\A[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z\z/', $value ) ) {
+		return null;
+	}
+	$time = DateTimeImmutable::createFromFormat( '!Y-m-d\TH:i:s\Z', $value, new DateTimeZone( 'UTC' ) );
+	return false !== $time && $time->format( 'Y-m-d\TH:i:s\Z' ) === $value ? $time->getTimestamp() : null;
+}
+
+/**
  * Do not reverse a maintainer's dismissal of an approval carried by this bot.
  *
  * @param array $reviews  Complete reviews.
@@ -360,11 +378,16 @@ function vipgoci_rebase_rollback_message( int $review_id, string $head, int $hum
  * @return bool Whether an earlier carried approval was manually revoked.
  */
 function vipgoci_rebase_approval_revoked( array $reviews, array $events, array $baseline, int $bot_id ): bool {
-	$prefix = 'Auto-approved conflict-free rebase of human review #' . $baseline['review'] . ';';
+	$candidate_time = null;
+	foreach ( $reviews as $candidate ) {
+		if ( $baseline['review'] === ( $candidate->id ?? null ) ) {
+			$candidate_time = vipgoci_rebase_timestamp( $candidate->submitted_at ?? null );
+		}
+	}
 	foreach ( $reviews as $review ) {
 		if (
 			$bot_id !== ( $review->user->id ?? null ) || 'DISMISSED' !== ( $review->state ?? null ) ||
-			! str_starts_with( $review->body ?? '', $prefix )
+			1 !== preg_match( '/\AAuto-approved conflict-free rebase of human review #([1-9][0-9]*);/', $review->body ?? '', $origin )
 		) {
 			continue;
 		}
@@ -377,9 +400,15 @@ function vipgoci_rebase_approval_revoked( array $reviews, array $events, array $
 			$bot_id === ( $dismissal->actor->id ?? null ) &&
 			'approved' === ( $dismissal->dismissed_review->state ?? null ) &&
 			vipgoci_rebase_sha( $review->commit_id ?? null ) &&
-			vipgoci_rebase_rollback_message( $review->id, $review->commit_id, $baseline['review'] ) === ( $dismissal->dismissed_review->dismissal_message ?? null );
-		if ( ! $rollback && ! vipgoci_rebase_sha( $dismissal->dismissed_review->dismissal_commit_id ?? null ) ) {
-			return true;
+			vipgoci_rebase_rollback_message( $review->id, $review->commit_id, (int) $origin[1] ) === ( $dismissal->dismissed_review->dismissal_message ?? null );
+		$automatic = 'review_dismissed' === ( $dismissal->event ?? null ) &&
+			'approved' === ( $dismissal->dismissed_review->state ?? null ) &&
+			vipgoci_rebase_sha( $dismissal->dismissed_review->dismissal_commit_id ?? null );
+		if ( ! $rollback && ! $automatic ) {
+			$dismissed_at = vipgoci_rebase_timestamp( $dismissal->created_at ?? null );
+			if ( $baseline['review'] === (int) $origin[1] || null === $candidate_time || null === $dismissed_at || $candidate_time <= $dismissed_at ) {
+				return true;
+			}
 		}
 	}
 	return false;
@@ -423,7 +452,15 @@ function vipgoci_rebase_approval_verify( array $options, array $baseline, object
 			$created[] = $review->id;
 		}
 	}
-	$created = array_unique( $created );
+	$created   = array_unique( $created );
+	$confirmed = false;
+	foreach ( $after_reviews ?? array() as $review ) {
+		if ( in_array( $review->id ?? null, $created, true ) && $bot_id === ( $review->user->id ?? null ) &&
+			'APPROVED' === ( $review->state ?? null ) && $payload['commit_id'] === ( $review->commit_id ?? null ) &&
+			$payload['body'] === ( $review->body ?? null ) ) {
+			$confirmed = true;
+		}
+	}
 	if ( null !== $after_reviews ) {
 		$after_reviews = array_values( array_filter( $after_reviews, static fn( object $review ): bool => ! in_array( $review->id ?? null, $created, true ) ) );
 	}
@@ -431,7 +468,7 @@ function vipgoci_rebase_approval_verify( array $options, array $baseline, object
 		$after_events = array_values( array_filter( $after_events, static fn( object $event ): bool => 'reviewed' !== ( $event->event ?? null ) || ! in_array( $event->id ?? null, $created, true ) ) );
 	}
 	if (
-		! vipgoci_rebase_pr_matches( $after, $options, $baseline ) || $after->base->sha !== $pr->base->sha ||
+		! $confirmed || ! vipgoci_rebase_pr_matches( $after, $options, $baseline ) || $after->base->sha !== $pr->base->sha ||
 		json_encode( $after_reviews ) !== json_encode( $reviews ) || json_encode( $after_events ) !== json_encode( $events )
 	) {
 		$unconfirmed = array();
@@ -453,9 +490,9 @@ function vipgoci_rebase_approval_verify( array $options, array $baseline, object
 				);
 			}
 		}
-		// No review ID can be recovered when both POST and the review read fail.
-		// An approval might still exist, so an ordinary clean scan is not enough.
-		if ( ! empty( $unconfirmed ) || ( empty( $created ) && null === $posted && null === $after_reviews ) ) {
+		// An inconclusive POST may have created an approval even when a fresh list
+		// has not exposed its ID. Never finish clean without reconciling that write.
+		if ( ! empty( $unconfirmed ) || empty( $created ) ) {
 			// phpcs:disable WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Plain-text CLI error with integer GitHub IDs.
 			throw new RuntimeException(
 				'Rebase approval rollback is unconfirmed for PR #' . $number .
@@ -466,10 +503,7 @@ function vipgoci_rebase_approval_verify( array $options, array $baseline, object
 		}
 		return false;
 	}
-	if ( empty( $created ) ) {
-		vipgoci_log( 'Rebase approval submission could not be confirmed; inspect GitHub before retrying', array( 'pr_number' => $number ) );
-	}
-	return ! empty( $created );
+	return true;
 }
 
 /**

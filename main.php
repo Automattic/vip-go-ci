@@ -2946,7 +2946,8 @@ function vipgoci_run_scan(
 			$results['issues'],
 			$results['stats'][ VIPGOCI_STATS_PHPCS ],
 			$results[ VIPGOCI_SKIPPED_FILES ],
-			$results['scan-completion']['phpcs']
+			$results['scan-completion']['phpcs'],
+			$results['rebase-clear']['phpcs']
 		);
 		if ( true === $options['svg-checks'] ) {
 			// SVG is executed and reported by the same per-PR PHPCS pipeline.

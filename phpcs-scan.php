@@ -435,6 +435,7 @@ function vipgoci_phpcs_prepare_file(
 		'validation'         => $validation ?? array(),
 		'requires_isolation' => $requires_isolation,
 		'may_be_ignored'     => $may_be_ignored,
+		'has_suppressions'   => 1 === preg_match( '/(?:phpcs\s*:\s*(?:ignore(?:file|line)?|disable|set)\b|@codingStandards(?:Ignore|ChangeSetting))/i', $file_contents ),
 	);
 }
 
@@ -590,6 +591,7 @@ function vipgoci_phpcs_scan_prepared_file( array $options, string $file_name, ar
 		'file_issues_str'        => $file_issues_str,
 		'temp_file_name'         => $temp_file_name,
 		'validation'             => $prepared['validation'],
+		'has_suppressions'       => $prepared['has_suppressions'],
 	);
 }
 
@@ -650,6 +652,7 @@ function vipgoci_phpcs_scan_batch( array $options, array $file_names ): array {
 					'file_issues_str'        => json_encode( $report ),
 					'temp_file_name'         => $file['temp_file_name'],
 					'validation'             => $file['validation'],
+					'has_suppressions'       => $file['has_suppressions'],
 				);
 			}
 			vipgoci_log(
@@ -712,6 +715,7 @@ function vipgoci_phpcs_scan_files( array $options, array $file_names ): Generato
  * @param array      $commit_issues_stats  Result statistics, focussed on PHP linting (reference).
  * @param array      $commit_skipped_files Information about skipped files (reference).
  * @param array|null $scan_completion      Per-PR completion evidence (reference).
+ * @param array|null $rebase_clear Per-PR absence of raw findings and suppression controls (reference).
  *
  * @return void
  */
@@ -720,7 +724,8 @@ function vipgoci_phpcs_scan_commit(
 	array &$commit_issues_submit,
 	array &$commit_issues_stats,
 	array &$commit_skipped_files,
-	?array &$scan_completion = null
+	?array &$scan_completion = null,
+	?array &$rebase_clear = null
 ): void {
 	$repo_owner   = $options['repo-owner'];
 	$repo_name    = $options['repo-name'];
@@ -760,6 +765,7 @@ function vipgoci_phpcs_scan_commit(
 	);
 	foreach ( $prs_implicated as $pr_item ) {
 		$scan_completion[ $pr_item->number ] = false;
+		$rebase_clear[ $pr_item->number ]    = false;
 	}
 
 	/*
@@ -806,6 +812,7 @@ function vipgoci_phpcs_scan_commit(
 
 	$files_issues_arr = array();
 	$file_completion  = array_fill_keys( $pr_item_files_changed['all'], false );
+	$file_clear       = $file_completion;
 	$scan_summary     = array(
 		'files_considered' => count( $pr_item_files_changed['all'] ),
 		'files_scanned'    => 0,
@@ -1031,6 +1038,7 @@ function vipgoci_phpcs_scan_commit(
 			$file_issues_arr_master
 		);
 
+		$file_clear[ $file_name ]       = empty( $file_issues_arr_master ) && empty( $tmp_scanning_results['has_suppressions'] );
 		$files_issues_arr[ $file_name ] = $file_issues_arr_master;
 		$file_completion[ $file_name ]  = true;
 		++$scan_summary['files_scanned'];
@@ -1291,6 +1299,12 @@ function vipgoci_phpcs_scan_commit(
 			}
 		}
 		$scan_completion[ $pr_item->number ] = $complete;
+		$rebase_clear[ $pr_item->number ]    = $complete;
+		foreach ( $pr_item_files_changed[ $pr_item->number ] ?? array() as $file_name ) {
+			if ( true !== ( $file_clear[ $file_name ] ?? false ) ) {
+				$rebase_clear[ $pr_item->number ] = false;
+			}
+		}
 	}
 
 	vipgoci_log(

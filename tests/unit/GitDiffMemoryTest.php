@@ -509,4 +509,36 @@ SH;
 		$this->assertTrue( vipgoci_gitrepo_checkout_matches_commit( $this->repo, $head, $paths ) );
 		$this->assertFalse( vipgoci_gitrepo_checkout_matches_commit( $this->repo, str_repeat( 'a', 40 ), $paths ) );
 	}
+	/** Index flags cannot make changed metadata qualify as committed evidence. */
+	public function testMetadataGuardDetectsChangesHiddenByIndexFlags(): void {
+		$this->write( 'plugins/a/main.php', "<?php\n// version1\n" );
+		$head = $this->commit();
+		foreach ( array( 'assume-unchanged', 'skip-worktree' ) as $flag ) {
+			$this->git( 'update-index --' . $flag . ' plugins/a/main.php' );
+			$this->write( 'plugins/a/main.php', "<?php\n// version9\n" );
+			$this->assertSame( '', $this->git( 'status --porcelain' ) );
+			$this->assertFalse( vipgoci_gitrepo_checkout_matches_commit( $this->repo, $head, array( 'plugins' ) ) );
+			$this->write( 'plugins/a/main.php', "<?php\n// version1\n" );
+			$this->git( 'update-index --no-' . $flag . ' plugins/a/main.php' );
+		}
+	}
+
+	/** Clean filters may hide changes from status, but not from raw blob comparison. */
+	public function testMetadataGuardDetectsChangesHiddenByCleanFilter(): void {
+		$this->write( '.gitattributes', "plugins/a/main.php filter=version\n" );
+		$this->git( 'config filter.version.clean ' . escapeshellarg( 'sed s/version9/version1/g' ) );
+		$this->write( 'plugins/a/main.php', "<?php\n// version1\n" );
+		$head = $this->commit();
+		$this->write( 'plugins/a/main.php', "<?php\n// version9\n" );
+		$this->assertSame( '', $this->git( 'status --porcelain' ) );
+		$this->assertFalse( vipgoci_gitrepo_checkout_matches_commit( $this->repo, $head, array( 'plugins' ) ) );
+	}
+
+	/** Checkout traversal must not approve metadata reached through committed links. */
+	public function testMetadataGuardRejectsCommittedSymlinks(): void {
+		$this->write( 'plugins/a/main.php', "<?php\n" );
+		symlink( 'a', $this->repo . '/plugins/alias' );
+		$head = $this->commit();
+		$this->assertFalse( vipgoci_gitrepo_checkout_matches_commit( $this->repo, $head, array( 'plugins' ), array( 'php' ) ) );
+	}
 }
