@@ -411,4 +411,134 @@ SH;
 			$this->assertSame( 1000000, $result['changes'] );
 		}
 	}
+	/** Committed discovery must preserve unusual paths and ignore checkout state. */
+	public function testCommittedTreeDiscoveryIgnoresDirtyIndexAndUntrackedFiles(): void {
+		$paths = array( 'dir/deleted.php', "space and\ttab.php", "line\nbreak.php" );
+		foreach ( $paths as $path ) {
+			$this->write( $path, "<?php\n" );
+		}
+		$this->write( 'README.md', 'text' );
+		$head = $this->commit();
+		unlink( $this->repo . '/dir/deleted.php' );
+		$this->write( 'untracked.php', "<?php\nfunction (\n" );
+		$this->write( 'staged.php', "<?php\n" );
+		$this->git( 'add staged.php' );
+		$options = array(
+			'repo-owner'     => 'fixture',
+			'repo-name'      => 'fixture',
+			'token'          => 'unused',
+			'local-git-repo' => $this->repo,
+		);
+		$before  = $this->git( 'status --porcelain' );
+		$filter  = array(
+			'file_extensions' => array( 'php' ),
+			'skip_folders'    => array(),
+		);
+		$files   = vipgoci_gitrepo_fetch_tree( $options, $head, $filter, $complete );
+		$this->assertTrue( $complete );
+		$this->assertEqualsCanonicalizing( $paths, $files );
+		$this->assertSame( $files, vipgoci_gitrepo_fetch_tree( $options, $head, $filter, $cached_complete ) );
+		$this->assertTrue( $cached_complete );
+		$this->assertSame( $before, $this->git( 'status --porcelain' ) );
+	}
+
+	/** A failed tree command must not cache a successful empty discovery. */
+	public function testFailedTreeCommandCanRecoverOnTheNextCall(): void {
+		$this->write( 'tracked.php', "<?php\n" );
+		$head    = $this->commit();
+		$options = array(
+			'repo-owner'     => 'fixture',
+			'repo-name'      => 'fixture',
+			'token'          => 'unused',
+			'local-git-repo' => $this->repo,
+		);
+		$path    = getenv( 'PATH' );
+		$git     = trim( (string) shell_exec( 'command -v git' ) );
+		mkdir( $this->repo . '/bin' );
+		file_put_contents( $this->repo . '/bin/git', "#!/bin/sh\ncase \"\$*\" in *ls-tree*) exit 1;; esac\nexec " . escapeshellarg( $git ) . ' "$@"' . "\n" );
+		chmod( $this->repo . '/bin/git', 0700 );
+		try {
+			putenv( 'PATH=' . $this->repo . '/bin:' . $path );
+			$this->assertSame( array(), vipgoci_gitrepo_fetch_tree( $options, $head, null, $complete ) );
+			$this->assertFalse( $complete );
+		} finally {
+			false === $path ? putenv( 'PATH' ) : putenv( 'PATH=' . $path );
+		}
+		$this->assertSame( array( 'tracked.php' ), vipgoci_gitrepo_fetch_tree( $options, $head, null, $complete ) );
+		$this->assertTrue( $complete );
+	}
+
+	/** Blob reads preserve exact bytes and apply symlink rejection to Git metadata. */
+	public function testCommittedBlobReadsIgnoreCheckoutAndPreserveBytes(): void {
+		$bytes = "  binary\0bytes\n\n";
+		$path  = "space\tand\nnewline.php";
+		$this->write( $path, $bytes );
+		symlink( $path, $this->repo . '/link.php' );
+		$head = $this->commit();
+		unlink( $this->repo . '/' . $path );
+		symlink( 'untracked.txt', $this->repo . '/' . $path );
+		$this->write( 'untracked.txt', 'checkout data' );
+		unlink( $this->repo . '/link.php' );
+		$this->write( 'link.php', 'replaced checkout link' );
+		$this->assertSame( $bytes, vipgoci_gitrepo_fetch_committed_file( 'fixture', 'fixture', 'unused', $head, $path, $this->repo ) );
+		$this->assertSame( $bytes, vipgoci_gitrepo_fetch_committed_file( 'fixture', 'fixture', 'unused', $head, '/' . $path, $this->repo ) );
+		$this->assertSame( $bytes, vipgoci_gitrepo_fetch_committed_file( 'fixture', 'fixture', 'unused', $head, $path, $this->repo, true ) );
+		$this->assertSame( $path, vipgoci_gitrepo_fetch_committed_file( 'fixture', 'fixture', 'unused', $head, 'link.php', $this->repo ) );
+		$this->assertFalse( vipgoci_gitrepo_fetch_committed_file( 'fixture', 'fixture', 'unused', $head, 'link.php', $this->repo, true ) );
+		$this->assertFalse( vipgoci_gitrepo_fetch_committed_file( 'fixture', 'fixture', 'unused', $head, 'untracked.txt', $this->repo ) );
+	}
+
+	/** Checkout-dependent WPScan metadata must not qualify from modified add-ons. */
+	public function testCheckoutMetadataGuardRejectsChangedAndExtraAddonFiles(): void {
+		$this->write( 'plugins/a/main.php', "<?php\n" );
+		$this->write( '.gitignore', "plugins/*.tmp\n" );
+		$head  = $this->commit();
+		$paths = array( 'plugins' );
+		$this->assertTrue( vipgoci_gitrepo_checkout_matches_commit( $this->repo, $head, $paths ) );
+		$this->write( 'unrelated.txt', 'outside inspected roots' );
+		$this->assertTrue( vipgoci_gitrepo_checkout_matches_commit( $this->repo, $head, $paths ) );
+		$this->write( 'plugins/a/main.php', "<?php\n// local change\n" );
+		$this->assertFalse( vipgoci_gitrepo_checkout_matches_commit( $this->repo, $head, $paths ) );
+		$this->write( 'plugins/a/main.php', "<?php\n" );
+		$this->write( 'plugins/a/extra.php', 'untracked' );
+		$this->assertFalse( vipgoci_gitrepo_checkout_matches_commit( $this->repo, $head, $paths ) );
+		unlink( $this->repo . '/plugins/a/extra.php' );
+		$this->write( 'plugins/extra.tmp', 'ignored' );
+		$this->assertFalse( vipgoci_gitrepo_checkout_matches_commit( $this->repo, $head, $paths ) );
+		unlink( $this->repo . '/plugins/extra.tmp' );
+		$this->assertTrue( vipgoci_gitrepo_checkout_matches_commit( $this->repo, $head, $paths ) );
+		$this->assertFalse( vipgoci_gitrepo_checkout_matches_commit( $this->repo, str_repeat( 'a', 40 ), $paths ) );
+	}
+	/** Index flags cannot make changed metadata qualify as committed evidence. */
+	public function testMetadataGuardDetectsChangesHiddenByIndexFlags(): void {
+		$this->write( 'plugins/a/main.php', "<?php\n// version1\n" );
+		$head = $this->commit();
+		foreach ( array( 'assume-unchanged', 'skip-worktree' ) as $flag ) {
+			$this->git( 'update-index --' . $flag . ' plugins/a/main.php' );
+			$this->write( 'plugins/a/main.php', "<?php\n// version9\n" );
+			$this->assertSame( '', $this->git( 'status --porcelain' ) );
+			$this->assertFalse( vipgoci_gitrepo_checkout_matches_commit( $this->repo, $head, array( 'plugins' ) ) );
+			$this->write( 'plugins/a/main.php', "<?php\n// version1\n" );
+			$this->git( 'update-index --no-' . $flag . ' plugins/a/main.php' );
+		}
+	}
+
+	/** Clean filters may hide changes from status, but not from raw blob comparison. */
+	public function testMetadataGuardDetectsChangesHiddenByCleanFilter(): void {
+		$this->write( '.gitattributes', "plugins/a/main.php filter=version\n" );
+		$this->git( 'config filter.version.clean ' . escapeshellarg( 'sed s/version9/version1/g' ) );
+		$this->write( 'plugins/a/main.php', "<?php\n// version1\n" );
+		$head = $this->commit();
+		$this->write( 'plugins/a/main.php', "<?php\n// version9\n" );
+		$this->assertSame( '', $this->git( 'status --porcelain' ) );
+		$this->assertFalse( vipgoci_gitrepo_checkout_matches_commit( $this->repo, $head, array( 'plugins' ) ) );
+	}
+
+	/** Checkout traversal must not approve metadata reached through committed links. */
+	public function testMetadataGuardRejectsCommittedSymlinks(): void {
+		$this->write( 'plugins/a/main.php', "<?php\n" );
+		symlink( 'a', $this->repo . '/plugins/alias' );
+		$head = $this->commit();
+		$this->assertFalse( vipgoci_gitrepo_checkout_matches_commit( $this->repo, $head, array( 'plugins' ), array( 'php' ) ) );
+	}
 }

@@ -358,13 +358,17 @@ function vipgoci_gitrepo_branch_current_get(
  * @param string     $commit_id Commit-ID of current commit.
  * @param null|array $filter    Filter to apply.
  *
+ * @param bool|null  $discovery_complete Whether the complete tree was read (reference).
+ *
  * @return array Array with files in repository as items.
  */
 function vipgoci_gitrepo_fetch_tree(
 	array $options,
 	string $commit_id,
-	null|array $filter = null
-) :array {
+	null|array $filter = null,
+	?bool &$discovery_complete = null
+): array {
+	$discovery_complete = false;
 	// Check for cached version.
 	$cached_id = array(
 		__FUNCTION__,
@@ -388,6 +392,7 @@ function vipgoci_gitrepo_fetch_tree(
 	);
 
 	if ( false !== $cached_data ) {
+		$discovery_complete = true;
 		return $cached_data;
 	}
 
@@ -396,22 +401,135 @@ function vipgoci_gitrepo_fetch_tree(
 		$options['local-git-repo']
 	);
 
-	// Actually get files.
-	$files_arr = vipgoci_scandir_git_repo(
-		$options['local-git-repo'],
-		true,
-		$filter
+	// Enumerate the committed tree, independently of dirty or sparse checkouts.
+	$output    = '';
+	$code      = -255;
+	$listing   = vipgoci_runtime_measure_exec_with_retry(
+		'git -C ' . escapeshellarg( $options['local-git-repo'] ) . ' ls-tree -r -z --full-tree ' . escapeshellarg( $commit_id ) . ' --',
+		array( 0 ),
+		$output,
+		$code,
+		'git_cli',
+		true
 	);
+	$files_arr = array();
+	if ( null === $listing || ( '' !== $listing && ! str_ends_with( $listing, "\0" ) ) ) {
+		return $files_arr;
+	}
+	foreach ( '' === $listing ? array() : explode( "\0", substr( $listing, 0, -1 ) ) as $entry ) {
+		$parts = explode( "\t", $entry, 2 );
+		if ( count( $parts ) !== 2 || ! preg_match( '/\A[0-7]{6} (blob|commit) [0-9a-f]{40}\z/', $parts[0], $metadata ) ) {
+			return array();
+		}
+		// A submodule is a commit entry, not a file in this repository's tree.
+		if ( 'blob' === $metadata[1] && ( null === $filter || vipgoci_filter_file_path( $parts[1], $filter ) ) ) {
+			$files_arr[] = $parts[1];
+		}
+	}
+	$discovery_complete = true;
 
 	/*
 	 * Cache the results and return
 	 */
-	vipgoci_cache(
-		$cached_id,
-		$files_arr
-	);
+	if ( $discovery_complete ) {
+		vipgoci_cache( $cached_id, $files_arr );
+	}
 
 	return $files_arr;
+}
+
+/**
+ * Confirm checkout-based add-on inspection matches the requested commit.
+ *
+ * WPScan metadata discovery reads files directly. Its inspected paths must have
+ * no tracked, untracked or ignored changes, and HEAD must remain the scanned ID.
+ *
+ * @param string     $repository Local repository.
+ * @param string     $commit Scanned commit.
+ * @param array      $paths Add-on roots inspected by WPScan.
+ * @param array|null $extensions Metadata file extensions, or null to check every blob.
+ * @return bool Whether checkout metadata is safe to use as completion evidence.
+ */
+function vipgoci_gitrepo_checkout_matches_commit( string $repository, string $commit, array $paths, ?array $extensions = null ): bool {
+	$output = '';
+	$code   = -255;
+	$status = vipgoci_runtime_measure_exec_with_retry(
+		'git --literal-pathspecs -c core.fsmonitor=false --no-optional-locks -C ' . escapeshellarg( $repository ) .
+			' status --porcelain=v2 --branch -z --untracked-files=all --ignored=matching --ignore-submodules=none -- ' .
+			implode( ' ', array_map( 'escapeshellarg', $paths ) ),
+		array( 0 ),
+		$output,
+		$code,
+		'git_cli',
+		true
+	);
+	if ( null === $status ) {
+		return false;
+	}
+	$matches = false;
+	foreach ( explode( "\0", $status ) as $record ) {
+		if ( '# branch.oid ' . $commit === $record ) {
+			$matches = true;
+		} elseif ( '' !== $record && ! str_starts_with( $record, '# ' ) ) {
+			return false;
+		}
+	}
+	if ( ! $matches ) {
+		return false;
+	}
+	// Status can hide raw changes via index flags or clean filters. Compare the
+	// metadata inputs to the committed blob IDs without using Git's stat cache.
+	$tree = vipgoci_runtime_measure_exec_with_retry(
+		'git --literal-pathspecs -C ' . escapeshellarg( $repository ) . ' ls-tree -r -z --full-tree ' . escapeshellarg( $commit ) . ' -- ' .
+			implode( ' ', array_map( 'escapeshellarg', $paths ) ),
+		array( 0 ),
+		$output,
+		$code,
+		'git_cli',
+		true
+	);
+	if ( null === $tree || ( '' !== $tree && ! str_ends_with( $tree, "\0" ) ) ) {
+		return false;
+	}
+	foreach ( '' === $tree ? array() : explode( "\0", substr( $tree, 0, -1 ) ) as $entry ) {
+		$parts = explode( "\t", $entry, 2 );
+		// Checkout traversal cannot attest to symlink or submodule contents.
+		if ( count( $parts ) !== 2 || ! preg_match( '/\A100(?:644|755) blob ([0-9a-f]{40})\z/', $parts[0], $metadata ) ) {
+			return false;
+		}
+		if ( null !== $extensions && ! in_array( vipgoci_file_extension_get( $parts[1] ), $extensions, true ) ) {
+			continue;
+		}
+		$file = $repository;
+		foreach ( explode( '/', $parts[1] ) as $component ) {
+			$file .= '/' . $component;
+			if ( is_link( $file ) ) {
+				return false;
+			}
+		}
+		if ( ! is_file( $file ) ) {
+			return false;
+		}
+		// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- A missing checkout file makes evidence incomplete.
+		$handle = @fopen( $file, 'rb' );
+		if ( false === $handle ) {
+			return false;
+		}
+		try {
+			$stat = fstat( $handle );
+			if ( false === $stat ) {
+				return false;
+			}
+			$hash = hash_init( 'sha1' );
+			hash_update( $hash, 'blob ' . $stat['size'] . "\0" );
+			if ( hash_update_stream( $hash, $handle ) !== $stat['size'] || hash_final( $hash ) !== $metadata[1] ) {
+				return false;
+			}
+		} finally {
+			fclose( $handle );
+		}
+	}
+	return true;
 }
 
 /**
@@ -427,7 +545,8 @@ function vipgoci_gitrepo_fetch_tree(
  * @param string $local_git_repo Path to local git repository.
  * @param bool   $reject_symlink Whether symbolic links should return false.
  *
- * @return false|string String with file contents on success, false on failure.
+ * @return false|string Raw committed blob contents on success, false on failure.
+ *                      Symlinks return their stored target text unless rejected.
  */
 function vipgoci_gitrepo_fetch_committed_file(
 	string $repo_owner,
@@ -443,6 +562,8 @@ function vipgoci_gitrepo_fetch_committed_file(
 		$local_git_repo
 	);
 
+	$file_name = ltrim( $file_name, '/' );
+
 	vipgoci_log(
 		'Fetching file-contents from local Git repository',
 		array(
@@ -456,38 +577,36 @@ function vipgoci_gitrepo_fetch_committed_file(
 		1
 	);
 
-	/*
-	 * If everything seems fine, return the file.
-	 */
+	// Read immutable blob bytes, not checkout files, filters or staged contents.
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'git_repo_fetch_file' );
-
-	$file_path = $local_git_repo . '/' . $file_name;
-
-	if (
-		( true === $reject_symlink ) &&
-		( is_link( $file_path ) )
-	) {
-		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'git_repo_fetch_file' );
-
-		vipgoci_log(
-			'Not fetching committed file because it is a symbolic link',
-			array(
-				'commit_id' => $commit_id,
-				'filename'  => $file_name,
-				'file_path' => $file_path,
-			)
+	try {
+		$output = '';
+		$code   = -255;
+		if ( $reject_symlink ) {
+			$entry = vipgoci_runtime_measure_exec_with_retry(
+				'git --literal-pathspecs -C ' . escapeshellarg( $local_git_repo ) . ' ls-tree -z --full-tree ' . escapeshellarg( $commit_id ) . ' -- ' . escapeshellarg( $file_name ),
+				array( 0 ),
+				$output,
+				$code,
+				'git_cli',
+				true
+			);
+			if ( null === $entry || ! preg_match( '/\A100(?:644|755) blob [0-9a-f]{40}\t/', $entry ) ) {
+				return false;
+			}
+		}
+		$contents = vipgoci_runtime_measure_exec_with_retry(
+			'git -C ' . escapeshellarg( $local_git_repo ) . ' cat-file blob ' . escapeshellarg( $commit_id . ':' . $file_name ) . ' 2>/dev/null',
+			array( 0 ),
+			$output,
+			$code,
+			'git_cli',
+			false
 		);
-
-		return false;
+		return $contents ?? false;
+	} finally {
+		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'git_repo_fetch_file' );
 	}
-
-	$file_contents_tmp = @file_get_contents( // phpcs:ignore WordPress.PHP.NoSilencedErrors
-		$file_path
-	);
-
-	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'git_repo_fetch_file' );
-
-	return $file_contents_tmp;
 }
 
 /**
@@ -526,9 +645,10 @@ function vipgoci_gitrepo_blame_for_file(
 	 */
 
 	$cmd = sprintf(
-		'%s -C %s blame --line-porcelain %s',
+		'%s -C %s blame --line-porcelain %s -- %s',
 		escapeshellcmd( 'git' ),
 		escapeshellarg( $local_git_repo ),
+		escapeshellarg( $commit_id ),
 		escapeshellarg( $file_name )
 	);
 
@@ -1817,6 +1937,7 @@ function vipgoci_gitrepo_diffs_clean_extra_whitespace(
  * @param bool       $permission_changes_also If to include files whose permissions were changed.
  * @param null|array $filter                  Filter to apply to results.
  * @param bool       $include_patches         Whether to load patches, rather than metadata only.
+ * @param bool|null  $discovery_complete Whether discovery succeeded, including an empty diff (reference).
  *
  * @return array Array with results. For example:
  *  array(
@@ -1850,8 +1971,10 @@ function vipgoci_git_diffs_fetch(
 	bool $removed_files_also = true,
 	bool $permission_changes_also = false,
 	null|array $filter = null,
-	bool $include_patches = true
+	bool $include_patches = true,
+	?bool &$discovery_complete = null
 ): array {
+	$discovery_complete = false;
 	/*
 	 * Check if we have a preference whether to
 	 * use local git repository or GitHub API.
@@ -1959,6 +2082,13 @@ function vipgoci_git_diffs_fetch(
 		'files_status' => array(),
 		'data_source'  => $diff_results_data_source,
 	);
+
+	if ( null === $diff_results || ! is_array( $diff_results['files'] ?? null ) ) {
+		return $results;
+	}
+	// GitHub compare returns at most 300 files; a response at that limit may be truncated.
+	// Preserve legacy results, but do not qualify them as complete scanner discovery.
+	$discovery_complete = VIPGOCI_GIT_DIFF_DATA_SOURCE_GITHUB_API !== $diff_results_data_source || count( $diff_results['files'] ) < 300;
 
 	foreach ( $diff_results['files'] as $file_item ) {
 		/*

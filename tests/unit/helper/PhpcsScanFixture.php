@@ -17,7 +17,7 @@ if ( false !== $log_path ) {
 	) ) . "\n", FILE_APPEND );
 }
 
-if ( count( $filenames ) > 1 && str_contains( $contents, 'fixture-batch-fatal' ) ) {
+if ( str_contains( $contents, 'fixture-fatal' ) || ( count( $filenames ) > 1 && str_contains( $contents, 'fixture-batch-fatal' ) ) ) {
 	fwrite( STDERR, 'Simulated PHPCS fatal error' );
 	exit( 255 );
 }
@@ -37,7 +37,7 @@ $report = array(
 );
 foreach ( $filenames as $filename ) {
 	$file_contents = file_get_contents( $filename );
-	if ( str_contains( $file_contents, 'fixture-empty-report' ) ) {
+	if ( str_contains( $file_contents, 'fixture-empty-report' ) || str_contains( $file_contents, 'fixture-zero-file' ) ) {
 		continue;
 	}
 	$messages    = array();
@@ -85,6 +85,26 @@ if ( count( $filenames ) > 1 ) {
 		++$report['totals']['errors'];
 	} elseif ( str_contains( $contents, 'fixture-batch-unknown-file' ) ) {
 		$report['files']['/unknown.php'] = $report['files'][ $filenames[0] ];
+	}
+}
+
+if ( str_contains( $contents, 'fixture-svg-' ) ) {
+	$filename = $filenames[0];
+	unset( $report['files'][ $filename ]['warnings'] );
+	if ( str_contains( $contents, 'fixture-svg-count-mismatch' ) ) {
+		$report['totals']['errors']             = 1;
+		$report['files'][ $filename ]['errors'] = 1;
+	} elseif ( str_contains( $contents, 'fixture-svg-total-mismatch' ) ) {
+		$report['totals']['errors'] = 1;
+	} elseif ( str_contains( $contents, 'fixture-svg-invalid-message' ) || str_contains( $contents, 'fixture-svg-null-line' ) ) {
+		$report['totals']['errors']               = 1;
+		$report['files'][ $filename ]['errors']   = 1;
+		$report['files'][ $filename ]['messages'] = array(
+			str_contains( $contents, 'fixture-svg-null-line' ) ? array(
+				'message' => 'Unable to parse file',
+				'line'    => null,
+			) : 'invalid',
+		);
 	}
 }
 echo json_encode( $report );

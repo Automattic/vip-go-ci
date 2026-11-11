@@ -326,6 +326,7 @@ function vipgoci_github_prs_urls_get(
  * @param bool       $permission_changes_also If to include files whose permissions were changed in results.
  * @param null|array $filter                  Filter to apply.
  * @param bool       $always_define_pr_number When true, will define array-key for a pull request in results even when no files are placed in the value.
+ * @param array|null $discovery_complete Per-PR file discovery success (reference).
  *
  * @return array Returns associative array with key as pull request number and value as array of affected files. Includes special key 'all' which includes all files altered by all pull requests. Example:
  *  Array(
@@ -352,8 +353,10 @@ function vipgoci_github_files_affected_by_commit(
 	bool $removed_files_also = true,
 	bool $permission_changes_also = false,
 	null|array $filter = null,
-	bool $always_define_pr_number = true
-) :array {
+	bool $always_define_pr_number = true,
+	?array &$discovery_complete = null
+): array {
+	$discovery_complete = array();
 	vipgoci_log(
 		'Fetching list of all files affected by each pull request ' .
 			'implicated by the commit',
@@ -404,8 +407,11 @@ function vipgoci_github_files_affected_by_commit(
 			$removed_files_also,
 			$permission_changes_also,
 			$filter,
-			false // File discovery does not need patches.
+			false, // File discovery does not need patches.
+			$pr_discovery_complete
 		);
+
+		$discovery_complete[ $pr_item->number ] = $pr_discovery_complete;
 
 		foreach (
 			array_keys( $pr_item_files_tmp['files'] ) as

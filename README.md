@@ -471,6 +471,99 @@ If _all_ files altered by a pull request have been found to be auto-approvable -
 
 The following Autoapprovals-related options can be configured via repository config-file:
 
+### Carrying human approvals across rebases
+
+`--autoapprove-rebases=true` can submit a new bot approval after a previously
+human-approved PR is rebased onto an updated, trusted base branch. It is disabled
+by default and independent of file-type auto-approval (`--autoapprove`). It can be
+enabled alongside that policy: a verified rebase approval is preserved even when
+the changed files do not qualify by type. Configure
+both trusted human reviewers by their stable GitHub user IDs and exact,
+case-sensitive base branch names:
+
+```sh
+./vip-go-ci.php ... --autoapprove-rebases=true \
+  --autoapprove-rebases-reviewer-ids="123,456" \
+  --autoapprove-rebases-base-branches="trunk"
+```
+
+These three options are only configurable by the operator on the command line or
+through `--env-options`; the repository configuration file cannot enable them or
+change the trust lists. Use a separate scanner account, not a trusted reviewer or
+the PR author. Its token needs permission to read PRs and timelines and to create
+and dismiss reviews. GitHub review-count and CODEOWNERS requirements still apply;
+the feature does not restore or impersonate a human review.
+
+The scanner must run **after the human approval, while that reviewed head is still
+current**, before the rebase. A `pull_request_review` submitted webhook can trigger
+that run, or the operator can rerun the scan. On a clean scan it records a
+`COMMENT` review beginning with `vip-go-ci rebase baseline v1:`, bound to the
+reviewed commit and containing its reviewer/review IDs, repository IDs, base
+branch, base tip and merge base. Subsequent runs accept that baseline only from
+the scanner account's authenticated GitHub user ID. Keep the baseline review;
+deleting or dismissing it disables carry-forward for that approval.
+
+After the rebase, the scanner requires all of the following:
+
+- The human's latest decisive review is still approved, or GitHub's dismissal
+  event identifies it as an approval automatically dismissed by the current head.
+  Manual dismissals of the human review or this feature's carried approval, and
+  outstanding change requests, prevent carry-forward. A compensating scanner
+  rollback can be retried only when its timeline actor is the scanner account
+  and its dismissal marker matches the carried review, head and human approval.
+  A manually revoked carried approval blocks all older saved baselines. Reusing
+  the feature requires a new human approval provably submitted after revocation;
+  missing or same-second timing evidence is treated as ambiguous.
+- The PR is open, non-draft, still targets the saved repository and base branch,
+  and has never been retargeted. Its base tip advances from the saved trusted tip,
+  and the current head includes that new tip.
+- The reviewed head, original base and new commits are available locally. A full
+  clone and retained reviewed-head objects are needed; missing history is not
+  fetched automatically and causes the feature to decline approval.
+- Git can mechanically merge the reviewed changes onto the new base with no
+  conflicts, and the complete resulting tree exactly equals the scanned head,
+  including whitespace, binaries, file modes, symlinks and submodule IDs.
+- File discovery must succeed before an empty file list qualifies as no work.
+  Failed local diffs and malformed or missing API fallback data prevent approval;
+  successfully discovered deletion-only or filtered-out changes require no scan.
+  API responses at the 300-file compare limit cannot prove complete discovery.
+- File discovery, blob contents and blame attribution use the scanned Git
+  commit, so edited, staged, deleted and untracked checkout files cannot replace
+  committed scan input. Blob reads return stored symlink target text rather than
+  following checkout links; callers can still reject committed symlinks.
+  WPScan metadata inspection uses the checkout, so enabled WPScan checks require
+  its add-on paths to have no tracked, untracked or ignored changes. Raw metadata
+  bytes must match committed blob IDs even when Git index flags or clean filters
+  hide a change. Symlinks and submodules in those roots cannot supply this proof.
+- Every enabled scanner has explicit successful completion evidence for this
+  PR and scanned commit. Failed commands, malformed output, missing reports and
+  a `skip-phpcs-scan` label prevent both baseline capture and carry-forward.
+  Disabled scanners require no completion evidence. PHPCS/SVG also require no
+  raw findings in the affected files before line/commit attribution filters,
+  and no PHPCS suppression or inline-rule override annotations. These stricter
+  rebase eligibility checks do not change ordinary scan reporting.
+- The original scan has no issues, nonzero statistics, or skipped files. The
+  feature never removes findings. Normal approval decisions preserve scan exit
+  status; an unconfirmed rollback is an operational error that fails the run.
+
+The proof uses an isolated bare object database, without the scanned checkout's
+index, worktree, hooks, or configured external merge drivers. It requires Git
+support for `rev-parse --path-format=absolute` and `merge-tree --write-tree
+--merge-base`; older Git remains supported for normal scanning, but cannot carry
+approvals forward. Unsupported commands, ambiguous history, conflicts and
+incomplete API responses all cause the feature to decline approval.
+
+The scanner rechecks the head, base and review evidence before approving, pins the
+review to the scanned head, then checks the PR again and dismisses its new review
+if the head/base moved during submission. A fresh read must confirm each created
+review is dismissed. Success also requires a fresh matching `APPROVED` review,
+not just an ID returned by POST. Failed or inconclusive compensation, including
+an unknown review ID after an uncertain POST (even with an unchanged review
+list), stops the run with an operational error; inspect GitHub and reconcile any active approval
+before retrying. GitHub has no atomic head-and-base precondition for submitting reviews; required current-head checks remain important.
+If GitHub already dismissed the human review on an earlier rebase, this first
+version requires a new human approval/baseline before another carry-forward.
+
 #### Options `--autoapprove` and `--autoapprove-php-nonfunctional-changes`
 
 Using these options, users can disable autoapproval entirely as well as the autoapprovals of non-functional changes.

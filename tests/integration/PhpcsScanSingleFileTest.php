@@ -203,6 +203,7 @@ final class PhpcsScanSingleFileTest extends TestCase {
 			'validation'      => [ 'total' => 0 ]
 		);
 
+		$expected_results['has_suppressions'] = false;
 		$expected_results['file_issues_str'] = json_encode(
 			$expected_results['file_issues_arr_master']
 		);

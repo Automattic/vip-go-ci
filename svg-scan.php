@@ -161,6 +161,37 @@ function vipgoci_svg_look_for_specific_tokens(
 
 
 /**
+ * Validate native SVG scanner output before adding internal findings.
+ *
+ * Every scanner finding is an error. Counts must match the complete message
+ * list for the requested file; general scan errors with no line are incomplete.
+ *
+ * @param mixed  $report Decoded scanner output.
+ * @param string $filename Requested temporary file.
+ * @return bool Whether the report provides complete, consistent evidence.
+ */
+function vipgoci_svg_report_valid( mixed $report, string $filename ): bool {
+	if ( ! is_array( $report ) || ! is_array( $report['files'] ?? null ) || count( $report['files'] ) !== 1 ||
+		! is_array( $report['totals'] ?? null ) || ! is_array( $report['files'][ $filename ] ?? null ) ) {
+		return false;
+	}
+	$file = $report['files'][ $filename ];
+	if ( ! is_int( $file['errors'] ?? null ) || ! is_array( $file['messages'] ?? null ) || ! array_is_list( $file['messages'] ) ||
+		$file['errors'] !== count( $file['messages'] ) || ( $report['totals']['errors'] ?? null ) !== $file['errors'] ||
+		( $report['totals']['warnings'] ?? null ) !== 0 || ( $report['totals']['fixable'] ?? null ) !== 0 ||
+		( $file['warnings'] ?? 0 ) !== 0 ) {
+		return false;
+	}
+	foreach ( $file['messages'] as $message ) {
+		if ( ! is_array( $message ) || ! is_string( $message['message'] ?? null ) ||
+			! is_int( $message['line'] ?? null ) || $message['line'] < 1 ) {
+			return false;
+		}
+	}
+	return true;
+}
+
+/**
  * Scan a SVG-file for disallowed
  * tokens. Will return results in the
  * same format as PHPCS does.
@@ -307,7 +338,9 @@ function vipgoci_svg_scan_single_file(
 		);
 	}
 
-	if ( null === $results ) {
+	if ( ! vipgoci_svg_report_valid( $results, $temp_file_name ) ) {
+		$results = null;
+		unlink( $temp_file_name );
 		vipgoci_log(
 			'SVG scanning of a single file failed',
 			array(

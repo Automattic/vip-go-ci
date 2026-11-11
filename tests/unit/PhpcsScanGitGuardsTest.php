@@ -206,11 +206,21 @@ final class PhpcsScanGitGuardsTest extends TestCase {
 		);
 		chmod( $this->directory . '/bin/git', 0755 );
 		putenv( 'PATH=' . $this->directory . '/bin:' . $this->original_path );
-		vipgoci_phpcs_scan_commit( $options, $issues, $stats, $skipped );
+		if ( true === ( $options['wpscan-api'] ?? false ) ) {
+			require_once __DIR__ . '/../../wpscan-scan.php';
+			vipgoci_wpscan_scan_commit( $options, $issues, $stats, $skipped, $completion );
+		} elseif ( true === ( $options['lint'] ?? false ) ) {
+			require_once __DIR__ . '/../../lint-scan.php';
+			vipgoci_lint_scan_commit( $options, $issues, $stats, $skipped, $completion );
+		} else {
+			vipgoci_phpcs_scan_commit( $options, $issues, $stats, $skipped, $completion, $rebase_clear );
+		}
 		return array(
-			'issues'  => $issues,
-			'stats'   => $stats,
-			'skipped' => $skipped,
+			'completion'   => $completion,
+			'rebase-clear' => $rebase_clear ?? null,
+			'issues'       => $issues,
+			'stats'        => $stats,
+			'skipped'      => $skipped,
 		);
 	}
 
@@ -827,5 +837,374 @@ final class PhpcsScanGitGuardsTest extends TestCase {
 		$this->assertArrayNotHasKey( 'github_pr_files_phpcs_scanned', vipgoci_counter_report( VIPGOCI_COUNTERS_DUMP ) );
 		$this->assertSame( array(), $this->commands( ' blame ' ) );
 		$this->assertFalse( vipgoci_cache( array( 'vipgoci_gitrepo_diffs_fetch_unfiltered', $this->repo, $this->base, $this->head ) ) );
+	}
+
+	/** A label skip remains incomplete even though its statistics are removed. */
+	public function testLabelSkipCannotProduceCompletionEvidence(): void {
+		$this->base = $this->commit( array() );
+		$this->head = $this->commit( array( 'clean.php' => "<?php\n" ) );
+		$GLOBALS['vipgoci_test_http_responses']['GET /repos/owner/repo/issues/42/labels'] = array( array( 'name' => 'skip-phpcs-scan' ) );
+		$result = $this->scan( array( 42, 43 ), array( 'phpcs-skip-scanning-via-labels-allowed' => true ) );
+		$this->assertSame(
+			array(
+				42 => false,
+				43 => true,
+			),
+			$result['completion']
+		);
+		$this->assertArrayNotHasKey( 42, $result['stats'] );
+	}
+
+	/**
+	 * Real command/report failures cannot count as successful clean scans.
+	 *
+	 * @param string $marker Fault injected into the scanner fixture.
+	 */
+	#[DataProvider( 'completionFailures' )]
+	public function testFailedScanCannotProduceCompletionEvidence( string $marker ): void {
+		$this->base = $this->commit( array() );
+		$this->head = $this->commit( array( 'failed.php' => "<?php\n// $marker\n" ) );
+		$result     = $this->scan();
+		$this->assertSame( array( 42 => false ), $result['completion'] );
+		$this->assertSame( array(), $result['issues'][42] );
+		$this->assertSame(
+			array(
+				'error'   => 0,
+				'warning' => 0,
+				'info'    => 0,
+			),
+			$result['stats'][42]
+		);
+	}
+
+	/**
+	 * Faults with zero parsed findings.
+	 *
+	 * @return array Fault markers.
+	 */
+	public static function completionFailures(): array {
+		return array_map( static fn( $marker ) => array( $marker ), array( 'fixture-fatal', 'fixture-invalid-json', 'fixture-empty-report', 'fixture-missing-file' ) );
+	}
+
+	/**
+	 * Propagate lint failures through both discovery modes.
+	 *
+	 * @param bool $modified_only Whether to scan only modified files.
+	 * @param bool $success Whether the command succeeds.
+	 */
+	#[DataProvider( 'lintCompletionCases' )]
+	public function testLintCompletionTracksCommandSuccess( bool $modified_only, bool $success ): void {
+		$this->base = $this->commit( array() );
+		$this->head = $this->commit( array( 'clean.php' => "<?php\n" ) );
+		$result     = $this->scan(
+			array( 42 ),
+			array(
+				'lint'                     => true,
+				'lint-modified-files-only' => $modified_only,
+				'lint-file-extensions'     => array( 'php' ),
+				'lint-skip-folders'        => array(),
+				'lint-php-versions'        => array( 'test' ),
+				'lint-php-version-paths'   => array( 'test' => $success ? PHP_BINARY : '/bin/false' ),
+			)
+		);
+		$this->assertSame( array( 42 => $success ), $result['completion'] );
+		$this->assertSame( array(), $result['issues'][42] );
+	}
+
+	/**
+	 * Discovery modes and real command outcomes.
+	 *
+	 * @return array Test cases.
+	 */
+	public static function lintCompletionCases(): array {
+		return array( array( true, true ), array( false, true ), array( true, false ), array( false, false ) );
+	}
+	/**
+	 * Scanner coordinators whose work is based on per-PR diff discovery.
+	 *
+	 * @param string $scanner Scanner to exercise.
+	 * @return array Scanner options.
+	 */
+	private function discoveryOptions( string $scanner ): array {
+		return array(
+			'lint'                              => 'lint' === $scanner,
+			'lint-modified-files-only'          => true,
+			'lint-file-extensions'              => array( 'php' ),
+			'lint-skip-folders'                 => array(),
+			'lint-php-versions'                 => array( 'test' ),
+			'lint-php-version-paths'            => array( 'test' => PHP_BINARY ),
+			'wpscan-api'                        => 'wpscan' === $scanner,
+			'wpscan-api-paths'                  => array( 'plugins' ),
+			'wpscan-api-skip-folders'           => array(),
+			'wpscan-api-plugin-file-extensions' => array( 'php' ),
+			'wpscan-api-theme-file-extensions'  => array( 'css' ),
+		);
+	}
+
+	/**
+	 * Missing/malformed discovery and a genuine successful empty result.
+	 *
+	 * @return array Scanner and fallback response scenarios.
+	 */
+	public static function discoveryCases(): array {
+		$cases = array();
+		foreach ( array( 'phpcs', 'lint', 'wpscan' ) as $scanner ) {
+			foreach ( array( 'missing files', 'transport failure', 'malformed files', 'malformed entry', 'capped files', 'below cap', 'empty success' ) as $response ) {
+				$cases[] = array( $scanner, $response );
+			}
+		}
+		return $cases;
+	}
+
+	/**
+	 * A failed local diff and malformed GitHub fallback must remain incomplete.
+	 *
+	 * @param string $scanner Scanner to exercise.
+	 * @param string $response Fallback response scenario.
+	 */
+	#[DataProvider( 'discoveryCases' )]
+	public function testDiscoverySuccessIsIndependentOfAnEmptyFileList( string $scanner, string $response ): void {
+		$this->head = $this->commit( array( 'changed.php' => "<?php\n" ) );
+		$this->base = str_repeat( '1', 40 );
+		$responses  = array(
+			'missing files'     => array(),
+			'transport failure' => null,
+			'malformed files'   => array( 'files' => 'invalid' ),
+			'malformed entry'   => array( 'files' => array( array( 'filename' => 'changed.php' ) ) ),
+			'empty success'     => array( 'files' => array() ),
+		);
+		foreach ( array(
+			'capped files' => 300,
+			'below cap'    => 299,
+		) as $case => $count ) {
+			$responses[ $case ] = array(
+				'files' => array_map(
+					static fn( $i ) => array(
+						'filename'  => 'file-' . $i . '.txt',
+						'status'    => 'added',
+						'additions' => 1,
+						'deletions' => 0,
+						'changes'   => 1,
+					),
+					range( 1, $count )
+				),
+			);
+		}
+
+		$GLOBALS['vipgoci_test_http_responses'][ 'GET /repos/owner/repo/compare/' . $this->base . '...' . $this->head ] = $responses[ $response ];
+		$result = $this->scan( array( 42 ), $this->discoveryOptions( $scanner ) );
+		$this->assertSame( array( 42 => in_array( $response, array( 'empty success', 'below cap' ), true ) ), $result['completion'] );
+		$this->assertSame( array(), $result['issues'][42] );
+		$this->assertFileDoesNotExist( $this->directory . '/phpcs.jsonl' );
+	}
+
+	/**
+	 * No-work PRs need an explicit successful completion, including deletions.
+	 *
+	 * @return array Scanners to exercise.
+	 */
+	public static function noWorkScanners(): array {
+		return array( array( 'phpcs', false ), array( 'lint', false ), array( 'wpscan', false ), array( 'phpcs', true ), array( 'lint', true ), array( 'wpscan', true ) );
+	}
+
+	/**
+	 * Removed-only changes are discovered successfully but need no file scan.
+	 *
+	 * @param string $scanner Scanner to exercise.
+	 * @param bool   $filtered Whether discovery filters out the changed file.
+	 */
+	#[DataProvider( 'noWorkScanners' )]
+	public function testDeletionOnlyPrCompletesWithoutScannerWork( string $scanner, bool $filtered ): void {
+		mkdir( $this->repo . '/plugins/gone', 0700, true );
+		$this->base = $this->commit( array( 'plugins/gone/main.php' => "<?php\n" ) );
+		$options    = $this->discoveryOptions( $scanner );
+		if ( $filtered ) {
+			$this->head                         = $this->commit( array( 'plugins/gone/main.php' => "<?php\n// changed\n" ) );
+			$options['phpcs-skip-folders']      = array( 'plugins' );
+			$options['lint-skip-folders']       = array( 'plugins' );
+			$options['wpscan-api-skip-folders'] = array( 'plugins' );
+		} else {
+			unlink( $this->repo . '/plugins/gone/main.php' );
+			$this->head = $this->commit( array() );
+		}
+		$result = $this->scan( array( 42 ), $options );
+		$this->assertSame( array( 42 => true ), $result['completion'] );
+		$this->assertSame( array(), $result['issues'][42] );
+	}
+
+	/**
+	 * Native SVG reports must be consistent before internal findings are added.
+	 *
+	 * @return array Fault markers and expected completion.
+	 */
+	public static function svgReports(): array {
+		return array( array( 'native', true ), array( 'count-mismatch', false ), array( 'total-mismatch', false ), array( 'invalid-message', false ), array( 'null-line', false ) );
+	}
+
+	/**
+	 * Empty findings must not conceal malformed SVG scanner evidence.
+	 *
+	 * @param string $marker Fixture report variant.
+	 * @param bool   $complete Expected completion.
+	 */
+	#[DataProvider( 'svgReports' )]
+	public function testSvgCompletionRequiresConsistentNativeReport( string $marker, bool $complete ): void {
+		$this->base = $this->commit( array() );
+		$this->head = $this->commit( array( 'icon.svg' => "<svg><!-- fixture-svg-$marker --></svg>\n" ) );
+		$result     = $this->scan(
+			array( 42 ),
+			array(
+				'svg-checks'       => true,
+				'svg-scanner-path' => __DIR__ . '/helper/PhpcsScanFixture.php',
+				'svg-php-path'     => PHP_BINARY,
+			)
+		);
+		$this->assertSame( array( 42 => $complete ), $result['completion'] );
+		$this->assertSame( array(), $result['issues'][42] );
+	}
+	/** A full local discovery at the API limit must still be marked complete. */
+	public function testLocalDiscoveryHasNoApiFileLimit(): void {
+		$this->base = $this->commit( array() );
+		$files      = array();
+		foreach ( range( 1, 300 ) as $index ) {
+			$files[ 'file-' . $index . '.txt' ] = 'text';
+		}
+		$this->head = $this->commit( $files );
+		$result     = $this->scan();
+		$this->assertSame( array( 42 => true ), $result['completion'] );
+	}
+	/**
+	 * Checkout changes must not alter committed-head attribution or discovery.
+	 *
+	 * @return array Mutation scenarios.
+	 */
+	public static function checkoutMutations(): array {
+		return array( array( 'clean' ), array( 'edited' ), array( 'deleted' ), array( 'staged edit' ) );
+	}
+
+	/**
+	 * PHPCS findings must survive mutations of their checkout lines.
+	 *
+	 * @param string $mutation Checkout mutation.
+	 */
+	#[DataProvider( 'checkoutMutations' )]
+	public function testCommittedPhpcsFindingSurvivesCheckoutChanges( string $mutation ): void {
+		$this->base = $this->commit( array() );
+		$this->head = $this->commit( array( 'finding.php' => "<?php\n// fixture-error\n" ) );
+		if ( 'deleted' === $mutation ) {
+			unlink( $this->repo . '/finding.php' );
+		} elseif ( 'clean' !== $mutation ) {
+			file_put_contents( $this->repo . '/finding.php', "<?php\n// working tree edit\n" );
+			if ( 'staged edit' === $mutation ) {
+				$this->git( 'add finding.php' );
+			}
+		}
+		$result = $this->scan();
+		$this->assertCount( 1, $result['issues'][42] );
+		$this->assertSame( 1, $result['stats'][42]['error'] );
+		$this->assertSame( array( 42 => true ), $result['completion'] );
+		$this->assertStringContainsString( $this->head . ' -- finding.php', $this->commands( ' blame ' )[0] );
+	}
+
+	/**
+	 * Full-repository lint must inspect committed files even if locally deleted.
+	 *
+	 * @param string $mutation Checkout mutation.
+	 */
+	#[DataProvider( 'checkoutMutations' )]
+	public function testCommittedLintFindingSurvivesCheckoutChanges( string $mutation ): void {
+		$this->base = $this->commit( array() );
+		$this->head = $this->commit( array( 'broken.php' => "<?php\nfunction (\n" ) );
+		if ( 'deleted' === $mutation ) {
+			unlink( $this->repo . '/broken.php' );
+		} elseif ( 'clean' !== $mutation ) {
+			file_put_contents( $this->repo . '/broken.php', "<?php\n// locally repaired\n" );
+			if ( 'staged edit' === $mutation ) {
+				$this->git( 'add broken.php' );
+			}
+		}
+		$options                             = $this->discoveryOptions( 'lint' );
+		$options['lint-modified-files-only'] = false;
+		$result                              = $this->scan( array( 42 ), $options );
+		$this->assertCount( 1, $result['issues'][42] );
+		$this->assertSame( 1, $result['stats'][42]['error'] );
+		$this->assertSame( array( 42 => true ), $result['completion'] );
+	}
+
+	/**
+	 * WPScan must not attest to completion using locally altered add-on metadata.
+	 *
+	 * @param string $mutation Checkout mutation.
+	 */
+	#[DataProvider( 'checkoutMutations' )]
+	public function testWpscanCompletionRequiresCommittedAddonCheckout( string $mutation ): void {
+		require_once __DIR__ . '/../../wpscan-api.php';
+		require_once __DIR__ . '/helper/WpscanCheckout.php';
+		$this->base = $this->commit( array() );
+		mkdir( $this->repo . '/plugins/a', 0700, true );
+		$this->head = $this->commit( array( 'plugins/a/main.php' => "<?php\n" ) );
+		if ( 'deleted' === $mutation ) {
+			unlink( $this->repo . '/plugins/a/main.php' );
+		} elseif ( 'clean' !== $mutation ) {
+			file_put_contents( $this->repo . '/plugins/a/main.php', "<?php\n// locally changed metadata\n" );
+			if ( 'staged edit' === $mutation ) {
+				$this->git( 'add plugins/a/main.php' );
+			}
+		}
+		$GLOBALS['wpscan_checkout_metadata']                             = array(
+			'plugin-a' => array(
+				'slug'             => 'a',
+				'version_detected' => '1.0',
+				'type'             => VIPGOCI_ADDON_PLUGIN,
+				'file_name'        => $this->repo . '/plugins/a/main.php',
+			),
+		);
+		$GLOBALS['vipgoci_test_http_responses']['GET /api/v3/plugins/a'] = array(
+			'a' => array(
+				'friendly_name'   => 'A',
+				'latest_version'  => '1.0',
+				'last_updated'    => '2026-01-01',
+				'vulnerabilities' => array(),
+			),
+		);
+		$options                     = $this->discoveryOptions( 'wpscan' );
+		$options['wpscan-api-token'] = 'token';
+		$result                      = $this->scan( array( 42 ), $options );
+		$this->assertSame( array( 42 => 'clean' === $mutation ), $result['completion'] );
+		$this->assertSame( array(), $result['issues'][42] );
+	}
+	/**
+	 * Suppression and in-file rule overrides cannot prove a complete clean scan.
+	 *
+	 * @return array Source annotations.
+	 */
+	public static function rebaseSuppressionControls(): array {
+		return array( array( 'phpcs:ignoreFile', true ), array( 'phpcs:disable Fixture.Test', false ), array( 'phpcs:ignore Fixture.Test', false ), array( '@codingStandardsIgnoreLine', false ), array( 'phpcs:set Fixture.Test value 0', false ) );
+	}
+
+	/**
+	 * Keep normal PHPCS behavior while refusing unsupported rebase evidence.
+	 *
+	 * @param string $control Source annotation.
+	 * @param bool   $omitted Whether the report omits the file entirely.
+	 */
+	#[DataProvider( 'rebaseSuppressionControls' )]
+	public function testSuppressedSourceCannotQualifyForRebaseApproval( string $control, bool $omitted ): void {
+		$this->base = $this->commit( array() );
+		$this->head = $this->commit( array( 'file.php' => "<?php\n// $control\n" . ( $omitted ? '// fixture-zero-file' : '// clean' ) ) );
+		$result     = $this->scan();
+		$this->assertSame( array(), $result['issues'][42] );
+		$this->assertTrue( $result['completion'][42] );
+		$this->assertFalse( $result['rebase-clear'][42] );
+	}
+
+	/** Unchanged-line findings must not disappear from rebase approval evidence. */
+	public function testDiscardedFindingsStillPreventRebaseApproval(): void {
+		$this->base = $this->commit( array( 'file.php' => "<?php\n// fixture-warning\n" ) );
+		$this->head = $this->commit( array( 'file.php' => "<?php\n// fixture-warning\n// new clean line\n" ) );
+		$result     = $this->scan();
+		$this->assertSame( array(), $result['issues'][42] );
+		$this->assertTrue( $result['completion'][42] );
+		$this->assertFalse( $result['rebase-clear'][42] );
 	}
 }

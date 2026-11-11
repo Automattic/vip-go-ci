@@ -95,14 +95,14 @@ function vipgoci_github_diffs_fetch_unfiltered(
 		vipgoci_http_api_fetch_url(
 			$github_url,
 			$github_token
-		),
+		) ?? '',
 		true
 	);
 
 	/*
 	 * If no "files" in array, return with error.
 	 */
-	if ( ! isset( $resp_raw['files'] ) ) {
+	if ( ! is_array( $resp_raw['files'] ?? null ) || ! array_is_list( $resp_raw['files'] ) ) {
 		return null;
 	}
 
@@ -119,6 +119,16 @@ function vipgoci_github_diffs_fetch_unfiltered(
 	);
 
 	foreach ( array_values( $resp_raw['files'] ) as $file_item ) {
+		if ( ! is_array( $file_item ) || ! is_string( $file_item['filename'] ?? null ) || '' === $file_item['filename'] || isset( $diff_results['files'][ $file_item['filename'] ] ) ||
+			! in_array( $file_item['status'] ?? null, array( 'added', 'removed', 'modified', 'renamed', 'copied', 'changed', 'unchanged' ), true ) ) {
+			return null;
+		}
+		foreach ( array( 'additions', 'deletions', 'changes' ) as $count ) {
+			if ( ! is_int( $file_item[ $count ] ?? null ) || $file_item[ $count ] < 0 ) {
+				return null;
+			}
+		}
+
 		/*
 		 * If there are content modifications to the file,
 		 * and GitHub indicates file status is 'renamed',
@@ -1117,7 +1127,7 @@ function vipgoci_github_pr_reviews_get(
  * @param string $dismiss_message Dismissal message.
  * @param string $github_token    GitHub token to use to make GitHub API requests.
  *
- * @return void
+ * @return bool Whether the dismissal request reported success.
  */
 function vipgoci_github_pr_review_dismiss(
 	string $repo_owner,
@@ -1126,7 +1136,7 @@ function vipgoci_github_pr_review_dismiss(
 	int $review_id,
 	string $dismiss_message,
 	string $github_token
-) :void {
+): bool {
 	vipgoci_log(
 		'Dismissing a pull request review',
 		array(
@@ -1149,7 +1159,7 @@ function vipgoci_github_pr_review_dismiss(
 		rawurlencode( (string) $review_id ) . '/' .
 		'dismissals';
 
-	vipgoci_http_api_put_url(
+	return 0 === vipgoci_http_api_put_url(
 		$github_url,
 		array(
 			'message' => $dismiss_message,

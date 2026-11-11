@@ -707,15 +707,19 @@ function vipgoci_filter_file_path(
  * @param null|array  $filter                 Filter to apply.
  * @param null|string $base_path              Internal only, should be null normally.
  *
+ * @param bool|null   $discovery_complete Whether all directories were read (reference).
+ *
  * @return array Array of files found.
  */
 function vipgoci_scandir_git_repo(
 	string $path,
 	bool $process_subdirectories = true,
 	null|array $filter = null,
-	null|string $base_path = null
-) :array {
-	$result = array();
+	null|string $base_path = null,
+	?bool &$discovery_complete = null
+): array {
+	$discovery_complete = false;
+	$result             = array();
 
 	vipgoci_log(
 		'Fetching git-tree using scandir()',
@@ -743,6 +747,10 @@ function vipgoci_scandir_git_repo(
 	$cdir = scandir( $path );
 
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'git_repo_scandir' );
+	if ( false === $cdir ) {
+		return $result;
+	}
+	$discovery_complete = true;
 
 	foreach ( $cdir as $key => $value ) {
 		if ( in_array(
@@ -770,8 +778,10 @@ function vipgoci_scandir_git_repo(
 				$path . DIRECTORY_SEPARATOR . $value,
 				$process_subdirectories,
 				$filter,
-				$base_path
+				$base_path,
+				$child_complete
 			);
+			$discovery_complete = $discovery_complete && $child_complete;
 
 			foreach ( $tmp_result as $tmp_result_item ) {
 				$result[] = $value .
