@@ -63,6 +63,7 @@ final class ScanCompletionTest extends TestCase {
 		$results['scan-completion'][ $scanner ][7] = 'true';
 		$this->assertFalse( vipgoci_rebase_scan_clear( $results, 7, $options ) );
 		$results['scan-completion'][ $scanner ][7] = true;
+		$results['rebase-clear']['phpcs'][7]       = true;
 		$this->assertTrue( vipgoci_rebase_scan_clear( $results, 7, $options ) );
 		$results['scan-completion']['commit'] = 'old-head';
 		$this->assertFalse( vipgoci_rebase_scan_clear( $results, 7, $options ) );
@@ -171,5 +172,26 @@ final class ScanCompletionTest extends TestCase {
 		// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- Exercise a known missing directory.
 		$this->assertSame( array(), @vipgoci_scandir_git_repo( $path, true, null, null, $complete ) );
 		$this->assertFalse( $complete );
+	}
+	/** Successful execution and zero reported counters cannot substitute for raw evidence. */
+	public function testRebaseRequiresExplicitUnsuppressedRawPhpcsEvidence(): void {
+		$options = array(
+			'commit' => 'head',
+			'phpcs'  => true,
+		);
+		$results = array(
+			'issues'          => array( 7 => array() ),
+			'stats'           => array( 'phpcs' => array( 7 => array( 'error' => 0 ) ) ),
+			'skipped-files'   => array( 7 => array( 'total' => 0 ) ),
+			'scan-completion' => array(
+				'commit' => 'head',
+				'phpcs'  => array( 7 => true ),
+			),
+		);
+		$this->assertFalse( vipgoci_rebase_scan_clear( $results, 7, $options ) );
+		$results['rebase-clear']['phpcs'][7] = false;
+		$this->assertFalse( vipgoci_rebase_scan_clear( $results, 7, $options ) );
+		$results['rebase-clear']['phpcs'][7] = true;
+		$this->assertTrue( vipgoci_rebase_scan_clear( $results, 7, $options ) );
 	}
 }

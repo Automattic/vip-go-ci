@@ -37,7 +37,7 @@ $report = array(
 );
 foreach ( $filenames as $filename ) {
 	$file_contents = file_get_contents( $filename );
-	if ( str_contains( $file_contents, 'fixture-empty-report' ) ) {
+	if ( str_contains( $file_contents, 'fixture-empty-report' ) || str_contains( $file_contents, 'fixture-zero-file' ) ) {
 		continue;
 	}
 	$messages    = array();

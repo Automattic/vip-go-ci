@@ -20,6 +20,10 @@ declare(strict_types=1);
  */
 function vipgoci_scan_completion_init( array $options, array $prs, array &$results ): void {
 	$results['scan-completion'] = array( 'commit' => $options['commit'] );
+	$results['rebase-clear']    = array();
+	if ( ( $options['phpcs'] ?? false ) || ( $options['svg-checks'] ?? false ) ) {
+		$results['rebase-clear']['phpcs'] = array_fill_keys( array_column( $prs, 'number' ), false );
+	}
 	foreach ( array( 'lint', 'phpcs', 'wpscan-api', 'svg-checks' ) as $scanner ) {
 		if ( true === ( $options[ $scanner ] ?? false ) ) {
 			$results['scan-completion'][ $scanner ] = array_fill_keys( array_column( $prs, 'number' ), false );

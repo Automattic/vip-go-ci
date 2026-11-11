@@ -444,12 +444,13 @@ function vipgoci_gitrepo_fetch_tree(
  * WPScan metadata discovery reads files directly. Its inspected paths must have
  * no tracked, untracked or ignored changes, and HEAD must remain the scanned ID.
  *
- * @param string $repository Local repository.
- * @param string $commit Scanned commit.
- * @param array  $paths Add-on roots inspected by WPScan.
+ * @param string     $repository Local repository.
+ * @param string     $commit Scanned commit.
+ * @param array      $paths Add-on roots inspected by WPScan.
+ * @param array|null $extensions Metadata file extensions, or null to check every blob.
  * @return bool Whether checkout metadata is safe to use as completion evidence.
  */
-function vipgoci_gitrepo_checkout_matches_commit( string $repository, string $commit, array $paths ): bool {
+function vipgoci_gitrepo_checkout_matches_commit( string $repository, string $commit, array $paths, ?array $extensions = null ): bool {
 	$output = '';
 	$code   = -255;
 	$status = vipgoci_runtime_measure_exec_with_retry(
@@ -473,7 +474,62 @@ function vipgoci_gitrepo_checkout_matches_commit( string $repository, string $co
 			return false;
 		}
 	}
-	return $matches;
+	if ( ! $matches ) {
+		return false;
+	}
+	// Status can hide raw changes via index flags or clean filters. Compare the
+	// metadata inputs to the committed blob IDs without using Git's stat cache.
+	$tree = vipgoci_runtime_measure_exec_with_retry(
+		'git --literal-pathspecs -C ' . escapeshellarg( $repository ) . ' ls-tree -r -z --full-tree ' . escapeshellarg( $commit ) . ' -- ' .
+			implode( ' ', array_map( 'escapeshellarg', $paths ) ),
+		array( 0 ),
+		$output,
+		$code,
+		'git_cli',
+		true
+	);
+	if ( null === $tree || ( '' !== $tree && ! str_ends_with( $tree, "\0" ) ) ) {
+		return false;
+	}
+	foreach ( '' === $tree ? array() : explode( "\0", substr( $tree, 0, -1 ) ) as $entry ) {
+		$parts = explode( "\t", $entry, 2 );
+		// Checkout traversal cannot attest to symlink or submodule contents.
+		if ( count( $parts ) !== 2 || ! preg_match( '/\A100(?:644|755) blob ([0-9a-f]{40})\z/', $parts[0], $metadata ) ) {
+			return false;
+		}
+		if ( null !== $extensions && ! in_array( vipgoci_file_extension_get( $parts[1] ), $extensions, true ) ) {
+			continue;
+		}
+		$file = $repository;
+		foreach ( explode( '/', $parts[1] ) as $component ) {
+			$file .= '/' . $component;
+			if ( is_link( $file ) ) {
+				return false;
+			}
+		}
+		if ( ! is_file( $file ) ) {
+			return false;
+		}
+		// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- A missing checkout file makes evidence incomplete.
+		$handle = @fopen( $file, 'rb' );
+		if ( false === $handle ) {
+			return false;
+		}
+		try {
+			$stat = fstat( $handle );
+			if ( false === $stat ) {
+				return false;
+			}
+			$hash = hash_init( 'sha1' );
+			hash_update( $hash, 'blob ' . $stat['size'] . "\0" );
+			if ( hash_update_stream( $hash, $handle ) !== $stat['size'] || hash_final( $hash ) !== $metadata[1] ) {
+				return false;
+			}
+		} finally {
+			fclose( $handle );
+		}
+	}
+	return true;
 }
 
 /**
