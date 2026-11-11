@@ -552,11 +552,24 @@ final class RebaseApprovalProcessTest extends TestCase {
 		$this->assertCount( 1, $GLOBALS['rebase_posts'] );
 	}
 
-	/** A same-head rerun returns the existing approval without posting again. */
+	/** Both policies must preserve the carried approval on a same-head rerun. */
 	public function testSameHeadRerunPreservesApproval(): void {
+		require_once __DIR__ . '/../../auto-approval.php';
+		require_once __DIR__ . '/../../statistics.php';
+		$this->options['autoapprove']           = true;
+		$this->options['autoapprove-filetypes'] = array( 'css' );
+		$this->options['autoapprove-label']     = 'auto-approved';
+		$this->options['wpscan-api']            = false;
+		$GLOBALS['rebase_file_policy_calls']    = 0;
 		$this->responses();
-		$this->assertSame( array( 7 ), $this->runProcess() );
-		$this->assertSame( array( 7 ), $this->runProcess() );
+		for ( $run = 0; $run < 2; ++$run ) {
+			$verified = $this->runProcess();
+			$this->assertSame( array( 7 ), $verified );
+			// The changed PHP file does not qualify under the file-type policy.
+			$approved_files = array();
+			vipgoci_auto_approval_scan_commit( $this->options, $approved_files, $this->results, $verified );
+		}
+		$this->assertSame( 2, $GLOBALS['rebase_file_policy_calls'] );
 		$this->assertCount( 1, $GLOBALS['rebase_posts'] );
 		$this->assertSame( array(), $GLOBALS['rebase_puts'] );
 	}
