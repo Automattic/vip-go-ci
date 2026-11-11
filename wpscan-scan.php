@@ -671,6 +671,7 @@ function vipgoci_wpscan_scan_commit(
 	 * remove any add-ons that cannot be associated
 	 * successfully.
 	 */
+	$checkout_matches                    = vipgoci_gitrepo_checkout_matches_commit( $options['local-git-repo'], $options['commit'], $options['wpscan-api-paths'] );
 	$addon_data_and_slugs_for_addon_dirs = vipgoci_wpscan_get_altered_addons_data_and_slugs(
 		$options,
 		$addon_dirs_relevant_to_scan,
@@ -702,9 +703,10 @@ function vipgoci_wpscan_scan_commit(
 		$files_affected_by_commit_by_pr,
 		$problematic_addons_found
 	);
+	$checkout_matches = $checkout_matches && vipgoci_gitrepo_checkout_matches_commit( $options['local-git-repo'], $options['commit'], $options['wpscan-api-paths'] );
 	foreach ( $files_affected_by_commit_by_pr as $number => $files ) {
 		if ( 'all' !== $number ) {
-			$scan_completion[ $number ] = true === ( $discovery_complete[ $number ] ?? false ) && vipgoci_wpscan_pr_scan_complete( $files, $directory_completion ?? array(), $options['wpscan-api-paths'] );
+			$scan_completion[ $number ] = $checkout_matches && true === ( $discovery_complete[ $number ] ?? false ) && vipgoci_wpscan_pr_scan_complete( $files, $directory_completion ?? array(), $options['wpscan-api-paths'] );
 		}
 	}
 
