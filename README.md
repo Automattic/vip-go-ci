@@ -518,6 +518,10 @@ After the rebase, the scanner requires all of the following:
 - Git can mechanically merge the reviewed changes onto the new base with no
   conflicts, and the complete resulting tree exactly equals the scanned head,
   including whitespace, binaries, file modes, symlinks and submodule IDs.
+- Every enabled scanner has explicit successful completion evidence for this
+  PR and scanned commit. Failed commands, malformed output, missing reports and
+  a `skip-phpcs-scan` label prevent both baseline capture and carry-forward.
+  Disabled scanners require no completion evidence.
 - The original scan has no issues, nonzero statistics, or skipped files. The
   feature never removes findings or changes scan exit status.
 

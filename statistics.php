@@ -8,6 +8,26 @@
 declare(strict_types=1);
 
 /**
+ * Reset scanner completion evidence for the exact commit and PRs in this run.
+ *
+ * Enabled scanners begin incomplete; only a scanner's successful return path
+ * may replace its per-PR value with true. Disabled scanners need no evidence.
+ *
+ * @param array $options Scanner options.
+ * @param array $prs Pull requests being scanned.
+ * @param array $results Scan results to initialize.
+ * @return void
+ */
+function vipgoci_scan_completion_init( array $options, array $prs, array &$results ): void {
+	$results['scan-completion'] = array( 'commit' => $options['commit'] );
+	foreach ( array( 'lint', 'phpcs', 'wpscan-api', 'svg-checks' ) as $scanner ) {
+		if ( true === ( $options[ $scanner ] ?? false ) ) {
+			$results['scan-completion'][ $scanner ] = array_fill_keys( array_column( $prs, 'number' ), false );
+		}
+	}
+}
+
+/**
  * Initialize statistics array
  *
  * @param array $options        Options array.

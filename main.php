@@ -2925,12 +2925,14 @@ function vipgoci_run_scan(
 	 */
 
 	// Start with linting if configured to do so.
+	vipgoci_scan_completion_init( $options, $prs_implicated, $results );
 	if ( true === $options['lint'] ) {
 		vipgoci_lint_scan_commit(
 			$options,
 			$results['issues'],
 			$results['stats'][ VIPGOCI_STATS_LINT ],
-			$results[ VIPGOCI_SKIPPED_FILES ]
+			$results[ VIPGOCI_SKIPPED_FILES ],
+			$results['scan-completion']['lint']
 		);
 
 		// Reduce memory usage as possible.
@@ -2943,8 +2945,13 @@ function vipgoci_run_scan(
 			$options,
 			$results['issues'],
 			$results['stats'][ VIPGOCI_STATS_PHPCS ],
-			$results[ VIPGOCI_SKIPPED_FILES ]
+			$results[ VIPGOCI_SKIPPED_FILES ],
+			$results['scan-completion']['phpcs']
 		);
+		if ( true === $options['svg-checks'] ) {
+			// SVG is executed and reported by the same per-PR PHPCS pipeline.
+			$results['scan-completion']['svg-checks'] = $results['scan-completion']['phpcs'];
+		}
 
 		gc_collect_cycles();
 	}
@@ -2954,7 +2961,8 @@ function vipgoci_run_scan(
 			$options,
 			$results['issues'],
 			$results['stats'][ VIPGOCI_STATS_WPSCAN_API ],
-			$results[ VIPGOCI_SKIPPED_FILES ]
+			$results[ VIPGOCI_SKIPPED_FILES ],
+			$results['scan-completion']['wpscan-api']
 		);
 
 		gc_collect_cycles();

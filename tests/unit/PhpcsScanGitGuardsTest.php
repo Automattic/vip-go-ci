@@ -206,11 +206,17 @@ final class PhpcsScanGitGuardsTest extends TestCase {
 		);
 		chmod( $this->directory . '/bin/git', 0755 );
 		putenv( 'PATH=' . $this->directory . '/bin:' . $this->original_path );
-		vipgoci_phpcs_scan_commit( $options, $issues, $stats, $skipped );
+		if ( true === ( $options['lint'] ?? false ) ) {
+			require_once __DIR__ . '/../../lint-scan.php';
+			vipgoci_lint_scan_commit( $options, $issues, $stats, $skipped, $completion );
+		} else {
+			vipgoci_phpcs_scan_commit( $options, $issues, $stats, $skipped, $completion );
+		}
 		return array(
-			'issues'  => $issues,
-			'stats'   => $stats,
-			'skipped' => $skipped,
+			'completion' => $completion,
+			'issues'     => $issues,
+			'stats'      => $stats,
+			'skipped'    => $skipped,
 		);
 	}
 
@@ -827,5 +833,86 @@ final class PhpcsScanGitGuardsTest extends TestCase {
 		$this->assertArrayNotHasKey( 'github_pr_files_phpcs_scanned', vipgoci_counter_report( VIPGOCI_COUNTERS_DUMP ) );
 		$this->assertSame( array(), $this->commands( ' blame ' ) );
 		$this->assertFalse( vipgoci_cache( array( 'vipgoci_gitrepo_diffs_fetch_unfiltered', $this->repo, $this->base, $this->head ) ) );
+	}
+
+	/** A label skip remains incomplete even though its statistics are removed. */
+	public function testLabelSkipCannotProduceCompletionEvidence(): void {
+		$this->base = $this->commit( array() );
+		$this->head = $this->commit( array( 'clean.php' => "<?php\n" ) );
+		$GLOBALS['vipgoci_test_http_responses']['GET /repos/owner/repo/issues/42/labels'] = array( array( 'name' => 'skip-phpcs-scan' ) );
+		$result = $this->scan( array( 42, 43 ), array( 'phpcs-skip-scanning-via-labels-allowed' => true ) );
+		$this->assertSame(
+			array(
+				42 => false,
+				43 => true,
+			),
+			$result['completion']
+		);
+		$this->assertArrayNotHasKey( 42, $result['stats'] );
+	}
+
+	/**
+	 * Real command/report failures cannot count as successful clean scans.
+	 *
+	 * @param string $marker Fault injected into the scanner fixture.
+	 */
+	#[DataProvider( 'completionFailures' )]
+	public function testFailedScanCannotProduceCompletionEvidence( string $marker ): void {
+		$this->base = $this->commit( array() );
+		$this->head = $this->commit( array( 'failed.php' => "<?php\n// $marker\n" ) );
+		$result     = $this->scan();
+		$this->assertSame( array( 42 => false ), $result['completion'] );
+		$this->assertSame( array(), $result['issues'][42] );
+		$this->assertSame(
+			array(
+				'error'   => 0,
+				'warning' => 0,
+				'info'    => 0,
+			),
+			$result['stats'][42]
+		);
+	}
+
+	/**
+	 * Faults with zero parsed findings.
+	 *
+	 * @return array Fault markers.
+	 */
+	public static function completionFailures(): array {
+		return array_map( static fn( $marker ) => array( $marker ), array( 'fixture-fatal', 'fixture-invalid-json', 'fixture-empty-report', 'fixture-missing-file' ) );
+	}
+
+	/**
+	 * Propagate lint failures through both discovery modes.
+	 *
+	 * @param bool $modified_only Whether to scan only modified files.
+	 * @param bool $success Whether the command succeeds.
+	 */
+	#[DataProvider( 'lintCompletionCases' )]
+	public function testLintCompletionTracksCommandSuccess( bool $modified_only, bool $success ): void {
+		$this->base = $this->commit( array() );
+		$this->head = $this->commit( array( 'clean.php' => "<?php\n" ) );
+		$result     = $this->scan(
+			array( 42 ),
+			array(
+				'lint'                     => true,
+				'lint-modified-files-only' => $modified_only,
+				'lint-file-extensions'     => array( 'php' ),
+				'lint-skip-folders'        => array(),
+				'lint-php-versions'        => array( 'test' ),
+				'lint-php-version-paths'   => array( 'test' => $success ? PHP_BINARY : '/bin/false' ),
+			)
+		);
+		$this->assertSame( array( 42 => $success ), $result['completion'] );
+		$this->assertSame( array(), $result['issues'][42] );
+	}
+
+	/**
+	 * Discovery modes and real command outcomes.
+	 *
+	 * @return array Test cases.
+	 */
+	public static function lintCompletionCases(): array {
+		return array( array( true, true ), array( false, true ), array( true, false ), array( false, false ) );
 	}
 }
