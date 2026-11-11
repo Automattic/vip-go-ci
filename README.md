@@ -508,7 +508,9 @@ After the rebase, the scanner requires all of the following:
 - The human's latest decisive review is still approved, or GitHub's dismissal
   event identifies it as an approval automatically dismissed by the current head.
   Manual dismissals of the human review or this feature's carried approval, and
-  outstanding change requests, prevent carry-forward.
+  outstanding change requests, prevent carry-forward. A compensating scanner
+  rollback can be retried only when its timeline actor is the scanner account
+  and its dismissal marker matches the carried review, head and human approval.
 - The PR is open, non-draft, still targets the saved repository and base branch,
   and has never been retargeted. Its base tip advances from the saved trusted tip,
   and the current head includes that new tip.
@@ -518,6 +520,10 @@ After the rebase, the scanner requires all of the following:
 - Git can mechanically merge the reviewed changes onto the new base with no
   conflicts, and the complete resulting tree exactly equals the scanned head,
   including whitespace, binaries, file modes, symlinks and submodule IDs.
+- File discovery must succeed before an empty file list qualifies as no work.
+  Failed local diffs and malformed or missing API fallback data prevent approval;
+  successfully discovered deletion-only or filtered-out changes require no scan.
+  API responses at the 300-file compare limit cannot prove complete discovery.
 - Every enabled scanner has explicit successful completion evidence for this
   PR and scanned commit. Failed commands, malformed output, missing reports and
   a `skip-phpcs-scan` label prevent both baseline capture and carry-forward.

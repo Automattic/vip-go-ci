@@ -619,7 +619,8 @@ function vipgoci_wpscan_scan_commit(
 		array(
 			'skip_folders' => $options['wpscan-api-skip-folders'],
 		),
-		false
+		true, // Keep successfully discovered PRs with no relevant files.
+		$discovery_complete
 	);
 	foreach ( $files_affected_by_commit_by_pr as $number => $files ) {
 		if ( 'all' !== $number ) {
@@ -658,7 +659,7 @@ function vipgoci_wpscan_scan_commit(
 		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'wpscan_scan_commit' );
 		foreach ( $files_affected_by_commit_by_pr as $number => $files ) {
 			if ( 'all' !== $number ) {
-				$scan_completion[ $number ] = vipgoci_wpscan_pr_scan_complete( $files, array(), $options['wpscan-api-paths'] );
+				$scan_completion[ $number ] = true === ( $discovery_complete[ $number ] ?? false ) && vipgoci_wpscan_pr_scan_complete( $files, array(), $options['wpscan-api-paths'] );
 			}
 		}
 
@@ -703,7 +704,7 @@ function vipgoci_wpscan_scan_commit(
 	);
 	foreach ( $files_affected_by_commit_by_pr as $number => $files ) {
 		if ( 'all' !== $number ) {
-			$scan_completion[ $number ] = vipgoci_wpscan_pr_scan_complete( $files, $directory_completion ?? array(), $options['wpscan-api-paths'] );
+			$scan_completion[ $number ] = true === ( $discovery_complete[ $number ] ?? false ) && vipgoci_wpscan_pr_scan_complete( $files, $directory_completion ?? array(), $options['wpscan-api-paths'] );
 		}
 	}
 

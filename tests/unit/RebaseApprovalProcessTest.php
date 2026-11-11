@@ -590,4 +590,52 @@ final class RebaseApprovalProcessTest extends TestCase {
 		$this->assertSame( array(), $this->runProcess() );
 		$this->assertSame( array(), $GLOBALS['rebase_posts'] );
 	}
+	/**
+	 * Authenticated rollbacks can be retried; copied or altered markers cannot.
+	 *
+	 * @return array Timeline mutation and expected retry authorization.
+	 */
+	public static function rollbackCases(): array {
+		return array( array( 'scanner rollback', true ), array( 'human actor', false ), array( 'missing actor', false ), array( 'wrong review', false ), array( 'wrong head', false ), array( 'wrong human review', false ), array( 'unmarked dismissal', false ) );
+	}
+
+	/**
+	 * Persist a rollback and retry against its actual dismissed review/timeline.
+	 *
+	 * @param string $scenario Timeline evidence to alter after the rollback.
+	 * @param bool   $allowed Whether the retry should approve.
+	 */
+	#[DataProvider( 'rollbackCases' )]
+	public function testPersistedRollbackCanBeRetriedOnlyWithAuthenticatedEvidence( string $scenario, bool $allowed ): void {
+		$this->responses();
+		$pr    = $this->pr;
+		$calls = 0;
+		$GLOBALS['rebase_responses'][ $this->root . 'pulls/7' ] = static function () use ( &$calls, $pr ): ?array {
+			// Simulate an inconclusive post-write read, then restore fresh evidence.
+			return 3 === ++$calls ? null : $pr;
+		};
+		$this->assertSame( array(), $this->runProcess() );
+		$this->assertCount( 1, $GLOBALS['rebase_puts'] );
+		$review = $GLOBALS['rebase_responses'][ $this->root . 'pulls/7/reviews?per_page=100&page=1' ][2];
+		$this->assertSame( 'DISMISSED', $review['state'] );
+		$timeline  = &$GLOBALS['rebase_responses'][ $this->root . 'issues/7/timeline?per_page=100&page=1' ];
+		$dismissal = &$timeline[ array_key_last( $timeline ) ];
+		$this->assertSame( 900, $dismissal['dismissed_review']['review_id'] );
+		if ( 'human actor' === $scenario ) {
+			$dismissal['actor']['id'] = 42;
+		} elseif ( 'missing actor' === $scenario ) {
+			unset( $dismissal['actor'] );
+		} elseif ( 'wrong review' === $scenario ) {
+			$dismissal['dismissed_review']['dismissal_message'] = vipgoci_rebase_rollback_message( 901, $this->fixture['head'], 101 );
+		} elseif ( 'wrong head' === $scenario ) {
+			$dismissal['dismissed_review']['dismissal_message'] = vipgoci_rebase_rollback_message( 900, $this->fixture['base'], 101 );
+		} elseif ( 'wrong human review' === $scenario ) {
+			$dismissal['dismissed_review']['dismissal_message'] = vipgoci_rebase_rollback_message( 900, $this->fixture['head'], 102 );
+		} elseif ( 'unmarked dismissal' === $scenario ) {
+			$dismissal['dismissed_review']['dismissal_message'] = 'Manual revocation';
+		}
+		$this->assertSame( $allowed ? array( 7 ) : array(), $this->runProcess() );
+		$this->assertCount( $allowed ? 2 : 1, $GLOBALS['rebase_posts'] );
+		$this->assertCount( 1, $GLOBALS['rebase_puts'] );
+	}
 }
