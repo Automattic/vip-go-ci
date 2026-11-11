@@ -524,12 +524,19 @@ After the rebase, the scanner requires all of the following:
   Failed local diffs and malformed or missing API fallback data prevent approval;
   successfully discovered deletion-only or filtered-out changes require no scan.
   API responses at the 300-file compare limit cannot prove complete discovery.
+- File discovery, blob contents and blame attribution use the scanned Git
+  commit, so edited, staged, deleted and untracked checkout files cannot replace
+  committed scan input. Blob reads return stored symlink target text rather than
+  following checkout links; callers can still reject committed symlinks.
+  WPScan metadata inspection uses the checkout, so enabled WPScan checks require
+  its add-on paths to have no tracked, untracked or ignored changes.
 - Every enabled scanner has explicit successful completion evidence for this
   PR and scanned commit. Failed commands, malformed output, missing reports and
   a `skip-phpcs-scan` label prevent both baseline capture and carry-forward.
   Disabled scanners require no completion evidence.
 - The original scan has no issues, nonzero statistics, or skipped files. The
-  feature never removes findings or changes scan exit status.
+  feature never removes findings. Normal approval decisions preserve scan exit
+  status; an unconfirmed rollback is an operational error that fails the run.
 
 The proof uses an isolated bare object database, without the scanned checkout's
 index, worktree, hooks, or configured external merge drivers. It requires Git
@@ -540,7 +547,11 @@ incomplete API responses all cause the feature to decline approval.
 
 The scanner rechecks the head, base and review evidence before approving, pins the
 review to the scanned head, then checks the PR again and dismisses its new review
-if the head/base moved during submission. GitHub has no atomic head-and-base
+if the head/base moved during submission. A fresh read must confirm each created
+review is dismissed. Failed or inconclusive compensation, including an unknown
+review ID after an uncertain POST and unavailable recovery data, stops the run
+with an operational error; inspect GitHub and reconcile any active approval
+before retrying. GitHub has no atomic head-and-base
 precondition for submitting reviews; required current-head checks remain important.
 If GitHub already dismissed the human review on an earlier rebase, this first
 version requires a new human approval/baseline before another carry-forward.

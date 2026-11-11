@@ -80,11 +80,12 @@ final class RebaseApprovalProcessTest extends TestCase {
 		}
 		require_once __DIR__ . '/helper/RebaseApprovalFixtures.php';
 		require_once __DIR__ . '/helper/RebaseApprovalHttp.php';
-		$GLOBALS['vipgoci_debug_level'] = -1;
-		$GLOBALS['rebase_posts']        = array();
-		$GLOBALS['rebase_puts']         = array();
-		$GLOBALS['rebase_responses']    = array();
-		unset( $GLOBALS['rebase_post_response'] );
+		$GLOBALS['vipgoci_debug_level']    = -1;
+		$GLOBALS['rebase_posts']           = array();
+		$GLOBALS['rebase_created_reviews'] = array();
+		$GLOBALS['rebase_puts']            = array();
+		$GLOBALS['rebase_responses']       = array();
+		unset( $GLOBALS['rebase_post_response'], $GLOBALS['rebase_put_response'], $GLOBALS['rebase_put_persist'] );
 		vipgoci_cache( VIPGOCI_CACHE_CLEAR );
 		vipgoci_cache(
 			array( 'vipgoci_github_authenticated_user_get', 'test-token' ),
@@ -637,5 +638,86 @@ final class RebaseApprovalProcessTest extends TestCase {
 		$this->assertSame( $allowed ? array( 7 ) : array(), $this->runProcess() );
 		$this->assertCount( $allowed ? 2 : 1, $GLOBALS['rebase_posts'] );
 		$this->assertCount( 1, $GLOBALS['rebase_puts'] );
+	}
+	/**
+	 * Request results and independent confirmation of compensation.
+	 *
+	 * @return array Rollback scenarios.
+	 */
+	public static function rollbackConfirmationCases(): array {
+		return array(
+			array( 'confirmed', false ),
+			array( 'failed request', true ),
+			array( 'false success', true ),
+			array( 'lost response but persisted', false ),
+			array( 'unavailable readback', true ),
+			array( 'wrong review', true ),
+			array( 'wrong author', true ),
+			array( 'wrong commit', true ),
+		);
+	}
+
+	/**
+	 * A rollback must be confirmed before an otherwise clean run can finish.
+	 *
+	 * @param string $scenario Fault at the HTTP boundary.
+	 * @param bool   $fails Whether an operational failure is required.
+	 */
+	#[DataProvider( 'rollbackConfirmationCases' )]
+	public function testRollbackRequiresMatchingDismissedReviewReadback( string $scenario, bool $fails ): void {
+		$this->responses();
+		$pr                     = $this->pr;
+		$changed                = $pr;
+		$changed['base']['sha'] = $this->fixture['base'];
+		$calls                  = 0;
+		$GLOBALS['rebase_responses'][ $this->root . 'pulls/7' ] = static function () use ( &$calls, $pr, $changed ): array {
+			return ++$calls < 3 ? $pr : $changed;
+		};
+		$GLOBALS['rebase_put_response']                         = in_array( $scenario, array( 'failed request', 'lost response but persisted' ), true ) ? -1 : 0;
+		$GLOBALS['rebase_put_persist']                          = ! in_array( $scenario, array( 'failed request', 'false success' ), true );
+		if ( 'unavailable readback' === $scenario ) {
+			$GLOBALS['rebase_responses'][ $this->root . 'pulls/7/reviews/900' ] = null;
+		} elseif ( str_starts_with( $scenario, 'wrong ' ) ) {
+			$review = array(
+				'id'        => 900,
+				'state'     => 'DISMISSED',
+				'user'      => array( 'id' => 999 ),
+				'commit_id' => $this->fixture['head'],
+			);
+			if ( 'wrong review' === $scenario ) {
+				$review['id'] = 901;
+			} elseif ( 'wrong author' === $scenario ) {
+				$review['user']['id'] = 42;
+			} else {
+				$review['commit_id'] = $this->fixture['base'];
+			}
+			$GLOBALS['rebase_responses'][ $this->root . 'pulls/7/reviews/900' ] = $review;
+		}
+		$failure = null;
+		try {
+			$this->assertSame( array(), $this->runProcess() );
+		} catch ( \RuntimeException $error ) {
+			$failure = $error;
+		}
+		$this->assertSame( $fails, $failure instanceof \RuntimeException );
+		if ( $fails ) {
+			$this->assertStringContainsString( 'rollback is unconfirmed for PR #7', $failure->getMessage() );
+		}
+		$this->assertCount( 1, $GLOBALS['rebase_posts'] );
+		$this->assertCount( 1, $GLOBALS['rebase_puts'] );
+		$this->assertSame( $GLOBALS['rebase_put_persist'] ? 'DISMISSED' : 'APPROVED', $GLOBALS['rebase_responses'][ $this->root . 'pulls/7/reviews?per_page=100&page=1' ][2]['state'] );
+	}
+
+	/** An uncertain POST plus an unavailable review list must stop the run. */
+	public function testUnknownCreatedReviewCannotSilentlyFinishClean(): void {
+		$this->responses();
+		$GLOBALS['rebase_post_response'] = '';
+		$reviews                         = $this->reviews;
+		$GLOBALS['rebase_responses'][ $this->root . 'pulls/7/reviews?per_page=100&page=1' ] = static function () use ( $reviews ): ?array {
+			return empty( $GLOBALS['rebase_posts'] ) ? $reviews : null;
+		};
+		$this->expectException( \RuntimeException::class );
+		$this->expectExceptionMessage( 'submitted review ID is unknown' );
+		$this->runProcess();
 	}
 }

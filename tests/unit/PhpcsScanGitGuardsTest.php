@@ -1072,4 +1072,104 @@ final class PhpcsScanGitGuardsTest extends TestCase {
 		$result     = $this->scan();
 		$this->assertSame( array( 42 => true ), $result['completion'] );
 	}
+	/**
+	 * Checkout changes must not alter committed-head attribution or discovery.
+	 *
+	 * @return array Mutation scenarios.
+	 */
+	public static function checkoutMutations(): array {
+		return array( array( 'clean' ), array( 'edited' ), array( 'deleted' ), array( 'staged edit' ) );
+	}
+
+	/**
+	 * PHPCS findings must survive mutations of their checkout lines.
+	 *
+	 * @param string $mutation Checkout mutation.
+	 */
+	#[DataProvider( 'checkoutMutations' )]
+	public function testCommittedPhpcsFindingSurvivesCheckoutChanges( string $mutation ): void {
+		$this->base = $this->commit( array() );
+		$this->head = $this->commit( array( 'finding.php' => "<?php\n// fixture-error\n" ) );
+		if ( 'deleted' === $mutation ) {
+			unlink( $this->repo . '/finding.php' );
+		} elseif ( 'clean' !== $mutation ) {
+			file_put_contents( $this->repo . '/finding.php', "<?php\n// working tree edit\n" );
+			if ( 'staged edit' === $mutation ) {
+				$this->git( 'add finding.php' );
+			}
+		}
+		$result = $this->scan();
+		$this->assertCount( 1, $result['issues'][42] );
+		$this->assertSame( 1, $result['stats'][42]['error'] );
+		$this->assertSame( array( 42 => true ), $result['completion'] );
+		$this->assertStringContainsString( $this->head . ' -- finding.php', $this->commands( ' blame ' )[0] );
+	}
+
+	/**
+	 * Full-repository lint must inspect committed files even if locally deleted.
+	 *
+	 * @param string $mutation Checkout mutation.
+	 */
+	#[DataProvider( 'checkoutMutations' )]
+	public function testCommittedLintFindingSurvivesCheckoutChanges( string $mutation ): void {
+		$this->base = $this->commit( array() );
+		$this->head = $this->commit( array( 'broken.php' => "<?php\nfunction (\n" ) );
+		if ( 'deleted' === $mutation ) {
+			unlink( $this->repo . '/broken.php' );
+		} elseif ( 'clean' !== $mutation ) {
+			file_put_contents( $this->repo . '/broken.php', "<?php\n// locally repaired\n" );
+			if ( 'staged edit' === $mutation ) {
+				$this->git( 'add broken.php' );
+			}
+		}
+		$options                             = $this->discoveryOptions( 'lint' );
+		$options['lint-modified-files-only'] = false;
+		$result                              = $this->scan( array( 42 ), $options );
+		$this->assertCount( 1, $result['issues'][42] );
+		$this->assertSame( 1, $result['stats'][42]['error'] );
+		$this->assertSame( array( 42 => true ), $result['completion'] );
+	}
+
+	/**
+	 * WPScan must not attest to completion using locally altered add-on metadata.
+	 *
+	 * @param string $mutation Checkout mutation.
+	 */
+	#[DataProvider( 'checkoutMutations' )]
+	public function testWpscanCompletionRequiresCommittedAddonCheckout( string $mutation ): void {
+		require_once __DIR__ . '/../../wpscan-api.php';
+		require_once __DIR__ . '/helper/WpscanCheckout.php';
+		$this->base = $this->commit( array() );
+		mkdir( $this->repo . '/plugins/a', 0700, true );
+		$this->head = $this->commit( array( 'plugins/a/main.php' => "<?php\n" ) );
+		if ( 'deleted' === $mutation ) {
+			unlink( $this->repo . '/plugins/a/main.php' );
+		} elseif ( 'clean' !== $mutation ) {
+			file_put_contents( $this->repo . '/plugins/a/main.php', "<?php\n// locally changed metadata\n" );
+			if ( 'staged edit' === $mutation ) {
+				$this->git( 'add plugins/a/main.php' );
+			}
+		}
+		$GLOBALS['wpscan_checkout_metadata']                             = array(
+			'plugin-a' => array(
+				'slug'             => 'a',
+				'version_detected' => '1.0',
+				'type'             => VIPGOCI_ADDON_PLUGIN,
+				'file_name'        => $this->repo . '/plugins/a/main.php',
+			),
+		);
+		$GLOBALS['vipgoci_test_http_responses']['GET /api/v3/plugins/a'] = array(
+			'a' => array(
+				'friendly_name'   => 'A',
+				'latest_version'  => '1.0',
+				'last_updated'    => '2026-01-01',
+				'vulnerabilities' => array(),
+			),
+		);
+		$options                     = $this->discoveryOptions( 'wpscan' );
+		$options['wpscan-api-token'] = 'token';
+		$result                      = $this->scan( array( 42 ), $options );
+		$this->assertSame( array( 42 => 'clean' === $mutation ), $result['completion'] );
+		$this->assertSame( array(), $result['issues'][42] );
+	}
 }

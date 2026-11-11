@@ -200,10 +200,8 @@ final class GitRepoRepoFetchCommittedFileTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
-		$this->assertSame(
-			'Test file contents. Some text.' . PHP_EOL,
-			$ret_without_reject_symlink
-		);
+		// Untracked links are not part of the requested commit in either mode.
+		$this->assertFalse( $ret_without_reject_symlink );
 
 		$this->assertFalse(
 			$ret_with_reject_symlink

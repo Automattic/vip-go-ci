@@ -1127,7 +1127,7 @@ function vipgoci_github_pr_reviews_get(
  * @param string $dismiss_message Dismissal message.
  * @param string $github_token    GitHub token to use to make GitHub API requests.
  *
- * @return void
+ * @return bool Whether the dismissal request reported success.
  */
 function vipgoci_github_pr_review_dismiss(
 	string $repo_owner,
@@ -1136,7 +1136,7 @@ function vipgoci_github_pr_review_dismiss(
 	int $review_id,
 	string $dismiss_message,
 	string $github_token
-) :void {
+): bool {
 	vipgoci_log(
 		'Dismissing a pull request review',
 		array(
@@ -1159,7 +1159,7 @@ function vipgoci_github_pr_review_dismiss(
 		rawurlencode( (string) $review_id ) . '/' .
 		'dismissals';
 
-	vipgoci_http_api_put_url(
+	return 0 === vipgoci_http_api_put_url(
 		$github_url,
 		array(
 			'message' => $dismiss_message,

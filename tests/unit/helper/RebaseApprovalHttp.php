@@ -16,7 +16,18 @@ declare(strict_types=1);
  * @return string|null JSON response or failure.
  */
 function vipgoci_http_api_fetch_url( string $url, mixed $token, bool $fatal = true ): ?string {
-	$key      = parse_url( $url, PHP_URL_PATH ) . ( null === parse_url( $url, PHP_URL_QUERY ) ? '' : '?' . parse_url( $url, PHP_URL_QUERY ) );
+	$key = parse_url( $url, PHP_URL_PATH ) . ( null === parse_url( $url, PHP_URL_QUERY ) ? '' : '?' . parse_url( $url, PHP_URL_QUERY ) );
+	if ( ! array_key_exists( $key, $GLOBALS['rebase_responses'] ) && preg_match( '~^(.*)/reviews/([0-9]+)$~', $key, $match ) ) {
+		if ( isset( $GLOBALS['rebase_created_reviews'][ (int) $match[2] ] ) ) {
+			return json_encode( $GLOBALS['rebase_created_reviews'][ (int) $match[2] ] );
+		}
+		$reviews = $GLOBALS['rebase_responses'][ $match[1] . '/reviews?per_page=100&page=1' ] ?? null;
+		foreach ( is_array( $reviews ) ? $reviews : array() as $review ) {
+			if ( $review['id'] === (int) $match[2] ) {
+				return json_encode( $review );
+			}
+		}
+	}
 	$response = $GLOBALS['rebase_responses'][ $key ] ?? null;
 	if ( is_callable( $response ) ) {
 		$response = $response();
@@ -44,8 +55,9 @@ function vipgoci_http_api_post_url( string $url, array $body, mixed $token ): st
 		'body'      => $body['body'],
 		'user'      => array( 'id' => 999 ),
 	);
-	$path                      = parse_url( $url, PHP_URL_PATH );
-	$timeline                  = str_replace( '/pulls/', '/issues/', substr( $path, 0, -strlen( '/reviews' ) ) ) . '/timeline?per_page=100&page=1';
+	$GLOBALS['rebase_created_reviews'][ $review['id'] ] = $review;
+	$path     = parse_url( $url, PHP_URL_PATH );
+	$timeline = str_replace( '/pulls/', '/issues/', substr( $path, 0, -strlen( '/reviews' ) ) ) . '/timeline?per_page=100&page=1';
 	foreach ( array(
 		$path . '?per_page=100&page=1' => $review,
 		$timeline                      => array_merge( $review, array( 'event' => 'reviewed' ) ),
@@ -70,13 +82,19 @@ function vipgoci_http_api_put_url( string $url, array $body, string $token ): in
 		'url'  => $url,
 		'body' => $body,
 	);
+	if ( false === ( $GLOBALS['rebase_put_persist'] ?? true ) ) {
+		return $GLOBALS['rebase_put_response'] ?? 0;
+	}
 	// Persist the real effect of a dismissal for subsequent scanner runs.
 	$path = parse_url( $url, PHP_URL_PATH );
 	preg_match( '~^(.*/pulls/[0-9]+)/reviews/([0-9]+)/dismissals$~', $path, $match );
 	if ( ! empty( $match ) ) {
 		$key       = $match[1] . '/reviews?per_page=100&page=1';
 		$review_id = (int) $match[2];
-		$reviews   = &$GLOBALS['rebase_responses'][ $key ];
+		if ( isset( $GLOBALS['rebase_created_reviews'][ $review_id ] ) ) {
+			$GLOBALS['rebase_created_reviews'][ $review_id ]['state'] = 'DISMISSED';
+		}
+		$reviews = &$GLOBALS['rebase_responses'][ $key ];
 		if ( is_array( $reviews ) ) {
 			foreach ( $reviews as &$review ) {
 				if ( $review['id'] === $review_id ) {
@@ -98,7 +116,7 @@ function vipgoci_http_api_put_url( string $url, array $body, string $token ): in
 			);
 		}
 	}
-	return 0;
+	return $GLOBALS['rebase_put_response'] ?? 0;
 }
 
 /**

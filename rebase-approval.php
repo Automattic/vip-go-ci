@@ -400,6 +400,7 @@ function vipgoci_rebase_approval_revoked( array $reviews, array $events, array $
  * @param array       $payload   Submitted review fields.
  * @param object|null $posted    POST response, if conclusive.
  * @return bool Whether the carried approval was confirmed against unchanged evidence.
+ * @throws RuntimeException When rollback or review recovery cannot be confirmed.
  */
 function vipgoci_rebase_approval_verify( array $options, array $baseline, object $pr, array $reviews, array $events, int $bot_id, array $payload, ?object $posted ): bool {
 	$number        = $baseline['pr'];
@@ -409,8 +410,7 @@ function vipgoci_rebase_approval_verify( array $options, array $baseline, object
 	$old_ids       = array_column( $reviews, 'id' );
 	$created       = array();
 	if (
-		null !== $posted && ! in_array( $posted->id, $old_ids, true ) &&
-		'APPROVED' === ( $posted->state ?? null ) && $payload['commit_id'] === ( $posted->commit_id ?? null )
+		null !== $posted && ! in_array( $posted->id, $old_ids, true )
 	) {
 		$created[] = $posted->id;
 	}
@@ -434,8 +434,35 @@ function vipgoci_rebase_approval_verify( array $options, array $baseline, object
 		! vipgoci_rebase_pr_matches( $after, $options, $baseline ) || $after->base->sha !== $pr->base->sha ||
 		json_encode( $after_reviews ) !== json_encode( $reviews ) || json_encode( $after_events ) !== json_encode( $events )
 	) {
+		$unconfirmed = array();
 		foreach ( $created as $review_id ) {
-			vipgoci_github_pr_review_dismiss( $options['repo-owner'], $options['repo-name'], $number, $review_id, vipgoci_rebase_rollback_message( $review_id, $payload['commit_id'], $baseline['review'] ), $options['token'] );
+			$sent   = vipgoci_github_pr_review_dismiss( $options['repo-owner'], $options['repo-name'], $number, $review_id, vipgoci_rebase_rollback_message( $review_id, $payload['commit_id'], $baseline['review'] ), $options['token'] );
+			$review = vipgoci_rebase_api_read( $options, 'pulls/' . $number . '/reviews/' . $review_id, false );
+			if ( $review_id !== ( $review->id ?? null ) || 'DISMISSED' !== ( $review->state ?? null ) ||
+				$bot_id !== ( $review->user->id ?? null ) || $payload['commit_id'] !== ( $review->commit_id ?? null ) ) {
+				$unconfirmed[] = $review_id;
+				vipgoci_log(
+					'Rebase approval rollback could not be confirmed',
+					array(
+						'pr_number'                   => $number,
+						'review_id'                   => $review_id,
+						'dismissal_request_succeeded' => $sent,
+					),
+					0,
+					true
+				);
+			}
+		}
+		// No review ID can be recovered when both POST and the review read fail.
+		// An approval might still exist, so an ordinary clean scan is not enough.
+		if ( ! empty( $unconfirmed ) || ( empty( $created ) && null === $posted && null === $after_reviews ) ) {
+			// phpcs:disable WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Plain-text CLI error with integer GitHub IDs.
+			throw new RuntimeException(
+				'Rebase approval rollback is unconfirmed for PR #' . $number .
+				( empty( $unconfirmed ) ? '; the submitted review ID is unknown.' : '; review IDs: ' . implode( ', ', $unconfirmed ) . '.' ) .
+				' An approval may still be active. Inspect GitHub and reconcile it before retrying.'
+			);
+			// phpcs:enable WordPress.Security.EscapeOutput.ExceptionNotEscaped
 		}
 		return false;
 	}
