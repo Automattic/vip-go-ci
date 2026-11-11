@@ -161,4 +161,15 @@ final class ScanCompletionTest extends TestCase {
 		$this->assertSame( array(), $result );
 		$this->assertSame( array( 'plugins/a' => $expected ), $completion );
 	}
+	/** An unreadable tree must not become a successfully discovered empty tree. */
+	public function testFailedTreeDiscoveryIsNotSuccessfulNoWork(): void {
+		require_once __DIR__ . '/../../misc.php';
+		require_once __DIR__ . '/../../log.php';
+		$GLOBALS['vipgoci_debug_level'] = -1;
+		$path                           = tempnam( sys_get_temp_dir(), 'vipgoci-missing-tree-' );
+		unlink( $path );
+		// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- Exercise a known missing directory.
+		$this->assertSame( array(), @vipgoci_scandir_git_repo( $path, true, null, null, $complete ) );
+		$this->assertFalse( $complete );
+	}
 }

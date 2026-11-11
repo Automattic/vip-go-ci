@@ -358,13 +358,17 @@ function vipgoci_gitrepo_branch_current_get(
  * @param string     $commit_id Commit-ID of current commit.
  * @param null|array $filter    Filter to apply.
  *
+ * @param bool|null  $discovery_complete Whether the complete tree was read (reference).
+ *
  * @return array Array with files in repository as items.
  */
 function vipgoci_gitrepo_fetch_tree(
 	array $options,
 	string $commit_id,
-	null|array $filter = null
-) :array {
+	null|array $filter = null,
+	?bool &$discovery_complete = null
+): array {
+	$discovery_complete = false;
 	// Check for cached version.
 	$cached_id = array(
 		__FUNCTION__,
@@ -388,6 +392,7 @@ function vipgoci_gitrepo_fetch_tree(
 	);
 
 	if ( false !== $cached_data ) {
+		$discovery_complete = true;
 		return $cached_data;
 	}
 
@@ -400,16 +405,17 @@ function vipgoci_gitrepo_fetch_tree(
 	$files_arr = vipgoci_scandir_git_repo(
 		$options['local-git-repo'],
 		true,
-		$filter
+		$filter,
+		null,
+		$discovery_complete
 	);
 
 	/*
 	 * Cache the results and return
 	 */
-	vipgoci_cache(
-		$cached_id,
-		$files_arr
-	);
+	if ( $discovery_complete ) {
+		vipgoci_cache( $cached_id, $files_arr );
+	}
 
 	return $files_arr;
 }
@@ -1817,6 +1823,7 @@ function vipgoci_gitrepo_diffs_clean_extra_whitespace(
  * @param bool       $permission_changes_also If to include files whose permissions were changed.
  * @param null|array $filter                  Filter to apply to results.
  * @param bool       $include_patches         Whether to load patches, rather than metadata only.
+ * @param bool|null  $discovery_complete Whether discovery succeeded, including an empty diff (reference).
  *
  * @return array Array with results. For example:
  *  array(
@@ -1850,8 +1857,10 @@ function vipgoci_git_diffs_fetch(
 	bool $removed_files_also = true,
 	bool $permission_changes_also = false,
 	null|array $filter = null,
-	bool $include_patches = true
+	bool $include_patches = true,
+	?bool &$discovery_complete = null
 ): array {
+	$discovery_complete = false;
 	/*
 	 * Check if we have a preference whether to
 	 * use local git repository or GitHub API.
@@ -1959,6 +1968,13 @@ function vipgoci_git_diffs_fetch(
 		'files_status' => array(),
 		'data_source'  => $diff_results_data_source,
 	);
+
+	if ( null === $diff_results || ! is_array( $diff_results['files'] ?? null ) ) {
+		return $results;
+	}
+	// GitHub compare returns at most 300 files; a response at that limit may be truncated.
+	// Preserve legacy results, but do not qualify them as complete scanner discovery.
+	$discovery_complete = VIPGOCI_GIT_DIFF_DATA_SOURCE_GITHUB_API !== $diff_results_data_source || count( $diff_results['files'] ) < 300;
 
 	foreach ( $diff_results['files'] as $file_item ) {
 		/*

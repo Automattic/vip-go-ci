@@ -206,7 +206,10 @@ final class PhpcsScanGitGuardsTest extends TestCase {
 		);
 		chmod( $this->directory . '/bin/git', 0755 );
 		putenv( 'PATH=' . $this->directory . '/bin:' . $this->original_path );
-		if ( true === ( $options['lint'] ?? false ) ) {
+		if ( true === ( $options['wpscan-api'] ?? false ) ) {
+			require_once __DIR__ . '/../../wpscan-scan.php';
+			vipgoci_wpscan_scan_commit( $options, $issues, $stats, $skipped, $completion );
+		} elseif ( true === ( $options['lint'] ?? false ) ) {
 			require_once __DIR__ . '/../../lint-scan.php';
 			vipgoci_lint_scan_commit( $options, $issues, $stats, $skipped, $completion );
 		} else {
@@ -914,5 +917,159 @@ final class PhpcsScanGitGuardsTest extends TestCase {
 	 */
 	public static function lintCompletionCases(): array {
 		return array( array( true, true ), array( false, true ), array( true, false ), array( false, false ) );
+	}
+	/**
+	 * Scanner coordinators whose work is based on per-PR diff discovery.
+	 *
+	 * @param string $scanner Scanner to exercise.
+	 * @return array Scanner options.
+	 */
+	private function discoveryOptions( string $scanner ): array {
+		return array(
+			'lint'                              => 'lint' === $scanner,
+			'lint-modified-files-only'          => true,
+			'lint-file-extensions'              => array( 'php' ),
+			'lint-skip-folders'                 => array(),
+			'lint-php-versions'                 => array( 'test' ),
+			'lint-php-version-paths'            => array( 'test' => PHP_BINARY ),
+			'wpscan-api'                        => 'wpscan' === $scanner,
+			'wpscan-api-paths'                  => array( 'plugins' ),
+			'wpscan-api-skip-folders'           => array(),
+			'wpscan-api-plugin-file-extensions' => array( 'php' ),
+			'wpscan-api-theme-file-extensions'  => array( 'css' ),
+		);
+	}
+
+	/**
+	 * Missing/malformed discovery and a genuine successful empty result.
+	 *
+	 * @return array Scanner and fallback response scenarios.
+	 */
+	public static function discoveryCases(): array {
+		$cases = array();
+		foreach ( array( 'phpcs', 'lint', 'wpscan' ) as $scanner ) {
+			foreach ( array( 'missing files', 'transport failure', 'malformed files', 'malformed entry', 'capped files', 'below cap', 'empty success' ) as $response ) {
+				$cases[] = array( $scanner, $response );
+			}
+		}
+		return $cases;
+	}
+
+	/**
+	 * A failed local diff and malformed GitHub fallback must remain incomplete.
+	 *
+	 * @param string $scanner Scanner to exercise.
+	 * @param string $response Fallback response scenario.
+	 */
+	#[DataProvider( 'discoveryCases' )]
+	public function testDiscoverySuccessIsIndependentOfAnEmptyFileList( string $scanner, string $response ): void {
+		$this->head = $this->commit( array( 'changed.php' => "<?php\n" ) );
+		$this->base = str_repeat( '1', 40 );
+		$responses  = array(
+			'missing files'     => array(),
+			'transport failure' => null,
+			'malformed files'   => array( 'files' => 'invalid' ),
+			'malformed entry'   => array( 'files' => array( array( 'filename' => 'changed.php' ) ) ),
+			'empty success'     => array( 'files' => array() ),
+		);
+		foreach ( array(
+			'capped files' => 300,
+			'below cap'    => 299,
+		) as $case => $count ) {
+			$responses[ $case ] = array(
+				'files' => array_map(
+					static fn( $i ) => array(
+						'filename'  => 'file-' . $i . '.txt',
+						'status'    => 'added',
+						'additions' => 1,
+						'deletions' => 0,
+						'changes'   => 1,
+					),
+					range( 1, $count )
+				),
+			);
+		}
+
+		$GLOBALS['vipgoci_test_http_responses'][ 'GET /repos/owner/repo/compare/' . $this->base . '...' . $this->head ] = $responses[ $response ];
+		$result = $this->scan( array( 42 ), $this->discoveryOptions( $scanner ) );
+		$this->assertSame( array( 42 => in_array( $response, array( 'empty success', 'below cap' ), true ) ), $result['completion'] );
+		$this->assertSame( array(), $result['issues'][42] );
+		$this->assertFileDoesNotExist( $this->directory . '/phpcs.jsonl' );
+	}
+
+	/**
+	 * No-work PRs need an explicit successful completion, including deletions.
+	 *
+	 * @return array Scanners to exercise.
+	 */
+	public static function noWorkScanners(): array {
+		return array( array( 'phpcs', false ), array( 'lint', false ), array( 'wpscan', false ), array( 'phpcs', true ), array( 'lint', true ), array( 'wpscan', true ) );
+	}
+
+	/**
+	 * Removed-only changes are discovered successfully but need no file scan.
+	 *
+	 * @param string $scanner Scanner to exercise.
+	 * @param bool   $filtered Whether discovery filters out the changed file.
+	 */
+	#[DataProvider( 'noWorkScanners' )]
+	public function testDeletionOnlyPrCompletesWithoutScannerWork( string $scanner, bool $filtered ): void {
+		mkdir( $this->repo . '/plugins/gone', 0700, true );
+		$this->base = $this->commit( array( 'plugins/gone/main.php' => "<?php\n" ) );
+		$options    = $this->discoveryOptions( $scanner );
+		if ( $filtered ) {
+			$this->head                         = $this->commit( array( 'plugins/gone/main.php' => "<?php\n// changed\n" ) );
+			$options['phpcs-skip-folders']      = array( 'plugins' );
+			$options['lint-skip-folders']       = array( 'plugins' );
+			$options['wpscan-api-skip-folders'] = array( 'plugins' );
+		} else {
+			unlink( $this->repo . '/plugins/gone/main.php' );
+			$this->head = $this->commit( array() );
+		}
+		$result = $this->scan( array( 42 ), $options );
+		$this->assertSame( array( 42 => true ), $result['completion'] );
+		$this->assertSame( array(), $result['issues'][42] );
+	}
+
+	/**
+	 * Native SVG reports must be consistent before internal findings are added.
+	 *
+	 * @return array Fault markers and expected completion.
+	 */
+	public static function svgReports(): array {
+		return array( array( 'native', true ), array( 'count-mismatch', false ), array( 'total-mismatch', false ), array( 'invalid-message', false ), array( 'null-line', false ) );
+	}
+
+	/**
+	 * Empty findings must not conceal malformed SVG scanner evidence.
+	 *
+	 * @param string $marker Fixture report variant.
+	 * @param bool   $complete Expected completion.
+	 */
+	#[DataProvider( 'svgReports' )]
+	public function testSvgCompletionRequiresConsistentNativeReport( string $marker, bool $complete ): void {
+		$this->base = $this->commit( array() );
+		$this->head = $this->commit( array( 'icon.svg' => "<svg><!-- fixture-svg-$marker --></svg>\n" ) );
+		$result     = $this->scan(
+			array( 42 ),
+			array(
+				'svg-checks'       => true,
+				'svg-scanner-path' => __DIR__ . '/helper/PhpcsScanFixture.php',
+				'svg-php-path'     => PHP_BINARY,
+			)
+		);
+		$this->assertSame( array( 42 => $complete ), $result['completion'] );
+		$this->assertSame( array(), $result['issues'][42] );
+	}
+	/** A full local discovery at the API limit must still be marked complete. */
+	public function testLocalDiscoveryHasNoApiFileLimit(): void {
+		$this->base = $this->commit( array() );
+		$files      = array();
+		foreach ( range( 1, 300 ) as $index ) {
+			$files[ 'file-' . $index . '.txt' ] = 'text';
+		}
+		$this->head = $this->commit( $files );
+		$result     = $this->scan();
+		$this->assertSame( array( 42 => true ), $result['completion'] );
 	}
 }

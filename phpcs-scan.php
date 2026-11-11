@@ -800,7 +800,8 @@ function vipgoci_phpcs_scan_commit(
 			),
 			'skip_folders'    => $options['phpcs-skip-folders'],
 		),
-		true
+		true,
+		$discovery_complete
 	);
 
 	$files_issues_arr = array();
@@ -1088,7 +1089,7 @@ function vipgoci_phpcs_scan_commit(
 	);
 
 	foreach ( $prs_implicated as $pr_item ) {
-		$complete = isset( $pr_item_files_changed[ $pr_item->number ] );
+		$complete = true === ( $discovery_complete[ $pr_item->number ] ?? false ) && isset( $pr_item_files_changed[ $pr_item->number ] );
 		foreach ( $pr_item_files_changed[ $pr_item->number ] ?? array() as $file_name ) {
 			if ( true !== ( $file_completion[ $file_name ] ?? false ) ) {
 				$complete = false;

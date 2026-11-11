@@ -657,7 +657,8 @@ function vipgoci_lint_scan_commit(
 				'file_extensions' => $options['lint-file-extensions'],
 				'skip_folders'    => $options['lint-skip-folders'],
 			),
-			true
+			true,
+			$discovery_complete
 		);
 
 		$files_to_be_scanned = $pr_item_files_changed['all'];
@@ -673,7 +674,8 @@ function vipgoci_lint_scan_commit(
 			array(
 				'file_extensions' => $options['lint-file-extensions'],
 				'skip_folders'    => $options['lint-skip-folders'],
-			)
+			),
+			$tree_discovery_complete
 		);
 	}
 
@@ -698,8 +700,8 @@ function vipgoci_lint_scan_commit(
 	foreach ( $prs_implicated as $pr_item ) {
 		$pr_number                     = $pr_item->number;
 		$scan_completion[ $pr_number ] = false === $options['lint-modified-files-only']
-			? empty( $failed_files )
-			: isset( $files_changed_in_pr[ $pr_number ] ) && empty( array_intersect( $failed_files, $files_changed_in_pr[ $pr_number ] ) );
+			? true === $tree_discovery_complete && empty( $failed_files )
+			: true === ( $discovery_complete[ $pr_number ] ?? false ) && isset( $files_changed_in_pr[ $pr_number ] ) && empty( array_intersect( $failed_files, $files_changed_in_pr[ $pr_number ] ) );
 		if ( 0 !== ( $commit_skipped_files[ $pr_number ]['total'] ?? 0 ) ) {
 			$scan_completion[ $pr_number ] = false;
 		}

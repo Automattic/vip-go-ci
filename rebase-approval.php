@@ -336,6 +336,21 @@ function vipgoci_rebase_review_write( array $options, int $number, array $body )
 }
 
 /**
+ * Bind a compensating dismissal to the review and original human approval.
+ *
+ * The marker is trusted only in a review_dismissed event by the authenticated
+ * scanner account. A copied message from a different actor is not a rollback.
+ *
+ * @param int    $review_id Created review ID.
+ * @param string $head Head approved by that review.
+ * @param int    $human_review_id Original human approval ID.
+ * @return string Stable dismissal message used to recognize scanner rollbacks.
+ */
+function vipgoci_rebase_rollback_message( int $review_id, string $head, int $human_review_id ): string {
+	return 'vip-go-ci rebase rollback v1: review=' . $review_id . '; head=' . $head . '; human_review=' . $human_review_id . '. PR head, base, or review evidence changed while approving the rebase.';
+}
+
+/**
  * Do not reverse a maintainer's dismissal of an approval carried by this bot.
  *
  * @param array $reviews  Complete reviews.
@@ -354,7 +369,16 @@ function vipgoci_rebase_approval_revoked( array $reviews, array $events, array $
 			continue;
 		}
 		$dismissals = array_values( array_filter( $events, static fn( object $event ): bool => ( $event->dismissed_review->review_id ?? null ) === $review->id ) );
-		if ( 1 !== count( $dismissals ) || ! vipgoci_rebase_sha( $dismissals[0]->dismissed_review->dismissal_commit_id ?? null ) ) {
+		if ( 1 !== count( $dismissals ) ) {
+			return true;
+		}
+		$dismissal = $dismissals[0];
+		$rollback  = 'review_dismissed' === ( $dismissal->event ?? null ) &&
+			$bot_id === ( $dismissal->actor->id ?? null ) &&
+			'approved' === ( $dismissal->dismissed_review->state ?? null ) &&
+			vipgoci_rebase_sha( $review->commit_id ?? null ) &&
+			vipgoci_rebase_rollback_message( $review->id, $review->commit_id, $baseline['review'] ) === ( $dismissal->dismissed_review->dismissal_message ?? null );
+		if ( ! $rollback && ! vipgoci_rebase_sha( $dismissal->dismissed_review->dismissal_commit_id ?? null ) ) {
 			return true;
 		}
 	}
@@ -411,7 +435,7 @@ function vipgoci_rebase_approval_verify( array $options, array $baseline, object
 		json_encode( $after_reviews ) !== json_encode( $reviews ) || json_encode( $after_events ) !== json_encode( $events )
 	) {
 		foreach ( $created as $review_id ) {
-			vipgoci_github_pr_review_dismiss( $options['repo-owner'], $options['repo-name'], $number, $review_id, 'PR head, base, or review evidence changed while approving the rebase.', $options['token'] );
+			vipgoci_github_pr_review_dismiss( $options['repo-owner'], $options['repo-name'], $number, $review_id, vipgoci_rebase_rollback_message( $review_id, $payload['commit_id'], $baseline['review'] ), $options['token'] );
 		}
 		return false;
 	}

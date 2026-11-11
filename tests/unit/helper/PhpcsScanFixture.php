@@ -87,4 +87,24 @@ if ( count( $filenames ) > 1 ) {
 		$report['files']['/unknown.php'] = $report['files'][ $filenames[0] ];
 	}
 }
+
+if ( str_contains( $contents, 'fixture-svg-' ) ) {
+	$filename = $filenames[0];
+	unset( $report['files'][ $filename ]['warnings'] );
+	if ( str_contains( $contents, 'fixture-svg-count-mismatch' ) ) {
+		$report['totals']['errors']             = 1;
+		$report['files'][ $filename ]['errors'] = 1;
+	} elseif ( str_contains( $contents, 'fixture-svg-total-mismatch' ) ) {
+		$report['totals']['errors'] = 1;
+	} elseif ( str_contains( $contents, 'fixture-svg-invalid-message' ) || str_contains( $contents, 'fixture-svg-null-line' ) ) {
+		$report['totals']['errors']               = 1;
+		$report['files'][ $filename ]['errors']   = 1;
+		$report['files'][ $filename ]['messages'] = array(
+			str_contains( $contents, 'fixture-svg-null-line' ) ? array(
+				'message' => 'Unable to parse file',
+				'line'    => null,
+			) : 'invalid',
+		);
+	}
+}
 echo json_encode( $report );

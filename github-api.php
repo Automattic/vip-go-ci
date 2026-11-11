@@ -95,14 +95,14 @@ function vipgoci_github_diffs_fetch_unfiltered(
 		vipgoci_http_api_fetch_url(
 			$github_url,
 			$github_token
-		),
+		) ?? '',
 		true
 	);
 
 	/*
 	 * If no "files" in array, return with error.
 	 */
-	if ( ! isset( $resp_raw['files'] ) ) {
+	if ( ! is_array( $resp_raw['files'] ?? null ) || ! array_is_list( $resp_raw['files'] ) ) {
 		return null;
 	}
 
@@ -119,6 +119,16 @@ function vipgoci_github_diffs_fetch_unfiltered(
 	);
 
 	foreach ( array_values( $resp_raw['files'] ) as $file_item ) {
+		if ( ! is_array( $file_item ) || ! is_string( $file_item['filename'] ?? null ) || '' === $file_item['filename'] || isset( $diff_results['files'][ $file_item['filename'] ] ) ||
+			! in_array( $file_item['status'] ?? null, array( 'added', 'removed', 'modified', 'renamed', 'copied', 'changed', 'unchanged' ), true ) ) {
+			return null;
+		}
+		foreach ( array( 'additions', 'deletions', 'changes' ) as $count ) {
+			if ( ! is_int( $file_item[ $count ] ?? null ) || $file_item[ $count ] < 0 ) {
+				return null;
+			}
+		}
+
 		/*
 		 * If there are content modifications to the file,
 		 * and GitHub indicates file status is 'renamed',

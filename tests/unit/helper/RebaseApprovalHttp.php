@@ -38,7 +38,7 @@ function vipgoci_http_api_post_url( string $url, array $body, mixed $token ): st
 		'body' => $body,
 	);
 	$review                    = array(
-		'id'        => 900,
+		'id'        => 899 + count( $GLOBALS['rebase_posts'] ),
 		'state'     => 'APPROVE' === $body['event'] ? 'APPROVED' : 'COMMENTED',
 		'commit_id' => $body['commit_id'],
 		'body'      => $body['body'],
@@ -70,6 +70,34 @@ function vipgoci_http_api_put_url( string $url, array $body, string $token ): in
 		'url'  => $url,
 		'body' => $body,
 	);
+	// Persist the real effect of a dismissal for subsequent scanner runs.
+	$path = parse_url( $url, PHP_URL_PATH );
+	preg_match( '~^(.*/pulls/[0-9]+)/reviews/([0-9]+)/dismissals$~', $path, $match );
+	if ( ! empty( $match ) ) {
+		$key       = $match[1] . '/reviews?per_page=100&page=1';
+		$review_id = (int) $match[2];
+		$reviews   = &$GLOBALS['rebase_responses'][ $key ];
+		if ( is_array( $reviews ) ) {
+			foreach ( $reviews as &$review ) {
+				if ( $review['id'] === $review_id ) {
+					$review['state'] = 'DISMISSED';
+				}
+			}
+			unset( $review );
+		}
+		$timeline = str_replace( '/pulls/', '/issues/', $match[1] ) . '/timeline?per_page=100&page=1';
+		if ( is_array( $GLOBALS['rebase_responses'][ $timeline ] ?? null ) ) {
+			$GLOBALS['rebase_responses'][ $timeline ][] = array(
+				'event'            => 'review_dismissed',
+				'actor'            => array( 'id' => 999 ),
+				'dismissed_review' => array(
+					'review_id'         => $review_id,
+					'state'             => 'approved',
+					'dismissal_message' => $body['message'],
+				),
+			);
+		}
+	}
 	return 0;
 }
 
