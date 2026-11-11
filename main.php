@@ -157,6 +157,9 @@ function vipgoci_help_print() :void {
 		"\t" . '                                   Markdown syntax allowed.' . PHP_EOL .
 		PHP_EOL .
 		'Auto approve configuration:' . PHP_EOL .
+		"\t" . '--autoapprove-rebases=BOOL     Carry trusted human approvals across verified rebases. Default false.' . PHP_EOL .
+		"\t" . '--autoapprove-rebases-reviewer-ids=ARRAY Comma-separated trusted human GitHub user IDs.' . PHP_EOL .
+		"\t" . '--autoapprove-rebases-base-branches=ARRAY Exact trusted base branch names (case sensitive).' . PHP_EOL .
 		"\t" . '--autoapprove=BOOL             Whether to auto-approve pull requests that fulfil' . PHP_EOL .
 		"\t" . '                               certain conditions -- see README.md for details.' . PHP_EOL .
 		"\t" . '--autoapprove-filetypes=STRING Specify what file-types can be auto-' . PHP_EOL .
@@ -349,6 +352,9 @@ function vipgoci_options_recognized() :array {
 		 * Auto approve configuration
 		 */
 		'autoapprove:',
+		'autoapprove-rebases:',
+		'autoapprove-rebases-reviewer-ids:',
+		'autoapprove-rebases-base-branches:',
 		'autoapprove-filetypes:',
 		'autoapprove-php-nonfunctional-changes:',
 		'autoapprove-php-nonfunctional-changes-file-extensions:',
@@ -956,6 +962,29 @@ function vipgoci_run_init_options_autoapprove( array &$options ) :void {
 			array(),
 			VIPGOCI_EXIT_USAGE_ERROR
 		);
+	}
+}
+
+/**
+ * Configure rebase approval independently of file-type auto-approval.
+ *
+ * These options are intentionally absent from the repository-config allowlist.
+ *
+ * @param array $options Scanner options.
+ * @return void
+ */
+function vipgoci_run_init_options_rebases( array &$options ) :void {
+	vipgoci_option_bool_handle( $options, 'autoapprove-rebases', 'false' );
+	vipgoci_option_array_handle( $options, 'autoapprove-rebases-reviewer-ids', array() );
+	vipgoci_option_array_handle( $options, 'autoapprove-rebases-base-branches', array(), null, ',', false );
+	foreach ( $options['autoapprove-rebases-reviewer-ids'] as $id ) {
+		if ( 1 !== preg_match( '/\A[1-9][0-9]{0,17}\z/', $id ) ) {
+			vipgoci_sysexit( 'Trusted rebase reviewers must be positive GitHub user IDs', array(), VIPGOCI_EXIT_USAGE_ERROR );
+			return;
+		}
+	}
+	if ( $options['autoapprove-rebases'] && ( empty( $options['autoapprove-rebases-reviewer-ids'] ) || empty( $options['autoapprove-rebases-base-branches'] ) ) ) {
+		vipgoci_sysexit( '--autoapprove-rebases requires trusted reviewer IDs and base branches', array(), VIPGOCI_EXIT_USAGE_ERROR );
 	}
 }
 
@@ -2246,6 +2275,7 @@ function vipgoci_run_init_options(
 
 	// Process autoapprove options.
 	vipgoci_run_init_options_autoapprove( $options );
+	vipgoci_run_init_options_rebases( $options );
 
 	// Set git repository options.
 	vipgoci_run_init_options_git_repo( $options );
@@ -2938,10 +2968,14 @@ function vipgoci_run_scan(
 	 * Will also remove from $results any files
 	 * auto-approved.
 	 */
+	// Keep the original results: existing auto-approval can remove findings.
+	$rebase_results = ( $options['autoapprove-rebases'] ?? false ) ? $results : array();
 	vipgoci_auto_approval_process(
 		$options,
 		$results
 	);
+	vipgoci_rebase_approval_process( $options, $rebase_results, $prs_implicated );
+	unset( $rebase_results );
 
 	gc_collect_cycles();
 
