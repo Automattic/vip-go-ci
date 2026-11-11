@@ -72,3 +72,17 @@ function vipgoci_http_api_put_url( string $url, array $body, string $token ): in
 	);
 	return 0;
 }
+
+/**
+ * Return a non-qualifying PHP file for the same-head file-policy rerun fixture.
+ *
+ * @param array  $options Unused scanner options.
+ * @param string $commit Unused scanned commit.
+ * @param array  $skipped Unused skipped files.
+ * @param mixed  ...$flags Unused discovery options.
+ * @return array Changed files for the verified PR.
+ */
+function vipgoci_github_files_affected_by_commit( array $options, string $commit, array &$skipped, mixed ...$flags ): array {
+	++$GLOBALS['rebase_file_policy_calls'];
+	return array( 7 => array( 'file.php' ) );
+}
