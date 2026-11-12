@@ -915,6 +915,10 @@ function vipgoci_report_submit_pr_generic_comment_from_results(
 				$github_postfields['body'] .= $scan_details_msg;
 			}
 
+			$github_postfields['body'] = vipgoci_github_comment_marker_add(
+				$github_postfields['body']
+			);
+
 			// Post to GitHub API.
 			vipgoci_http_api_post_url(
 				$github_url,
@@ -1389,6 +1393,10 @@ function vipgoci_report_submit_pr_review_from_results(
 
 				$y--;
 
+				$github_postfields['comments'][ $y ]['body'] = vipgoci_github_comment_marker_add(
+					$github_postfields['comments'][ $y ]['body']
+				);
+
 				$github_postfields_tmp['comments'][] =
 					$github_postfields['comments'][ $y ];
 
@@ -1396,6 +1404,10 @@ function vipgoci_report_submit_pr_review_from_results(
 					$github_postfields['comments'][ $y ]
 				);
 			}
+
+			$github_postfields_tmp['body'] = vipgoci_github_comment_marker_add(
+				$github_postfields_tmp['body']
+			);
 
 			// Actually send a request to GitHub.
 			$github_post_res_tmp = vipgoci_http_api_post_url(
@@ -1646,10 +1658,30 @@ function vipgoci_report_submit_pr_generic_support_comment(
 
 		$comment_exists_already = false;
 
+		/*
+		 * When a comment marker is configured, only consider
+		 * comments submitted by us, so that comments by other
+		 * instances or other users do not prevent ours from
+		 * being posted.
+		 */
+		$token_holder_login = null;
+
+		if ( '' !== vipgoci_github_comment_marker_get() ) {
+			$token_holder_login = vipgoci_github_authenticated_user_get(
+				$options['token']
+			)->login;
+		}
+
 		foreach (
 			$existing_comments as
 				$existing_comment_item
 		) {
+			if (
+				( null !== $token_holder_login ) &&
+				( ! vipgoci_github_item_submitted_by_us( $existing_comment_item, $token_holder_login ) )
+			) {
+				continue;
+			}
 
 			if ( strpos(
 				$existing_comment_item->body,

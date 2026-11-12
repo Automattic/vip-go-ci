@@ -869,7 +869,7 @@ function vipgoci_results_comment_match(
 		$comment_made_body = str_replace(
 			array( '/**', '**', 'Warning', 'Error', 'Info', ':no_entry_sign:', ':warning:', ':information_source:', '/\*\*' ),
 			array( '/\*\*', '', '', '', '', '', '', '', '/**' ),
-			$comment_made->body
+			vipgoci_github_comment_marker_remove( $comment_made->body )
 		);
 
 		/*
