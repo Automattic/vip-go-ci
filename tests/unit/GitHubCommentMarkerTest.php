@@ -35,6 +35,7 @@ use PHPUnit\Framework\TestCase;
 #[CoversFunction( 'vipgoci_github_pr_comments_cleanup' )]
 #[CoversFunction( 'vipgoci_github_prs_implicated' )]
 #[CoversFunction( 'vipgoci_report_submit_pr_generic_support_comment' )]
+#[CoversFunction( 'vipgoci_results_remove_existing_github_comments' )]
 final class GitHubCommentMarkerTest extends TestCase {
 	/**
 	 * Options for the fixture repository.
@@ -517,5 +518,80 @@ final class GitHubCommentMarkerTest extends TestCase {
 		);
 
 		$this->assertCount( $expected_posts, $posts );
+	}
+
+	/**
+	 * A comment made obsolete by a later commit, with a position but
+	 * no line, does not count as already posted: the matching finding
+	 * is still reported and counted.
+	 *
+	 * @return void
+	 */
+	public function testObsoleteCommentFromEarlierCommitDoesNotRemoveFinding(): void {
+		require_once __DIR__ . '/../../results.php';
+
+		vipgoci_github_token_login_set( VIPGOCI_GITHUB_ACTIONS_BOT_LOGIN );
+		vipgoci_github_comment_marker_set( 'actions' );
+
+		$comment = function ( string $commit_id, null|int $line ): array {
+			return array(
+				'id'                     => 1,
+				'pull_request_review_id' => 1,
+				'user'                   => array( 'login' => 'github-actions[bot]' ),
+				'body'                   => "**Error**: Some issue (*WordPress.Foo.Bar*).\n<!-- vip-go-ci-marker:actions -->",
+				'path'                   => 'test.php',
+				'position'               => 3,
+				'line'                   => $line,
+				'original_commit_id'     => $commit_id,
+				'created_at'             => '2026-01-01T00:00:00Z',
+				'updated_at'             => '2026-01-01T00:00:00Z',
+			);
+		};
+
+		$pr_item = (object) array(
+			'number'     => 42,
+			'created_at' => '2026-01-01T00:00:00Z',
+		);
+
+		foreach ( array( 'obsolete' => array( null, 1 ), 'active' => array( 3, 0 ) ) as $case => list( $line, $expected_issues ) ) {
+			vipgoci_cache( VIPGOCI_CACHE_CLEAR );
+
+			$GLOBALS['vipgoci_test_http_responses'] = array(
+				'GET /repos/owner/repo/pulls/42/commits'  => array(
+					array( 'sha' => 'commit-a' ),
+					array( 'sha' => 'commit-b' ),
+				),
+				'GET /repos/owner/repo/pulls/42/comments' => array(
+					$comment( 'commit-a', $line ),
+				),
+			);
+
+			$results = array(
+				'issues' => array(
+					42 => array(
+						array(
+							'type'      => VIPGOCI_STATS_PHPCS,
+							'file_name' => 'test.php',
+							'file_line' => 3,
+							'issue'     => array(
+								'message' => 'Some issue',
+								'source'  => 'WordPress.Foo.Bar',
+								'level'   => 'ERROR',
+							),
+						),
+					),
+				),
+				'stats'  => array(
+					VIPGOCI_STATS_PHPCS => array(
+						42 => array( 'error' => 1 ),
+					),
+				),
+			);
+
+			vipgoci_results_remove_existing_github_comments( $this->options, array( $pr_item ), $results );
+
+			$this->assertCount( $expected_issues, $results['issues'][42], $case );
+			$this->assertSame( $expected_issues, $results['stats'][ VIPGOCI_STATS_PHPCS ][42]['error'], $case );
+		}
 	}
 }

@@ -481,10 +481,11 @@ function vipgoci_github_pr_reviews_comments_get(
 			continue;
 		}
 
-		if ( null === $pr_comment->position ) {
+		if ( ! vipgoci_github_pr_comment_is_active( $pr_comment ) ) {
 			/*
-			 * If no line-number was provided,
-			 * ignore the comment.
+			 * Ignore obsolete comments, so that they
+			 * do not prevent current findings from
+			 * being reported.
 			 */
 			continue;
 		}
