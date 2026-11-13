@@ -161,7 +161,6 @@ function vipgoci_help_print() :void {
 		"\t" . '                               certain conditions -- see README.md for details.' . PHP_EOL .
 		"\t" . '--autoapprove-filetypes=STRING Specify what file-types can be auto-' . PHP_EOL .
 		"\t" . '                               approved. PHP files cannot be specified.' . PHP_EOL .
-		"\t" . '--autoapprove-deletions-only=BOOL             Auto-approve pull requests that only remove lines.' . PHP_EOL .
 		"\t" . '--autoapprove-php-nonfunctional-changes=BOOL    For autoapprovals, also consider' . PHP_EOL .
 		"\t" . '                                                PHP files approved that contain' . PHP_EOL .
 		"\t" . '                                                only non-functional changes, such as' . PHP_EOL .
@@ -351,7 +350,6 @@ function vipgoci_options_recognized() :array {
 		 */
 		'autoapprove:',
 		'autoapprove-filetypes:',
-		'autoapprove-deletions-only:',
 		'autoapprove-php-nonfunctional-changes:',
 		'autoapprove-php-nonfunctional-changes-file-extensions:',
 		'autoapprove-label:',
@@ -885,7 +883,6 @@ function vipgoci_run_init_options_autoapprove( array &$options ) :void {
 	 * boolean options.
 	 */
 	vipgoci_option_bool_handle( $options, 'autoapprove', 'false' );
-	vipgoci_option_bool_handle( $options, 'autoapprove-deletions-only', 'false' );
 
 	vipgoci_option_bool_handle( $options, 'autoapprove-php-nonfunctional-changes', 'false' );
 
@@ -948,7 +945,7 @@ function vipgoci_run_init_options_autoapprove( array &$options ) :void {
 	if (
 		( true === $options['autoapprove'] ) &&
 		(
-			( empty( $options['autoapprove-filetypes'] ) && ( false === $options['autoapprove-deletions-only'] ) ) ||
+			( empty( $options['autoapprove-filetypes'] ) ) ||
 			( false === $options['autoapprove-label'] )
 		)
 	) {
