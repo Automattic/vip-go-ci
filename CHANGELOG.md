@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased
+
+- Add opt-in deletion-only pull request approval and a specific support message, with whole-diff validation that rejects structural and binary changes.
+
 ## [1.4.2](https://github.com/Automattic/vip-go-ci/releases/tag/1.4.2) - 2026-09-18
 
 - TODO: Add release changes.

@@ -1146,6 +1146,72 @@ function vipgoci_gitrepo_diff_output( string $cmd ): ?SplFileObject {
 }
 
 /**
+ * Verify the entire merge-base diff only removes text from regular files.
+ * Reject added paths (including renames), mode/type changes and binary diffs.
+ * Git objects must already be available locally; failures never qualify.
+ *
+ * @param string $local_git_repo Local repository path.
+ * @param string $base           Immutable PR base commit.
+ * @param string $head           Scanned PR head commit.
+ * @return bool Whether the complete diff contains only text deletions.
+ */
+function vipgoci_gitrepo_deletions_only( string $local_git_repo, string $base, string $head ): bool {
+	if ( ! vipgoci_gitrepo_commit_id_validate_format( $base ) || ! vipgoci_gitrepo_commit_id_validate_format( $head ) ) {
+		return false;
+	}
+
+	// Disable transforms, rename detection, relative paths and submodule hiding.
+	// With renames disabled, every rename contains an added path and is rejected.
+	$stream = vipgoci_gitrepo_diff_output(
+		'git --no-pager -C ' . escapeshellarg( $local_git_repo ) .
+		' diff --no-color --no-ext-diff --no-textconv --no-renames --no-relative' .
+		' --ignore-submodules=none --raw --numstat --no-abbrev -z ' .
+		escapeshellarg( $base . '...' . $head ) . ' --'
+	);
+	if ( null === $stream ) {
+		return false;
+	}
+	$stat = $stream->fstat();
+	if ( false === $stat || 0 === $stat['size'] ) {
+		return false;
+	}
+	$data = $stream->fread( $stat['size'] );
+	if ( false === $data || strlen( $data ) !== $stat['size'] || ! str_ends_with( $data, "\0" ) ) {
+		return false;
+	}
+	$records = explode( "\0", $data );
+	array_pop( $records );
+	$files = array();
+	$i     = 0;
+	while ( isset( $records[ $i ] ) && str_starts_with( $records[ $i ], ':' ) ) {
+		if ( 1 !== preg_match( '/^:(100644|100755) (100644|100755|000000) [0-9a-f]{40} [0-9a-f]{40} ([MD])$/D', $records[ $i++ ], $header ) ) {
+			return false;
+		}
+		if ( ( 'M' === $header[3] && $header[1] !== $header[2] ) || ( 'D' === $header[3] && '000000' !== $header[2] ) ) {
+			return false;
+		}
+		$path = $records[ $i++ ] ?? '';
+		if ( '' === $path || isset( $files[ $path ] ) ) {
+			return false;
+		}
+		$files[ $path ] = $header[3];
+	}
+	$has_deletions = false;
+	for ( ; $i < count( $records ); $i++ ) {
+		// Binary numstat uses "-". Only decimal deletion counts qualify.
+		if ( 1 !== preg_match( '/^0\t(0|[1-9][0-9]*)\t([\s\S]+)$/D', $records[ $i ], $counts ) || ! isset( $files[ $counts[2] ] ) ) {
+			return false;
+		}
+		if ( '0' === $counts[1] && 'D' !== $files[ $counts[2] ] ) {
+			return false;
+		}
+		$has_deletions = $has_deletions || '0' !== $counts[1];
+		unset( $files[ $counts[2] ] );
+	}
+	return $has_deletions && array() === $files;
+}
+
+/**
  * Fetch filenames, statuses and line counts without materializing patches.
  *
  * Raw records supply modes and rename identity; numstat supplies changed-line
