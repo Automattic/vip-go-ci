@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_wpscan_scan_commit' )]
 final class WpscanScanCommitTest extends TestCase {
 	/**
 	 * Variable for WPScan API scanning.
@@ -154,8 +157,6 @@ final class WpscanScanCommitTest extends TestCase {
 	/**
 	 * Test when wpscan-api is disabled.
 	 *
-	 * @covers ::vipgoci_wpscan_scan_commit
-	 *
 	 * @return void
 	 */
 	public function testScanCommitDisabled(): void {
@@ -228,8 +229,6 @@ final class WpscanScanCommitTest extends TestCase {
 
 	/**
 	 * Test when wpscan-api is enabled.
-	 *
-	 * @covers ::vipgoci_wpscan_scan_commit
 	 *
 	 * @return void
 	 */

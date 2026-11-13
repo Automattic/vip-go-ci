@@ -9,15 +9,18 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Check if repo-meta API options are handled
  * correctly.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_run_init_options_repo_meta_api' )]
 final class MainRunInitOptionsRepoMetaApiTest extends TestCase {
 	/**
 	 * Options array.
@@ -51,8 +54,6 @@ final class MainRunInitOptionsRepoMetaApiTest extends TestCase {
 	/**
 	 * Check if repo-meta API default options are correctly provided.
 	 *
-	 * @covers ::vipgoci_run_init_options_repo_meta_api
-	 *
 	 * @return void
 	 */
 	public function testRunInitOptionsRepoMetaApiDefault() :void {
@@ -72,8 +73,6 @@ final class MainRunInitOptionsRepoMetaApiTest extends TestCase {
 
 	/**
 	 * Check if repo-meta API custom options are correctly parsed.
-	 *
-	 * @covers ::vipgoci_run_init_options_repo_meta_api
 	 *
 	 * @return void
 	 */

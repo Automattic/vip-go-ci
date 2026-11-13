@@ -9,6 +9,9 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -16,10 +19,10 @@ use PHPUnit\Framework\TestCase;
  *
  * Should not call a HTTP endpoint as no data
  * should be there to send.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_run_cleanup_send_pixel_api' )]
 final class MainRunCleanupSendPixelApiTest extends TestCase {
 	/**
 	 * Options array.
@@ -65,8 +68,6 @@ final class MainRunCleanupSendPixelApiTest extends TestCase {
 	/**
 	 * Check if correct message is printed,
 	 * indicating sending statistics was attempted.
-	 *
-	 * @covers ::vipgoci_run_cleanup_send_pixel_api
 	 */
 	public function testSendPixelApiSuccess() :void {
 		$this->options['pixel-api-url'] = 'https://127.0.0.1:1234';
@@ -114,8 +115,6 @@ final class MainRunCleanupSendPixelApiTest extends TestCase {
 	/**
 	 * Check if correct message is printed,
 	 * indicating sending statistics was not attempted.
-	 *
-	 * @covers ::vipgoci_run_cleanup_send_pixel_api
 	 */
 	public function testSendPixelApiFailure() :void {
 		// Skip option, leads to sending stats is not attempted.

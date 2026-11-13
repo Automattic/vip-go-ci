@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_directory_found_in_file_list' )]
 final class MiscDirectoryFoundInFileListTest extends TestCase {
 	/**
 	 * Setup function. Require file.
@@ -29,8 +32,6 @@ final class MiscDirectoryFoundInFileListTest extends TestCase {
 
 	/**
 	 * Test common usage of the function.
-	 *
-	 * @covers ::vipgoci_directory_found_in_file_list
 	 *
 	 * @return void
 	 */
@@ -49,8 +50,6 @@ final class MiscDirectoryFoundInFileListTest extends TestCase {
 	/**
 	 * Test common usage of the function.
 	 *
-	 * @covers ::vipgoci_directory_found_in_file_list
-	 *
 	 * @return void
 	 */
 	public function testCommonUsage2(): void {
@@ -68,8 +67,6 @@ final class MiscDirectoryFoundInFileListTest extends TestCase {
 	/**
 	 * Test common usage of the function.
 	 *
-	 * @covers ::vipgoci_directory_found_in_file_list
-	 *
 	 * @return void
 	 */
 	public function testCommonUsage3(): void {
@@ -86,8 +83,6 @@ final class MiscDirectoryFoundInFileListTest extends TestCase {
 
 	/**
 	 * Test common usage of the function.
-	 *
-	 * @covers ::vipgoci_directory_found_in_file_list
 	 *
 	 * @return void
 	 */

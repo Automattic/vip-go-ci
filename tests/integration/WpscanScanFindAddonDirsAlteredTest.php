@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_wpscan_find_addon_dirs_altered' )]
 final class WpscanScanFindAddonDirsAlteredTest extends TestCase {
 	/**
 	 * Variable for WPScan API scanning.
@@ -142,8 +145,6 @@ final class WpscanScanFindAddonDirsAlteredTest extends TestCase {
 	/**
 	 * Test when addons are added to pull request.
 	 *
-	 * @covers ::vipgoci_wpscan_find_addon_dirs_altered
-	 *
 	 * @return void
 	 */
 	public function testFindDirsAlteredAddonAdded(): void {
@@ -206,8 +207,6 @@ final class WpscanScanFindAddonDirsAlteredTest extends TestCase {
 	/**
 	 * Test when addons are updated in pull request.
 	 *
-	 * @covers ::vipgoci_wpscan_find_addon_dirs_altered
-	 *
 	 * @return void
 	 */
 	public function testFindDirsAlteredAddonUpdated(): void {
@@ -266,8 +265,6 @@ final class WpscanScanFindAddonDirsAlteredTest extends TestCase {
 
 	/**
 	 * Test when addons are removed from pull request.
-	 *
-	 * @covers ::vipgoci_wpscan_find_addon_dirs_altered
 	 *
 	 * @return void
 	 */

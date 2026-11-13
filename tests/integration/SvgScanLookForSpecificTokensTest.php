@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_svg_look_for_specific_tokens' )]
 final class SvgScanLookForSpecificTokensTest extends TestCase {
 	/**
 	 * Setup function. Require files, etc.
@@ -27,9 +30,6 @@ final class SvgScanLookForSpecificTokensTest extends TestCase {
 		require_once __DIR__ . '/IncludesForTests.php';
 	}
 
-	/**
-	 * @covers ::vipgoci_svg_look_for_specific_tokens
-	 */
 	public function testSpecificTokens1() {
 		$temp_file_name = tempnam(
 			sys_get_temp_dir(),

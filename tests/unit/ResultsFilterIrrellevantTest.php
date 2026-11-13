@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_results_filter_irrellevant' )]
 final class ResultsFilterIrrellevantTest extends TestCase {
 	/**
 	 * Setup function. Require files, etc.
@@ -30,8 +33,6 @@ final class ResultsFilterIrrellevantTest extends TestCase {
 
 	/**
 	 * Test common usage of the function.
-	 *
-	 * @covers ::vipgoci_results_filter_irrellevant
 	 *
 	 * @return void
 	 */

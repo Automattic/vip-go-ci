@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_wpscan_report_comment_format_result' )]
 final class WpscanReportCommentFormatResultTest extends TestCase {
 	/**
 	 * Setup function. Require files.
@@ -37,8 +40,6 @@ final class WpscanReportCommentFormatResultTest extends TestCase {
 
 	/**
 	 * Test common usage when reporting results for a plugin.
-	 *
-	 * @covers ::vipgoci_wpscan_report_comment_format_result
 	 *
 	 * @return void
 	 */
@@ -193,8 +194,6 @@ final class WpscanReportCommentFormatResultTest extends TestCase {
 	/**
 	 * Test common usage when reporting results for a theme.
 	 *
-	 * @covers ::vipgoci_wpscan_report_comment_format_result
-	 *
 	 * @return void
 	 */
 	public function testReportResultTheme(): void {
@@ -348,8 +347,6 @@ final class WpscanReportCommentFormatResultTest extends TestCase {
 	/**
 	 * Test invalid usage, invalid 'security' field.
 	 *
-	 * @covers ::vipgoci_wpscan_report_comment_format_result
-	 *
 	 * @return void
 	 */
 	public function testReportResultSecurityTypeInvalid(): void {
@@ -406,8 +403,6 @@ final class WpscanReportCommentFormatResultTest extends TestCase {
 
 	/**
 	 * Test invalid usage, invalid 'issue_type' field.
-	 *
-	 * @covers ::vipgoci_wpscan_report_comment_format_result
 	 *
 	 * @return void
 	 */

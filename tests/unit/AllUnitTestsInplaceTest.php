@@ -9,14 +9,15 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Check if all tests are correctly named.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
 final class AllUnitTestsInplaceTest extends TestCase {
 	/**
 	 * Verify files.

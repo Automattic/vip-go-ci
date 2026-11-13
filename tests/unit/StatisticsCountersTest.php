@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Test counter functionality.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_counter_report' )]
 final class StatisticsCountersTest extends TestCase {
 	/**
 	 * Setup function. Require files, etc.
@@ -30,8 +33,6 @@ final class StatisticsCountersTest extends TestCase {
 
 	/**
 	 * Test with invalid parameters.
-	 *
-	 * @covers ::vipgoci_counter_report
 	 *
 	 * @return void
 	 */
@@ -57,8 +58,6 @@ final class StatisticsCountersTest extends TestCase {
 
 	/**
 	 * Test with valid parameters.
-	 *
-	 * @covers ::vipgoci_counter_report
 	 *
 	 * @return void
 	 */

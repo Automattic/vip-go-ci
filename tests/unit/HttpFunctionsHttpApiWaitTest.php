@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the test.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_http_api_wait' )]
 final class HttpFunctionsHttpApiWaitTest extends TestCase {
 	/**
 	 * Setup function. Require files.
@@ -35,8 +38,6 @@ final class HttpFunctionsHttpApiWaitTest extends TestCase {
 	 * returns after a defined time when it should do so.
 	 *
 	 * @return void
-	 *
-	 * @covers ::vipgoci_http_api_wait
 	 */
 	public function testGitHubWait(): void {
 		for ( $i = 0; $i < 4; $i++ ) {
@@ -72,8 +73,6 @@ final class HttpFunctionsHttpApiWaitTest extends TestCase {
 	 * it should wait for.
 	 *
 	 * @return void
-	 *
-	 * @covers ::vipgoci_http_api_wait
 	 */
 	public function testGitHubDoNotWait(): void {
 		for ( $i = 0; $i < 4; $i++ ) {

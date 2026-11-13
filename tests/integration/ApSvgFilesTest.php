@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_ap_svg_files' )]
 final class ApSvgFilesTest extends TestCase {
 	/**
 	 * Git options.
@@ -147,8 +150,6 @@ final class ApSvgFilesTest extends TestCase {
 
 	/**
 	 * Test common usage of the function.
-	 *
-	 * @covers ::vipgoci_ap_svg_files
 	 */
 	public function testApSvgFiles1() :void {
 		$options_test = vipgoci_unittests_options_test(
@@ -206,8 +207,6 @@ final class ApSvgFilesTest extends TestCase {
 	 * Test auto-approvals of SVG files that
 	 * have been renamed, removed, or had their
 	 * permissions changed.
-	 *
-	 * @covers ::vipgoci_ap_svg_files
 	 */
 	public function testApSvgFiles2() :void {
 		$options_test = vipgoci_unittests_options_test(

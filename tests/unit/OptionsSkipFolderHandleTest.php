@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Test if *-skip-folders variables are correctly set.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_option_skip_folder_handle' )]
 final class OptionsSkipFolderHandleTest extends TestCase {
 	/**
 	 * Options array.
@@ -47,8 +50,6 @@ final class OptionsSkipFolderHandleTest extends TestCase {
 	/**
 	 * Test if --phpcs-skip-folders and --lint-skip-folders
 	 * are correctly parsed.
-	 *
-	 * @covers ::vipgoci_option_skip_folder_handle
 	 *
 	 * @return void
 	 */

@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_run_cleanup_phpcs' )]
 final class MainRunCleanupPhpcsTest extends TestCase {
 	/**
 	 * Setup function. Require files, etc.
@@ -29,8 +32,6 @@ final class MainRunCleanupPhpcsTest extends TestCase {
 
 	/**
 	 * Check if PHPCS cleanup is correctly performed.
-	 *
-	 * @covers ::vipgoci_run_cleanup_phpcs
 	 *
 	 * @return void
 	 */

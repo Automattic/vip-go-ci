@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_svg_scan_single_file' )]
 final class SvgScanScanSingleFileTest extends TestCase {
 	/**
 	 * Options array.
@@ -93,9 +96,6 @@ final class SvgScanScanSingleFileTest extends TestCase {
 		unset( $this->options );
 	}
 
-	/**
-	 * @covers ::vipgoci_svg_scan_single_file
-	 */
 	public function testSvgScanSingleFileTest1() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,

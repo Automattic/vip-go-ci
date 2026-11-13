@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_phpcs_write_xml_standard_file' )]
 final class PhpcsScanWriteXmlStandardFileTest extends TestCase {
 	/**
 	 * XML file path.
@@ -40,9 +43,6 @@ final class PhpcsScanWriteXmlStandardFileTest extends TestCase {
 		unset( $this->xml_file_path );
 	}
 
-	/**
-	 * @covers ::vipgoci_phpcs_write_xml_standard_file
-	 */
 	public function testWriteXmlStandardFile1() {
 		$phpcs_standards = array(
 			'WordPress-VIP-Go',

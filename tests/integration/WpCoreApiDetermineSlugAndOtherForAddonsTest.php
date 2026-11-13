@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_wpcore_api_determine_slug_and_other_for_addons' )]
 final class WpCoreApiDetermineSlugAndOtherForAddonsTest extends TestCase {
 	/**
 	 * Prefix for array keys indicating plugin.
@@ -44,8 +47,6 @@ final class WpCoreApiDetermineSlugAndOtherForAddonsTest extends TestCase {
 
 	/**
 	 * Test common usage of the function with plugins.
-	 *
-	 * @covers ::vipgoci_wpcore_api_determine_slug_and_other_for_addons
 	 *
 	 * @return void
 	 */
@@ -192,8 +193,6 @@ final class WpCoreApiDetermineSlugAndOtherForAddonsTest extends TestCase {
 	/**
 	 * Test when no results are expected with plugin data.
 	 *
-	 * @covers ::vipgoci_wpcore_api_determine_slug_and_other_for_addons
-	 *
 	 * @return void
 	 */
 	public function testPluginNoResults(): void {
@@ -226,8 +225,6 @@ final class WpCoreApiDetermineSlugAndOtherForAddonsTest extends TestCase {
 	/**
 	 * Test invalid usage with plugin data.
 	 *
-	 * @covers ::vipgoci_wpcore_api_determine_slug_and_other_for_addons
-	 *
 	 * @return void
 	 */
 	public function testInvalidPluginUsage1(): void {
@@ -247,8 +244,6 @@ final class WpCoreApiDetermineSlugAndOtherForAddonsTest extends TestCase {
 
 	/**
 	 * Test invalid usage with plugin data.
-	 *
-	 * @covers ::vipgoci_wpcore_api_determine_slug_and_other_for_addons
 	 *
 	 * @return void
 	 */
@@ -284,8 +279,6 @@ final class WpCoreApiDetermineSlugAndOtherForAddonsTest extends TestCase {
 
 	/**
 	 * Test invalid usage with plugin data.
-	 *
-	 * @covers ::vipgoci_wpcore_api_determine_slug_and_other_for_addons
 	 *
 	 * @return void
 	 */
@@ -324,8 +317,6 @@ final class WpCoreApiDetermineSlugAndOtherForAddonsTest extends TestCase {
 
 	/**
 	 * Test common usage of the function with themes.
-	 *
-	 * @covers ::vipgoci_wpcore_api_determine_slug_and_other_for_addons
 	 *
 	 * @return void
 	 */
@@ -402,8 +393,6 @@ final class WpCoreApiDetermineSlugAndOtherForAddonsTest extends TestCase {
 	/**
 	 * Test when no results are expected with theme data.
 	 *
-	 * @covers ::vipgoci_wpcore_api_determine_slug_and_other_for_addons
-	 *
 	 * @return void
 	 */
 	public function testThemeNoResults(): void {
@@ -436,8 +425,6 @@ final class WpCoreApiDetermineSlugAndOtherForAddonsTest extends TestCase {
 	/**
 	 * Test invalid usage with theme data.
 	 *
-	 * @covers ::vipgoci_wpcore_api_determine_slug_and_other_for_addons
-	 *
 	 * @return void
 	 */
 	public function testInvalidThemeUsage1(): void {
@@ -458,8 +445,6 @@ final class WpCoreApiDetermineSlugAndOtherForAddonsTest extends TestCase {
 
 	/**
 	 * Test invalid usage with theme data.
-	 *
-	 * @covers ::vipgoci_wpcore_api_determine_slug_and_other_for_addons
 	 *
 	 * @return void
 	 */

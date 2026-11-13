@@ -10,14 +10,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements all the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_option_array_handle' )]
 final class OptionsArrayHandleTest extends TestCase {
 	/**
 	 * Setup function. Require file.
@@ -41,8 +44,6 @@ final class OptionsArrayHandleTest extends TestCase {
 
 	/**
 	 * Test when option is an empty string.
-	 *
-	 * @covers ::vipgoci_option_array_handle
 	 *
 	 * @return void
 	 */
@@ -68,8 +69,6 @@ final class OptionsArrayHandleTest extends TestCase {
 	/**
 	 * Test when option is empty.
 	 *
-	 * @covers ::vipgoci_option_array_handle
-	 *
 	 * @return void
 	 */
 	public function testOptionsArrayHandle2() :void {
@@ -94,8 +93,6 @@ final class OptionsArrayHandleTest extends TestCase {
 	/**
 	 * Test when there are multiple values, comma separated,
 	 * and comma is the separator.
-	 *
-	 * @covers ::vipgoci_option_array_handle
 	 *
 	 * @return void
 	 */
@@ -127,8 +124,6 @@ final class OptionsArrayHandleTest extends TestCase {
 	 * in the test above, but values should
 	 * not be transformed to lower case.
 	 *
-	 * @covers ::vipgoci_option_array_handle
-	 *
 	 * @return void
 	 */
 	public function testOptionsArrayHandle4() :void {
@@ -157,8 +152,6 @@ final class OptionsArrayHandleTest extends TestCase {
 
 	/**
 	 * Test forbidden values. No errors, as no forbidden value is used.
-	 *
-	 * @covers ::vipgoci_option_array_handle
 	 *
 	 * @return void
 	 */
@@ -189,8 +182,6 @@ final class OptionsArrayHandleTest extends TestCase {
 	/**
 	 * Test forbidden values. No errors, as no forbidden value is used.
 	 *
-	 * @covers ::vipgoci_option_array_handle
-	 *
 	 * @return void
 	 */
 	public function testOptionsArrayHandle6() :void {
@@ -219,8 +210,6 @@ final class OptionsArrayHandleTest extends TestCase {
 
 	/**
 	 * Test forbidden values. Error, as forbidden value is used.
-	 *
-	 * @covers ::vipgoci_option_array_handle
 	 *
 	 * @return void
 	 */

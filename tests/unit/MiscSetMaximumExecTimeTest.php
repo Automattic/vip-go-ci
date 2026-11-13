@@ -9,16 +9,19 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Run tests in separate process to ensure
  * static value in vipgoci_set_maximum_exec_time() is
  * not inherited from another test.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_set_maximum_exec_time' )]
 final class MiscSetMaximumExecTimeTest extends TestCase {
 	/**
 	 * Require file and set indication.
@@ -63,8 +66,6 @@ final class MiscSetMaximumExecTimeTest extends TestCase {
 	/**
 	 * Check if a particular string was outputted
 	 * indicating that alarm was raised.
-	 *
-	 * @covers ::vipgoci_set_maximum_exec_time
 	 *
 	 * @return void
 	 */

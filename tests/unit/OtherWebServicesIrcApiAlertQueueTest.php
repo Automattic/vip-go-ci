@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Test IRC queue function.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_irc_api_alert_queue' )]
 final class OtherWebServicesIrcApiAlertQueueTest extends TestCase {
 	/**
 	 * Require correct file.
@@ -36,8 +39,6 @@ final class OtherWebServicesIrcApiAlertQueueTest extends TestCase {
 
 	/**
 	 * Test if IRC queue functions correctly.
-	 *
-	 * @covers ::vipgoci_irc_api_alert_queue
 	 *
 	 * @return void
 	 */

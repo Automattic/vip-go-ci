@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_output_markdown_escape' )]
 final class OutputSecurityMarkdownEscapeTest extends TestCase {
 	/**
 	 * Setup function. Require file.
@@ -29,8 +32,6 @@ final class OutputSecurityMarkdownEscapeTest extends TestCase {
 
 	/**
 	 * Test escaping function.
-	 *
-	 * @covers ::vipgoci_output_markdown_escape
 	 *
 	 * @return void
 	 */

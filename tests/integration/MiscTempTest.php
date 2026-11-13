@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_save_temp_file' )]
 final class MiscTempTest extends TestCase {
 	/**
 	 * Setup function. Require files, etc.
@@ -27,9 +30,6 @@ final class MiscTempTest extends TestCase {
 		require_once __DIR__ . '/IncludesForTests.php';
 	}
 
-	/**
-	 * @covers ::vipgoci_save_temp_file
-	 */
 	public function testTempFile1() {
 		$file_name_prefix = 'myfilename1';
 		$file_name_extension = null;
@@ -69,9 +69,6 @@ final class MiscTempTest extends TestCase {
 		unlink( $temp_file_name );
 	}
 
-	/**
-	 * @covers ::vipgoci_save_temp_file
-	 */
 	public function testTempFile2() {
 		$file_name_prefix = 'myfilename2';
 		$file_name_extension = '';
@@ -112,9 +109,6 @@ final class MiscTempTest extends TestCase {
 	}
 
 
-	/**
-	 * @covers ::vipgoci_save_temp_file
-	 */
 	public function testTempFile3() {
 		$file_name_prefix = 'myfilename3';
 		$file_name_extension = 'txt';

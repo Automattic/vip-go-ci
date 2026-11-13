@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_wpscan_get_altered_addons_data_and_slugs' )]
 final class WpscanGetAlteredAddonsDataAndSlugsTest extends TestCase {
 	/**
 	 * Variable for WPScan API configuration.
@@ -174,8 +177,6 @@ final class WpscanGetAlteredAddonsDataAndSlugsTest extends TestCase {
 	 * Test common usage of the function. No results expected
 	 * as plugin and theme were not altered.
 	 *
-	 * @covers ::vipgoci_wpscan_get_altered_addons_data_and_slugs
-	 *
 	 * @return void
 	 */
 	public function testNoResultsFound(): void {
@@ -236,8 +237,6 @@ final class WpscanGetAlteredAddonsDataAndSlugsTest extends TestCase {
 	/**
 	 * Test common usage of the function. Only one result expected
 	 * as theme was altered, not plugin.
-	 *
-	 * @covers ::vipgoci_wpscan_get_altered_addons_data_and_slugs
 	 *
 	 * @return void
 	 */
@@ -365,8 +364,6 @@ final class WpscanGetAlteredAddonsDataAndSlugsTest extends TestCase {
 
 	/**
 	 * Test common usage of the function.
-	 *
-	 * @covers ::vipgoci_wpscan_get_altered_addons_data_and_slugs
 	 *
 	 * @return void
 	 */

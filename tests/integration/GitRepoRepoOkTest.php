@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_gitrepo_ok' )]
 final class GitRepoRepoOkTest extends TestCase {
 	/**
 	 * Git options.
@@ -103,8 +106,6 @@ final class GitRepoRepoOkTest extends TestCase {
 	/**
 	 * Test normal usage of the vipgoci_gitrepo_ok() function,
 	 * should succeed.
-	 *
-	 * @covers ::vipgoci_gitrepo_ok
 	 */
 	public function testRepoOkSuccess() :void {
 		$options_test = vipgoci_unittests_options_test(
@@ -152,8 +153,6 @@ final class GitRepoRepoOkTest extends TestCase {
 	/**
 	 * Test invalid usage of the vipgoci_gitrepo_ok() function,
 	 * should not succeed.
-	 *
-	 * @covers ::vipgoci_gitrepo_ok
 	 */
 	public function testRepoOkFailure() :void {
 		$options_test = vipgoci_unittests_options_test(

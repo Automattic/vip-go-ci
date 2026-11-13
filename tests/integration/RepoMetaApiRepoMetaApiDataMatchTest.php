@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_repo_meta_api_data_match' )]
 final class RepoMetaApiRepoMetaApiDataMatchTest extends TestCase {
 	/**
 	 * Options array.
@@ -102,9 +105,6 @@ final class RepoMetaApiRepoMetaApiDataMatchTest extends TestCase {
 		unset( $this->options_meta_api_secrets );
 	}
 
-	/**
-	 * @covers ::vipgoci_repo_meta_api_data_match
-	 */
 	public function test_repo_meta_api_data_match1() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
@@ -139,9 +139,6 @@ final class RepoMetaApiRepoMetaApiDataMatchTest extends TestCase {
 		);
 	}
 
-	/**
-	 * @covers ::vipgoci_repo_meta_api_data_match
-	 */
 	public function test_repo_meta_api_data_match2() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
@@ -176,9 +173,6 @@ final class RepoMetaApiRepoMetaApiDataMatchTest extends TestCase {
 		);
 	}
 
-	/**
-	 * @covers ::vipgoci_repo_meta_api_data_match
-	 */
 	public function test_repo_meta_api_data_match3() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
@@ -213,9 +207,6 @@ final class RepoMetaApiRepoMetaApiDataMatchTest extends TestCase {
 		);
 	}
 
-	/**
-	 * @covers ::vipgoci_repo_meta_api_data_match
-	 */
 	public function test_repo_meta_api_data_match4() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,

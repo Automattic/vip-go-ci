@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_cache' )]
 final class CacheVipgociCacheTest extends TestCase {
 	/**
 	 * Setup function. Require files, etc.
@@ -30,8 +33,6 @@ final class CacheVipgociCacheTest extends TestCase {
 
 	/**
 	 * Test caching random data and test if is correctly retrieved.
-	 *
-	 * @covers ::vipgoci_cache
 	 *
 	 * @return void
 	 */
@@ -95,8 +96,6 @@ final class CacheVipgociCacheTest extends TestCase {
 
 	/**
 	 * Test clearing of cache.
-	 *
-	 * @covers ::vipgoci_cache
 	 *
 	 * @return void
 	 */

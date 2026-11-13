@@ -10,14 +10,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Implements testing of vipgoci_output_sanitize_version_number().
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_output_sanitize_version_number' )]
 final class OutputSecuritySanitizeVersionNumberTest extends TestCase {
 	/**
 	 * Setup function. Require file needed.
@@ -30,8 +33,6 @@ final class OutputSecuritySanitizeVersionNumberTest extends TestCase {
 
 	/**
 	 * Check if function really sanitizes input string.
-	 *
-	 * @covers ::vipgoci_output_sanitize_version_number
 	 *
 	 * @return void
 	 */

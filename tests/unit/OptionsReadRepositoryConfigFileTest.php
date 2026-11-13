@@ -9,14 +9,17 @@ declare( strict_types=1 );
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_options_read_repo_file' )]
 final class OptionsReadRepositoryConfigFileTest extends TestCase {
 	/**
 	 * Setup function. Require files.
@@ -31,8 +34,6 @@ final class OptionsReadRepositoryConfigFileTest extends TestCase {
 
 	/**
 	 * Tests against the --lint-modified-files-only option.
-	 *
-	 * @covers ::vipgoci_options_read_repo_file
 	 *
 	 * @return void
 	 */

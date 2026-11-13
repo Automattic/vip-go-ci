@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_ap_nonfunctional_changes' )]
 final class ApNonfunctionalChangesTest extends TestCase {
 	var $options_git = array(
 		'repo-owner'			=> null,
@@ -97,8 +100,6 @@ final class ApNonfunctionalChangesTest extends TestCase {
 	/**
 	 * Test pull request in which multiple files are altered but
 	 * only two are auto-approvable.
-	 *
-	 * @covers ::vipgoci_ap_nonfunctional_changes
 	 */
 	public function testNonFunctionalChanges1() {
 		$auto_approved_files_arr = array();
@@ -138,8 +139,6 @@ final class ApNonfunctionalChangesTest extends TestCase {
 	/**
 	 * Test pull request in which on file is removed
 	 * and another one is altered.
-	 *
-	 * @covers ::vipgoci_ap_nonfunctional_changes
 	 */
 	public function testNonFunctionalChanges2() {
 		$auto_approved_files_arr = array();

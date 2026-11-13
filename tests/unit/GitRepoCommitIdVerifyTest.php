@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_gitrepo_commit_id_validate_format' )]
 final class GitRepoCommitIdVerifyTest extends TestCase {
 	/**
 	 * Setup function. Require files, etc.
@@ -29,8 +32,6 @@ final class GitRepoCommitIdVerifyTest extends TestCase {
 
 	/**
 	 * Ensure a few valid commit IDs are validated correctly.
-	 *
-	 * @covers ::vipgoci_gitrepo_commit_id_validate_format
 	 *
 	 * @return void
 	 */
@@ -59,8 +60,6 @@ final class GitRepoCommitIdVerifyTest extends TestCase {
 
 	/**
 	 * Ensure that invalid commits are not validated.
-	 *
-	 * @covers ::vipgoci_gitrepo_commit_id_validate_format
 	 *
 	 * @return void
 	 */

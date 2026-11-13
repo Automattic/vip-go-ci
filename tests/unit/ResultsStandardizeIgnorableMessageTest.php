@@ -9,15 +9,18 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Test function intended to standardize message
  * used in ignoring results.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_results_standardize_ignorable_message' )]
 final class ResultsStandardizeIgnorableMessageTest extends TestCase {
 	/**
 	 * Require file needed.
@@ -30,8 +33,6 @@ final class ResultsStandardizeIgnorableMessageTest extends TestCase {
 
 	/**
 	 * Test standardizing function in different ways.
-	 *
-	 * @covers ::vipgoci_results_standardize_ignorable_message
 	 *
 	 * @return void
 	 */

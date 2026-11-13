@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_svg_do_scan_with_scanner' )]
 final class SvgScanWithScannerTest extends TestCase {
 	/**
 	 * SVG PHP path.
@@ -54,9 +57,6 @@ final class SvgScanWithScannerTest extends TestCase {
 		unset( $this->svg_php_path );
 	}
 
-	/**
-	 * @covers ::vipgoci_svg_do_scan_with_scanner
-	 */
 	public function testScanner1() {
 		if ( empty( $this->svg_scanner_path ) ) {
 			$this->markTestSkipped(
@@ -123,9 +123,6 @@ final class SvgScanWithScannerTest extends TestCase {
 	}
 
 
-	/**
-	 * @covers ::vipgoci_svg_do_scan_with_scanner
-	 */
 	public function testScanner2() {
 		if ( empty( $this->svg_scanner_path ) ) {
 			$this->markTestSkipped(

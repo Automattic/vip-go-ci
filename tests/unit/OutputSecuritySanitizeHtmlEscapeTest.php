@@ -11,14 +11,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Test output sanitization function.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_output_html_escape' )]
 final class OutputSecuritySanitizeHtmlEscapeTest extends TestCase {
 	/**
 	 * Setup function. Require file needed.
@@ -31,8 +34,6 @@ final class OutputSecuritySanitizeHtmlEscapeTest extends TestCase {
 
 	/**
 	 * Test if the function really HTML encodes input string.
-	 *
-	 * @covers ::vipgoci_output_html_escape
 	 *
 	 * @return void
 	 */

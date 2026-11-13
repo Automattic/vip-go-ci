@@ -12,6 +12,7 @@ namespace Vipgoci\Tests\Unit;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\PreserveGlobalState;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+use PHPUnit\Framework\Attributes\CoversFunction;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -20,6 +21,7 @@ use PHPUnit\Framework\TestCase;
 #[Group( 'mocked-api' )]
 #[RunTestsInSeparateProcesses]
 #[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_send_stats_to_pixel_api' )]
 final class OtherWebServicesSendStatsToPixelApiTest extends TestCase {
 	/**
 	 * Setup function. Require files.
@@ -34,8 +36,6 @@ final class OtherWebServicesSendStatsToPixelApiTest extends TestCase {
 
 	/**
 	 * Emulate sending statistics to Pixel API.
-	 *
-	 * @covers ::vipgoci_send_stats_to_pixel_api
 	 *
 	 * @return void
 	 */

@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_github_prs_urls_get' )]
 final class GitHubMiscGithubPrsUrlsGetTest extends TestCase {
 	/**
 	 * Setup function. Require files, etc.
@@ -51,8 +54,6 @@ final class GitHubMiscGithubPrsUrlsGetTest extends TestCase {
 	/**
 	 * Test if function returns expected URLs to
 	 * pull requests.
-	 *
-	 * @covers ::vipgoci_github_prs_urls_get
 	 */
 	public function testPrsUrls(): void {
 		$pull_requests = $this->createMockPullRequests();

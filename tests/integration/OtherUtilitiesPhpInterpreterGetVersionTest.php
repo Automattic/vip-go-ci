@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_util_php_interpreter_get_version' )]
 final class OtherUtilitiesPhpInterpreterGetVersionTest extends TestCase {
 	/**
 	 * Options array.
@@ -51,8 +54,6 @@ final class OtherUtilitiesPhpInterpreterGetVersionTest extends TestCase {
 	 * Uses internal function to do this.
 	 *
 	 * @return void
-	 *
-	 * @covers ::vipgoci_util_php_interpreter_get_version
 	 */
 	public function testPhpInterpreterGetVersion() :void {
 		$options_test = vipgoci_unittests_options_test(

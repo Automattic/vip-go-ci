@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_file_extension_get' )]
 final class MiscFileExtensionTest extends TestCase {
 	/**
 	 * Setup function. Require files, etc.
@@ -29,8 +32,6 @@ final class MiscFileExtensionTest extends TestCase {
 
 	/**
 	 * Test common usage of the function.
-	 *
-	 * @covers ::vipgoci_file_extension_get
 	 *
 	 * @return void
 	 */
@@ -50,8 +51,6 @@ final class MiscFileExtensionTest extends TestCase {
 	/**
 	 * Test common usage of the function.
 	 *
-	 * @covers ::vipgoci_file_extension_get
-	 *
 	 * @return void
 	 */
 	public function testFileExtension2() :void {
@@ -69,8 +68,6 @@ final class MiscFileExtensionTest extends TestCase {
 
 	/**
 	 * Test without extension.
-	 *
-	 * @covers ::vipgoci_file_extension_get
 	 *
 	 * @return void
 	 */

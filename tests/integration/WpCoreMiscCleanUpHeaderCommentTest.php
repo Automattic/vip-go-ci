@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_wpcore_misc_cleanup_header_comment' )]
 final class WpCoreMiscCleanUpHeaderCommentTest extends TestCase {
 	/**
 	 * Setup function. Require files.
@@ -29,8 +32,6 @@ final class WpCoreMiscCleanUpHeaderCommentTest extends TestCase {
 
 	/**
 	 * Test common usage of the function.
-	 *
-	 * @covers ::vipgoci_wpcore_misc_cleanup_header_comment
 	 *
 	 * @return void
 	 */
@@ -70,8 +71,6 @@ final class WpCoreMiscCleanUpHeaderCommentTest extends TestCase {
 	/**
 	 * Test common usage of the function.
 	 *
-	 * @covers ::vipgoci_wpcore_misc_cleanup_header_comment
-	 *
 	 * @return void
 	 */
 	public function testWpCoreMiscCleanUpHeaderCommentTest2(): void {
@@ -105,8 +104,6 @@ final class WpCoreMiscCleanUpHeaderCommentTest extends TestCase {
 
 	/**
 	 * Test common usage of the function.
-	 *
-	 * @covers ::vipgoci_wpcore_misc_cleanup_header_comment
 	 *
 	 * @return void
 	 */

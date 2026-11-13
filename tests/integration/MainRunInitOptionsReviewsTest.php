@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Check if all options regarding reviews are correctly set up.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_run_init_options_reviews' )]
 final class MainRunInitOptionsReviewsTest extends TestCase {
 	/**
 	 * Variable for options.
@@ -43,8 +46,6 @@ final class MainRunInitOptionsReviewsTest extends TestCase {
 
 	/**
 	 * Tests if default options regarding reviews are set up correctly.
-	 *
-	 * @covers ::vipgoci_run_init_options_reviews
 	 */
 	public function testRunInitOptionsReviewsDefault() :void {
 		vipgoci_run_init_options_reviews(
@@ -70,8 +71,6 @@ final class MainRunInitOptionsReviewsTest extends TestCase {
 
 	/**
 	 * Tests if custom options regarding reviews are set up correctly.
-	 *
-	 * @covers ::vipgoci_run_init_options_reviews
 	 */
 	public function testRunInitOptionsReviewsCustom() :void {
 		$this->options = array(

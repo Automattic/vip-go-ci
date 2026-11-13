@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_github_prs_implicated' )]
 final class GitHubPrsImplicatedTest extends TestCase {
 	/**
 	 * Options array.
@@ -79,9 +82,6 @@ final class GitHubPrsImplicatedTest extends TestCase {
 		unset( $this->options );
 	}
 
-	/**
-	 * @covers ::vipgoci_github_prs_implicated
-	 */
 	public function testGitHubPrsImplicatedIncludeDraftPrs() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
@@ -126,9 +126,6 @@ final class GitHubPrsImplicatedTest extends TestCase {
 		unset( $this->options['commit'] );
 	}
 
-	/**
-	 * @covers ::vipgoci_github_prs_implicated
-	 */
 	public function testGitHubPrsImplicatedSkipDraftPrsFalse() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
@@ -235,9 +232,6 @@ final class GitHubPrsImplicatedTest extends TestCase {
 		);
 	}
 
-	/**
-	 * @covers ::vipgoci_github_prs_implicated
-	 */
 	public function testGitHubPrsImplicatedSkipDraftPrsTrue() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
