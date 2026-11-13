@@ -72,7 +72,7 @@ final class ReportCreateScanDetailsSoftwareVersionsTest extends TestCase {
 		);
 
 		$this->assertStringContainsString(
-			'<li>vip-go-ci version: <code>' . VIPGOCI_VERSION . '</code></li>',
+			'<li><a href="https://github.com/Automattic/vip-go-ci">vip-go-ci</a> version: <code>' . VIPGOCI_VERSION . '</code></li>',
 			$actual_output
 		);
 
@@ -150,7 +150,7 @@ final class ReportCreateScanDetailsSoftwareVersionsTest extends TestCase {
 		);
 
 		$this->assertStringContainsString(
-			'<li>vip-go-ci version: <code>' . VIPGOCI_VERSION . '</code></li>',
+			'<li><a href="https://github.com/Automattic/vip-go-ci">vip-go-ci</a> version: <code>' . VIPGOCI_VERSION . '</code></li>',
 			$actual_output
 		);
 

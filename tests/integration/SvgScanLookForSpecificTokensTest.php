@@ -72,7 +72,7 @@ final class SvgScanLookForSpecificTokensTest extends TestCase {
 		);
 
 		$results_expected = json_decode(
-			'{"totals":{"errors":1,"warnings":0,"fixable":0},"files":{"' . addcslashes( $temp_file_name, '/' ) . '":{"errors":1,"messages":[{"message":"Found forbidden tag in SVG file: \'<?php\'","line":6,"level":"ERROR"}]}}}',
+			'{"totals":{"errors":1,"warnings":0,"fixable":0},"files":{"' . addcslashes( $temp_file_name, '/' ) . '":{"errors":1,"messages":[{"message":"Found forbidden tag in SVG file: &#039;&lt;?php&#039;","line":6,"level":"ERROR"}]}}}',
 			true
 		);
 
