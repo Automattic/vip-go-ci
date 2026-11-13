@@ -8,6 +8,34 @@
 declare(strict_types=1);
 
 /**
+ * Determine whether the whole pull request only deletes lines at the scanned head.
+ * Missing statistics or a changed head must not qualify for auto-approval.
+ *
+ * @param array $options    Repository options and scanned commit.
+ * @param int   $pr_number  Pull request number.
+ * @param bool  $skip_cache Fetch current PR data instead of reusing a cached classification.
+ * @return bool
+ */
+function vipgoci_github_pr_deletions_only( array $options, int $pr_number, bool $skip_cache = false ): bool {
+	$cached_id = array( __FUNCTION__, $options['repo-owner'], $options['repo-name'], $pr_number, $options['commit'], $options['token'] );
+	$cached    = $skip_cache ? false : vipgoci_cache( $cached_id );
+	if ( false !== $cached ) {
+		return $cached['deletions-only'];
+	}
+
+	$url    = VIPGOCI_GITHUB_BASE_URL . '/repos/' .
+		rawurlencode( $options['repo-owner'] ) . '/' .
+		rawurlencode( $options['repo-name'] ) . '/pulls/' . $pr_number;
+	$pr     = json_decode( (string) vipgoci_http_api_fetch_url( $url, $options['token'], false ), true );
+	$result = is_array( $pr ) &&
+		( ( $pr['head']['sha'] ?? null ) === $options['commit'] ) &&
+		( ( $pr['additions'] ?? null ) === 0 ) &&
+		isset( $pr['deletions'] ) && is_int( $pr['deletions'] ) && ( $pr['deletions'] > 0 );
+	vipgoci_cache( $cached_id, array( 'deletions-only' => $result ) );
+	return $result;
+}
+
+/**
  * Add GitHub API version header to provided
  * array if URL is GitHub.
  *
