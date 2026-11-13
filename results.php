@@ -313,7 +313,7 @@ function vipgoci_results_remove_existing_github_comments(
  *
  * @param array $options                 Options array for the program.
  * @param array $results                 Results array.
- * @param array $auto_approved_files_arr Array of auto-approved files.
+ * @param array $auto_approved_files_arr Auto-approved reasons keyed by PR number and filename.
  *
  * @return void
  */
@@ -352,7 +352,7 @@ function vipgoci_results_approved_files_comments_remove(
 			 * do not to anything.
 			 */
 			if ( ! isset(
-				$auto_approved_files_arr[ $issue_item['file_name'] ]
+				$auto_approved_files_arr[ $pr_number ][ $issue_item['file_name'] ]
 			) ) {
 				continue;
 			}
