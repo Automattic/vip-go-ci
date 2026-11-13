@@ -148,4 +148,38 @@ final class CacheVipgociCacheTest extends TestCase {
 			$cached_data
 		);
 	}
+
+	/** Invalid UTF-8 path bytes must not alias other files, functions or commits. */
+	public function testBinaryKeysRemainDistinctAndPreserveCacheContracts(): void {
+		vipgoci_cache( VIPGOCI_CACHE_CLEAR );
+		$keys = array(
+			array( 'validation', "file-\xff.php", 'commit-a' ),
+			array( 'validation', "file-\xfe.php", 'commit-a' ),
+			array( 'validation', 'file-\377.php', 'commit-a' ),
+			array( 'validation', "file-\xff.php", 'commit-b' ),
+			array( 'patch', "file-\xff.php", 'commit-a' ),
+			array( 'nested', array( "file-\xff.php" => array( "value-\xfe" ) ) ),
+			array( 'typed', 1 ),
+			array( 'typed', '1' ),
+		);
+		foreach ( $keys as $index => $key ) {
+			$this->assertSame( $index, vipgoci_cache( $key, $index ) );
+		}
+		foreach ( $keys as $index => $key ) {
+			$this->assertSame( $index, vipgoci_cache( $key ) );
+		}
+		$value = (object) array( 'state' => 'original' );
+		$returned = vipgoci_cache( array( "object-\xff" ), $value );
+		$value->state = 'caller-mutated';
+		$this->assertSame( 'original', $returned->state );
+		$cached = vipgoci_cache( array( "object-\xff" ) );
+		$this->assertSame( 'original', $cached->state );
+		$cached->state = 'read-mutated';
+		$this->assertSame( 'original', vipgoci_cache( array( "object-\xff" ) )->state );
+		vipgoci_cache( VIPGOCI_CACHE_CLEAR );
+		foreach ( $keys as $key ) {
+			$this->assertFalse( vipgoci_cache( $key ) );
+		}
+	}
+
 }

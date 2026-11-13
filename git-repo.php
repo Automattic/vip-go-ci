@@ -1364,7 +1364,7 @@ function vipgoci_gitrepo_diffs_fetch_unfiltered(
 	 * as that is what GitHub uses: https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/about-comparing-branches-in-pull-requests#three-dot-and-two-dot-git-diff-comparisons
 	 */
 	$git_diff_cmd = sprintf(
-		'%s --no-pager -C %s diff --no-color %s',
+		'%s --no-pager -c core.quotepath=true -C %s diff --no-color --src-prefix=a/ --dst-prefix=b/ %s',
 		escapeshellcmd( 'git' ),
 		escapeshellarg( $local_git_repo ),
 		escapeshellarg( $commit_id_a . '...' . $commit_id_b )
@@ -1469,19 +1469,11 @@ function vipgoci_gitrepo_diffs_fetch_unfiltered(
 
 			$cur_file_status = null;
 
-			if ( 4 === count( $git_result_item_arr ) ) {
-				$cur_file_minus = $git_result_item_arr[2];
-			} else {
-				$cur_file_minus = null;
-			}
+			list( $cur_file_minus, $cur_file_plus ) = vipgoci_gitrepo_diff_header_paths(
+				substr( $git_result_item, strlen( 'diff --git ' ) )
+			);
 
 			$cur_file_minus_path_cleaned = false;
-
-			if ( 4 === count( $git_result_item_arr ) ) {
-				$cur_file_plus = $git_result_item_arr[3];
-			} else {
-				$cur_file_plus = null;
-			}
 
 			$cur_file_plus_path_cleaned = false;
 
@@ -1498,10 +1490,18 @@ function vipgoci_gitrepo_diffs_fetch_unfiltered(
 			) {
 				$cur_file_status = 'modified';
 			} elseif (
-				( 'rename' === $git_result_item_arr[0] ) &&
+				in_array( $git_result_item_arr[0], array( 'rename', 'copy' ), true ) &&
 				( 'from' === $git_result_item_arr[1] )
 			) {
-				$cur_file_previous_filename = $git_result_item_arr[2];
+				$cur_file_previous_filename = vipgoci_gitrepo_get_file_path_from_diff( $git_result_item_arr, 2 );
+				$cur_file_minus              = $cur_file_previous_filename;
+				$cur_file_minus_path_cleaned = true;
+			} elseif (
+				in_array( $git_result_item_arr[0], array( 'rename', 'copy' ), true ) &&
+				( 'to' === $git_result_item_arr[1] )
+			) {
+				$cur_file_plus              = vipgoci_gitrepo_get_file_path_from_diff( $git_result_item_arr, 2 );
+				$cur_file_plus_path_cleaned = true;
 			} elseif ( '---' === $git_result_item_arr[0] ) {
 				$cur_file_minus = vipgoci_gitrepo_get_file_path_from_diff(
 					vipgoci_gitrepo_diffs_clean_extra_whitespace(
@@ -1672,7 +1672,7 @@ function vipgoci_gitrepo_diffs_fetch_unfiltered(
 				)
 			);
 
-			continue;
+			return null;
 		}
 
 		/*
@@ -1767,7 +1767,7 @@ function vipgoci_gitrepo_diffs_fetch_unfiltered(
 
 /**
  * Join path array into string and return. Remove first array
- * items if specified.
+ * items if specified. Decode Git C quoting without changing literal paths.
  *
  * @param array $path_arr       Path as array.
  * @param int   $index_to_start From what element in the array to start the join.
@@ -1798,7 +1798,50 @@ function vipgoci_gitrepo_get_file_path_from_diff(
 
 	$path = join( ' ', $path_arr );
 
+	// Only Git's quoted representation has escapes; literal unquoted bytes stay intact.
+	if ( str_starts_with( $path, '"' ) && str_ends_with( $path, '"' ) ) {
+		$path = stripcslashes( substr( $path, 1, -1 ) );
+	}
+
 	return $path;
+}
+
+/**
+ * Decode the two paths in a textual Git diff header without splitting filenames.
+ *
+ * Unquoted names may contain spaces, including " b/". Non-rename headers repeat
+ * the same path with different prefixes. Ambiguous rename/copy headers are
+ * resolved later by their complete from/to records.
+ *
+ * @param string $paths Header suffix after "diff --git ".
+ * @return array Pair of prefixed paths, or null entries until from/to records.
+ */
+function vipgoci_gitrepo_diff_header_paths( string $paths ): array {
+	if ( str_contains( $paths, '"' ) ) {
+		$quoted = '"(?:[^"\\\\]|\\\\.)*"';
+		if ( 1 === preg_match( '/^(' . $quoted . '|[^"]+) (' . $quoted . '|[^"]+)$/D', $paths, $matches ) ) {
+			return array(
+				vipgoci_gitrepo_get_file_path_from_diff( array( $matches[1] ) ),
+				vipgoci_gitrepo_get_file_path_from_diff( array( $matches[2] ) ),
+			);
+		}
+	} else {
+		$length = strlen( $paths );
+		if ( 1 === $length % 2 ) {
+			$half  = intdiv( $length - 1, 2 );
+			$minus = substr( $paths, 0, $half );
+			$plus  = substr( $paths, $half + 1 );
+			if (
+				' ' === $paths[ $half ] &&
+				str_starts_with( $minus, 'a/' ) &&
+				str_starts_with( $plus, 'b/' ) &&
+				substr( $minus, 2 ) === substr( $plus, 2 )
+			) {
+				return array( $minus, $plus );
+			}
+		}
+	}
+	return array( null, null );
 }
 
 /**
