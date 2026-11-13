@@ -90,6 +90,32 @@ final class GitHubPrDeletionsOnlyTest extends MockedApiTestCase {
 			case 'binary':
 				file_put_contents( $this->repo . '/binary.bin', "x\0" );
 				break;
+			case 'forced-text binary deletion':
+			case 'forced-text binary modification':
+				$this->git( 'checkout -q ' . $this->base );
+				file_put_contents( $this->repo . '/.gitattributes', "*.bin diff\n" );
+				$this->git( 'add -A' );
+				$this->git( 'commit -qm attributes' );
+				$this->base = $this->git( 'rev-parse HEAD' );
+				file_put_contents( $this->repo . '/code.php', '' );
+				if ( 'forced-text binary deletion' === $change ) {
+					unlink( $this->repo . '/binary.bin' );
+				} else {
+					file_put_contents( $this->repo . '/binary.bin', '' );
+				}
+				$this->git( 'add -A' );
+				$this->git( 'commit -qm binary-deletion' );
+				$this->head = $this->git( 'rev-parse HEAD' );
+				break;
+			case 'late binary marker':
+				$this->git( 'checkout -q ' . $this->base );
+				file_put_contents( $this->repo . '/binary.bin', str_repeat( 'a', 70000 ) . "\0\nremove\n" );
+				$this->git( 'commit -qam baseline' );
+				$this->base = $this->git( 'rev-parse HEAD' );
+				file_put_contents( $this->repo . '/binary.bin', str_repeat( 'a', 70000 ) . "\0\n" );
+				$this->git( 'commit -qam deletion' );
+				$this->head = $this->git( 'rev-parse HEAD' );
+				break;
 			case 'binary deletion':
 				unlink( $this->repo . '/binary.bin' );
 				break;
@@ -176,7 +202,7 @@ final class GitHubPrDeletionsOnlyTest extends MockedApiTestCase {
 	}
 
 	public static function mixedChanges(): array {
-		return array_map( static fn( $case ) => array( $case ), array( 'rename', 'mode', 'binary', 'binary deletion', 'symlink', 'submodule', 'addition', 'empty addition', 'missing base', 'missing head', 'empty diff', 'valid deletions', 'whole file removal', 'unusual path', 'earlier addition', 'invalid base' ) );
+		return array_map( static fn( $case ) => array( $case ), array( 'rename', 'mode', 'binary', 'binary deletion', 'symlink', 'submodule', 'addition', 'empty addition', 'missing base', 'missing head', 'empty diff', 'valid deletions', 'whole file removal', 'unusual path', 'earlier addition', 'invalid base', 'forced-text binary deletion', 'forced-text binary modification', 'late binary marker' ) );
 	}
 
 	/**

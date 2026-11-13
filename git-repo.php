@@ -1182,19 +1182,24 @@ function vipgoci_gitrepo_deletions_only( string $local_git_repo, string $base, s
 	$records = explode( "\0", $data );
 	array_pop( $records );
 	$files = array();
+	$blobs = array();
 	$i     = 0;
 	while ( isset( $records[ $i ] ) && str_starts_with( $records[ $i ], ':' ) ) {
-		if ( 1 !== preg_match( '/^:(100644|100755) (100644|100755|000000) [0-9a-f]{40} [0-9a-f]{40} ([MD])$/D', $records[ $i++ ], $header ) ) {
+		if ( 1 !== preg_match( '/^:(100644|100755) (100644|100755|000000) ([0-9a-f]{40}) ([0-9a-f]{40}) ([MD])$/D', $records[ $i++ ], $header ) ) {
 			return false;
 		}
-		if ( ( 'M' === $header[3] && $header[1] !== $header[2] ) || ( 'D' === $header[3] && '000000' !== $header[2] ) ) {
+		if ( ( 'M' === $header[5] && $header[1] !== $header[2] ) || ( 'D' === $header[5] && '000000' !== $header[2] ) ) {
 			return false;
 		}
 		$path = $records[ $i++ ] ?? '';
 		if ( '' === $path || isset( $files[ $path ] ) ) {
 			return false;
 		}
-		$files[ $path ] = $header[3];
+		$files[ $path ]      = $header[5];
+		$blobs[ $header[3] ] = true;
+		if ( 'M' === $header[5] ) {
+			$blobs[ $header[4] ] = true;
+		}
 	}
 	$has_deletions = false;
 	for ( ; $i < count( $records ); $i++ ) {
@@ -1208,7 +1213,27 @@ function vipgoci_gitrepo_deletions_only( string $local_git_repo, string $base, s
 		$has_deletions = $has_deletions || '0' !== $counts[1];
 		unset( $files[ $counts[2] ] );
 	}
-	return $has_deletions && array() === $files;
+	if ( ! $has_deletions || array() !== $files ) {
+		return false;
+	}
+
+	// Attributes can force binary blobs into numeric numstat records. Inspect
+	// immutable content independently, including NULs beyond Git's probe window.
+	foreach ( array_keys( $blobs ) as $blob ) {
+		$content = vipgoci_gitrepo_diff_output(
+			'git -C ' . escapeshellarg( $local_git_repo ) . ' cat-file blob ' . escapeshellarg( $blob )
+		);
+		if ( null === $content ) {
+			return false;
+		}
+		while ( ! $content->eof() ) {
+			$chunk = $content->fread( 65536 );
+			if ( false === $chunk || str_contains( $chunk, "\0" ) ) {
+				return false;
+			}
+		}
+	}
+	return true;
 }
 
 /**
