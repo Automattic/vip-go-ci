@@ -409,7 +409,7 @@ function vipgoci_options_recognized() :array {
  * GitHub return with a non-zero exit-code. Same
  * if any files were skipped.
  *
- * If we submitted nothing or only warnings, and
+ * If we detected no errors (including already-reported errors) and
  * no files were skipped, return with zero.
  *
  * @param array $results Array with results from scanning, etc.
@@ -2946,6 +2946,16 @@ function vipgoci_run_scan(
 	gc_collect_cycles();
 
 	/*
+	 * Apply explicit ignores before presentation deduplication removes issues.
+	 */
+	if ( ! empty( $options['review-comments-ignore'] ) ) {
+		vipgoci_results_filter_ignorable(
+			$options,
+			$results
+		);
+	}
+
+	/*
 	 * Remove comments from $results that have
 	 * already been submitted.
 	 */
@@ -2970,16 +2980,6 @@ function vipgoci_run_scan(
 		$options,
 		$results
 	);
-
-	/*
-	 * Remove ignorable comments from $results.
-	 */
-	if ( ! empty( $options['review-comments-ignore'] ) ) {
-		vipgoci_results_filter_ignorable(
-			$options,
-			$results
-		);
-	}
 
 	// Keep record of how many issues we found.
 	vipgoci_counter_update_with_issues_found( $results );
