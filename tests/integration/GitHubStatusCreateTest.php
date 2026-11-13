@@ -100,7 +100,9 @@ final class GitHubStatusCreateTest extends TestCase {
 	 * @return void
 	 */
 	private function setBuildStatus() :void {
-		sleep( 2 ); // GitHub API requirement.
+		if ( 'true' === getenv( 'VIPGOCI_TESTING_LIVE_API' ) ) {
+			sleep( 2 );
+		} // GitHub API requirement.
 
 		$github_url =
 			VIPGOCI_GITHUB_BASE_URL . '/' .
@@ -130,7 +132,9 @@ final class GitHubStatusCreateTest extends TestCase {
 	 * @return array
 	 */
 	private function getCurrentBuildStatus(): ?array {
-		sleep( 2 );
+		if ( 'true' === getenv( 'VIPGOCI_TESTING_LIVE_API' ) ) {
+			sleep( 2 );
+		}
 
 		$github_url =
 			VIPGOCI_GITHUB_BASE_URL . '/' .

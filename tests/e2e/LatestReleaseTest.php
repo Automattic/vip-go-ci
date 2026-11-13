@@ -31,6 +31,11 @@ final class LatestReleaseTest extends TestCase {
 	 * @return void
 	 */
 	protected function setUp() :void {
+		if ( 'true' !== getenv( 'VIPGOCI_TESTING_LIVE_API' ) ) {
+			require_once __DIR__ . '/../common/helper/IntegrationApiMock.php';
+			require_once __DIR__ . '/../common/helper/CurlApiMock.php';
+		}
+
 		$this->temp_file_name = tempnam(
 			sys_get_temp_dir(),
 			'vipgoci-defines-php-file'
@@ -69,7 +74,8 @@ final class LatestReleaseTest extends TestCase {
 		 * Resolve the published release independently of latest-release.php.
 		 * The moving 'latest' Git tag can lag behind published releases.
 		 */
-		$ch = curl_init( 'https://api.github.com/repos/Automattic/vip-go-ci/releases/latest' );
+		$ch = curl_init();
+		curl_setopt( $ch, CURLOPT_URL, 'https://api.github.com/repos/Automattic/vip-go-ci/releases/latest' );
 		curl_setopt_array(
 			$ch,
 			array(
@@ -110,7 +116,9 @@ final class LatestReleaseTest extends TestCase {
 		 * Run latest-release.php to get latest version number.
 		 */
 		$returned_version_number = exec(
-			escapeshellarg( PHP_BINARY ) . ' latest-release.php',
+			escapeshellarg( PHP_BINARY ) .
+			( 'true' === getenv( 'VIPGOCI_TESTING_LIVE_API' ) ? '' : ' -d auto_prepend_file=' . escapeshellarg( __DIR__ . '/../common/helper/ReleaseApiBootstrap.php' ) ) .
+			' latest-release.php',
 			$script_output,
 			$script_status
 		);

@@ -11,6 +11,7 @@ namespace Vipgoci\Tests\Unit;
 
 use PHPUnit\Framework\Attributes\CoversFunction;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\PreserveGlobalState;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
@@ -18,6 +19,7 @@ use PHPUnit\Framework\TestCase;
 /**
  * Exercise real result processing, API filtering and caching with fake HTTP.
  */
+#[Group( 'mocked-api' )]
 #[RunTestsInSeparateProcesses]
 #[PreserveGlobalState( false )]
 #[CoversFunction( 'vipgoci_results_remove_existing_github_comments' )]

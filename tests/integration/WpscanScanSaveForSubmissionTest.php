@@ -335,7 +335,9 @@ final class WpscanScanSaveForSubmissionTest extends TestCase {
 		$this->prLabelAdd();
 
 		// Wait for a bit while updates take place on GitHub.
-		sleep( 10 );
+		if ( 'true' === getenv( 'VIPGOCI_TESTING_LIVE_API' ) ) {
+			sleep( 10 );
+		}
 
 		vipgoci_wpscan_scan_save_for_submission(
 			$this->options,
