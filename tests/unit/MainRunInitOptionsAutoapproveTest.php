@@ -62,6 +62,7 @@ final class MainRunInitOptionsAutoapproveTest extends TestCase {
 	public function testRunInitOptionsAutoapproveDefault() :void {
 		$this->options = array(
 			'autoapprove'                           => null,
+			'autoapprove-deletions-only'            => null,
 			'autoapprove-php-nonfunctional-changes' => null,
 			'autoapprove-php-nonfunctional-changes-file-extensions' => null,
 			'autoapprove-filetypes'                 => 'txt,gif,png',
@@ -75,6 +76,7 @@ final class MainRunInitOptionsAutoapproveTest extends TestCase {
 		$this->assertSame(
 			array(
 				'autoapprove'                           => false,
+				'autoapprove-deletions-only'            => false,
 				'autoapprove-php-nonfunctional-changes' => false,
 				'autoapprove-php-nonfunctional-changes-file-extensions' => array( 'php' ),
 				'autoapprove-filetypes'                 => array(),
@@ -93,6 +95,7 @@ final class MainRunInitOptionsAutoapproveTest extends TestCase {
 	public function testRunInitOptionsAutoapproveCustom() :void {
 		$this->options = array(
 			'autoapprove'                           => 'true',
+			'autoapprove-deletions-only'            => 'true',
 			'autoapprove-php-nonfunctional-changes' => 'true',
 			'autoapprove-php-nonfunctional-changes-file-extensions' => 'php,inc',
 			'autoapprove-filetypes'                 => 'txt,gif,png,pdf',
@@ -109,6 +112,7 @@ final class MainRunInitOptionsAutoapproveTest extends TestCase {
 		$this->assertSame(
 			array(
 				'autoapprove'                           => true,
+				'autoapprove-deletions-only'            => true,
 				'autoapprove-php-nonfunctional-changes' => true,
 				'autoapprove-php-nonfunctional-changes-file-extensions' => array( 'php', 'inc' ),
 				'autoapprove-filetypes'                 => array( 'txt', 'gif', 'png', 'pdf' ),
@@ -129,6 +133,7 @@ final class MainRunInitOptionsAutoapproveTest extends TestCase {
 	public function testRunInitOptionsAutoapproveErrors1() :void {
 		$this->options = array(
 			'autoapprove'                           => 'true',
+			'autoapprove-deletions-only'            => 'true',
 			'autoapprove-php-nonfunctional-changes' => 'true',
 			'autoapprove-php-nonfunctional-changes-file-extensions' => 'php,inc',
 			'autoapprove-filetypes'                 => 'txt,gif,png,pdf,php', // 'php' is not allowed.
@@ -162,6 +167,7 @@ final class MainRunInitOptionsAutoapproveTest extends TestCase {
 	public function testRunInitOptionsAutoapproveErrors2() :void {
 		$this->options = array(
 			'autoapprove'                           => 'true',
+			'autoapprove-deletions-only'            => 'true',
 			'autoapprove-php-nonfunctional-changes' => 'true',
 			'autoapprove-php-nonfunctional-changes-file-extensions' => 'php,inc',
 			'autoapprove-filetypes'                 => '', // Should not be empty.
@@ -185,5 +191,24 @@ final class MainRunInitOptionsAutoapproveTest extends TestCase {
 			'vipgoci_sysexit() was called; message=To be able to auto-approve, file-types to approve must be specified, as well as a label; see --help for information',
 			$error_msg
 		);
+	}
+	/**
+	 * Deletion-only approvals need no file-type allowlist.
+	 *
+	 * @return void
+	 */
+	public function testDeletionOnlyWithoutFileTypes(): void {
+		$this->options = array(
+			'autoapprove'                => 'true',
+			'autoapprove-deletions-only' => 'true',
+			'autoapprove-filetypes'      => '',
+			'autoapprove-label'          => 'auto-approved',
+			'lint-file-extensions'       => array( 'php' ),
+			'phpcs-file-extensions'      => array( 'php' ),
+			'svg-file-extensions'        => array( 'svg' ),
+		);
+		vipgoci_run_init_options_autoapprove( $this->options );
+		$this->assertTrue( $this->options['autoapprove-deletions-only'] );
+		$this->assertSame( array(), $this->options['autoapprove-filetypes'] );
 	}
 }

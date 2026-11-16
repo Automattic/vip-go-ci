@@ -151,6 +151,7 @@ function vipgoci_auto_approval_non_approval(
  * @param object|bool $pr_label                Pull request label found, false when none is found.
  * @param array       $auto_approved_files_arr Auto-approved reasons keyed by PR number and filename.
  * @param array       $files_seen              Files processed during auto-approval.
+ * @param bool        $deletions_only          Whether approval is based on deletion-only changes.
  *
  * @return void
  */
@@ -159,8 +160,9 @@ function vipgoci_autoapproval_do_approve(
 	int $pr_number,
 	object|bool $pr_label,
 	array &$auto_approved_files_arr,
-	array $files_seen
-) :void {
+	array $files_seen,
+	bool $deletions_only = false
+): void {
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_START, 'vipgoci_autoapproval_do_approve' );
 
 	$pr_item_approval_reviews =
@@ -219,6 +221,8 @@ function vipgoci_autoapproval_do_approve(
 			$options['token'],
 			$pr_number,
 			$options['commit'],
+			$deletions_only ?
+				'Auto-approved pull request #' . $pr_number . ' because it only removes lines.' :
 			'Auto-approved pull request #' .
 				(int) $pr_number . ' as it ' .
 				'contains only auto-approvable files -- ' .
@@ -370,6 +374,13 @@ function vipgoci_auto_approval_scan_commit(
 			}
 		}
 
+		$deletions_only = ( true === ( $options['autoapprove-deletions-only'] ?? false ) ) &&
+			vipgoci_github_pr_deletions_only( $options, (int) $pr_number, true );
+		if ( $deletions_only ) {
+			$files_seen       = $pr_files_changed;
+			$can_auto_approve = true;
+		}
+
 		/*
 		 * If WPScan API is enabled, dry-run mode is disabled, and problems
 		 * were identified by WPScan API, do not auto-approve.
@@ -443,7 +454,8 @@ function vipgoci_auto_approval_scan_commit(
 				$pr_number,
 				$pr_label,
 				$auto_approved_files_arr,
-				$files_seen
+				$files_seen,
+				$deletions_only
 			);
 		}
 
