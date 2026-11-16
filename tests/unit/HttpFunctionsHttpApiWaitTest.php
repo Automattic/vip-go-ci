@@ -20,6 +20,7 @@ use PHPUnit\Framework\TestCase;
 #[RunTestsInSeparateProcesses]
 #[PreserveGlobalState( false )]
 #[CoversFunction( 'vipgoci_http_api_wait' )]
+#[CoversFunction( 'vipgoci_http_api_retry_wait' )]
 final class HttpFunctionsHttpApiWaitTest extends TestCase {
 	/**
 	 * Setup function. Require files.
@@ -77,8 +78,6 @@ final class HttpFunctionsHttpApiWaitTest extends TestCase {
 	 * waits for the time remaining since the last call.
 	 *
 	 * @return void
-	 *
-	 * @covers ::vipgoci_http_api_wait
 	 */
 	public function testGitHubWaitOnlyRemainingTime(): void {
 		$http_api_url = 'https://' . VIPGOCI_HTTP_API_WAIT_APIS_ARRAY[0] . '/test';
@@ -113,8 +112,6 @@ final class HttpFunctionsHttpApiWaitTest extends TestCase {
 	 * only sleeps if the request will be retried.
 	 *
 	 * @return void
-	 *
-	 * @covers ::vipgoci_http_api_retry_wait
 	 */
 	public function testRetryWaitOnlySleepsWhenRetrying(): void {
 		$time_start = microtime( true );

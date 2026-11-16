@@ -244,8 +244,6 @@ final class RepoMetaApiRepoMetaApiDataMatchTest extends TestCase {
 	/**
 	 * Test matching against data from --repo-meta-data,
 	 * with no repo-meta API configured.
-	 *
-	 * @covers ::vipgoci_repo_meta_api_data_match
 	 */
 	public function test_repo_meta_api_data_match_repo_meta_data_option() {
 		$this->options['repo-meta-api-base-url'] = null;

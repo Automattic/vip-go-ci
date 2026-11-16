@@ -150,8 +150,6 @@ final class MainRunInitOptionsPostGenericPrSupportCommentsTest extends TestCase 
 	 * Check that a single support message works without the optional
 	 * skip-if-label-exists and repo-meta-match options.
 	 *
-	 * @covers ::vipgoci_run_init_options_post_generic_pr_support_comments
-	 *
 	 * @return void
 	 */
 	public function testRunInitOptionsPostGenericPrSupportCommentsWithoutOptionalOptions() :void {
