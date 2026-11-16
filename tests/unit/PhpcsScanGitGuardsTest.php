@@ -64,7 +64,7 @@ final class PhpcsScanGitGuardsTest extends TestCase {
 
 	/** Load production code and create a local repository without user hooks. */
 	protected function setUp(): void {
-		foreach ( array( 'defines', 'cache', 'log', 'misc', 'statistics', 'git-repo', 'github-api', 'github-misc', 'phpcs-scan', 'svg-scan', 'results', 'reports', 'skip-file', 'file-validation', 'output-security', 'other-web-services' ) as $module ) {
+		foreach ( array( 'defines', 'cache', 'log', 'misc', 'statistics', 'git-repo', 'github-api', 'github-misc', 'phpcs-scan', 'svg-scan', 'ap-svg-files', 'results', 'reports', 'skip-file', 'file-validation', 'output-security', 'other-web-services' ) as $module ) {
 			require_once __DIR__ . '/../../' . $module . '.php';
 		}
 		require_once __DIR__ . '/helper/GitHubRequestGuards.php';
@@ -451,6 +451,73 @@ final class PhpcsScanGitGuardsTest extends TestCase {
 		$this->assertStringEndsWith( '.svg', $calls[1]['files'][0] );
 		$this->assertSame( array( 'a.php', 'icon.svg', 'z.php' ), array_column( $result['issues'][42], 'file_name' ) );
 		$this->assertSame( 'VipgociInternal.SVG.DisallowedTags', $result['issues'][42][1]['issue']['source'] );
+	}
+
+	/** @return array SVG contents and the configured token expected in a finding. */
+	public static function svgPhpTokenCases(): array {
+		return array(
+			'mixed-case PHP' => array( "<svg>\n<g>safe</g>\n<?PhP echo 1; ?>\n</svg>\n", '<?php' ),
+			'short echo'     => array( "<svg>\n<g>safe</g>\n<?= 1 ?>\n</svg>\n", '<?=' ),
+			'clean SVG'      => array( "<svg>\n<g>safe</g>\n</svg>\n", null ),
+		);
+	}
+
+	/** Real single-file and commit scans must veto approval for either PHP token. */
+	#[DataProvider( 'svgPhpTokenCases' )]
+	public function testSvgPhpTokensBlockAutoApproval( string $contents, ?string $token ): void {
+		$this->base = $this->commit( array() );
+		$this->head = $this->commit( array( 'icon.svg' => $contents ) );
+		$options = array(
+			'repo-owner'          => 'owner',
+			'repo-name'           => 'repo',
+			'token'               => 'test-token',
+			'commit'              => $this->head,
+			'local-git-repo'      => $this->repo,
+			'branches-ignore'     => array(),
+			'skip-draft-prs'      => false,
+			'svg-checks'          => true,
+			'svg-file-extensions' => array( 'svg' ),
+			'svg-scanner-path'    => __DIR__ . '/helper/PhpcsScanFixture.php',
+			'svg-php-path'        => PHP_BINARY,
+			'skip-large-files'    => false,
+		);
+		$single = vipgoci_svg_scan_single_file( $options, 'icon.svg' );
+		$this->assertFileDoesNotExist( $single['temp_file_name'] );
+		$expected_message = null === $token ? array() : array( array(
+			'message'  => "Found forbidden tag in SVG file: '$token'",
+			'line'     => 3,
+			'level'    => 'ERROR',
+			'severity' => 5,
+			'source'   => 'VipgociInternal.SVG.DisallowedTags',
+			'fixable'  => false,
+			'column'   => 0,
+		) );
+		$expected_count = null === $token ? 0 : 1;
+		$this->assertSame(
+			array( 'errors' => $expected_count, 'warnings' => 0, 'fixable' => 0 ),
+			$single['file_issues_arr_master']['totals']
+		);
+		$this->assertSame(
+			array( 'errors' => $expected_count, 'warnings' => 0, 'messages' => $expected_message ),
+			$single['file_issues_arr_master']['files'][ $single['temp_file_name'] ]
+		);
+
+		$result = $this->scan( array( 42 ), array(
+			'svg-checks'       => true,
+			'svg-scanner-path' => $options['svg-scanner-path'],
+			'svg-php-path'     => $options['svg-php-path'],
+		) );
+		$this->assertSame( $expected_count, $result['stats'][42]['error'] );
+		$this->assertCount( $expected_count, $result['issues'][42] );
+		if ( null !== $token ) {
+			$this->assertSame( 'icon.svg', $result['issues'][42][0]['file_name'] );
+			$this->assertSame( $expected_message[0], $result['issues'][42][0]['issue'] );
+		}
+
+		$approved = array();
+		vipgoci_ap_svg_files( $options, $approved );
+		$this->assertSame( null === $token ? array( 42 => array( 'icon.svg' => 'ap-svg-files' ) ) : array(), $approved );
+		$this->assertSame( array(), array_filter( $GLOBALS['vipgoci_test_http_requests'], static fn( $request ) => str_starts_with( $request['request'], 'POST ' ) ) );
 	}
 
 	/** Both absolute and slash-trimmed PHPCS report keys must map back to the right file. */
