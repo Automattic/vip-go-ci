@@ -82,6 +82,7 @@ final class GenericSupportCommentSelectionTest extends TestCase {
 			'repo-owner'                                 => 'fixture-owner',
 			'repo-name'                                  => 'fixture-repo',
 			'token'                                      => 'fixture-gh-token',
+			'commit'                                     => 'fixture-head',
 			'repo-meta-api-base-url'                     => 'https://meta.fixture.invalid',
 			'repo-meta-api-user-id'                      => 'fixture-user',
 			'repo-meta-api-access-token'                 => 'fixture-token',
@@ -123,6 +124,17 @@ final class GenericSupportCommentSelectionTest extends TestCase {
 		$url     = VIPGOCI_GITHUB_BASE_URL . '/repos/fixture-owner/fixture-repo/issues/42/comments';
 		$headers = array( 'Authorization: token fixture-gh-token', 'X-GitHub-Api-Version: ' . VIPGOCI_GITHUB_API_VERSION );
 		if ( 'enterprise' === $tier && 'trunk' === $branch && ! $draft ) {
+			IntegrationApiMock::expect(
+				'GET',
+				VIPGOCI_GITHUB_BASE_URL . '/repos/fixture-owner/fixture-repo/pulls/42',
+				$headers,
+				array( 'body' => json_encode( array(
+					'head'      => array( 'sha' => 'fixture-head' ),
+					'base'      => array( 'sha' => 'fixture-base' ),
+					'additions' => 1,
+					'deletions' => 0,
+				) ) )
+			);
 			IntegrationApiMock::expect( 'GET', $url . '?page=1&per_page=100', $headers, array( 'body' => json_encode( $comments ) ) );
 		}
 		if ( $post ) {
