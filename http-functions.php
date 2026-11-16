@@ -238,16 +238,19 @@ function vipgoci_http_resp_sunset_header_check(
 
 /**
  * Detect if we exceeded the API rate limit,
- * and if so, exit with error.
+ * and if so, exit with error or throw when explicitly requested.
  *
  * @param string $http_api_url API URL used.
  * @param array  $resp_headers HTTP response headers.
+ * @param bool   $throw_on_rate_limit Throw instead of exiting when the limit is reached.
  *
  * @return void
+ * @throws RuntimeException When rate limited and exception mode is enabled.
  */
 function vipgoci_http_api_rate_limit_check(
 	string $http_api_url,
-	array $resp_headers
+	array $resp_headers,
+	bool $throw_on_rate_limit = false
 ) :void {
 	/*
 	 * Special case for WPScan API: Unlimited requests
@@ -280,6 +283,13 @@ function vipgoci_http_api_rate_limit_check(
 			'http_api_request_limit_reached',
 			1
 		);
+
+		if ( $throw_on_rate_limit ) {
+			throw new RuntimeException(
+				'HTTP API rate limit reached for ' . $http_api_url .
+				'; remaining: ' . $resp_headers['x-ratelimit-remaining'][0]
+			);
+		}
 
 		vipgoci_sysexit(
 			'Exceeded rate limit for HTTP API, unable to ' .
@@ -363,15 +373,16 @@ function vipgoci_http_api_rate_limit_usage(
 }
 
 /**
- * Make sure to wait between requests to HTTP APIs,
- * but only for certain APIs and when needed.
+ * Make sure to wait between mutating requests to HTTP
+ * APIs (POST, PUT, DELETE), but only for certain APIs
+ * and when needed. GET requests do not need to wait.
  *
  * This function should be called just before
  * sending a request to a HTTP API -- that is the most
- * effective usage. Will only wait if not enough time
- * has passed between calls to this function and if the
- * HTTP API URL specified matches one of the URLs in
- * VIPGOCI_HTTP_API_WAIT_APIS_ARRAY.
+ * effective usage. Will only wait for the time remaining
+ * of VIPGOCI_HTTP_API_WAIT_TIME_SECONDS since the last call
+ * to this function and if the HTTP API URL specified
+ * matches one of the URLs in VIPGOCI_HTTP_API_WAIT_APIS_ARRAY.
  *
  * See here for background for GitHub API requests:
  * https://developer.github.com/v3/guides/best-practices-for-integrators/#dealing-with-abuse-rate-limits
@@ -414,20 +425,72 @@ function vipgoci_http_api_wait( string $http_api_url ) :void {
 
 	if ( null !== $last_request_time ) {
 		/*
-		 * Only sleep if less than specified time
-		 * has elapsed from last request.
+		 * Only sleep for the time remaining, if less
+		 * than specified time has elapsed from last request.
 		 */
-		if (
-			( time() - $last_request_time ) <
-			VIPGOCI_HTTP_API_WAIT_TIME_SECONDS
-		) {
-			sleep( VIPGOCI_HTTP_API_WAIT_TIME_SECONDS );
+		$time_remaining = VIPGOCI_HTTP_API_WAIT_TIME_SECONDS -
+			( microtime( true ) - $last_request_time );
+
+		if ( $time_remaining > 0 ) {
+			usleep( (int) ceil( $time_remaining * 1000000 ) );
 		}
 	}
 
-	$last_request_time = time();
+	$last_request_time = microtime( true );
 
 	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'http_api_forced_wait' );
+}
+
+/**
+ * Sleep before retrying a failed request to a HTTP API,
+ * but only if the request will actually be retried.
+ *
+ * @param bool $retry_req   If the request should be retried.
+ * @param int  $retry_cnt   How often the request has been retried.
+ * @param int  $retry_max   How often to retry request in case of failure.
+ * @param int  $retry_sleep Time to sleep, in seconds.
+ *
+ * @return void
+ */
+function vipgoci_http_api_retry_wait(
+	bool $retry_req,
+	int $retry_cnt,
+	int $retry_max,
+	int $retry_sleep
+) :void {
+	if ( ( true === $retry_req ) && ( $retry_cnt < $retry_max ) ) {
+		sleep( $retry_sleep );
+	}
+}
+
+/**
+ * Set whether write requests to the GitHub API
+ * are to be skipped and logged instead of sent.
+ *
+ * @param bool $dry_run True to enable dry-run mode.
+ *
+ * @return void
+ */
+function vipgoci_http_api_dry_run_set( bool $dry_run ) :void {
+	global $vipgoci_http_api_dry_run;
+
+	$vipgoci_http_api_dry_run = $dry_run;
+}
+
+/**
+ * Determine if a write request should be skipped because
+ * of dry-run mode. Only requests to the GitHub API are
+ * skipped, other services are not affected.
+ *
+ * @param string $http_api_url HTTP request URL.
+ *
+ * @return bool True if the request should not be sent.
+ */
+function vipgoci_http_api_dry_run_skip( string $http_api_url ) :bool {
+	global $vipgoci_http_api_dry_run;
+
+	return ( true === ( $vipgoci_http_api_dry_run ?? false ) ) &&
+		( str_starts_with( $http_api_url, VIPGOCI_GITHUB_BASE_URL . '/' ) );
 }
 
 /**
@@ -441,14 +504,17 @@ function vipgoci_http_api_wait( string $http_api_url ) :void {
  * @param null|string|array $http_api_token         Access token to use as string or array, null to skip.
  * @param bool              $fatal_error_on_failure If to exit on failure or return.
  * @param int               $curl_retries_max       How often to retry request in case of failure.
+ * @param bool              $throw_on_rate_limit   Throw instead of exiting when rate limited.
  *
  * @return string|null String containing results on success, null on failure (if set not to exit).
+ * @throws RuntimeException When rate limited and exception mode is enabled.
  */
 function vipgoci_http_api_fetch_url(
 	string $http_api_url,
 	null|string|array $http_api_token,
 	bool $fatal_error_on_failure = true,
-	int $curl_retries_max = 4
+	int $curl_retries_max = 4,
+	bool $throw_on_rate_limit = false
 ) :string|null {
 	$curl_retries = 0;
 	/*
@@ -522,9 +588,6 @@ function vipgoci_http_api_fetch_url(
 		vipgoci_curl_set_security_options(
 			$ch
 		);
-
-		// Make sure to wait if needed.
-		vipgoci_http_api_wait( $http_api_url );
 
 		/*
 		 * Execute query to API, keep
@@ -617,10 +680,16 @@ function vipgoci_http_api_fetch_url(
 			$resp_headers
 		);
 
-		vipgoci_http_api_rate_limit_check(
-			$http_api_url,
-			$resp_headers
-		);
+		try {
+			vipgoci_http_api_rate_limit_check(
+				$http_api_url,
+				$resp_headers,
+				$throw_on_rate_limit
+			);
+		} catch ( RuntimeException $error ) {
+			curl_close( $ch );
+			throw $error;
+		}
 
 		vipgoci_http_resp_sunset_header_check(
 			$http_api_url,
@@ -672,8 +741,10 @@ function vipgoci_http_api_fetch_url(
  * @param string            $http_content_type   The HTTP Content-Type header value to use. 'application/json' is the default.
  * @param int               $retry_max           How often to retry request in case of failure.
  * @param int               $timeout             Connection timeout, by default VIPGOCI_HTTP_API_LONG_TIMEOUT.
+ * @param bool              $throw_on_rate_limit   Throw instead of exiting when rate limited.
  *
  * @return string|int Request body as string on success, -1 on failure. Failures will be logged.
+ * @throws RuntimeException When rate limited and exception mode is enabled.
  *
  * @codeCoverageIgnore
  */
@@ -686,8 +757,22 @@ function vipgoci_http_api_post_url(
 	int $http_version = CURL_HTTP_VERSION_NONE,
 	string $http_content_type = VIPGOCI_HTTP_API_CONTENT_TYPE_APPLICATION_JSON,
 	int $retry_max = 4,
-	int $timeout = VIPGOCI_HTTP_API_LONG_TIMEOUT
+	int $timeout = VIPGOCI_HTTP_API_LONG_TIMEOUT,
+	bool $throw_on_rate_limit = false
 ) :string|int {
+	if ( true === vipgoci_http_api_dry_run_skip( $http_api_url ) ) {
+		vipgoci_log(
+			'Dry-run mode: Not sending request to GitHub API',
+			array(
+				'http_method' => ( true === $http_delete ) ? 'DELETE' : 'POST',
+				'http_url'    => $http_api_url,
+				'postfields'  => $http_api_postfields,
+			)
+		);
+
+		return '';
+	}
+
 	/*
 	 * Actually send a request to HTTP API -- make sure
 	 * to retry if something fails.
@@ -978,13 +1063,19 @@ function vipgoci_http_api_post_url(
 				true // Log to IRC.
 			);
 
-			sleep( $retry_sleep );
+			vipgoci_http_api_retry_wait( $retry_req, $retry_cnt, $retry_max, $retry_sleep );
 		}
 
-		vipgoci_http_api_rate_limit_check(
-			$http_api_url,
-			$resp_headers
-		);
+		try {
+			vipgoci_http_api_rate_limit_check(
+				$http_api_url,
+				$resp_headers,
+				$throw_on_rate_limit
+			);
+		} catch ( RuntimeException $error ) {
+			curl_close( $ch );
+			throw $error;
+		}
 
 		vipgoci_http_api_rate_limit_usage(
 			$http_api_url,
@@ -1016,8 +1107,10 @@ function vipgoci_http_api_post_url(
  * @param array  $http_api_postfields HTTP request fields.
  * @param string $http_api_token      Access token to use.
  * @param int    $retry_max           How often to retry request in case of failure.
+ * @param bool              $throw_on_rate_limit   Throw instead of exiting when rate limited.
  *
  * @return int Returns zero (0) on success, -1 on failure.
+ * @throws RuntimeException When rate limited and exception mode is enabled.
  *
  * @codeCoverageIgnore
  */
@@ -1025,8 +1118,22 @@ function vipgoci_http_api_put_url(
 	string $http_api_url,
 	array $http_api_postfields,
 	string $http_api_token,
-	int $retry_max = 4
+	int $retry_max = 4,
+	bool $throw_on_rate_limit = false
 ) :int {
+	if ( true === vipgoci_http_api_dry_run_skip( $http_api_url ) ) {
+		vipgoci_log(
+			'Dry-run mode: Not sending request to GitHub API',
+			array(
+				'http_method' => 'PUT',
+				'http_url'    => $http_api_url,
+				'postfields'  => $http_api_postfields,
+			)
+		);
+
+		return 0;
+	}
+
 	$retry_cnt = 0;
 
 	/*
@@ -1244,13 +1351,19 @@ function vipgoci_http_api_put_url(
 				true // Log to IRC.
 			);
 
-			sleep( $retry_sleep );
+			vipgoci_http_api_retry_wait( $retry_req, $retry_cnt, $retry_max, $retry_sleep );
 		}
 
-		vipgoci_http_api_rate_limit_check(
-			$http_api_url,
-			$resp_headers
-		);
+		try {
+			vipgoci_http_api_rate_limit_check(
+				$http_api_url,
+				$resp_headers,
+				$throw_on_rate_limit
+			);
+		} catch ( RuntimeException $error ) {
+			curl_close( $ch );
+			throw $error;
+		}
 
 		vipgoci_http_api_rate_limit_usage(
 			$http_api_url,

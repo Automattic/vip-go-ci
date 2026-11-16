@@ -52,6 +52,8 @@ final class ResultsRemoveExistingGithubCommentsTest extends TestCase {
 	 */
 	private array $options = array();
 
+	private ?string $owned_repo_path = null;
+
 	/**
 	 * Comments for tests.
 	 *
@@ -136,9 +138,16 @@ final class ResultsRemoveExistingGithubCommentsTest extends TestCase {
 	 * @return void
 	 */
 	protected function tearDown() :void {
-		unset( $this->options_git_repo );
-		unset( $this->options_results );
-		unset( $this->options );
+		try {
+			if ( null !== $this->owned_repo_path ) {
+				$this->assertTrue( vipgoci_unittests_remove_git_repo( $this->owned_repo_path ) );
+			}
+		} finally {
+			$this->owned_repo_path = null;
+			unset( $this->options_git_repo );
+			unset( $this->options_results );
+			unset( $this->options );
+		}
 	}
 
 	/**
@@ -187,6 +196,7 @@ final class ResultsRemoveExistingGithubCommentsTest extends TestCase {
 			vipgoci_unittests_setup_git_repo(
 				$this->options
 			);
+		$this->owned_repo_path = is_string( $this->options['local-git-repo'] ) ? $this->options['local-git-repo'] : null;
 
 		if ( false === $this->options['local-git-repo'] ) {
 			$this->markTestSkipped(

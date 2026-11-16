@@ -295,138 +295,137 @@ function vipgoci_svg_scan_single_file(
 		$file_contents
 	);
 
-	/*
-	 * Skips the SVG scanning when the validation contains any issue
-	 */
-	if ( true === $options['skip-large-files'] ) {
-		$validation = vipgoci_validate(
-			$temp_file_name,
-			$file_name,
-			$options['commit'],
-			$options['skip-large-files-limit']
-		);
-
-		if ( 0 !== $validation['total'] ) {
-			$skipped = array(
-				'file_issues_arr_master' => array(),
-				'file_issues_str'        => null,
-				'temp_file_name'         => $temp_file_name,
-				'validation'             => $validation,
+	try {
+		/*
+		 * Skips the SVG scanning when the validation contains any issue
+		 */
+		if ( true === $options['skip-large-files'] ) {
+			$validation = vipgoci_validate(
+				$temp_file_name,
+				$file_name,
+				$options['commit'],
+				$options['skip-large-files-limit']
 			);
 
-			unlink( $temp_file_name );
+			if ( 0 !== $validation['total'] ) {
+				$skipped = array(
+					'file_issues_arr_master' => array(),
+					'file_issues_str'        => null,
+					'temp_file_name'         => $temp_file_name,
+					'validation'             => $validation,
+				);
 
-			return $skipped;
+				return $skipped;
+			}
 		}
-	}
 
-	/*
-	 * Use the svg-sanitizer's library scanner
-	 * to scan the file.
-	 */
+		/*
+		 * Use the svg-sanitizer's library scanner
+		 * to scan the file.
+		 */
 
-	$results = vipgoci_svg_do_scan_with_scanner(
-		$options['svg-scanner-path'],
-		$options['svg-php-path'],
-		$temp_file_name
-	);
-
-	if ( null !== $results ) {
-		$results = json_decode(
-			$results,
-			true
+		$results = vipgoci_svg_do_scan_with_scanner(
+			$options['svg-scanner-path'],
+			$options['svg-php-path'],
+			$temp_file_name
 		);
-	}
 
-	if ( ! vipgoci_svg_report_valid( $results, $temp_file_name ) ) {
-		$results = null;
-		unlink( $temp_file_name );
-		vipgoci_log(
-			'SVG scanning of a single file failed',
-			array(
-				'results'        => $results,
-				'file_name'      => $file_name,
-				'temp_file_name' => $temp_file_name,
-				'validation'     => array(
+		if ( null !== $results ) {
+			$results = json_decode(
+				$results,
+				true
+			);
+		}
+
+		if ( ! vipgoci_svg_report_valid( $results, $temp_file_name ) ) {
+			$results = null;
+			vipgoci_log(
+				'SVG scanning of a single file failed',
+				array(
+					'results'        => $results,
+					'file_name'      => $file_name,
+					'temp_file_name' => $temp_file_name,
+					'validation'     => array(
+						'total' => 0,
+					),
+				),
+			);
+
+			vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'svg_scan_single_file' );
+
+			return array(
+				'file_issues_arr_master' => $results,
+				'file_issues_str'        => null,
+				'temp_file_name'         => $temp_file_name,
+				'validation'             => array(
 					'total' => 0,
 				),
-			),
+			);
+		}
+
+		/*
+		 * Use custom scanning to look for
+		 * forbidden tags.
+		 */
+
+		vipgoci_svg_look_for_specific_tokens(
+			$disallowed_tokens,
+			$temp_file_name,
+			$results
 		);
+
+		/*
+		 * Add in missing information to
+		 * the results -- this will emulate
+		 * PHPCS results as possible.
+		 */
+		$results['files'][ $temp_file_name ]['messages'] = array_map(
+			function( $issue_item ) {
+				$issue_item['severity'] = 5;
+				$issue_item['source']   = 'VipgociInternal.SVG.DisallowedTags';
+				$issue_item['level']    = 'ERROR';
+				$issue_item['fixable']  = false;
+				$issue_item['column']   = 0;
+
+				/*
+				 * @todo: In some cases $issue_item['line'] (line number),
+				 * can be null indicating a problem with scanning the file
+				 * generally. This should be reported to the end-user.
+				 */
+
+				return $issue_item;
+			},
+			$results['files'][ $temp_file_name ]['messages']
+		);
+
+		/*
+		 * Emulate results returned
+		 * by vipgoci_phpcs_scan_single_file().
+		 */
+
+		foreach ( array( 'errors', 'warnings', 'fixable' ) as $stats_key ) {
+			if ( ! isset( $results['totals']['errors'] ) ) {
+				$results['totals'][ $stats_key ] = 0;
+			}
+		}
 
 		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'svg_scan_single_file' );
 
+		vipgoci_log(
+			'SVG scanning of a single file finished',
+			array(
+				'file_issues_arr_master' => $results,
+			)
+		);
+
 		return array(
 			'file_issues_arr_master' => $results,
-			'file_issues_str'        => null,
+			'file_issues_str'        => json_encode( $results ),
 			'temp_file_name'         => $temp_file_name,
-			'validation'             => array(
-				'total' => 0,
-			),
+			'validation'             => $validation ?? array(),
 		);
+	} finally {
+		unlink( $temp_file_name );
 	}
-
-	/*
-	 * Use custom scanning to look for
-	 * forbidden tags.
-	 */
-
-	vipgoci_svg_look_for_specific_tokens(
-		$disallowed_tokens,
-		$temp_file_name,
-		$results
-	);
-
-	/*
-	 * Add in missing information to
-	 * the results -- this will emulate
-	 * PHPCS results as possible.
-	 */
-	$results['files'][ $temp_file_name ]['messages'] = array_map(
-		function( $issue_item ) {
-			$issue_item['severity'] = 5;
-			$issue_item['source']   = 'VipgociInternal.SVG.DisallowedTags';
-			$issue_item['level']    = 'ERROR';
-			$issue_item['fixable']  = false;
-			$issue_item['column']   = 0;
-
-			/*
-			 * @todo: In some cases $issue_item['line'] (line number),
-			 * can be null indicating a problem with scanning the file
-			 * generally. This should be reported to the end-user.
-			 */
-
-			return $issue_item;
-		},
-		$results['files'][ $temp_file_name ]['messages']
-	);
-
-	unlink( $temp_file_name );
-
-	/*
-	 * Emulate results returned
-	 * by vipgoci_phpcs_scan_single_file().
-	 */
-
-	foreach ( array( 'errors', 'warnings', 'fixable' ) as $stats_key ) {
-		if ( ! isset( $results['totals']['errors'] ) ) {
-			$results['totals'][ $stats_key ] = 0;
-		}
-	}
-
-	vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'svg_scan_single_file' );
-
-	vipgoci_log(
-		'SVG scanning of a single file finished',
-		array(
-			'file_issues_arr_master' => $results,
-		)
-	);
-
-	return array(
-		'file_issues_arr_master' => $results,
-		'file_issues_str'        => json_encode( $results ),
-		'temp_file_name'         => $temp_file_name,
-		'validation'             => $validation ?? array(),
-	);
 }
 

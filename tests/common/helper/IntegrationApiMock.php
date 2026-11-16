@@ -36,6 +36,16 @@ final class IntegrationApiMock {
 	 */
 	private static bool $strict = false;
 
+	/** Replace one existing GET response within this isolated test process. */
+	public static function replaceResponse( string $url, array $response, bool $must_exist = true ): void {
+		self::request( 'GET', 'https://api.github.com/user', null );
+		$key = 'GET ' . $url;
+		if ( $must_exist ) {
+			Assert::assertArrayHasKey( $key, self::$responses );
+		}
+		self::$responses[ $key ] = $response;
+	}
+
 	/**
 	 * Queue a low-level HTTP response for transport and failure-path tests.
 	 *

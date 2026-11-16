@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\PreserveGlobalState;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
@@ -119,6 +120,54 @@ final class AutoApprovalPrIsolationTest extends TestCase {
 			array( 'vipgoci_github_prs_implicated', 'fixture', 'fixture', $this->options['commit'], 'unused', array() ),
 			$prs
 		);
+	}
+
+	/** @return array WPScan counts that independently allow or veto approval. */
+	public static function wpscanApprovalCases(): array {
+		return array(
+			'no findings'   => array( 0, 0, true ),
+			'errors only'   => array( 1, 0, false ),
+			'warnings only' => array( 0, 1, false ),
+		);
+	}
+
+	/** Either WPScan count must veto an otherwise eligible PR outside dry mode. */
+	#[DataProvider( 'wpscanApprovalCases' )]
+	public function testWpscanCountsIndependentlyVetoApproval( int $errors, int $warnings, bool $can_approve ): void {
+		$this->setPrs( array( 101 => $this->git( 'rev-parse HEAD^' ) ) );
+		$this->options['wpscan-api'] = true;
+		$this->options['wpscan-api-dry-mode'] = false;
+		$approved = array( 101 => array( 'shared.php' => 'autoapprove-nonfunctional-changes' ) );
+		$results = array(
+			'stats' => array(
+				VIPGOCI_STATS_WPSCAN_API => array(
+					101 => array( VIPGOCI_ISSUE_TYPE_ERROR => $errors, VIPGOCI_ISSUE_TYPE_WARNING => $warnings ),
+				),
+			),
+		);
+		if ( ! $can_approve ) {
+			$GLOBALS['vipgoci_test_http_responses']['GET /repos/fixture/fixture/pulls/101/reviews'] = array(
+				array( 'id' => 900, 'state' => 'APPROVED', 'user' => array( 'id' => 123, 'login' => 'bot' ) ),
+			);
+		}
+
+		vipgoci_auto_approval_scan_commit( $this->options, $approved, $results );
+		$writes = array_values( array_filter(
+			$GLOBALS['vipgoci_test_http_requests'],
+			static fn( $request ) => ! str_starts_with( $request['request'], 'GET ' )
+		) );
+		if ( $can_approve ) {
+			$this->assertSame(
+				array( 'POST /repos/fixture/fixture/pulls/101/reviews', 'POST /repos/fixture/fixture/issues/101/labels' ),
+				array_column( $writes, 'request' )
+			);
+			$this->assertSame( 'APPROVE', $writes[0]['body']['event'] );
+			$this->assertSame( $this->options['commit'], $writes[0]['body']['commit_id'] );
+			$this->assertSame( array( 'Approved' ), $writes[1]['body'] );
+		} else {
+			$this->assertSame( array( 'PUT /repos/fixture/fixture/pulls/101/reviews/900/dismissals' ), array_column( $writes, 'request' ) );
+			$this->assertSame( array( 'message' => 'Dismissing obsolete review; not approved any longer' ), $writes[0]['body'] );
+		}
 	}
 
 	/** Different bases must not share approvals, regardless of processing order. */

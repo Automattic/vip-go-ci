@@ -18,10 +18,11 @@ declare(strict_types=1);
  * @param string $method HTTP method.
  * @param string $url    Request URL.
  * @param array  $body   Request body.
+ * @param null|string|array $token Authentication argument from the GET caller.
  *
  * @return string|int|null JSON response or a transport failure sentinel.
  */
-function vipgoci_unittests_github_request( string $method, string $url, array $body = array() ): string|int|null {
+function vipgoci_unittests_github_request( string $method, string $url, array $body = array(), null|string|array $token = null ): string|int|null {
 	global $vipgoci_test_http_requests, $vipgoci_test_http_responses;
 
 	$request = $method . ' ' . parse_url( $url, PHP_URL_PATH );
@@ -33,6 +34,9 @@ function vipgoci_unittests_github_request( string $method, string $url, array $b
 		'url'     => $url,
 		'body'    => $body,
 	);
+	if ( 'GET' === $method ) {
+		$vipgoci_test_http_requests[ array_key_last( $vipgoci_test_http_requests ) ]['token'] = $token;
+	}
 
 	if ( ! array_key_exists( $fixture, $vipgoci_test_http_responses ) ) {
 		$fixture = $request;
@@ -48,7 +52,7 @@ function vipgoci_unittests_github_request( string $method, string $url, array $b
  * Replace the external GET transport, keeping API parsing and caching real.
  *
  * @param string            $http_api_url           Request URL.
- * @param null|string|array $http_api_token         Token, unused.
+ * @param null|string|array $http_api_token         Token captured with the GET request.
  * @param bool              $fatal_error_on_failure Failure policy, unused.
  * @param int               $curl_retries_max       Retry limit, unused.
  *
@@ -60,7 +64,7 @@ function vipgoci_http_api_fetch_url(
 	bool $fatal_error_on_failure = true,
 	int $curl_retries_max = 4
 ): string|null {
-	return vipgoci_unittests_github_request( 'GET', $http_api_url );
+	return vipgoci_unittests_github_request( 'GET', $http_api_url, array(), $http_api_token );
 }
 
 /**

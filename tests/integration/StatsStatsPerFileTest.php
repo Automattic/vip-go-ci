@@ -90,7 +90,11 @@ final class StatsStatsPerFileTest extends TestCase {
 	 * @return void
 	 */
 	protected function tearDown(): void {
-		if ( false !== $this->options['local-git-repo'] ) {
+		if (
+			isset( $this->options['local-git-repo'] ) &&
+			is_string( $this->options['local-git-repo'] ) &&
+			'' !== $this->options['local-git-repo']
+		) {
 			vipgoci_unittests_remove_git_repo(
 				$this->options['local-git-repo']
 			);

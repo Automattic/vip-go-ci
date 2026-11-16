@@ -96,6 +96,8 @@ To run the full suites against live services and skip the tests dedicated to moc
 
 Live mode uses the normal PHP cURL functions and integration configuration, including the existing `github-skip-write-tests` control. Configure real credentials only for live runs. Set `github-skip-write-tests=true` to prevent writes during those runs; offline tests exercise the write paths against fixtures.
 
+The label, WPScan submission and auto-approval integration tests capture the labels they may change and restore their original presence during teardown, including after an assertion fails. Auto-approval tests skip a configured PR that already has an approval by the token holder, since the nonapproval path would dismiss it. New approvals carry a unique invocation marker; teardown dismisses only matching new review IDs on the tested commit and verifies cleanup. GitHub retains those dismissed reviews in its history. Failed cleanup reports the affected test PR instead of silently succeeding. Snapshot and cleanup requests opt into rate-limit exceptions, so low-quota responses fail the test while allowing later cleanup and local-checkout removal to run. Ordinary HTTP calls retain their existing rate-limit exit policy. Fixture-only restoration checks skip in live mode.
+
 When adding mocked coverage:
 
 - For focused client tests, extend `tests/common/MockedApiTestCase.php` and use the `mocked-api`, process-isolation and disabled-global-preservation attributes. Queue raw responses with `HttpApiMock::expect()`. Every expected request must be consumed, and extra requests fail immediately.

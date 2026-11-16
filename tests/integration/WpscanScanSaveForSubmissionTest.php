@@ -21,6 +21,8 @@ use PHPUnit\Framework\TestCase;
 #[PreserveGlobalState( false )]
 #[CoversFunction( 'vipgoci_wpscan_scan_save_for_submission' )]
 final class WpscanScanSaveForSubmissionTest extends TestCase {
+	private ?LivePrState $pr_state = null;
+	private int $output_level = 0;
 	/**
 	 * Variable for WPScan API scanning.
 	 *
@@ -153,7 +155,9 @@ final class WpscanScanSaveForSubmissionTest extends TestCase {
 	 * @return void
 	 */
 	protected function setUp() :void {
+		$this->output_level = ob_get_level();
 		require_once __DIR__ . '/IncludesForTests.php';
+		require_once __DIR__ . '/helper/LivePrState.php';
 
 		vipgoci_unittests_get_config_values(
 			'wpscan-api-scan',
@@ -220,15 +224,30 @@ final class WpscanScanSaveForSubmissionTest extends TestCase {
 	 * @return void
 	 */
 	protected function tearDown(): void {
-		if ( ! empty( $this->options['local-git-repo'] ) ) {
-			vipgoci_unittests_remove_git_repo(
-				$this->options['local-git-repo']
-			);
+		try {
+			$this->close_test_output_buffers();
+			$this->pr_state?->restore();
+		} finally {
+			$this->close_test_output_buffers();
+			if ( ! empty( $this->options['local-git-repo'] ) ) {
+				vipgoci_unittests_remove_git_repo( $this->options['local-git-repo'] );
+			}
+			unset( $this->options_wpscan_api_scan, $this->options_git, $this->options );
 		}
+	}
 
-		unset( $this->options_wpscan_api_scan );
-		unset( $this->options_git );
-		unset( $this->options );
+	private function close_test_output_buffers(): void {
+		while ( ob_get_level() > $this->output_level ) {
+			ob_end_clean();
+		}
+	}
+
+	private function capture_pr_state(): void {
+		$this->pr_state = new LivePrState(
+			$this->options['repo-owner'], $this->options['repo-name'],
+			$this->options['token'], (int) $this->options['wpscan-pr-number'],
+			array( VIPGOCI_WPSCAN_SKIP_SCAN_PR_LABEL )
+		);
 	}
 
 	/**
@@ -239,21 +258,6 @@ final class WpscanScanSaveForSubmissionTest extends TestCase {
 	 */
 	private function prLabelAdd() :void {
 		vipgoci_github_label_add_to_pr(
-			$this->options['repo-owner'],
-			$this->options['repo-name'],
-			$this->options['token'],
-			(int) $this->options['wpscan-pr-number'],
-			VIPGOCI_WPSCAN_SKIP_SCAN_PR_LABEL
-		);
-	}
-
-	/**
-	 * Remove 'skip-wpscan' label from pull request.
-	 *
-	 * @return void
-	 */
-	private function prLabelRemove() :void {
-		vipgoci_github_pr_label_remove(
 			$this->options['repo-owner'],
 			$this->options['repo-name'],
 			$this->options['token'],
@@ -302,6 +306,7 @@ final class WpscanScanSaveForSubmissionTest extends TestCase {
 		if ( vipgoci_unittests_skip_github_write_tests( $this ) ) {
 			return;
 		}
+		$this->capture_pr_state();
 
 		vipgoci_unittests_output_suppress();
 
@@ -349,9 +354,6 @@ final class WpscanScanSaveForSubmissionTest extends TestCase {
 			$this->problematic_addons_found
 		);
 
-		// Remove label.
-		$this->prLabelRemove();
-
 		vipgoci_unittests_output_unsuppress();
 
 		$this->assertSame(
@@ -391,6 +393,10 @@ final class WpscanScanSaveForSubmissionTest extends TestCase {
 
 		if ( vipgoci_unittests_skip_github_write_tests( $this ) ) {
 			return;
+		}
+		$this->capture_pr_state();
+		if ( $this->pr_state->had_label( VIPGOCI_WPSCAN_SKIP_SCAN_PR_LABEL ) ) {
+			$this->markTestSkipped( 'Configured test PR already has skip-wpscan label' );
 		}
 
 		vipgoci_unittests_output_suppress();

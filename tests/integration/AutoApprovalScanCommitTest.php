@@ -21,6 +21,9 @@ use PHPUnit\Framework\TestCase;
 #[PreserveGlobalState( false )]
 #[CoversFunction( 'vipgoci_auto_approval_scan_commit' )]
 final class AutoApprovalScanCommitTest extends TestCase {
+	private ?LivePrState $pr_state = null;
+	private string $unsafe_reason = 'Test not safe to run due to earlier warnings';
+	private int $output_level = 0;
 	/**
 	 * Variable that indicates if it is safe to run
 	 * tests.
@@ -56,7 +59,9 @@ final class AutoApprovalScanCommitTest extends TestCase {
 	 * @return void
 	 */
 	protected function setUp(): void {
+		$this->output_level = ob_get_level();
 		require_once __DIR__ . '/IncludesForTests.php';
+		require_once __DIR__ . '/helper/LivePrState.php';
 
 		$this->options_git = array(
 			'git-path'        => null,
@@ -131,7 +136,7 @@ final class AutoApprovalScanCommitTest extends TestCase {
 			(int) $this->options['pr-test-ap-auto-approval-1'];
 
 		if ( ! vipgoci_unittests_get_skip_github_write_tests() ) {
-			$this->cleanup_prs();
+			$this->check_pr_and_capture_state();
 		}
 	}
 
@@ -142,28 +147,31 @@ final class AutoApprovalScanCommitTest extends TestCase {
 	 * @return void
 	 */
 	protected function tearDown(): void {
-		if ( false !== $this->options['local-git-repo'] ) {
-			vipgoci_unittests_remove_git_repo(
-				$this->options['local-git-repo']
-			);
+		try {
+			$this->close_test_output_buffers();
+			$this->pr_state?->restore();
+		} finally {
+			$this->close_test_output_buffers();
+			if ( false !== ( $this->options['local-git-repo'] ?? false ) ) {
+				vipgoci_unittests_remove_git_repo( $this->options['local-git-repo'] );
+			}
+			unset( $this->options_git, $this->options_auto_approvals, $this->options );
 		}
+	}
 
-		if ( ! vipgoci_unittests_get_skip_github_write_tests() ) {
-			$this->cleanup_prs();
+	private function close_test_output_buffers(): void {
+		while ( ob_get_level() > $this->output_level ) {
+			ob_end_clean();
 		}
-
-		unset( $this->options_git );
-		unset( $this->options_auto_approvals );
-		unset( $this->options );
 	}
 
 	/**
-	 * Dismiss any previously submitted reviews
-	 * to pull requests used in these tests.
+	 * Validate that the commit belongs only to the configured PR and
+	 * capture the state before the subject can write to it.
 	 *
 	 * @return void
 	 */
-	private function cleanup_prs() :void {
+	private function check_pr_and_capture_state() :void {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
 			array(),
@@ -186,6 +194,7 @@ final class AutoApprovalScanCommitTest extends TestCase {
 
 		vipgoci_unittests_output_unsuppress();
 
+		$this->safe_to_run = 1 === count( $prs_implicated );
 		foreach ( $prs_implicated as $pr_item ) {
 			if (
 				(int) $pr_item->number
@@ -200,40 +209,22 @@ final class AutoApprovalScanCommitTest extends TestCase {
 				);
 
 				$this->safe_to_run = false;
-
-				continue;
-			} else {
-				if ( null === $this->safe_to_run ) {
-					$this->safe_to_run = true;
-				}
 			}
+		}
+		if ( false === $this->safe_to_run ) {
+			return;
+		}
 
-			vipgoci_unittests_output_suppress();
-
-			$pr_item_reviews = vipgoci_github_pr_reviews_get(
-				$this->options['repo-owner'],
-				$this->options['repo-name'],
-				(int) $pr_item->number,
-				$this->options['token'],
-				array(
-					'login' => 'myself',
-					'state' => array( 'APPROVED' ),
-				),
-				true // Skip cache.
-			);
-
-			foreach ( $pr_item_reviews as $pr_item_review ) {
-				vipgoci_github_pr_review_dismiss(
-					$this->options['repo-owner'],
-					$this->options['repo-name'],
-					(int) $pr_item->number,
-					(int) $pr_item_review->id,
-					'Dismissing obsolete review; not approved any longer',
-					$this->options['token']
-				);
-			}
-
-			vipgoci_unittests_output_unsuppress();
+		$marker = 'vipgoci-test-' . bin2hex( random_bytes( 8 ) );
+		$this->options['autoapprove-filetypes'][] = $marker;
+		$this->pr_state = new LivePrState(
+			$this->options['repo-owner'], $this->options['repo-name'],
+			$this->options['token'], $this->options['pr-test-ap-auto-approval-1'],
+			array( $this->options['autoapprove-label'] ), $marker, $this->options['commit']
+		);
+		if ( $this->pr_state->has_own_approval() ) {
+			$this->safe_to_run = false;
+			$this->unsafe_reason = 'Configured test PR has a preexisting approval by this account; production nonapproval would dismiss it';
 		}
 	}
 
@@ -292,7 +283,7 @@ final class AutoApprovalScanCommitTest extends TestCase {
 
 		if ( false === $this->safe_to_run ) {
 			$this->markTestSkipped(
-				'Test not safe to run due to earlier warnings'
+				$this->unsafe_reason
 			);
 		}
 
@@ -419,7 +410,7 @@ final class AutoApprovalScanCommitTest extends TestCase {
 
 		if ( false === $this->safe_to_run ) {
 			$this->markTestSkipped(
-				'Test not safe to run due to earlier warnings'
+				$this->unsafe_reason
 			);
 		}
 
@@ -539,7 +530,7 @@ final class AutoApprovalScanCommitTest extends TestCase {
 		}
 		if ( false === $this->safe_to_run ) {
 			$this->markTestSkipped(
-				'Test not safe to run due to earlier warnings'
+				$this->unsafe_reason
 			);
 		}
 
@@ -662,7 +653,7 @@ final class AutoApprovalScanCommitTest extends TestCase {
 
 		if ( false === $this->safe_to_run ) {
 			$this->markTestSkipped(
-				'Test not safe to run due to earlier warnings'
+				$this->unsafe_reason
 			);
 		}
 
@@ -777,7 +768,7 @@ final class AutoApprovalScanCommitTest extends TestCase {
 		}
 		if ( false === $this->safe_to_run ) {
 			$this->markTestSkipped(
-				'Test not safe to run due to earlier warnings'
+				$this->unsafe_reason
 			);
 		}
 
@@ -912,7 +903,7 @@ final class AutoApprovalScanCommitTest extends TestCase {
 
 		if ( false === $this->safe_to_run ) {
 			$this->markTestSkipped(
-				'Test not safe to run due to earlier warnings'
+				$this->unsafe_reason
 			);
 		}
 
