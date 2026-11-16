@@ -98,6 +98,7 @@ final class ReportCreateScanDetailsAutoApproveConfigurationTest extends TestCase
 	 */
 	public function testCreateDetails2(): void {
 		$this->options['autoapprove']                           = true;
+		$this->options['autoapprove-deletions-only']            = true;
 		$this->options['autoapprove-php-nonfunctional-changes'] = true;
 		$this->options['autoapprove-php-nonfunctional-changes-file-extensions'] = array( 'php' );
 		$this->options['autoapprove-filetypes']                                 = array( 'txt', 'ini' );
@@ -135,5 +136,20 @@ final class ReportCreateScanDetailsAutoApproveConfigurationTest extends TestCase
 				'<li><code>txt</code></li><li><code>ini</code></li></ul>',
 			$actual_output
 		);
+	}
+	public function testDeletionPolicyReporting(): void {
+		$this->options = array(
+			'autoapprove'                           => true,
+			'autoapprove-filetypes'                 => array(),
+			'autoapprove-php-nonfunctional-changes' => false,
+			'autoapprove-php-nonfunctional-changes-file-extensions' => array(),
+		);
+		foreach ( array( false, true ) as $enabled ) {
+			$this->options['autoapprove-deletions-only'] = $enabled;
+			$this->assertStringContainsString(
+				'<p>Deletion-only pull requests auto-approved:' . PHP_EOL . '<code>' . ( $enabled ? 'true' : 'false' ) . '</code></p>',
+				vipgoci_report_create_scan_details_auto_approve_configuration( $this->options )
+			);
+		}
 	}
 }

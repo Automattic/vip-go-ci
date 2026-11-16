@@ -2517,5 +2517,23 @@
     "subject_type": "line",
     "is_copilot_code_review": false,
     "copilot_code_review_sources": []
+  },
+  "GET https://api.github.com/repos/automattic/vip-go-ci-testing/pulls/32": {
+    "number": 32,
+    "head": {
+      "sha": "37a5be155aa03cf61f13842ab46e036b62d3cecb",
+      "ref": "post-generic-pr-support-comments-test-3"
+    },
+    "additions": 3,
+    "deletions": 0
+  },
+  "GET https://api.github.com/repos/automattic/vip-go-ci-testing/pulls/25": {
+    "number": 25,
+    "head": {
+      "sha": "37a5be155aa03cf61f13842ab46e036b62d3cecb",
+      "ref": "post-generic-pr-support-comments-test-3"
+    },
+    "additions": 3,
+    "deletions": 0
   }
 }
