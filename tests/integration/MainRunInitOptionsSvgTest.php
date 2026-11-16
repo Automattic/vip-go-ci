@@ -26,14 +26,14 @@ final class MainRunInitOptionsSvgTest extends TestCase {
 	 *
 	 * @var $svg_scanner_path
 	 */
-	private string $svg_scanner_path = '';
+	private ?string $svg_scanner_path = null;
 
 	/**
 	 * PHP path for SVG scanning.
 	 *
 	 * @var $svg_php_path
 	 */
-	private string $svg_php_path = '';
+	private ?string $svg_php_path = null;
 
 	/**
 	 * Options array.
@@ -95,9 +95,17 @@ final class MainRunInitOptionsSvgTest extends TestCase {
 	 * Test customizations for SVG options.
 	 */
 	public function testRunInitOptionsSvgCustom() :void {
-		if ( empty( $this->svg_scanner_path ) ) {
+		if ( empty( $this->svg_scanner_path ) || ! file_exists( $this->svg_scanner_path ) ) {
 			$this->markTestSkipped(
 				'Skipping test, not configured correctly, as some options are missing (svg-scanner-path)'
+			);
+
+			return;
+		}
+
+		if ( empty( $this->svg_php_path ) || ! file_exists( $this->svg_php_path ) ) {
+			$this->markTestSkipped(
+				'Skipping test, not configured correctly, as some options are missing (svg-php-path)'
 			);
 
 			return;
