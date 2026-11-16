@@ -22,6 +22,8 @@ use PHPUnit\Framework\TestCase;
 #[CoversFunction( 'vipgoci_github_label_add_to_pr' )]
 #[CoversFunction( 'vipgoci_github_pr_label_remove' )]
 final class GitHubApiLabelsTest extends TestCase {
+	private ?LivePrState $pr_state = null;
+	private int $output_level = 0;
 	/**
 	 * Const for label name.
 	 *
@@ -69,7 +71,9 @@ final class GitHubApiLabelsTest extends TestCase {
 	 * @return void.
 	 */
 	protected function setUp(): void {
+		$this->output_level = ob_get_level();
 		require_once __DIR__ . '/IncludesForTests.php';
+		require_once __DIR__ . '/LivePrState.php';
 
 		vipgoci_unittests_get_config_values(
 			'git',
@@ -101,10 +105,27 @@ final class GitHubApiLabelsTest extends TestCase {
 	 * @return void.
 	 */
 	protected function tearDown(): void {
-		unset( $this->options_git );
-		unset( $this->options_secrets );
-		unset( $this->options_labels );
-		unset( $this->options );
+		try {
+			$this->close_test_output_buffers();
+			$this->pr_state?->restore();
+		} finally {
+			$this->close_test_output_buffers();
+			unset( $this->options_git, $this->options_secrets, $this->options_labels, $this->options );
+		}
+	}
+
+	private function close_test_output_buffers(): void {
+		while ( ob_get_level() > $this->output_level ) {
+			ob_end_clean();
+		}
+	}
+
+	private function capture_pr_state(): void {
+		$this->pr_state = new LivePrState(
+			$this->options['repo-owner'], $this->options['repo-name'],
+			$this->options['github-token'], (int) $this->options['labels-pr-to-modify'],
+			array( self::LABEL_NAME )
+		);
 	}
 
 	/**
@@ -126,6 +147,7 @@ final class GitHubApiLabelsTest extends TestCase {
 		if ( vipgoci_unittests_skip_github_write_tests( $this ) ) {
 			return;
 		}
+		$this->capture_pr_state();
 
 		vipgoci_unittests_output_suppress();
 
@@ -143,15 +165,8 @@ final class GitHubApiLabelsTest extends TestCase {
 
 		$labels_after = $this->labels_get();
 
-		$this->assertSame(
-			-1,
-			count( $labels_before ) - count( $labels_after )
-		);
-
-		$this->assertSame(
-			'Label for testing',
-			$labels_after[0]->name
-		);
+		$this->assertContains( self::LABEL_NAME, array_column( $labels_after, 'name' ) );
+		$this->assertSame( $this->pr_state->had_label( self::LABEL_NAME ) ? count( $labels_before ) : count( $labels_before ) + 1, count( $labels_after ) );
 	}
 
 	/**
@@ -173,6 +188,7 @@ final class GitHubApiLabelsTest extends TestCase {
 		if ( vipgoci_unittests_skip_github_write_tests( $this ) ) {
 			return;
 		}
+		$this->capture_pr_state();
 
 		vipgoci_unittests_output_suppress();
 
@@ -195,6 +211,7 @@ final class GitHubApiLabelsTest extends TestCase {
 			1,
 			count( $labels_before ) - count( $labels_after )
 		);
+		$this->assertNotContains( self::LABEL_NAME, array_column( $labels_after, 'name' ) );
 	}
 
 	/**
