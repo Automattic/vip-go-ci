@@ -61,7 +61,7 @@ final class AutoApprovalScanCommitTest extends TestCase {
 	protected function setUp(): void {
 		$this->output_level = ob_get_level();
 		require_once __DIR__ . '/IncludesForTests.php';
-		require_once __DIR__ . '/LivePrState.php';
+		require_once __DIR__ . '/helper/LivePrState.php';
 
 		$this->options_git = array(
 			'git-path'        => null,

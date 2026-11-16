@@ -73,7 +73,7 @@ final class GitHubApiLabelsTest extends TestCase {
 	protected function setUp(): void {
 		$this->output_level = ob_get_level();
 		require_once __DIR__ . '/IncludesForTests.php';
-		require_once __DIR__ . '/LivePrState.php';
+		require_once __DIR__ . '/helper/LivePrState.php';
 
 		vipgoci_unittests_get_config_values(
 			'git',

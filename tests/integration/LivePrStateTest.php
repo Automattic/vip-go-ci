@@ -33,7 +33,7 @@ final class LivePrStateTest extends TestCase {
 			$this->markTestSkipped( 'This restoration check uses only the offline API fixture' );
 		}
 		require_once __DIR__ . '/IncludesForTests.php';
-		require_once __DIR__ . '/LivePrState.php';
+		require_once __DIR__ . '/helper/LivePrState.php';
 	}
 
 	private function labels(): array {
