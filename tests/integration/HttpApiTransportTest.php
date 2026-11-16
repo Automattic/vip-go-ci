@@ -138,6 +138,9 @@ final class HttpApiTransportTest extends TestCase {
 			$body
 		);
 		$this->assertSame( '{"id":7}', vipgoci_http_api_post_url( $url, $body, 'fixture-token' ) );
+		$raw_body = $GLOBALS['vipgoci_curl_mock_requests'][0]['options'][ CURLOPT_POSTFIELDS ];
+		$this->assertIsString( $raw_body );
+		$this->assertSame( '{"message":"Fixture message","values":[1,2]}', $raw_body );
 	}
 
 	/** Preserve form fields, bearer authentication and the requested HTTP version. */
@@ -150,6 +153,8 @@ final class HttpApiTransportTest extends TestCase {
 		IntegrationApiMock::expect( 'POST', $url, array( 'Authorization: Bearer fixture-token', 'Content-Type: application/x-www-form-urlencoded' ), array( 'body' => '{}' ), $body );
 		$this->assertSame( '{}', vipgoci_http_api_post_url( $url, $body, array( 'bearer' => 'fixture-token' ), false, false, CURL_HTTP_VERSION_1_1, VIPGOCI_HTTP_API_CONTENT_TYPE_X_WWW_FORM_URLENCODED ) );
 		$options = $GLOBALS['vipgoci_curl_mock_requests'][0]['options'];
+		$this->assertIsString( $options[ CURLOPT_POSTFIELDS ] );
+		$this->assertSame( 'name=Fixture+with+spaces&json=%7B%22key%22%3A%22value%22%7D', $options[ CURLOPT_POSTFIELDS ] );
 		$this->assertSame( CURL_HTTP_VERSION_1_1, $options[ CURLOPT_HTTP_VERSION ] );
 		$this->assertSame( 0, $options[ CURLOPT_MAXREDIRS ] );
 		$this->assertFalse( $options[ CURLOPT_FOLLOWLOCATION ] );
