@@ -63,6 +63,7 @@ final class LatestReleaseTest extends TestCase {
 	 */
 	public function testResults(): void {
 		// phpcs:disable WordPress.PHP.DiscouragedPHPFunctions.system_calls_exec
+		require_once __DIR__ . '/helper/LatestReleaseCliProcess.php';
 		if ( false === $this->temp_file_name ) {
 			$this->markTestSkipped(
 				'Unable to create temporary file'
@@ -116,14 +117,10 @@ final class LatestReleaseTest extends TestCase {
 		/*
 		 * Run latest-release.php to get latest version number.
 		 */
-		$returned_version_number = exec(
-			escapeshellarg( PHP_BINARY ) .
-			( 'true' === getenv( 'VIPGOCI_TESTING_LIVE_API' ) ? '' : ' -d auto_prepend_file=' . escapeshellarg( __DIR__ . '/../common/helper/ReleaseApiBootstrap.php' ) ) .
-			' latest-release.php',
-			$script_output,
-			$script_status
+		$script_result = LatestReleaseCliProcess::run(
+			'true' === getenv( 'VIPGOCI_TESTING_LIVE_API' ) ? null : __DIR__ . '/../common/helper/ReleaseApiBootstrap.php'
 		);
-		$this->assertSame( 0, $script_status, 'latest-release.php failed.' );
+		$this->assertSame( 0, $script_result['status'], 'latest-release.php failed: ' . $script_result['stderr'] );
 
 		/*
 		 * Verify format of version number is correct.
@@ -138,20 +135,12 @@ final class LatestReleaseTest extends TestCase {
 			)
 		);
 
-		$this->assertSame(
-			1,
-			preg_match(
-				$version_number_preg,
-				$returned_version_number
-			)
-		);
-
 		/*
-		 * Verify both version numbers match.
+		 * Verify the entire stdout stream contains only the published version.
 		 */
-		$this->assertSame(
-			$correct_version_number,
-			$returned_version_number
+		$this->assertContains(
+			$script_result['stdout'],
+			array( $correct_version_number, $correct_version_number . "\n" )
 		);
 		// phpcs:enable WordPress.PHP.DiscouragedPHPFunctions.system_calls_exec
 	}
