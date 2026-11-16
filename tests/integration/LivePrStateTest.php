@@ -189,6 +189,115 @@ final class LivePrStateTest extends TestCase {
 		HttpApiMock::assert_complete();
 	}
 
+	private function expect_api( string $method, string $path, array $response, ?int $remaining = null, array $body = array() ): void {
+		$headers = array( 'Authorization: token ' . self::TOKEN );
+		if ( 'POST' === $method || 'DELETE' === $method ) {
+			$headers[] = 'Content-Type: application/json';
+		}
+		$headers[] = 'X-GitHub-Api-Version: ' . VIPGOCI_GITHUB_API_VERSION;
+		IntegrationApiMock::expect(
+			$method, VIPGOCI_GITHUB_BASE_URL . $path, $headers,
+			array(
+				'status' => 'DELETE' === $method ? 204 : ( 'POST' === $method ? 201 : 200 ),
+				'headers' => null === $remaining ? array() : array( 'X-RateLimit-Remaining' => (string) $remaining ),
+				'body' => json_encode( $response ),
+			),
+			$body
+		);
+	}
+
+	public static function rateLimitedCleanupRequests(): array {
+		$cases = array();
+		foreach ( array( 'labels', 'reviews', 'add-label', 'remove-label', 'dismiss-review' ) as $request ) {
+			foreach ( array( 0, 1 ) as $remaining ) {
+				$cases[ $request . '-' . $remaining ] = array( $request, $remaining );
+			}
+		}
+		return $cases;
+	}
+
+	#[DataProvider( 'rateLimitedCleanupRequests' )]
+	public function testRateLimitedCleanupRequestsAllowFinally( string $request, int $remaining ): void {
+		if ( 'add-label' === $request ) {
+			$this->add_label( 'tracked-label' );
+		}
+		$state = new LivePrState( self::OWNER, self::REPO, self::TOKEN, self::PR, array( 'tracked-label' ), 'test-marker', self::COMMIT );
+		$this->approve( 'created by test-marker' );
+		$owned = $this->reviews()[0];
+		$base = '/repos/automattic/vip-go-ci-testing';
+		$labels = $base . '/issues/46/labels';
+		$reviews = $base . '/pulls/46/reviews?per_page=100&page=1';
+		$current = 'remove-label' === $request ? array( array( 'name' => 'tracked-label' ) ) : array();
+		$this->expect_api( 'GET', $labels, $current, 'labels' === $request ? $remaining : null );
+		if ( 'labels' !== $request ) {
+			if ( 'add-label' === $request ) {
+				$this->expect_api( 'POST', $labels, array(), $remaining, array( 'tracked-label' ) );
+			} elseif ( 'remove-label' === $request ) {
+				$this->expect_api( 'DELETE', $labels . '/tracked-label', array(), $remaining );
+			}
+			$baseline = 'add-label' === $request ? array( array( 'name' => 'tracked-label' ) ) : array();
+			$this->expect_api( 'GET', $labels, $baseline );
+		}
+		$this->expect_api( 'GET', $reviews, array( $owned ), 'reviews' === $request ? $remaining : null );
+		if ( 'reviews' !== $request ) {
+			$this->expect_api(
+				'PUT', $base . '/pulls/46/reviews/' . $owned['id'] . '/dismissals', array(),
+				'dismiss-review' === $request ? $remaining : null,
+				array( 'message' => 'Dismissing approval created by integration test test-marker' )
+			);
+			$owned['state'] = 'DISMISSED';
+			$this->expect_api( 'GET', $reviews, array( $owned ) );
+		}
+
+		$error_message = null;
+		$finally_ran = false;
+		try {
+			try {
+				$state->restore();
+			} finally {
+				$finally_ran = true;
+			}
+		} catch ( RuntimeException $error ) {
+			$error_message = $error->getMessage();
+		}
+		$this->assertTrue( $finally_ran );
+		$this->assertNotNull( $error_message );
+		$this->assertStringContainsString( 'Could not restore test PR automattic/vip-go-ci-testing#46:', $error_message );
+		$this->assertStringContainsString( 'HTTP API rate limit reached', $error_message );
+		$this->assertStringContainsString( 'remaining: ' . $remaining, $error_message );
+		HttpApiMock::assert_complete();
+	}
+
+	public static function rateLimitedSnapshotRequests(): array {
+		$cases = array();
+		foreach ( array( 'labels', 'user', 'reviews' ) as $request ) {
+			foreach ( array( 0, 1 ) as $remaining ) {
+				$cases[ $request . '-' . $remaining ] = array( $request, $remaining );
+			}
+		}
+		return $cases;
+	}
+
+	#[DataProvider( 'rateLimitedSnapshotRequests' )]
+	public function testRateLimitedSnapshotThrowsBeforeMutation( string $request, int $remaining ): void {
+		$base = '/repos/automattic/vip-go-ci-testing';
+		$this->expect_api( 'GET', $base . '/issues/46/labels', array(), 'labels' === $request ? $remaining : null );
+		if ( 'labels' !== $request ) {
+			$this->expect_api( 'GET', '/user', array( 'id' => 100, 'login' => 'fixture-bot' ), 'user' === $request ? $remaining : null );
+		}
+		if ( 'reviews' === $request ) {
+			$this->expect_api( 'GET', $base . '/pulls/46/reviews?per_page=100&page=1', array(), $remaining );
+		}
+		try {
+			new LivePrState( self::OWNER, self::REPO, self::TOKEN, self::PR, array(), 'test-marker', self::COMMIT );
+			$this->fail( 'A rate-limited snapshot must stop setup before any mutation.' );
+		} catch ( RuntimeException $error ) {
+			$this->assertStringContainsString( 'HTTP API rate limit reached', $error->getMessage() );
+			$this->assertStringContainsString( 'remaining: ' . $remaining, $error->getMessage() );
+		}
+		HttpApiMock::assert_complete();
+	}
+
 	public function testFindsTrackedLabelOnSecondPage(): void {
 		$base_url = VIPGOCI_GITHUB_BASE_URL . '/repos/automattic/vip-go-ci-testing/issues/46/labels';
 		IntegrationApiMock::replaceResponse(

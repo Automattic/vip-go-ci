@@ -12,7 +12,7 @@ namespace Vipgoci\Tests\Integration;
 use RuntimeException;
 use Throwable;
 
-// Reads must return transport failures: exiting PHP would bypass teardown's finally.
+// Snapshot and cleanup failures must return or throw so teardown's finally runs.
 final class LivePrState {
 	private array $labels_before = array();
 	private array $reviews_before = array();
@@ -29,7 +29,7 @@ final class LivePrState {
 	) {
 		$this->labels_before = $this->labels_get();
 		if ( null !== $review_marker ) {
-			$user = json_decode( vipgoci_http_api_fetch_url( VIPGOCI_GITHUB_BASE_URL . '/user', $this->token, false ) ?? '' );
+			$user = json_decode( vipgoci_http_api_fetch_url( VIPGOCI_GITHUB_BASE_URL . '/user', $this->token, false, throw_on_rate_limit: true ) ?? '' );
 			if ( ! is_object( $user ) || ! isset( $user->id, $user->login ) || ! is_int( $user->id ) || $user->id <= 0 || ! is_string( $user->login ) || '' === $user->login ) {
 				throw new RuntimeException( 'Could not identify token holder for test PR ' . $this->owner . '/' . $this->repo . '#' . $this->pr_number );
 			}
@@ -63,9 +63,15 @@ final class LivePrState {
 				}
 				try {
 					if ( $before ) {
-						vipgoci_github_label_add_to_pr( $this->owner, $this->repo, $this->token, $this->pr_number, $label );
+						vipgoci_http_api_post_url(
+							$this->resource_url( 'issues/' . $this->pr_number . '/labels' ),
+							array( $label ), $this->token, throw_on_rate_limit: true
+						);
 					} else {
-						vipgoci_github_pr_label_remove( $this->owner, $this->repo, $this->token, $this->pr_number, $label );
+						vipgoci_http_api_post_url(
+							$this->resource_url( 'issues/' . $this->pr_number . '/labels/' . rawurlencode( $label ) ),
+							array(), $this->token, http_delete: true, throw_on_rate_limit: true
+						);
 					}
 				} catch ( Throwable $error ) {
 					$errors[] = 'label ' . $label . ': ' . $error->getMessage();
@@ -96,10 +102,10 @@ final class LivePrState {
 						continue;
 					}
 					try {
-						vipgoci_github_pr_review_dismiss(
-							$this->owner, $this->repo, $this->pr_number, (int) $review->id,
-							'Dismissing approval created by integration test ' . $this->review_marker,
-							$this->token
+						vipgoci_http_api_put_url(
+							$this->resource_url( 'pulls/' . $this->pr_number . '/reviews/' . (int) $review->id . '/dismissals' ),
+							array( 'message' => 'Dismissing approval created by integration test ' . $this->review_marker ),
+							$this->token, throw_on_rate_limit: true
 						);
 					} catch ( Throwable $error ) {
 						$errors[] = 'review ' . $review->id . ': ' . $error->getMessage();
@@ -133,13 +139,17 @@ final class LivePrState {
 		}
 	}
 
+	private function resource_url( string $resource ): string {
+		return VIPGOCI_GITHUB_BASE_URL . '/repos/' . rawurlencode( $this->owner ) . '/' . rawurlencode( $this->repo ) . '/' . $resource;
+	}
+
 	private function labels_get(): array {
 		$names = array();
-		$base_url = VIPGOCI_GITHUB_BASE_URL . '/repos/' . rawurlencode( $this->owner ) . '/' . rawurlencode( $this->repo ) . '/issues/' . $this->pr_number . '/labels';
+		$base_url = $this->resource_url( 'issues/' . $this->pr_number . '/labels' );
 		$page = 1;
 		do {
 			$url = $base_url . ( 1 === $page ? '' : '?page=' . $page );
-			$labels = json_decode( vipgoci_http_api_fetch_url( $url, $this->token, false ) ?? '' );
+			$labels = json_decode( vipgoci_http_api_fetch_url( $url, $this->token, false, throw_on_rate_limit: true ) ?? '' );
 			if ( ! is_array( $labels ) ) {
 				throw new RuntimeException( 'Invalid labels response for PR #' . $this->pr_number . ' page ' . $page );
 			}
@@ -158,8 +168,8 @@ final class LivePrState {
 		$own = array();
 		$page = 1;
 		do {
-			$url = VIPGOCI_GITHUB_BASE_URL . '/repos/' . rawurlencode( $this->owner ) . '/' . rawurlencode( $this->repo ) . '/pulls/' . $this->pr_number . '/reviews?per_page=100&page=' . $page;
-			$reviews = json_decode( vipgoci_http_api_fetch_url( $url, $this->token, false ) ?? '' );
+			$url = $this->resource_url( 'pulls/' . $this->pr_number . '/reviews?per_page=100&page=' . $page );
+			$reviews = json_decode( vipgoci_http_api_fetch_url( $url, $this->token, false, throw_on_rate_limit: true ) ?? '' );
 			if ( ! is_array( $reviews ) ) {
 				throw new RuntimeException( 'Invalid reviews response for PR #' . $this->pr_number . ' page ' . $page );
 			}
