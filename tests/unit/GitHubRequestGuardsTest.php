@@ -268,6 +268,14 @@ final class GitHubRequestGuardsTest extends TestCase {
 		$this->assertRequests(
 			array( 'GET /orgs/owner/teams/reviewers', 'GET /orgs/owner/teams/reviewers', 'GET /orgs/other/teams/reviewers' )
 		);
+		$this->assertSame(
+			array(
+				array( 'request' => 'GET /orgs/owner/teams/reviewers', 'url' => VIPGOCI_GITHUB_BASE_URL . '/orgs/owner/teams/reviewers', 'body' => array(), 'token' => 'test-token' ),
+				array( 'request' => 'GET /orgs/owner/teams/reviewers', 'url' => VIPGOCI_GITHUB_BASE_URL . '/orgs/owner/teams/reviewers', 'body' => array(), 'token' => 'other-token' ),
+				array( 'request' => 'GET /orgs/other/teams/reviewers', 'url' => VIPGOCI_GITHUB_BASE_URL . '/orgs/other/teams/reviewers', 'body' => array(), 'token' => 'other-token' ),
+			),
+			$GLOBALS['vipgoci_test_http_requests']
+		);
 	}
 
 	/**
