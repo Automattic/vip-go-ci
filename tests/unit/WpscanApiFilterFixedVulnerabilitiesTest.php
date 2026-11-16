@@ -136,6 +136,9 @@ final class WpscanApiFilterFixedVulnerabilitiesTest extends TestCase {
 					array( 'id' => 'fixed-at', 'fixed_in' => '1.0.0' ),
 					array( 'id' => 'fixed-later', 'fixed_in' => '1.1.0' ),
 					array( 'id' => 'missing-fixed-in' ),
+					null,
+					'invalid advisory',
+					42,
 				),
 			),
 		);

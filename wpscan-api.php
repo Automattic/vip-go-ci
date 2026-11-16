@@ -144,7 +144,7 @@ function vipgoci_wpscan_filter_fixed_vulnerabilities(
 	$wpscan_results[ $wpscan_slug ] ['vulnerabilities'] = array_filter(
 		$wpscan_results[ $wpscan_slug ]['vulnerabilities'],
 		function( $vuln_item ) use ( $version_number ) {
-			if ( ! array_key_exists( 'fixed_in', $vuln_item ) ) {
+			if ( ! is_array( $vuln_item ) || ! array_key_exists( 'fixed_in', $vuln_item ) ) {
 				return false;
 			}
 
