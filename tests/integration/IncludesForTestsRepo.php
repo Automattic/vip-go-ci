@@ -22,71 +22,105 @@ function vipgoci_unittests_setup_git_repo(
 		return false;
 	}
 
-	$res = unlink( $temp_dir );
+	// Only this invocation's tempnam() result may be removed on failure.
+	$complete = false;
+	try {
 
-	if ( false === $res ) {
-		return false;
+		$res = unlink( $temp_dir );
+
+		if ( false === $res ) {
+			return false;
+		}
+
+		$res = mkdir( $temp_dir );
+
+		if ( false === $res ) {
+			return false;
+		}
+
+		$cmd = sprintf(
+			'%s clone %s %s 2>&1',
+			escapeshellcmd( $options['git-path'] ),
+			escapeshellarg( $options['github-repo-url'] ),
+			escapeshellarg( $temp_dir )
+		);
+
+		$cmd_output = '';
+		$cmd_status = 0;
+
+		$res = exec( $cmd, $cmd_output, $cmd_status );
+
+		$cmd_output = implode( PHP_EOL, $cmd_output );
+
+		if (
+			( null === $cmd_output ) ||
+			( false !== strpos( $cmd_output, 'fatal' ) ) ||
+			( 0 !== $cmd_status )
+		) {
+			return false;
+		}
+
+		unset( $cmd );
+		unset( $cmd_output );
+		unset( $cmd_status );
+
+		$cmd = sprintf(
+			'%s -C %s checkout %s 2>&1',
+			escapeshellcmd( $options['git-path'] ),
+			escapeshellarg( $temp_dir ),
+			escapeshellarg( $options['commit'] )
+		);
+
+		$cmd_output = '';
+		$cmd_status = 0;
+
+		$res = exec( $cmd, $cmd_output, $cmd_status );
+
+		$cmd_output = implode( PHP_EOL, $cmd_output );
+
+		if (
+			( null === $cmd_output ) ||
+			( false !== strpos( $cmd_output, 'fatal:' ) ) ||
+			( 0 !== $cmd_status )
+		) {
+			return false;
+		}
+
+		unset( $cmd );
+		unset( $cmd_output );
+		unset( $cmd_status );
+
+		$complete = true;
+		return $temp_dir;
+	} finally {
+		if ( ! $complete ) {
+			$removed = true;
+
+			try {
+				if ( is_dir( $temp_dir ) && ! is_link( $temp_dir ) ) {
+					$iterator = new RecursiveIteratorIterator(
+						new RecursiveDirectoryIterator( $temp_dir, FilesystemIterator::SKIP_DOTS ),
+						RecursiveIteratorIterator::CHILD_FIRST
+					);
+
+					foreach ( $iterator as $entry ) {
+						$path = $entry->getPathname();
+						$removed = ( $entry->isDir() && ! $entry->isLink() ? @rmdir( $path ) : @unlink( $path ) ) && $removed;
+					}
+
+					$removed = @rmdir( $temp_dir ) && $removed;
+				} elseif ( file_exists( $temp_dir ) || is_link( $temp_dir ) ) {
+					$removed = @unlink( $temp_dir );
+				}
+			} catch ( Throwable $error ) {
+				$removed = false;
+			}
+
+			if ( ! $removed ) {
+				error_log( 'Warning: Could not remove allocated temporary git path: ' . $temp_dir );
+			}
+		}
 	}
-
-	$res = mkdir( $temp_dir );
-
-	if ( false === $res ) {
-		return false;
-	}
-
-	$cmd = sprintf(
-		'%s clone %s %s 2>&1',
-		escapeshellcmd( $options['git-path'] ),
-		escapeshellarg( $options['github-repo-url'] ),
-		escapeshellarg( $temp_dir )
-	);
-
-	$cmd_output = '';
-	$cmd_status = 0;
-
-	$res = exec( $cmd, $cmd_output, $cmd_status );
-
-	$cmd_output = implode( PHP_EOL, $cmd_output );
-
-	if (
-		( null === $cmd_output ) ||
-		( false !== strpos( $cmd_output, 'fatal' ) ) ||
-		( 0 !== $cmd_status )
-	) {
-		return false;
-	}
-
-	unset( $cmd );
-	unset( $cmd_output );
-	unset( $cmd_status );
-
-	$cmd = sprintf(
-		'%s -C %s checkout %s 2>&1',
-		escapeshellcmd( $options['git-path'] ),
-		escapeshellarg( $temp_dir ),
-		escapeshellarg( $options['commit'] )
-	);
-
-	$cmd_output = '';
-	$cmd_status = 0;
-
-	$res = exec( $cmd, $cmd_output, $cmd_status );
-
-	$cmd_output = implode( PHP_EOL, $cmd_output );
-
-	if (
-		( null === $cmd_output ) ||
-		( false !== strpos( $cmd_output, 'fatal:' ) ) ||
-		( 0 !== $cmd_status )
-	) {
-		return false;
-	}
-
-	unset( $cmd );
-	unset( $cmd_output );
-	unset( $cmd_status );
-
-	return $temp_dir;
 }
 
 /**

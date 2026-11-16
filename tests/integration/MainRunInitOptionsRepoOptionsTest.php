@@ -49,6 +49,8 @@ final class MainRunInitOptionsRepoOptionsTest extends TestCase {
 	 */
 	private array $options = array();
 
+	private ?string $owned_repo_path = null;
+
 	/**
 	 * Set up variables.
 	 */
@@ -92,9 +94,16 @@ final class MainRunInitOptionsRepoOptionsTest extends TestCase {
 	 * Clear variables.
 	 */
 	protected function tearDown() :void {
-		unset( $this->options );
-		unset( $this->options_options );
-		unset( $this->options_git );
+		try {
+			if ( null !== $this->owned_repo_path ) {
+				$this->assertTrue( vipgoci_unittests_remove_git_repo( $this->owned_repo_path ) );
+			}
+		} finally {
+			$this->owned_repo_path = null;
+			unset( $this->options );
+			unset( $this->options_options );
+			unset( $this->options_git );
+		}
 	}
 
 	/**
@@ -104,6 +113,7 @@ final class MainRunInitOptionsRepoOptionsTest extends TestCase {
 		$this->options['local-git-repo'] = vipgoci_unittests_setup_git_repo(
 			$this->options
 		);
+		$this->owned_repo_path = is_string( $this->options['local-git-repo'] ) ? $this->options['local-git-repo'] : null;
 
 		if ( false === $this->options['local-git-repo'] ) {
 			$this->markTestSkipped(
@@ -143,7 +153,6 @@ final class MainRunInitOptionsRepoOptionsTest extends TestCase {
 			$this->options['repo-options-allowed']
 		);
 
-		vipgoci_unittests_remove_git_repo( $this->options['local-git-repo'] );
 	}
 
 	/**
@@ -155,6 +164,7 @@ final class MainRunInitOptionsRepoOptionsTest extends TestCase {
 		$this->options['local-git-repo'] = vipgoci_unittests_setup_git_repo(
 			$this->options
 		);
+		$this->owned_repo_path = is_string( $this->options['local-git-repo'] ) ? $this->options['local-git-repo'] : null;
 
 		if ( false === $this->options['local-git-repo'] ) {
 			$this->markTestSkipped(
@@ -194,7 +204,6 @@ final class MainRunInitOptionsRepoOptionsTest extends TestCase {
 			$this->options['repo-options-allowed']
 		);
 
-		vipgoci_unittests_remove_git_repo( $this->options['local-git-repo'] );
 	}
 
 	/**
@@ -206,6 +215,7 @@ final class MainRunInitOptionsRepoOptionsTest extends TestCase {
 		$this->options['local-git-repo'] = vipgoci_unittests_setup_git_repo(
 			$this->options
 		);
+		$this->owned_repo_path = is_string( $this->options['local-git-repo'] ) ? $this->options['local-git-repo'] : null;
 
 		if ( false === $this->options['local-git-repo'] ) {
 			$this->markTestSkipped(
@@ -245,6 +255,5 @@ final class MainRunInitOptionsRepoOptionsTest extends TestCase {
 			$this->options['repo-options-allowed']
 		);
 
-		vipgoci_unittests_remove_git_repo( $this->options['local-git-repo'] );
 	}
 }
