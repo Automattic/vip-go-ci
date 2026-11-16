@@ -119,4 +119,39 @@ final class MainRunScanSkipExecutionTest extends TestCase {
 			$printed_data
 		);
 	}
+
+	/** A real exit must prevent work immediately after the skip gate. */
+	public function testSkipExecutionTerminatesChildProcess(): void {
+		list( $status, $output ) = $this->runSkipGateInChild( true );
+		$this->assertSame( VIPGOCI_EXIT_NORMAL, $status );
+		$this->assertStringContainsString( 'Skipping scanning entirely, as determined by configuration', $output );
+		$this->assertStringNotContainsString( 'downstream-sentinel', $output );
+	}
+
+	/** The disabled gate must return and allow downstream work. */
+	public function testDisabledSkipExecutionReachesDownstreamWork(): void {
+		list( $status, $output ) = $this->runSkipGateInChild( false );
+		$this->assertSame( 17, $status );
+		$this->assertSame( 'downstream-sentinel', $output );
+	}
+
+	/**
+	 * Run without PHPUnit's indication that makes vipgoci_sysexit() return.
+	 *
+	 * @param bool $skip Whether to terminate at the gate.
+	 * @return array Child exit status and complete captured output.
+	 */
+	private function runSkipGateInChild( bool $skip ): array {
+		$script = '';
+		foreach ( array( 'defines', 'main', 'log' ) as $module ) {
+			$script .= 'require ' . var_export( __DIR__ . '/../../' . $module . '.php', true ) . ';';
+		}
+		$script .= 'if (function_exists("vipgoci_unittests_check_indication_for_test_id")) { exit(99); }';
+		$script .= '$vipgoci_debug_level = 0;';
+		$script .= '$options = array("skip-execution" => ' . ( $skip ? 'true' : 'false' ) . ');';
+		$script .= 'vipgoci_run_scan_skip_execution($options);';
+		$script .= 'echo "downstream-sentinel"; exit(17);';
+		exec( escapeshellarg( PHP_BINARY ) . ' -r ' . escapeshellarg( $script ) . ' 2>&1', $output, $status );
+		return array( $status, implode( "\n", $output ) );
+	}
 }

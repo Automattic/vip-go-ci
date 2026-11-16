@@ -26,7 +26,7 @@ final class SvgScanWithScannerTest extends TestCase {
 	 *
 	 * @var $svg_php_path
 	 */
-	private string $svg_php_path = '';
+	private ?string $svg_php_path = null;
 
 	var $svg_scanner_path = null;
 
@@ -38,7 +38,11 @@ final class SvgScanWithScannerTest extends TestCase {
 			'svg-scanner-path'
 		);
 
-		if ( ! file_exists( $this->svg_scanner_path ) ) {
+		if (
+			! is_string( $this->svg_scanner_path ) ||
+			'' === $this->svg_scanner_path ||
+			! file_exists( $this->svg_scanner_path )
+		) {
 			$this->svg_scanner_path = null;
 		}
 
@@ -47,7 +51,11 @@ final class SvgScanWithScannerTest extends TestCase {
 			'svg-php-path'
 		);
 
-		if ( ! file_exists( $this->svg_php_path ) ) {
+		if (
+			! is_string( $this->svg_php_path ) ||
+			'' === $this->svg_php_path ||
+			! file_exists( $this->svg_php_path )
+		) {
 			$this->svg_php_path = null;
 		}
 	}
@@ -127,6 +135,14 @@ final class SvgScanWithScannerTest extends TestCase {
 		if ( empty( $this->svg_scanner_path ) ) {
 			$this->markTestSkipped(
 				'Must set up SVG scanner.'
+			);
+
+			return;
+		}
+
+		if ( empty( $this->svg_php_path ) ) {
+			$this->markTestSkipped(
+				'Must set up path to PHP used to run SVG scanner.'
 			);
 
 			return;

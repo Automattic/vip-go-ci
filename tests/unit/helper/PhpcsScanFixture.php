@@ -12,8 +12,10 @@ $contents  = implode( "\n", array_map( 'file_get_contents', $filenames ) );
 $log_path  = getenv( 'VIPGOCI_TEST_PHPCS_INVOCATIONS' );
 if ( false !== $log_path ) {
 	file_put_contents( $log_path, json_encode( array(
-		'files' => $filenames,
-		'argv'  => $argv,
+		'files'    => $filenames,
+		'argv'     => $argv,
+		'exists'   => array_map( 'is_file', $filenames ),
+		'contents' => array_map( 'file_get_contents', $filenames ),
 	) ) . "\n", FILE_APPEND );
 }
 
@@ -24,6 +26,18 @@ if ( count( $filenames ) > 1 && str_contains( $contents, 'fixture-batch-fatal' )
 
 if ( str_contains( $contents, 'fixture-invalid-json' ) ) {
 	echo 'Invalid scanner output';
+	exit( 0 );
+}
+
+if ( str_contains( $contents, 'fixture-null-output' ) ) {
+	exit( 255 );
+}
+
+if ( str_contains( $contents, 'fixture-exception' ) ) {
+	echo json_encode( array(
+		'totals' => array( 'errors' => 0, 'warnings' => 0, 'fixable' => 0 ),
+		'files'  => array( $filenames[0] => array( 'messages' => null ) ),
+	) );
 	exit( 0 );
 }
 

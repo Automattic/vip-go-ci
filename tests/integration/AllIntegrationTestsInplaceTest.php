@@ -64,12 +64,7 @@ final class AllIntegrationTestsInplaceTest extends TestCase {
 						return false;
 				}
 
-				$file_item_end = strpos(
-					$file_item,
-					'Test.php'
-				);
-
-				if ( false !== $file_item_end ) {
+				if ( str_ends_with( $file_item, 'Test.php' ) ) {
 					/*
 					 * If the filename ends with 'Test.php',
 					 * skip this file from the final result.

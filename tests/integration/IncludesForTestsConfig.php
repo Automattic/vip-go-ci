@@ -38,17 +38,14 @@ function vipgoci_unittests_get_config_value(
 		return $fixtures[ $section ][ $key ] ?? null;
 	}
 
-	if ( false === $secret_file ) {
-		$ini_array = parse_ini_file(
-			VIPGOCI_UNIT_TESTS_INI_DIR_PATH . '/config.ini',
-			true
-		);
-	} else {
-		$ini_array = parse_ini_file(
-			VIPGOCI_UNIT_TESTS_INI_DIR_PATH . '/config-secrets.ini',
-			true
-		);
+	$config_path = VIPGOCI_UNIT_TESTS_INI_DIR_PATH .
+		( $secret_file ? '/config-secrets.ini' : '/config.ini' );
+
+	if ( ! is_readable( $config_path ) ) {
+		return null;
 	}
+
+	$ini_array = parse_ini_file( $config_path, true );
 
 	if ( false === $ini_array ) {
 		return null;

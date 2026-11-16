@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Vipgoci\Tests\Integration;
 
 use PHPUnit\Framework\AssertionFailedError;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\PreserveGlobalState;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
@@ -138,6 +139,9 @@ final class HttpApiTransportTest extends TestCase {
 			$body
 		);
 		$this->assertSame( '{"id":7}', vipgoci_http_api_post_url( $url, $body, 'fixture-token' ) );
+		$raw_body = $GLOBALS['vipgoci_curl_mock_requests'][0]['options'][ CURLOPT_POSTFIELDS ];
+		$this->assertIsString( $raw_body );
+		$this->assertSame( '{"message":"Fixture message","values":[1,2]}', $raw_body );
 	}
 
 	/** Preserve form fields, bearer authentication and the requested HTTP version. */
@@ -150,6 +154,8 @@ final class HttpApiTransportTest extends TestCase {
 		IntegrationApiMock::expect( 'POST', $url, array( 'Authorization: Bearer fixture-token', 'Content-Type: application/x-www-form-urlencoded' ), array( 'body' => '{}' ), $body );
 		$this->assertSame( '{}', vipgoci_http_api_post_url( $url, $body, array( 'bearer' => 'fixture-token' ), false, false, CURL_HTTP_VERSION_1_1, VIPGOCI_HTTP_API_CONTENT_TYPE_X_WWW_FORM_URLENCODED ) );
 		$options = $GLOBALS['vipgoci_curl_mock_requests'][0]['options'];
+		$this->assertIsString( $options[ CURLOPT_POSTFIELDS ] );
+		$this->assertSame( 'name=Fixture+with+spaces&json=%7B%22key%22%3A%22value%22%7D', $options[ CURLOPT_POSTFIELDS ] );
 		$this->assertSame( CURL_HTTP_VERSION_1_1, $options[ CURLOPT_HTTP_VERSION ] );
 		$this->assertSame( 0, $options[ CURLOPT_MAXREDIRS ] );
 		$this->assertFalse( $options[ CURLOPT_FOLLOWLOCATION ] );
@@ -176,6 +182,52 @@ final class HttpApiTransportTest extends TestCase {
 		$body = array( 'message' => 'Fixture dismissal' );
 		IntegrationApiMock::expect( 'PUT', $url, array( 'Authorization: token fixture-token' ), array( 'body' => '{}' ), $body );
 		$this->assertSame( 0, vipgoci_http_api_put_url( $url, $body, 'fixture-token' ) );
+	}
+
+	/** Exercise the existing exit policy for every method at both boundaries. */
+	public static function defaultRateLimitRequests(): array {
+		$cases = array();
+		foreach ( array( 'GET', 'POST', 'DELETE', 'PUT' ) as $method ) {
+			foreach ( array( 0, 1 ) as $remaining ) {
+				$cases[ $method . '-' . $remaining ] = array( $method, $remaining );
+			}
+		}
+		return $cases;
+	}
+
+	/** Default clients must still exit on rate limits, including a nonfatal GET. */
+	#[DataProvider( 'defaultRateLimitRequests' )]
+	public function testDefaultRateLimitPolicyStillExits( string $method, int $remaining ): void {
+		$autoload = defined( 'PHPUNIT_COMPOSER_INSTALL' ) ? PHPUNIT_COMPOSER_INSTALL : __PHPUNIT_PHAR__;
+		$code = 'require ' . var_export( $autoload, true ) . ';' .
+			'require ' . var_export( __DIR__ . '/IncludesForTests.php', true ) . ';' .
+			'$method = ' . var_export( $method, true ) . ';' .
+			'$remaining = ' . $remaining . ';' . <<<'PHP'
+$url = 'https://transport.fixture.invalid/rate-limit';
+$headers = in_array( $method, array( 'POST', 'DELETE' ), true ) ? array( 'Content-Type: application/json' ) : array();
+\Vipgoci\Tests\Common\IntegrationApiMock::expect(
+	$method, $url, $headers,
+	array( 'status' => 'DELETE' === $method ? 204 : 200, 'headers' => array( 'X-RateLimit-Remaining' => (string) $remaining ), 'body' => '{}' )
+);
+if ( 'GET' === $method ) {
+	vipgoci_http_api_fetch_url( $url, null, false );
+} elseif ( 'PUT' === $method ) {
+	vipgoci_http_api_put_url( $url, array(), '' );
+} else {
+	vipgoci_http_api_post_url( $url, array(), null, 'DELETE' === $method );
+}
+echo 'rate-limit-returned';
+exit( 17 );
+PHP;
+		$pipes = array();
+		$process = proc_open( array( PHP_BINARY, '-r', $code ), array( 1 => array( 'pipe', 'w' ), 2 => array( 'pipe', 'w' ) ), $pipes );
+		$this->assertIsResource( $process );
+		$stdout = stream_get_contents( $pipes[1] );
+		$stderr = stream_get_contents( $pipes[2] );
+		fclose( $pipes[1] );
+		fclose( $pipes[2] );
+		$this->assertSame( VIPGOCI_EXIT_HTTP_API_ERROR, proc_close( $process ), $stderr );
+		$this->assertStringNotContainsString( 'rate-limit-returned', $stdout );
 	}
 
 	/** A transient server error must consume another response rather than succeed. */
