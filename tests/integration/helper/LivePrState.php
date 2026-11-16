@@ -12,6 +12,7 @@ namespace Vipgoci\Tests\Integration;
 use RuntimeException;
 use Throwable;
 
+// Reads must return transport failures: exiting PHP would bypass teardown's finally.
 final class LivePrState {
 	private array $labels_before = array();
 	private array $reviews_before = array();
@@ -28,7 +29,7 @@ final class LivePrState {
 	) {
 		$this->labels_before = $this->labels_get();
 		if ( null !== $review_marker ) {
-			$user = json_decode( vipgoci_http_api_fetch_url( VIPGOCI_GITHUB_BASE_URL . '/user', $this->token ) );
+			$user = json_decode( vipgoci_http_api_fetch_url( VIPGOCI_GITHUB_BASE_URL . '/user', $this->token, false ) ?? '' );
 			if ( ! is_object( $user ) || ! isset( $user->id, $user->login ) || ! is_int( $user->id ) || $user->id <= 0 || ! is_string( $user->login ) || '' === $user->login ) {
 				throw new RuntimeException( 'Could not identify token holder for test PR ' . $this->owner . '/' . $this->repo . '#' . $this->pr_number );
 			}
@@ -138,7 +139,7 @@ final class LivePrState {
 		$page = 1;
 		do {
 			$url = $base_url . ( 1 === $page ? '' : '?page=' . $page );
-			$labels = json_decode( vipgoci_http_api_fetch_url( $url, $this->token ) );
+			$labels = json_decode( vipgoci_http_api_fetch_url( $url, $this->token, false ) ?? '' );
 			if ( ! is_array( $labels ) ) {
 				throw new RuntimeException( 'Invalid labels response for PR #' . $this->pr_number . ' page ' . $page );
 			}
@@ -158,7 +159,7 @@ final class LivePrState {
 		$page = 1;
 		do {
 			$url = VIPGOCI_GITHUB_BASE_URL . '/repos/' . rawurlencode( $this->owner ) . '/' . rawurlencode( $this->repo ) . '/pulls/' . $this->pr_number . '/reviews?per_page=100&page=' . $page;
-			$reviews = json_decode( vipgoci_http_api_fetch_url( $url, $this->token ) );
+			$reviews = json_decode( vipgoci_http_api_fetch_url( $url, $this->token, false ) ?? '' );
 			if ( ! is_array( $reviews ) ) {
 				throw new RuntimeException( 'Invalid reviews response for PR #' . $this->pr_number . ' page ' . $page );
 			}

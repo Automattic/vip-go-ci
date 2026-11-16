@@ -10,12 +10,14 @@ declare(strict_types=1);
 namespace Vipgoci\Tests\Integration;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\PreserveGlobalState;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use Vipgoci\Tests\Common\IntegrationApiMock;
+use Vipgoci\Tests\Common\HttpApiMock;
 
 #[RunTestsInSeparateProcesses]
 #[PreserveGlobalState( false )]
@@ -56,7 +58,8 @@ final class LivePrStateTest extends TestCase {
 
 	public function testRestoresOnlyNewLabelAndMarkedApproval(): void {
 		$this->add_label( 'unrelated' );
-		$this->approve( 'existing approval' );
+		// Even an identical marker and commit cannot make a baseline review ours.
+		$this->approve( 'existing approval with test-marker' );
 		$before = $this->reviews();
 		$state = new LivePrState( self::OWNER, self::REPO, self::TOKEN, self::PR, array( 'Label for testing' ), 'test-marker', self::COMMIT );
 		$this->assertTrue( $state->has_own_approval() );
@@ -69,6 +72,48 @@ final class LivePrStateTest extends TestCase {
 		$after = $this->reviews();
 		$this->assertSame( $before[0], $after[0] );
 		$this->assertSame( 'DISMISSED', $after[1]['state'] );
+	}
+
+	public function testPreservesNewApprovalsThatFailAnyOwnershipCheck(): void {
+		$state = new LivePrState( self::OWNER, self::REPO, self::TOKEN, self::PR, array(), 'test-marker', self::COMMIT );
+		$this->assertFalse( $state->has_own_approval() );
+		$this->approve( 'created by test-marker' );
+		$owned = $this->reviews()[0];
+
+		// Each unrelated approval differs from the owned review in only one field.
+		$other_account = $owned;
+		$other_account['id'] = $owned['id'] + 1;
+		$other_account['user'] = array( 'id' => 101, 'login' => 'another-reviewer' );
+		$other_marker = $owned;
+		$other_marker['id'] = $owned['id'] + 2;
+		$other_marker['body'] = 'created by another-invocation';
+		$other_commit = $owned;
+		$other_commit['id'] = $owned['id'] + 3;
+		$other_commit['commit_id'] = 'another-commit';
+		IntegrationApiMock::replaceResponse(
+			VIPGOCI_GITHUB_BASE_URL . '/repos/automattic/vip-go-ci-testing/pulls/46/reviews?per_page=100&page=1',
+			array( $owned, $other_account, $other_marker, $other_commit )
+		);
+
+		$error_message = null;
+		try {
+			$state->restore();
+		} catch ( RuntimeException $error ) {
+			$error_message = $error->getMessage();
+		}
+		$this->assertSame(
+			'Could not restore test PR automattic/vip-go-ci-testing#46: ' .
+			'new approval ' . $other_marker['id'] . ' lacks this invocation marker or commit; left untouched; ' .
+			'new approval ' . $other_commit['id'] . ' lacks this invocation marker or commit; left untouched; ' .
+			'new approvals remain: ' . $other_marker['id'] . ', ' . $other_commit['id'],
+			$error_message
+		);
+		$owned['state'] = 'DISMISSED';
+		$this->assertSame(
+			array( $owned, $other_account, $other_marker, $other_commit ),
+			$this->reviews(),
+			'Only the new approval matching the account, invocation marker and commit may be dismissed.'
+		);
 	}
 
 	public function testFinallyRestoresAfterFailureAndReaddsRemovedLabel(): void {
@@ -86,6 +131,62 @@ final class LivePrStateTest extends TestCase {
 		}
 		$this->assertSame( array( 'skip-wpscan', 'unrelated' ), $this->labels() );
 		$this->assertSame( 'DISMISSED', $this->reviews()[0]['state'] );
+	}
+
+	public static function cleanupReadFailures(): array {
+		return array( 'labels' => array( true ), 'reviews' => array( false ) );
+	}
+
+	#[DataProvider( 'cleanupReadFailures' )]
+	public function testExhaustedReadRetriesReportFailureAndAllowFinally( bool $fail_labels ): void {
+		$state = new LivePrState( self::OWNER, self::REPO, self::TOKEN, self::PR, array(), 'test-marker', self::COMMIT );
+		$this->approve( 'created by test-marker' );
+		$owned = $this->reviews()[0];
+		$base = VIPGOCI_GITHUB_BASE_URL . '/repos/automattic/vip-go-ci-testing';
+		$labels_url = $base . '/issues/46/labels';
+		$reviews_url = $base . '/pulls/46/reviews?per_page=100&page=1';
+		$headers = array( 'Authorization: token ' . self::TOKEN, 'X-GitHub-Api-Version: ' . VIPGOCI_GITHUB_API_VERSION );
+		if ( $fail_labels ) {
+			for ( $attempt = 0; $attempt < 5; $attempt++ ) {
+				IntegrationApiMock::expect( 'GET', $labels_url, $headers, array( 'body' => false ) );
+			}
+			IntegrationApiMock::expect( 'GET', $reviews_url, $headers, array( 'body' => json_encode( array( $owned ) ) ) );
+			IntegrationApiMock::expect(
+				'PUT', $base . '/pulls/46/reviews/' . $owned['id'] . '/dismissals',
+				$headers,
+				array( 'body' => '{}' ),
+				array( 'message' => 'Dismissing approval created by integration test test-marker' )
+			);
+			$owned['state'] = 'DISMISSED';
+			IntegrationApiMock::expect( 'GET', $reviews_url, $headers, array( 'body' => json_encode( array( $owned ) ) ) );
+		} else {
+			IntegrationApiMock::expect( 'GET', $labels_url, $headers, array( 'body' => '[]' ) );
+			IntegrationApiMock::expect( 'GET', $labels_url, $headers, array( 'body' => '[]' ) );
+			for ( $attempt = 0; $attempt < 5; $attempt++ ) {
+				IntegrationApiMock::expect( 'GET', $reviews_url, $headers, array( 'body' => false ) );
+			}
+		}
+
+		$finally_ran = false;
+		$error_message = null;
+		try {
+			try {
+				$state->restore();
+			} finally {
+				$finally_ran = true;
+			}
+		} catch ( RuntimeException $error ) {
+			$error_message = $error->getMessage();
+		}
+		$resource = $fail_labels ? 'label' : 'review';
+		$plural = $fail_labels ? 'labels' : 'reviews';
+		$this->assertSame(
+			'Could not restore test PR automattic/vip-go-ci-testing#46: ' . $resource .
+			' readback: Invalid ' . $plural . ' response for PR #46 page 1',
+			$error_message
+		);
+		$this->assertTrue( $finally_ran );
+		HttpApiMock::assert_complete();
 	}
 
 	public function testFindsTrackedLabelOnSecondPage(): void {
