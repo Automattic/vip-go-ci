@@ -859,6 +859,79 @@ final class PhpcsScanGitGuardsTest extends TestCase {
 		$this->assertFalse( vipgoci_cache( array( 'vipgoci_gitrepo_diffs_fetch_unfiltered', $this->repo, $this->base, $this->head ) ) );
 	}
 
+	/** @return array Explicit newline counts and expected SVG validation outcome. */
+	public static function svgLineLimitCases(): array {
+		return array(
+			'below limit' => array( "<svg>\n<g/>\n</svg>\n", false ),
+			'at limit' => array( "<svg>\n<g/>\n<g/>\n</svg>\n", true ),
+			'above limit' => array( "<svg>\n<g/>\n<g/>\n<g/>\n</svg>\n", true ),
+			'many bytes on one line' => array( '<svg>' . str_repeat( ' ', 4096 ) . "</svg>\n", false ),
+		);
+	}
+
+	/** SVG validation must skip before scanning and retain consumer accounting. */
+	#[DataProvider( 'svgLineLimitCases' )]
+	public function testSvgLineLimitPreventsScannerInvocation( string $contents, bool $skip ): void {
+		$this->base = $this->commit( array() );
+		$this->head = $this->commit( array( 'icon.svg' => $contents ) );
+		$overrides = array(
+			'svg-checks' => true,
+			'svg-scanner-path' => __DIR__ . '/helper/PhpcsScanFixture.php',
+			'svg-php-path' => PHP_BINARY,
+			'skip-large-files' => true,
+			'skip-large-files-limit' => 4,
+		);
+		$options = array_merge( array(
+			'repo-owner' => 'owner',
+			'repo-name' => 'repo',
+			'token' => 'test-token',
+			'commit' => $this->head,
+			'local-git-repo' => $this->repo,
+			'svg-file-extensions' => array( 'svg' ),
+		), $overrides );
+		$direct = null;
+		try {
+			$direct = vipgoci_svg_scan_single_file( $options, 'icon.svg' );
+			$expected_validation = $skip ? array(
+				'total' => 1,
+				'issues' => array( VIPGOCI_VALIDATION_MAXIMUM_LINES => array( 'icon.svg' ) ),
+			) : array( 'total' => 0 );
+			$this->assertSame( $expected_validation, $direct['validation'] );
+			$this->assertFileDoesNotExist( $direct['temp_file_name'] );
+			if ( $skip ) {
+				$this->assertSame( array(), $direct['file_issues_arr_master'] );
+				$this->assertNull( $direct['file_issues_str'] );
+			}
+			list( $result, $output ) = $this->scanWithLogs( 0, $overrides );
+			$this->assertSame( array( 42 => array() ), $result['issues'] );
+			$this->assertSame( array( 42 => array( 'error' => 0, 'warning' => 0, 'info' => 0 ) ), $result['stats'] );
+			$this->assertSame(
+				array( 42 => array( 'issues' => $skip ? array( VIPGOCI_VALIDATION_MAXIMUM_LINES => array( 'icon.svg' ) ) : array(), 'total' => $skip ? 1 : 0 ) ),
+				$result['skipped']
+			);
+			$this->assertSame( 1, preg_match( '/"PHPCS-scanning complete"; (\{.*?\n\})/s', $output, $matches ) );
+			$summary = json_decode( $matches[1], true, 512, JSON_THROW_ON_ERROR );
+			$this->assertSame( $skip ? 1 : 0, $summary['files_skipped'] );
+			$this->assertSame( $skip ? 0 : 1, $summary['files_scanned'] );
+			$this->assertSame( 0, $summary['files_failed'] );
+			$calls = is_file( $this->directory . '/phpcs.jsonl' ) ? $this->phpcsInvocations() : array();
+			$this->assertCount( $skip ? 0 : 2, $calls );
+		} finally {
+			if ( isset( $direct['temp_file_name'] ) && is_file( $direct['temp_file_name'] ) ) {
+				unlink( $direct['temp_file_name'] );
+			}
+			if ( is_file( $this->directory . '/phpcs.jsonl' ) ) {
+				foreach ( file( $this->directory . '/phpcs.jsonl', FILE_IGNORE_NEW_LINES ) as $line ) {
+					foreach ( json_decode( $line, true )['files'] as $file ) {
+						if ( is_file( $file ) ) {
+							unlink( $file );
+						}
+					}
+				}
+			}
+		}
+	}
+
 	/** The existing large-file skip must retain its separate reporting state. */
 	public function testLargeFileSkipPreservesValidationResult(): void {
 		$this->base = $this->commit( array() );
