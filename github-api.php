@@ -2808,6 +2808,7 @@ function vipgoci_github_repo_collaborators_get(
 		__FUNCTION__,
 		$repo_owner,
 		$repo_name,
+		$github_token,
 		$affiliation,
 	);
 
