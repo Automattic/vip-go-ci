@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_phpcs_validate_sniffs_in_options_and_report' )]
 final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 	/**
 	 * PHPCS options.
@@ -166,8 +169,6 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 	 * that errors are posted to pull request.
 	 *
 	 * @return void
-	 *
-	 * @covers ::vipgoci_phpcs_validate_sniffs_in_options_and_report
 	 */
 	public function testPhpcsValidateIncludeSniffsWithErrors() :void {
 		$options_test = vipgoci_unittests_options_test(
@@ -358,8 +359,6 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 	 * no errors are posted to pull request.
 	 *
 	 * @return void
-	 *
-	 * @covers ::vipgoci_phpcs_validate_sniffs_in_options_and_report
 	 */
 	public function testPhpcsValidateIncludeSniffsNoErrors() :void {
 		$options_test = vipgoci_unittests_options_test(
@@ -504,8 +503,6 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 	 * be posted to pull request.
 	 *
 	 * @return void
-	 *
-	 * @covers ::vipgoci_phpcs_validate_sniffs_in_options_and_report
 	 */
 	public function testPhpcsValidateExcludeSniffsWithErrors() :void {
 		$options_test = vipgoci_unittests_options_test(
@@ -696,8 +693,6 @@ final class PhpcsScanValidateSniffsInOptionAndReportTest extends TestCase {
 	 * posted to pull request.
 	 *
 	 * @return void
-	 *
-	 * @covers ::vipgoci_phpcs_validate_sniffs_in_options_and_report
 	 */
 	public function testPhpcsValidateExcludeSniffsNoErrors() :void {
 		$options_test = vipgoci_unittests_options_test(

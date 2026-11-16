@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_option_generic_support_comments_process' )]
 final class OptionsGenericSupportCommentsProcessTest extends TestCase {
 	/**
 	 * Options array.
@@ -49,8 +52,6 @@ final class OptionsGenericSupportCommentsProcessTest extends TestCase {
 	/**
 	 * Test common usage of the function.
 	 *
-	 * @covers ::vipgoci_option_generic_support_comments_process
-	 *
 	 * @return void
 	 */
 	public function testOptionGenericSupportCommentProcessBoolean() :void {
@@ -76,8 +77,6 @@ final class OptionsGenericSupportCommentsProcessTest extends TestCase {
 
 	/**
 	 * Test common usage of the function.
-	 *
-	 * @covers ::vipgoci_option_generic_support_comments_process
 	 *
 	 * @return void
 	 */
@@ -108,8 +107,6 @@ final class OptionsGenericSupportCommentsProcessTest extends TestCase {
 	/**
 	 * Test common usage of the function.
 	 *
-	 * @covers ::vipgoci_option_generic_support_comments_process
-	 *
 	 * @return void
 	 */
 	public function testOptionGenericSupportCommentProcessStringStringLower() :void {
@@ -139,8 +136,6 @@ final class OptionsGenericSupportCommentsProcessTest extends TestCase {
 	/**
 	 * Test common usage of the function.
 	 *
-	 * @covers ::vipgoci_option_generic_support_comments_process
-	 *
 	 * @return void
 	 */
 	public function testOptionGenericSupportCommentProcessArrayNotLower() :void {
@@ -169,8 +164,6 @@ final class OptionsGenericSupportCommentsProcessTest extends TestCase {
 
 	/**
 	 * Test common usage of the function.
-	 *
-	 * @covers ::vipgoci_option_generic_support_comments_process
 	 *
 	 * @return void
 	 */

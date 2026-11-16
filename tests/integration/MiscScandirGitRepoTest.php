@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_scandir_git_repo' )]
 final class MiscScandirGitRepoTest extends TestCase {
 	/**
 	 * Git options.
@@ -98,8 +101,6 @@ final class MiscScandirGitRepoTest extends TestCase {
 
 	/**
 	 * Test function with subdirectories enabled and no filter.
-	 *
-	 * @covers ::vipgoci_scandir_git_repo
 	 */
 	public function testScandirRepoWithSubdirectoriesAndNoFilter() {
 		$options_test = vipgoci_unittests_options_test(
@@ -153,8 +154,6 @@ final class MiscScandirGitRepoTest extends TestCase {
 
 	/**
 	 * Test function with subdirectories enabled and filter applied.
-	 *
-	 * @covers ::vipgoci_scandir_git_repo
 	 */
 	public function testScandirRepoWithSubdirectoriesAndFilter() {
 		$options_test = vipgoci_unittests_options_test(
@@ -209,8 +208,6 @@ final class MiscScandirGitRepoTest extends TestCase {
 
 	/**
 	 * Test function with subdirectories disabled and no filter.
-	 *
-	 * @covers ::vipgoci_scandir_git_repo
 	 */
 	public function testScandirRepoWithoutSubdirectoriesAndNoFilter() {
 		$options_test = vipgoci_unittests_options_test(
@@ -262,8 +259,6 @@ final class MiscScandirGitRepoTest extends TestCase {
 
 	/**
 	 * Test function with subdirectories disabled and filter applied.
-	 *
-	 * @covers ::vipgoci_scandir_git_repo
 	 */
 	public function testScandirRepoWithoutSubdirectoriesAndFilter() {
 		$options_test = vipgoci_unittests_options_test(

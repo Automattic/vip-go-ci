@@ -9,15 +9,18 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_stats_init' )]
 final class StatsStatsInitTest extends TestCase {
 	/**
 	 * Setup function. Require files, etc.
@@ -31,8 +34,6 @@ final class StatsStatsInitTest extends TestCase {
 
 	/**
 	 * Test the vipgoci_stats_init() function with fairly typical values.
-	 *
-	 * @covers ::vipgoci_stats_init
 	 *
 	 * @return void
 	 */

@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_wpscan_filter_fixed_vulnerabilities' )]
 final class WpscanApiFilterFixedVulnerabilitiesTest extends TestCase {
 	/**
 	 * Setup function. Require file.
@@ -29,8 +32,6 @@ final class WpscanApiFilterFixedVulnerabilitiesTest extends TestCase {
 
 	/**
 	 * Test common usage of the function.
-	 *
-	 * @covers ::vipgoci_wpscan_filter_fixed_vulnerabilities
 	 *
 	 * @return void
 	 */
@@ -123,8 +124,6 @@ final class WpscanApiFilterFixedVulnerabilitiesTest extends TestCase {
 
 	/**
 	 * Test invalid usage of the function.
-	 *
-	 * @covers ::vipgoci_wpscan_filter_fixed_vulnerabilities
 	 *
 	 * @return void
 	 */

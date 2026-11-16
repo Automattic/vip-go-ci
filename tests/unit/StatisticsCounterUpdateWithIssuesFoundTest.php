@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Test counter functionality.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_counter_update_with_issues_found' )]
 final class StatisticsCounterUpdateWithIssuesFoundTest extends TestCase {
 	/**
 	 * Setup function. Require files, etc.
@@ -30,8 +33,6 @@ final class StatisticsCounterUpdateWithIssuesFoundTest extends TestCase {
 
 	/**
 	 * Test common usage of the function.
-	 *
-	 * @covers ::vipgoci_counter_update_with_issues_found
 	 *
 	 * @return void
 	 */

@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_options_read_repo_skip_files' )]
 final class OptionsReadRepoSkipFilesTest extends TestCase {
 	/**
 	 * Git options array.
@@ -135,8 +138,6 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 	 * Tests when options files are present, but not configured
 	 * to read them.
 	 *
-	 * @covers ::vipgoci_options_read_repo_skip_files
-	 *
 	 * @return void
 	 */
 	public function testOptionsReadRepoFilePhpcsTest1() :void {
@@ -178,8 +179,6 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 	/**
 	 * Uses commit without options files for skip-folders,
 	 * is configured to read one of them.
-	 *
-	 * @covers ::vipgoci_options_read_repo_skip_files
 	 *
 	 * @return void
 	 */
@@ -224,8 +223,6 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 	/**
 	 * Commit with valid skip-folders options file, configured to read
 	 * in skip-folders folders for PHPCS.
-	 *
-	 * @covers ::vipgoci_options_read_repo_skip_files
 	 *
 	 * @return void
 	 */
@@ -275,8 +272,6 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 	 * Configuration file available for PHP Lint folder skipping,
 	 * but not configured to read it.
 	 *
-	 * @covers ::vipgoci_options_read_repo_skip_files
-	 *
 	 * @return void
 	 */
 	public function testOptionsReadRepoFileLintTest1() :void {
@@ -318,8 +313,6 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 	/**
 	 * Uses commit without options files for PHP linting skip-folders,
 	 * is configured to read it.
-	 *
-	 * @covers ::vipgoci_options_read_repo_skip_files
 	 *
 	 * @return void
 	 */
@@ -364,8 +357,6 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 	/**
 	 * Uses commit with options files for skip-folders,
 	 * is configured to read it.
-	 *
-	 * @covers ::vipgoci_options_read_repo_skip_files
 	 *
 	 * @return void
 	 */
@@ -415,8 +406,6 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 	 * Configuration file available for WPScan API folder skipping,
 	 * but not configured to read it.
 	 *
-	 * @covers ::vipgoci_options_read_repo_skip_files
-	 *
 	 * @return void
 	 */
 	public function testOptionsReadRepoFileWpscanApiTest1() :void {
@@ -458,8 +447,6 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 	/**
 	 * Uses commit without options files for WPScan API skip-folders,
 	 * is configured to read it.
-	 *
-	 * @covers ::vipgoci_options_read_repo_skip_files
 	 *
 	 * @return void
 	 */
@@ -504,8 +491,6 @@ final class OptionsReadRepoSkipFilesTest extends TestCase {
 	/**
 	 * Uses commit with options files for skip-folders,
 	 * is configured to read it.
-	 *
-	 * @covers ::vipgoci_options_read_repo_skip_files
 	 *
 	 * @return void
 	 */

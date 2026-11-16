@@ -259,21 +259,23 @@ final class GitHubCommentMarkerTest extends TestCase {
 	}
 
 	/**
-	 * Only our marked inline comments, and unmarked ones by the legacy login, count
-	 * as already posted. Unmarked ones by the token-holder, which may be shared with
-	 * other workflows, others' comments and foreign markers do not.
+	 * Only comments by the token-holder's account (matched by numeric ID)
+	 * count as already posted. With a marker configured, they also need our
+	 * marker, unless unmarked and the legacy login is the token-holder.
 	 *
 	 * @return void
 	 */
-	public function testExistingCommentsKeepUnmarkedAndSkipForeignMarkers(): void {
-		vipgoci_github_token_login_set( VIPGOCI_GITHUB_ACTIONS_BOT_LOGIN );
+	public function testExistingCommentsRequireAccountIdAndMarker(): void {
 		vipgoci_github_comment_marker_set( 'actions' );
-		vipgoci_github_comment_marker_legacy_login_set( 'legacy-bot' );
 
-		$comment = function ( string $login, string $body, int $position ): array {
+		$comment = function ( string $login, int $user_id, string $body, int $position ): array {
 			return array_merge(
 				$this->item( $login, $body ),
 				array(
+					'user'               => array(
+						'login' => $login,
+						'id'    => $user_id,
+					),
 					'path'               => 'test.php',
 					'position'           => $position,
 					'original_commit_id' => 'abc',
@@ -281,14 +283,63 @@ final class GitHubCommentMarkerTest extends TestCase {
 			);
 		};
 
+		$fixtures = array(
+			'GET /user'                               => array(
+				'login'    => 'my-bot',
+				'id'       => 100,
+				'html_url' => 'https://github.com/my-bot',
+			),
+			'GET /repos/owner/repo/pulls/42/comments' => array(
+				$comment( 'my-bot', 100, "Ours\n<!-- vip-go-ci-marker:actions -->", 1 ),
+				$comment( 'my-bot', 100, 'Before marker', 2 ),
+				$comment( 'my-bot', 100, "Other instance\n<!-- vip-go-ci-marker:other -->", 3 ),
+				$comment( 'my-bot', 200, "Same login, other account\n<!-- vip-go-ci-marker:actions -->", 4 ),
+				$comment( 'some-user', 300, "Copied\n<!-- vip-go-ci-marker:actions -->", 5 ),
+			),
+		);
+
+		foreach (
+			array(
+				'legacy login is the token-holder' => array( 'my-bot', array( 'test.php:1', 'test.php:2' ) ),
+				'legacy login is another account'  => array( 'legacy-bot', array( 'test.php:1' ) ),
+			) as $case => list( $legacy_login, $expected )
+		) {
+			vipgoci_cache( VIPGOCI_CACHE_CLEAR );
+			vipgoci_github_comment_marker_legacy_login_set( $legacy_login );
+
+			$GLOBALS['vipgoci_test_http_responses'] = $fixtures;
+
+			$comments = array();
+
+			vipgoci_github_pr_reviews_comments_get( $this->options, 'abc', '2026-01-01T00:00:00Z', $comments, 42 );
+
+			$this->assertSame( $expected, array_keys( $comments ), $case );
+		}
+	}
+
+	/**
+	 * Without a numeric ID for the token-holder, as with a login set by
+	 * --github-token-login, no comment counts as already posted.
+	 *
+	 * @return void
+	 */
+	public function testExistingCommentsIgnoredWithoutAccountId(): void {
+		vipgoci_github_token_login_set( VIPGOCI_GITHUB_ACTIONS_BOT_LOGIN );
+		vipgoci_github_comment_marker_set( 'actions' );
+
 		$GLOBALS['vipgoci_test_http_responses'] = array(
 			'GET /repos/owner/repo/pulls/42/comments' => array(
-				$comment( 'github-actions[bot]', "Ours\n<!-- vip-go-ci-marker:actions -->", 1 ),
-				$comment( 'legacy-bot', 'Legacy', 2 ),
-				$comment( 'github-actions[bot]', 'Before marker', 3 ),
-				$comment( 'github-actions[bot]', "Other instance\n<!-- vip-go-ci-marker:other -->", 4 ),
-				$comment( 'some-user', 'Unmarked', 5 ),
-				$comment( 'some-user', "Copied\n<!-- vip-go-ci-marker:actions -->", 6 ),
+				array_merge(
+					$this->item( 'github-actions[bot]', "Ours\n<!-- vip-go-ci-marker:actions -->" ),
+					array(
+						'user'               => array(
+							'login' => 'github-actions[bot]',
+							'id'    => 41898282,
+						),
+						'path'               => 'test.php',
+						'original_commit_id' => 'abc',
+					)
+				),
 			),
 		);
 
@@ -296,10 +347,7 @@ final class GitHubCommentMarkerTest extends TestCase {
 
 		vipgoci_github_pr_reviews_comments_get( $this->options, 'abc', '2026-01-01T00:00:00Z', $comments, 42 );
 
-		$this->assertSame(
-			array( 'test.php:1', 'test.php:2' ),
-			array_keys( $comments )
-		);
+		$this->assertSame( array(), $comments );
 	}
 
 	/**
@@ -523,21 +571,23 @@ final class GitHubCommentMarkerTest extends TestCase {
 	/**
 	 * A comment made obsolete by a later commit, with a position but
 	 * no line, does not count as already posted: the matching finding
-	 * is still reported and counted.
+	 * is still reported.
 	 *
 	 * @return void
 	 */
 	public function testObsoleteCommentFromEarlierCommitDoesNotRemoveFinding(): void {
 		require_once __DIR__ . '/../../results.php';
 
-		vipgoci_github_token_login_set( VIPGOCI_GITHUB_ACTIONS_BOT_LOGIN );
 		vipgoci_github_comment_marker_set( 'actions' );
 
 		$comment = function ( string $commit_id, null|int $line ): array {
 			return array(
 				'id'                     => 1,
 				'pull_request_review_id' => 1,
-				'user'                   => array( 'login' => 'github-actions[bot]' ),
+				'user'                   => array(
+					'login' => 'my-bot',
+					'id'    => 100,
+				),
 				'body'                   => "**Error**: Some issue (*WordPress.Foo.Bar*).\n<!-- vip-go-ci-marker:actions -->",
 				'path'                   => 'test.php',
 				'position'               => 3,
@@ -557,6 +607,11 @@ final class GitHubCommentMarkerTest extends TestCase {
 			vipgoci_cache( VIPGOCI_CACHE_CLEAR );
 
 			$GLOBALS['vipgoci_test_http_responses'] = array(
+				'GET /user'                               => array(
+					'login'    => 'my-bot',
+					'id'       => 100,
+					'html_url' => 'https://github.com/my-bot',
+				),
 				'GET /repos/owner/repo/pulls/42/commits'  => array(
 					array( 'sha' => 'commit-a' ),
 					array( 'sha' => 'commit-b' ),
@@ -591,7 +646,9 @@ final class GitHubCommentMarkerTest extends TestCase {
 			vipgoci_results_remove_existing_github_comments( $this->options, array( $pr_item ), $results );
 
 			$this->assertCount( $expected_issues, $results['issues'][42], $case );
-			$this->assertSame( $expected_issues, $results['stats'][ VIPGOCI_STATS_PHPCS ][42]['error'], $case );
+
+			// Deduplication only affects presentation, the error is still counted.
+			$this->assertSame( 1, $results['stats'][ VIPGOCI_STATS_PHPCS ][42]['error'], $case );
 		}
 	}
 }

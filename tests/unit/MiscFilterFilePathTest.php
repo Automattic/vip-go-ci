@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_filter_file_path' )]
 final class MiscFilterFilePathTest extends TestCase {
 	/**
 	 * Setup function. Require files, etc.
@@ -30,8 +33,6 @@ final class MiscFilterFilePathTest extends TestCase {
 
 	/**
 	 * Test common usage of the function.
-	 *
-	 * @covers ::vipgoci_filter_file_path
 	 *
 	 * @return void
 	 */
@@ -63,8 +64,6 @@ final class MiscFilterFilePathTest extends TestCase {
 
 	/**
 	 * Test common usage of the function.
-	 *
-	 * @covers ::vipgoci_filter_file_path
 	 *
 	 * @return void
 	 */
@@ -99,8 +98,6 @@ final class MiscFilterFilePathTest extends TestCase {
 	/**
 	 * Test common usage of the function.
 	 *
-	 * @covers ::vipgoci_filter_file_path
-	 *
 	 * @return void
 	 */
 	public function testFilterFilePath3() :void {
@@ -131,8 +128,6 @@ final class MiscFilterFilePathTest extends TestCase {
 
 	/**
 	 * Test common usage of the function.
-	 *
-	 * @covers ::vipgoci_filter_file_path
 	 *
 	 * @return void
 	 */
@@ -189,8 +184,6 @@ final class MiscFilterFilePathTest extends TestCase {
 
 	/**
 	 * Test common usage of the function.
-	 *
-	 * @covers ::vipgoci_filter_file_path
 	 *
 	 * @return void
 	 */
@@ -261,8 +254,6 @@ final class MiscFilterFilePathTest extends TestCase {
 	/**
 	 * Test common usage of the function.
 	 *
-	 * @covers ::vipgoci_filter_file_path
-	 *
 	 * @return void
 	 */
 	public function testFilterFilePath6() :void {
@@ -293,8 +284,6 @@ final class MiscFilterFilePathTest extends TestCase {
 
 	/**
 	 * Test common usage of the function.
-	 *
-	 * @covers ::vipgoci_filter_file_path
 	 *
 	 * @return void
 	 */

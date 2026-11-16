@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_curl_headers' )]
 final class HttpFunctionsCurlHeadersTest extends TestCase {
 	/**
 	 * Setup function. Require files.
@@ -29,8 +32,6 @@ final class HttpFunctionsCurlHeadersTest extends TestCase {
 	 * Test using fairly typical HTTP headers.
 	 *
 	 * @return void
-	 *
-	 * @covers ::vipgoci_curl_headers
 	 */
 	public function testCurlHeaders1() :void {
 		$ch = curl_init();
@@ -80,8 +81,6 @@ final class HttpFunctionsCurlHeadersTest extends TestCase {
 	 * Test using HTTP/2 Status compatibility header.
 	 *
 	 * @return void
-	 *
-	 * @covers ::vipgoci_curl_headers
 	 */
 	public function testCurlHeaders2() :void {
 		$ch = curl_init();
@@ -124,8 +123,6 @@ final class HttpFunctionsCurlHeadersTest extends TestCase {
 	 * headers that are seen only once.
 	 *
 	 * @return void
-	 *
-	 * @covers ::vipgoci_curl_headers
 	 */
 	public function testCurlHeaders3() :void {
 		$ch = curl_init();

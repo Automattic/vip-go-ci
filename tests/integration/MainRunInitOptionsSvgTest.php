@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Test vipgoci_run_init_options_svg() function.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_run_init_options_svg' )]
 final class MainRunInitOptionsSvgTest extends TestCase {
 	/**
 	 * SVG scanner path.
@@ -71,8 +74,6 @@ final class MainRunInitOptionsSvgTest extends TestCase {
 
 	/**
 	 * Test defaults for SVG options.
-	 *
-	 * @covers ::vipgoci_run_init_options_svg
 	 */
 	public function testRunInitOptionsSvgDefault() :void {
 		vipgoci_run_init_options_svg(
@@ -92,8 +93,6 @@ final class MainRunInitOptionsSvgTest extends TestCase {
 
 	/**
 	 * Test customizations for SVG options.
-	 *
-	 * @covers ::vipgoci_run_init_options_svg
 	 */
 	public function testRunInitOptionsSvgCustom() :void {
 		if ( empty( $this->svg_scanner_path ) ) {

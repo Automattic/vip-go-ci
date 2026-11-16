@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_results_sort_by_severity' )]
 final class ResultsCommentsSortBySeverityTest extends TestCase {
 	/**
 	 * Options array.
@@ -178,9 +181,6 @@ final class ResultsCommentsSortBySeverityTest extends TestCase {
 		unset( $this->results );
 	}
 
-	/**
-	 * @covers ::vipgoci_results_sort_by_severity
-	 */
 	public function testSortingNotConfigured() {
 		$this->options['review-comments-sort'] = false;
 		$this->results_before = $this->results;
@@ -205,9 +205,6 @@ final class ResultsCommentsSortBySeverityTest extends TestCase {
 		);
 	}
 
-	/**
-	 * @covers ::vipgoci_results_sort_by_severity
-	 */
 	public function testSortingCorrect1() {
 		$this->options['review-comments-sort'] = true;
 

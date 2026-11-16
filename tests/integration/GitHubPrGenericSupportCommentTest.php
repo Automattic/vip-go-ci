@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_report_submit_pr_generic_support_comment' )]
 final class GitHubPrGenericSupportCommentTest extends TestCase {
 	/**
 	 * Git options.
@@ -344,8 +347,6 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 	 * Should not post generic support comments.
 	 *
 	 * @return void
-	 *
-	 * @covers ::vipgoci_report_submit_pr_generic_support_comment
 	 */
 	public function testPostingNotConfigured() :void {
 		$options_test = vipgoci_unittests_options_test(
@@ -429,8 +430,6 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 	 * but not drafts.
 	 *
 	 * @return void
-	 *
-	 * @covers ::vipgoci_report_submit_pr_generic_support_comment
 	 */
 	public function testPostingWorksAnyBranch() :void {
 		$options_test = vipgoci_unittests_options_test(
@@ -556,8 +555,6 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 	 * Should post generic support comments to specific branches.
 	 *
 	 * @return void
-	 *
-	 * @covers ::vipgoci_report_submit_pr_generic_support_comment
 	 */
 	public function testPostingWorksSpecificBranch() :void {
 		$options_test = vipgoci_unittests_options_test(
@@ -683,8 +680,6 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 	 * Posting of support comment skipped, branch invalid.
 	 *
 	 * @return void
-	 *
-	 * @covers ::vipgoci_report_submit_pr_generic_support_comment
 	 */
 	public function testPostingSkippedInvalidBranch() :void {
 		$options_test = vipgoci_unittests_options_test(
@@ -775,8 +770,6 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 	 * Posting of support comment succeeds with draft pull request.
 	 *
 	 * @return void
-	 *
-	 * @covers ::vipgoci_report_submit_pr_generic_support_comment
 	 */
 	public function testPostingWorksWithDraftPRs() :void {
 		$options_test = vipgoci_unittests_options_test(
@@ -941,8 +934,6 @@ final class GitHubPrGenericSupportCommentTest extends TestCase {
 	 * Should skip submitting support comment when label is in place.
 	 *
 	 * @return void
-	 *
-	 * @covers ::vipgoci_report_submit_pr_generic_support_comment
 	 */
 	public function testPostingWorksWithLabels() :void {
 		$test_label = 'my-random-label-1596640824';

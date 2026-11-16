@@ -9,15 +9,18 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Check if skip-large files options
  * are correctly handled.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_run_init_options_skip_large_files' )]
 final class MainRunInitOptionsSkipLargeFilesTest extends TestCase {
 	/**
 	 * Options array.
@@ -53,8 +56,6 @@ final class MainRunInitOptionsSkipLargeFilesTest extends TestCase {
 	 * Check if default --skip-large-files* options are
 	 * correctly provided.
 	 *
-	 * @covers ::vipgoci_run_init_options_skip_large_files
-	 *
 	 * @return void
 	 */
 	public function testRunInitOptionsSkipLargeFilesDefault() :void {
@@ -74,8 +75,6 @@ final class MainRunInitOptionsSkipLargeFilesTest extends TestCase {
 	/**
 	 * Check if custom --skip-large-files* options are
 	 * correctly parsed.
-	 *
-	 * @covers ::vipgoci_run_init_options_skip_large_files
 	 *
 	 * @return void
 	 */

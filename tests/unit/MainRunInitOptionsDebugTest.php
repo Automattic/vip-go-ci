@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Test if debug level is correctly set.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_run_init_options_debug' )]
 final class MainRunInitOptionsDebugTest extends TestCase {
 	/**
 	 * Options array.
@@ -58,8 +61,6 @@ final class MainRunInitOptionsDebugTest extends TestCase {
 
 	/**
 	 * Test if debug level is set correctly.
-	 *
-	 * @covers ::vipgoci_run_init_options_debug
 	 *
 	 * @return void
 	 */

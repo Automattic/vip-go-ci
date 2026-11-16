@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_options_read_repo_file' )]
 final class OptionsReadRepoFileTest extends TestCase {
 	/**
 	 * Git options.
@@ -110,8 +113,6 @@ final class OptionsReadRepoFileTest extends TestCase {
 	 * Tests integer values read from repository config files
 	 *
 	 * @return void
-	 *
-	 * @covers ::vipgoci_options_read_repo_file
 	 */
 	public function testOptionsReadRepoFileIntTest1() :void {
 		$this->options['commit'] =
@@ -164,8 +165,6 @@ final class OptionsReadRepoFileTest extends TestCase {
 	 * Tests integer values read from repository config files
 	 *
 	 * @return void
-	 *
-	 * @covers ::vipgoci_options_read_repo_file
 	 */
 	public function testOptionsReadRepoFileIntTest2() :void {
 		$this->options['commit'] =
@@ -218,8 +217,6 @@ final class OptionsReadRepoFileTest extends TestCase {
 	 * Tests integer values read from repository config files.
 	 *
 	 * @return void
-	 *
-	 * @covers ::vipgoci_options_read_repo_file
 	 */
 	public function testOptionsReadRepoFileIntTest3() :void {
 		$this->options['repo-options'] = false;
@@ -280,8 +277,6 @@ final class OptionsReadRepoFileTest extends TestCase {
 	 * Tests integer values read from repository config files.
 	 *
 	 * @return void
-	 *
-	 * @covers ::vipgoci_options_read_repo_file
 	 */
 	public function testOptionsReadRepoFileIntTest4() :void {
 		$this->options['commit'] =
@@ -334,8 +329,6 @@ final class OptionsReadRepoFileTest extends TestCase {
 	 * Tests integer values read from repository config files
 	 *
 	 * @return void
-	 *
-	 * @covers ::vipgoci_options_read_repo_file
 	 */
 	public function testOptionsReadRepoFileIntTest5() :void {
 		$this->options['commit'] =
@@ -388,8 +381,6 @@ final class OptionsReadRepoFileTest extends TestCase {
 	 * Tests integer values read from repository config files.
 	 *
 	 * @return void
-	 *
-	 * @covers ::vipgoci_options_read_repo_file
 	 */
 	public function testOptionsReadRepoFileIntTest6() :void {
 		$this->options['commit'] =
@@ -442,8 +433,6 @@ final class OptionsReadRepoFileTest extends TestCase {
 	 * Tests for boolean options in repository config files
 	 *
 	 * @return void
-	 *
-	 * @covers ::vipgoci_options_read_repo_file
 	 */
 	public function testOptionsReadRepoFileBoolTest1() :void {
 		$this->options['commit'] =
@@ -496,8 +485,6 @@ final class OptionsReadRepoFileTest extends TestCase {
 	 * Tests for boolean options in repository config files.
 	 *
 	 * @return void
-	 *
-	 * @covers ::vipgoci_options_read_repo_file
 	 */
 	public function testOptionsReadRepoFileBoolTest2() :void {
 		$this->options['commit'] =
@@ -553,8 +540,6 @@ final class OptionsReadRepoFileTest extends TestCase {
 	 * Tests for boolean options in repository config files
 	 *
 	 * @return void
-	 *
-	 * @covers ::vipgoci_options_read_repo_file
 	 */
 	public function testOptionsReadRepoFileBoolTest3() :void {
 		$this->options['commit'] =
@@ -607,8 +592,6 @@ final class OptionsReadRepoFileTest extends TestCase {
 	 * Tests for array options in repository config files
 	 *
 	 * @return void
-	 *
-	 * @covers ::vipgoci_options_read_repo_file
 	 */
 	public function testOptionsReadRepoFileArrayTest1() :void {
 		$this->options['commit'] =
@@ -674,8 +657,6 @@ final class OptionsReadRepoFileTest extends TestCase {
 	 * Tests for array options in repository config files
 	 *
 	 * @return void
-	 *
-	 * @covers ::vipgoci_options_read_repo_file
 	 */
 	public function testOptionsReadRepoFileArrayTest2() :void {
 		$this->options['commit'] =
@@ -739,8 +720,6 @@ final class OptionsReadRepoFileTest extends TestCase {
 	 * Tests against the --repo-options-allowed option.
 	 *
 	 * @return void
-	 *
-	 * @covers ::vipgoci_options_read_repo_file
 	 */
 	public function testOptionsReadRepoFileOptionAllowedTest1() :void {
 		$this->options['commit'] =

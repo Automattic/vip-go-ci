@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Check if options regarding repository are set up correctly.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_run_init_options_repo_options' )]
 final class MainRunInitOptionsRepoOptionsTest extends TestCase {
 	/**
 	 * Git options array.
@@ -96,8 +99,6 @@ final class MainRunInitOptionsRepoOptionsTest extends TestCase {
 
 	/**
 	 * Check if options regarding repository are set up correctly.
-	 *
-	 * @covers ::vipgoci_run_init_options_repo_options
 	 */
 	public function testRunInitOptionsRepoOptionsDisabled() :void {
 		$this->options['local-git-repo'] = vipgoci_unittests_setup_git_repo(
@@ -147,8 +148,6 @@ final class MainRunInitOptionsRepoOptionsTest extends TestCase {
 
 	/**
 	 * Test if options regarding repositories are processed correctly.
-	 *
-	 * @covers ::vipgoci_run_init_options_repo_options
 	 */
 	public function testRunInitOptionsRepoOptionsEnabledAndAllowed() :void {
 		$this->options['commit'] = $this->options['commit-test-options-read-repo-file-with-file-2'];
@@ -200,8 +199,6 @@ final class MainRunInitOptionsRepoOptionsTest extends TestCase {
 
 	/**
 	 * Test if options regarding repositories are processed correctly.
-	 *
-	 * @covers ::vipgoci_run_init_options_repo_options
 	 */
 	public function testRunInitOptionsRepoOptionsEnabledAndNotAllowed() :void {
 		$this->options['commit'] = $this->options['commit-test-options-read-repo-file-with-file-2'];

@@ -18,7 +18,7 @@ declare(strict_types=1);
  * via the command-line.
  *
  * @param array $options                 Options needed.
- * @param array $auto_approved_files_arr Array of auto-approved files.
+ * @param array $auto_approved_files_arr Auto-approved reasons keyed by PR number and filename.
  */
 function vipgoci_ap_file_types(
 	array $options,
@@ -55,33 +55,39 @@ function vipgoci_ap_file_types(
 	 * -- and auto-approve them if their file-type
 	 * is auto-approvable.
 	 */
-	foreach ( $pr_item_files_changed['all'] as $pr_diff_file_name ) {
-		/*
-		 * If the file is already in the array
-		 * of approved files, do not do anything.
-		 */
-		if ( isset(
-			$auto_approved_files_arr[ $pr_diff_file_name ]
-		) ) {
+	foreach ( $pr_item_files_changed as $pr_number => $pr_files_changed ) {
+		if ( 'all' === $pr_number ) {
 			continue;
 		}
 
-		$pr_diff_file_extension = vipgoci_file_extension_get(
-			$pr_diff_file_name
-		);
+		foreach ( $pr_files_changed as $pr_diff_file_name ) {
+			/*
+			 * If the file is already in the array
+			 * of approved files, do not do anything.
+			 */
+			if ( isset(
+				$auto_approved_files_arr[ $pr_number ][ $pr_diff_file_name ]
+			) ) {
+				continue;
+			}
 
-		/*
-		 * Check if the extension of the file
-		 * is in a list of auto-approvable
-		 * file extensions.
-		 */
-		if ( in_array(
-			$pr_diff_file_extension,
-			$options['autoapprove-filetypes'],
-			true
-		) ) {
-			$auto_approved_files_arr[ $pr_diff_file_name ]
-				= 'autoapprove-filetypes';
+			$pr_diff_file_extension = vipgoci_file_extension_get(
+				$pr_diff_file_name
+			);
+
+			/*
+			 * Check if the extension of the file
+			 * is in a list of auto-approvable
+			 * file extensions.
+			 */
+			if ( in_array(
+				$pr_diff_file_extension,
+				$options['autoapprove-filetypes'],
+				true
+			) ) {
+				$auto_approved_files_arr[ $pr_number ][ $pr_diff_file_name ]
+					= 'autoapprove-filetypes';
+			}
 		}
 	}
 

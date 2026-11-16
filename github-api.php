@@ -330,7 +330,7 @@ function vipgoci_github_fetch_commit_info(
 }
 
 /**
- * Fetch all comments from GitHub API for the
+ * Fetch the authenticated account's comments from GitHub API for the
  * repository and commit specified, will fetch only
  * comments made after certain timestamp and that are
  * associated with a pull request.
@@ -458,25 +458,29 @@ function vipgoci_github_pr_reviews_comments_get(
 		vipgoci_cache( $cached_id, $prs_comments_cache );
 	}
 
-	/*
-	 * When a comment marker is configured, only keep comments
-	 * submitted by us, so that feedback from other instances or
-	 * other users does not prevent ours from being posted, nor
-	 * remove findings. Unmarked comments by the token-holder are
-	 * not kept, as the login may be shared with other workflows.
-	 */
-	$token_holder_login = null;
+	$authenticated_user = vipgoci_github_authenticated_user_get( $options['token'] );
+	$authenticated_id   = $authenticated_user->id ?? null;
 
-	if ( '' !== vipgoci_github_comment_marker_get() ) {
-		$token_holder_login = vipgoci_github_authenticated_user_get(
-			$options['token']
-		)->login;
+	// Unknown identity must never authorize suppression of a scan finding.
+	if ( ! is_int( $authenticated_id ) || $authenticated_id <= 0 ) {
+		return;
 	}
 
+	/*
+	 * When a comment marker is configured, also require our
+	 * marker, as the account may be shared with other
+	 * workflows or instances of vip-go-ci.
+	 */
+	$marker_configured = ( '' !== vipgoci_github_comment_marker_get() );
+
 	foreach ( $prs_comments_cache as $pr_comment ) {
+		if ( ( $pr_comment->user->id ?? null ) !== $authenticated_id ) {
+			continue;
+		}
+
 		if (
-			( null !== $token_holder_login ) &&
-			( ! vipgoci_github_item_submitted_by_us( $pr_comment, $token_holder_login ) )
+			( true === $marker_configured ) &&
+			( ! vipgoci_github_item_submitted_by_us( $pr_comment, $authenticated_user->login ) )
 		) {
 			continue;
 		}

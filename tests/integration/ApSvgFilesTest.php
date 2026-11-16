@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_ap_svg_files' )]
 final class ApSvgFilesTest extends TestCase {
 	/**
 	 * Git options.
@@ -147,8 +150,6 @@ final class ApSvgFilesTest extends TestCase {
 
 	/**
 	 * Test common usage of the function.
-	 *
-	 * @covers ::vipgoci_ap_svg_files
 	 */
 	public function testApSvgFiles1() :void {
 		$options_test = vipgoci_unittests_options_test(
@@ -196,7 +197,7 @@ final class ApSvgFilesTest extends TestCase {
 				'auto-approvable-1.svg' => 'ap-svg-files',
 				'auto-approvable-2.svg' => 'ap-svg-files',
 			),
-			$auto_approved_files_arr
+			$this->approvalReasonsForFixture( $auto_approved_files_arr )
 		);
 
 		unset( $this->options['svg-checks'] );
@@ -206,8 +207,6 @@ final class ApSvgFilesTest extends TestCase {
 	 * Test auto-approvals of SVG files that
 	 * have been renamed, removed, or had their
 	 * permissions changed.
-	 *
-	 * @covers ::vipgoci_ap_svg_files
 	 */
 	public function testApSvgFiles2() :void {
 		$options_test = vipgoci_unittests_options_test(
@@ -258,9 +257,30 @@ final class ApSvgFilesTest extends TestCase {
 				'auto-approvable3.svg'          => 'ap-svg-files',
 				'auto-approvable4.svg'          => 'ap-svg-files',
 			),
-			$auto_approved_files_arr
+			$this->approvalReasonsForFixture( $auto_approved_files_arr )
 		);
 
 		unset( $this->options['svg-checks'] );
 	}
+	/**
+	 * Verify the fixture PR owns the approval reasons.
+	 *
+	 * @param array $approved Approval reasons keyed by PR and filename.
+	 * @return array Reasons for the fixture PR.
+	 */
+	private function approvalReasonsForFixture( array $approved ): array {
+		$prs = vipgoci_github_prs_implicated(
+			$this->options['repo-owner'],
+			$this->options['repo-name'],
+			$this->options['commit'],
+			$this->options['token'],
+			$this->options['branches-ignore'],
+			$this->options['skip-draft-prs']
+		);
+		$this->assertCount( 1, $prs );
+		$pr = reset( $prs );
+		$this->assertSame( array( $pr->number ), array_keys( $approved ) );
+		return $approved[ $pr->number ];
+	}
+
 }

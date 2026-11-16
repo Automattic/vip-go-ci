@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_results_approved_files_comments_remove' )]
 final class ResultsApprovedFilesCommentsRemoveTest extends TestCase {
 	/**
 	 * Setup function. Require file.
@@ -132,8 +135,6 @@ final class ResultsApprovedFilesCommentsRemoveTest extends TestCase {
 	 * Test function and compare result with expected results.
 	 *
 	 * @return void
-	 *
-	 * @covers ::vipgoci_results_approved_files_comments_remove
 	 */
 	public function testRemoveCommentFromResults() :void {
 		$results_altered = $this->results_arr;
@@ -143,9 +144,11 @@ final class ResultsApprovedFilesCommentsRemoveTest extends TestCase {
 		 * do not have any specific meaning.
 		 */
 		$auto_approved_files_arr = array(
-			'php-file-1.php' => 'autoapprove-approved-php-file', // This file should be removed from results.
-			'theme-1.css'    => 'autoapprove-filetypes', // This one not.
-			'plugin-1.php'   => 'autoapprove-approved-php-file', // And not this one either.
+			32 => array(
+				'php-file-1.php' => 'autoapprove-approved-php-file', // This file should be removed from results.
+				'theme-1.css'    => 'autoapprove-filetypes', // This one not.
+				'plugin-1.php'   => 'autoapprove-approved-php-file', // And not this one either.
+			),
 		);
 
 		/*

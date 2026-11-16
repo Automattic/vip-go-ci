@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_github_pr_review_events_get' )]
 final class GitHubPrReviewEventsGetTest extends TestCase {
 	/**
 	 * Options array.
@@ -73,9 +76,6 @@ final class GitHubPrReviewEventsGetTest extends TestCase {
 		unset( $this->options );
 	}
 
-	/**
-	 * @covers ::vipgoci_github_pr_review_events_get
-	 */
 	public function testGitHubPrReviewEventsGet_no_filters() {
 		vipgoci_unittests_output_suppress();
 
@@ -139,9 +139,6 @@ final class GitHubPrReviewEventsGetTest extends TestCase {
 		);
 	}
 
-	/**
-	 * @covers ::vipgoci_github_pr_review_events_get
-	 */
 	public function testGitHubPrReviewEventsGet_with_filters() {
 		vipgoci_unittests_output_suppress();
 
@@ -227,9 +224,6 @@ final class GitHubPrReviewEventsGetTest extends TestCase {
 		);
 	}
 
-	/**
-	 * @covers ::vipgoci_github_pr_review_events_get
-	 */
 	public function testGitHubPrReviewEventsGet_with_review_ids_only() {
 		vipgoci_unittests_output_suppress();
 

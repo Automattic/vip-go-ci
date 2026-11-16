@@ -9,15 +9,18 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Check if environmental options are handled
  * correctly.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_run_env_options_handle' )]
 final class MainRunEnvOptionsHandleTest extends TestCase {
 	/**
 	 * Options array.
@@ -79,8 +82,6 @@ final class MainRunEnvOptionsHandleTest extends TestCase {
 	/**
 	 * Check if environmental options are handled
 	 * correctly.
-	 *
-	 * @covers ::vipgoci_run_env_options_handle
 	 *
 	 * @return void
 	 */

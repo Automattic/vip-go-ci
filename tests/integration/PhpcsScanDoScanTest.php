@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_phpcs_do_scan' )]
 final class PhpcsScanDoScanTest extends TestCase {
 	var $options_phpcs = array(
 		'phpcs-path'		=> null,
@@ -78,9 +81,6 @@ final class PhpcsScanDoScanTest extends TestCase {
 		unset( $this->options_phpcs );
 	}
 
-	/**
-	 * @covers ::vipgoci_phpcs_do_scan
-	 */
 	public function testDoScanTest1() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options_phpcs,
@@ -136,8 +136,6 @@ final class PhpcsScanDoScanTest extends TestCase {
 	/**
 	 * Scan using a custom PHPCS XML standard file
 	 * by specifying sniffs to include.
-	 *
-	 * @covers ::vipgoci_phpcs_do_scan
 	 */
 	public function testDoScanTest2() {
 		$options_test = vipgoci_unittests_options_test(
@@ -232,8 +230,6 @@ final class PhpcsScanDoScanTest extends TestCase {
 
 	/**
 	 * Scan using PHPCS but exclude certain sniffs.
-	 *
-	 * @covers ::vipgoci_phpcs_do_scan
 	 */
 	public function testDoScanTest3() {
 		$options_test = vipgoci_unittests_options_test(
@@ -289,8 +285,6 @@ final class PhpcsScanDoScanTest extends TestCase {
 	/**
 	 * Scan using PHPCS, and both include and exclude certain
 	 * sniffs.
-	 *
-	 * @covers ::vipgoci_phpcs_do_scan
 	 */
 	public function testDoScanTest4() {
 		$options_test = vipgoci_unittests_options_test(

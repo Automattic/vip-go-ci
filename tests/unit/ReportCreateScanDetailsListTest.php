@@ -10,14 +10,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_report_create_scan_details_list' )]
 final class ReportCreateScanDetailsListTest extends TestCase {
 	/**
 	 * Setup function.
@@ -31,8 +34,6 @@ final class ReportCreateScanDetailsListTest extends TestCase {
 
 	/**
 	 * Test number being provided for formatting.
-	 *
-	 * @covers ::vipgoci_report_create_scan_details_list
 	 *
 	 * @return void
 	 */
@@ -53,8 +54,6 @@ final class ReportCreateScanDetailsListTest extends TestCase {
 	/**
 	 * Test boolean being provided for formatting.
 	 *
-	 * @covers ::vipgoci_report_create_scan_details_list
-	 *
 	 * @return void
 	 */
 	public function testDetailsListBool(): void {
@@ -74,8 +73,6 @@ final class ReportCreateScanDetailsListTest extends TestCase {
 	/**
 	 * Test empty array being provided for formatting.
 	 *
-	 * @covers ::vipgoci_report_create_scan_details_list
-	 *
 	 * @return void
 	 */
 	public function testDetailsListArray1(): void {
@@ -94,8 +91,6 @@ final class ReportCreateScanDetailsListTest extends TestCase {
 
 	/**
 	 * Test array with data being provided for formatting.
-	 *
-	 * @covers ::vipgoci_report_create_scan_details_list
 	 *
 	 * @return void
 	 */
@@ -126,8 +121,6 @@ final class ReportCreateScanDetailsListTest extends TestCase {
 
 	/**
 	 * Test array with data being provided for formatting.
-	 *
-	 * @covers ::vipgoci_report_create_scan_details_list
 	 *
 	 * @return void
 	 */

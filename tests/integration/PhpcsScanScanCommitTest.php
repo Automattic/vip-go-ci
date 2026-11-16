@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_phpcs_scan_commit' )]
 final class PhpcsScanScanCommitTest extends TestCase {
 	/**
 	 * Options array.
@@ -129,9 +132,6 @@ final class PhpcsScanScanCommitTest extends TestCase {
 		unset( $this->options );
 	}
 
-	/**
-	 * @covers ::vipgoci_phpcs_scan_commit
-	 */
 	public function testDoScanTest1() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
@@ -252,9 +252,6 @@ final class PhpcsScanScanCommitTest extends TestCase {
 		);
 	}
 
-	/**
-	 * @covers ::vipgoci_phpcs_scan_commit
-	 */
 	public function testDoScanTest2() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
@@ -400,9 +397,6 @@ final class PhpcsScanScanCommitTest extends TestCase {
 		);
 	}
 
-	/**
-	 * @covers ::vipgoci_phpcs_scan_commit
-	 */
 	public function testDoScanTest3() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
@@ -563,7 +557,6 @@ final class PhpcsScanScanCommitTest extends TestCase {
 
 
 	/**
-	 * @covers ::vipgoci_phpcs_scan_commit
 	 *
 	 * Test if --phpcs-sniffs-exclude is used
 	 * while doing PHPCS scanning.
@@ -691,8 +684,6 @@ final class PhpcsScanScanCommitTest extends TestCase {
 
 	/**
 	 * Tests when PHPCS uses basepath "." in its configuration.
-	 *
-	 * @covers ::vipgoci_phpcs_scan_commit
 	 */
 	public function testDoScanTest5() {
 		$options_test = vipgoci_unittests_options_test(
@@ -909,7 +900,6 @@ final class PhpcsScanScanCommitTest extends TestCase {
 	}
 
 	/**
-	 * @covers ::vipgoci_phpcs_scan_commit
 	 * Should skip files with more than 15000 lines
 	 * Expected to skip 1 file
 	 * skip-large-files = true
@@ -987,7 +977,6 @@ final class PhpcsScanScanCommitTest extends TestCase {
 	}
 
 	/**
-	 * @covers ::vipgoci_phpcs_scan_commit
 	 * Should skip files with more than 15 and can otherwise
 	 * Expected to scan 1 file normally and skip 1 file
 	 * tests1/myfile1.php should be skipped
@@ -1063,7 +1052,6 @@ final class PhpcsScanScanCommitTest extends TestCase {
 	}
 
 	/**
-	 * @covers ::vipgoci_phpcs_scan_commit
 	 * Should scan all the files
 	 * Expected to scan 2 files normally
 	 * skip-large-files = false

@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_directory_path_get_dir_and_include_base' )]
 final class MiscDirectoryPathMakeRelativeToBaseTest extends TestCase {
 	/**
 	 * Setup function. Require file.
@@ -29,8 +32,6 @@ final class MiscDirectoryPathMakeRelativeToBaseTest extends TestCase {
 
 	/**
 	 * Test various usage cases of the function.
-	 *
-	 * @covers ::vipgoci_directory_path_get_dir_and_include_base
 	 *
 	 * @return void
 	 */

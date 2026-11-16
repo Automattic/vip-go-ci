@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_github_status_create' )]
 final class GitHubStatusCreateTest extends TestCase {
 	/**
 	 * Options array.
@@ -100,7 +103,9 @@ final class GitHubStatusCreateTest extends TestCase {
 	 * @return void
 	 */
 	private function setBuildStatus() :void {
-		sleep( 2 ); // GitHub API requirement.
+		if ( 'true' === getenv( 'VIPGOCI_TESTING_LIVE_API' ) ) {
+			sleep( 2 );
+		} // GitHub API requirement.
 
 		$github_url =
 			VIPGOCI_GITHUB_BASE_URL . '/' .
@@ -130,7 +135,9 @@ final class GitHubStatusCreateTest extends TestCase {
 	 * @return array
 	 */
 	private function getCurrentBuildStatus(): ?array {
-		sleep( 2 );
+		if ( 'true' === getenv( 'VIPGOCI_TESTING_LIVE_API' ) ) {
+			sleep( 2 );
+		}
 
 		$github_url =
 			VIPGOCI_GITHUB_BASE_URL . '/' .
@@ -170,8 +177,6 @@ final class GitHubStatusCreateTest extends TestCase {
 
 	/**
 	 * Test common usage of the function.
-	 *
-	 * @covers ::vipgoci_github_status_create
 	 *
 	 * @return void
 	 */

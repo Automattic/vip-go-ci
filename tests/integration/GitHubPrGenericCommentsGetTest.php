@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_github_pr_generic_comments_get' )]
 final class GitHubPrGenericCommentsGetTest extends TestCase {
 	/**
 	 * Options array.
@@ -73,9 +76,6 @@ final class GitHubPrGenericCommentsGetTest extends TestCase {
 		unset( $this->options );
 	}
 
-	/**
-	 * @covers ::vipgoci_github_pr_generic_comments_get
-	 */
 	public function testGitHubPrGenericCommentsGet1() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,

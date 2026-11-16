@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Test if exit status is correctly determined.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_exit_status' )]
 final class MainExitStatusTest extends TestCase {
 	/**
 	 * Setup function. Require files, etc.
@@ -30,8 +33,6 @@ final class MainExitStatusTest extends TestCase {
 
 	/**
 	 * Test if exit status is correctly determined.
-	 *
-	 * @covers ::vipgoci_exit_status
 	 *
 	 * @return void
 	 */
@@ -57,8 +58,6 @@ final class MainExitStatusTest extends TestCase {
 	/**
 	 * Test if exit status is correctly determined.
 	 *
-	 * @covers ::vipgoci_exit_status
-	 *
 	 * @return void
 	 */
 	public function testExitStatus2() :void {
@@ -82,8 +81,6 @@ final class MainExitStatusTest extends TestCase {
 
 	/**
 	 * Test if exit status is correctly determined.
-	 *
-	 * @covers ::vipgoci_exit_status
 	 *
 	 * @return void
 	 */

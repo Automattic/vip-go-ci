@@ -12,14 +12,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_lint_scan_multiple_files' )]
 final class LintScanMultipleFilesTest extends TestCase {
 	/**
 	 * Variable for options.
@@ -153,8 +156,6 @@ final class LintScanMultipleFilesTest extends TestCase {
 	 * PHP lint file with syntax errors.
 	 *
 	 * @return void
-	 *
-	 * @covers ::vipgoci_lint_scan_multiple_files
 	 */
 	public function testLintDoScan1() :void {
 

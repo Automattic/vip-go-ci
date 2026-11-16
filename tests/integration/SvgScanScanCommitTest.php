@@ -9,6 +9,9 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -23,10 +26,10 @@ use PHPUnit\Framework\TestCase;
  * 
  * Here we only test if SVG scanning does work 
  * as expected.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_phpcs_scan_commit' )]
 final class SvgScanScanCommitTest extends TestCase {
 	/**
 	 * Options array.
@@ -119,8 +122,6 @@ final class SvgScanScanCommitTest extends TestCase {
 
 	/**
 	 * Test SVG scanning of whole commit.
-	 *
-	 * @covers ::vipgoci_phpcs_scan_commit
 	 */
 	public function testDoScanTest1() {
 		$options_test = vipgoci_unittests_options_test(

@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_github_api_version_header_maybe_add' )]
 final class GitHubVersionHeaderMaybeAddTest extends TestCase {
 	/**
 	 * Setup function. Require file.
@@ -30,8 +33,6 @@ final class GitHubVersionHeaderMaybeAddTest extends TestCase {
 
 	/**
 	 * Test condition when header should not be added to array.
-	 *
-	 * @covers ::vipgoci_github_api_version_header_maybe_add
 	 *
 	 * @return void
 	 */
@@ -51,8 +52,6 @@ final class GitHubVersionHeaderMaybeAddTest extends TestCase {
 
 	/**
 	 * Test condition when header should be added to array.
-	 *
-	 * @covers ::vipgoci_github_api_version_header_maybe_add
 	 *
 	 * @return void
 	 */

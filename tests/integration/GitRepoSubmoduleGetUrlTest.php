@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_gitrepo_submodule_get_url' )]
 final class GitRepoSubmoduleGetUrlTest extends TestCase {
 	/**
 	 * Options array.
@@ -66,9 +69,6 @@ final class GitRepoSubmoduleGetUrlTest extends TestCase {
 		unset( $this->options_git_repo_tests );
 	}
 
-	/**
-	 * @covers ::vipgoci_gitrepo_submodule_get_url
-	 */
 	public function testGetSubmodulesUrl1() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,

@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_github_org_teams_get' )]
 final class GitHubOrgTeamsTest extends TestCase {
 	/**
 	 * Options array
@@ -58,8 +61,6 @@ final class GitHubOrgTeamsTest extends TestCase {
 
 	/**
 	 * Test common usage of the function.
-	 *
-	 * @covers ::vipgoci_github_org_teams_get
 	 *
 	 * @return void
 	 */
@@ -141,8 +142,6 @@ final class GitHubOrgTeamsTest extends TestCase {
 
 	/**
 	 * Test common usage of the function.
-	 *
-	 * @covers ::vipgoci_github_org_teams_get
 	 *
 	 * @return void
 	 */
@@ -228,8 +227,6 @@ final class GitHubOrgTeamsTest extends TestCase {
 
 	/**
 	 * Test common usage of the function.
-	 *
-	 * @covers ::vipgoci_github_org_teams_get
 	 *
 	 * @return void
 	 */

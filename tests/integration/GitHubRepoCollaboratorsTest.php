@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_github_repo_collaborators_get' )]
 final class GitHubRepoCollaboratorsTest extends TestCase {
 	/**
 	 * Options array.
@@ -53,9 +56,6 @@ final class GitHubRepoCollaboratorsTest extends TestCase {
 		unset( $this->options_git );
 	}
 
-	/**
-	 * @covers ::vipgoci_github_repo_collaborators_get
-	 */
 	public function testRepocollaboratorsAll() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
@@ -102,9 +102,6 @@ final class GitHubRepoCollaboratorsTest extends TestCase {
 		);
 	}
 
-	/**
-	 * @covers ::vipgoci_github_repo_collaborators_get
-	 */
 	public function testRepocollaboratorsDirect() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,

@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_repo_meta_api_data_fetch' )]
 final class RepoMetaApiRepoMetaApiDataFetchTest extends TestCase {
 	/**
 	 * Options for repo meta API.
@@ -81,8 +84,6 @@ final class RepoMetaApiRepoMetaApiDataFetchTest extends TestCase {
 	 * Test common usage of the function.
 	 *
 	 * @return void
-	 *
-	 * @covers ::vipgoci_repo_meta_api_data_fetch
 	 */
 	public function testMetaApiDataFetch() :void {
 		$options_test = vipgoci_unittests_options_test(

@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Tests if GitHub token related options are processed correctly.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_run_init_github_token_option' )]
 final class MainRunInitGithubTokenOptionTest extends TestCase {
 	/**
 	 * Options array.
@@ -64,8 +67,6 @@ final class MainRunInitGithubTokenOptionTest extends TestCase {
 
 	/**
 	 * Uses valid GitHub token to test if options are correctly processed.
-	 *
-	 * @covers ::vipgoci_run_init_github_token_option
 	 *
 	 * @return void
 	 */
@@ -115,8 +116,6 @@ final class MainRunInitGithubTokenOptionTest extends TestCase {
 
 	/**
 	 * Uses invalid GitHub token to test if options are correctly processed.
-	 *
-	 * @covers ::vipgoci_run_init_github_token_option
 	 *
 	 * @return void
 	 */

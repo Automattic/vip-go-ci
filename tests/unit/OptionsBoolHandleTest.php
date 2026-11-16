@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_option_bool_handle' )]
 final class OptionsBoolHandleTest extends TestCase {
 	/**
 	 * Setup function. Require files.
@@ -31,8 +34,6 @@ final class OptionsBoolHandleTest extends TestCase {
 	 * Test common usage, no option value specified.
 	 *
 	 * @return void
-	 *
-	 * @covers ::vipgoci_option_bool_handle
 	 */
 	public function testOptionsBoolHandle1() :void {
 		$options = array();
@@ -53,8 +54,6 @@ final class OptionsBoolHandleTest extends TestCase {
 	 * Test usage with option value specified.
 	 *
 	 * @return void
-	 *
-	 * @covers ::vipgoci_option_bool_handle
 	 */
 	public function testOptionsBoolHandle2() :void {
 		$options = array(
@@ -77,8 +76,6 @@ final class OptionsBoolHandleTest extends TestCase {
 	 * Test usage with option value specified.
 	 *
 	 * @return void
-	 *
-	 * @covers ::vipgoci_option_bool_handle
 	 */
 	public function testOptionsBoolHandle3() :void {
 		$options = array(

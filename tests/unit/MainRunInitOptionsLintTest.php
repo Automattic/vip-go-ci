@@ -9,15 +9,18 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Check if options relating to linting
  * are correctly parsed and set.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_run_init_options_lint' )]
 final class MainRunInitOptionsLintTest extends TestCase {
 	/**
 	 * Options array.
@@ -130,8 +133,6 @@ final class MainRunInitOptionsLintTest extends TestCase {
 	 * Check if options relating to linting
 	 * are correctly parsed and set.
 	 *
-	 * @covers ::vipgoci_run_init_options_lint
-	 *
 	 * @return void
 	 */
 	public function testRunInitOptionsLintDefault() :void {
@@ -160,8 +161,6 @@ final class MainRunInitOptionsLintTest extends TestCase {
 	/**
 	 * Check if options relating to linting
 	 * are correctly parsed and set.
-	 *
-	 * @covers ::vipgoci_run_init_options_lint
 	 *
 	 * @return void
 	 */

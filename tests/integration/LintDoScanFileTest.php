@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_lint_do_scan_file' )]
 final class LintDoScanFileTest extends TestCase {
 	/**
 	 * Options variable for the tests.
@@ -52,8 +55,6 @@ final class LintDoScanFileTest extends TestCase {
 
 	/**
 	 * Try to PHP lint, but there are errors with running the linter.
-	 *
-	 * @covers ::vipgoci_lint_do_scan_file
 	 */
 	public function testLintDoScan1() {
 		$options_test = vipgoci_unittests_options_test(
@@ -88,8 +89,6 @@ final class LintDoScanFileTest extends TestCase {
 
 	/**
 	 * Test PHP linting when there are no issues.
-	 *
-	 * @covers ::vipgoci_lint_do_scan_file
 	 */
 	public function testLintDoScan2() {
 		$options_test = vipgoci_unittests_options_test(
@@ -129,8 +128,6 @@ final class LintDoScanFileTest extends TestCase {
 
 	/**
 	 * Test PHP linting when there are issues.
-	 *
-	 * @covers ::vipgoci_lint_do_scan_file
 	 */
 	public function testLintDoScan3() {
 		$options_test = vipgoci_unittests_options_test(

@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Check if Pixel API default options are correctly provided.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_run_init_options_pixel_api' )]
 final class MainRunInitOptionsPixelApiTest extends TestCase {
 	/**
 	 * Options array.
@@ -50,8 +53,6 @@ final class MainRunInitOptionsPixelApiTest extends TestCase {
 	/**
 	 * Check if Pixel API default options are correctly provided.
 	 *
-	 * @covers ::vipgoci_run_init_options_pixel_api
-	 *
 	 * @return void
 	 */
 	public function testRunInitOptionsPixelApiDefault() :void {
@@ -69,8 +70,6 @@ final class MainRunInitOptionsPixelApiTest extends TestCase {
 
 	/**
 	 * Check if Pixel API options are correctly parsed.
-	 *
-	 * @covers ::vipgoci_run_init_options_pixel_api
 	 *
 	 * @return void
 	 */

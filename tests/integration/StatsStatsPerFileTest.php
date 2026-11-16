@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_stats_per_file' )]
 final class StatsStatsPerFileTest extends TestCase {
 	/**
 	 * Options for git.
@@ -102,8 +105,6 @@ final class StatsStatsPerFileTest extends TestCase {
 	 * Test if statistics collection for file works correctly.
 	 *
 	 * @return void
-	 *
-	 * @covers ::vipgoci_stats_per_file
 	 */
 	public function testStatsPerFile1() :void {
 		$options_test = vipgoci_unittests_options_test(

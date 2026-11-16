@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_wpcore_misc_get_addon_data_and_slugs_for_directory' )]
 final class WpCoreMiscGetAddonDataAndSlugsForDirectoryTest extends TestCase {
 	/**
 	 * Temporary directory.
@@ -102,8 +105,6 @@ final class WpCoreMiscGetAddonDataAndSlugsForDirectoryTest extends TestCase {
 
 	/**
 	 * Test common usage of the function. Scans subdirectories.
-	 *
-	 * @covers ::vipgoci_wpcore_misc_get_addon_data_and_slugs_for_directory
 	 *
 	 * @return void
 	 */
@@ -294,8 +295,6 @@ final class WpCoreMiscGetAddonDataAndSlugsForDirectoryTest extends TestCase {
 
 	/**
 	 * Test common usage of the function. Does not scan subdirectories.
-	 *
-	 * @covers ::vipgoci_wpcore_misc_get_addon_data_and_slugs_for_directory
 	 *
 	 * @return void
 	 */

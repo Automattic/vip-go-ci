@@ -9,6 +9,9 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 require_once __DIR__ . '/GitDiffsFetchUnfilteredTrait.php';
@@ -18,10 +21,10 @@ require_once __DIR__ . '/GitDiffsFetchUnfilteredTrait.php';
  *
  * Note that these two tests share the same data, via
  * the GitDiffsFetchUnfilteredTrait.php file.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_gitrepo_diffs_fetch_unfiltered' )]
 final class GitRepoDiffsFetchUnfilteredTest extends TestCase {
 	/**
 	 * Options array.
@@ -100,8 +103,6 @@ final class GitRepoDiffsFetchUnfilteredTest extends TestCase {
 
 	/**
 	 * Check diff between commits.
-	 *
-	 * @covers ::vipgoci_gitrepo_diffs_fetch_unfiltered
 	 */
 	public function testGitRepoDiffsFetch1() {
 		$options_test = vipgoci_unittests_options_test(
@@ -146,8 +147,6 @@ final class GitRepoDiffsFetchUnfilteredTest extends TestCase {
 
 	/**
 	 * Check diff between commits.
-	 *
-	 * @covers ::vipgoci_gitrepo_diffs_fetch_unfiltered
 	 */
 	public function testGitRepoDiffsFetch2() {
 		$options_test = vipgoci_unittests_options_test(
@@ -192,8 +191,6 @@ final class GitRepoDiffsFetchUnfilteredTest extends TestCase {
 
 	/**
 	 * Check diff between commits.
-	 *
-	 * @covers ::vipgoci_gitrepo_diffs_fetch_unfiltered
 	 */
 	public function testGitRepoDiffsFetch3() {
 		$options_test = vipgoci_unittests_options_test(
@@ -238,8 +235,6 @@ final class GitRepoDiffsFetchUnfilteredTest extends TestCase {
 
 	/**
 	 * Check diff between commits.
-	 *
-	 * @covers ::vipgoci_gitrepo_diffs_fetch_unfiltered
 	 */
 	public function testGitRepoDiffsFetch4() {
 		$options_test = vipgoci_unittests_options_test(
@@ -284,8 +279,6 @@ final class GitRepoDiffsFetchUnfilteredTest extends TestCase {
 
 	/**
 	 * Check diff between commits.
-	 *
-	 * @covers ::vipgoci_gitrepo_diffs_fetch_unfiltered
 	 */
 	public function testGitRepoDiffsFetch5() {
 		$options_test = vipgoci_unittests_options_test(
@@ -330,8 +323,6 @@ final class GitRepoDiffsFetchUnfilteredTest extends TestCase {
 
 	/**
 	 * Check diff between commits.
-	 *
-	 * @covers ::vipgoci_gitrepo_diffs_fetch_unfiltered
 	 */
 	public function testGitRepoDiffsFetch6() {
 		$options_test = vipgoci_unittests_options_test(
@@ -394,8 +385,6 @@ final class GitRepoDiffsFetchUnfilteredTest extends TestCase {
 
 	/**
 	 * Check diff between commits.
-	 *
-	 * @covers ::vipgoci_gitrepo_diffs_fetch_unfiltered
 	 */
 	public function testGitRepoDiffsFetch7() {
 		$options_test = vipgoci_unittests_options_test(

@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Check if WPScan API related options are handled correctly.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_run_init_options_wpscan' )]
 final class MainRunInitOptionsWpscanTest extends TestCase {
 	/**
 	 * Options array.
@@ -50,8 +53,6 @@ final class MainRunInitOptionsWpscanTest extends TestCase {
 	/**
 	 * Check if WPScan API default options are correctly
 	 * parsed and provided.
-	 *
-	 * @covers ::vipgoci_run_init_options_wpscan
 	 *
 	 * @return void
 	 */
@@ -97,8 +98,6 @@ final class MainRunInitOptionsWpscanTest extends TestCase {
 	/**
 	 * Check if WPScan API custom options are correctly
 	 * parsed and provided.
-	 *
-	 * @covers ::vipgoci_run_init_options_wpscan
 	 *
 	 * @return void
 	 */

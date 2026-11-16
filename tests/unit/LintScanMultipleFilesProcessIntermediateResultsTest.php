@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_lint_scan_multiple_files_process_intermediate_results' )]
 final class LintScanMultipleFilesProcessIntermediateResultsTest extends TestCase {
 	/**
 	 * Setup function. Require files, etc.
@@ -30,8 +33,6 @@ final class LintScanMultipleFilesProcessIntermediateResultsTest extends TestCase
 	/**
 	 * Call the function with intermediary results for processing.
 	 * Check if the results match what is expected.
-	 *
-	 * @covers ::vipgoci_lint_scan_multiple_files_process_intermediate_results
 	 *
 	 * @return void
 	 */

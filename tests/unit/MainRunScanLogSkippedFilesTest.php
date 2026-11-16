@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Checks if it is logged when a file is skipped.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_run_scan_log_skipped_files' )]
 final class MainRunScanLogSkippedFilesTest extends TestCase {
 	/**
 	 * Options array.
@@ -94,8 +97,6 @@ final class MainRunScanLogSkippedFilesTest extends TestCase {
 	/**
 	 * Check if it is logged when a file is skipped.
 	 *
-	 * @covers ::vipgoci_run_scan_log_skipped_files
-	 *
 	 * @return void
 	 */
 	public function testRunScanLogSkippedFilesNoFound() :void {
@@ -120,8 +121,6 @@ final class MainRunScanLogSkippedFilesTest extends TestCase {
 
 	/**
 	 * Check if it is not logged when a file is not skipped.
-	 *
-	 * @covers ::vipgoci_run_scan_log_skipped_files
 	 *
 	 * @return void
 	 */

@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_wpcore_misc_get_file_wp_headers' )]
 final class WpCoreMiscGetFileWpHeadersTest extends TestCase {
 	/**
 	 * Setup function. Require files, etc.
@@ -29,8 +32,6 @@ final class WpCoreMiscGetFileWpHeadersTest extends TestCase {
 
 	/**
 	 * Test common usage of the function.
-	 *
-	 * @covers ::vipgoci_wpcore_misc_get_file_wp_headers
 	 *
 	 * @return void
 	 */
@@ -111,8 +112,6 @@ final class WpCoreMiscGetFileWpHeadersTest extends TestCase {
 	/**
 	 * Test common usage of the function.
 	 *
-	 * @covers ::vipgoci_wpcore_misc_get_file_wp_headers
-	 *
 	 * @return void
 	 */
 	public function testGetWpHeadersValidHeaders2(): void {
@@ -191,8 +190,6 @@ final class WpCoreMiscGetFileWpHeadersTest extends TestCase {
 
 	/**
 	 * Test with invalid and missing headers.
-	 *
-	 * @covers ::vipgoci_wpcore_misc_get_file_wp_headers
 	 *
 	 * @return void
 	 */

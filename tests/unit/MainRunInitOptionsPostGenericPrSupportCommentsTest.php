@@ -9,15 +9,18 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Test if options relating to posting
  * generic comments are correctly set and parsed.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_run_init_options_post_generic_pr_support_comments' )]
 final class MainRunInitOptionsPostGenericPrSupportCommentsTest extends TestCase {
 	/**
 	 * Options array.
@@ -57,8 +60,6 @@ final class MainRunInitOptionsPostGenericPrSupportCommentsTest extends TestCase 
 
 	/**
 	 * Test if default options are correct.
-	 *
-	 * @covers ::vipgoci_run_init_options_post_generic_pr_support_comments
 	 *
 	 * @return void
 	 */
@@ -102,8 +103,6 @@ final class MainRunInitOptionsPostGenericPrSupportCommentsTest extends TestCase 
 
 	/**
 	 * Check if custom options are correctly parsed.
-	 *
-	 * @covers ::vipgoci_run_init_options_post_generic_pr_support_comments
 	 *
 	 * @return void
 	 */

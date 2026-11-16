@@ -11,14 +11,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_runtime_measure_exec_with_retry' )]
 final class StatisticsRuntimeMeasureExecWithRetryTest extends TestCase {
 	/**
 	 * Setup function. Require files.
@@ -33,8 +36,6 @@ final class StatisticsRuntimeMeasureExecWithRetryTest extends TestCase {
 	 * Test if execution time measured is correct
 	 * and that output returned is correct
 	 * as well.
-	 *
-	 * @covers ::vipgoci_runtime_measure_exec_with_retry
 	 */
 	public function testExecSuccessRuntimeMeasure() :void {
 		$output_2    = '';
@@ -80,8 +81,6 @@ final class StatisticsRuntimeMeasureExecWithRetryTest extends TestCase {
 	/**
 	 * Ensure that empty output results in an empty string
 	 * and result code is correct.
-	 *
-	 * @covers: vipgoci_runtime_measure_exec_with_retry
 	 */
 	public function testExecSuccessWithEmptyReturn() :void {
 		$output_2    = '';
@@ -119,8 +118,6 @@ final class StatisticsRuntimeMeasureExecWithRetryTest extends TestCase {
 	 * Test if the function retries execution when status code
 	 * is unexpected and if the output is correct when that occurs.
 	 * Will also check if the function really attempts retries.
-	 *
-	 * @covers ::vipgoci_runtime_measure_exec_with_retry
 	 */
 	public function testExecRetry() :void {
 		$path_to_cli = tempnam(
@@ -227,8 +224,6 @@ final class StatisticsRuntimeMeasureExecWithRetryTest extends TestCase {
 	/**
 	 * Test if the function returns correct status code on failure.
 	 * Check if the output string obtained is correct.
-	 *
-	 * @covers ::vipgoci_runtime_measure_exec_with_retry
 	 */
 	public function testExecAlwaysFails() :void {
 		$output_2    = '';
@@ -268,8 +263,6 @@ final class StatisticsRuntimeMeasureExecWithRetryTest extends TestCase {
 	/**
 	 * Check if the output string obtained is correct, check if standard
 	 * error is included.
-	 *
-	 * @covers ::vipgoci_runtime_measure_exec_with_retry
 	 */
 	public function testExecAlwaysFailsCheckStderr() :void {
 		$output_2    = '';

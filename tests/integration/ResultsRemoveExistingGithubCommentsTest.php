@@ -9,15 +9,18 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_results_remove_existing_github_comments' )]
 final class ResultsRemoveExistingGithubCommentsTest extends TestCase {
 	/**
 	 * Git options variable.
@@ -153,10 +156,10 @@ final class ResultsRemoveExistingGithubCommentsTest extends TestCase {
 				),
 				2,
 			),
-			'comments on the same PR are removed'  => array(
+			'same-PR comments require authenticated ownership'  => array(
 				'pr-number-2',
 				array( self::COMMENTS_DATA['comment_not_removable'] ),
-				1,
+				2,
 			),
 		);
 	}
@@ -164,8 +167,6 @@ final class ResultsRemoveExistingGithubCommentsTest extends TestCase {
 	/**
 	 * Remove comments only when already posted on the PR being scanned.
 	 * Does not process dismissed reviews.
-	 *
-	 * @covers ::vipgoci_results_remove_existing_github_comments
 	 *
 	 * @param string $pr_option            Configuration key for the PR to scan.
 	 * @param array  $expected_issues      Issues that should remain after deduplication.
@@ -220,6 +221,34 @@ final class ResultsRemoveExistingGithubCommentsTest extends TestCase {
 		$results_actual['stats'][ VIPGOCI_STATS_PHPCS ][ $pr_number ] = array(
 			'error' => 2,
 		);
+
+		// Establish fixture ownership independently of the deduplication getter.
+		// Read-only CI credentials can differ from the account that posted it.
+		vipgoci_unittests_output_suppress();
+		$identity = vipgoci_github_authenticated_user_get( $this->options['token'] );
+		$comments = vipgoci_github_pr_reviews_comments_get_by_pr( $this->options, $pr_number );
+		$commits = vipgoci_github_prs_commits_list(
+			$this->options['repo-owner'],
+			$this->options['repo-name'],
+			$pr_number,
+			$this->options['token']
+		);
+		vipgoci_unittests_output_unsuppress();
+		$this->assertIsInt( $identity->id );
+		$owns_fixture = false;
+		foreach ( $comments as $comment ) {
+			if (
+				$identity->id === $comment->user->id &&
+				'test.php' === $comment->path &&
+				3 === $comment->position &&
+				in_array( $comment->original_commit_id, $commits, true )
+			) {
+				$owns_fixture = true;
+			}
+		}
+		if ( ! $owns_fixture ) {
+			$expected_issues = array_values( self::COMMENTS_DATA );
+		}
 
 		$results_expected['issues'][ $pr_number ] = $expected_issues;
 

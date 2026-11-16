@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_gitrepo_fetch_committed_file' )]
 final class GitRepoRepoFetchCommittedFileTest extends TestCase {
 	/**
 	 * Options array.
@@ -70,9 +73,6 @@ final class GitRepoRepoFetchCommittedFileTest extends TestCase {
 		}
 	}
 
-	/**
-	 * @covers ::vipgoci_gitrepo_fetch_committed_file
-	 */
 	public function testRepoFetchTree1() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
@@ -126,9 +126,6 @@ final class GitRepoRepoFetchCommittedFileTest extends TestCase {
 		);
 	}
 
-	/**
-	 * @covers ::vipgoci_gitrepo_fetch_committed_file
-	 */
 	public function testRepoFetchTreeRejectSymlink() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
@@ -185,7 +182,8 @@ final class GitRepoRepoFetchCommittedFileTest extends TestCase {
 			$this->options['github-token'],
 			$this->options['commit-test-repo-fetch-committed-file-1'],
 			$symlinked_file_name,
-			$this->options['local-git-repo']
+			$this->options['local-git-repo'],
+			false // Explicit opt-in for contained regular symlinks.
 		);
 
 		$ret_with_reject_symlink = vipgoci_gitrepo_fetch_committed_file(

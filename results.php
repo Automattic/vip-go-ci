@@ -12,7 +12,8 @@ declare(strict_types=1);
  * Remove comments that exist on a GitHub pull request from
  * the results array. Will loop through each pull request
  * affected by the current commit, and remove any comment
- * from the results array if it already exists.
+ * from the results array if it already exists under the authenticated account.
+ * Detected issue statistics remain unchanged for enforcement.
  *
  * @param array $options                                Options array for the program.
  * @param array $prs_implicated                         Array of PRs implicated.
@@ -269,12 +270,7 @@ function vipgoci_results_remove_existing_github_comments(
 					$results['issues'][ $pr_item->number ][ $tobe_submitted_cmt_key ]
 				);
 
-				/*
-				 * Update statistics
-				 */
-				$results['stats'][ $tobe_submitted_cmt['type'] ][ $pr_item->number ][ strtolower(
-					$tobe_submitted_cmt['issue']['level']
-				) ]--;
+				// Suppress duplicate presentation only; detected issues still count.
 			}
 		}
 
@@ -317,7 +313,7 @@ function vipgoci_results_remove_existing_github_comments(
  *
  * @param array $options                 Options array for the program.
  * @param array $results                 Results array.
- * @param array $auto_approved_files_arr Array of auto-approved files.
+ * @param array $auto_approved_files_arr Auto-approved reasons keyed by PR number and filename.
  *
  * @return void
  */
@@ -356,7 +352,7 @@ function vipgoci_results_approved_files_comments_remove(
 			 * do not to anything.
 			 */
 			if ( ! isset(
-				$auto_approved_files_arr[ $issue_item['file_name'] ]
+				$auto_approved_files_arr[ $pr_number ][ $issue_item['file_name'] ]
 			) ) {
 				continue;
 			}

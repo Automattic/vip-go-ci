@@ -9,14 +9,19 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+use PHPUnit\Framework\Attributes\CoversFunction;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[Group( 'mocked-api' )]
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_results_filter_comments_to_max' )]
 final class ResultsFilterCommentsToMaxTest extends TestCase {
 	/**
 	 * Options array.
@@ -159,8 +164,6 @@ final class ResultsFilterCommentsToMaxTest extends TestCase {
 	/**
 	 * Test common usage of the function.
 	 *
-	 * @covers ::vipgoci_results_filter_comments_to_max
-	 *
 	 * @return void
 	 */
 	public function testResultsFilterCommentsToMax1() :void {
@@ -218,8 +221,6 @@ final class ResultsFilterCommentsToMaxTest extends TestCase {
 	}
 	/**
 	 * Test common usage of the function.
-	 *
-	 * @covers ::vipgoci_results_filter_comments_to_max
 	 *
 	 * @return void
 	 */
@@ -309,8 +310,6 @@ final class ResultsFilterCommentsToMaxTest extends TestCase {
 
 	/**
 	 * Test common usage of the function.
-	 *
-	 * @covers ::vipgoci_results_filter_comments_to_max
 	 *
 	 * @return void
 	 */

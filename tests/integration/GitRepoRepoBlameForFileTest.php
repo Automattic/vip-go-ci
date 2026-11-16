@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_gitrepo_blame_for_file' )]
 final class GitRepoRepoBlameForFileTest extends TestCase {
 	/**
 	 * Git options.
@@ -111,8 +114,6 @@ final class GitRepoRepoBlameForFileTest extends TestCase {
 	 * values are as expected.
 	 *
 	 * @return void
-	 *
-	 * @covers ::vipgoci_gitrepo_blame_for_file
 	 */
 	public function testGitRepoBlameForFiles() :void {
 		$options_test = vipgoci_unittests_options_test(
@@ -375,8 +376,6 @@ final class GitRepoRepoBlameForFileTest extends TestCase {
 	 * Get 'git blame' for an empty file.
 	 *
 	 * @return void
-	 *
-	 * @covers ::vipgoci_gitrepo_blame_for_file
 	 */
 	public function testGitRepoBlameForEmptyFile() {
 		/*

@@ -205,6 +205,100 @@ final class GitDiffMemoryTest extends TestCase {
 		}
 	}
 
+
+	/** Both Git readers and line mapping must agree on exact filename bytes. */
+	public function testPatchPathsMatchMetadataForQuotedAndLiteralBytes(): void {
+		$base = $this->commit();
+		$paths = array(
+			'unicode-é.php', "invalid-\xff.php", "invalid-\xfe.php",
+			"tab\tname.php", "new\nline.php", "cr\rname.php",
+			'quote".php', 'back\\slash.php', 'literal\\303\\251.php',
+			' leading  space .php', 'space b/nested.php', 'trailing.php ',
+		);
+		foreach ( $paths as $path ) {
+			$this->write( $path, "<?php\nreturn 1;\n" );
+		}
+		$head = $this->commit();
+		foreach ( array( 'false', 'true' ) as $quotepath ) {
+			$this->git( 'config core.quotepath ' . $quotepath );
+			vipgoci_cache( VIPGOCI_CACHE_CLEAR );
+			$metadata = vipgoci_gitrepo_diffs_fetch_metadata( $this->repo, $base, $head );
+			$patches = vipgoci_gitrepo_diffs_fetch_unfiltered( $this->repo, $base, $head );
+			$this->assertSame( array_keys( $metadata['files'] ), array_keys( $patches['files'] ) );
+			foreach ( $paths as $path ) {
+				$this->assertSame( $path, $patches['files'][ $path ]['filename'] );
+				$this->assertSame( $metadata['files'][ $path ]['status'], $patches['files'][ $path ]['status'] );
+				$this->assertSame( 2, $patches['files'][ $path ]['additions'] );
+				$this->assertSame(
+					array( null, '1', 2 ),
+					vipgoci_patch_changed_lines( $this->repo, 'fixture', 'fixture', 'unused', $base, $head, $path )
+				);
+			}
+		}
+		foreach ( $paths as $path ) {
+			$this->write( $path, "<?php\nreturn 2;\n" );
+		}
+		$edited = $this->commit();
+		$patches = vipgoci_gitrepo_diffs_fetch_unfiltered( $this->repo, $head, $edited );
+		$this->assertSame( count( $paths ), count( $patches['files'] ) );
+		foreach ( $paths as $path ) {
+			$this->assertSame( 'modified', $patches['files'][ $path ]['status'] );
+			unlink( $this->repo . '/' . $path );
+		}
+		$deleted = $this->commit();
+		$patches = vipgoci_gitrepo_diffs_fetch_unfiltered( $this->repo, $edited, $deleted );
+		$this->assertSame( count( $paths ), count( $patches['files'] ) );
+		foreach ( $paths as $path ) {
+			$this->assertSame( 'removed', $patches['files'][ $path ]['status'] );
+		}
+	}
+
+	/** No-hunk records and renames must not invent or truncate path keys. */
+	public function testHeaderOnlyAndRenamedPathsRemainByteExact(): void {
+		$old = 'old b/name with  spaces.php';
+		$new = 'new b/renamed with  spaces.php';
+		$quoted_old = "old-\xff.php";
+		$quoted_new = "new-\xfe.php";
+		$mode = 'mode b/name  with spaces.php';
+		foreach ( array( $old, $quoted_old, $mode ) as $path ) {
+			$this->write( $path, "<?php\nreturn 1;\n" );
+		}
+		$base = $this->commit();
+		// Git's rename pairing should be unambiguous, so use distinct contents.
+		$this->write( $quoted_old, "<?php\nreturn 100;\n" );
+		$base = $this->commit();
+		mkdir( $this->repo . '/new b' );
+		rename( $this->repo . '/' . $old, $this->repo . '/' . $new );
+		rename( $this->repo . '/' . $quoted_old, $this->repo . '/' . $quoted_new );
+		chmod( $this->repo . '/' . $mode, 0755 );
+		$head = $this->commit();
+		$metadata = vipgoci_gitrepo_diffs_fetch_metadata( $this->repo, $base, $head );
+		$patches = vipgoci_gitrepo_diffs_fetch_unfiltered( $this->repo, $base, $head );
+		$this->assertSame( array_keys( $metadata['files'] ), array_keys( $patches['files'] ) );
+		foreach ( array( $new => $old, $quoted_new => $quoted_old ) as $path => $previous ) {
+			$this->assertSame( 'renamed', $patches['files'][ $path ]['status'] );
+			$this->assertSame( $previous, $patches['files'][ $path ]['previous_filename'] );
+		}
+		$this->assertSame( 'modified', $patches['files'][ $mode ]['status'] );
+		$this->assertSame( '', $patches['files'][ $mode ]['patch'] );
+	}
+
+	/** GitHub JSON paths stay raw and absent patches never become a line-1 map. */
+	public function testGithubOmittedPatchCannotFabricateChangedLines(): void {
+		$name = 'unicode-é.php';
+		vipgoci_cache( array( 'vipgoci_git_diffs_fetch', $this->repo, 'fixture', 'fixture', 'base', 'head' ), true );
+		vipgoci_cache(
+			array( 'vipgoci_github_diffs_fetch_unfiltered', 'fixture', 'fixture', 'base', 'head' ),
+			array(
+				'files' => array( $name => array(
+					'filename' => $name, 'status' => 'modified', 'patch' => '',
+					'additions' => 1, 'deletions' => 1, 'changes' => 2,
+				) ),
+			)
+		);
+		$this->assertNull( vipgoci_patch_changed_lines( $this->repo, 'fixture', 'fixture', 'unused', 'base', 'head', $name ) );
+	}
+
 	/** Missing local commits must keep the established GitHub fallback. */
 	public function testMetadataFailureFallsBackWithoutReturningPatches(): void {
 		$base    = $this->commit();

@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_auto_approval_scan_commit' )]
 final class AutoApprovalScanCommitTest extends TestCase {
 	/**
 	 * Variable that indicates if it is safe to run
@@ -271,8 +274,6 @@ final class AutoApprovalScanCommitTest extends TestCase {
 	/**
 	 * Test auto-approvals for PR that should
 	 * auto-appove.
-	 *
-	 * @covers ::vipgoci_auto_approval_scan_commit
 	 */
 	public function testAutoApproval1() {
 		$options_test = vipgoci_unittests_options_test(
@@ -310,11 +311,13 @@ final class AutoApprovalScanCommitTest extends TestCase {
 		}
 
 		$auto_approved_files_arr = array(
-			'file-1.php'  => 'autoapprove-approved-php-file', // Not a value used generally, only for testing.
-			'file-2.css'  => 'autoapprove-filetypes',
-			'file-3.txt'  => 'autoapprove-filetypes',
-			'file-4.json' => 'autoapprove-filetypes',
-			'README.md'   => 'autoapprove-filetypes',
+			(int) $this->options['pr-test-ap-auto-approval-1'] => array(
+				'file-1.php'  => 'autoapprove-approved-php-file', // Not a value used generally, only for testing.
+				'file-2.css'  => 'autoapprove-filetypes',
+				'file-3.txt'  => 'autoapprove-filetypes',
+				'file-4.json' => 'autoapprove-filetypes',
+				'README.md'   => 'autoapprove-filetypes',
+			),
 		);
 
 		$results = array();
@@ -398,8 +401,6 @@ final class AutoApprovalScanCommitTest extends TestCase {
 	/**
 	 * Test auto-approvals for PR that should
 	 * not auto-appove.
-	 *
-	 * @covers ::vipgoci_auto_approval_scan_commit
 	 */
 	public function testAutoApproval2() {
 		$options_test = vipgoci_unittests_options_test(
@@ -437,11 +438,13 @@ final class AutoApprovalScanCommitTest extends TestCase {
 		}
 
 		$auto_approved_files_arr = array(
-			// Note: file-1.php is NOT approved.
-			'file-2.css'  => 'autoapprove-filetypes',
-			'file-3.txt'  => 'autoapprove-filetypes',
-			'file-4.json' => 'autoapprove-filetypes',
-			'README.md'   => 'autoapprove-filetypes',
+			(int) $this->options['pr-test-ap-auto-approval-1'] => array(
+				// Note: file-1.php is NOT approved.
+				'file-2.css'  => 'autoapprove-filetypes',
+				'file-3.txt'  => 'autoapprove-filetypes',
+				'file-4.json' => 'autoapprove-filetypes',
+				'README.md'   => 'autoapprove-filetypes',
+			),
 		);
 
 		$results = array();
@@ -519,8 +522,6 @@ final class AutoApprovalScanCommitTest extends TestCase {
 	 * Test auto-approvals for PR that should
 	 * not auto-appove, but should leave a comment
 	 * about one PHP file that is approved.
-	 *
-	 * @covers ::vipgoci_auto_approval_scan_commit
 	 */
 	public function testAutoApproval3() {
 		$options_test = vipgoci_unittests_options_test(
@@ -557,13 +558,15 @@ final class AutoApprovalScanCommitTest extends TestCase {
 		}
 
 		$auto_approved_files_arr = array(
-			// Note: file-1.php is approved, but
-			// some of the other files are not.
-			'file-1.php' => 'autoapprove-approved-php-file', // Not a value used generally, only for testing.
-			'file-2.css' => 'autoapprove-filetypes',
-			'file-3.txt' => 'autoapprove-filetypes',
-			// file-4.json is not approved.
-			'README.md'  => 'autoapprove-filetypes',
+			(int) $this->options['pr-test-ap-auto-approval-1'] => array(
+				// Note: file-1.php is approved, but
+				// some of the other files are not.
+				'file-1.php' => 'autoapprove-approved-php-file', // Not a value used generally, only for testing.
+				'file-2.css' => 'autoapprove-filetypes',
+				'file-3.txt' => 'autoapprove-filetypes',
+				// file-4.json is not approved.
+				'README.md'  => 'autoapprove-filetypes',
+			),
 		);
 
 		$results = array(
@@ -641,8 +644,6 @@ final class AutoApprovalScanCommitTest extends TestCase {
 	 * In vipgoci_autoapproval_do_approve() we make
 	 * sure we do not re-approve already approved
 	 * Pull-Requests. Make sure this really works.
-	 *
-	 * @covers ::vipgoci_auto_approval_scan_commit
 	 */
 	public function testAutoApproval4() {
 		$options_test = vipgoci_unittests_options_test(
@@ -708,11 +709,13 @@ final class AutoApprovalScanCommitTest extends TestCase {
 		 */
 
 		$auto_approved_files_arr = array(
-			// All files in the PR are approvable.
-			'file-1.php'  => 'autoapprove-approved-php-file', // Not a value used generally, only for testing.
-			'file-2.css'  => 'autoapprove-filetypes',
-			'file-3.txt'  => 'autoapprove-filetypes',
-			'file-4.json' => 'autoapprove-filetypes',
+			(int) $this->options['pr-test-ap-auto-approval-1'] => array(
+				// All files in the PR are approvable.
+				'file-1.php'  => 'autoapprove-approved-php-file', // Not a value used generally, only for testing.
+				'file-2.css'  => 'autoapprove-filetypes',
+				'file-3.txt'  => 'autoapprove-filetypes',
+				'file-4.json' => 'autoapprove-filetypes',
+			),
 		);
 
 		$results = array(
@@ -757,8 +760,6 @@ final class AutoApprovalScanCommitTest extends TestCase {
 	 * Test auto-approvals for pull request that should
 	 * be auto-appoved as WPScan is enabled and
 	 * no WPScan errors are present.
-	 *
-	 * @covers ::vipgoci_auto_approval_scan_commit
 	 */
 	public function testAutoApprovalWithoutWpscanIssues() {
 		$options_test = vipgoci_unittests_options_test(
@@ -799,11 +800,13 @@ final class AutoApprovalScanCommitTest extends TestCase {
 
 		// All files are approved.
 		$auto_approved_files_arr = array(
-			'file-1.php'  => 'autoapprove-approved-php-file', // Not a value used generally, only for testing.
-			'file-2.css'  => 'autoapprove-filetypes',
-			'file-3.txt'  => 'autoapprove-filetypes',
-			'file-4.json' => 'autoapprove-filetypes',
-			'README.md'   => 'autoapprove-filetypes',
+			(int) $this->options['pr-test-ap-auto-approval-1'] => array(
+				'file-1.php'  => 'autoapprove-approved-php-file', // Not a value used generally, only for testing.
+				'file-2.css'  => 'autoapprove-filetypes',
+				'file-3.txt'  => 'autoapprove-filetypes',
+				'file-4.json' => 'autoapprove-filetypes',
+				'README.md'   => 'autoapprove-filetypes',
+			),
 		);
 
 		$results_before = array(
@@ -891,8 +894,6 @@ final class AutoApprovalScanCommitTest extends TestCase {
 	/**
 	 * Test auto-approvals for pull request that should
 	 * not be auto-appoved due to WPScan errors present.
-	 *
-	 * @covers ::vipgoci_auto_approval_scan_commit
 	 */
 	public function testAutoApprovalWithWpscanIssues() {
 		$options_test = vipgoci_unittests_options_test(
@@ -934,11 +935,13 @@ final class AutoApprovalScanCommitTest extends TestCase {
 
 		// All files are approved.
 		$auto_approved_files_arr = array(
-			'file-1.php'  => 'autoapprove-approved-php-file', // Not a value used generally, only for testing.
-			'file-2.css'  => 'autoapprove-filetypes',
-			'file-3.txt'  => 'autoapprove-filetypes',
-			'file-4.json' => 'autoapprove-filetypes',
-			'README.md'   => 'autoapprove-filetypes',
+			(int) $this->options['pr-test-ap-auto-approval-1'] => array(
+				'file-1.php'  => 'autoapprove-approved-php-file', // Not a value used generally, only for testing.
+				'file-2.css'  => 'autoapprove-filetypes',
+				'file-3.txt'  => 'autoapprove-filetypes',
+				'file-4.json' => 'autoapprove-filetypes',
+				'README.md'   => 'autoapprove-filetypes',
+			),
 		);
 
 		$results_before = array(

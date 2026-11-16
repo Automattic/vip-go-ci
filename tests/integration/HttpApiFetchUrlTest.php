@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_http_api_fetch_url' )]
 final class HttpApiFetchUrlTest extends TestCase {
 	/**
 	 * Setup function. Require files, etc.
@@ -27,9 +30,6 @@ final class HttpApiFetchUrlTest extends TestCase {
 		require_once __DIR__ . '/IncludesForTests.php';
 	}
 
-	/**
-	 * @covers ::vipgoci_http_api_fetch_url
-	 */
 	public function testGitHubFetchUrl1() {
 		$ret = vipgoci_http_api_fetch_url(
 			'https://api.github.com/rate_limit',

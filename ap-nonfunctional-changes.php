@@ -18,7 +18,7 @@ declare(strict_types=1);
  * changes in whitespacing, comments, etc.
  *
  * @param array $options                 Options needed.
- * @param array $auto_approved_files_arr Auto approved files array.
+ * @param array $auto_approved_files_arr Auto-approved reasons keyed by PR number and filename.
  *
  * @return void
  */
@@ -77,7 +77,7 @@ function vipgoci_ap_nonfunctional_changes(
 			 * of approved files, do not do anything.
 			 */
 			if ( isset(
-				$auto_approved_files_arr[ $pr_diff_file_name ]
+				$auto_approved_files_arr[ $pr_item->number ][ $pr_diff_file_name ]
 			) ) {
 				continue;
 			}
@@ -195,7 +195,7 @@ function vipgoci_ap_nonfunctional_changes(
 			) {
 				$log_msg = 'File is indeed functionally the same, autoapproving';
 
-				$auto_approved_files_arr[ $pr_diff_file_name ]
+				$auto_approved_files_arr[ $pr_item->number ][ $pr_diff_file_name ]
 					= 'autoapprove-nonfunctional-changes';
 			} else {
 				$log_msg = 'File is not functionally the same, not autoapproving';

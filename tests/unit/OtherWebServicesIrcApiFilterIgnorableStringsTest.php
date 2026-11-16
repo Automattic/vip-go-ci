@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_irc_api_filter_ignorable_strings' )]
 final class OtherWebServicesIrcApiFilterIgnorableStringsTest extends TestCase {
 	/**
 	 * Setup function. Require files, set up indication.
@@ -45,8 +48,6 @@ final class OtherWebServicesIrcApiFilterIgnorableStringsTest extends TestCase {
 	/**
 	 * Test simple usage of the function.
 	 *
-	 * @covers ::vipgoci_irc_api_filter_ignorable_strings
-	 *
 	 * @return void
 	 */
 	public function testFilterIgnorableStringsSimpleUsage(): void {
@@ -61,8 +62,6 @@ final class OtherWebServicesIrcApiFilterIgnorableStringsTest extends TestCase {
 	/**
 	 * Test usage with JSON encoded string.
 	 *
-	 * @covers ::vipgoci_irc_api_filter_ignorable_strings
-	 *
 	 * @return void
 	 */
 	public function testFilterIgnorableStringsJsonUsage(): void {
@@ -76,8 +75,6 @@ final class OtherWebServicesIrcApiFilterIgnorableStringsTest extends TestCase {
 
 	/**
 	 * Test more complex usage of the function.
-	 *
-	 * @covers ::vipgoci_irc_api_filter_ignorable_strings
 	 *
 	 * @return void
 	 */
@@ -94,8 +91,6 @@ final class OtherWebServicesIrcApiFilterIgnorableStringsTest extends TestCase {
 	/**
 	 * Test with no strings to remove.
 	 *
-	 * @covers ::vipgoci_irc_api_filter_ignorable_strings
-	 *
 	 * @return void
 	 */
 	public function testFilterIgnorableStringsNotFound(): void {
@@ -109,8 +104,6 @@ final class OtherWebServicesIrcApiFilterIgnorableStringsTest extends TestCase {
 
 	/**
 	 * Test invalid usage of the function.
-	 *
-	 * @covers ::vipgoci_irc_api_filter_ignorable_strings
 	 *
 	 * @return void
 	 */
@@ -136,8 +129,6 @@ final class OtherWebServicesIrcApiFilterIgnorableStringsTest extends TestCase {
 
 	/**
 	 * Test invalid usage of the function.
-	 *
-	 * @covers ::vipgoci_irc_api_filter_ignorable_strings
 	 *
 	 * @return void
 	 */

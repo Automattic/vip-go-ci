@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_http_api_rate_limit_usage' )]
 final class HttpApiRateLimitUsageTest extends TestCase {
 	/**
 	 * Setup function. Require files, etc.
@@ -24,13 +27,12 @@ final class HttpApiRateLimitUsageTest extends TestCase {
 	 * @return void
 	 */
 	protected function setUp(): void {
-		require_once __DIR__ . '/../integration/IncludesForTests.php';
+		require_once __DIR__ . '/../../defines.php';
+		require_once __DIR__ . '/../../http-functions.php';
 	}
 
 	/**
 	 * Test common usage of the function.
-	 *
-	 * @covers ::vipgoci_http_api_rate_limit_usage
 	 *
 	 * @return void
 	 */

@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_github_pr_reviews_comments_get_by_pr' )]
 final class GitHubPrReviewsCommentsGetByPrTest extends TestCase {
 	/**
 	 * Options array.
@@ -73,9 +76,6 @@ final class GitHubPrReviewsCommentsGetByPrTest extends TestCase {
 		unset( $this->options );
 	}
 
-	/**
-	 * @covers ::vipgoci_github_pr_reviews_comments_get_by_pr
-	 */
 	public function testGitHubPrReviewsCommentsGetByPr1() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
@@ -124,9 +124,6 @@ final class GitHubPrReviewsCommentsGetByPrTest extends TestCase {
 		);
 	}
 
-	/**
-	 * @covers ::vipgoci_github_pr_reviews_comments_get_by_pr
-	 */
 	public function testGitHubPrReviewsCommentsGetByPr2() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
@@ -177,9 +174,6 @@ final class GitHubPrReviewsCommentsGetByPrTest extends TestCase {
 		);
 	}
 
-	/**
-	 * @covers ::vipgoci_github_pr_reviews_comments_get_by_pr
-	 */
 	public function testGitHubPrReviewsCommentsGetByPr3() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,

@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_gitrepo_get_file_at_commit' )]
 final class GitRepoRepoGetFileAtCommitTest extends TestCase {
 	/**
 	 * Git options.
@@ -97,8 +100,6 @@ final class GitRepoRepoGetFileAtCommitTest extends TestCase {
 	/**
 	 * Test fetching files as they were at a particular commit.
 	 * Ensure different commit-IDs return correct content.
-	 *
-	 * @covers ::vipgoci_gitrepo_get_file_at_commit
 	 */
 	public function testGetFileWithData() :void {
 		$options_test = vipgoci_unittests_options_test(
@@ -194,8 +195,6 @@ final class GitRepoRepoGetFileAtCommitTest extends TestCase {
 
 	/**
 	 * Test asking for an empty file.
-	 *
-	 * @covers ::vipgoci_gitrepo_get_file_at_commit
 	 */
 	public function testGetEmptyFile() :void {
 		$options_test = vipgoci_unittests_options_test(
@@ -234,8 +233,6 @@ final class GitRepoRepoGetFileAtCommitTest extends TestCase {
 
 	/**
 	 * Test if asking for non-existent file returns correct value.
-	 *
-	 * @covers ::vipgoci_gitrepo_get_file_at_commit
 	 */
 	public function testGetNonExistentFile() :void {
 		$options_test = vipgoci_unittests_options_test(

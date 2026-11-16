@@ -52,7 +52,8 @@ function vipgoci_cache(
 		return true;
 	}
 
-	$cache_id = json_encode(
+	// Filenames can contain arbitrary bytes; JSON would alias invalid UTF-8 IDs.
+	$cache_id = serialize(
 		$cache_id_arr
 	);
 

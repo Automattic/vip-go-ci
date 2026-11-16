@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_cache' )]
 final class CacheVipgociCacheTest extends TestCase {
 	/**
 	 * Setup function. Require files, etc.
@@ -30,8 +33,6 @@ final class CacheVipgociCacheTest extends TestCase {
 
 	/**
 	 * Test caching random data and test if is correctly retrieved.
-	 *
-	 * @covers ::vipgoci_cache
 	 *
 	 * @return void
 	 */
@@ -96,8 +97,6 @@ final class CacheVipgociCacheTest extends TestCase {
 	/**
 	 * Test clearing of cache.
 	 *
-	 * @covers ::vipgoci_cache
-	 *
 	 * @return void
 	 */
 	public function testCache2() :void {
@@ -148,4 +147,38 @@ final class CacheVipgociCacheTest extends TestCase {
 			$cached_data
 		);
 	}
+
+	/** Invalid UTF-8 path bytes must not alias other files, functions or commits. */
+	public function testBinaryKeysRemainDistinctAndPreserveCacheContracts(): void {
+		vipgoci_cache( VIPGOCI_CACHE_CLEAR );
+		$keys = array(
+			array( 'validation', "file-\xff.php", 'commit-a' ),
+			array( 'validation', "file-\xfe.php", 'commit-a' ),
+			array( 'validation', 'file-\377.php', 'commit-a' ),
+			array( 'validation', "file-\xff.php", 'commit-b' ),
+			array( 'patch', "file-\xff.php", 'commit-a' ),
+			array( 'nested', array( "file-\xff.php" => array( "value-\xfe" ) ) ),
+			array( 'typed', 1 ),
+			array( 'typed', '1' ),
+		);
+		foreach ( $keys as $index => $key ) {
+			$this->assertSame( $index, vipgoci_cache( $key, $index ) );
+		}
+		foreach ( $keys as $index => $key ) {
+			$this->assertSame( $index, vipgoci_cache( $key ) );
+		}
+		$value = (object) array( 'state' => 'original' );
+		$returned = vipgoci_cache( array( "object-\xff" ), $value );
+		$value->state = 'caller-mutated';
+		$this->assertSame( 'original', $returned->state );
+		$cached = vipgoci_cache( array( "object-\xff" ) );
+		$this->assertSame( 'original', $cached->state );
+		$cached->state = 'read-mutated';
+		$this->assertSame( 'original', vipgoci_cache( array( "object-\xff" ) )->state );
+		vipgoci_cache( VIPGOCI_CACHE_CLEAR );
+		foreach ( $keys as $key ) {
+			$this->assertFalse( vipgoci_cache( $key ) );
+		}
+	}
+
 }

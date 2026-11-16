@@ -9,15 +9,18 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Check if maximum execution time option is
  * parsed correctly.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_run_init_options_max_exec_time' )]
 final class MainRunInitOptionsMaxExecTimeTest extends TestCase {
 	/**
 	 * Options array.
@@ -53,8 +56,6 @@ final class MainRunInitOptionsMaxExecTimeTest extends TestCase {
 	/**
 	 * Check if maximum execution time option is
 	 * parsed correctly.
-	 *
-	 * @covers ::vipgoci_run_init_options_max_exec_time
 	 *
 	 * @return void
 	 */

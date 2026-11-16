@@ -9,14 +9,18 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_github_label_add_to_pr' )]
+#[CoversFunction( 'vipgoci_github_pr_label_remove' )]
 final class GitHubApiLabelsTest extends TestCase {
 	/**
 	 * Const for label name.
@@ -106,8 +110,6 @@ final class GitHubApiLabelsTest extends TestCase {
 	/**
 	 * Test adding a GitHub label.
 	 *
-	 * @covers ::vipgoci_github_label_add_to_pr
-	 *
 	 * @return void
 	 */
 	public function testGitHubAddLabel1() :void {
@@ -155,8 +157,6 @@ final class GitHubApiLabelsTest extends TestCase {
 	/**
 	 * Test removing a GitHub label.
 	 *
-	 * @covers ::vipgoci_github_pr_label_remove
-	 *
 	 * @return void
 	 */
 	public function testGitHubRemoveLabel1() :void {
@@ -176,6 +176,7 @@ final class GitHubApiLabelsTest extends TestCase {
 
 		vipgoci_unittests_output_suppress();
 
+		vipgoci_github_label_add_to_pr( $this->options['repo-owner'], $this->options['repo-name'], $this->options['github-token'], (int) $this->options['labels-pr-to-modify'], self::LABEL_NAME );
 		$labels_before = $this->labels_get();
 
 		vipgoci_github_pr_label_remove(
@@ -208,7 +209,9 @@ final class GitHubApiLabelsTest extends TestCase {
 		 * Avoid stale cache by waiting
 		 * a short while.
 		 */
-		sleep( 10 );
+		if ( 'true' === getenv( 'VIPGOCI_TESTING_LIVE_API' ) ) {
+			sleep( 10 );
+		}
 
 		$github_url =
 			VIPGOCI_GITHUB_BASE_URL . '/' .

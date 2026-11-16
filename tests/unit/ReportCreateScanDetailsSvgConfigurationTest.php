@@ -10,14 +10,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_report_create_scan_details_svg_configuration' )]
 final class ReportCreateScanDetailsSvgConfigurationTest extends TestCase {
 	/**
 	 * Options array.
@@ -52,8 +55,6 @@ final class ReportCreateScanDetailsSvgConfigurationTest extends TestCase {
 	/**
 	 * Test function with most reporting disabled.
 	 *
-	 * @covers ::vipgoci_report_create_scan_details_svg_configuration
-	 *
 	 * @return void
 	 */
 	public function testCreateDetails1(): void {
@@ -82,8 +83,6 @@ final class ReportCreateScanDetailsSvgConfigurationTest extends TestCase {
 
 	/**
 	 * Test function with reporting enabled.
-	 *
-	 * @covers ::vipgoci_report_create_scan_details_svg_configuration
 	 *
 	 * @return void
 	 */

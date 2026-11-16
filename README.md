@@ -329,6 +329,8 @@ Use the `--max-exec-time` option to set maximum execution time (in seconds):
 
 `vip-go-ci` normally asks GitHub which user the token belongs to, and uses that login to recognize the comments and reviews it posted earlier. GitHub App installation tokens, such as the `GITHUB_TOKEN` provided by GitHub Actions, cannot query this information. For these tokens (prefixed `ghs_`), the login has to be set with `--github-token-login`, as the token does not tell which app it belongs to: use `github-actions[bot]` for `GITHUB_TOKEN`. The option also skips the lookup for any other token.
 
+Inline comments already posted are only recognized, and not posted again, when made by the token-holder's account, matched by its numeric user ID. As the ID is not known when the login is set with `--github-token-login`, inline comments are then posted again on each run. Detected issues are counted either way, so the exit status is not affected.
+
 Since other workflows may also post as `github-actions[bot]`, use `--comment-marker` to add a hidden marker to every comment and review `vip-go-ci` posts. When set, feedback carrying the marker is treated as posted by `vip-go-ci`, both when avoiding duplicate comments and when cleaning up or dismissing earlier feedback. For example:
 
 > ./vip-go-ci.php ... --token="$GITHUB_TOKEN" --github-token-login="github-actions[bot]" --comment-marker="github-actions"
@@ -337,7 +339,7 @@ Since other workflows may also post as `github-actions[bot]`, use `--comment-mar
 
 Feedback posted before the marker was enabled is handled as follows, so that pull requests already scanned do not receive duplicate comments:
 
-* Inline comments without any marker count as already posted only if authored by the login set with `--comment-marker-legacy-login`. Unmarked comments by other users, including the token-holder's login (which other workflows may share), and comments carrying a different marker, do not.
+* Inline comments without any marker count as already posted only if authored by the token-holder's account, and its login is the one set with `--comment-marker-legacy-login`. Unmarked comments by other users, unmarked comments by the token-holder when the legacy login is another account (as the token-holder's login may be shared with other workflows), and comments carrying a different marker, do not.
 * When `vip-go-ci` posted as its own account before (for example with a personal access token for a dedicated bot user), set `--comment-marker-legacy-login` to that account's login when enabling the marker. Otherwise, its earlier comments are not recognized and findings are posted again.
 * Comments and reviews without any marker are treated as `vip-go-ci`'s own if authored by the login set with `--comment-marker-legacy-login` (default: `wpcomvip-vipgoci-bot`), and may be cleaned up or dismissed. This login should only be used by `vip-go-ci`.
 
@@ -556,6 +558,8 @@ For WPScan API, use file named `.vipgoci_wpscan_api_skip_folders`.
 By default, `vip-go-ci` will skip scanning of any files that are longer than 15,000 lines and display a warning in GitHub reviews about the files skipped. This means that these files are not PHP linted, not PHPCS scanned nor SVG scanned. This feature was implemented because very large files will often cause scanning to take much longer time than is ideal, delaying submission of results, as well as causing GitHub API errors.
 
 This feature can be disabled by setting the `--skip-large-files` parameter to `false`. The size limit can be changed from 15,000 to a custom value by setting the `--skip-large-files-limit` option.
+
+Current checkout file reads through the shared scanner file reader also have a fixed 16 MiB byte limit, independent of the line limit and `--skip-large-files`. Files exceeding it cause a scan failure before temporary staging. Scanner reads reject symbolic links in the file path, nonregular files, and targets outside the checkout. Recursive repository discovery does not follow directory entries that are symlinks. Historical Git-object reads use a separate reader and are not subject to this byte limit.
 
 ### Configuring review comments 
 

@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_github_pr_reviews_comments_get' )]
 final class GitHubPrReviewsCommentsGetTest extends TestCase {
 	/**
 	 * Options array.
@@ -73,9 +76,6 @@ final class GitHubPrReviewsCommentsGetTest extends TestCase {
 		unset( $this->options );
 	}
 
-	/**
-	 * @covers ::vipgoci_github_pr_reviews_comments_get
-	 */
 	public function testGitHubPrReviewsCommentsGet1() {
 		$options_test = vipgoci_unittests_options_test(
 			$this->options,
@@ -98,12 +98,29 @@ final class GitHubPrReviewsCommentsGetTest extends TestCase {
 			$prs_comments
 		);
 
+		// The configured token need not belong to the historical fixture author.
+		$identity = vipgoci_github_authenticated_user_get( $this->options['token'] );
+		$fixture = json_decode(
+			vipgoci_http_api_fetch_url(
+				VIPGOCI_GITHUB_BASE_URL . '/repos/' .
+				rawurlencode( $this->options['repo-owner'] ) . '/' .
+				rawurlencode( $this->options['repo-name'] ) . '/pulls/comments/264037556',
+				$this->options['token']
+			)
+		);
 		vipgoci_unittests_output_unsuppress();
+		$this->assertIsInt( $identity->id );
+		$this->assertIsInt( $fixture->user->id );
+		if ( $fixture->user->id !== $identity->id ) {
+			$this->assertSame( array(), $prs_comments );
+			return;
+		}
 
 		$this->assertSame(
 			1,
 			count( array_keys( $prs_comments ) )
 		);
+		$this->assertSame( $identity->id, $prs_comments['file1.php:3'][0]->user->id );
 
 		$this->assertSame(
 			212601504,

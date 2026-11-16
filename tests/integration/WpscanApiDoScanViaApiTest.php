@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+use PHPUnit\Framework\Attributes\CoversFunction;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_wpscan_do_scan_via_api' )]
 final class WpscanApiDoScanViaApiTest extends TestCase {
 	/**
 	 * WPScan API options.
@@ -71,8 +74,6 @@ final class WpscanApiDoScanViaApiTest extends TestCase {
 	/**
 	 * Ask WPScan API for information about a plugin.
 	 *
-	 * @covers ::vipgoci_wpscan_do_scan_via_api
-	 *
 	 * @return void
 	 */
 	public function testWpscanDoScanPluginViaApi(): void {
@@ -124,8 +125,6 @@ final class WpscanApiDoScanViaApiTest extends TestCase {
 	/**
 	 * Ask WPScan API for information about a theme.
 	 *
-	 * @covers ::vipgoci_wpscan_do_scan_via_api
-	 *
 	 * @return void
 	 */
 	public function testWpscanDoScanThemeViaApi(): void {
@@ -176,8 +175,6 @@ final class WpscanApiDoScanViaApiTest extends TestCase {
 
 	/**
 	 * Make an invalid request to WPScan API.
-	 *
-	 * @covers ::vipgoci_wpscan_do_scan_via_api
 	 *
 	 * @return void
 	 */

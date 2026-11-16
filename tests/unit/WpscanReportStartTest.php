@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_wpscan_report_start' )]
 final class WpscanReportStartTest extends TestCase {
 	/**
 	 * Setup function. Require file.
@@ -37,8 +40,6 @@ final class WpscanReportStartTest extends TestCase {
 	/**
 	 * Test common usage of the function.
 	 * Test if it returns expected strings.
-	 *
-	 * @covers ::vipgoci_wpscan_report_start
 	 *
 	 * @return void
 	 */
@@ -73,8 +74,6 @@ final class WpscanReportStartTest extends TestCase {
 	 * Test common usage of the function.
 	 * Test if it returns expected strings.
 	 *
-	 * @covers ::vipgoci_wpscan_report_start
-	 *
 	 * @return void
 	 */
 	public function testWpscanReportStartTheme(): void {
@@ -106,8 +105,6 @@ final class WpscanReportStartTest extends TestCase {
 
 	/**
 	 * Test invalid usage of the function.
-	 *
-	 * @covers ::vipgoci_wpscan_report_start
 	 *
 	 * @return void
 	 */

@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class that implements the testing.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_lint_parse_results' )]
 final class LintParseResultsTest extends TestCase {
 	/**
 	 * Require file.
@@ -31,8 +34,6 @@ final class LintParseResultsTest extends TestCase {
 	 * Test function when there are no linting issues.
 	 *
 	 * @return void
-	 *
-	 * @covers ::vipgoci_lint_parse_results
 	 */
 	public function testLintGetIssues1() :void {
 		$lint_issues = array(
@@ -55,8 +56,6 @@ final class LintParseResultsTest extends TestCase {
 	 * Test function when there are linting issues.
 	 *
 	 * @return void
-	 *
-	 * @covers ::vipgoci_lint_parse_results
 	 */
 	public function testLintDoScan2() :void {
 		$lint_issues = array(

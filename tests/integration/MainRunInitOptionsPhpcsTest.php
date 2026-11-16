@@ -9,14 +9,17 @@ declare(strict_types=1);
 
 namespace Vipgoci\Tests\Integration;
 
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Test vipgoci_run_init_options_phpcs function.
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
+#[CoversFunction( 'vipgoci_run_init_options_phpcs' )]
 final class MainRunInitOptionsPhpcsTest extends TestCase {
 	/**
 	 * Path to PHPCS script.
@@ -61,8 +64,6 @@ final class MainRunInitOptionsPhpcsTest extends TestCase {
 
 	/**
 	 * Test function. Check if PHPCS defaults are initialized.
-	 *
-	 * @covers ::vipgoci_run_init_options_phpcs
 	 */
 	public function testRunInitOptionsPhpcsDefaults() :void {
 		$options_test = vipgoci_unittests_options_test(
@@ -120,8 +121,6 @@ final class MainRunInitOptionsPhpcsTest extends TestCase {
 
 	/**
 	 * Test function. Check if PHPCS customizations are initialized.
-	 *
-	 * @covers ::vipgoci_run_init_options_phpcs
 	 */
 	public function testRunInitOptionsPhpcsCustom() :void {
 		$options_test = vipgoci_unittests_options_test(
@@ -183,8 +182,6 @@ final class MainRunInitOptionsPhpcsTest extends TestCase {
 	/**
 	 * Test function. Check for vipgoci_sysexit() call
 	 * when invalid options are used.
-	 *
-	 * @covers ::vipgoci_run_init_options_phpcs
 	 */
 	public function testRunInitOptionsPhpcsInvalid() :void {
 		$options_test = vipgoci_unittests_options_test(
