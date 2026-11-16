@@ -62,9 +62,12 @@ final class PhpcsScanGitGuardsTest extends TestCase {
 	 */
 	private string $head;
 
+	/** Staged SVG files returned directly to this test. */
+	private array $ownedSvgPaths = array();
+
 	/** Load production code and create a local repository without user hooks. */
 	protected function setUp(): void {
-		foreach ( array( 'defines', 'cache', 'log', 'misc', 'statistics', 'git-repo', 'github-api', 'github-misc', 'phpcs-scan', 'svg-scan', 'results', 'reports', 'skip-file', 'file-validation', 'output-security', 'other-web-services' ) as $module ) {
+		foreach ( array( 'defines', 'cache', 'log', 'misc', 'statistics', 'git-repo', 'github-api', 'github-misc', 'phpcs-scan', 'svg-scan', 'ap-svg-files', 'results', 'reports', 'skip-file', 'file-validation', 'output-security', 'other-web-services' ) as $module ) {
 			require_once __DIR__ . '/../../' . $module . '.php';
 		}
 		require_once __DIR__ . '/helper/GitHubRequestGuards.php';
@@ -89,6 +92,22 @@ final class PhpcsScanGitGuardsTest extends TestCase {
 	protected function tearDown(): void {
 		putenv( false === $this->original_path ? 'PATH' : 'PATH=' . $this->original_path );
 		putenv( false === $this->original_phpcs_log ? 'VIPGOCI_TEST_PHPCS_INVOCATIONS' : 'VIPGOCI_TEST_PHPCS_INVOCATIONS=' . $this->original_phpcs_log );
+		foreach ( $this->ownedSvgPaths as $file ) {
+			if ( is_file( $file ) ) {
+				unlink( $file );
+			}
+		}
+		$invocations = $this->directory . '/phpcs.jsonl';
+		if ( is_file( $invocations ) ) {
+			foreach ( file( $invocations, FILE_IGNORE_NEW_LINES ) as $line ) {
+				$call = json_decode( $line, true );
+				foreach ( $call['files'] as $file ) {
+					if ( str_starts_with( basename( $file ), 'svg-scan-' ) && is_file( $file ) ) {
+						unlink( $file );
+					}
+				}
+			}
+		}
 		$entries = new \RecursiveIteratorIterator(
 			new \RecursiveDirectoryIterator( $this->directory, \FilesystemIterator::SKIP_DOTS ),
 			\RecursiveIteratorIterator::CHILD_FIRST
@@ -211,6 +230,7 @@ final class PhpcsScanGitGuardsTest extends TestCase {
 			'issues'  => $issues,
 			'stats'   => $stats,
 			'skipped' => $skipped,
+			'options' => $options,
 		);
 	}
 
@@ -883,5 +903,104 @@ final class PhpcsScanGitGuardsTest extends TestCase {
 		$this->assertArrayNotHasKey( 'github_pr_files_phpcs_scanned', vipgoci_counter_report( VIPGOCI_COUNTERS_DUMP ) );
 		$this->assertSame( array(), $this->commands( ' blame ' ) );
 		$this->assertFalse( vipgoci_cache( array( 'vipgoci_gitrepo_diffs_fetch_unfiltered', $this->repo, $this->base, $this->head ) ) );
+	}
+
+	/** @return array Malformed SVG scanner responses. */
+	public static function malformedSvgOutputs(): array {
+		return array(
+			'invalid JSON' => array( 'fixture-invalid-json' ),
+			'null output'  => array( 'fixture-null-output' ),
+		);
+	}
+
+	/** A staged SVG scan failure must be reported and excluded from auto approval. */
+	#[DataProvider( 'malformedSvgOutputs' )]
+	public function testFailedSvgScanCleansStagingAndWithholdsApproval( string $marker ): void {
+		$contents   = "<svg>\n<!-- $marker -->\n</svg>\n";
+		$this->base = $this->commit( array() );
+		$this->head = $this->commit( array( 'icon.svg' => $contents ) );
+		$result     = $this->scan(
+			array( 42 ),
+			array(
+				'svg-checks'       => true,
+				'svg-scanner-path' => __DIR__ . '/helper/PhpcsScanFixture.php',
+				'svg-php-path'     => PHP_BINARY,
+			)
+		);
+		$calls = $this->phpcsInvocations();
+		$this->assertCount( 1, $calls );
+		$this->assertSame( array( true ), $calls[0]['exists'] );
+		$this->assertSame( array( $contents ), $calls[0]['contents'] );
+		$this->assertSame( array( 42 => array() ), $result['issues'] );
+		$this->assertSame( 1, vipgoci_counter_report( VIPGOCI_COUNTERS_DUMP )['github_pr_files_phpcs_scanned'] );
+
+		$approved = array();
+		vipgoci_ap_svg_files( $result['options'], $approved );
+		$this->assertSame( array(), $approved );
+		$this->assertSame( array( true ), $this->phpcsInvocations()[1]['exists'] );
+		$this->assertSame( array( $contents ), $this->phpcsInvocations()[1]['contents'] );
+		$direct = vipgoci_svg_scan_single_file( $result['options'], 'icon.svg' );
+		$this->ownedSvgPaths[] = $direct['temp_file_name'];
+		$this->assertNull( $direct['file_issues_arr_master'] );
+		$this->assertFileDoesNotExist( $direct['temp_file_name'] );
+		$this->assertSame( array( true ), $this->phpcsInvocations()[2]['exists'] );
+		$this->assertSame( array( $contents ), $this->phpcsInvocations()[2]['contents'] );
+
+		$posts = array_values( array_filter(
+			$GLOBALS['vipgoci_test_http_requests'],
+			static fn( $request ) => str_starts_with( $request['request'], 'POST ' )
+		) );
+		$this->assertCount( 1, $posts );
+		$this->assertSame( 'POST /repos/owner/repo/issues/42/comments', $posts[0]['request'] );
+		$this->assertStringContainsString( '* icon.svg', $posts[0]['body']['body'] );
+		$this->assertStringContainsString( VIPGOCI_PHPCS_SCAN_FAILED_MSG_START, $posts[0]['body']['body'] );
+	}
+
+	/** Success, skipped and exceptional paths release the staged file they own. */
+	public function testSvgPostStagingTerminalPathsCleanOwnedFiles(): void {
+		$this->base = $this->commit( array() );
+		$this->head = $this->commit( array(
+			'clean.svg' => "<svg/>\n",
+			'large.svg' => "<svg>\nline two\n</svg>\n",
+			'error.svg' => "<svg><!-- fixture-exception --></svg>\n",
+		) );
+		$options = array(
+			'repo-owner'             => 'owner',
+			'repo-name'              => 'repo',
+			'token'                  => 'test-token',
+			'commit'                 => $this->head,
+			'local-git-repo'         => $this->repo,
+			'svg-checks'             => true,
+			'svg-file-extensions'    => array( 'svg' ),
+			'svg-scanner-path'       => __DIR__ . '/helper/PhpcsScanFixture.php',
+			'svg-php-path'           => PHP_BINARY,
+			'skip-large-files'       => false,
+			'skip-large-files-limit' => 1,
+		);
+
+		$success = vipgoci_svg_scan_single_file( $options, 'clean.svg' );
+		$this->ownedSvgPaths[] = $success['temp_file_name'];
+		$this->assertSame( 0, $success['file_issues_arr_master']['totals']['errors'] );
+		$this->assertFileDoesNotExist( $success['temp_file_name'] );
+		$this->assertSame( array( true ), $this->phpcsInvocations()[0]['exists'] );
+		$this->assertSame( array( "<svg/>\n" ), $this->phpcsInvocations()[0]['contents'] );
+
+		$options['skip-large-files'] = true;
+		$skipped = vipgoci_svg_scan_single_file( $options, 'large.svg' );
+		$this->ownedSvgPaths[] = $skipped['temp_file_name'];
+		$this->assertSame( 1, $skipped['validation']['total'] );
+		$this->assertFileDoesNotExist( $skipped['temp_file_name'] );
+		$this->assertCount( 1, $this->phpcsInvocations() );
+
+		$options['skip-large-files'] = false;
+		try {
+			vipgoci_svg_scan_single_file( $options, 'error.svg' );
+			$this->fail( 'Expected malformed scanner structure to throw.' );
+		} catch ( \TypeError $error ) {
+			$this->assertStringContainsString( 'array_map', $error->getMessage() );
+		}
+		$calls = $this->phpcsInvocations();
+		$this->assertSame( array( true ), $calls[1]['exists'] );
+		$this->assertSame( array( "<svg><!-- fixture-exception --></svg>\n" ), $calls[1]['contents'] );
 	}
 }
