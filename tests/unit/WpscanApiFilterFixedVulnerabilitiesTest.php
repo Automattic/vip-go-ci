@@ -123,6 +123,37 @@ final class WpscanApiFilterFixedVulnerabilitiesTest extends TestCase {
 	}
 
 	/**
+	 * Keep unfixed advisories while filtering fixes at or before the installed version.
+	 *
+	 * @return void
+	 */
+	public function testRetainsUnfixedVulnerabilitiesAlongsideFutureFixes(): void {
+		$results = array(
+			'my-plugin' => array(
+				'vulnerabilities' => array(
+					array( 'id' => 'unfixed', 'fixed_in' => null ),
+					array( 'id' => 'fixed-before', 'fixed_in' => '0.9.9' ),
+					array( 'id' => 'fixed-at', 'fixed_in' => '1.0.0' ),
+					array( 'id' => 'fixed-later', 'fixed_in' => '1.1.0' ),
+					array( 'id' => 'missing-fixed-in' ),
+				),
+			),
+		);
+
+		$this->assertSame(
+			array(
+				'my-plugin' => array(
+					'vulnerabilities' => array(
+						array( 'id' => 'unfixed', 'fixed_in' => null ),
+						array( 'id' => 'fixed-later', 'fixed_in' => '1.1.0' ),
+					),
+				),
+			),
+			vipgoci_wpscan_filter_fixed_vulnerabilities( 'my-plugin', '1.0.0', $results )
+		);
+	}
+
+	/**
 	 * Test invalid usage of the function.
 	 *
 	 * @return void
