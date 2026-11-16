@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Vipgoci\Tests\Integration;
 
 use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\PreserveGlobalState;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
@@ -64,7 +65,7 @@ final class SvgScanLookForSpecificTokensTest extends TestCase {
 		vipgoci_svg_look_for_specific_tokens(
 			array(
 				'<?php',
-				'<=',
+				'<?=',
 				'<foo ',
 			),
 			$temp_file_name,
@@ -85,5 +86,45 @@ final class SvgScanLookForSpecificTokensTest extends TestCase {
 			$results_expected,
 			$results
 		);
+	}
+
+	/** Each input isolates one configured token, including a harmless comparison. */
+	public static function phpTokenCases(): array {
+		return array(
+			'mixed-case PHP' => array( "<svg>\n<g>safe</g>\n<?PhP echo 1; ?>\n</svg>\n", '<?php' ),
+			'short echo'     => array( "<svg>\n<g>safe</g>\n<?= 1 ?>\n</svg>\n", '<?=' ),
+			'comparison'     => array( "<svg>\n<g>1 <= 2</g>\n</svg>\n", null ),
+		);
+	}
+
+	/** The helper reports the configured token, exact line and error count. */
+	#[DataProvider( 'phpTokenCases' )]
+	public function testPhpOpeningTokens( string $contents, ?string $token ): void {
+		$file = tempnam( sys_get_temp_dir(), 'svg-php-token-' );
+		try {
+			file_put_contents( $file, $contents );
+			$results = array(
+				'totals' => array( 'errors' => 0, 'warnings' => 0, 'fixable' => 0 ),
+				'files'  => array(),
+			);
+			vipgoci_svg_look_for_specific_tokens( array( '<?php', '<?=' ), $file, $results );
+			$expected = array(
+				'totals' => array( 'errors' => null === $token ? 0 : 1, 'warnings' => 0, 'fixable' => 0 ),
+				'files'  => array(),
+			);
+			if ( null !== $token ) {
+				$expected['files'][ $file ] = array(
+					'errors'   => 1,
+					'messages' => array( array(
+						'message' => "Found forbidden tag in SVG file: '$token'",
+						'line'    => 3,
+						'level'   => 'ERROR',
+					) ),
+				);
+			}
+			$this->assertSame( $expected, $results );
+		} finally {
+			unlink( $file );
+		}
 	}
 }
