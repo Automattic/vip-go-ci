@@ -630,6 +630,10 @@ function vipgoci_report_maybe_no_issues_found(
 			continue;
 		}
 
+		/*
+		 * Do not use cached reviews: reviews may have been
+		 * dismissed earlier in this run, after they were cached.
+		 */
 		$pr_reviews_commented = vipgoci_github_pr_reviews_get(
 			$repo_owner,
 			$repo_name,
@@ -638,7 +642,8 @@ function vipgoci_report_maybe_no_issues_found(
 			array(
 				'login' => 'myself',
 				'state' => array( 'COMMENTED', 'CHANGES_REQUESTED' ),
-			)
+			),
+			true // Skip cache.
 		);
 
 		if ( empty( $pr_reviews_commented ) ) {
