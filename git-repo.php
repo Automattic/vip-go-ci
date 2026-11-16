@@ -598,7 +598,7 @@ function vipgoci_gitrepo_fetch_committed_file(
 			}
 		}
 		$object = escapeshellarg( $commit_id . ':' . $file_name );
-		$size = vipgoci_runtime_measure_exec_with_retry(
+		$size   = vipgoci_runtime_measure_exec_with_retry(
 			'git -C ' . escapeshellarg( $local_git_repo ) . ' cat-file -s ' . $object . ' 2>/dev/null',
 			array( 0 ),
 			$output,
@@ -615,8 +615,13 @@ function vipgoci_gitrepo_fetch_committed_file(
 		if ( null === $stream ) {
 			return false;
 		}
-		$contents = $stream->fread( VIPGOCI_GIT_REPO_MAX_FILE_BYTES + 1 );
-		return false !== $contents && strlen( $contents ) === (int) trim( $size ) ? $contents : false;
+		$stat = $stream->fstat();
+		$size = (int) trim( $size );
+		if ( false === $stat || $stat['size'] !== $size ) {
+			return false;
+		}
+		$contents = 0 === $size ? '' : $stream->fread( $size );
+		return false !== $contents && strlen( $contents ) === $size ? $contents : false;
 	} finally {
 		vipgoci_runtime_measure( VIPGOCI_RUNTIME_STOP, 'git_repo_fetch_file' );
 	}

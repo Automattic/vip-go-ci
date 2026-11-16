@@ -119,16 +119,20 @@ final class GitRepoSafeReadTest extends TestCase {
 	public function testContainedRegularFilesPreserveContentsAndSymlinkPolicy(): void {
 		$this->write( 'binary.php', "a\0b\n \n" );
 		$this->write( 'empty.php', '' );
+		$this->head = $this->commit();
 		$this->assertSame( "a\0b\n \n", $this->fetch( 'binary.php' ) );
 		$this->assertSame( '', $this->fetch( 'empty.php' ) );
 		$this->assertSame( "<?php return 1;\n", $this->fetch( 'normal.php' ) );
 		$this->assertFalse( $this->fetch( 'internal.php' ) );
-		$this->assertSame( "<?php return 1;\n", $this->fetch( 'internal.php', false ) );
+		$this->assertSame( 'normal.php', $this->fetch( 'internal.php', false ) );
+		$this->assertSame( '/dev/zero', $this->fetch( 'device.php', false ) );
 		mkdir( $this->repo . '/nested' );
 		symlink( '../normal.php', $this->repo . '/nested/relative.php' );
 		symlink( 'nested', $this->repo . '/parent' );
+		$this->head = $this->commit();
 		$this->assertFalse( $this->fetch( 'parent/relative.php' ) );
-		$this->assertSame( "<?php return 1;\n", $this->fetch( 'parent/relative.php', false ) );
+		$this->assertFalse( $this->fetch( 'parent/relative.php', false ) );
+		$this->assertSame( '../normal.php', $this->fetch( 'nested/relative.php', false ) );
 	}
 
 	/** External regular files and parent-directory symlinks cannot escape. */
@@ -230,6 +234,7 @@ final class GitRepoSafeReadTest extends TestCase {
 			}
 			fwrite( $handle, 'x' );
 			fclose( $handle );
+			$this->head = $this->commit();
 			$this->assertSame( array( 0, 'false' ), $this->probe( $path ) );
 			foreach ( array( 'phpcs', 'lint', 'svg' ) as $mode ) {
 				list( $code, $output ) = $this->probe( $path, $mode );
@@ -239,6 +244,7 @@ final class GitRepoSafeReadTest extends TestCase {
 		$handle = fopen( $this->repo . '/boundary.php', 'wb' );
 		ftruncate( $handle, VIPGOCI_GIT_REPO_MAX_FILE_BYTES );
 		fclose( $handle );
+		$this->head = $this->commit();
 		$this->assertSame( VIPGOCI_GIT_REPO_MAX_FILE_BYTES, strlen( $this->fetch( 'boundary.php' ) ) );
 		$this->assertSame( "<?php return 1;\n", vipgoci_gitrepo_get_file_at_commit( $this->head, 'normal.php', $this->repo, $this->head ) );
 	}

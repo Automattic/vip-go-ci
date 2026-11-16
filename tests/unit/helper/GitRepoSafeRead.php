@@ -38,6 +38,6 @@ switch ( $argv[4] ) {
 		break;
 	default:
 		echo json_encode(
-			vipgoci_gitrepo_fetch_committed_file( 'fixture', 'fixture', 'unused', $argv[2], $argv[3], $argv[1] )
+			vipgoci_gitrepo_fetch_committed_file( 'fixture', 'fixture', 'unused', $argv[2], $argv[3], $argv[1], true )
 		);
 }

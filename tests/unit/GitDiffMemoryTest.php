@@ -577,7 +577,7 @@ SH;
 		$this->assertSame( $bytes, vipgoci_gitrepo_fetch_committed_file( 'fixture', 'fixture', 'unused', $head, $path, $this->repo ) );
 		$this->assertSame( $bytes, vipgoci_gitrepo_fetch_committed_file( 'fixture', 'fixture', 'unused', $head, '/' . $path, $this->repo ) );
 		$this->assertSame( $bytes, vipgoci_gitrepo_fetch_committed_file( 'fixture', 'fixture', 'unused', $head, $path, $this->repo, true ) );
-		$this->assertSame( $path, vipgoci_gitrepo_fetch_committed_file( 'fixture', 'fixture', 'unused', $head, 'link.php', $this->repo ) );
+		$this->assertSame( $path, vipgoci_gitrepo_fetch_committed_file( 'fixture', 'fixture', 'unused', $head, 'link.php', $this->repo, false ) );
 		$this->assertFalse( vipgoci_gitrepo_fetch_committed_file( 'fixture', 'fixture', 'unused', $head, 'link.php', $this->repo, true ) );
 		$this->assertFalse( vipgoci_gitrepo_fetch_committed_file( 'fixture', 'fixture', 'unused', $head, 'untracked.txt', $this->repo ) );
 	}
