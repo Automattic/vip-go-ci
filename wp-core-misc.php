@@ -646,47 +646,52 @@ function vipgoci_wpcore_api_determine_slug_and_other_for_addons(
 		 * The API will return with more than one potential
 		 * result array; search both for data.
 		 */
+		$returned_keys = array();
 		foreach ( $api_data['no_update'] as $key => $data_item ) {
+			$returned_keys[ $key ] = true;
 			$slugs_by_addon[ $addon_query_type . '-' . $key ] = $data_item;
 		}
 
 		foreach ( $api_data[ $addon_query_type_short ] as $key => $data_item ) {
+			$returned_keys[ $key ] = true;
 			if ( ! isset( $slugs_by_addon[ $addon_query_type . '-' . $key ] ) ) {
 				$slugs_by_addon[ $addon_query_type . '-' . $key ] = $data_item;
 			}
 		}
 
-		// API provides slug in 'theme' field, handle this.
-		if (
-			( VIPGOCI_ADDON_THEME === $addon_query_type ) &&
-			( isset( $slugs_by_addon[ $addon_query_type . '-' . $key ]['theme'] ) )
-		) {
-			$slugs_by_addon[ $addon_query_type . '-' . $key ]['slug'] = $slugs_by_addon[ $addon_query_type . '-' . $key ]['theme'];
-		}
+		// Normalize and validate each effective result after response precedence is applied.
+		foreach ( array_keys( $returned_keys ) as $key ) {
+			$addon_key = $addon_query_type . '-' . $key;
 
-		/*
-		 * Verify that slug is valid; if not skip result.
-		 */
-		if (
-			( isset(
-				$slugs_by_addon[ $addon_query_type . '-' . $key ]['slug']
-			) ) &&
-			( false === vipgoci_validate_slug(
-				$slugs_by_addon[ $addon_query_type . '-' . $key ]['slug']
-			) )
-		) {
-			vipgoci_log(
-				'Invalid slug received from WordPress.org API, skipping result',
-				array(
-					'addon_query_type_short' => $addon_query_type_short,
-					'api_data_raw'           => $api_data_raw,
-					'api_data'               => $api_data,
+			// API provides slug in 'theme' field, handle this.
+			if (
+				( VIPGOCI_ADDON_THEME === $addon_query_type ) &&
+				( isset( $slugs_by_addon[ $addon_key ]['theme'] ) )
+			) {
+				$slugs_by_addon[ $addon_key ]['slug'] = $slugs_by_addon[ $addon_key ]['theme'];
+			}
+
+			/*
+			 * Verify that slug is valid; if not skip result.
+			 */
+			if (
+				( isset( $slugs_by_addon[ $addon_key ]['slug'] ) ) &&
+				(
+					! is_string( $slugs_by_addon[ $addon_key ]['slug'] ) ||
+					false === vipgoci_validate_slug( $slugs_by_addon[ $addon_key ]['slug'] )
 				)
-			);
+			) {
+				vipgoci_log(
+					'Invalid slug received from WordPress.org API, skipping result',
+					array(
+						'addon_query_type_short' => $addon_query_type_short,
+						'api_data_raw'           => $api_data_raw,
+						'api_data'               => $api_data,
+					)
+				);
 
-			unset( $slugs_by_addon[ $addon_query_type . '-' . $key ] );
-
-			continue;
+				unset( $slugs_by_addon[ $addon_key ] );
+			}
 		}
 	}
 
