@@ -94,18 +94,41 @@ final class GitHubCommentMarkerTest extends TestCase {
 	}
 
 	/**
-	 * The configured login is used without querying GitHub.
+	 * The configured login is used without querying /user, and its numeric
+	 * ID is looked up by login. The ID is only kept if GitHub returns the
+	 * same login.
 	 *
 	 * @return void
 	 */
-	public function testTokenLoginOverrideSkipsApi(): void {
-		vipgoci_github_token_login_set( VIPGOCI_GITHUB_ACTIONS_BOT_LOGIN );
+	public function testTokenLoginOverrideLooksUpId(): void {
+		foreach (
+			array(
+				'found'          => array( array( 'login' => 'GitHub-Actions[bot]', 'id' => 41898282 ), 41898282 ),
+				'other login'    => array( array( 'login' => 'someone-else', 'id' => 5 ), null ),
+				'not found'      => array( array( 'message' => 'Not Found' ), null ),
+				'invalid ID'     => array( array( 'login' => 'github-actions[bot]', 'id' => '41898282' ), null ),
+				'request failed' => array( null, null ),
+			) as $case => list( $response, $expected_id )
+		) {
+			vipgoci_cache( VIPGOCI_CACHE_CLEAR );
+			vipgoci_github_token_login_set( VIPGOCI_GITHUB_ACTIONS_BOT_LOGIN );
 
-		$user_info = vipgoci_github_authenticated_user_get( $this->options['token'] );
+			$GLOBALS['vipgoci_test_http_requests']  = array();
+			$GLOBALS['vipgoci_test_http_responses'] = array(
+				'GET /users/github-actions%5Bbot%5D' => $response,
+			);
 
-		$this->assertSame( 'github-actions[bot]', $user_info->login );
-		$this->assertSame( 'https://github.com/apps/github-actions', $user_info->html_url );
-		$this->assertSame( array(), $GLOBALS['vipgoci_test_http_requests'] );
+			$user_info = vipgoci_github_authenticated_user_get( $this->options['token'] );
+
+			$this->assertSame( 'github-actions[bot]', $user_info->login, $case );
+			$this->assertSame( 'https://github.com/apps/github-actions', $user_info->html_url, $case );
+			$this->assertSame( $expected_id, $user_info->id ?? null, $case );
+			$this->assertSame(
+				array( 'GET /users/github-actions%5Bbot%5D' ),
+				array_column( $GLOBALS['vipgoci_test_http_requests'], 'request' ),
+				$case
+			);
+		}
 	}
 
 	/**
@@ -165,7 +188,10 @@ final class GitHubCommentMarkerTest extends TestCase {
 
 		$this->assertSame( '0', $options['comment-marker'] );
 		$this->assertSame( '<!-- vip-go-ci-marker:0 -->', vipgoci_github_comment_marker_get() );
-		$this->assertSame( array(), $GLOBALS['vipgoci_test_http_requests'] );
+		$this->assertSame(
+			array( 'GET /users/github-actions%5Bbot%5D' ),
+			array_column( $GLOBALS['vipgoci_test_http_requests'], 'request' )
+		);
 	}
 
 	/**
@@ -318,36 +344,49 @@ final class GitHubCommentMarkerTest extends TestCase {
 	}
 
 	/**
-	 * Without a numeric ID for the token-holder, as with a login set by
-	 * --github-token-login, no comment counts as already posted.
+	 * With a login set by --github-token-login, comments count as already
+	 * posted only if the login's numeric ID was found and matches; without
+	 * it, no comment counts as already posted.
 	 *
 	 * @return void
 	 */
-	public function testExistingCommentsIgnoredWithoutAccountId(): void {
-		vipgoci_github_token_login_set( VIPGOCI_GITHUB_ACTIONS_BOT_LOGIN );
-		vipgoci_github_comment_marker_set( 'actions' );
-
-		$GLOBALS['vipgoci_test_http_responses'] = array(
-			'GET /repos/owner/repo/pulls/42/comments' => array(
-				array_merge(
-					$this->item( 'github-actions[bot]', "Ours\n<!-- vip-go-ci-marker:actions -->" ),
-					array(
-						'user'               => array(
-							'login' => 'github-actions[bot]',
-							'id'    => 41898282,
-						),
-						'path'               => 'test.php',
-						'original_commit_id' => 'abc',
-					)
-				),
+	public function testExistingCommentsWithConfiguredLogin(): void {
+		$comments_fixture = array(
+			array_merge(
+				$this->item( 'github-actions[bot]', "Ours\n<!-- vip-go-ci-marker:actions -->" ),
+				array(
+					'user'               => array(
+						'login' => 'github-actions[bot]',
+						'id'    => 41898282,
+					),
+					'path'               => 'test.php',
+					'original_commit_id' => 'abc',
+				)
 			),
 		);
 
-		$comments = array();
+		foreach (
+			array(
+				'ID found'     => array( array( 'login' => 'github-actions[bot]', 'id' => 41898282 ), array( 'test.php:3' ) ),
+				'other ID'     => array( array( 'login' => 'github-actions[bot]', 'id' => 7 ), array() ),
+				'ID not found' => array( array( 'message' => 'Not Found' ), array() ),
+			) as $case => list( $user_response, $expected )
+		) {
+			vipgoci_cache( VIPGOCI_CACHE_CLEAR );
+			vipgoci_github_token_login_set( VIPGOCI_GITHUB_ACTIONS_BOT_LOGIN );
+			vipgoci_github_comment_marker_set( 'actions' );
 
-		vipgoci_github_pr_reviews_comments_get( $this->options, 'abc', '2026-01-01T00:00:00Z', $comments, 42 );
+			$GLOBALS['vipgoci_test_http_responses'] = array(
+				'GET /users/github-actions%5Bbot%5D'      => $user_response,
+				'GET /repos/owner/repo/pulls/42/comments' => $comments_fixture,
+			);
 
-		$this->assertSame( array(), $comments );
+			$comments = array();
+
+			vipgoci_github_pr_reviews_comments_get( $this->options, 'abc', '2026-01-01T00:00:00Z', $comments, 42 );
+
+			$this->assertSame( $expected, array_keys( $comments ), $case );
+		}
 	}
 
 	/**

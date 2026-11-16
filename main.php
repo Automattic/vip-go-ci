@@ -74,9 +74,10 @@ function vipgoci_help_print() :void {
 		"\t" . '--repo-name=STRING             Specify name of the repository.' . PHP_EOL .
 		"\t" . '--commit=STRING                Specify the exact commit to scan (SHA).' . PHP_EOL .
 		"\t" . '--token=STRING                 The access-token to use to communicate with GitHub.' . PHP_EOL .
-		"\t" . '--github-token-login=STRING    Login of the token-holder. When set, the GitHub API is not' . PHP_EOL .
-		"\t" . '                               queried for it. Required for GitHub App installation tokens;' . PHP_EOL .
-		"\t" . '                               use "' . VIPGOCI_GITHUB_ACTIONS_BOT_LOGIN . '" for GITHUB_TOKEN.' . PHP_EOL .
+		"\t" . '--github-token-login=STRING    Login of the token-holder. When set, it is not queried from' . PHP_EOL .
+		"\t" . '                               GitHub; only its numeric ID is looked up. Required for GitHub' . PHP_EOL .
+		"\t" . '                               App installation tokens; use "' . VIPGOCI_GITHUB_ACTIONS_BOT_LOGIN . '"' . PHP_EOL .
+		"\t" . '                               for GITHUB_TOKEN.' . PHP_EOL .
 		"\t" . '--comment-marker=STRING        Add a hidden marker with this ID to comments and reviews' . PHP_EOL .
 		"\t" . '                               posted, and only treat feedback carrying the marker as' . PHP_EOL .
 		"\t" . '                               our own. Useful when the token is shared with other tools.' . PHP_EOL .
@@ -1746,6 +1747,7 @@ function vipgoci_run_init_github_token_option( array &$options ) :void {
 			'Got information about token-holder user from GitHub',
 			array(
 				'login'    => $current_user_info->login,
+				'id'       => $current_user_info->id ?? null,
 				'html_url' => $current_user_info->html_url,
 			)
 		);

@@ -1811,6 +1811,18 @@ function vipgoci_github_authenticated_user_get(
 			),
 		);
 
+		/*
+		 * Look up the numeric ID of the configured login, which
+		 * is needed to recognize comments posted earlier. If it
+		 * cannot be found, leave it unset, so that no comment is
+		 * treated as already posted.
+		 */
+		$user_id = vipgoci_github_user_id_get( $token_login, $github_token );
+
+		if ( null !== $user_id ) {
+			$current_user_info->id = $user_id;
+		}
+
 		vipgoci_cache( $cached_id, $current_user_info );
 
 		return $current_user_info;
@@ -1852,6 +1864,56 @@ function vipgoci_github_authenticated_user_get(
 	vipgoci_cache( $cached_id, $current_user_info );
 
 	return $current_user_info;
+}
+
+/**
+ * Get the numeric ID of a GitHub user by login.
+ *
+ * @param string $login        Login of the user.
+ * @param string $github_token GitHub token to use.
+ *
+ * @return null|int Numeric ID of the user, or null if it could not be
+ *                  found or the login returned does not match.
+ */
+function vipgoci_github_user_id_get(
+	string $login,
+	string $github_token
+) :null|int {
+	$github_url =
+		VIPGOCI_GITHUB_BASE_URL . '/' .
+		'users/' .
+		rawurlencode( $login );
+
+	$user_info_json = vipgoci_http_api_fetch_url(
+		$github_url,
+		$github_token,
+		false // Do not stop execution on failure.
+	);
+
+	$user_info = ( null === $user_info_json ) ?
+		null : json_decode( $user_info_json );
+
+	if (
+		( ! is_object( $user_info ) ) ||
+		( ! isset( $user_info->login, $user_info->id ) ) ||
+		( ! is_string( $user_info->login ) ) ||
+		// GitHub logins are not case-sensitive.
+		( 0 !== strcasecmp( $user_info->login, $login ) ) ||
+		( ! is_int( $user_info->id ) ) ||
+		( $user_info->id <= 0 )
+	) {
+		vipgoci_log(
+			'Unable to get the numeric ID of the configured token-holder login ' .
+				'from GitHub; comments posted earlier will not be recognized',
+			array(
+				'login' => $login,
+			)
+		);
+
+		return null;
+	}
+
+	return $user_info->id;
 }
 
 /**

@@ -94,7 +94,7 @@ final class MainRunInitGithubTokenLoginTest extends TestCase {
 
 	/**
 	 * With the login set, an installation token is accepted
-	 * without querying GitHub.
+	 * without querying /user.
 	 *
 	 * @return void
 	 */
@@ -118,7 +118,12 @@ final class MainRunInitGithubTokenLoginTest extends TestCase {
 		);
 
 		$this->assertSame( 'github-actions[bot]', vipgoci_github_token_login_get() );
-		$this->assertSame( array(), $GLOBALS['vipgoci_test_http_requests'] );
+
+		// Only the numeric ID is looked up, /user is not queried.
+		$this->assertSame(
+			array( 'GET /users/github-actions%5Bbot%5D' ),
+			array_column( $GLOBALS['vipgoci_test_http_requests'], 'request' )
+		);
 	}
 
 	/**

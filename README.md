@@ -329,7 +329,7 @@ Use the `--max-exec-time` option to set maximum execution time (in seconds):
 
 `vip-go-ci` normally asks GitHub which user the token belongs to, and uses that login to recognize the comments and reviews it posted earlier. GitHub App installation tokens, such as the `GITHUB_TOKEN` provided by GitHub Actions, cannot query this information. For these tokens (prefixed `ghs_`), the login has to be set with `--github-token-login`, as the token does not tell which app it belongs to: use `github-actions[bot]` for `GITHUB_TOKEN`. The option also skips the lookup for any other token.
 
-Inline comments already posted are only recognized, and not posted again, when made by the token-holder's account, matched by its numeric user ID. As the ID is not known when the login is set with `--github-token-login`, inline comments are then posted again on each run. Detected issues are counted either way, so the exit status is not affected.
+Inline comments already posted are only recognized, and not posted again, when made by the token-holder's account, matched by its numeric user ID. When the login is set with `--github-token-login`, its ID is looked up with `GET /users/{login}`. If it cannot be found, inline comments are posted again on each run. Detected issues are counted either way, so the exit status is not affected.
 
 Since other workflows may also post as `github-actions[bot]`, use `--comment-marker` to add a hidden marker to every comment and review `vip-go-ci` posts. When set, feedback carrying the marker is treated as posted by `vip-go-ci`, both when avoiding duplicate comments and when cleaning up or dismissing earlier feedback. For example:
 
