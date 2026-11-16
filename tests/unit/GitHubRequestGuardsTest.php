@@ -762,6 +762,43 @@ final class GitHubRequestGuardsTest extends TestCase {
 		$this->assertRequests( array( 'GET /repos/owner/repo/pulls/42/comments' ) );
 	}
 
+	/** @return array Caps at and just below one existing plus two new comments. */
+	public static function activeCommentCapCases(): array {
+		return array( 'exact capacity' => array( 3, false ), 'one over capacity' => array( 2, true ) );
+	}
+
+	/** Obsolete own and active foreign comments must not consume capacity. */
+	#[DataProvider( 'activeCommentCapCases' )]
+	public function testCommentCapCountsOnlyActiveOwnComments( int $cap, bool $trim ): void {
+		$this->options['review-comments-total-max'] = $cap;
+		$active = $this->comment();
+		$obsolete = $this->comment( null );
+		$obsolete['id'] = 11;
+		$foreign = $this->comment();
+		$foreign['id'] = 12;
+		$foreign['user'] = array( 'login' => 'someone-else', 'id' => 456 );
+		$GLOBALS['vipgoci_test_http_responses']['GET /repos/owner/repo/pulls/42/comments'] = array( $active, $obsolete, $foreign );
+
+		$low = $this->issue();
+		$low['issue'] = array( 'message' => 'New warning', 'source' => 'Fixture.Warning', 'level' => 'WARNING', 'severity' => 1 );
+		$high = $this->issue();
+		$high['issue']['message'] = 'New error';
+		$results = $this->emptyResults();
+		$results['issues'] = array( 41 => array(), 42 => array( $low, $high ) );
+		$results['stats']['phpcs'][42]['error'] = 1;
+		$results['stats']['phpcs'][42]['warning'] = 1;
+		$expected = $results;
+		if ( $trim ) {
+			$expected['issues'][42] = array( $high );
+			$expected['stats']['phpcs'][42]['warning'] = 0;
+		}
+		$maxed = array();
+		vipgoci_results_filter_comments_to_max( $this->options, $results, $maxed );
+		$this->assertSame( $expected, $results );
+		$this->assertSame( $trim ? array( 42 => true ) : array(), $maxed );
+		$this->assertRequests( array( 'GET /repos/owner/repo/pulls/42/comments' ) );
+	}
+
 	/**
 	 * Reviews in other states or by other people do not need dismissal comments.
 	 *
