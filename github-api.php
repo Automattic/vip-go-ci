@@ -1399,8 +1399,7 @@ function vipgoci_github_pr_reviews_dismiss_with_non_active_comments(
 				$options['repo-name'],
 				$pr_number,
 				$pr_review->id,
-				'Dismissing review as all inline comments ' .
-					'are obsolete by now',
+				'Dismissing review as all inline comments are obsolete by now',
 				$options['token']
 			);
 		}
